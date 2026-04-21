@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git --version)",
+      "Bash(git init *)",
+      "Bash(mkdir -p .github/workflows src data templates static public/archive tests)",
+      "Bash(python3.11 -m venv .venv)",
+      "Bash(.venv/bin/python -m pip install --upgrade pip --quiet)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(.venv/bin/python -m src.list_contracts)",
+      "Bash(tee /tmp/list_contracts.out)",
+      "Bash(.venv/bin/python *)",
+      "Bash(git add *)"
+    ]
+  }
+}

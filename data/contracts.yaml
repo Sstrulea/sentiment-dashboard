@@ -1,0 +1,154 @@
+categories:
+  fx:
+    label: Forex
+    instruments:
+      - symbol: EUR
+        name: Euro FX
+        cftc_code: "099741"
+      - symbol: GBP
+        name: British Pound
+        cftc_code: "096742"
+      - symbol: JPY
+        name: Japanese Yen
+        cftc_code: "097741"
+      - symbol: CHF
+        name: Swiss Franc
+        cftc_code: "092741"
+      - symbol: CAD
+        name: Canadian Dollar
+        cftc_code: "090741"
+      - symbol: AUD
+        name: Australian Dollar
+        cftc_code: "232741"
+      - symbol: NZD
+        name: New Zealand Dollar
+        cftc_code: "112741"
+      - symbol: MXN
+        name: Mexican Peso
+        cftc_code: "095741"
+      - symbol: ZAR
+        name: South African Rand
+        cftc_code: "122741"
+      - symbol: DXY
+        name: US Dollar Index
+        cftc_code: "098662"
+  indices:
+    label: Indices
+    instruments:
+      - symbol: SP500
+        name: S&P 500 E-mini
+        cftc_code: "13874A"
+      - symbol: NASDAQ
+        name: Nasdaq-100 E-mini
+        cftc_code: "209742"
+      - symbol: DOW
+        name: Dow Jones E-mini ($5)
+        cftc_code: "124603"
+      - symbol: RUSSELL
+        name: Russell 2000 E-mini
+        cftc_code: "239742"
+      - symbol: VIX
+        name: VIX Futures
+        cftc_code: "1170E1"
+  rates:
+    label: US Treasuries
+    instruments:
+      - symbol: UST2Y
+        name: 2-Year T-Note
+        cftc_code: "042601"
+      - symbol: UST5Y
+        name: 5-Year T-Note
+        cftc_code: "044601"
+      - symbol: UST10Y
+        name: 10-Year T-Note
+        cftc_code: "043602"
+      - symbol: UST30Y
+        name: US Treasury Bond
+        cftc_code: "020601"
+  metals:
+    label: Metals
+    instruments:
+      - symbol: GOLD
+        name: Gold
+        cftc_code: "088691"
+      - symbol: SILVER
+        name: Silver
+        cftc_code: "084691"
+      - symbol: PLATINUM
+        name: Platinum
+        cftc_code: "076651"
+      - symbol: PALLADIUM
+        name: Palladium
+        cftc_code: "075651"
+      - symbol: COPPER
+        name: Copper
+        cftc_code: "085692"
+  energy:
+    label: Energy
+    instruments:
+      - symbol: WTI
+        name: WTI Crude Oil
+        cftc_code: "067651"
+      - symbol: NATGAS
+        name: Natural Gas
+        cftc_code: "023651"
+      - symbol: HEATING
+        name: Heating Oil
+        cftc_code: "022651"
+      - symbol: GASOLINE
+        name: Gasoline RBOB
+        cftc_code: "111659"
+  crypto:
+    label: Crypto
+    instruments:
+      - symbol: BTC
+        name: Bitcoin
+        cftc_code: "133741"
+      - symbol: ETH
+        name: Ether
+        cftc_code: "146021"
+  ags:
+    label: Grains & Softs
+    instruments:
+      - symbol: CORN
+        name: Corn
+        cftc_code: "002602"
+      - symbol: SOYBEANS
+        name: Soybeans
+        cftc_code: "005602"
+      - symbol: WHEAT
+        name: Wheat Chicago
+        cftc_code: "001602"
+      - symbol: OATS
+        name: Oats
+        cftc_code: "004603"
+      - symbol: COTTON
+        name: Cotton
+        cftc_code: "033661"
+      - symbol: SUGAR
+        name: Sugar No. 11
+        cftc_code: "080732"
+      - symbol: COFFEE
+        name: Coffee C
+        cftc_code: "083731"
+      - symbol: COCOA
+        name: Cocoa
+        cftc_code: "073732"
+      - symbol: ORANGE
+        name: Orange Juice
+        cftc_code: "040701"
+      - symbol: LUMBER
+        name: Lumber
+        cftc_code: "058644"
+  livestock:
+    label: Livestock
+    instruments:
+      - symbol: LIVECATTLE
+        name: Live Cattle
+        cftc_code: "057642"
+      - symbol: FEEDERCATTLE
+        name: Feeder Cattle
+        cftc_code: "061641"
+      - symbol: LEANHOGS
+        name: Lean Hogs
+        cftc_code: "054642"

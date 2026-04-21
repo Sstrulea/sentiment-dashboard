@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>COT Dashboard — {{ report_date }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <h1>COT Dashboard</h1>
+    <div class="dates">
+      <span><strong>Report Date:</strong> {{ report_date }}</span>
+      <span><strong>Generated:</strong> {{ generated_at }}</span>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="pill-group" id="catPills">
+      {% for cat_key, cat in by_cat.items() %}
+      <button class="pill active" data-cat="{{ cat_key }}">{{ cat.label }}</button>
+      {% endfor %}
+    </div>
+    <button id="themeBtn" class="btn">🌓 Theme</button>
+    <button id="csvBtn" class="btn">⬇ CSV</button>
+    <select id="archiveSel" class="btn">
+      {% for d in archive|reverse %}
+      <option value="archive/{{ d }}.html"{% if d == report_date %} selected{% endif %}>{{ d }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</header>
+
+{% if flips %}
+<section id="flips">
+  <h2>Flips into extremes this week</h2>
+  <div class="flip-list">
+    {% for f in flips %}
+      <span class="flip-badge {{ 'flip-long' if f.direction == 'long' else 'flip-short' }}">
+        <strong>{{ f.symbol }}</strong> {{ f.series }} → {{ f.direction|upper }} ({{ (f.extreme_value * 100)|round(0)|int }}%)
+      </span>
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+<section id="flips" class="empty">
+  <h2>Flips into extremes this week</h2>
+  <p class="muted">No new extremes this week.</p>
+</section>
+{% endif %}
+
+<main>
+{% for cat_key, cat in by_cat.items() %}
+<section class="cat" data-cat="{{ cat_key }}">
+  <h2>{{ cat.label }}</h2>
+  <div class="table-wrap">
+    <table class="cot">
+      <thead>
+        <tr>
+          <th data-sort="symbol">Symbol</th>
+          <th data-sort="name">Name</th>
+          <th data-sort="spec_exp_long">Spec Long%</th>
+          <th data-sort="spec_exp_short">Spec Short%</th>
+          <th data-sort="spec_net">Spec Net</th>
+          <th data-sort="spec_ext_6m">Spec Ext 6M</th>
+          <th data-sort="spec_ext_3y">Spec Ext 3Y</th>
+          <th data-sort="comm_exp_long">Comm Long%</th>
+          <th data-sort="comm_exp_short">Comm Short%</th>
+          <th data-sort="comm_net">Comm Net</th>
+          <th data-sort="comm_ext_6m">Comm Ext 6M</th>
+          <th data-sort="comm_ext_3y">Comm Ext 3Y</th>
+          <th>Spec Net Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in cat.rows %}
+        {% if r.missing %}
+        <tr class="row-missing">
+          <td>{{ r.symbol }}</td>
+          <td>{{ r.name }}</td>
+          <td colspan="11" class="muted">no data</td>
+        </tr>
+        {% else %}
+        <tr data-symbol="{{ r.symbol }}"
+            data-spec_exp_long="{{ r.spec_exp_long }}"
+            data-spec_exp_short="{{ r.spec_exp_short }}"
+            data-spec_net="{{ r.spec_net }}"
+            data-spec_ext_6m="{{ r.spec_ext_6m }}"
+            data-spec_ext_3y="{{ r.spec_ext_3y }}"
+            data-comm_exp_long="{{ r.comm_exp_long }}"
+            data-comm_exp_short="{{ r.comm_exp_short }}"
+            data-comm_net="{{ r.comm_net }}"
+            data-comm_ext_6m="{{ r.comm_ext_6m }}"
+            data-comm_ext_3y="{{ r.comm_ext_3y }}"
+            class="{% if r.spec_flipped or r.comm_flipped %}row-flip{% endif %}">
+          <td class="sym">{{ r.symbol }}</td>
+          <td class="name">{{ r.name }}</td>
+          <td class="{{ r.spec_exp_long_class }}">{{ r.fmt_spec_long_pct }}</td>
+          <td>{{ r.fmt_spec_short_pct }}</td>
+          <td class="num {% if r.spec_net_top3 %}net-top{% endif %}">{{ r.fmt_spec_net }}</td>
+          <td class="{{ r.spec_ext_6m_class }}">{{ r.fmt_spec_ext_6m }}</td>
+          <td class="{{ r.spec_ext_3y_class }}">{{ r.fmt_spec_ext_3y }}</td>
+          <td class="{{ r.comm_exp_long_class }}">{{ r.fmt_comm_long_pct }}</td>
+          <td>{{ r.fmt_comm_short_pct }}</td>
+          <td class="num {% if r.comm_net_top3 %}net-top{% endif %}">{{ r.fmt_comm_net }}</td>
+          <td class="{{ r.comm_ext_6m_class }}">{{ r.fmt_comm_ext_6m }}</td>
+          <td class="{{ r.comm_ext_3y_class }}">{{ r.fmt_comm_ext_3y }}</td>
+          <td class="spark-cell">{{ r.sparkline | safe }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endfor %}
+</main>
+
+<footer>
+  <p class="muted">Data: CFTC Legacy Combined (Futures + Options). Percentile rank over trailing 26 (6M) / 156 (3Y) weeks.</p>
+</footer>
+
+<script>
+(function () {
+  // Theme toggle
+  const themeBtn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('cot-theme');
+  if (saved === 'dark') document.body.classList.add('dark');
+  themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('cot-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  });
+
+  // Category pills
+  document.querySelectorAll('#catPills .pill').forEach(p => {
+    p.addEventListener('click', () => {
+      p.classList.toggle('active');
+      const cat = p.getAttribute('data-cat');
+      document.querySelectorAll(`section.cat[data-cat="${cat}"]`).forEach(s => {
+        s.style.display = p.classList.contains('active') ? '' : 'none';
+      });
+    });
+  });
+
+  // Sortable tables
+  document.querySelectorAll('table.cot').forEach(table => {
+    table.querySelectorAll('th[data-sort]').forEach(th => {
+      let asc = true;
+      th.style.cursor = 'pointer';
+      th.addEventListener('click', () => {
+        const key = th.getAttribute('data-sort');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.classList.contains('row-missing'));
+        const missing = Array.from(tbody.querySelectorAll('tr.row-missing'));
+        rows.sort((a, b) => {
+          const av = a.dataset[key] || a.querySelector(`.${key === 'symbol' ? 'sym' : 'name'}`)?.textContent || '';
+          const bv = b.dataset[key] || b.querySelector(`.${key === 'symbol' ? 'sym' : 'name'}`)?.textContent || '';
+          const an = parseFloat(av); const bn = parseFloat(bv);
+          const cmp = (!isNaN(an) && !isNaN(bn)) ? (an - bn) : String(av).localeCompare(String(bv));
+          return asc ? cmp : -cmp;
+        });
+        asc = !asc;
+        tbody.innerHTML = '';
+        rows.forEach(r => tbody.appendChild(r));
+        missing.forEach(r => tbody.appendChild(r));
+      });
+    });
+  });
+
+  // Export CSV
+  document.getElementById('csvBtn').addEventListener('click', () => {
+    const lines = [['category','symbol','name','spec_exp_long','spec_exp_short','spec_net','spec_ext_6m','spec_ext_3y','comm_exp_long','comm_exp_short','comm_net','comm_ext_6m','comm_ext_3y'].join(',')];
+    document.querySelectorAll('section.cat').forEach(sec => {
+      const cat = sec.getAttribute('data-cat');
+      sec.querySelectorAll('tbody tr').forEach(r => {
+        if (r.classList.contains('row-missing')) return;
+        const d = r.dataset;
+        const name = r.querySelector('.name')?.textContent || '';
+        lines.push([cat, d.symbol, name.replace(/,/g,''), d.spec_exp_long, d.spec_exp_short, d.spec_net, d.spec_ext_6m, d.spec_ext_3y, d.comm_exp_long, d.comm_exp_short, d.comm_net, d.comm_ext_6m, d.comm_ext_3y].join(','));
+      });
+    });
+    const blob = new Blob([lines.join('\n')], {type: 'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `cot-{{ report_date }}.csv`;
+    a.click();
+  });
+
+  // Archive navigation
+  document.getElementById('archiveSel').addEventListener('change', e => {
+    window.location.href = e.target.value;
+  });
+})();
+</script>
+</body>
+</html>
