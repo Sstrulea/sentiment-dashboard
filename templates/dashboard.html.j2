@@ -56,20 +56,24 @@
   <div class="table-wrap">
     <table class="cot">
       <thead>
-        <tr>
-          <th data-sort="symbol">Symbol</th>
-          <th data-sort="name">Name</th>
-          <th data-sort="spec_exp_long">Spec Long%</th>
-          <th data-sort="spec_exp_short">Spec Short%</th>
-          <th data-sort="spec_net">Spec Net</th>
-          <th data-sort="spec_ext_6m">Spec Ext 6M</th>
-          <th data-sort="spec_ext_3y">Spec Ext 3Y</th>
-          <th data-sort="comm_exp_long">Comm Long%</th>
-          <th data-sort="comm_exp_short">Comm Short%</th>
-          <th data-sort="comm_net">Comm Net</th>
-          <th data-sort="comm_ext_6m">Comm Ext 6M</th>
-          <th data-sort="comm_ext_3y">Comm Ext 3Y</th>
-          <th>Spec Net Trend</th>
+        <tr class="grp-row">
+          <th rowspan="2" data-sort="symbol">Symbol</th>
+          <th rowspan="2" data-sort="name">Name</th>
+          <th colspan="5" class="grp-spec">Large Speculators</th>
+          <th colspan="5" class="grp-comm">Commercials</th>
+          <th rowspan="2">Trend</th>
+        </tr>
+        <tr class="sub-row">
+          <th data-sort="spec_exp_long" class="col-spec first-spec">Exposure Long</th>
+          <th data-sort="spec_exp_short" class="col-spec">Exposure Short</th>
+          <th data-sort="spec_net" class="col-spec">Net Position</th>
+          <th data-sort="spec_ext_6m" class="col-spec">Extremes 6M</th>
+          <th data-sort="spec_ext_3y" class="col-spec">Extremes 3Y</th>
+          <th data-sort="comm_exp_long" class="col-comm first-comm">Exposure Long</th>
+          <th data-sort="comm_exp_short" class="col-comm">Exposure Short</th>
+          <th data-sort="comm_net" class="col-comm">Net Position</th>
+          <th data-sort="comm_ext_6m" class="col-comm">Extremes 6M</th>
+          <th data-sort="comm_ext_3y" class="col-comm">Extremes 3Y</th>
         </tr>
       </thead>
       <tbody>
@@ -95,16 +99,16 @@
             class="{% if r.spec_flipped or r.comm_flipped %}row-flip{% endif %}">
           <td class="sym">{{ r.symbol }}</td>
           <td class="name">{{ r.name }}</td>
-          <td class="{{ r.spec_exp_long_class }}">{{ r.fmt_spec_long_pct }}</td>
-          <td>{{ r.fmt_spec_short_pct }}</td>
-          <td class="num {% if r.spec_net_top3 %}net-top{% endif %}">{{ r.fmt_spec_net }}</td>
-          <td class="{{ r.spec_ext_6m_class }}">{{ r.fmt_spec_ext_6m }}</td>
-          <td class="{{ r.spec_ext_3y_class }}">{{ r.fmt_spec_ext_3y }}</td>
-          <td class="{{ r.comm_exp_long_class }}">{{ r.fmt_comm_long_pct }}</td>
-          <td>{{ r.fmt_comm_short_pct }}</td>
-          <td class="num {% if r.comm_net_top3 %}net-top{% endif %}">{{ r.fmt_comm_net }}</td>
-          <td class="{{ r.comm_ext_6m_class }}">{{ r.fmt_comm_ext_6m }}</td>
-          <td class="{{ r.comm_ext_3y_class }}">{{ r.fmt_comm_ext_3y }}</td>
+          <td class="col-spec first-spec {{ r.spec_exp_long_class }}">{{ r.fmt_spec_long_pct }}</td>
+          <td class="col-spec">{{ r.fmt_spec_short_pct }}</td>
+          <td class="col-spec num {% if r.spec_net_top3 %}net-top{% endif %}">{{ r.fmt_spec_net }}</td>
+          <td class="col-spec {{ r.spec_ext_6m_class }}">{{ r.fmt_spec_ext_6m }}</td>
+          <td class="col-spec {{ r.spec_ext_3y_class }}">{{ r.fmt_spec_ext_3y }}</td>
+          <td class="col-comm first-comm {{ r.comm_exp_long_class }}">{{ r.fmt_comm_long_pct }}</td>
+          <td class="col-comm">{{ r.fmt_comm_short_pct }}</td>
+          <td class="col-comm num {% if r.comm_net_top3 %}net-top{% endif %}">{{ r.fmt_comm_net }}</td>
+          <td class="col-comm {{ r.comm_ext_6m_class }}">{{ r.fmt_comm_ext_6m }}</td>
+          <td class="col-comm {{ r.comm_ext_3y_class }}">{{ r.fmt_comm_ext_3y }}</td>
           <td class="spark-cell">{{ r.sparkline | safe }}</td>
         </tr>
         {% endif %}
