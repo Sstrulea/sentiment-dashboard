@@ -230,13 +230,14 @@ def render_dashboard(snapshot: pd.DataFrame, history: pd.DataFrame) -> Path:
     # Write today's snapshot to archive first so the date picker sees it.
     archive_path = ARCHIVE / f"{report_date}.html"
 
-    tpl = env.get_template("dashboard.html.j2")
+    tpl = env.get_template("cot.html.j2")
     html = tpl.render(
         by_cat=by_cat,
         flips=flips,
         report_date=report_date,
         generated_at=generated_at,
         archive=_list_archive() + [report_date],
+        active_page="cot",
     )
 
     index_path = PUBLIC / "index.html"

@@ -1,0 +1,16 @@
+<nav class="main-nav">
+  <div class="nav-container">
+    <div class="nav-brand">Dashboard</div>
+    <ul class="nav-links">
+      <li class="{% if active_page == 'cot' %}active{% endif %}">
+        <a href="/">COT</a>
+      </li>
+      <li class="{% if active_page == 'pc-ratio' %}active{% endif %}">
+        <a href="/pc-ratio">P/C Ratio</a>
+      </li>
+      <li class="{% if active_page == 'vix-ratio' %}active{% endif %}">
+        <a href="/vix-ratio">VIX/VIX3M</a>
+      </li>
+    </ul>
+  </div>
+</nav>

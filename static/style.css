@@ -186,3 +186,73 @@ svg.spark { display: block; }
 footer { padding: 20px 16px; color: var(--muted); font-size: 12px; }
 
 .muted { color: var(--muted); }
+
+/* === NAVBAR (added in Stage 3) === */
+.main-nav {
+  background: #0a0a0a;
+  border-bottom: 1px solid #333;
+  padding: 0;
+  margin: 0;
+}
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+}
+.nav-brand {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+}
+.nav-links li a {
+  color: #aaa;
+  text-decoration: none;
+  padding: 16px 20px;
+  display: block;
+  font-size: 14px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-links li a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+.nav-links li.active a {
+  color: #fff;
+  border-bottom: 2px solid #4caf50;
+}
+.page-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+.placeholder {
+  color: #888;
+  font-style: italic;
+  padding: 40px;
+  text-align: center;
+  background: #111;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .nav-container {
+    padding: 0 12px;
+  }
+  .nav-links li a {
+    padding: 16px 12px;
+    font-size: 13px;
+  }
+}

@@ -16,7 +16,19 @@
       "Bash(curl -s -o /tmp/vix3m_test.csv -w \"HTTP: %{http_code}, size: %{size_download}\\\\n\" \"https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv\")",
       "Bash(curl -s -o /tmp/pc_test.json -w \"HTTP: %{http_code}\\\\n\" \"https://cdn.cboe.com/data/us/options/market_statistics/daily/2026-04-21_daily_options\")",
       "Bash(tee /tmp/backfill_chunk1.log)",
-      "Bash(tee /tmp/backfill_chunk2.log)"
+      "Bash(tee /tmp/backfill_chunk2.log)",
+      "Bash(git mv *)",
+      "Bash(tee /tmp/httpd.log)",
+      "Bash(curl -s -o /dev/null -w \"/           -> %{http_code}\\\\n\" \"http://localhost:8765/\")",
+      "Bash(curl -s -o /dev/null -w \"/index.html -> %{http_code}\\\\n\" \"http://localhost:8765/index.html\")",
+      "Bash(curl -s -o /dev/null -w \"/pc-ratio.html -> %{http_code}\\\\n\" \"http://localhost:8765/pc-ratio.html\")",
+      "Bash(curl -s -o /dev/null -w \"/vix-ratio.html -> %{http_code}\\\\n\" \"http://localhost:8765/vix-ratio.html\")",
+      "Bash(curl -s -o /dev/null -w \"/style.css -> %{http_code}\\\\n\" \"http://localhost:8765/style.css\")",
+      "Bash(curl -s http://localhost:8765/)",
+      "Bash(sed -n '/main-nav/,/<\\\\/nav>/p')",
+      "Bash(curl -s http://localhost:8765/pc-ratio.html)",
+      "Bash(curl -s http://localhost:8765/vix-ratio.html)",
+      "Bash(pkill -f \"http.server 8765\")"
     ]
   }
 }
