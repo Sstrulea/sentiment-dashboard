@@ -17,12 +17,27 @@
     </div>
   </div>
   <div class="controls">
-    <div class="pill-group" id="catPills">
-      {% for cat_key, cat in by_cat.items() %}
-      <button class="pill active" data-cat="{{ cat_key }}">{{ cat.label }}</button>
-      {% endfor %}
+    <div id="catFilter" class="cat-filter" role="group" aria-label="Filter categories">
+      <span class="cat-filter-label">Show:</span>
+      <div class="cat-chips">
+        {% for cat_key, cat in by_cat.items() %}
+        <button type="button" class="cat-chip selected" data-cat="{{ cat_key }}" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>{{ cat.label }}</span>
+        </button>
+        {% endfor %}
+      </div>
+      <div class="cat-filter-actions">
+        <button type="button" class="cat-action" data-action="all">All</button>
+        <button type="button" class="cat-action" data-action="none">None</button>
+      </div>
     </div>
-    <button id="themeBtn" class="btn">🌓 Theme</button>
     <button id="csvBtn" class="btn">⬇ CSV</button>
     <select id="archiveSel" class="btn">
       {% for d in archive|reverse %}
@@ -127,22 +142,30 @@
 
 <script>
 (function () {
-  // Theme toggle
-  const themeBtn = document.getElementById('themeBtn');
-  const saved = localStorage.getItem('cot-theme');
-  if (saved === 'dark') document.body.classList.add('dark');
-  themeBtn.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    localStorage.setItem('cot-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  // Category filter (checkbox-chip semantics: "show what's checked")
+  const chips = Array.from(document.querySelectorAll('#catFilter .cat-chip'));
+  function applyChip(chip) {
+    const cat = chip.getAttribute('data-cat');
+    const shown = chip.classList.contains('selected');
+    chip.setAttribute('aria-pressed', shown ? 'true' : 'false');
+    document.querySelectorAll(`section.cat[data-cat="${cat}"]`).forEach(s => {
+      s.style.display = shown ? '' : 'none';
+    });
+  }
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      applyChip(chip);
+    });
+    applyChip(chip);
   });
-
-  // Category pills
-  document.querySelectorAll('#catPills .pill').forEach(p => {
-    p.addEventListener('click', () => {
-      p.classList.toggle('active');
-      const cat = p.getAttribute('data-cat');
-      document.querySelectorAll(`section.cat[data-cat="${cat}"]`).forEach(s => {
-        s.style.display = p.classList.contains('active') ? '' : 'none';
+  document.querySelectorAll('#catFilter .cat-action').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.getAttribute('data-action');
+      chips.forEach(chip => {
+        if (action === 'all') chip.classList.add('selected');
+        else if (action === 'none') chip.classList.remove('selected');
+        applyChip(chip);
       });
     });
   });

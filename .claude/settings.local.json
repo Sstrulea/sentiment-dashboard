@@ -32,7 +32,9 @@
       "Bash(curl -sL \"https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js\" -o static/chart.umd.min.js)",
       "Bash(curl -sL \"https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js\" -o static/chartjs-plugin-annotation.min.js)",
       "Bash(node --check static/pc-chart.js)",
-      "Bash(node --check static/vix-chart.js)"
+      "Bash(node --check static/vix-chart.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8765/theme-toggle.js)",
+      "Bash(node --check static/theme-toggle.js)"
     ]
   }
 }

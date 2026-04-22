@@ -21,37 +21,129 @@
         <a href="/vix-ratio">VIX/VIX3M</a>
       </li>
     </ul>
+    <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle theme">
+      <svg class="theme-icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+      </svg>
+      <svg class="theme-icon moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
   </div>
 </nav>
+<script src="/theme-toggle.js"></script>
 <header class="topbar">
   <div class="brand">
     <h1>COT Dashboard</h1>
     <div class="dates">
       <span><strong>Report Date:</strong> 2026-04-14</span>
-      <span><strong>Generated:</strong> 2026-04-22 08:39 UTC</span>
+      <span><strong>Generated:</strong> 2026-04-22 08:54 UTC</span>
     </div>
   </div>
   <div class="controls">
-    <div class="pill-group" id="catPills">
-      
-      <button class="pill active" data-cat="fx">Forex</button>
-      
-      <button class="pill active" data-cat="indices">Indices</button>
-      
-      <button class="pill active" data-cat="rates">US Treasuries</button>
-      
-      <button class="pill active" data-cat="metals">Metals</button>
-      
-      <button class="pill active" data-cat="energy">Energy</button>
-      
-      <button class="pill active" data-cat="crypto">Crypto</button>
-      
-      <button class="pill active" data-cat="ags">Grains & Softs</button>
-      
-      <button class="pill active" data-cat="livestock">Livestock</button>
-      
+    <div id="catFilter" class="cat-filter" role="group" aria-label="Filter categories">
+      <span class="cat-filter-label">Show:</span>
+      <div class="cat-chips">
+        
+        <button type="button" class="cat-chip selected" data-cat="fx" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Forex</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="indices" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Indices</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="rates" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>US Treasuries</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="metals" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Metals</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="energy" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Energy</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="crypto" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Crypto</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="ags" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Grains & Softs</span>
+        </button>
+        
+        <button type="button" class="cat-chip selected" data-cat="livestock" aria-pressed="true">
+          <svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">
+            <rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5"
+                  fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+          <span>Livestock</span>
+        </button>
+        
+      </div>
+      <div class="cat-filter-actions">
+        <button type="button" class="cat-action" data-action="all">All</button>
+        <button type="button" class="cat-action" data-action="none">None</button>
+      </div>
     </div>
-    <button id="themeBtn" class="btn">🌓 Theme</button>
     <button id="csvBtn" class="btn">⬇ CSV</button>
     <select id="archiveSel" class="btn">
       
@@ -1572,22 +1664,30 @@
 
 <script>
 (function () {
-  // Theme toggle
-  const themeBtn = document.getElementById('themeBtn');
-  const saved = localStorage.getItem('cot-theme');
-  if (saved === 'dark') document.body.classList.add('dark');
-  themeBtn.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    localStorage.setItem('cot-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  // Category filter (checkbox-chip semantics: "show what's checked")
+  const chips = Array.from(document.querySelectorAll('#catFilter .cat-chip'));
+  function applyChip(chip) {
+    const cat = chip.getAttribute('data-cat');
+    const shown = chip.classList.contains('selected');
+    chip.setAttribute('aria-pressed', shown ? 'true' : 'false');
+    document.querySelectorAll(`section.cat[data-cat="${cat}"]`).forEach(s => {
+      s.style.display = shown ? '' : 'none';
+    });
+  }
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      applyChip(chip);
+    });
+    applyChip(chip);
   });
-
-  // Category pills
-  document.querySelectorAll('#catPills .pill').forEach(p => {
-    p.addEventListener('click', () => {
-      p.classList.toggle('active');
-      const cat = p.getAttribute('data-cat');
-      document.querySelectorAll(`section.cat[data-cat="${cat}"]`).forEach(s => {
-        s.style.display = p.classList.contains('active') ? '' : 'none';
+  document.querySelectorAll('#catFilter .cat-action').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const action = btn.getAttribute('data-action');
+      chips.forEach(chip => {
+        if (action === 'all') chip.classList.add('selected');
+        else if (action === 'none') chip.classList.remove('selected');
+        applyChip(chip);
       });
     });
   });
