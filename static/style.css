@@ -508,3 +508,138 @@ footer { padding: 20px 16px; color: var(--muted); font-size: 12px; }
   .chart-controls { flex-direction: column; align-items: stretch; }
   .window-selector { justify-content: space-between; }
 }
+
+/* === VIX page (added in Stage 5) === */
+.vix-page { max-width: 1400px; }
+.vix-header {
+  margin-bottom: 20px;
+}
+.vix-header h1 { margin: 0 0 8px 0; font-size: 24px; }
+.vix-header .subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 700px;
+  line-height: 1.5;
+}
+
+.vix-signal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 2fr;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+.vix-signal-card .label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.vix-signal-card .value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.vix-signal-card .value.huge { font-size: 36px; font-weight: 700; }
+.vix-signal-card .date {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.vix-signal-card .signal-components {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-self: center;
+}
+.vix-signal-card .signal-components .value {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.regime-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.regime-badge.regime-acute-panic {
+  background: rgba(211, 47, 47, 0.2);
+  color: #ff5252;
+  border: 1px solid rgba(211, 47, 47, 0.5);
+}
+.regime-badge.regime-backwardation {
+  background: rgba(244, 67, 54, 0.15);
+  color: #ff7961;
+}
+.regime-badge.regime-normal {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+.regime-badge.regime-complacency {
+  background: var(--caution-bg);
+  color: var(--caution-fg);
+}
+.regime-sub {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.regime-flip {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--caution-bg);
+  color: var(--caution-fg);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.regime-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  display: inline-block;
+}
+.swatch.acute-panic { background: rgba(211, 47, 47, 0.4); }
+.swatch.backwardation { background: rgba(244, 67, 54, 0.3); }
+.swatch.normal { background: rgba(76, 175, 80, 0.25); }
+.swatch.complacency { background: rgba(255, 193, 7, 0.25); }
+
+@media (max-width: 700px) {
+  .vix-signal-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .vix-signal-card .signal-components {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .regime-legend { flex-direction: column; gap: 8px; }
+}

@@ -1,0 +1,55 @@
+name: Daily Sentiment Refresh
+
+on:
+  schedule:
+    # 01:00 UTC daily = 03:00/04:00 Romania (DST).
+    # After US close (21:00 UTC) and after CBOE publishes the daily options file.
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run daily refresh
+        run: python -m src.main --mode daily
+
+      - name: Commit and push if changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/sentiment_history.parquet data/pc_history.parquet \
+                  public/data/pc-ratio.json public/data/vix-ratio.json \
+                  public/pc-ratio.html public/vix-ratio.html \
+                  public/style.css public/chart.umd.min.js \
+                  public/chartjs-plugin-annotation.min.js \
+                  public/pc-chart.js public/vix-chart.js 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git pull --rebase origin main
+            git commit -m "daily: sentiment refresh $(date -u +%Y-%m-%d)"
+            git push
+          fi
