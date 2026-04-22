@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P/C Ratio | Dashboard</title>
   <link rel="stylesheet" href="/style.css">
+  <script src="/chart.umd.min.js"></script>
+  <script src="/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
   <nav class="main-nav">
@@ -23,11 +25,79 @@
     </ul>
   </div>
 </nav>
-  <main class="page-content">
-    <h1>Put/Call Ratio</h1>
-    <p class="placeholder">
-      Chart and data will be added in Stage 4.
-    </p>
+
+  <main class="page-content pc-page">
+
+    <header class="pc-header">
+      <h1>Put/Call Ratio</h1>
+      <div class="pc-controls">
+        <label for="variant-select">Variant:</label>
+        <select id="variant-select">
+          <option value="total">Total</option>
+          <option value="equity">Equity</option>
+          <option value="index">Index</option>
+          <option value="spx_spxw">SPX + SPXW</option>
+          <option value="vix">VIX</option>
+        </select>
+      </div>
+    </header>
+
+    <div id="vix-info-banner" class="info-banner" hidden>
+      <strong>Note:</strong>
+      <span id="vix-info-text"></span>
+    </div>
+
+    <section class="pc-signal-card" id="signal-card">
+      <div class="signal-value">
+        <span class="label">Current value</span>
+        <span class="value" id="signal-value">—</span>
+        <span class="date" id="signal-date">—</span>
+      </div>
+      <div class="signal-status">
+        <span class="label">Signal</span>
+        <span class="status" id="signal-status">—</span>
+      </div>
+      <div class="signal-meta">
+        <div><span class="label">Percentile (1Y)</span>
+             <span class="value" id="signal-percentile">—</span></div>
+        <div><span class="label">MA 10-day</span>
+             <span class="value" id="signal-ma10">—</span></div>
+        <div><span class="label">Threshold source</span>
+             <span class="value" id="signal-source">—</span></div>
+      </div>
+    </section>
+
+    <section class="chart-section">
+      <div class="chart-controls">
+        <div class="window-selector" role="tablist" aria-label="Time window">
+          <button class="win-btn" data-window="1M">1M</button>
+          <button class="win-btn active" data-window="3M">3M</button>
+          <button class="win-btn" data-window="6M">6M</button>
+          <button class="win-btn" data-window="1Y">1Y</button>
+          <button class="win-btn" data-window="3Y">3Y</button>
+          <button class="win-btn" data-window="Max">Max</button>
+        </div>
+        <div class="toggle-controls">
+          <label class="toggle">
+            <input type="checkbox" id="ma10-toggle">
+            <span>Show MA10</span>
+          </label>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="pc-chart"></canvas>
+      </div>
+      <div class="chart-footer">
+        <div class="confidence-indicator" id="confidence-indicator"></div>
+        <div class="source-citation" id="source-citation"></div>
+      </div>
+    </section>
+
   </main>
+
+  <script>
+    window.PC_DATA_URL = "/data/pc-ratio.json";
+  </script>
+  <script src="/pc-chart.js"></script>
 </body>
 </html>
