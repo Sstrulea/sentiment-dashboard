@@ -10,7 +10,11 @@
       "Bash(.venv/bin/python -m src.list_contracts)",
       "Bash(tee /tmp/list_contracts.out)",
       "Bash(.venv/bin/python *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(curl -s -o /tmp/vix_test.csv -w \"HTTP: %{http_code}, size: %{size_download}\\\\n\" \"https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /tmp/vix3m_test.csv -w \"HTTP: %{http_code}, size: %{size_download}\\\\n\" \"https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv\")",
+      "Bash(curl -s -o /tmp/pc_test.json -w \"HTTP: %{http_code}\\\\n\" \"https://cdn.cboe.com/data/us/options/market_statistics/daily/2026-04-21_daily_options\")"
     ]
   }
 }

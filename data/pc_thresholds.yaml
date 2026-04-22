@@ -1,0 +1,49 @@
+# Default thresholds used during warmup phase (before rolling window is available).
+# Can be manually edited to override at any time.
+# After `dynamic_from_day` trading days of accumulated data, rolling P90/P10 on
+# `rolling_window_days` replaces these defaults automatically.
+
+dynamic_from_day: 252
+rolling_window_days: 252
+
+variants:
+  total:
+    display_name: "Total"
+    high_put: 1.20
+    high_call: 0.70
+    confidence: "HIGH"
+    source: "Wall Street Courier 15-year study (2007-2022) + StockCharts"
+    interpretation: "contrarian"
+
+  equity:
+    display_name: "Equity"
+    high_put: 0.85
+    high_call: 0.45
+    confidence: "MEDIUM"
+    source: "Estimated from historical mean 0.61 (StockCharts 200DMA)"
+    interpretation: "contrarian"
+
+  index:
+    display_name: "Index"
+    high_put: 1.70
+    high_call: 1.00
+    confidence: "MEDIUM-LOW"
+    source: "Estimated from structural bias (professional hedging)"
+    interpretation: "contrarian"
+
+  spx_spxw:
+    display_name: "SPX + SPXW"
+    high_put: 1.80
+    high_call: 1.10
+    confidence: "LOW"
+    source: "Estimated baseline, no authoritative literature"
+    interpretation: "contrarian"
+
+  vix:
+    display_name: "VIX"
+    high_put: 0.80
+    high_call: 0.30
+    confidence: "LOW"
+    source: "Estimated baseline — VIX options are speculative, not hedging"
+    interpretation: "direct"
+    note: "High put volume = expected volatility drop = bullish for SPX"
