@@ -41,8 +41,17 @@ def _weekly() -> int:
 
 
 def _daily() -> int:
-    """Refresh VIX parquet, append today's P/C row, re-render sentiment pages."""
-    from .sentiment_fetch import append_pc_daily, build_sentiment_parquet
+    """Refresh VIX parquet, fill any missing recent P/C rows, re-render pages.
+
+    Always attempts to backfill the last ~10 calendar days of business days so
+    that transient gaps (yesterday's CBOE file that wasn't published yet at the
+    previous run's cron time, holidays mis-skipped, earlier failures) get
+    filled in on any later successful run.
+    """
+    import pandas as pd
+
+    from .sentiment_backfill import is_us_market_holiday, trading_days
+    from .sentiment_fetch import PC_FILE, append_pc_daily, build_sentiment_parquet
     from .sentiment_render import render_pc_ratio_page, render_vix_ratio_page
 
     log = logging.getLogger("daily")
@@ -58,18 +67,36 @@ def _daily() -> int:
         return 2
 
     today = dt.date.today()
-    try:
-        appended = append_pc_daily(today)
-        if appended:
-            log.info("P/C row for %s appended", today)
+    start = today - dt.timedelta(days=10)
+
+    existing_dates: set[dt.date] = set()
+    if PC_FILE.exists():
+        existing_dates = {
+            pd.Timestamp(d).date() for d in pd.read_parquet(PC_FILE)["date"]
+        }
+
+    candidates = [d for d in trading_days(start, today) if d not in existing_dates]
+    if not candidates:
+        log.info("P/C parquet already has every trading day in [%s, %s].", start, today)
+    else:
+        log.info("Attempting P/C fetch for %d missing trading day(s): %s",
+                 len(candidates), ", ".join(d.isoformat() for d in candidates))
+
+    for d in candidates:
+        if is_us_market_holiday(d):
+            continue
+        try:
+            ok = append_pc_daily(d)
+        except Exception as e:
+            log.error("P/C append failed for %s: %s", d, e)
+            return 2
+        if ok:
+            log.info("P/C row for %s appended", d)
         else:
             log.warning(
-                "No P/C data for %s (weekend / holiday / not yet published). Pages will"
-                " reflect the most recent available row.", today,
+                "No P/C data for %s (not yet published or skipped). Will retry"
+                " on next run.", d,
             )
-    except Exception as e:
-        log.error("P/C append failed for %s: %s", today, e)
-        return 2
 
     try:
         pc_out = render_pc_ratio_page()

@@ -38,18 +38,19 @@ jobs:
 
       - name: Commit and push if changes
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "sstrulea"
+          git config user.email "sebi.strulea@gmail.com"
           git add data/sentiment_history.parquet data/pc_history.parquet \
                   public/data/pc-ratio.json public/data/vix-ratio.json \
                   public/pc-ratio.html public/vix-ratio.html \
                   public/style.css public/chart.umd.min.js \
                   public/chartjs-plugin-annotation.min.js \
-                  public/pc-chart.js public/vix-chart.js 2>/dev/null || true
+                  public/pc-chart.js public/vix-chart.js \
+                  public/theme-toggle.js 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git pull --rebase origin main
             git commit -m "daily: sentiment refresh $(date -u +%Y-%m-%d)"
+            git pull --rebase origin main
             git push
           fi
