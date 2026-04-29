@@ -92,6 +92,30 @@ def _load_cot_history() -> pd.DataFrame | None:
             code_to_symbol[str(inst["cftc_code"])] = str(inst["symbol"])
     df = df.copy()
     df["symbol"] = df["cftc_contract_market_code"].astype(str).map(code_to_symbol)
+
+    # Attach spec_ext_6m (rolling 6M percentile rank of large-spec long share).
+    # The COT compute module computes this for the `spec_net` series; we
+    # replicate the rank for the long-share series here so the confluence
+    # signal can use it without invoking the heavier compute pipeline.
+    df["report_date_as_yyyy_mm_dd"] = pd.to_datetime(df["report_date_as_yyyy_mm_dd"])
+    long_all = pd.to_numeric(df["noncomm_positions_long_all"], errors="coerce")
+    short_all = pd.to_numeric(df["noncomm_positions_short_all"], errors="coerce")
+    total = long_all + short_all
+    df["_spec_long_share"] = long_all.where(total > 0) / total
+
+    parts = []
+    for _, g in df.sort_values(["cftc_contract_market_code", "report_date_as_yyyy_mm_dd"]).groupby(
+        "cftc_contract_market_code", sort=False
+    ):
+        g = g.copy()
+        # 6M COT = ~26 weekly reports.
+        g["spec_ext_6m"] = g["_spec_long_share"].rolling(window=26, min_periods=26).apply(
+            lambda x: pd.Series(x).rank(method="average", pct=True).iloc[-1], raw=False,
+        )
+        parts.append(g)
+    if parts:
+        df = pd.concat(parts, ignore_index=True)
+    df = df.drop(columns=["_spec_long_share"])
     return df
 
 

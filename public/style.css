@@ -880,6 +880,33 @@ body.dark .ls-bar-labels .ls-short { color: #ffb74d; }
   justify-content: flex-end;
   white-space: nowrap;
 }
+
+/* Details column — single button replacing the noisy badge stack. */
+.details-col, .details-cell {
+  width: 80px;
+  text-align: center;
+}
+.details-cell { padding: 4px 8px; }
+.details-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--surface-alt);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+.details-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
 .alert-icon {
   display: inline-block;
   padding: 2px 6px;

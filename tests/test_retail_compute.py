@@ -9,7 +9,7 @@ from src.retail_compute import (
     compute_3m_extreme,
     compute_6m_extreme,
     compute_contrarian_signal,
-    compute_cot_divergence,
+    compute_cot_confluence,
     compute_underwater_flag,
     compute_volume_position_divergence,
     extreme_class,
@@ -17,9 +17,13 @@ from src.retail_compute import (
 
 DEFAULT_CFG = {
     "contrarian_threshold": 70,
-    "underwater_threshold_pct": 0.5,
     "vol_position_divergence_pp": 15,
-    "cot_divergence_threshold": 0.4,
+    "capitulation_long_min_crowd_pct": 60,
+    "capitulation_long_min_loss_pct": 1.0,
+    "capitulation_short_min_crowd_pct": 60,
+    "capitulation_short_min_loss_pct": 1.0,
+    "cot_confluence_retail_extreme_pct": 70,
+    "cot_confluence_cot_extreme_rank": 0.85,
     "ramp_in": {"min_n_for_extreme": 20},
 }
 
@@ -118,46 +122,78 @@ def test_contrarian_signal_handles_none():
 
 
 # ---------------------------------------------------------------------------
-# Underwater flag
+# Capitulation pressure (renamed from underwater)
 # ---------------------------------------------------------------------------
 
-def test_underwater_longs_flag_when_avg_above_spot():
+def test_capitulation_long_pressure_does_NOT_fire_on_small_loss():
+    # 0.5% loss is below the 1% threshold, even with crowded longs → no fire.
     out = compute_underwater_flag(
         long_pct=70.0,
         avg_long_price=1.0921,
         avg_short_price=1.0810,
-        spot_estimate=1.0865,
+        spot_estimate=1.0865,  # avg_long is only ~0.52% above spot
         signal_config=DEFAULT_CFG,
     )
-    # 1.0921 > 1.0865 * (1 + 0.005) = 1.0919... → True
-    assert out["longs_underwater"] is True
-    # PnL pips: spot - avg_long → negative
+    assert out["long_pressure"] is False
+    # Pip estimate still surfaced for modal text.
     assert out["long_pnl_pips_estimate"] < 0
 
 
-def test_underwater_shorts_flag_when_avg_below_spot():
+def test_capitulation_long_pressure_does_NOT_fire_when_not_crowded():
+    # ≥1% loss but only 50% long → not crowded → no fire.
+    out = compute_underwater_flag(
+        long_pct=50.0,
+        avg_long_price=1.10,
+        avg_short_price=1.05,
+        spot_estimate=1.08,  # avg_long ~1.85% above spot
+        signal_config=DEFAULT_CFG,
+    )
+    assert out["long_pressure"] is False
+
+
+def test_capitulation_long_pressure_fires_when_crowded_AND_deep_loss():
+    out = compute_underwater_flag(
+        long_pct=72.0,
+        avg_long_price=1.10,
+        avg_short_price=1.05,
+        spot_estimate=1.08,  # avg_long ~1.85% above spot
+        signal_config=DEFAULT_CFG,
+    )
+    assert out["long_pressure"] is True
+
+
+def test_capitulation_short_pressure_does_NOT_fire_on_small_loss():
     out = compute_underwater_flag(
         long_pct=30.0,
         avg_long_price=1.10,
-        avg_short_price=1.05,
-        spot_estimate=1.10,
+        avg_short_price=1.0935,
+        spot_estimate=1.10,  # avg_short only ~0.59% below spot
         signal_config=DEFAULT_CFG,
     )
-    assert out["shorts_underwater"] is True
-    # short PnL = avg_short - spot < 0
-    assert out["short_pnl_pips_estimate"] < 0
+    assert out["short_pressure"] is False
 
 
-def test_underwater_handles_no_avg_prices():
+def test_capitulation_short_pressure_fires_when_crowded_AND_deep_loss():
     out = compute_underwater_flag(
-        long_pct=50.0,
+        long_pct=20.0,        # short_pct = 80% → crowded
+        avg_long_price=1.10,
+        avg_short_price=1.05,
+        spot_estimate=1.08,   # avg_short ~2.78% below spot
+        signal_config=DEFAULT_CFG,
+    )
+    assert out["short_pressure"] is True
+
+
+def test_capitulation_handles_no_avg_prices():
+    out = compute_underwater_flag(
+        long_pct=70.0,
         avg_long_price=None,
         avg_short_price=None,
         spot_estimate=None,
         signal_config=DEFAULT_CFG,
     )
-    assert out["longs_underwater"] is False
-    assert out["shorts_underwater"] is False
+    assert out["long_pressure"] is False
+    assert out["short_pressure"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -199,23 +235,31 @@ def test_vol_pos_divergence_missing_volume():
 
 
 # ---------------------------------------------------------------------------
-# COT divergence
+# COT confluence
 # ---------------------------------------------------------------------------
 
-def test_cot_divergence_returns_none_when_link_missing():
-    out = compute_cot_divergence(
-        retail_long_pct=70.0,
+def _cot_df(symbol: str, spec_ext_6m: float, report_date: str = "2026-04-22") -> pd.DataFrame:
+    return pd.DataFrame({
+        "report_date_as_yyyy_mm_dd": [pd.Timestamp(report_date)],
+        "symbol": [symbol],
+        "spec_ext_6m": [spec_ext_6m],
+    })
+
+
+def test_cot_confluence_returns_none_when_link_missing():
+    out = compute_cot_confluence(
+        retail_long_pct=85.0,
         cot_link=None,
         invert_cot=False,
-        cot_history_df=pd.DataFrame(),
+        cot_history_df=_cot_df("EUR", 0.95),
         signal_config=DEFAULT_CFG,
     )
     assert out is None
 
 
-def test_cot_divergence_returns_none_when_no_cot_data():
-    out = compute_cot_divergence(
-        retail_long_pct=70.0,
+def test_cot_confluence_returns_none_when_no_cot_data():
+    out = compute_cot_confluence(
+        retail_long_pct=85.0,
         cot_link="EUR",
         invert_cot=False,
         cot_history_df=None,
@@ -224,64 +268,94 @@ def test_cot_divergence_returns_none_when_no_cot_data():
     assert out is None
 
 
-def test_cot_divergence_detects_large_gap():
-    # Retail 70% long, CFTC large specs only 20% long → gap of 0.50.
-    cot = pd.DataFrame({
-        "report_date_as_yyyy_mm_dd": [pd.Timestamp("2026-04-22")],
-        "symbol": ["EUR"],
-        "noncomm_positions_long_all": [20000],
-        "noncomm_positions_short_all": [80000],
-    })
-    out = compute_cot_divergence(
-        retail_long_pct=70.0,
+def test_cot_confluence_returns_none_when_only_retail_extreme():
+    # Retail crowded long but COT large specs neutral → no confluence.
+    out = compute_cot_confluence(
+        retail_long_pct=85.0,
         cot_link="EUR",
         invert_cot=False,
-        cot_history_df=cot,
+        cot_history_df=_cot_df("EUR", 0.50),
+        signal_config=DEFAULT_CFG,
+    )
+    assert out is None
+
+
+def test_cot_confluence_returns_none_when_only_cot_extreme():
+    # COT crowded long but retail balanced → no confluence.
+    out = compute_cot_confluence(
+        retail_long_pct=50.0,
+        cot_link="EUR",
+        invert_cot=False,
+        cot_history_df=_cot_df("EUR", 0.92),
+        signal_config=DEFAULT_CFG,
+    )
+    assert out is None
+
+
+def test_cot_confluence_returns_none_when_they_disagree():
+    # Retail extreme-long, COT extreme-short → disagreement, no edge.
+    out = compute_cot_confluence(
+        retail_long_pct=85.0,
+        cot_link="EUR",
+        invert_cot=False,
+        cot_history_df=_cot_df("EUR", 0.05),
+        signal_config=DEFAULT_CFG,
+    )
+    assert out is None
+
+
+def test_cot_confluence_bearish_when_both_extreme_long():
+    out = compute_cot_confluence(
+        retail_long_pct=84.0,
+        cot_link="EUR",
+        invert_cot=False,
+        cot_history_df=_cot_df("EUR", 0.92),
         signal_config=DEFAULT_CFG,
     )
     assert out is not None
-    assert out["has_divergence"] is True
-    assert out["retail_long_normalized"] == pytest.approx(0.70)
-    assert out["cot_spec_long_normalized"] == pytest.approx(0.20)
-    assert out["divergence_magnitude"] == pytest.approx(0.50)
+    assert out["has_confluence"] is True
+    assert out["direction"] == "bearish_contrarian"
+    assert out["retail_long_pct"] == pytest.approx(84.0)
+    assert out["cot_spec_ext_6m"] == pytest.approx(0.92)
     assert out["cot_report_date"] == "2026-04-22"
 
 
-def test_cot_divergence_inverts_when_flagged():
-    # USDJPY: retail long USD ≈ short JPY.
-    # If COT JPY large specs are 20% long → from USDJPY perspective they are 80% long.
-    cot = pd.DataFrame({
-        "report_date_as_yyyy_mm_dd": [pd.Timestamp("2026-04-22")],
-        "symbol": ["JPY"],
-        "noncomm_positions_long_all": [20000],
-        "noncomm_positions_short_all": [80000],
-    })
-    out = compute_cot_divergence(
-        retail_long_pct=85.0,
-        cot_link="JPY",
-        invert_cot=True,
-        cot_history_df=cot,
+def test_cot_confluence_bullish_when_both_extreme_short():
+    out = compute_cot_confluence(
+        retail_long_pct=12.0,         # short_pct = 88
+        cot_link="EUR",
+        invert_cot=False,
+        cot_history_df=_cot_df("EUR", 0.08),
         signal_config=DEFAULT_CFG,
     )
     assert out is not None
-    # Inverted: 1 - 0.20 = 0.80; retail = 0.85 → magnitude 0.05 → no divergence
-    assert out["cot_spec_long_normalized"] == pytest.approx(0.80)
-    assert out["has_divergence"] is False
+    assert out["direction"] == "bullish_contrarian"
+    assert out["cot_spec_ext_6m"] == pytest.approx(0.08)
 
 
-def test_cot_divergence_ignored_when_below_threshold():
-    cot = pd.DataFrame({
-        "report_date_as_yyyy_mm_dd": [pd.Timestamp("2026-04-22")],
-        "symbol": ["EUR"],
-        "noncomm_positions_long_all": [50000],
-        "noncomm_positions_short_all": [50000],
-    })
-    out = compute_cot_divergence(
-        retail_long_pct=60.0,
-        cot_link="EUR",
-        invert_cot=False,
-        cot_history_df=cot,
+def test_cot_confluence_inverts_when_flagged():
+    # USDJPY: retail long USD ≈ short JPY. If JPY COT spec_ext_6m=0.05 (short
+    # extreme), from USDJPY POV that flips to 0.95 → matches retail extreme-long.
+    out = compute_cot_confluence(
+        retail_long_pct=85.0,
+        cot_link="JPY",
+        invert_cot=True,
+        cot_history_df=_cot_df("JPY", 0.05),
         signal_config=DEFAULT_CFG,
     )
-    # retail 0.60 vs cot 0.50 → magnitude 0.10 → no divergence (threshold 0.40)
-    assert out["has_divergence"] is False
+    assert out is not None
+    assert out["direction"] == "bearish_contrarian"
+    assert out["cot_spec_ext_6m"] == pytest.approx(0.95)
+
+
+def test_cot_confluence_inverts_no_match_when_directions_align_in_underlying():
+    # Without invert: retail long + COT long → bearish confluence.
+    # With invert applied to same data: retail long + COT 0.08 → disagreement, None.
+    out = compute_cot_confluence(
+        retail_long_pct=85.0,
+        cot_link="JPY",
+        invert_cot=True,
+        cot_history_df=_cot_df("JPY", 0.92),  # inverts to 0.08 → COT extreme-short
+        signal_config=DEFAULT_CFG,
+    )
+    assert out is None

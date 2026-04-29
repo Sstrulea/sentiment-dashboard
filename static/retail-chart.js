@@ -23,9 +23,9 @@
       "on one side, few large traders on the other — the bigger money may " +
       "be on the side with fewer positions.",
     cot:
-      "Smart-money divergence: retail crowd is positioned opposite to CFTC " +
-      "large speculators. When retail and institutions disagree, " +
-      "institutions usually win.",
+      "Retail and CFTC large speculators are both crowded on the same side " +
+      "at a multi-month extreme. Both groups statistically reverse from " +
+      "these levels — high-conviction contrarian setup.",
     extreme:
       "Today's positioning is at a multi-month extreme — historically a " +
       "turning-point zone.",
@@ -230,37 +230,15 @@
 
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
-  function alertIcons(sym) {
-    const out = [];
-    const sig = sym.signals || {};
-    if (sig.contrarian === "bearish_contrarian") {
-      out.push('<span class="alert-icon alert-bearish" title="' + escAttr(TOOLTIPS.pill_bearish) + '">⚠</span>');
-    } else if (sig.contrarian === "bullish_contrarian") {
-      out.push('<span class="alert-icon alert-bullish" title="' + escAttr(TOOLTIPS.pill_bullish) + '">⚠</span>');
-    }
-    const u = sig.underwater || {};
-    if (u.longs_underwater) {
-      out.push('<span class="alert-icon alert-under" title="' + escAttr(TOOLTIPS.longs_losing) + '">LONGS LOSING</span>');
-    }
-    if (u.shorts_underwater) {
-      out.push('<span class="alert-icon alert-under" title="' + escAttr(TOOLTIPS.shorts_losing) + '">SHORTS LOSING</span>');
-    }
-    const vd = sig.vol_position_divergence || {};
-    if (vd.has_divergence) {
-      out.push('<span class="alert-icon alert-div" title="' + escAttr(TOOLTIPS.div) + '">DIV</span>');
-    }
-    const e3 = (sig.extremes || {}).ext_3m || {};
-    const e6 = (sig.extremes || {}).ext_6m || {};
-    if (e3.class === "ext-95" || e3.class === "ext-05") {
-      out.push('<span class="alert-icon alert-ext" title="' + escAttr(TOOLTIPS.extreme) + '">⚡3M</span>');
-    }
-    if (e6.class === "ext-95" || e6.class === "ext-05") {
-      out.push('<span class="alert-icon alert-ext" title="' + escAttr(TOOLTIPS.extreme) + '">⚡6M</span>');
-    }
-    if (state.cotOverlay && sig.cot_divergence && sig.cot_divergence.has_divergence) {
-      out.push('<span class="alert-icon alert-cot" title="' + escAttr(TOOLTIPS.cot) + '">⚡COT</span>');
-    }
-    return out.join("");
+  function detailsButton(sym) {
+    const n = sym.alert_count || 0;
+    const tip = (n === 0)
+      ? "No signals firing"
+      : (n + " signal" + (n === 1 ? "" : "s") + " firing");
+    return (
+      '<button type="button" class="details-btn" title="' + escAttr(tip) + '">' +
+      'Details &rsaquo;</button>'
+    );
   }
 
   function symbolPointCount(sym) {
@@ -284,13 +262,24 @@
     return false;
   }
 
+  function pageHasAnySparklines() {
+    if (!state.payload) return false;
+    for (const cat of state.payload.categories) {
+      for (const s of cat.symbols) {
+        if (symbolPointCount(s) >= MIN_POINTS_FOR_SPARKLINE) return true;
+      }
+    }
+    return false;
+  }
+
   function renderRow(sym, opts) {
     const showExtCols = opts && opts.showExtCols;
+    const showSparkCol = opts && opts.showSparkCol;
     const cur = sym.current || {};
     const sig = sym.signals || {};
     const ext3 = (sig.extremes || {}).ext_3m || {};
     const ext6 = (sig.extremes || {}).ext_6m || {};
-    const u = sig.underwater || {};
+    const u = sig.capitulation || sig.underwater || {};
     const vd = sig.vol_position_divergence || {};
     const nPoints = symbolPointCount(sym);
 
@@ -347,6 +336,7 @@
     const extCells = showExtCols
       ? '<td class="ext-cell">' + ext3Cell + '</td><td class="ext-cell">' + ext6Cell + '</td>'
       : '';
+    const sparkCell = showSparkCol ? '<td class="spark-cell">' + sparkCellHtml + '</td>' : '';
 
     return (
       '<tr data-symbol="' + sym.symbol + '">' +
@@ -356,8 +346,8 @@
       '<td class="price-cell">' + priceCell + "</td>" +
       '<td><span class="pill ' + pillCls + '" title="' + escAttr(pillTip) + '">' + pillTxt + "</span></td>" +
       extCells +
-      '<td class="alerts-cell"><div class="alerts-row">' + alertIcons(sym) + "</div></td>" +
-      '<td class="spark-cell">' + sparkCellHtml + "</td>" +
+      '<td class="details-cell">' + detailsButton(sym) + "</td>" +
+      sparkCell +
       "</tr>"
     );
   }
@@ -367,9 +357,11 @@
     wrap.innerHTML = "";
 
     const showExtCols = pageHasAnyExtremes();
+    const showSparkCol = pageHasAnySparklines();
     const extHeaders = showExtCols
       ? '<th data-sort="ext_3m">3M ext</th><th data-sort="ext_6m">6M ext</th>'
       : '';
+    const sparkHeader = showSparkCol ? '<th>1M</th>' : '';
 
     state.payload.categories.forEach(cat => {
       if (!state.catVisible[cat.key]) return;
@@ -389,10 +381,10 @@
         '<th data-sort="spot">Price</th>' +
         '<th>Signal</th>' +
         extHeaders +
-        '<th data-sort="alerts">Alerts</th>' +
-        '<th>1M</th>' +
+        '<th class="details-col" data-sort="alerts">Details</th>' +
+        sparkHeader +
         '</tr></thead>' +
-        '<tbody>' + symbols.map(s => renderRow(s, { showExtCols })).join("") + '</tbody>' +
+        '<tbody>' + symbols.map(s => renderRow(s, { showExtCols, showSparkCol })).join("") + '</tbody>' +
         '</table></div>';
 
       // Wire sort headers
@@ -473,9 +465,9 @@
       });
     }
 
-    // Underwater longs
-    const u = sig.underwater || {};
-    if (u.longs_underwater) {
+    // Capitulation pressure (only fires when crowded AND deeply underwater)
+    const u = sig.capitulation || sig.underwater || {};
+    if (u.long_pressure) {
       const pips = Math.abs(Math.round(u.long_pnl_pips_estimate || 0));
       entries.push({
         title: "Longs are losing money",
@@ -487,9 +479,9 @@
           "selling — but a turn higher could trigger relief buying.",
       });
     }
-    if (u.shorts_underwater) {
+    if (u.short_pressure) {
       const pips = Math.abs(Math.round(u.short_pnl_pips_estimate || 0));
-      const both = u.longs_underwater;
+      const both = u.long_pressure;
       entries.push({
         title: both ? "Shorts are also losing money" : "Shorts are losing money",
         body:
@@ -516,23 +508,29 @@
       });
     }
 
-    // COT smart-money divergence — only if overlay is enabled
-    const cd = sig.cot_divergence;
-    if (state.cotOverlay && cd && cd.has_divergence) {
-      const retail = Math.round((cd.retail_long_normalized || 0) * 100);
-      const cot = Math.round((cd.cot_spec_long_normalized || 0) * 100);
-      const biasNote = (sig.contrarian !== "neutral")
-        ? " — adds conviction to the " +
-          (sig.contrarian === "bullish_contrarian" ? "bullish" : "bearish") +
-          " bias above"
-        : "";
+    // COT confluence: retail AND large specs both crowded on the SAME side
+    // at extremes. Requires the overlay toggle to be on.
+    const cc = sig.cot_confluence;
+    if (state.cotOverlay && cc && cc.has_confluence) {
+      const retailLong = Math.round(cc.retail_long_pct || 0);
+      const rank = Number(cc.cot_spec_ext_6m || 0);
+      const isBearish = cc.direction === "bearish_contrarian";
+      const retailLine = isBearish
+        ? ("Retail: " + retailLong + "% long.")
+        : ("Retail: " + (100 - retailLong) + "% short.");
+      const cotLine = isBearish
+        ? ("CFTC large speculators: at 6M high of long positioning (rank " + rank.toFixed(2) + ").")
+        : ("CFTC large speculators: at 6M low of long positioning (rank " + rank.toFixed(2) + ").");
+      const sideText = isBearish ? "bullish side" : "bearish side";
+      const reversal = isBearish ? "bearish reversal" : "bullish reversal";
       entries.push({
-        title: "Smart money disagrees with retail",
+        title: "Retail AND large specs both at extremes — strong contrarian signal",
         body:
-          "Retail crowd: " + retail + "% long. CFTC large speculators " +
-          "(institutions): " + cot + "% long. They're on opposite sides. " +
-          "Institutions usually win these disagreements" + biasNote +
-          ". (COT report: " + (cd.cot_report_date || "—") + ")",
+          retailLine + " " + cotLine + " " +
+          "Both groups are crowded on the " + sideText + ". " +
+          "When retail and institutions both reach extremes together, " +
+          "reversals statistically follow. Strong conviction for a " + reversal +
+          ". (COT report: " + (cc.cot_report_date || "—") + ")",
       });
     }
 
@@ -591,7 +589,7 @@
     const body = document.getElementById("symbolDetailContent");
 
     const cur = sym.current || {};
-    const u = sym.signals.underwater || {};
+    const u = sym.signals.capitulation || sym.signals.underwater || {};
     const nPoints = symbolPointCount(sym);
     const chartReady = nPoints >= MIN_POINTS_FOR_CHART;
 

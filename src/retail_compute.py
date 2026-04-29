@@ -172,11 +172,24 @@ def compute_underwater_flag(
     long_positions: int | None = None,
     short_positions: int | None = None,
 ) -> dict:
-    """Are the crowd's long/short books underwater vs spot?
+    """Capitulation pressure: the crowded side is also deeply underwater.
 
-    Threshold = `underwater_threshold_pct` (default 0.5%) deviation from spot.
+    Long capitulation pressure fires only when:
+        long_pct >= capitulation_long_min_crowd_pct
+        AND avg_long_price > spot_estimate * (1 + capitulation_long_min_loss_pct/100)
+
+    Short capitulation pressure fires only when:
+        short_pct (= 100 - long_pct) >= capitulation_short_min_crowd_pct
+        AND avg_short_price < spot_estimate * (1 - capitulation_short_min_loss_pct/100)
+
+    The pip estimates are returned regardless (for use in modal text), but the
+    boolean flags require the combined "crowded + losing" criteria so the
+    badges only fire on genuine setups, not as wallpaper.
     """
-    threshold = float(signal_config.get("underwater_threshold_pct", 0.5)) / 100.0
+    long_min_crowd = float(signal_config.get("capitulation_long_min_crowd_pct", 60))
+    long_min_loss = float(signal_config.get("capitulation_long_min_loss_pct", 1.0)) / 100.0
+    short_min_crowd = float(signal_config.get("capitulation_short_min_crowd_pct", 60))
+    short_min_loss = float(signal_config.get("capitulation_short_min_loss_pct", 1.0)) / 100.0
 
     spot = spot_estimate
     if spot is None:
@@ -184,26 +197,30 @@ def compute_underwater_flag(
 
     pip = _pip_size(spot)
 
-    longs_underwater = False
-    shorts_underwater = False
+    long_pressure = False
+    short_pressure = False
     long_pnl_pips = 0.0
     short_pnl_pips = 0.0
 
+    short_pct = None if long_pct is None or pd.isna(long_pct) else (100.0 - float(long_pct))
+
     if spot is not None and avg_long_price is not None and not pd.isna(avg_long_price):
-        # Longs underwater when avg long entry > spot * (1 + threshold)
-        longs_underwater = float(avg_long_price) > float(spot) * (1.0 + threshold)
         if pip > 0:
             long_pnl_pips = (float(spot) - float(avg_long_price)) / pip
+        long_crowded = long_pct is not None and not pd.isna(long_pct) and float(long_pct) >= long_min_crowd
+        long_deeply_underwater = float(avg_long_price) > float(spot) * (1.0 + long_min_loss)
+        long_pressure = bool(long_crowded and long_deeply_underwater)
 
     if spot is not None and avg_short_price is not None and not pd.isna(avg_short_price):
-        # Shorts underwater when avg short entry < spot * (1 - threshold)
-        shorts_underwater = float(avg_short_price) < float(spot) * (1.0 - threshold)
         if pip > 0:
             short_pnl_pips = (float(avg_short_price) - float(spot)) / pip
+        short_crowded = short_pct is not None and short_pct >= short_min_crowd
+        short_deeply_underwater = float(avg_short_price) < float(spot) * (1.0 - short_min_loss)
+        short_pressure = bool(short_crowded and short_deeply_underwater)
 
     return {
-        "longs_underwater": bool(longs_underwater),
-        "shorts_underwater": bool(shorts_underwater),
+        "long_pressure": bool(long_pressure),
+        "short_pressure": bool(short_pressure),
         "long_pnl_pips_estimate": float(round(long_pnl_pips, 1)),
         "short_pnl_pips_estimate": float(round(short_pnl_pips, 1)),
         "spot_estimate": None if spot is None else float(spot),
@@ -269,20 +286,41 @@ def compute_volume_position_divergence(
 
 
 # ---------------------------------------------------------------------------
-# COT cross-link divergence
+# COT confluence
 # ---------------------------------------------------------------------------
+#
+# Both retail traders AND CFTC large speculators (non-commercials) are read as
+# contrarian indicators at extremes — both groups statistically get squeezed
+# at trend extremes. The high-conviction setup is when BOTH are crowded on the
+# SAME side at extremes ("everyone is on the same wrong side") → strong
+# contrarian confluence. When they disagree, there's no edge — it's noise.
+# Commercials are ignored — they're hedgers, not directional bets, and their
+# behavior reflects business needs not market views.
+#
+# COT side uses the 6M extreme percentile rank (0=6M low, 1=6M high) of
+# large-spec long positioning, NOT the raw long%. That's how COT data is
+# properly read — extremes within recent history, not absolute counts.
 
-def compute_cot_divergence(
+def compute_cot_confluence(
     retail_long_pct: float | None,
     cot_link: str | None,
     invert_cot: bool,
     cot_history_df: pd.DataFrame | None,
     signal_config: dict,
 ) -> dict | None:
-    """Compare retail long bias to CFTC large-spec long bias.
+    """Detect retail + large-spec confluence at same-direction extremes.
 
-    Returns None when no COT cross-link is configured or no COT data is found.
-    Otherwise returns a dict with normalized values and a divergence flag.
+    Returns confluence dict only when retail AND CFTC large specs are BOTH at
+    extremes on the SAME side. Otherwise returns None.
+
+    Returns:
+      {
+        "has_confluence": True,
+        "direction": "bullish_contrarian" | "bearish_contrarian",
+        "retail_long_pct": float,           # 0..100
+        "cot_spec_ext_6m": float,           # 0..1, post-invert if applicable
+        "cot_report_date": str,
+      }
     """
     if cot_link is None or not cot_link:
         return None
@@ -291,8 +329,7 @@ def compute_cot_divergence(
     if retail_long_pct is None or pd.isna(retail_long_pct):
         return None
 
-    # Find latest snapshot for this CFTC symbol.
-    df = cot_history_df.copy()
+    df = cot_history_df
     if "symbol" not in df.columns:
         return None
     sub = df[df["symbol"].astype(str).str.upper() == str(cot_link).upper()]
@@ -301,24 +338,34 @@ def compute_cot_divergence(
     sub = sub.sort_values("report_date_as_yyyy_mm_dd")
     last = sub.iloc[-1]
 
-    long_all = last.get("noncomm_positions_long_all")
-    short_all = last.get("noncomm_positions_short_all")
-    if long_all is None or short_all is None or pd.isna(long_all) or pd.isna(short_all):
+    cot_ext = last.get("spec_ext_6m")
+    if cot_ext is None or pd.isna(cot_ext):
         return None
-    total = float(long_all) + float(short_all)
-    if total <= 0:
-        return None
-
-    cot_spec_long = float(long_all) / total  # 0..1
+    cot_spec_ext_6m = float(cot_ext)
     if invert_cot:
-        cot_spec_long = 1.0 - cot_spec_long
+        cot_spec_ext_6m = 1.0 - cot_spec_ext_6m
+    cot_spec_ext_6m = max(0.0, min(1.0, cot_spec_ext_6m))
 
-    retail_long_norm = float(retail_long_pct) / 100.0
-    magnitude = abs(retail_long_norm - cot_spec_long)
-    threshold = float(signal_config.get("cot_divergence_threshold", 0.4))
+    retail_extreme_pct = float(signal_config.get("cot_confluence_retail_extreme_pct", 70))
+    cot_extreme_rank = float(signal_config.get("cot_confluence_cot_extreme_rank", 0.85))
+
+    retail_long = float(retail_long_pct)
+    retail_extreme_long = retail_long >= retail_extreme_pct
+    retail_extreme_short = retail_long <= (100.0 - retail_extreme_pct)
+    cot_extreme_long = cot_spec_ext_6m >= cot_extreme_rank
+    cot_extreme_short = cot_spec_ext_6m <= (1.0 - cot_extreme_rank)
+
+    direction: str | None = None
+    if retail_extreme_long and cot_extreme_long:
+        direction = "bearish_contrarian"  # both crowded long → fade → expect down
+    elif retail_extreme_short and cot_extreme_short:
+        direction = "bullish_contrarian"  # both crowded short → fade → expect up
+
+    if direction is None:
+        return None
 
     report_date = last.get("report_date_as_yyyy_mm_dd")
-    if isinstance(report_date, (pd.Timestamp,)):
+    if isinstance(report_date, pd.Timestamp):
         report_date_str = report_date.date().isoformat()
     elif report_date is None:
         report_date_str = None
@@ -329,10 +376,10 @@ def compute_cot_divergence(
             report_date_str = str(report_date)
 
     return {
-        "has_divergence": bool(magnitude > threshold),
-        "retail_long_normalized": float(round(retail_long_norm, 4)),
-        "cot_spec_long_normalized": float(round(cot_spec_long, 4)),
-        "divergence_magnitude": float(round(magnitude, 4)),
+        "has_confluence": True,
+        "direction": direction,
+        "retail_long_pct": float(round(retail_long, 2)),
+        "cot_spec_ext_6m": float(round(cot_spec_ext_6m, 4)),
         "cot_report_date": report_date_str,
     }
 
@@ -399,10 +446,10 @@ def _alert_count(signals: dict) -> int:
     cnt = 0
     if signals.get("contrarian", "neutral") != "neutral":
         cnt += 1
-    underwater = signals.get("underwater") or {}
-    if underwater.get("longs_underwater"):
+    cap = signals.get("capitulation") or {}
+    if cap.get("long_pressure"):
         cnt += 1
-    if underwater.get("shorts_underwater"):
+    if cap.get("short_pressure"):
         cnt += 1
     if (signals.get("vol_position_divergence") or {}).get("has_divergence"):
         cnt += 1
@@ -411,8 +458,8 @@ def _alert_count(signals: dict) -> int:
         cnt += 1
     if (extremes.get("ext_6m") or {}).get("class") in ("ext-95", "ext-05"):
         cnt += 1
-    cot_div = signals.get("cot_divergence")
-    if cot_div and cot_div.get("has_divergence"):
+    cot_conf = signals.get("cot_confluence")
+    if cot_conf and cot_conf.get("has_confluence"):
         cnt += 1
     return cnt
 
@@ -433,8 +480,8 @@ def compute_signals_for_symbol(
             "current": None,
             "signals": {
                 "contrarian": "neutral",
-                "underwater": {
-                    "longs_underwater": False, "shorts_underwater": False,
+                "capitulation": {
+                    "long_pressure": False, "short_pressure": False,
                     "long_pnl_pips_estimate": 0.0, "short_pnl_pips_estimate": 0.0,
                 },
                 "vol_position_divergence": {
@@ -446,7 +493,7 @@ def compute_signals_for_symbol(
                     "ext_3m": {"value": None, "n": 0, "class": "ext-na"},
                     "ext_6m": {"value": None, "n": 0, "class": "ext-na"},
                 },
-                "cot_divergence": None,
+                "cot_confluence": None,
             },
             "alert_count": 0,
             "history": {label: {"dates": [], "long_pct": [], "spot_estimate": []} for label in WINDOW_DAYS},
@@ -468,7 +515,7 @@ def compute_signals_for_symbol(
     spot = _spot_estimate(avg_long, avg_short, long_pos, short_pos)
 
     contrarian = compute_contrarian_signal(long_pct, signal_config)
-    underwater = compute_underwater_flag(
+    capitulation = compute_underwater_flag(
         long_pct, avg_long, avg_short, spot, signal_config,
         long_positions=long_pos, short_positions=short_pos,
     )
@@ -482,7 +529,7 @@ def compute_signals_for_symbol(
     ext_3m_val, ext_3m_n = compute_3m_extreme(win_3m["long_pct"], signal_config)
     ext_6m_val, ext_6m_n = compute_6m_extreme(win_6m["long_pct"], signal_config)
 
-    cot_div = compute_cot_divergence(
+    cot_conf = compute_cot_confluence(
         long_pct,
         symbol_cfg.get("cot_link"),
         bool(symbol_cfg.get("invert_cot", False)),
@@ -492,11 +539,11 @@ def compute_signals_for_symbol(
 
     signals = {
         "contrarian": contrarian,
-        "underwater": {
-            "longs_underwater": underwater["longs_underwater"],
-            "shorts_underwater": underwater["shorts_underwater"],
-            "long_pnl_pips_estimate": underwater["long_pnl_pips_estimate"],
-            "short_pnl_pips_estimate": underwater["short_pnl_pips_estimate"],
+        "capitulation": {
+            "long_pressure": capitulation["long_pressure"],
+            "short_pressure": capitulation["short_pressure"],
+            "long_pnl_pips_estimate": capitulation["long_pnl_pips_estimate"],
+            "short_pnl_pips_estimate": capitulation["short_pnl_pips_estimate"],
         },
         "vol_position_divergence": vol_pos_div,
         "extremes": {
@@ -511,7 +558,7 @@ def compute_signals_for_symbol(
                 "class": extreme_class(ext_6m_val),
             },
         },
-        "cot_divergence": cot_div,
+        "cot_confluence": cot_conf,
     }
 
     current = {

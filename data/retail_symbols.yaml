@@ -38,9 +38,15 @@ categories:
 
 signal_config:
   contrarian_threshold: 70           # long% >= 70 -> bearish-contrarian; short% >= 70 -> bullish-contrarian
-  underwater_threshold_pct: 0.5      # avg_long_price > spot * (1 + 0.005) -> "longs underwater"
+  underwater_threshold_pct: 0.5      # legacy; superseded by capitulation_*_min_loss_pct
   vol_position_divergence_pp: 15     # |volume_long% - position_long%| > 15 -> divergence flag
-  cot_divergence_threshold: 0.4      # |retail_long_normalized - cot_spec_long_pct| > 0.4 -> COT divergence
+  cot_divergence_threshold: 0.4      # legacy; replaced by cot_confluence_* below
+  capitulation_long_min_crowd_pct: 60     # long% must be >= 60 for "longs losing money" to fire
+  capitulation_long_min_loss_pct: 1.0     # avg_long_price must exceed spot by >=1.0% to fire
+  capitulation_short_min_crowd_pct: 60
+  capitulation_short_min_loss_pct: 1.0
+  cot_confluence_retail_extreme_pct: 70   # retail long% >= 70 (or <= 30) to qualify as extreme
+  cot_confluence_cot_extreme_rank: 0.85   # cot_spec_ext_6m >= 0.85 (or <= 0.15) to qualify
   extreme_thresholds:
     extreme_high: 0.95
     high: 0.70
