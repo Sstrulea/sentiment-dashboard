@@ -4,9 +4,12 @@
 
   const DATA_URL = window.RETAIL_DATA_URL || "/data/retail-sentiment.json";
 
-  // Hide visualizations until we have at least this many snapshots for a symbol.
-  const MIN_POINTS_FOR_SPARKLINE = 5;
-  const MIN_POINTS_FOR_CHART = 5;
+  // Ripeness gates use distinct calendar days (not raw snapshot count) so that
+  // multiple intraday snapshots don't artificially mature a symbol.
+  const MIN_DAYS_FOR_1M = 30;
+  const MIN_DAYS_FOR_3M = 90;
+  const MIN_DAYS_FOR_6M = 180;
+  const MIN_DAYS_FOR_CHART = 30;
 
   // Tooltip copy — shown on every badge/pill via the title attribute.
   const TOOLTIPS = {
@@ -22,6 +25,9 @@
       "Retail and CFTC large speculators are both crowded on the same side " +
       "at a multi-month extreme. Both groups statistically reverse from " +
       "these levels — high-conviction contrarian setup.",
+    cot_badge:
+      "Retail and CFTC large specs are both at extremes on the same side — " +
+      "high-conviction contrarian confluence.",
     extreme:
       "Today's positioning is at a multi-month extreme — historically a " +
       "turning-point zone.",
@@ -244,39 +250,53 @@
     return dates.length;
   }
 
-  function pageHasAnyExtremes() {
+  function distinctDaysInHistory(historyArray) {
+    // Returns the number of distinct UTC calendar dates in a list of ISO
+    // timestamps (or {ts}/{date} objects). Multiple intraday snapshots count
+    // as one day.
+    const days = new Set();
+    if (!historyArray) return 0;
+    for (const point of historyArray) {
+      let iso;
+      if (typeof point === "string") iso = point;
+      else if (point && typeof point === "object") iso = point.ts || point.date;
+      if (!iso) continue;
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) continue;
+      days.add(d.toISOString().slice(0, 10));
+    }
+    return days.size;
+  }
+
+  function symbolDistinctDays(sym) {
+    const all = (sym.history || {}).All || {};
+    return distinctDaysInHistory(all.dates || []);
+  }
+
+  function pageHasAnyDaysAtLeast(minDays) {
     if (!state.payload) return false;
     for (const cat of state.payload.categories) {
       for (const s of cat.symbols) {
-        const sig = s.signals || {};
-        const e3 = (sig.extremes || {}).ext_3m || {};
-        const e6 = (sig.extremes || {}).ext_6m || {};
-        if (e3.value !== null && e3.value !== undefined) return true;
-        if (e6.value !== null && e6.value !== undefined) return true;
+        if (symbolDistinctDays(s) >= minDays) return true;
       }
     }
     return false;
   }
 
-  function pageHasAnySparklines() {
-    if (!state.payload) return false;
-    for (const cat of state.payload.categories) {
-      for (const s of cat.symbols) {
-        if (symbolPointCount(s) >= MIN_POINTS_FOR_SPARKLINE) return true;
-      }
-    }
-    return false;
-  }
+  function pageHasAny3M() { return pageHasAnyDaysAtLeast(MIN_DAYS_FOR_3M); }
+  function pageHasAny6M() { return pageHasAnyDaysAtLeast(MIN_DAYS_FOR_6M); }
+  function pageHasAnySparklines() { return pageHasAnyDaysAtLeast(MIN_DAYS_FOR_1M); }
 
   function renderRow(sym, opts) {
-    const showExtCols = opts && opts.showExtCols;
-    const showSparkCol = opts && opts.showSparkCol;
+    const show3MCol = !!(opts && opts.show3MCol);
+    const show6MCol = !!(opts && opts.show6MCol);
+    const showSparkCol = !!(opts && opts.showSparkCol);
     const cur = sym.current || {};
     const sig = sym.signals || {};
     const ext3 = (sig.extremes || {}).ext_3m || {};
     const ext6 = (sig.extremes || {}).ext_6m || {};
     const u = sig.capitulation || sig.underwater || {};
-    const nPoints = symbolPointCount(sym);
+    const nDays = symbolDistinctDays(sym);
 
     const longPct = cur.long_pct;
     const shortPct = cur.short_pct;
@@ -306,28 +326,37 @@
       pillCls = "pill-bullish"; pillTxt = "BULLISH (contrarian)"; pillTip = TOOLTIPS.pill_bullish;
     }
 
-    const ext3Cell = (ext3.value === null || ext3.value === undefined) ?
-      '<span class="ext-na" title="' + (ext3.n || 0) + ' datapoints (need 20)">—</span>' :
-      '<span class="' + (ext3.class || "ext-na") + '">' + Math.round((ext3.value || 0) * 100) + '%</span>';
-    const ext6Cell = (ext6.value === null || ext6.value === undefined) ?
-      '<span class="ext-na" title="' + (ext6.n || 0) + ' datapoints (need 20)">—</span>' :
-      '<span class="' + (ext6.class || "ext-na") + '">' + Math.round((ext6.value || 0) * 100) + '%</span>';
+    // Per-cell ripeness: only show a numeric extreme if the symbol itself has
+    // enough calendar days. Below that, "—" with a tooltip.
+    const ext3Cell = (nDays < MIN_DAYS_FOR_3M || ext3.value === null || ext3.value === undefined)
+      ? '<span class="ext-na" title="Need ' + MIN_DAYS_FOR_3M + ' days; have ' + nDays + '">—</span>'
+      : '<span class="' + (ext3.class || "ext-na") + '">' + Math.round((ext3.value || 0) * 100) + '%</span>';
+    const ext6Cell = (nDays < MIN_DAYS_FOR_6M || ext6.value === null || ext6.value === undefined)
+      ? '<span class="ext-na" title="Need ' + MIN_DAYS_FOR_6M + ' days; have ' + nDays + '">—</span>'
+      : '<span class="' + (ext6.class || "ext-na") + '">' + Math.round((ext6.value || 0) * 100) + '%</span>';
 
     const longPctSeries = ((sym.history || {})["1M"] || {}).long_pct || [];
-    const sparkCellHtml = (nPoints >= MIN_POINTS_FOR_SPARKLINE) ? sparkline(longPctSeries) : "";
+    const sparkCellHtml = (nDays >= MIN_DAYS_FOR_1M) ? sparkline(longPctSeries) : "";
 
-    const extCells = showExtCols
-      ? '<td class="ext-cell">' + ext3Cell + '</td><td class="ext-cell">' + ext6Cell + '</td>'
-      : '';
+    const ext3Html = show3MCol ? '<td class="ext-cell">' + ext3Cell + '</td>' : '';
+    const ext6Html = show6MCol ? '<td class="ext-cell">' + ext6Cell + '</td>' : '';
     const sparkCell = showSparkCol ? '<td class="spark-cell">' + sparkCellHtml + '</td>' : '';
+
+    // COT confluence badge — only when the overlay toggle is ON and the
+    // symbol's confluence signal is firing.
+    const cc = sig.cot_confluence;
+    const cotBadge = (state.cotOverlay && cc && cc.has_confluence)
+      ? ' <span class="cot-badge" title="' + escAttr(TOOLTIPS.cot_badge) + '">⚡ COT</span>'
+      : '';
 
     return (
       '<tr data-symbol="' + sym.symbol + '">' +
       '<td class="sym">' + sym.display + '</td>' +
       '<td class="ls-cell">' + splitBar + "</td>" +
       '<td class="price-cell">' + priceCell + "</td>" +
-      '<td><span class="pill ' + pillCls + '" title="' + escAttr(pillTip) + '">' + pillTxt + "</span></td>" +
-      extCells +
+      '<td class="signal-cell"><span class="pill ' + pillCls + '" title="' + escAttr(pillTip) + '">' + pillTxt + "</span>" + cotBadge + "</td>" +
+      ext3Html +
+      ext6Html +
       '<td class="details-cell">' + detailsButton(sym) + "</td>" +
       sparkCell +
       "</tr>"
@@ -338,11 +367,11 @@
     const wrap = document.getElementById("retailContent");
     wrap.innerHTML = "";
 
-    const showExtCols = pageHasAnyExtremes();
+    const show3MCol = pageHasAny3M();
+    const show6MCol = pageHasAny6M();
     const showSparkCol = pageHasAnySparklines();
-    const extHeaders = showExtCols
-      ? '<th data-sort="ext_3m">3M ext</th><th data-sort="ext_6m">6M ext</th>'
-      : '';
+    const ext3Header = show3MCol ? '<th data-sort="ext_3m">3M ext</th>' : '';
+    const ext6Header = show6MCol ? '<th data-sort="ext_6m">6M ext</th>' : '';
     const sparkHeader = showSparkCol ? '<th>1M</th>' : '';
 
     state.payload.categories.forEach(cat => {
@@ -361,11 +390,12 @@
         '<th data-sort="long_pct">Long / Short</th>' +
         '<th data-sort="spot">Price</th>' +
         '<th>Signal</th>' +
-        extHeaders +
+        ext3Header +
+        ext6Header +
         '<th class="details-col" data-sort="alerts">Details</th>' +
         sparkHeader +
         '</tr></thead>' +
-        '<tbody>' + symbols.map(s => renderRow(s, { showExtCols, showSparkCol })).join("") + '</tbody>' +
+        '<tbody>' + symbols.map(s => renderRow(s, { show3MCol, show6MCol, showSparkCol })).join("") + '</tbody>' +
         '</table></div>';
 
       // Wire sort headers
@@ -557,8 +587,8 @@
 
     const cur = sym.current || {};
     const u = sym.signals.capitulation || sym.signals.underwater || {};
-    const nPoints = symbolPointCount(sym);
-    const chartReady = nPoints >= MIN_POINTS_FOR_CHART;
+    const nDays = symbolDistinctDays(sym);
+    const chartReady = nDays >= MIN_DAYS_FOR_CHART;
 
     const windowButtons = ["1W", "1M", "3M", "6M", "1Y", "All"].map(w => {
       const data = (sym.history || {})[w] || {};
@@ -576,8 +606,8 @@
          '<div class="chart-wrapper"><canvas id="retailModalChart"></canvas></div>' +
          '</div>')
       : ('<div class="modal-chart-pending">' +
-         'Historical chart will appear once enough data is collected ' +
-         '(currently ' + nPoints + '/' + MIN_POINTS_FOR_CHART + ' snapshots).' +
+         'Historical chart will appear once we have at least ' + MIN_DAYS_FOR_CHART + ' days of data.<br>' +
+         'Currently collecting: ' + nDays + ' day' + (nDays === 1 ? '' : 's') + ' so far.' +
          '</div>');
 
     body.innerHTML =

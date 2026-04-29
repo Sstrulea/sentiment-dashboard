@@ -815,17 +815,15 @@ table.retail-table tbody tr:nth-child(even) { background: var(--row-alt); }
 table.retail-table tbody tr:hover { background: rgba(100, 181, 246, 0.10); }
 table.retail-table td.sym { font-weight: 600; }
 
+.ls-cell { min-width: 200px; }
 .ls-bar {
   display: flex;
-  height: 12px;
-  width: 130px;
+  height: 14px;
+  width: 100%;
   border-radius: 4px;
   overflow: hidden;
   background: var(--surface-alt);
 }
-.ls-bar-sm { height: 6px; margin-top: 4px; }
-.ls-bar-muted { opacity: 0.45; }
-.ls-bar-divergent { box-shadow: 0 0 0 1px rgba(244, 67, 54, 0.6); }
 .ls-bar-long { background: #1976d2; }
 .ls-bar-short { background: #f57c00; }
 body.dark .ls-bar-long { background: #64b5f6; }
@@ -833,7 +831,7 @@ body.dark .ls-bar-short { background: #ffb74d; }
 .ls-bar-labels {
   display: flex;
   justify-content: space-between;
-  width: 130px;
+  width: 100%;
   margin-top: 2px;
   font-size: 11px;
 }
@@ -861,6 +859,23 @@ body.dark .ls-bar-labels .ls-short { color: #ffb74d; }
 .pill-neutral { color: var(--muted); background: var(--surface-alt); }
 .pill-bearish { color: #fff; background: #b71c1c; }
 .pill-bullish { color: #fff; background: #1b5e20; }
+
+.signal-cell {
+  white-space: nowrap;
+}
+.cot-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  margin-left: 4px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: #006064;
+  color: #fff;
+  cursor: help;
+}
+body.dark .cot-badge { background: #00838f; }
 
 .ext-cell { text-align: center; }
 .ext-cell span {
