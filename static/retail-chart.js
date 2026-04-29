@@ -4,6 +4,44 @@
 
   const DATA_URL = window.RETAIL_DATA_URL || "/data/retail-sentiment.json";
 
+  // Hide visualizations until we have at least this many snapshots for a symbol.
+  const MIN_POINTS_FOR_SPARKLINE = 5;
+  const MIN_POINTS_FOR_CHART = 5;
+
+  // Tooltip copy — shown on every badge/pill via the title attribute.
+  const TOOLTIPS = {
+    longs_losing:
+      "Average long entry price is above current spot — the long crowd is " +
+      "collectively in a loss. If price drops further, expect cascading " +
+      "stop-outs from leveraged longs (long capitulation pressure).",
+    shorts_losing:
+      "Average short entry price is below current spot — the short crowd is " +
+      "collectively in a loss. If price rises further, expect cascading " +
+      "stop-outs from leveraged shorts (potential short squeeze fuel).",
+    div:
+      "Position count and volume disagree on direction. Many small traders " +
+      "on one side, few large traders on the other — the bigger money may " +
+      "be on the side with fewer positions.",
+    cot:
+      "Smart-money divergence: retail crowd is positioned opposite to CFTC " +
+      "large speculators. When retail and institutions disagree, " +
+      "institutions usually win.",
+    extreme:
+      "Today's positioning is at a multi-month extreme — historically a " +
+      "turning-point zone.",
+    pill_bullish:
+      "≥70% of retail traders are short. Retail is statistically wrong at " +
+      "extremes — this is a contrarian BUY signal. Look for opportunities " +
+      "to go long.",
+    pill_bearish:
+      "≥70% of retail traders are long. Retail is statistically wrong at " +
+      "extremes — this is a contrarian SELL signal. Look for opportunities " +
+      "to go short.",
+    pill_neutral:
+      "Crowd positioning is balanced — no contrarian edge from this signal " +
+      "alone. Check other signals (underwater crowd, COT divergence, extremes).",
+  };
+
   const state = {
     payload: null,
     catVisible: {},          // cat_key -> bool
@@ -190,48 +228,71 @@
     return state.sortAsc ? cmp : -cmp;
   }
 
+  function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
+
   function alertIcons(sym) {
     const out = [];
     const sig = sym.signals || {};
     if (sig.contrarian === "bearish_contrarian") {
-      out.push('<span class="alert-icon alert-bearish" title="Crowd ≥70% long — bearish contrarian signal">⚠</span>');
+      out.push('<span class="alert-icon alert-bearish" title="' + escAttr(TOOLTIPS.pill_bearish) + '">⚠</span>');
     } else if (sig.contrarian === "bullish_contrarian") {
-      out.push('<span class="alert-icon alert-bullish" title="Crowd ≥70% short — bullish contrarian signal">⚠</span>');
+      out.push('<span class="alert-icon alert-bullish" title="' + escAttr(TOOLTIPS.pill_bullish) + '">⚠</span>');
     }
     const u = sig.underwater || {};
     if (u.longs_underwater) {
-      out.push('<span class="alert-icon alert-under" title="Avg long entry above spot — longs underwater (' + fmtPips(u.long_pnl_pips_estimate) + ')">UNDER</span>');
+      out.push('<span class="alert-icon alert-under" title="' + escAttr(TOOLTIPS.longs_losing) + '">LONGS LOSING</span>');
     }
     if (u.shorts_underwater) {
-      out.push('<span class="alert-icon alert-under" title="Avg short entry below spot — shorts underwater (' + fmtPips(u.short_pnl_pips_estimate) + ')">UNDER</span>');
+      out.push('<span class="alert-icon alert-under" title="' + escAttr(TOOLTIPS.shorts_losing) + '">SHORTS LOSING</span>');
     }
     const vd = sig.vol_position_divergence || {};
     if (vd.has_divergence) {
-      out.push('<span class="alert-icon alert-div" title="Position vs volume divergence: ' + fmtPct1(vd.divergence_pp) + ' gap">DIV</span>');
+      out.push('<span class="alert-icon alert-div" title="' + escAttr(TOOLTIPS.div) + '">DIV</span>');
     }
     const e3 = (sig.extremes || {}).ext_3m || {};
     const e6 = (sig.extremes || {}).ext_6m || {};
     if (e3.class === "ext-95" || e3.class === "ext-05") {
-      out.push('<span class="alert-icon alert-ext" title="3M extreme: ' + fmtPct1((e3.value || 0) * 100) + '">⚡3M</span>');
+      out.push('<span class="alert-icon alert-ext" title="' + escAttr(TOOLTIPS.extreme) + '">⚡3M</span>');
     }
     if (e6.class === "ext-95" || e6.class === "ext-05") {
-      out.push('<span class="alert-icon alert-ext" title="6M extreme: ' + fmtPct1((e6.value || 0) * 100) + '">⚡6M</span>');
+      out.push('<span class="alert-icon alert-ext" title="' + escAttr(TOOLTIPS.extreme) + '">⚡6M</span>');
     }
     if (state.cotOverlay && sig.cot_divergence && sig.cot_divergence.has_divergence) {
-      out.push('<span class="alert-icon alert-cot" title="COT divergence: retail ' +
-        fmtPct1((sig.cot_divergence.retail_long_normalized || 0) * 100) +
-        ' vs CFTC specs ' + fmtPct1((sig.cot_divergence.cot_spec_long_normalized || 0) * 100) + '">⚡COT</span>');
+      out.push('<span class="alert-icon alert-cot" title="' + escAttr(TOOLTIPS.cot) + '">⚡COT</span>');
     }
-    return out.join(" ");
+    return out.join("");
   }
 
-  function renderRow(sym) {
+  function symbolPointCount(sym) {
+    // Use the longest available history window for the count.
+    const all = (sym.history || {}).All || {};
+    const dates = all.dates || [];
+    return dates.length;
+  }
+
+  function pageHasAnyExtremes() {
+    if (!state.payload) return false;
+    for (const cat of state.payload.categories) {
+      for (const s of cat.symbols) {
+        const sig = s.signals || {};
+        const e3 = (sig.extremes || {}).ext_3m || {};
+        const e6 = (sig.extremes || {}).ext_6m || {};
+        if (e3.value !== null && e3.value !== undefined) return true;
+        if (e6.value !== null && e6.value !== undefined) return true;
+      }
+    }
+    return false;
+  }
+
+  function renderRow(sym, opts) {
+    const showExtCols = opts && opts.showExtCols;
     const cur = sym.current || {};
     const sig = sym.signals || {};
     const ext3 = (sig.extremes || {}).ext_3m || {};
     const ext6 = (sig.extremes || {}).ext_6m || {};
     const u = sig.underwater || {};
     const vd = sig.vol_position_divergence || {};
+    const nPoints = symbolPointCount(sym);
 
     const longPct = cur.long_pct;
     const shortPct = cur.short_pct;
@@ -266,9 +327,12 @@
       '<div><span class="lbl">Avg S</span> <span>' + fmtPrice(cur.avg_short_price) + '</span> <span class="pnl ' + shortPnlClass + '">' + fmtPips(u.short_pnl_pips_estimate) + '</span></div>' +
       "</div>";
 
-    let pillCls = "pill-neutral", pillTxt = "NEUTRAL";
-    if (sig.contrarian === "bearish_contrarian") { pillCls = "pill-bearish"; pillTxt = "BEARISH (contrarian)"; }
-    else if (sig.contrarian === "bullish_contrarian") { pillCls = "pill-bullish"; pillTxt = "BULLISH (contrarian)"; }
+    let pillCls = "pill-neutral", pillTxt = "NEUTRAL", pillTip = TOOLTIPS.pill_neutral;
+    if (sig.contrarian === "bearish_contrarian") {
+      pillCls = "pill-bearish"; pillTxt = "BEARISH (contrarian)"; pillTip = TOOLTIPS.pill_bearish;
+    } else if (sig.contrarian === "bullish_contrarian") {
+      pillCls = "pill-bullish"; pillTxt = "BULLISH (contrarian)"; pillTip = TOOLTIPS.pill_bullish;
+    }
 
     const ext3Cell = (ext3.value === null || ext3.value === undefined) ?
       '<span class="ext-na" title="' + (ext3.n || 0) + ' datapoints (need 20)">—</span>' :
@@ -278,6 +342,11 @@
       '<span class="' + (ext6.class || "ext-na") + '">' + Math.round((ext6.value || 0) * 100) + '%</span>';
 
     const longPctSeries = ((sym.history || {})["1M"] || {}).long_pct || [];
+    const sparkCellHtml = (nPoints >= MIN_POINTS_FOR_SPARKLINE) ? sparkline(longPctSeries) : "";
+
+    const extCells = showExtCols
+      ? '<td class="ext-cell">' + ext3Cell + '</td><td class="ext-cell">' + ext6Cell + '</td>'
+      : '';
 
     return (
       '<tr data-symbol="' + sym.symbol + '">' +
@@ -285,11 +354,10 @@
       '<td class="ls-cell">' + splitBar + "</td>" +
       '<td class="vol-cell">' + volBar + "</td>" +
       '<td class="price-cell">' + priceCell + "</td>" +
-      '<td><span class="pill ' + pillCls + '">' + pillTxt + "</span></td>" +
-      '<td class="ext-cell">' + ext3Cell + "</td>" +
-      '<td class="ext-cell">' + ext6Cell + "</td>" +
-      '<td class="alerts-cell">' + alertIcons(sym) + "</td>" +
-      '<td class="spark-cell">' + sparkline(longPctSeries) + "</td>" +
+      '<td><span class="pill ' + pillCls + '" title="' + escAttr(pillTip) + '">' + pillTxt + "</span></td>" +
+      extCells +
+      '<td class="alerts-cell"><div class="alerts-row">' + alertIcons(sym) + "</div></td>" +
+      '<td class="spark-cell">' + sparkCellHtml + "</td>" +
       "</tr>"
     );
   }
@@ -297,6 +365,11 @@
   function renderTables() {
     const wrap = document.getElementById("retailContent");
     wrap.innerHTML = "";
+
+    const showExtCols = pageHasAnyExtremes();
+    const extHeaders = showExtCols
+      ? '<th data-sort="ext_3m">3M ext</th><th data-sort="ext_6m">6M ext</th>'
+      : '';
 
     state.payload.categories.forEach(cat => {
       if (!state.catVisible[cat.key]) return;
@@ -315,12 +388,11 @@
         '<th>Volume</th>' +
         '<th data-sort="spot">Price</th>' +
         '<th>Signal</th>' +
-        '<th data-sort="ext_3m">3M ext</th>' +
-        '<th data-sort="ext_6m">6M ext</th>' +
+        extHeaders +
         '<th data-sort="alerts">Alerts</th>' +
         '<th>1M</th>' +
         '</tr></thead>' +
-        '<tbody>' + symbols.map(renderRow).join("") + '</tbody>' +
+        '<tbody>' + symbols.map(s => renderRow(s, { showExtCols })).join("") + '</tbody>' +
         '</table></div>';
 
       // Wire sort headers
@@ -358,43 +430,154 @@
     return null;
   }
 
-  function explainSignals(sym) {
+  function buildSignalEntries(sym) {
+    // Returns an array of {cls?, title, body} for each FIRING signal — entries
+    // that don't apply are omitted entirely (no "shorts are not underwater"
+    // filler). Plain-language phrasing for end-users.
+    const entries = [];
     const sig = sym.signals || {};
-    const lines = [];
-    if (sig.contrarian === "bearish_contrarian") {
-      lines.push("Crowd is ≥70% long — historically a contrarian bearish signal.");
-    } else if (sig.contrarian === "bullish_contrarian") {
-      lines.push("Crowd is ≥70% short — historically a contrarian bullish signal.");
+    const cur = sym.current || {};
+    const display = sym.display || sym.symbol;
+
+    // Trade bias
+    if (sig.contrarian === "bullish_contrarian") {
+      const shortPct = cur.short_pct == null ? null : Math.round(cur.short_pct);
+      entries.push({
+        cls: "bias-bullish",
+        title: "Trade bias: BULLISH (contrarian)",
+        body:
+          (shortPct == null ? "≥70%" : shortPct + "%") +
+          " of retail traders are short " + display +
+          ". The retail crowd is statistically wrong at extremes. " +
+          "Bias: look for buying opportunities.",
+      });
+    } else if (sig.contrarian === "bearish_contrarian") {
+      const longPct = cur.long_pct == null ? null : Math.round(cur.long_pct);
+      entries.push({
+        cls: "bias-bearish",
+        title: "Trade bias: BEARISH (contrarian)",
+        body:
+          (longPct == null ? "≥70%" : longPct + "%") +
+          " of retail traders are long " + display +
+          ". The retail crowd is statistically wrong at extremes. " +
+          "Bias: look for selling opportunities.",
+      });
     } else {
-      lines.push("No extreme crowd positioning.");
+      entries.push({
+        cls: "bias-neutral",
+        title: "Trade bias: NEUTRAL",
+        body:
+          "Crowd positioning is balanced — no contrarian edge from this " +
+          "signal alone. Check other signals (underwater crowd, COT " +
+          "divergence, extremes).",
+      });
     }
+
+    // Underwater longs
     const u = sig.underwater || {};
-    if (u.longs_underwater) lines.push("Average long entry sits above spot (" + fmtPips(u.long_pnl_pips_estimate) + ") — longs underwater.");
-    if (u.shorts_underwater) lines.push("Average short entry sits below spot (" + fmtPips(u.short_pnl_pips_estimate) + ") — shorts underwater.");
+    if (u.longs_underwater) {
+      const pips = Math.abs(Math.round(u.long_pnl_pips_estimate || 0));
+      entries.push({
+        title: "Longs are losing money",
+        body:
+          "Average long entry: " + fmtPrice(cur.avg_long_price) +
+          ". Current spot: " + fmtPrice(cur.spot_estimate) +
+          ". Longs are " + pips + " pips underwater on average. " +
+          "If " + display + " drops further, expect stop-outs and forced " +
+          "selling — but a turn higher could trigger relief buying.",
+      });
+    }
+    if (u.shorts_underwater) {
+      const pips = Math.abs(Math.round(u.short_pnl_pips_estimate || 0));
+      const both = u.longs_underwater;
+      entries.push({
+        title: both ? "Shorts are also losing money" : "Shorts are losing money",
+        body:
+          "Average short entry: " + fmtPrice(cur.avg_short_price) +
+          ". Current spot: " + fmtPrice(cur.spot_estimate) +
+          ". Shorts are " + pips + " pips underwater" +
+          (both
+            ? ". Both sides are losing — typical of choppy/ranging conditions."
+            : ". A continued rise could trigger short-covering / squeeze."),
+      });
+    }
+
+    // Volume vs position divergence
     const vd = sig.vol_position_divergence || {};
     if (vd.has_divergence) {
-      lines.push("Volume vs position divergence: " + fmtPct1(vd.position_long_pct) + " of accounts long but volume is " + fmtPct1(vd.volume_long_pct) + " long (" + fmtPct1(vd.divergence_pp) + " gap).");
+      entries.push({
+        title: "Volume disagrees with position count",
+        body:
+          fmtPct1(vd.position_long_pct) + " of accounts are long, but " +
+          fmtPct1(vd.volume_long_pct) + " of volume is long (gap: " +
+          fmtPct1(vd.divergence_pp) + "). Many small traders on one side, " +
+          "fewer large traders on the other — bigger money may be on the " +
+          "side with fewer positions.",
+      });
     }
+
+    // COT smart-money divergence — only if overlay is enabled
+    const cd = sig.cot_divergence;
+    if (state.cotOverlay && cd && cd.has_divergence) {
+      const retail = Math.round((cd.retail_long_normalized || 0) * 100);
+      const cot = Math.round((cd.cot_spec_long_normalized || 0) * 100);
+      const biasNote = (sig.contrarian !== "neutral")
+        ? " — adds conviction to the " +
+          (sig.contrarian === "bullish_contrarian" ? "bullish" : "bearish") +
+          " bias above"
+        : "";
+      entries.push({
+        title: "Smart money disagrees with retail",
+        body:
+          "Retail crowd: " + retail + "% long. CFTC large speculators " +
+          "(institutions): " + cot + "% long. They're on opposite sides. " +
+          "Institutions usually win these disagreements" + biasNote +
+          ". (COT report: " + (cd.cot_report_date || "—") + ")",
+      });
+    }
+
+    // Extremes
     const e3 = (sig.extremes || {}).ext_3m || {};
     const e6 = (sig.extremes || {}).ext_6m || {};
-    if (e3.value !== null && e3.value !== undefined) {
-      lines.push("3M extreme: " + Math.round((e3.value || 0) * 100) + "% (n=" + e3.n + ")");
+    const e3Ripe = e3.value !== null && e3.value !== undefined;
+    const e6Ripe = e6.value !== null && e6.value !== undefined;
+    if (e3Ripe || e6Ripe) {
+      const parts = [];
+      if (e3Ripe) parts.push("3M: " + Math.round((e3.value || 0) * 100) + "%ile (n=" + e3.n + ")");
+      if (e6Ripe) parts.push("6M: " + Math.round((e6.value || 0) * 100) + "%ile (n=" + e6.n + ")");
+      entries.push({
+        title: "Positioning extremes",
+        body: parts.join(" · ") +
+          ". Values near 0% or 100% mark multi-month turning-point zones.",
+      });
     } else {
-      lines.push("3M extreme: not enough history yet (n=" + (e3.n || 0) + ")");
+      const n = Math.max(e3.n || 0, e6.n || 0);
+      const need = Math.max(0, 20 - n);
+      entries.push({
+        title: "3M / 6M extremes: not enough history yet",
+        body:
+          "(" + n + " snapshot" + (n === 1 ? "" : "s") + " collected). " +
+          "These signals will activate after ~" + (need < 10 ? 10 : need) +
+          "-20 more snapshots.",
+      });
     }
-    if (e6.value !== null && e6.value !== undefined) {
-      lines.push("6M extreme: " + Math.round((e6.value || 0) * 100) + "% (n=" + e6.n + ")");
-    } else {
-      lines.push("6M extreme: not enough history yet (n=" + (e6.n || 0) + ")");
-    }
-    const cd = sig.cot_divergence;
-    if (cd) {
-      const dir = cd.has_divergence ? "DIVERGENT" : "aligned";
-      lines.push("COT cross-link: retail " + Math.round((cd.retail_long_normalized || 0) * 100) +
-        "% vs CFTC large specs " + Math.round((cd.cot_spec_long_normalized || 0) * 100) +
-        "% — " + dir + " (report " + (cd.cot_report_date || "—") + ")");
-    }
-    return lines;
+
+    return entries;
+  }
+
+  function renderSignalEntriesHtml(entries) {
+    return entries.map(e => {
+      const cls = "signal-entry" + (e.cls ? " " + e.cls : "");
+      return (
+        '<li class="' + cls + '">' +
+        '<div class="signal-arrow">&rarr;</div>' +
+        '<div class="signal-body">' +
+        '<div class="signal-title">' + e.title + '</div>' +
+        '<div class="signal-text">' + e.body + '</div>' +
+        '</div>' +
+        '</li>'
+      );
+    }).join("");
   }
 
   function openModal(symKey) {
@@ -409,6 +592,8 @@
 
     const cur = sym.current || {};
     const u = sym.signals.underwater || {};
+    const nPoints = symbolPointCount(sym);
+    const chartReady = nPoints >= MIN_POINTS_FOR_CHART;
 
     const windowButtons = ["1W", "1M", "3M", "6M", "1Y", "All"].map(w => {
       const data = (sym.history || {})[w] || {};
@@ -416,6 +601,19 @@
       return '<button type="button" class="win-btn' + (w === "1M" ? " active" : "") + '" data-window="' + w + '"' +
         (enabled ? "" : ' disabled title="Not enough history yet"') + ">" + w + "</button>";
     }).join("");
+
+    const chartSection = chartReady
+      ? ('<div class="modal-chart-section">' +
+         '<div class="chart-controls">' +
+         '<div class="window-selector">' + windowButtons + '</div>' +
+         '<label class="toggle"><input type="checkbox" id="modalSpotToggle"><span>Show spot estimate</span></label>' +
+         '</div>' +
+         '<div class="chart-wrapper"><canvas id="retailModalChart"></canvas></div>' +
+         '</div>')
+      : ('<div class="modal-chart-pending">' +
+         'Historical chart will appear once enough data is collected ' +
+         '(currently ' + nPoints + '/' + MIN_POINTS_FOR_CHART + ' snapshots).' +
+         '</div>');
 
     body.innerHTML =
       '<header class="modal-header">' +
@@ -438,36 +636,31 @@
       '<div class="modal-card">' +
       '<h3>Signals</h3>' +
       '<ul class="signal-list">' +
-      explainSignals(sym).map(l => "<li>" + l + "</li>").join("") +
+      renderSignalEntriesHtml(buildSignalEntries(sym)) +
       '</ul>' +
       '</div>' +
       '</div>' +
-      '<div class="modal-chart-section">' +
-      '<div class="chart-controls">' +
-      '<div class="window-selector">' + windowButtons + '</div>' +
-      '<label class="toggle"><input type="checkbox" id="modalSpotToggle"><span>Show spot estimate</span></label>' +
-      '</div>' +
-      '<div class="chart-wrapper"><canvas id="retailModalChart"></canvas></div>' +
-      '</div>';
+      chartSection;
 
     modal.hidden = false;
     document.body.classList.add("modal-open");
 
-    body.querySelectorAll(".win-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        if (btn.disabled) return;
-        body.querySelectorAll(".win-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.chartWindow = btn.dataset.window;
+    if (chartReady) {
+      body.querySelectorAll(".win-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (btn.disabled) return;
+          body.querySelectorAll(".win-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          state.chartWindow = btn.dataset.window;
+          renderModalChart();
+        });
+      });
+      body.querySelector("#modalSpotToggle").addEventListener("change", e => {
+        state.showSpot = !!e.target.checked;
         renderModalChart();
       });
-    });
-    body.querySelector("#modalSpotToggle").addEventListener("change", e => {
-      state.showSpot = !!e.target.checked;
       renderModalChart();
-    });
-
-    renderModalChart();
+    }
   }
 
   function closeModal() {
