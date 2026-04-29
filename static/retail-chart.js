@@ -18,10 +18,6 @@
       "Average short entry price is below current spot — the short crowd is " +
       "collectively in a loss. If price rises further, expect cascading " +
       "stop-outs from leveraged shorts (potential short squeeze fuel).",
-    div:
-      "Position count and volume disagree on direction. Many small traders " +
-      "on one side, few large traders on the other — the bigger money may " +
-      "be on the side with fewer positions.",
     cot:
       "Retail and CFTC large speculators are both crowded on the same side " +
       "at a multi-month extreme. Both groups statistically reverse from " +
@@ -280,13 +276,10 @@
     const ext3 = (sig.extremes || {}).ext_3m || {};
     const ext6 = (sig.extremes || {}).ext_6m || {};
     const u = sig.capitulation || sig.underwater || {};
-    const vd = sig.vol_position_divergence || {};
     const nPoints = symbolPointCount(sym);
 
     const longPct = cur.long_pct;
     const shortPct = cur.short_pct;
-    const volLong = (vd.volume_long_pct !== null && vd.volume_long_pct !== undefined) ? vd.volume_long_pct : null;
-    const volShort = volLong !== null ? (100 - volLong) : null;
 
     const splitBar =
       '<div class="ls-bar" title="Long ' + fmtPct(longPct) + ' · Short ' + fmtPct(shortPct) + '">' +
@@ -295,16 +288,6 @@
       "</div>" +
       '<div class="ls-bar-labels"><span class="ls-long">' + fmtPct(longPct) + ' L</span>' +
       '<span class="ls-short">' + fmtPct(shortPct) + ' S</span></div>';
-
-    const volBar = (volLong !== null) ?
-      ('<div class="ls-bar ls-bar-sm ' + (vd.has_divergence ? "ls-bar-divergent" : "ls-bar-muted") + '" title="Volume Long ' + fmtPct1(volLong) + '">' +
-        '<div class="ls-bar-long" style="width:' + volLong + '%"></div>' +
-        '<div class="ls-bar-short" style="width:' + volShort + '%"></div>' +
-        "</div>" +
-        '<div class="ls-bar-labels small">' +
-        '<span>' + fmtPct1(volLong) + ' vL</span>' +
-        '<span>' + fmtPct1(volShort) + ' vS</span></div>') :
-      '<span class="muted small">—</span>';
 
     const longPnlClass = (u.long_pnl_pips_estimate || 0) >= 0 ? "pnl-pos" : "pnl-neg";
     const shortPnlClass = (u.short_pnl_pips_estimate || 0) >= 0 ? "pnl-pos" : "pnl-neg";
@@ -342,7 +325,6 @@
       '<tr data-symbol="' + sym.symbol + '">' +
       '<td class="sym">' + sym.display + '</td>' +
       '<td class="ls-cell">' + splitBar + "</td>" +
-      '<td class="vol-cell">' + volBar + "</td>" +
       '<td class="price-cell">' + priceCell + "</td>" +
       '<td><span class="pill ' + pillCls + '" title="' + escAttr(pillTip) + '">' + pillTxt + "</span></td>" +
       extCells +
@@ -377,7 +359,6 @@
         '<thead><tr>' +
         '<th data-sort="symbol">Symbol</th>' +
         '<th data-sort="long_pct">Long / Short</th>' +
-        '<th>Volume</th>' +
         '<th data-sort="spot">Price</th>' +
         '<th>Signal</th>' +
         extHeaders +
@@ -491,20 +472,6 @@
           (both
             ? ". Both sides are losing — typical of choppy/ranging conditions."
             : ". A continued rise could trigger short-covering / squeeze."),
-      });
-    }
-
-    // Volume vs position divergence
-    const vd = sig.vol_position_divergence || {};
-    if (vd.has_divergence) {
-      entries.push({
-        title: "Volume disagrees with position count",
-        body:
-          fmtPct1(vd.position_long_pct) + " of accounts are long, but " +
-          fmtPct1(vd.volume_long_pct) + " of volume is long (gap: " +
-          fmtPct1(vd.divergence_pp) + "). Many small traders on one side, " +
-          "fewer large traders on the other — bigger money may be on the " +
-          "side with fewer positions.",
       });
     }
 

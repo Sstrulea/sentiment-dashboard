@@ -228,64 +228,6 @@ def compute_underwater_flag(
 
 
 # ---------------------------------------------------------------------------
-# Volume vs position divergence
-# ---------------------------------------------------------------------------
-
-def compute_volume_position_divergence(
-    long_pct: float | None,
-    long_volume: float | None,
-    short_volume: float | None,
-    signal_config: dict,
-) -> dict:
-    """Detect cases where most accounts are long but most volume is short (or vice-versa).
-
-    Indicates a few large positions on one side dominate volume despite the
-    crowd leaning the other way.
-    """
-    threshold = float(signal_config.get("vol_position_divergence_pp", 15))
-
-    if long_pct is None or pd.isna(long_pct):
-        return {
-            "has_divergence": False,
-            "position_long_pct": None,
-            "volume_long_pct": None,
-            "divergence_pp": None,
-        }
-
-    pos_long_pct = float(long_pct)
-
-    if (
-        long_volume is None or short_volume is None
-        or pd.isna(long_volume) or pd.isna(short_volume)
-    ):
-        return {
-            "has_divergence": False,
-            "position_long_pct": pos_long_pct,
-            "volume_long_pct": None,
-            "divergence_pp": None,
-        }
-
-    total_vol = float(long_volume) + float(short_volume)
-    if total_vol <= 0:
-        return {
-            "has_divergence": False,
-            "position_long_pct": pos_long_pct,
-            "volume_long_pct": None,
-            "divergence_pp": None,
-        }
-
-    vol_long_pct = (float(long_volume) / total_vol) * 100.0
-    divergence_pp = abs(vol_long_pct - pos_long_pct)
-
-    return {
-        "has_divergence": bool(divergence_pp > threshold),
-        "position_long_pct": float(round(pos_long_pct, 2)),
-        "volume_long_pct": float(round(vol_long_pct, 2)),
-        "divergence_pp": float(round(divergence_pp, 2)),
-    }
-
-
-# ---------------------------------------------------------------------------
 # COT confluence
 # ---------------------------------------------------------------------------
 #
@@ -451,8 +393,6 @@ def _alert_count(signals: dict) -> int:
         cnt += 1
     if cap.get("short_pressure"):
         cnt += 1
-    if (signals.get("vol_position_divergence") or {}).get("has_divergence"):
-        cnt += 1
     extremes = signals.get("extremes") or {}
     if (extremes.get("ext_3m") or {}).get("class") in ("ext-95", "ext-05"):
         cnt += 1
@@ -484,11 +424,6 @@ def compute_signals_for_symbol(
                     "long_pressure": False, "short_pressure": False,
                     "long_pnl_pips_estimate": 0.0, "short_pnl_pips_estimate": 0.0,
                 },
-                "vol_position_divergence": {
-                    "has_divergence": False,
-                    "position_long_pct": None, "volume_long_pct": None,
-                    "divergence_pp": None,
-                },
                 "extremes": {
                     "ext_3m": {"value": None, "n": 0, "class": "ext-na"},
                     "ext_6m": {"value": None, "n": 0, "class": "ext-na"},
@@ -519,9 +454,6 @@ def compute_signals_for_symbol(
         long_pct, avg_long, avg_short, spot, signal_config,
         long_positions=long_pos, short_positions=short_pos,
     )
-    vol_pos_div = compute_volume_position_divergence(
-        long_pct, long_vol, short_vol, signal_config,
-    )
 
     # Extremes use the per-symbol long-pct series within the trailing window.
     win_3m = _last_n_days_window(df, 90)
@@ -545,7 +477,6 @@ def compute_signals_for_symbol(
             "long_pnl_pips_estimate": capitulation["long_pnl_pips_estimate"],
             "short_pnl_pips_estimate": capitulation["short_pnl_pips_estimate"],
         },
-        "vol_position_divergence": vol_pos_div,
         "extremes": {
             "ext_3m": {
                 "value": ext_3m_val,

@@ -11,13 +11,11 @@ from src.retail_compute import (
     compute_contrarian_signal,
     compute_cot_confluence,
     compute_underwater_flag,
-    compute_volume_position_divergence,
     extreme_class,
 )
 
 DEFAULT_CFG = {
     "contrarian_threshold": 70,
-    "vol_position_divergence_pp": 15,
     "capitulation_long_min_crowd_pct": 60,
     "capitulation_long_min_loss_pct": 1.0,
     "capitulation_short_min_crowd_pct": 60,
@@ -194,44 +192,6 @@ def test_capitulation_handles_no_avg_prices():
     )
     assert out["long_pressure"] is False
     assert out["short_pressure"] is False
-
-
-# ---------------------------------------------------------------------------
-# Volume vs position divergence
-# ---------------------------------------------------------------------------
-
-def test_vol_pos_divergence_detects_27pp():
-    # 72% long by accounts, but only 44% of volume long → ~28pp gap
-    out = compute_volume_position_divergence(
-        long_pct=72.0,
-        long_volume=905.47,
-        short_volume=1142.58,
-        signal_config=DEFAULT_CFG,
-    )
-    assert out["has_divergence"] is True
-    assert out["divergence_pp"] > 25
-
-
-def test_vol_pos_divergence_ignores_5pp():
-    out = compute_volume_position_divergence(
-        long_pct=55.0,
-        long_volume=600,
-        short_volume=500,
-        signal_config=DEFAULT_CFG,
-    )
-    # vol_long = 600/1100 = 54.5% → gap 0.5pp
-    assert out["has_divergence"] is False
-
-
-def test_vol_pos_divergence_missing_volume():
-    out = compute_volume_position_divergence(
-        long_pct=55.0,
-        long_volume=None,
-        short_volume=None,
-        signal_config=DEFAULT_CFG,
-    )
-    assert out["has_divergence"] is False
-    assert out["volume_long_pct"] is None
 
 
 # ---------------------------------------------------------------------------
