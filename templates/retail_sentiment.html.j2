@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Sentiment | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chart.umd.min.js"></script>
+  <script src="/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+  {% include '_navbar.html.j2' %}
+
+  <main class="page-content retail-page">
+    <header class="retail-header">
+      <h1>Retail Sentiment</h1>
+      <div class="provider-meta-bar" id="providerMeta">
+        <span class="muted">Loading provider info…</span>
+      </div>
+    </header>
+
+    <div class="retail-controls">
+      <div id="catFilter" class="cat-filter" role="group" aria-label="Filter categories">
+        <span class="cat-filter-label">Show:</span>
+        <div class="cat-chips" id="retailCatChips"><!-- chips injected by retail-chart.js --></div>
+        <div class="cat-filter-actions">
+          <button type="button" class="cat-action" data-action="all">All</button>
+          <button type="button" class="cat-action" data-action="none">None</button>
+        </div>
+      </div>
+      <label class="toggle cot-overlay-toggle">
+        <input type="checkbox" id="cotOverlayToggle">
+        <span>COT Divergence Overlay</span>
+        <span class="tooltip" title="Overlays smart-money-vs-dumb-money divergence flags from CFTC COT data.">&#9432;</span>
+      </label>
+    </div>
+
+    <section class="retail-table-wrapper">
+      <div id="retailContent">
+        <p class="muted" style="padding: 40px; text-align: center;">Loading retail sentiment…</p>
+      </div>
+    </section>
+
+    <div id="symbolDetailModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button class="modal-close" type="button" aria-label="Close">&times;</button>
+        <div id="symbolDetailContent"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>window.RETAIL_DATA_URL = "{{ data_url }}";</script>
+  <script src="/retail-chart.js"></script>
+</body>
+</html>

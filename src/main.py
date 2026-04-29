@@ -2,7 +2,8 @@
 
 Modes:
     weekly      — COT full refresh (default; preserved behavior)
-    daily       — VIX rebuild + P/C append for today + re-render sentiment pages
+    daily       — VIX rebuild + P/C append for today + retail snapshot + re-render
+    retail      — Retail sentiment snapshot + re-render only (3-hourly cron)
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
 """
@@ -112,6 +113,43 @@ def _daily() -> int:
         log.error("VIX render failed: %s", e)
         return 2
 
+    # Retail snapshot is best-effort — do not let Myfxbook outages block VIX/PC.
+    rc = _retail()
+    if rc != 0:
+        log.warning("Retail step exited %d (non-fatal in --mode daily)", rc)
+
+    return 0
+
+
+def _retail() -> int:
+    """Fetch + append a fresh retail sentiment snapshot, then re-render the page.
+
+    Returns:
+        0 on success or non-credential fetch error (admin can retry later).
+        2 on `RetailAuthError` — credentials must be fixed before any retry.
+    """
+    log = logging.getLogger("retail")
+    log.info("Retail sentiment refresh starting")
+
+    from .retail_providers import RetailAuthError
+
+    try:
+        from .retail_fetch import snapshot_retail_sentiment
+        n = snapshot_retail_sentiment()
+        log.info("Retail snapshot complete: %d symbols", n)
+    except RetailAuthError as e:
+        log.error("Retail auth error (admin must fix credentials): %s", e)
+        return 2
+    except Exception as e:
+        log.warning("Retail snapshot failed (non-fatal): %s", e)
+
+    try:
+        from .retail_render import render_retail_sentiment_page
+        out = render_retail_sentiment_page()
+        log.info("Retail page rendered → %s", out)
+    except Exception as e:
+        log.warning("Retail render failed: %s", e)
+
     return 0
 
 
@@ -139,7 +177,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Dashboard orchestrator")
     parser.add_argument(
         "--mode",
-        choices=["weekly", "daily", "all", "backfill-pc"],
+        choices=["weekly", "daily", "retail", "all", "backfill-pc"],
         default="weekly",
         help="which pipeline to run (default: weekly)",
     )
@@ -154,6 +192,8 @@ def main(argv: list[str] | None = None) -> int:
         return _weekly()
     if args.mode == "daily":
         return _daily()
+    if args.mode == "retail":
+        return _retail()
     if args.mode == "all":
         rc = _weekly()
         if rc != 0:

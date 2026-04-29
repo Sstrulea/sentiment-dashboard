@@ -1,0 +1,146 @@
+{
+  "error": false,
+  "message": "",
+  "symbols": [
+    {
+      "name": "EURUSD",
+      "shortPercentage": 28,
+      "longPercentage": 72,
+      "shortVolume": 1142.58,
+      "longVolume": 905.47,
+      "shortPositions": 3888,
+      "longPositions": 2932,
+      "totalPositions": 6820,
+      "avgShortPrice": 1.0810,
+      "avgLongPrice": 1.0921
+    },
+    {
+      "name": "GBPUSD",
+      "shortPercentage": 35,
+      "longPercentage": 65,
+      "shortVolume": 600.00,
+      "longVolume": 720.30,
+      "shortPositions": 2100,
+      "longPositions": 3500,
+      "totalPositions": 5600,
+      "avgShortPrice": 1.2480,
+      "avgLongPrice": 1.2515
+    },
+    {
+      "name": "USDJPY",
+      "shortPercentage": 60,
+      "longPercentage": 40,
+      "shortVolume": 1050.55,
+      "longVolume": 700.10,
+      "shortPositions": 4200,
+      "longPositions": 2800,
+      "totalPositions": 7000,
+      "avgShortPrice": 156.30,
+      "avgLongPrice": 155.10
+    },
+    {
+      "name": "XAUUSD",
+      "shortPercentage": 75,
+      "longPercentage": 25,
+      "shortVolume": 1800.10,
+      "longVolume": 320.20,
+      "shortPositions": 5500,
+      "longPositions": 1800,
+      "totalPositions": 7300,
+      "avgShortPrice": 2380.50,
+      "avgLongPrice": 2410.75
+    },
+    {
+      "name": "BTCUSD",
+      "shortPercentage": 22,
+      "longPercentage": 78,
+      "shortVolume": 88.10,
+      "longVolume": 240.55,
+      "shortPositions": 320,
+      "longPositions": 1100,
+      "totalPositions": 1420,
+      "avgShortPrice": 67500,
+      "avgLongPrice": 65800
+    },
+    {
+      "name": "USTEC",
+      "shortPercentage": 45,
+      "longPercentage": 55,
+      "shortVolume": 410.00,
+      "longVolume": 510.00,
+      "shortPositions": 1200,
+      "longPositions": 1450,
+      "totalPositions": 2650,
+      "avgShortPrice": 18800,
+      "avgLongPrice": 18650
+    },
+    {
+      "name": "SPX500",
+      "shortPercentage": 33,
+      "longPercentage": 67,
+      "shortVolume": 250.10,
+      "longVolume": 488.50,
+      "shortPositions": 800,
+      "longPositions": 1600,
+      "totalPositions": 2400,
+      "avgShortPrice": 5180.0,
+      "avgLongPrice": 5190.5
+    },
+    {
+      "name": "DJ30",
+      "shortPercentage": 42,
+      "longPercentage": 58,
+      "shortVolume": 180.0,
+      "longVolume": 220.0,
+      "shortPositions": 500,
+      "longPositions": 700,
+      "totalPositions": 1200,
+      "avgShortPrice": 39000,
+      "avgLongPrice": 38800
+    },
+    {
+      "name": "AUDUSD",
+      "shortPercentage": 50,
+      "longPercentage": 50,
+      "shortVolume": 300,
+      "longVolume": 305,
+      "shortPositions": 1000,
+      "longPositions": 1010,
+      "totalPositions": 2010,
+      "avgShortPrice": 0.6580,
+      "avgLongPrice": 0.6620
+    },
+    {
+      "name": "BADSYM_BAD",
+      "shortPercentage": 30,
+      "longPercentage": 50,
+      "shortVolume": 100,
+      "longVolume": 100,
+      "shortPositions": 200,
+      "longPositions": 200,
+      "totalPositions": 400,
+      "avgShortPrice": 1.0,
+      "avgLongPrice": 1.0
+    },
+    {
+      "name": "SOMEUNKNOWN",
+      "shortPercentage": 50,
+      "longPercentage": 50,
+      "shortVolume": 100,
+      "longVolume": 100,
+      "shortPositions": 100,
+      "longPositions": 100,
+      "totalPositions": 200,
+      "avgShortPrice": 1.0,
+      "avgLongPrice": 1.0
+    }
+  ],
+  "general": {
+    "demoAccountsPercentage": 43.5,
+    "realAccountsPercentage": 56.5,
+    "profitablePercentage": 31.5,
+    "nonprofitablePercentage": 68.5,
+    "totalFunds": "35,914,737.56",
+    "averageDeposit": "5,278.10"
+  }
+}

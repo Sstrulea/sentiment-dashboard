@@ -1,0 +1,55 @@
+name: Retail Sentiment Refresh
+
+on:
+  schedule:
+    # Every 3 hours: 00, 03, 06, 09, 12, 15, 18, 21 UTC.
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
+jobs:
+  retail:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run retail snapshot
+        env:
+          MYFXBOOK_EMAIL: ${{ secrets.MYFXBOOK_EMAIL }}
+          MYFXBOOK_PASSWORD: ${{ secrets.MYFXBOOK_PASSWORD }}
+        run: python -m src.main --mode retail
+
+      - name: Commit and push if changes
+        run: |
+          git config user.name "sstrulea"
+          git config user.email "sebi.strulea@gmail.com"
+          git add data/retail_history.parquet data/retail_general.parquet \
+                  public/data/retail-sentiment.json public/retail-sentiment.html \
+                  public/retail-chart.js 2>/dev/null || true
+          git add public/style.css 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "retail: snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
+            git pull --rebase origin main
+            git push
+          fi

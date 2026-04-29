@@ -1,0 +1,63 @@
+# Universal symbol -> provider-specific aliases + display config + optional COT cross-link.
+symbols:
+  # Forex
+  EURUSD: { category: fx, display: "EUR/USD", cot_link: EUR }
+  GBPUSD: { category: fx, display: "GBP/USD", cot_link: GBP }
+  USDJPY: { category: fx, display: "USD/JPY", cot_link: JPY, invert_cot: true }
+  USDCHF: { category: fx, display: "USD/CHF", cot_link: CHF, invert_cot: true }
+  USDCAD: { category: fx, display: "USD/CAD", cot_link: CAD, invert_cot: true }
+  AUDUSD: { category: fx, display: "AUD/USD", cot_link: AUD }
+  NZDUSD: { category: fx, display: "NZD/USD", cot_link: NZD }
+  EURGBP: { category: fx, display: "EUR/GBP" }
+  EURJPY: { category: fx, display: "EUR/JPY" }
+  GBPJPY: { category: fx, display: "GBP/JPY" }
+  AUDJPY: { category: fx, display: "AUD/JPY" }
+  EURAUD: { category: fx, display: "EUR/AUD" }
+
+  # Metals
+  XAUUSD: { category: metals, display: "Gold",   cot_link: GOLD }
+  XAGUSD: { category: metals, display: "Silver", cot_link: SILVER }
+
+  # Indices
+  US500:  { category: indices, display: "S&P 500",     cot_link: SP500 }
+  NAS100: { category: indices, display: "Nasdaq 100",  cot_link: NASDAQ }
+  US30:   { category: indices, display: "Dow 30",      cot_link: DOW }
+  GER40:  { category: indices, display: "DAX 40" }
+  UK100:  { category: indices, display: "FTSE 100" }
+  JPN225: { category: indices, display: "Nikkei 225" }
+
+  # Crypto
+  BTCUSD: { category: crypto, display: "Bitcoin", cot_link: BTC }
+  ETHUSD: { category: crypto, display: "Ether",   cot_link: ETH }
+
+categories:
+  fx:      { label: "Forex",   order: 1 }
+  metals:  { label: "Metals",  order: 2 }
+  indices: { label: "Indices", order: 3 }
+  crypto:  { label: "Crypto",  order: 4 }
+
+signal_config:
+  contrarian_threshold: 70           # long% >= 70 -> bearish-contrarian; short% >= 70 -> bullish-contrarian
+  underwater_threshold_pct: 0.5      # avg_long_price > spot * (1 + 0.005) -> "longs underwater"
+  vol_position_divergence_pp: 15     # |volume_long% - position_long%| > 15 -> divergence flag
+  cot_divergence_threshold: 0.4      # |retail_long_normalized - cot_spec_long_pct| > 0.4 -> COT divergence
+  extreme_thresholds:
+    extreme_high: 0.95
+    high: 0.70
+    low: 0.30
+    extreme_low: 0.05
+  ramp_in:
+    min_n_for_extreme: 20            # below 20 datapoints, show "-" instead of extreme value
+
+# Provider-specific symbol aliases (universal -> ordered fallback list of provider names).
+# Most symbols are 1:1 with the provider feed; aliases capture the few that differ.
+provider_aliases:
+  myfxbook:
+    NAS100: ["NAS100", "USTEC", "USTECH", "NASDAQ100", "NDX"]
+    US500:  ["US500", "SPX500", "SP500", "SPX"]
+    US30:   ["US30", "DJ30", "DOW30", "WS30", "USA30"]
+    GER40:  ["GER40", "DE40", "DAX40", "GER30", "DE30"]
+    UK100:  ["UK100", "FTSE100", "UKX"]
+    JPN225: ["JPN225", "NIKKEI225", "JP225", "NI225"]
+    XAUUSD: ["XAUUSD", "GOLD"]
+    XAGUSD: ["XAGUSD", "SILVER"]

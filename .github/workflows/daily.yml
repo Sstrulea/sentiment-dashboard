@@ -34,6 +34,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run daily refresh
+        env:
+          MYFXBOOK_EMAIL: ${{ secrets.MYFXBOOK_EMAIL }}
+          MYFXBOOK_PASSWORD: ${{ secrets.MYFXBOOK_PASSWORD }}
         run: python -m src.main --mode daily
 
       - name: Commit and push if changes
@@ -41,11 +44,15 @@ jobs:
           git config user.name "sstrulea"
           git config user.email "sebi.strulea@gmail.com"
           git add data/sentiment_history.parquet data/pc_history.parquet \
+                  data/retail_history.parquet data/retail_general.parquet \
                   public/data/pc-ratio.json public/data/vix-ratio.json \
+                  public/data/retail-sentiment.json \
                   public/pc-ratio.html public/vix-ratio.html \
+                  public/retail-sentiment.html \
                   public/style.css public/chart.umd.min.js \
                   public/chartjs-plugin-annotation.min.js \
                   public/pc-chart.js public/vix-chart.js \
+                  public/retail-chart.js \
                   public/theme-toggle.js 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes to commit"
