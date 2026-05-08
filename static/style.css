@@ -279,6 +279,18 @@ table.cot tr.row-missing td { color: var(--muted); font-style: italic; text-alig
   background: linear-gradient(90deg, rgba(144,202,249,0.45), rgba(144,202,249,0.15)) !important;
 }
 
+/* Commercials: inverted scheme — high percentile = blue, low percentile = red */
+table.cot td.col-comm.ext-95 { background: #1565c0 !important; color: #fff; }
+table.cot td.col-comm.ext-70 { background: #90caf9 !important; color: #0d47a1; }
+table.cot td.col-comm.ext-30 { background: #ef9a9a !important; color: #7f0000; }
+table.cot td.col-comm.ext-05 { background: #d32f2f !important; color: #fff; }
+table.cot td.col-comm.exp-high-long {
+  background: linear-gradient(90deg, rgba(144,202,249,0.45), rgba(144,202,249,0.15)) !important;
+}
+table.cot td.col-comm.exp-high-short {
+  background: linear-gradient(90deg, rgba(239,154,154,0.45), rgba(239,154,154,0.15)) !important;
+}
+
 /* Top 3 |Net| */
 td.net-top { background: #fff176 !important; color: #5d4037; font-weight: 600; }
 body.dark td.net-top { background: #665c17 !important; color: #fffde7; }
