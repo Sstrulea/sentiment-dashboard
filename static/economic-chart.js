@@ -17,7 +17,12 @@
     sortKey: null,
     sortAsc: false,
     activeSymbol: null,
+    ccySel: new Set(),   // empty = no currency filter (show all)
+    biasSel: new Set(),  // empty = no bias filter (show all)
   };
+
+  const CCY_ORDER = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"];
+  const BIAS_GROUPS = ["Bullish", "Neutral", "Bearish"];
 
   // ---- Formatting ---------------------------------------------------------
   function fmtNum(v) {
@@ -89,6 +94,89 @@
     return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
   }
 
+  // ---- Filters ------------------------------------------------------------
+  function biasGroup(bias) {
+    const b = bias || "";
+    if (b.indexOf("Bull") >= 0) return "Bullish";
+    if (b.indexOf("Bear") >= 0) return "Bearish";
+    return "Neutral";
+  }
+  function instrumentCurrencies(inst) {
+    const out = [];
+    const b = inst.breakdown && inst.breakdown.base;
+    const q = inst.breakdown && inst.breakdown.quote;
+    if (b && b.currency) out.push(b.currency);
+    if (q && q.currency) out.push(q.currency);
+    return out;
+  }
+  function passesFilters(inst) {
+    if (state.ccySel.size && !instrumentCurrencies(inst).some(c => state.ccySel.has(c))) return false;
+    if (state.biasSel.size && !state.biasSel.has(biasGroup(inst.bias))) return false;
+    return true;
+  }
+
+  const CHIP_SVG =
+    '<svg class="chip-box" viewBox="0 0 16 16" aria-hidden="true">' +
+    '<rect class="chip-box-rect" x="2" y="2" width="12" height="12" rx="2.5" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+    '<path class="chip-box-check" d="M4.5 8.4l2.4 2.4L11.8 5.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+
+  function buildChipGroup(containerId, items, selSet) {
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    items.forEach(key => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "cat-chip" + (selSet.has(key) ? " selected" : "");
+      btn.dataset.key = key;
+      btn.setAttribute("aria-pressed", selSet.has(key) ? "true" : "false");
+      btn.innerHTML = CHIP_SVG + "<span></span>";
+      btn.querySelector("span").textContent = key;
+      btn.addEventListener("click", () => {
+        if (selSet.has(key)) selSet.delete(key);
+        else selSet.add(key);
+        btn.classList.toggle("selected");
+        btn.setAttribute("aria-pressed", selSet.has(key) ? "true" : "false");
+        updateAllButtons();
+        renderTable();
+      });
+      wrap.appendChild(btn);
+    });
+  }
+
+  function wireAllButton(filterId, containerId, selSet) {
+    document.querySelectorAll("#" + filterId + ' .cat-action[data-action="all"]').forEach(b => {
+      b.addEventListener("click", () => {
+        selSet.clear();
+        document.querySelectorAll("#" + containerId + " .cat-chip").forEach(ch => {
+          ch.classList.remove("selected");
+          ch.setAttribute("aria-pressed", "false");
+        });
+        updateAllButtons();
+        renderTable();
+      });
+    });
+  }
+
+  function updateAllButtons() {
+    const map = [["econCcyFilter", state.ccySel], ["econBiasFilter", state.biasSel]];
+    map.forEach(([fid, set]) => {
+      document.querySelectorAll("#" + fid + ' .cat-action[data-action="all"]').forEach(b => {
+        b.classList.toggle("active", set.size === 0);
+      });
+    });
+  }
+
+  function renderFilters() {
+    const present = CCY_ORDER.filter(c => (state.payload.currencies || {})[c]);
+    buildChipGroup("econCcyChips", present, state.ccySel);
+    buildChipGroup("econBiasChips", BIAS_GROUPS, state.biasSel);
+    wireAllButton("econCcyFilter", "econCcyChips", state.ccySel);
+    wireAllButton("econBiasFilter", "econBiasChips", state.biasSel);
+    updateAllButtons();
+  }
+
   // ---- Layout helpers -----------------------------------------------------
   function tableLayout() {
     return (state.payload.meta && state.payload.meta.table_layout) || [];
@@ -154,7 +242,12 @@
   function renderTable() {
     const wrap = document.getElementById("econContent");
     const layout = tableLayout();
-    const instruments = state.payload.instruments.slice().sort(compareInstruments);
+    const instruments = state.payload.instruments.filter(passesFilters).sort(compareInstruments);
+
+    if (!instruments.length) {
+      wrap.innerHTML = '<p class="muted" style="padding:40px;text-align:center;">No instruments match the selected filters.</p>';
+      return;
+    }
 
     const groupHeaderCells = layout.map(g =>
       '<th colspan="' + g.columns.length + '" class="grp-head grp-' + g.category + '">' +
@@ -356,6 +449,7 @@
   function init(payload) {
     state.payload = payload;
     renderMeta();
+    renderFilters();
     wireModalClose();
     renderTable();
   }

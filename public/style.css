@@ -1256,3 +1256,17 @@ table.econ-ind-table { min-width: 440px; } /* scroll inside the leg, never the w
 @media (max-width: 760px) {
   .modal-grid.econ-leg-grid { grid-template-columns: 1fr; }
 }
+
+/* === Economic Dashboard filters === */
+.econ-controls {
+  display: flex; flex-wrap: wrap; gap: 10px 24px;
+  align-items: center; margin: 4px 0 16px;
+}
+.econ-controls .cat-filter { margin: 0; }
+.econ-controls .cat-action.active {
+  background: var(--accent); color: #fff; border-color: var(--accent);
+}
+@media (max-width: 768px) {
+  .econ-controls { flex-direction: column; align-items: stretch; gap: 10px; }
+  .econ-controls .cat-chips { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+}

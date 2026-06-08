@@ -18,9 +18,26 @@
     </header>
 
     <div class="econ-legend">
-      <span class="muted">Bias from the normalized macro-surprise index. Category cells are rounded scores
-      −2…+2 (green = bullish for the currency / base leg); the small <b>n</b> is how many indicators
-      back that cell — thin coverage means a soft read. Click a row for the per-indicator breakdown.</span>
+      <span class="muted">Bias from the normalized macro-surprise index. Cells are rounded scores on a
+      blue (bullish) ↔ red (bearish) scale; for a pair each indicator cell is the base − quote
+      differential. Click a row for the per-indicator breakdown.</span>
+    </div>
+
+    <div class="econ-controls">
+      <div id="econCcyFilter" class="cat-filter" role="group" aria-label="Filter by currency">
+        <span class="cat-filter-label">Currency:</span>
+        <div class="cat-chips" id="econCcyChips"><!-- chips injected by economic-chart.js --></div>
+        <div class="cat-filter-actions">
+          <button type="button" class="cat-action" data-action="all">All</button>
+        </div>
+      </div>
+      <div id="econBiasFilter" class="cat-filter" role="group" aria-label="Filter by bias">
+        <span class="cat-filter-label">Bias:</span>
+        <div class="cat-chips" id="econBiasChips"><!-- chips injected by economic-chart.js --></div>
+        <div class="cat-filter-actions">
+          <button type="button" class="cat-action" data-action="all">All</button>
+        </div>
+      </div>
     </div>
 
     <section class="retail-table-wrapper">
