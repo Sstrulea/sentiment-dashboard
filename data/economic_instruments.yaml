@@ -29,8 +29,8 @@ categories_display: [growth, inflation, labour]
 scale: 5
 pair_divisor: 2
 bias_thresholds:
-  very: 4
-  mild: 2
+  very: 3.5
+  mild: 1.5
 
 # type: single  => {currency, sign}
 # type: fx      => {base, quote}

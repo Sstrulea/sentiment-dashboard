@@ -49,16 +49,18 @@
   }
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
-  // ---- Color classes ------------------------------------------------------
-  // Clamp magnitude so differentials beyond ±2 still color strongly.
+  // ---- Color classes (COT divergent palette: blue = bullish/buy, red = bearish) ----
+  // Divergent scale by magnitude; differentials run to ±4 so we have ±3 tiers.
   function cellClass(score) {
     const n = Number(score);
-    if (Number.isNaN(n)) return "cell-z0";
-    if (n >= 2) return "cell-p2";
-    if (n === 1) return "cell-p1";
-    if (n <= -2) return "cell-n2";
-    if (n === -1) return "cell-n1";
-    return "cell-z0";
+    if (Number.isNaN(n)) return "ec-0";
+    if (n >= 3) return "ec-p3";
+    if (n === 2) return "ec-p2";
+    if (n === 1) return "ec-p1";
+    if (n <= -3) return "ec-n3";
+    if (n === -2) return "ec-n2";
+    if (n === -1) return "ec-n1";
+    return "ec-0";
   }
   function biasClass(bias) {
     switch (bias) {
@@ -68,12 +70,6 @@
       case "Very Bearish": return "bias-very-bear";
       default: return "bias-neut";
     }
-  }
-  function dirClass(inst) {
-    const b = inst.bias || "";
-    if (b.indexOf("Bull") >= 0) return "dir-bull";
-    if (b.indexOf("Bear") >= 0) return "dir-bear";
-    return "dir-neut";
   }
 
   // ---- Meta-bar -----------------------------------------------------------
@@ -142,13 +138,14 @@
   }
 
   function renderRow(inst) {
-    const dir = dirClass(inst);
+    const bcls = biasClass(inst.bias);
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
+    // Symbol / Bias / Score: whole cell filled with the bias color (no pill).
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym ' + dir + '">' + (inst.display || inst.symbol) + '</td>' +
-      '<td class="bias-cell"><span class="pill ' + biasClass(inst.bias) + '">' + inst.bias + '</span></td>' +
-      '<td class="score-cell ' + dir + '">' + fmtScoreInt(inst.score) + '</td>' +
+      '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
+      '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias + '</td>' +
+      '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score) + '</td>' +
       cells +
       '</tr>'
     );
@@ -322,7 +319,7 @@
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ')</small></h2>' +
       '<div class="muted modal-subhead">' +
       '<span class="pill ' + biasClass(inst.bias) + '">' + inst.bias + '</span> ' +
-      '<span class="modal-score ' + dirClass(inst) + '">Score ' + fmtSigned(inst.score, 2) + '</span>' +
+      '<span class="modal-score">Score ' + fmtSigned(inst.score, 2) + '</span>' +
       '<span class="modal-formula">' + sub + '</span></div>' +
       '</header>' +
       '<p class="muted econ-modal-note">Rounded cells can hide divergence — e.g. a Labour score near 0 may be ' +

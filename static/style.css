@@ -1115,25 +1115,26 @@ body.modal-open { overflow: hidden; }
 .econ-legend { font-size: 12px; line-height: 1.5; margin: 0 0 16px 0; max-width: 900px; }
 .econ-legend b { color: var(--fg); }
 
-/* Bias pills (5 levels) — green = bullish, reuse .pill base. */
-.bias-very-bull { color: #fff; background: #1b5e20; }
-.bias-bull      { color: var(--success-fg); background: var(--success-bg); }
-.bias-neut      { color: var(--muted); background: var(--surface-alt); }
-.bias-bear      { color: var(--warning-fg); background: var(--warning-bg); }
-.bias-very-bear { color: #fff; background: #b71c1c; }
+/* Bias colors (5 levels) — COT palette: blue = bullish/buy, red = bearish.
+   Used as the modal pill AND (via .biasfill on a td) as a full-cell fill. */
+.bias-very-bull { color: #fff;     background: #1565c0; }
+.bias-bull      { color: #0d47a1;  background: #90caf9; }
+.bias-neut      { color: var(--fg); background: var(--surface-alt); }
+.bias-bear      { color: #7f0000;  background: #ef9a9a; }
+.bias-very-bear { color: #fff;     background: #d32f2f; }
 
-/* Category cells: diverging −2…+2 (green bullish / red bearish). */
 table.econ-table td.econ-cell { text-align: center; font-variant-numeric: tabular-nums; }
 .econ-cell .econ-score { font-weight: 600; font-size: 13px; }
-.econ-cell .cov { display: block; font-size: 10px; color: var(--muted); font-weight: 400; cursor: help; }
-table.econ-table td.score-cell { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.econ-cell .cov { display: none; }
 
-.cell-p2 { background: #1b5e20; color: #fff; }
-.cell-p1 { background: var(--success-bg); color: var(--success-fg); }
-.cell-z0 { background: transparent; color: var(--muted); }
-.cell-n1 { background: var(--warning-bg); color: var(--warning-fg); }
-.cell-n2 { background: #b71c1c; color: #fff; }
-.econ-cell.cell-p2 .cov, .econ-cell.cell-n2 .cov { color: rgba(255,255,255,0.8); }
+/* Per-indicator divergent scale — COT palette, intensity by magnitude (to ±4). */
+.ec-p3 { background: #0d47a1; color: #fff; }
+.ec-p2 { background: #1565c0; color: #fff; }
+.ec-p1 { background: #90caf9; color: #0d47a1; }
+.ec-0  { background: transparent; color: var(--muted); }
+.ec-n1 { background: #ef9a9a; color: #7f0000; }
+.ec-n2 { background: #d32f2f; color: #fff; }
+.ec-n3 { background: #7f0000; color: #fff; }
 
 /* Modal: per-leg breakdown */
 .modal-grid.one-col { grid-template-columns: 1fr; }
@@ -1194,13 +1195,12 @@ table.econ-table th.col-sym, table.econ-table td.sym { white-space: nowrap; widt
 table.econ-table td.score-cell { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; width: 1%; white-space: nowrap; }
 table.econ-table td.bias-cell { width: 1%; white-space: nowrap; }
 
-/* Direction coloring (symbol + score text); bias keeps its pill background. */
-.dir-bull { color: var(--success-fg); }
-.dir-bear { color: var(--warning-fg); }
-.dir-neut { color: var(--muted); }
-table.econ-table td.sym.dir-bull, table.econ-table td.score-cell.dir-bull { color: var(--success-fg); }
-table.econ-table td.sym.dir-bear, table.econ-table td.score-cell.dir-bear { color: var(--warning-fg); }
-table.econ-table td.sym.dir-neut, table.econ-table td.score-cell.dir-neut { color: var(--muted); }
+/* Symbol / Bias / Score = whole-cell fill in the bias color (no pill, no radius).
+   Background + text color come from the .bias-* class on the td itself. */
+table.econ-table td.biasfill { font-weight: 600; }
+table.econ-table td.sym.biasfill { font-weight: 700; }
+table.econ-table td.bias-cell.biasfill { text-align: center; font-size: 12px; }
+table.econ-table td.score-cell.biasfill { text-align: center; font-weight: 700; }
 
 /* Per-indicator cells */
 table.econ-table td.econ-cell {
@@ -1232,10 +1232,26 @@ body.dark .grp-head.grp-labour,    body.dark .ind-head.grp-labour    { backgroun
 table.econ-ind-table { min-width: 440px; } /* scroll inside the leg, never the whole modal */
 .modal-subhead { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
 .modal-formula { font-size: 12px; }
-.modal-score { font-weight: 600; }
-.modal-score.dir-bull { color: var(--success-fg); }
-.modal-score.dir-bear { color: var(--warning-fg); }
-.modal-score.dir-neut { color: var(--muted); }
+.modal-score { font-weight: 600; color: var(--fg); }
+
+/* Sticky modal header — stays pinned (with the X) while the body scrolls. */
+#econDetailModal .modal-content { padding-top: 0; }
+#econDetailModal .modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--bg);
+  margin: 0 -24px 10px;
+  padding: 16px 48px 10px 24px;
+  border-bottom: 1px solid var(--border);
+}
+#econDetailModal .modal-close {
+  position: sticky;
+  top: 10px;
+  float: right;
+  z-index: 5;
+  margin: 0;
+}
 
 @media (max-width: 760px) {
   .modal-grid.econ-leg-grid { grid-template-columns: 1fr; }
