@@ -65,13 +65,18 @@ def compute_indicator_score(
     indicator_cfg: dict,
     defaults: dict,
     as_of: pd.Timestamp,
+    allow_stale: bool = False,
 ) -> dict | None:
     """Score the latest release of one (currency, indicator).
 
     `sub_df` holds only that indicator's rows for one currency. Returns None if
-    no release with a non-NaN `actual` falls inside `max_age_days` of `as_of`
-    (indicator absent). Otherwise returns:
-        {actual, consensus, surprise, z, score, flag, release_dt}
+    there is no release with a non-NaN `actual` at all (truly absent). If the
+    latest actual is OUTSIDE `max_age_days`:
+      - allow_stale=False (default): returns None (the historical scoring
+        behavior — stale data never enters any average/index).
+      - allow_stale=True: still scores it but marks `stale: True`, so callers
+        can DISPLAY it (greyed) without feeding it into aggregation.
+    Returns: {actual, consensus, surprise, z, score, flag, release_dt, stale}.
     flags: None (z-scored), "fallback", "no_consensus".
     """
     if sub_df is None or sub_df.empty:
@@ -90,10 +95,18 @@ def compute_indicator_score(
     df["consensus"] = pd.to_numeric(df["consensus"], errors="coerce")
 
     cutoff = as_of - pd.Timedelta(days=max_age_days)
-    have_actual = df[df["actual"].notna() & (df["release_dt"] >= cutoff)]
-    if have_actual.empty:
+    fresh = df[df["actual"].notna() & (df["release_dt"] >= cutoff)]
+    if not fresh.empty:
+        latest = fresh.iloc[-1]
+        stale = False
+    elif allow_stale:
+        any_actual = df[df["actual"].notna()]
+        if any_actual.empty:
+            return None
+        latest = any_actual.iloc[-1]
+        stale = True
+    else:
         return None
-    latest = have_actual.iloc[-1]
 
     actual = float(latest["actual"])
     consensus = latest["consensus"]
@@ -108,6 +121,7 @@ def compute_indicator_score(
             "score": 0,
             "flag": "no_consensus",
             "release_dt": release_dt,
+            "stale": stale,
         }
 
     consensus = float(consensus)
@@ -137,6 +151,7 @@ def compute_indicator_score(
                 "score": 0,
                 "flag": "no_consensus",
                 "release_dt": release_dt,
+                "stale": stale,
             }
         pct = direction * surprise / abs(consensus)
         return {
@@ -147,6 +162,7 @@ def compute_indicator_score(
             "score": bucket_score(pct, pct_buckets),
             "flag": "fallback",
             "release_dt": release_dt,
+            "stale": stale,
         }
 
     z = direction * surprise / sigma
@@ -158,6 +174,7 @@ def compute_indicator_score(
         "score": bucket_score(z, z_buckets),
         "flag": None,
         "release_dt": release_dt,
+        "stale": stale,
     }
 
 
@@ -206,12 +223,14 @@ def compute_currency_scorecard(
         if not _indicator_applies(currency, ind_cfg):
             continue
         sub = ccy_df[ccy_df["indicator_key"] == key] if not ccy_df.empty else ccy_df
-        scored = compute_indicator_score(sub, ind_cfg, defaults, as_of)
+        # allow_stale=True so stale indicators appear in the breakdown (for
+        # display), but they are EXCLUDED from the category average/index below.
+        scored = compute_indicator_score(sub, ind_cfg, defaults, as_of, allow_stale=True)
         if scored is None:
             continue
         breakdown[key] = scored
         cat = ind_cfg.get("category")
-        if cat in per_cat:
+        if cat in per_cat and not scored.get("stale"):
             per_cat[cat].append((scored["score"], float(ind_cfg.get("weight", 1.0))))
 
     categories_out: dict[str, dict] = {}

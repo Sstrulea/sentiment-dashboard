@@ -77,6 +77,24 @@
     }
   }
 
+  // Continuous divergent gradient using the COT endpoints (intense blue ↔ intense
+  // red), as a tint over the cell so it adapts to light/dark themes. `score` is
+  // signed; `scale` is the magnitude that saturates to full intensity. Returns
+  // an inline-style string ("" for neutral → no tint).
+  const COT_BLUE = "21,101,192";   // #1565c0  (bullish / positive)
+  const COT_RED = "211,47,47";     // #d32f2f  (bearish / negative)
+  function gradientStyle(score, scale) {
+    if (score === null || score === undefined || Number.isNaN(Number(score))) return "";
+    const t = Math.max(-1, Math.min(1, Number(score) / scale));
+    const mag = Math.pow(Math.abs(t), 0.7);          // ease so low values still read
+    if (mag < 0.001) return "";                       // neutral → transparent
+    const rgb = t > 0 ? COT_BLUE : COT_RED;
+    const a = mag.toFixed(3);
+    const fg = mag >= 0.55 ? "#fff" : "";
+    return "background:rgba(" + rgb + "," + a + ")" + (fg ? ";color:" + fg : "");
+  }
+  function styleAttr(s) { return s ? ' style="' + s + '"' : ""; }
+
   // ---- Meta-bar -----------------------------------------------------------
   function renderMeta() {
     const el = document.getElementById("econMeta");
@@ -200,14 +218,15 @@
     if (key === "bias" || key === "score") return inst.score;          // precise float
     if (key.indexOf("ind:") === 0) {
       const k = key.slice(4);
-      const v = (inst.indicator_cells || {})[k];
+      const c = (inst.indicator_cells || {})[k];
+      const v = c && c.v;
       return (v === null || v === undefined) ? -Infinity : v;
     }
     return 0;
   }
   function compareInstruments(a, b) {
     const key = state.sortKey;
-    if (!key) return Math.abs(b.score) - Math.abs(a.score);            // strongest first
+    if (!key) return b.score - a.score;                                // most bullish on top, most bearish bottom
     const av = rowSortValue(a, key);
     const bv = rowSortValue(b, key);
     let cmp;
@@ -218,24 +237,31 @@
 
   // ---- Table --------------------------------------------------------------
   function indicatorCellHtml(inst, key) {
-    const v = (inst.indicator_cells || {})[key];
+    const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
+    const v = c.v;
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
     }
-    return '<td class="econ-cell ' + cellClass(v) + '">' + fmtScoreCell(v) + '</td>';
+    if (c.stale) {
+      return '<td class="econ-cell ec-stale" title="stale — latest release is outside the lookback window; excluded from scoring">' +
+        fmtScoreCell(v) + '</td>';
+    }
+    // Continuous gradient on the per-indicator differential (saturates at ±4).
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + "</td>";
   }
 
   function renderRow(inst) {
-    const bcls = biasClass(inst.bias);
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
-    // Symbol / Bias / Score: whole cell filled with the bias color (no pill).
+    // Symbol / Bias / Score share one continuous gradient driven by the precise
+    // score (saturates near ±6) → a smooth top-to-bottom column gradient.
+    const sg = styleAttr(gradientStyle(inst.score, 6));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
-      '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias + '</td>' +
-      '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score) + '</td>' +
+      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
+      '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
+      '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
       cells +
-      '</tr>'
+      "</tr>"
     );
   }
 
@@ -318,9 +344,9 @@
     const zTxt = (e.z === null || e.z === undefined) ? "—" : fmtSigned(e.z, 2);
     const dateTxt = fmtDate(e.release_dt) +
       (e.age_days !== null && e.age_days !== undefined ? ' <span class="muted">(' + e.age_days + 'd)</span>' : '');
-    const staleBadge = e.stale ? ' <span class="econ-flag flag-stale" title="Older than max_age">stale</span>' : '';
+    const staleBadge = e.stale ? ' <span class="econ-flag flag-stale" title="Latest release is older than max_age_days — shown for visibility but excluded from the category average / index">stale</span>' : '';
     return (
-      '<tr>' +
+      '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
       '<td class="ei-name">' + (meta.label || key) + inverted + '</td>' +
       '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
       '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +

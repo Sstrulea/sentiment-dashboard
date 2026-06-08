@@ -183,6 +183,8 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
       - fx pair -> base score − quote score (a leg missing the indicator counts
                    as 0; if BOTH legs lack it — e.g. a USD-only indicator on a
                    non-USD cross — the cell is None and renders as “—”).
+    Each cell is {"v": int|None, "stale": bool}; `stale` is true when any
+    contributing leg's indicator is stale (shown greyed, not folded into scoring).
     """
     currencies = payload.get("currencies", {}) or {}
     inst_cfg = instruments_cfg.get("instruments", {}) or {}
@@ -192,7 +194,7 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
 
     for inst in payload.get("instruments", []):
         cfg = inst_cfg.get(inst["symbol"], {})
-        cells: dict[str, int | None] = {}
+        cells: dict[str, dict] = {}
         bdn = inst.get("breakdown", {}) or {}
         base_ccy = (bdn.get("base") or {}).get("currency")
         quote_ref = bdn.get("quote")
@@ -203,24 +205,30 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
             bd = _bd(base_ccy)
             for k in TABLE_COLUMN_KEYS:
                 e = bd.get(k)
-                cells[k] = int(round(e["score"] * sign)) if e else None
+                if e is None:
+                    cells[k] = {"v": None, "stale": False}
+                else:
+                    cells[k] = {"v": int(round(e["score"] * sign)), "stale": bool(e.get("stale"))}
         else:
             bb, bq = _bd(base_ccy), _bd(quote_ccy)
             for k in TABLE_COLUMN_KEYS:
                 eb, eq = bb.get(k), bq.get(k)
                 if eb is None and eq is None:
-                    cells[k] = None
+                    cells[k] = {"v": None, "stale": False}
                 else:
-                    cells[k] = int((eb["score"] if eb else 0) - (eq["score"] if eq else 0))
+                    v = (eb["score"] if eb else 0) - (eq["score"] if eq else 0)
+                    stale = bool((eb and eb.get("stale")) or (eq and eq.get("stale")))
+                    cells[k] = {"v": int(v), "stale": stale}
         inst["indicator_cells"] = cells
 
 
 def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> None:
-    """Add recency (release_dt iso, age_days, stale) to every per-indicator entry.
+    """Add recency (release_dt iso, age_days) to every per-indicator entry.
 
-    Mutates in place. Compute already drops indicators older than max_age_days, so
-    `stale` is effectively always False here — it's surfaced defensively so the UI
-    is honest if that ever changes.
+    Mutates in place. `stale` is set authoritatively by compute (an indicator is
+    stale iff its latest actual is older than max_age_days — it's then shown but
+    excluded from every average/index); here we only add the age in days and a
+    defensive fallback if compute didn't set the flag.
     """
     for card in payload.get("currencies", {}).values():
         for key, entry in (card.get("breakdown") or {}).items():
@@ -230,10 +238,10 @@ def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> No
             if ts is not None and not pd.isna(ts):
                 age = int((as_of - ts).days)
                 entry["age_days"] = age
-                entry["stale"] = age > max_age
+                entry.setdefault("stale", age > max_age)
             else:
                 entry["age_days"] = None
-                entry["stale"] = False
+                entry.setdefault("stale", False)
 
 
 def build_economic_payload() -> dict:
