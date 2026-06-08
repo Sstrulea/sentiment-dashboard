@@ -1182,3 +1182,61 @@ table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-
   .econ-meta-bar { text-align: left; }
   .modal-grid.one-col { grid-template-columns: 1fr; }
 }
+
+/* === Economic Dashboard v2: dense per-indicator table (EdgeFinder-style) === */
+/* Near full-width: override the 1400px page cap and trim gutters. */
+.econ-page { max-width: 100%; padding-left: 16px; padding-right: 16px; }
+
+.econ-scroll { overflow-x: auto; }
+
+/* Symbol column shrinks to content (pair codes are short). */
+table.econ-table th.col-sym, table.econ-table td.sym { white-space: nowrap; width: 1%; }
+table.econ-table td.score-cell { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; width: 1%; white-space: nowrap; }
+table.econ-table td.bias-cell { width: 1%; white-space: nowrap; }
+
+/* Direction coloring (symbol + score text); bias keeps its pill background. */
+.dir-bull { color: var(--success-fg); }
+.dir-bear { color: var(--warning-fg); }
+.dir-neut { color: var(--muted); }
+table.econ-table td.sym.dir-bull, table.econ-table td.score-cell.dir-bull { color: var(--success-fg); }
+table.econ-table td.sym.dir-bear, table.econ-table td.score-cell.dir-bear { color: var(--warning-fg); }
+table.econ-table td.sym.dir-neut, table.econ-table td.score-cell.dir-neut { color: var(--muted); }
+
+/* Per-indicator cells */
+table.econ-table td.econ-cell {
+  text-align: center; font-variant-numeric: tabular-nums; font-weight: 600;
+  font-size: 12px; padding: 4px 6px; min-width: 38px;
+}
+table.econ-table td.econ-cell .cov { display: none; } /* no per-indicator coverage */
+.cell-na { color: var(--muted); font-weight: 400; background: transparent; }
+
+/* Grouped two-row header */
+table.econ-table thead th.grp-head {
+  text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+table.econ-table thead th.ind-head { font-size: 10px; padding: 4px 5px; white-space: nowrap; font-weight: 600; }
+.grp-head.grp-growth,    .ind-head.grp-growth    { background: rgba(33,150,243,0.08); }
+.grp-head.grp-inflation, .ind-head.grp-inflation { background: rgba(255,152,0,0.08); }
+.grp-head.grp-labour,    .ind-head.grp-labour    { background: rgba(156,39,176,0.08); }
+body.dark .grp-head.grp-growth,    body.dark .ind-head.grp-growth    { background: rgba(33,150,243,0.14); }
+body.dark .grp-head.grp-inflation, body.dark .ind-head.grp-inflation { background: rgba(255,152,0,0.14); }
+body.dark .grp-head.grp-labour,    body.dark .ind-head.grp-labour    { background: rgba(156,39,176,0.14); }
+
+/* Modal: responsive, no horizontal clipping. */
+#econDetailModal .modal-content { max-width: 1100px; }
+.modal-grid.econ-leg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.modal-grid.econ-leg-grid.one-col { grid-template-columns: minmax(0, 1fr); }
+.econ-leg { min-width: 0; overflow: hidden; }
+.econ-ind-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.econ-ind-table { min-width: 440px; } /* scroll inside the leg, never the whole modal */
+.modal-subhead { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.modal-formula { font-size: 12px; }
+.modal-score { font-weight: 600; }
+.modal-score.dir-bull { color: var(--success-fg); }
+.modal-score.dir-bear { color: var(--warning-fg); }
+.modal-score.dir-neut { color: var(--muted); }
+
+@media (max-width: 760px) {
+  .modal-grid.econ-leg-grid { grid-template-columns: 1fr; }
+}

@@ -65,6 +65,35 @@ CATEGORY_LABEL_FALLBACK = {
     "rates": "Rates (display-only)",
 }
 
+# Dense per-indicator table layout (EdgeFinder-style): one column per indicator,
+# grouped under category headers. `interest_rate_decision` is intentionally
+# omitted (display-only, weight 0) — it stays in the modal. Short labels are the
+# column headers. This is presentation only; scoring is untouched.
+TABLE_LAYOUT = [
+    {"category": "growth", "columns": [
+        ("manufacturing_pmi", "Mfg PMI"),
+        ("services_pmi", "Services"),
+        ("gdp_qoq", "GDP"),
+        ("retail_sales", "Retail"),
+    ]},
+    {"category": "inflation", "columns": [
+        ("cpi_yoy", "CPI"),
+        ("core_cpi", "Core CPI"),
+        ("core_pce", "Core PCE"),
+        ("ppi_yoy", "PPI"),
+    ]},
+    {"category": "labour", "columns": [
+        ("employment_change", "NFP/Emp"),
+        ("unemployment_rate", "Unemp"),
+        ("wage_growth", "Wages"),
+        ("adp", "ADP"),
+        ("jolts", "JOLTS"),
+        ("jobless_claims", "Claims"),
+    ]},
+]
+
+TABLE_COLUMN_KEYS = [k for g in TABLE_LAYOUT for (k, _) in g["columns"]]
+
 
 def _env() -> Environment:
     return Environment(
@@ -126,14 +155,64 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
             )
         }
 
+    table_layout = [
+        {
+            "category": g["category"],
+            "label": cat_meta.get(g["category"], {}).get("label", g["category"].title()),
+            "columns": [{"key": k, "label": lbl} for k, lbl in g["columns"]],
+        }
+        for g in TABLE_LAYOUT
+    ]
+
     return {
         "categories": cat_meta,
         "indicators": ind_meta,
         "categories_display": instruments_cfg.get("categories_display", []),
+        "table_layout": table_layout,
         "bias_thresholds": instruments_cfg.get("bias_thresholds", {}),
         "scale": instruments_cfg.get("scale"),
         "pair_divisor": instruments_cfg.get("pair_divisor"),
     }
+
+
+def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
+    """Attach a per-indicator cell to each instrument for the dense table.
+
+    Pure recombination of the already-computed per-indicator scores (no scoring):
+      - single  -> currency's indicator score × sign
+      - fx pair -> base score − quote score (a leg missing the indicator counts
+                   as 0; if BOTH legs lack it — e.g. a USD-only indicator on a
+                   non-USD cross — the cell is None and renders as “—”).
+    """
+    currencies = payload.get("currencies", {}) or {}
+    inst_cfg = instruments_cfg.get("instruments", {}) or {}
+
+    def _bd(ccy: str | None) -> dict:
+        return (currencies.get(ccy, {}) or {}).get("breakdown", {}) or {}
+
+    for inst in payload.get("instruments", []):
+        cfg = inst_cfg.get(inst["symbol"], {})
+        cells: dict[str, int | None] = {}
+        bdn = inst.get("breakdown", {}) or {}
+        base_ccy = (bdn.get("base") or {}).get("currency")
+        quote_ref = bdn.get("quote")
+        quote_ccy = quote_ref.get("currency") if quote_ref else None
+
+        if inst.get("type") == "single":
+            sign = float(cfg.get("sign", 1))
+            bd = _bd(base_ccy)
+            for k in TABLE_COLUMN_KEYS:
+                e = bd.get(k)
+                cells[k] = int(round(e["score"] * sign)) if e else None
+        else:
+            bb, bq = _bd(base_ccy), _bd(quote_ccy)
+            for k in TABLE_COLUMN_KEYS:
+                eb, eq = bb.get(k), bq.get(k)
+                if eb is None and eq is None:
+                    cells[k] = None
+                else:
+                    cells[k] = int((eb["score"] if eb else 0) - (eq["score"] if eq else 0))
+        inst["indicator_cells"] = cells
 
 
 def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> None:
@@ -176,6 +255,12 @@ def build_economic_payload() -> dict:
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     _enrich_breakdowns(payload, meta["indicators"], as_of)
+    _build_indicator_cells(payload, instruments_cfg)
+
+    # Presentation-only label trim (keeps the symbol column tight).
+    for inst in payload.get("instruments", []):
+        if inst.get("display"):
+            inst["display"] = inst["display"].replace("(DXY proxy)", "(DXY)")
 
     payload["meta"] = meta
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

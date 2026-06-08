@@ -1,9 +1,11 @@
 /* Economic Dashboard page logic. Pure DOM over /data/economic.json — no charts.
- * Table: Symbol | Bias | Score | Growth | Inflation | Labour Market.
- * Row click opens a modal explaining WHY the score is what it is: per-leg,
- * per-category, per-indicator (actual / consensus / surprise / z / score / flag),
- * with category subtotals and the leg index — so a rounded "0" cell that hides
- * +2 vs −2 divergence is visible. Reuses the COT/Retail look + modal pattern.
+ * Dense EdgeFinder-style table: Symbol | Bias | Score | one column per indicator
+ * (grouped under Growth / Inflation / Labour headers). Each indicator cell is the
+ * differential score (base − quote) for a pair, or the currency score for a
+ * single; USD-only indicators show "—" on non-USD instruments. Row click opens a
+ * modal with the full per-indicator detail (actual / consensus / surprise / z /
+ * score / method) and category subtotals — that's where the rounded-cell
+ * divergence is explained.
  */
 (function () {
   "use strict";
@@ -31,8 +33,13 @@
     return (n > 0 ? "+" : "") + s;
   }
   function fmtScoreCell(v) {
-    if (v === null || v === undefined) return "0";
+    if (v === null || v === undefined) return "—";
     return (v > 0 ? "+" : "") + v;
+  }
+  function fmtScoreInt(v) {
+    if (v === null || v === undefined || Number.isNaN(v)) return "—";
+    const n = Math.round(Number(v));
+    return (n > 0 ? "+" : "") + n;
   }
   function fmtDate(iso) {
     if (!iso) return "—";
@@ -43,14 +50,15 @@
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
   // ---- Color classes ------------------------------------------------------
+  // Clamp magnitude so differentials beyond ±2 still color strongly.
   function cellClass(score) {
-    switch (Number(score)) {
-      case 2: return "cell-p2";
-      case 1: return "cell-p1";
-      case -1: return "cell-n1";
-      case -2: return "cell-n2";
-      default: return "cell-z0";
-    }
+    const n = Number(score);
+    if (Number.isNaN(n)) return "cell-z0";
+    if (n >= 2) return "cell-p2";
+    if (n === 1) return "cell-p1";
+    if (n <= -2) return "cell-n2";
+    if (n === -1) return "cell-n1";
+    return "cell-z0";
   }
   function biasClass(bias) {
     switch (bias) {
@@ -60,6 +68,12 @@
       case "Very Bearish": return "bias-very-bear";
       default: return "bias-neut";
     }
+  }
+  function dirClass(inst) {
+    const b = inst.bias || "";
+    if (b.indexOf("Bull") >= 0) return "dir-bull";
+    if (b.indexOf("Bear") >= 0) return "dir-bear";
+    return "dir-neut";
   }
 
   // ---- Meta-bar -----------------------------------------------------------
@@ -79,31 +93,37 @@
     return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
   }
 
-  // ---- Table --------------------------------------------------------------
-  const CATS = function () {
-    return (state.payload.meta && state.payload.meta.categories_display) ||
-      ["growth", "inflation", "labour"];
-  };
-
+  // ---- Layout helpers -----------------------------------------------------
+  function tableLayout() {
+    return (state.payload.meta && state.payload.meta.table_layout) || [];
+  }
+  function columnKeys() {
+    const out = [];
+    tableLayout().forEach(g => g.columns.forEach(c => out.push(c.key)));
+    return out;
+  }
   function catLabel(key) {
     const m = state.payload.meta && state.payload.meta.categories;
     return (m && m[key] && m[key].label) || key;
   }
-
-  function rowSortValue(inst, key) {
-    if (key === "symbol") return inst.display || inst.symbol;
-    if (key === "bias" || key === "score") return inst.score;
-    // category key
-    const c = (inst.categories || {})[key] || {};
-    return c.score_cell === undefined || c.score_cell === null ? 0 : c.score_cell;
+  function indMeta(key) {
+    return (state.payload.meta.indicators || {})[key] || {};
   }
 
+  // ---- Sorting ------------------------------------------------------------
+  function rowSortValue(inst, key) {
+    if (key === "symbol") return inst.display || inst.symbol;
+    if (key === "bias" || key === "score") return inst.score;          // precise float
+    if (key.indexOf("ind:") === 0) {
+      const k = key.slice(4);
+      const v = (inst.indicator_cells || {})[k];
+      return (v === null || v === undefined) ? -Infinity : v;
+    }
+    return 0;
+  }
   function compareInstruments(a, b) {
     const key = state.sortKey;
-    if (!key) {
-      // default: strongest absolute score first
-      return Math.abs(b.score) - Math.abs(a.score);
-    }
+    if (!key) return Math.abs(b.score) - Math.abs(a.score);            // strongest first
     const av = rowSortValue(a, key);
     const bv = rowSortValue(b, key);
     let cmp;
@@ -112,49 +132,56 @@
     return state.sortAsc ? cmp : -cmp;
   }
 
-  function categoryCellHtml(inst, catKey) {
-    const c = (inst.categories || {})[catKey] || { score_cell: 0, coverage: 0 };
-    const cov = c.coverage || 0;
-    const covHtml = '<span class="cov" title="' +
-      escAttr(cov + " indicator" + (cov === 1 ? "" : "s") + " backing this cell") +
-      '">n' + cov + '</span>';
-    const cls = cov > 0 ? cellClass(c.score_cell) : "cell-z0";
-    const val = cov > 0 ? fmtScoreCell(c.score_cell) : "—";
-    return '<td class="econ-cell ' + cls + '"><span class="econ-score">' + val + '</span>' + covHtml + '</td>';
+  // ---- Table --------------------------------------------------------------
+  function indicatorCellHtml(inst, key) {
+    const v = (inst.indicator_cells || {})[key];
+    if (v === null || v === undefined) {
+      return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
+    }
+    return '<td class="econ-cell ' + cellClass(v) + '">' + fmtScoreCell(v) + '</td>';
   }
 
   function renderRow(inst) {
-    const cats = CATS();
-    const biasPill = '<span class="pill ' + biasClass(inst.bias) + '">' + inst.bias + '</span>';
-    const catCells = cats.map(c => categoryCellHtml(inst, c)).join("");
+    const dir = dirClass(inst);
+    const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym">' + (inst.display || inst.symbol) + '</td>' +
-      '<td class="bias-cell">' + biasPill + '</td>' +
-      '<td class="score-cell">' + fmtSigned(inst.score, 2) + '</td>' +
-      catCells +
+      '<td class="sym ' + dir + '">' + (inst.display || inst.symbol) + '</td>' +
+      '<td class="bias-cell"><span class="pill ' + biasClass(inst.bias) + '">' + inst.bias + '</span></td>' +
+      '<td class="score-cell ' + dir + '">' + fmtScoreInt(inst.score) + '</td>' +
+      cells +
       '</tr>'
     );
   }
 
   function renderTable() {
     const wrap = document.getElementById("econContent");
-    const cats = CATS();
+    const layout = tableLayout();
     const instruments = state.payload.instruments.slice().sort(compareInstruments);
 
-    const catHeaders = cats.map(c =>
-      '<th data-sort="' + c + '">' + catLabel(c) + '</th>'
+    const groupHeaderCells = layout.map(g =>
+      '<th colspan="' + g.columns.length + '" class="grp-head grp-' + g.category + '">' +
+      g.label + '</th>'
     ).join("");
 
+    let subHeaderCells = "";
+    layout.forEach(g => g.columns.forEach(c => {
+      subHeaderCells += '<th data-sort="ind:' + c.key + '" class="ind-head grp-' + g.category +
+        '" title="' + escAttr(indMeta(c.key).label || c.key) + '">' + c.label + '</th>';
+    }));
+
     wrap.innerHTML =
-      '<div class="retail-table-scroll">' +
+      '<div class="retail-table-scroll econ-scroll">' +
       '<table class="retail-table econ-table">' +
-      '<thead><tr>' +
-      '<th data-sort="symbol">Symbol</th>' +
-      '<th data-sort="bias">Bias</th>' +
-      '<th data-sort="score">Score</th>' +
-      catHeaders +
-      '</tr></thead>' +
+      '<thead>' +
+      '<tr>' +
+      '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
+      '<th rowspan="2" data-sort="bias">Bias</th>' +
+      '<th rowspan="2" data-sort="score">Score</th>' +
+      groupHeaderCells +
+      '</tr>' +
+      '<tr>' + subHeaderCells + '</tr>' +
+      '</thead>' +
       '<tbody>' + instruments.map(renderRow).join("") + '</tbody>' +
       '</table></div>';
 
@@ -181,8 +208,9 @@
     return state.payload.instruments.find(i => i.symbol === sym) || null;
   }
 
-  function indMeta(key) {
-    return (state.payload.meta.indicators || {})[key] || {};
+  function CATS() {
+    return (state.payload.meta && state.payload.meta.categories_display) ||
+      ["growth", "inflation", "labour"];
   }
 
   function flagBadge(flag) {
@@ -224,7 +252,6 @@
     }
     const breakdown = card.breakdown || {};
     const cats = CATS().slice();
-    // Append any non-display categories that still have indicators (e.g. rates).
     Object.keys(breakdown).forEach(k => {
       const c = indMeta(k).category;
       if (c && cats.indexOf(c) === -1) cats.push(c);
@@ -248,10 +275,10 @@
       groups +=
         '<div class="econ-cat-group">' +
         '<div class="econ-cat-head">' + catLabel(catKey) + ' ' + subHtml + '</div>' +
-        '<table class="econ-ind-table">' +
+        '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
         '<thead><tr><th>Indicator</th><th>Act</th><th>Cons</th><th>Surp</th><th>z</th><th>Score</th><th>Method</th><th>Release</th></tr></thead>' +
         '<tbody>' + keys.map(k => indicatorRow(k, breakdown[k])).join("") + '</tbody>' +
-        '</table></div>';
+        '</table></div></div>';
     });
 
     if (!groups) groups = '<p class="muted">No indicators within the lookback window.</p>';
@@ -279,7 +306,7 @@
     const quote = (inst.breakdown && inst.breakdown.quote) ? inst.breakdown.quote.currency : null;
     const isFx = inst.type === "fx";
 
-    const gridClass = isFx ? "modal-grid" : "modal-grid one-col";
+    const gridClass = isFx ? "modal-grid econ-leg-grid" : "modal-grid econ-leg-grid one-col";
     const legs = isFx
       ? legHtml("Base", base) + legHtml("Quote", quote)
       : legHtml("Currency", base);
@@ -293,11 +320,12 @@
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ')</small></h2>' +
-      '<div class="muted">' +
+      '<div class="muted modal-subhead">' +
       '<span class="pill ' + biasClass(inst.bias) + '">' + inst.bias + '</span> ' +
-      '&nbsp;Score ' + fmtSigned(inst.score, 2) + ' &nbsp;·&nbsp; ' + sub + '</div>' +
+      '<span class="modal-score ' + dirClass(inst) + '">Score ' + fmtSigned(inst.score, 2) + '</span>' +
+      '<span class="modal-formula">' + sub + '</span></div>' +
       '</header>' +
-      '<p class="muted econ-modal-note">Rounded category cells can hide divergence — e.g. a Labour “0” may be ' +
+      '<p class="muted econ-modal-note">Rounded cells can hide divergence — e.g. a Labour score near 0 may be ' +
       'NFP +2 against Jobless Claims −2. The per-indicator rows below show the real spread.</p>' +
       '<div class="' + gridClass + '">' + legs + '</div>';
 
