@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Economic Dashboard | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  {% include '_navbar.html.j2' %}
+
+  <main class="page-content econ-page">
+    <header class="econ-header">
+      <h1>Economic Dashboard</h1>
+      <div class="econ-meta-bar" id="econMeta">
+        <span class="muted">Loading…</span>
+      </div>
+    </header>
+
+    <div class="econ-legend">
+      <span class="muted">Bias from the normalized macro-surprise index. Category cells are rounded scores
+      −2…+2 (green = bullish for the currency / base leg); the small <b>n</b> is how many indicators
+      back that cell — thin coverage means a soft read. Click a row for the per-indicator breakdown.</span>
+    </div>
+
+    <section class="retail-table-wrapper">
+      <div id="econContent">
+        <p class="muted" style="padding: 40px; text-align: center;">Loading economic bias…</p>
+      </div>
+    </section>
+
+    <div id="econDetailModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button class="modal-close" type="button" aria-label="Close">&times;</button>
+        <div id="econDetailContent"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>window.ECON_DATA_URL = "{{ data_url }}";</script>
+  <script src="/economic-chart.js"></script>
+</body>
+</html>

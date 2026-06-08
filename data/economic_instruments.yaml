@@ -1,0 +1,77 @@
+# Instrument definitions for the Economic Dashboard (v1: FX + single-currency).
+#
+# A per-CURRENCY scorecard is computed first (see economic_compute.py); each
+# instrument here derives its score from one or two currency indices:
+#   - type: single  -> score = index(currency) * sign
+#   - type: fx       -> score = (index(base) - index(quote)) / pair_divisor
+#
+# Country (FMP `country` code) -> currency. Only in-scope currencies are kept;
+# everything else is dropped at fetch time.
+currency_for_country:
+  US: USD
+  EU: EUR
+  GB: GBP
+  UK: GBP
+  JP: JPY
+  AU: AUD
+  NZ: NZD
+  CA: CAD
+  CH: CHF
+
+# Display scaling / bias mapping. All thresholds live here, not in code.
+#   scale          — currency index = weighted-mean(category subtotals) * scale,
+#                    yielding roughly [-10, 10].
+#   pair_divisor   — FX pair score = (index(base) - index(quote)) / pair_divisor.
+#   categories_display — column order on the table.
+#   bias_thresholds — on |score|:  < mild => Neutral ; [mild-1, very-1] => Bull/Bear ;
+#                     >= very => Very Bull/Bear. (See compute._bias_label.)
+categories_display: [growth, inflation, labour]
+scale: 5
+pair_divisor: 2
+bias_thresholds:
+  very: 7
+  mild: 3
+
+# type: single  => {currency, sign}
+# type: fx      => {base, quote}
+instruments:
+  # --- Single-currency ---
+  US-DOLLAR: { type: single, currency: USD, sign: 1, display: "US Dollar (DXY proxy)" }
+
+  # --- Majors ---
+  EURUSD: { type: fx, base: EUR, quote: USD, display: "EUR/USD" }
+  GBPUSD: { type: fx, base: GBP, quote: USD, display: "GBP/USD" }
+  USDJPY: { type: fx, base: USD, quote: JPY, display: "USD/JPY" }
+  USDCHF: { type: fx, base: USD, quote: CHF, display: "USD/CHF" }
+  USDCAD: { type: fx, base: USD, quote: CAD, display: "USD/CAD" }
+  AUDUSD: { type: fx, base: AUD, quote: USD, display: "AUD/USD" }
+  NZDUSD: { type: fx, base: NZD, quote: USD, display: "NZD/USD" }
+
+  # --- EUR crosses ---
+  EURGBP: { type: fx, base: EUR, quote: GBP, display: "EUR/GBP" }
+  EURJPY: { type: fx, base: EUR, quote: JPY, display: "EUR/JPY" }
+  EURCHF: { type: fx, base: EUR, quote: CHF, display: "EUR/CHF" }
+  EURAUD: { type: fx, base: EUR, quote: AUD, display: "EUR/AUD" }
+  EURNZD: { type: fx, base: EUR, quote: NZD, display: "EUR/NZD" }
+  EURCAD: { type: fx, base: EUR, quote: CAD, display: "EUR/CAD" }
+
+  # --- GBP crosses ---
+  GBPJPY: { type: fx, base: GBP, quote: JPY, display: "GBP/JPY" }
+  GBPCHF: { type: fx, base: GBP, quote: CHF, display: "GBP/CHF" }
+  GBPAUD: { type: fx, base: GBP, quote: AUD, display: "GBP/AUD" }
+  GBPNZD: { type: fx, base: GBP, quote: NZD, display: "GBP/NZD" }
+  GBPCAD: { type: fx, base: GBP, quote: CAD, display: "GBP/CAD" }
+
+  # --- JPY crosses ---
+  AUDJPY: { type: fx, base: AUD, quote: JPY, display: "AUD/JPY" }
+  NZDJPY: { type: fx, base: NZD, quote: JPY, display: "NZD/JPY" }
+  CADJPY: { type: fx, base: CAD, quote: JPY, display: "CAD/JPY" }
+  CHFJPY: { type: fx, base: CHF, quote: JPY, display: "CHF/JPY" }
+
+  # --- Other crosses ---
+  AUDNZD: { type: fx, base: AUD, quote: NZD, display: "AUD/NZD" }
+  AUDCAD: { type: fx, base: AUD, quote: CAD, display: "AUD/CAD" }
+  AUDCHF: { type: fx, base: AUD, quote: CHF, display: "AUD/CHF" }
+  NZDCAD: { type: fx, base: NZD, quote: CAD, display: "NZD/CAD" }
+  NZDCHF: { type: fx, base: NZD, quote: CHF, display: "NZD/CHF" }
+  CADCHF: { type: fx, base: CAD, quote: CHF, display: "CAD/CHF" }

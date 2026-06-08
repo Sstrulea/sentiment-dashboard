@@ -1,0 +1,244 @@
+# Economic indicator taxonomy for the Economic Dashboard (v1).
+#
+# Drives src/economic_fetch.py (matcher → indicator_key) and
+# src/economic_compute.py (scoring). Nothing here is hardcoded in Python —
+# all thresholds, weights, directions, and pillar/category assignments live in
+# this file.
+#
+# Scoring model (see DESIGN spec):
+#   surprise = actual - consensus
+#   z        = direction * surprise / sigma_rolling(last K prints, both values)
+#   bucket z to integer score -2..+2 via z_buckets
+#   fallback (< fallback_min_prints pairs, or sigma in {0, NaN}):
+#       pct = direction * surprise / |consensus|, bucketed via pct_buckets
+#   no consensus -> score 0, flag no_consensus.
+
+defaults:
+  surprise_window_k: 12        # rolling window (# of same-indicator prints) for sigma
+  z_buckets: [1.0, 0.33]       # |z| >= 1.0 -> ±2 ; >= 0.33 -> ±1 ; else 0
+  fallback_min_prints: 6       # below this many (actual,consensus) pairs, use pct fallback
+  pct_buckets: [0.10, 0.02]    # |pct| >= 0.10 -> ±2 ; >= 0.02 -> ±1 ; else 0
+  max_age_days: 120            # default trailing window for "latest release" per indicator
+
+# Equal-weight categories in v1 (1.0). The rate group cap is a Phase-7
+# calibration concern and lives with the standing pillars (not in scope here).
+categories:
+  growth:    { weight: 1.0, label: "Growth" }
+  inflation: { weight: 1.0, label: "Inflation" }
+  labour:    { weight: 1.0, label: "Labour Market" }
+
+# Each indicator:
+#   pillar        — surprise pillar this belongs to (display grouping under category)
+#   category      — growth | inflation | labour
+#   direction     — +1 (higher actual = bullish for currency) | -1 (inverted)
+#   weight        — relative weight within its category (equal=1.0 in v1)
+#   max_age_days  — optional per-indicator override of defaults.max_age_days
+#   currencies    — optional whitelist; absent => all in-scope currencies
+indicators:
+  # --- Inflation (hawkish convention: hotter = bullish currency) ---
+  cpi_yoy:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+  core_cpi:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+  ppi_yoy:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+  core_pce:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+
+  # --- Growth ---
+  gdp_qoq:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+  manufacturing_pmi:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+  services_pmi:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+  retail_sales:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+
+  # --- Labour ---
+  employment_change:           # NFP (US) / Employment Change (AU,CA,NZ) / Claimant (UK)
+    pillar: labour
+    category: labour
+    direction: 1
+    weight: 1.0
+  unemployment_rate:
+    pillar: labour
+    category: labour
+    direction: -1              # higher unemployment = bearish currency
+    weight: 1.0
+  wage_growth:
+    pillar: labour
+    category: labour
+    direction: 1
+    weight: 1.0
+  adp:
+    pillar: labour
+    category: labour
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+  jolts:
+    pillar: labour
+    category: labour
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+  jobless_claims:
+    pillar: labour
+    category: labour
+    direction: -1              # more claims = bearish currency
+    weight: 1.0
+    currencies: [USD]
+
+  # --- Rates (display-only; weight 0 to avoid double-counting vs the standing
+  # Rate-Expectations pillar that is added in Phase 9) ---
+  interest_rate_decision:
+    pillar: rates
+    category: rates
+    direction: 1
+    weight: 0.0
+
+# ---------------------------------------------------------------------------
+# Matcher: MT5 economic-calendar `event` string -> indicator_key, keyed by the
+# MT5 `country` field. Reconciled against REAL event names observed in
+# $MT5_FILES_DIR/economic_calendar.csv via `python -m src.economic_probe
+# --dump-events` (540-day history). No longer UNVERIFIED.
+#
+# Rules:
+#   * Entries are defined ONLY for the 8 in-scope countries. Euro-area member
+#     states (Germany, France, Italy, Spain) are intentionally absent, so their
+#     rows drop — EUR is scored exclusively from "European Union" releases,
+#     avoiding triple-counting (e.g. national PMIs vs the EU aggregate).
+#   * Patterns are anchored full-string regexes (^...$, case-insensitive) so
+#     each indicator_key maps to EXACTLY ONE event name per country. This is
+#     critical: m/m and y/y variants share a release timestamp, so collapsing
+#     them under one key would corrupt the surprise/sigma series.
+#   * S&P Global *Composite* PMI is deliberately NOT mapped (manufacturing +
+#     services are already counted separately; composite would double-count).
+#   * `interest_rate_decision` carries weight 0 (display-only).
+#
+# Evaluation: src.economic_fetch.match_event() walks this country's rule list
+# in order and returns the indicator of the first pattern that matches.
+# ---------------------------------------------------------------------------
+matcher:
+  United States:
+    - { pattern: '^Core PCE Price Index y/y$',      indicator: core_pce }
+    - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^PPI y/y$',                       indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^ISM Manufacturing PMI$',         indicator: manufacturing_pmi }
+    - { pattern: '^ISM Non-Manufacturing PMI$',     indicator: services_pmi }
+    - { pattern: '^Retail Sales m/m$',              indicator: retail_sales }
+    - { pattern: '^Nonfarm Payrolls$',              indicator: employment_change }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^Average Hourly Earnings y/y$',   indicator: wage_growth }
+    - { pattern: '^ADP Nonfarm Employment Change$', indicator: adp }
+    - { pattern: '^JOLTS Job Openings$',            indicator: jolts }
+    - { pattern: '^Initial Jobless Claims$',        indicator: jobless_claims }
+    - { pattern: '^Fed Interest Rate Decision$',    indicator: interest_rate_decision }
+
+  European Union:
+    - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^PPI y/y$',                       indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^S&P Global Manufacturing PMI$',  indicator: manufacturing_pmi }
+    - { pattern: '^S&P Global Services PMI$',       indicator: services_pmi }
+    - { pattern: '^Retail Sales m/m$',              indicator: retail_sales }
+    - { pattern: '^Employment Change q/q$',         indicator: employment_change }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^Wage Costs y/y$',                indicator: wage_growth }
+    - { pattern: '^ECB Interest Rate Decision$',    indicator: interest_rate_decision }
+
+  United Kingdom:
+    - { pattern: '^Core CPI y/y$',                          indicator: core_cpi }
+    - { pattern: '^CPI y/y$',                               indicator: cpi_yoy }
+    - { pattern: '^PPI Output y/y$',                        indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                               indicator: gdp_qoq }
+    - { pattern: '^S&P Global/CIPS Manufacturing PMI$',     indicator: manufacturing_pmi }
+    - { pattern: '^S&P Global/CIPS Services PMI$',          indicator: services_pmi }
+    - { pattern: '^Retail Sales m/m$',                      indicator: retail_sales }
+    - { pattern: '^Claimant Count Change$',                 indicator: employment_change }
+    - { pattern: '^Unemployment Rate$',                     indicator: unemployment_rate }
+    - { pattern: '^Average Weekly Earnings, Total Pay y/y$', indicator: wage_growth }
+    - { pattern: '^BoE Interest Rate Decision$',            indicator: interest_rate_decision }
+
+  Japan:
+    - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^au Jibun Bank Manufacturing PMI$', indicator: manufacturing_pmi }
+    - { pattern: '^au Jibun Bank Services PMI$',    indicator: services_pmi }
+    - { pattern: '^Retail Sales m/m$',              indicator: retail_sales }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^Labor Cash Earnings y/y$',       indicator: wage_growth }
+    - { pattern: '^BoJ Interest Rate Decision$',    indicator: interest_rate_decision }
+
+  Australia:
+    - { pattern: '^RBA Trimmed Mean CPI y/y$',      indicator: core_cpi }
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^PPI y/y$',                       indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^S&P Global Manufacturing PMI$',  indicator: manufacturing_pmi }
+    - { pattern: '^S&P Global Services PMI$',       indicator: services_pmi }
+    - { pattern: '^Retail Sales m/m$',              indicator: retail_sales }
+    - { pattern: '^Employment Change$',             indicator: employment_change }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^Wage Price Index y/y$',          indicator: wage_growth }
+    - { pattern: '^RBA Interest Rate Decision$',    indicator: interest_rate_decision }
+
+  New Zealand:
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^PPI Output q/q$',                indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^Retail Sales q/q$',              indicator: retail_sales }
+    - { pattern: '^Employment Change q/q$',         indicator: employment_change }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^Labor Cost Index y/y$',          indicator: wage_growth }
+    - { pattern: '^RBNZ Interest Rate Decision$',   indicator: interest_rate_decision }
+
+  Canada:
+    - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^IPPI y/y$',                      indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^S&P Global Manufacturing PMI$',  indicator: manufacturing_pmi }
+    - { pattern: '^Retail Sales m/m$',              indicator: retail_sales }
+    - { pattern: '^Employment Change$',             indicator: employment_change }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^BoC Interest Rate Decision$',    indicator: interest_rate_decision }
+
+  Switzerland:
+    - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
+    - { pattern: '^PPI y/y$',                       indicator: ppi_yoy }
+    - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
+    - { pattern: '^procure\.ch Manufacturing PMI$', indicator: manufacturing_pmi }
+    - { pattern: '^Retail Sales y/y$',              indicator: retail_sales }
+    - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
+    - { pattern: '^SNB Interest Rate Decision$',    indicator: interest_rate_decision }

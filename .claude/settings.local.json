@@ -36,7 +36,22 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8765/theme-toggle.js)",
       "Bash(node --check static/theme-toggle.js)",
       "Bash(echo \"exit code: $?\")",
-      "Bash(echo \"--- exit: $?\")"
+      "Bash(echo \"--- exit: $?\")",
+      "Bash(echo \"exit=$?\")",
+      "Bash(curl -s -o /tmp/te.txt -w \"HTTP %{http_code}\\\\n\" \"https://api.tradingeconomics.com/calendar?c=guest:guest&d1=2026-05-01&d2=2026-05-15\")",
+      "Bash(git reset *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(node --check static/economic-chart.js)",
+      "Bash(awk '{print $5, $NF}')",
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
+      "Bash(command -v chromium playwright)",
+      "Bash(/Users/sebastian/Documents/projects/macro-data-analysis/.venv/bin/python *)",
+      "Bash(chmod +x scripts/econ_refresh.sh)",
+      "Bash(zsh -n scripts/econ_refresh.sh)",
+      "Bash([ -d \"$HOME/Documents/projects/macro-data-analysis/.venv\" ])"
     ]
   }
 }

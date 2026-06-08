@@ -1099,3 +1099,86 @@ body.modal-open { overflow: hidden; }
   .modal-content { width: 100%; max-height: 100vh; height: 100vh; border-radius: 0; }
   .modal-grid { grid-template-columns: 1fr; }
 }
+
+/* === Economic Dashboard page === */
+.econ-page { max-width: 1200px; }
+.econ-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.econ-header h1 { margin: 0; font-size: 24px; }
+.econ-meta-bar { color: var(--muted); font-size: 13px; text-align: right; }
+.econ-legend { font-size: 12px; line-height: 1.5; margin: 0 0 16px 0; max-width: 900px; }
+.econ-legend b { color: var(--fg); }
+
+/* Bias pills (5 levels) — green = bullish, reuse .pill base. */
+.bias-very-bull { color: #fff; background: #1b5e20; }
+.bias-bull      { color: var(--success-fg); background: var(--success-bg); }
+.bias-neut      { color: var(--muted); background: var(--surface-alt); }
+.bias-bear      { color: var(--warning-fg); background: var(--warning-bg); }
+.bias-very-bear { color: #fff; background: #b71c1c; }
+
+/* Category cells: diverging −2…+2 (green bullish / red bearish). */
+table.econ-table td.econ-cell { text-align: center; font-variant-numeric: tabular-nums; }
+.econ-cell .econ-score { font-weight: 600; font-size: 13px; }
+.econ-cell .cov { display: block; font-size: 10px; color: var(--muted); font-weight: 400; cursor: help; }
+table.econ-table td.score-cell { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.cell-p2 { background: #1b5e20; color: #fff; }
+.cell-p1 { background: var(--success-bg); color: var(--success-fg); }
+.cell-z0 { background: transparent; color: var(--muted); }
+.cell-n1 { background: var(--warning-bg); color: var(--warning-fg); }
+.cell-n2 { background: #b71c1c; color: #fff; }
+.econ-cell.cell-p2 .cov, .econ-cell.cell-n2 .cov { color: rgba(255,255,255,0.8); }
+
+/* Modal: per-leg breakdown */
+.modal-grid.one-col { grid-template-columns: 1fr; }
+.econ-modal-note { font-size: 12px; margin: 4px 0 0 0; font-style: italic; }
+.econ-leg h3 {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--fg);
+  border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px;
+}
+.econ-leg-index { font-size: 12px; font-weight: 600; color: var(--accent); }
+.econ-cat-group { margin-bottom: 14px; }
+.econ-cat-head {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted); margin-bottom: 4px; display: flex; gap: 6px; align-items: baseline;
+}
+.econ-cat-sub {
+  display: inline-block; padding: 0 6px; border-radius: 4px;
+  font-weight: 700; font-size: 11px;
+}
+table.econ-ind-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+table.econ-ind-table th {
+  text-align: right; font-weight: 600; color: var(--muted);
+  border-bottom: 1px solid var(--border); padding: 3px 5px; font-size: 10px;
+}
+table.econ-ind-table th:first-child { text-align: left; }
+table.econ-ind-table td { padding: 3px 5px; border-bottom: 1px dashed var(--border); }
+table.econ-ind-table td.ei-name { text-align: left; }
+table.econ-ind-table td.ei-num { text-align: right; }
+table.econ-ind-table td.ei-score { text-align: center; font-weight: 700; border-radius: 3px; }
+table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-space: nowrap; font-size: 11px; }
+.econ-inv { color: var(--warning-fg); cursor: help; }
+.econ-flag {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  font-size: 10px; font-weight: 600; white-space: nowrap;
+}
+.flag-z  { background: var(--surface-alt); color: var(--muted); }
+.flag-fb { background: var(--caution-bg); color: var(--caution-fg); cursor: help; }
+.flag-nc { background: var(--warn-mid-bg); color: var(--warn-mid-fg); cursor: help; }
+.flag-stale { background: var(--warning-bg); color: var(--warning-fg); cursor: help; }
+
+@media (max-width: 768px) {
+  .econ-header { flex-direction: column; align-items: flex-start; }
+  .econ-meta-bar { text-align: left; }
+  .modal-grid.one-col { grid-template-columns: 1fr; }
+}

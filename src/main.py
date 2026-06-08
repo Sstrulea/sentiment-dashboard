@@ -4,6 +4,7 @@ Modes:
     weekly      — COT full refresh (default; preserved behavior)
     daily       — VIX rebuild + P/C append for today + retail snapshot + re-render
     retail      — Retail sentiment snapshot + re-render only (3-hourly cron)
+    economic    — MT5 economic-calendar ingest + Economic Dashboard re-render
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
 """
@@ -153,6 +154,34 @@ def _retail() -> int:
     return 0
 
 
+def _economic() -> int:
+    """Ingest the MT5 economic calendar (best-effort) and re-render the page.
+
+    The CSV ingest is best-effort: a missing/locked CSV must not block the
+    re-render (the page can still be rebuilt from the existing parquet). Returns
+    0 on success; 2 only if the render itself fails.
+    """
+    log = logging.getLogger("economic")
+    log.info("Economic dashboard refresh starting")
+
+    try:
+        from .economic_fetch import update_economic_calendar
+        n = update_economic_calendar(days_back=4)
+        log.info("Economic calendar ingest: %d release(s) this run", n)
+    except Exception as e:
+        log.warning("Economic calendar ingest failed (non-fatal): %s", e)
+
+    try:
+        from .economic_render import render_economic_page
+        out = render_economic_page()
+        log.info("Economic page rendered → %s", out)
+    except Exception as e:
+        log.error("Economic render failed: %s", e)
+        return 2
+
+    return 0
+
+
 def _backfill_pc() -> int:
     """Full P/C backfill from 2019-10-07 through today."""
     from .sentiment_backfill import _cmd_pc_range  # noqa: PLC2701 (internal but intentional)
@@ -177,7 +206,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Dashboard orchestrator")
     parser.add_argument(
         "--mode",
-        choices=["weekly", "daily", "retail", "all", "backfill-pc"],
+        choices=["weekly", "daily", "retail", "economic", "all", "backfill-pc"],
         default="weekly",
         help="which pipeline to run (default: weekly)",
     )
@@ -194,6 +223,8 @@ def main(argv: list[str] | None = None) -> int:
         return _daily()
     if args.mode == "retail":
         return _retail()
+    if args.mode == "economic":
+        return _economic()
     if args.mode == "all":
         rc = _weekly()
         if rc != 0:
