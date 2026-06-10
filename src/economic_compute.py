@@ -193,8 +193,13 @@ def compute_currency_scorecard(
     indicators_cfg: dict,
     instruments_cfg: dict,
     as_of: pd.Timestamp,
+    rate_entry: dict | None = None,
 ) -> dict:
     """Aggregate one currency: indicator scores -> category subtotals -> index.
+
+    `rate_entry` (optional) adds the standing **monetary** category with the
+    single sub-indicator `rate_expectations` (score = rate_entry["score"]). When
+    None, the scorecard is identical to the surprise-only behavior (3 categories).
 
     Returns:
         {
@@ -252,6 +257,23 @@ def compute_currency_scorecard(
         }
         if coverage > 0:
             cat_scores_for_index.append((precise, float(cat_meta.get("weight", 1.0))))
+
+    # Standing monetary category (Rate Expectations). Same shape as a surprise
+    # category but its score comes from the precomputed rate engine, not the
+    # calendar. Weight 1.0 (equal) — provisional until calibration.
+    if rate_entry is not None and rate_entry.get("score") is not None:
+        rscore = int(rate_entry["score"])
+        breakdown["rate_expectations"] = dict(rate_entry)
+        categories_out["monetary"] = {
+            "score_cell": _clamp_cell(float(rscore)),
+            "score_precise": float(rscore),
+            "coverage": 1,
+        }
+        total_coverage += 1
+        monetary_weight = float(
+            (indicators_cfg.get("categories", {}).get("monetary", {}) or {}).get("weight", 1.0)
+        )
+        cat_scores_for_index.append((float(rscore), monetary_weight))
 
     if cat_scores_for_index:
         wsum = sum(w for _, w in cat_scores_for_index)
@@ -384,16 +406,43 @@ def compute_instrument(
 # Top-level payload
 # ---------------------------------------------------------------------------
 
+def _rate_entry_for(rs) -> dict | None:
+    """Normalize a RateScore (dataclass or dict) into a breakdown entry, or None."""
+    if rs is None:
+        return None
+    def g(k):
+        return getattr(rs, k) if hasattr(rs, k) else (rs.get(k) if isinstance(rs, dict) else None)
+    score = g("rate_score")
+    if score is None:
+        return None
+    as_of = g("as_of")
+    return {
+        "score": int(score),
+        "delta_w": g("delta_w"),
+        "latest_yield": g("latest_yield"),
+        "z": g("z"),
+        "method": g("method"),
+        "as_of": as_of.isoformat() if hasattr(as_of, "isoformat") else as_of,
+        "stale": bool(g("stale")) if g("stale") is not None else False,
+        "pillar": "monetary",
+    }
+
+
 def build_payload(
     calendar_df: pd.DataFrame,
     indicators_cfg: dict,
     instruments_cfg: dict,
     as_of: pd.Timestamp | None = None,
+    rate_scores: dict | None = None,
 ) -> dict:
     """Compute every currency scorecard and every instrument payload.
 
     Pure: `as_of` defaults to now (UTC, naive) but is best passed explicitly for
-    deterministic tests. Returns {"as_of", "currencies", "instruments"}.
+    deterministic tests. `rate_scores` (optional) is a {currency: RateScore}
+    mapping from the rate engine; when given, each scored currency gains the
+    standing `monetary` category. When None, behavior is identical to the
+    surprise-only payload (full backward compatibility).
+    Returns {"as_of", "currencies", "instruments"}.
     """
     if as_of is None:
         as_of = pd.Timestamp.utcnow().tz_localize(None)
@@ -413,9 +462,11 @@ def build_payload(
             needed.add(inst["base"])
             needed.add(inst["quote"])
 
+    rate_scores = rate_scores or {}
     scorecards = {
         ccy: compute_currency_scorecard(
-            calendar_df, ccy, indicators_cfg, instruments_cfg, as_of
+            calendar_df, ccy, indicators_cfg, instruments_cfg, as_of,
+            rate_entry=_rate_entry_for(rate_scores.get(ccy)),
         )
         for ccy in sorted(needed)
     }

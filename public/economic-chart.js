@@ -359,6 +359,27 @@
     );
   }
 
+  function rateExpRow(e) {
+    if (!e) return "";
+    const yld = (e.latest_yield === null || e.latest_yield === undefined) ? "—" : Number(e.latest_yield).toFixed(3) + "%";
+    const dw = (e.delta_w === null || e.delta_w === undefined) ? "—" : fmtSigned(e.delta_w, 3) + "pp";
+    const z = (e.z === null || e.z === undefined) ? "—" : fmtSigned(e.z, 2);
+    const stale = e.stale ? ' <span class="econ-flag flag-stale" title="2y yield older than ~7 business days">stale</span>' : "";
+    const asof = e.as_of ? fmtDate(e.as_of) : "—";
+    const src = e.source ? ' <span class="muted">(' + e.source + ")</span>" : "";
+    return (
+      '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
+      '<td class="ei-name">Rate Expectations (2y)' + src + '</td>' +
+      '<td class="ei-num">' + yld + '</td>' +
+      '<td class="ei-num">' + dw + '</td>' +
+      '<td class="ei-num">' + z + '</td>' +
+      '<td class="ei-score ' + cellClass(e.score) + '">' + fmtScoreCell(e.score) + '</td>' +
+      '<td class="ei-flag">' + (e.method || "—") + stale + '</td>' +
+      '<td class="ei-date">' + asof + '</td>' +
+      '</tr>'
+    );
+  }
+
   function legHtml(role, currency) {
     if (!currency) return "";
     const card = (state.payload.currencies || {})[currency];
@@ -388,13 +409,20 @@
       } else {
         subHtml = '<span class="muted">display-only</span>';
       }
+      let table;
+      if (catKey === "monetary") {
+        table =
+          '<thead><tr><th>Indicator</th><th>Latest 2y</th><th>Δ2y(1m)</th><th>z</th><th>Score</th><th>Method</th><th>As-of</th></tr></thead>' +
+          '<tbody>' + keys.map(k => rateExpRow(breakdown[k])).join("") + '</tbody>';
+      } else {
+        table =
+          '<thead><tr><th>Indicator</th><th>Act</th><th>Cons</th><th>Surp</th><th>z</th><th>Score</th><th>Method</th><th>Release</th></tr></thead>' +
+          '<tbody>' + keys.map(k => indicatorRow(k, breakdown[k])).join("") + '</tbody>';
+      }
       groups +=
         '<div class="econ-cat-group">' +
         '<div class="econ-cat-head">' + catLabel(catKey) + ' ' + subHtml + '</div>' +
-        '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
-        '<thead><tr><th>Indicator</th><th>Act</th><th>Cons</th><th>Surp</th><th>z</th><th>Score</th><th>Method</th><th>Release</th></tr></thead>' +
-        '<tbody>' + keys.map(k => indicatorRow(k, breakdown[k])).join("") + '</tbody>' +
-        '</table></div></div>';
+        '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + '</table></div></div>';
     });
 
     if (!groups) groups = '<p class="muted">No indicators within the lookback window.</p>';

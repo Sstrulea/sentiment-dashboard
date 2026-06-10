@@ -313,3 +313,79 @@ def test_us_only_indicator_does_not_populate_non_usd_pair():
 ])
 def test_bias_label_thresholds(score, expected):
     assert bias_label(score, {"very": 7, "mild": 3}) == expected
+
+
+# ---------------------------------------------------------------------------
+# Monetary category (4th category, C2 integration) — backward compatible
+# ---------------------------------------------------------------------------
+
+def _rate(score, **kw):
+    """A RateScore-like dict accepted by build_payload(rate_scores=...)."""
+    base = {"rate_score": score, "delta_w": 0.10, "latest_yield": 4.0,
+            "z": 1.1, "method": "z", "as_of": "2024-06-10", "stale": False}
+    base.update(kw)
+    return base
+
+
+def test_no_rate_scores_is_backward_compatible():
+    # Without rate_scores → identical 3-category behavior (no monetary anywhere).
+    cal = _make_rows("USD", "gdp_qoq", [100] * 11 + [110], [100] * 12)
+    p = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF)
+    assert "monetary" not in p["currencies"]["USD"]["categories"]
+    assert "rate_expectations" not in p["currencies"]["USD"]["breakdown"]
+
+
+def test_monetary_category_added_with_rate_scores():
+    cal = _make_rows("USD", "gdp_qoq", [100] * 11 + [110], [100] * 12)  # growth +2
+    rs = {"USD": _rate(2)}
+    p = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF, rate_scores=rs)
+    usd = p["currencies"]["USD"]
+    assert usd["categories"]["monetary"] == {"score_cell": 2, "score_precise": 2.0, "coverage": 1}
+    assert usd["breakdown"]["rate_expectations"]["score"] == 2
+    assert usd["breakdown"]["rate_expectations"]["method"] == "z"
+
+
+def test_index_averages_over_four_categories():
+    # USD growth=+2 only (other surprise cats absent). Without rate: index = +2*scale.
+    cal = _make_rows("USD", "gdp_qoq", [100] * 11 + [110], [100] * 12)
+    p3 = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF)
+    assert p3["currencies"]["USD"]["index"] == pytest.approx(10.0)  # +2 * scale(5)
+    # With rate=-2: mean(growth +2, monetary -2) = 0 → index 0.
+    p4 = build_payload(cal, _indicators_cfg(), _instruments_cfg(),
+                       as_of=AS_OF, rate_scores={"USD": _rate(-2)})
+    assert p4["currencies"]["USD"]["index"] == pytest.approx(0.0)
+
+
+def test_monetary_only_currency_index_is_rate_times_scale():
+    # No surprise data at all, only a rate score → index = rate * scale.
+    empty = pd.DataFrame(columns=CALENDAR_COLUMNS)
+    p = build_payload(empty, _indicators_cfg(), _instruments_cfg(),
+                      as_of=AS_OF, rate_scores={"USD": _rate(1)})
+    usd = p["currencies"]["USD"]
+    assert usd["categories"]["monetary"]["coverage"] == 1
+    assert usd["index"] == pytest.approx(5.0)  # +1 * scale(5)
+
+
+def test_graceful_when_currency_lacks_rate_score():
+    # USD has a rate score, EUR does not → EUR keeps 3-category behavior, no crash.
+    cal = pd.concat([
+        _make_rows("USD", "gdp_qoq", [100] * 11 + [110], [100] * 12),
+        _make_rows("EUR", "gdp_qoq", [1.0] * 11 + [2.0], [1.0] * 12),
+    ], ignore_index=True)
+    p = build_payload(cal, _indicators_cfg(), _instruments_cfg(),
+                      as_of=AS_OF, rate_scores={"USD": _rate(2)})
+    assert "monetary" in p["currencies"]["USD"]["categories"]
+    assert "monetary" not in p["currencies"]["EUR"]["categories"]
+    # EUR index unchanged = growth +2 * scale
+    assert p["currencies"]["EUR"]["index"] == pytest.approx(10.0)
+
+
+def test_fx_pair_monetary_differential_in_breakdown():
+    # EUR rate +2, USD rate -1 → EURUSD monetary differential exists on both legs.
+    rs = {"EUR": _rate(2), "USD": _rate(-1)}
+    p = build_payload(pd.DataFrame(columns=CALENDAR_COLUMNS),
+                      _indicators_cfg(), _instruments_cfg(), as_of=AS_OF, rate_scores=rs)
+    by = {i["symbol"]: i for i in p["instruments"]}
+    eurusd = by["EURUSD"]
+    assert eurusd["breakdown"]["base"]["indicators"]["rate_expectations"]["score"] == 2
+    assert eurusd["breakdown"]["quote"]["indicators"]["rate_expectations"]["score"] == -1

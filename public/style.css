@@ -1219,9 +1219,11 @@ table.econ-table thead th.ind-head { font-size: 10px; padding: 4px 5px; white-sp
 .grp-head.grp-growth,    .ind-head.grp-growth    { background: rgba(33,150,243,0.08); }
 .grp-head.grp-inflation, .ind-head.grp-inflation { background: rgba(255,152,0,0.08); }
 .grp-head.grp-labour,    .ind-head.grp-labour    { background: rgba(156,39,176,0.08); }
+.grp-head.grp-monetary,  .ind-head.grp-monetary  { background: rgba(0,150,136,0.10); }
 body.dark .grp-head.grp-growth,    body.dark .ind-head.grp-growth    { background: rgba(33,150,243,0.14); }
 body.dark .grp-head.grp-inflation, body.dark .ind-head.grp-inflation { background: rgba(255,152,0,0.14); }
 body.dark .grp-head.grp-labour,    body.dark .ind-head.grp-labour    { background: rgba(156,39,176,0.14); }
+body.dark .grp-head.grp-monetary,  body.dark .ind-head.grp-monetary  { background: rgba(0,150,136,0.18); }
 
 /* Modal: responsive, no horizontal clipping. */
 #econDetailModal .modal-content { max-width: 1100px; }

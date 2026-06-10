@@ -27,6 +27,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from src.economic_compute import build_payload
+from src.rate_compute import compute_rate_scores
 from src.static_assets import copy_static_assets
 
 log = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES_DIR = ROOT / "templates"
 PUBLIC_DIR = ROOT / "public"
 PARQUET = ROOT / "data" / "economic_calendar.parquet"
+RATES_PARQUET = ROOT / "data" / "rates.parquet"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 
@@ -56,12 +58,14 @@ INDICATOR_LABELS = {
     "jolts": "JOLTS Job Openings",
     "jobless_claims": "Jobless Claims",
     "interest_rate_decision": "Interest Rate Decision",
+    "rate_expectations": "Rate Expectations (2y)",
 }
 
 CATEGORY_LABEL_FALLBACK = {
     "growth": "Growth",
     "inflation": "Inflation",
     "labour": "Labour Market",
+    "monetary": "Monetary Policy",
     "rates": "Rates (display-only)",
 }
 
@@ -89,6 +93,9 @@ TABLE_LAYOUT = [
         ("adp", "ADP"),
         ("jolts", "JOLTS"),
         ("jobless_claims", "Claims"),
+    ]},
+    {"category": "monetary", "columns": [
+        ("rate_expectations", "Rate Exp (2y)"),
     ]},
 ]
 
@@ -146,9 +153,18 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
             "weight": float(cfg.get("weight", 1.0)),
             "max_age_days": int(cfg.get("max_age_days", defaults.get("max_age_days", 120))),
         }
+    # Synthetic meta for the standing rate sub-indicator (not in the YAML taxonomy).
+    ind_meta["rate_expectations"] = {
+        "label": INDICATOR_LABELS["rate_expectations"],
+        "category": "monetary",
+        "pillar": "monetary",
+        "direction": 1,
+        "weight": 1.0,
+        "max_age_days": 7,
+    }
 
     cat_meta: dict[str, dict] = {}
-    for key in list(categories_cfg) + ["rates"]:
+    for key in list(categories_cfg) + ["monetary", "rates"]:
         cat_meta[key] = {
             "label": (categories_cfg.get(key, {}) or {}).get(
                 "label", CATEGORY_LABEL_FALLBACK.get(key, key.title())
@@ -259,10 +275,34 @@ def build_economic_payload() -> dict:
         log.warning("%s missing — rendering an empty Economic page.", PARQUET)
 
     as_of = pd.Timestamp.utcnow().tz_localize(None)
-    payload = build_payload(cal, indicators_cfg, instruments_cfg, as_of=as_of)
+
+    # Rate-Expectations engine (C1): optional 4th "monetary" category. Missing
+    # parquet → render exactly as before (3 categories), no crash.
+    rate_scores = {}
+    rate_sources_by_ccy: dict[str, str] = {}
+    if RATES_PARQUET.exists():
+        try:
+            rates_df = pd.read_parquet(RATES_PARQUET)
+            rate_scores = compute_rate_scores(rates_df, as_of=as_of.date())
+            rates_df = rates_df.sort_values("date")
+            rate_sources_by_ccy = {
+                str(c): str(g["source"].iloc[-1])
+                for c, g in rates_df.groupby("currency")
+            }
+        except Exception as e:
+            log.warning("rates.parquet present but unreadable (%s); skipping monetary.", e)
+            rate_scores = {}
+
+    payload = build_payload(cal, indicators_cfg, instruments_cfg,
+                            as_of=as_of, rate_scores=rate_scores or None)
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     _enrich_breakdowns(payload, meta["indicators"], as_of)
+    # Attach the chosen source to each rate_expectations breakdown entry.
+    for ccy, card in payload.get("currencies", {}).items():
+        entry = (card.get("breakdown") or {}).get("rate_expectations")
+        if entry is not None and ccy in rate_sources_by_ccy:
+            entry["source"] = rate_sources_by_ccy[ccy]
     _build_indicator_cells(payload, instruments_cfg)
 
     # Presentation-only label trim (keeps the symbol column tight).

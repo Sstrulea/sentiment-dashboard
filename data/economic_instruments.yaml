@@ -25,7 +25,7 @@ currency_for_country:
 #   categories_display — column order on the table.
 #   bias_thresholds — on |score|:  < mild => Neutral ; [mild-1, very-1] => Bull/Bear ;
 #                     >= very => Very Bull/Bear. (See compute._bias_label.)
-categories_display: [growth, inflation, labour]
+categories_display: [growth, inflation, labour, monetary]
 scale: 5
 pair_divisor: 2
 bias_thresholds:

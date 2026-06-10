@@ -5,11 +5,16 @@ export MT5_FILES_DIR="/Users/sebastian/Library/Application Support/net.metaquote
 REPO="$HOME/Documents/projects/macro-data-analysis"
 cd "$REPO" || exit 1
 git pull --rebase --autostash >/dev/null 2>&1
-before=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+cal_before=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+rates_before=$(md5 -q data/rates.parquet 2>/dev/null)
+# Refresh the calendar (surprises) and the 2y rates (Monetary Policy) before render.
 ./.venv/bin/python -m src.economic_fetch >> /tmp/econ.log 2>&1
-after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
-if [ "$before" != "$after" ]; then
+./.venv/bin/python -m src.rate_fetch >> /tmp/econ.log 2>&1
+cal_after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+rates_after=$(md5 -q data/rates.parquet 2>/dev/null)
+if [ "$cal_before" != "$cal_after" ] || [ "$rates_before" != "$rates_after" ]; then
   ./.venv/bin/python -m src.main --mode economic >> /tmp/econ.log 2>&1
-  git add data/economic_calendar.parquet public/economic.html public/data/economic.json
+  git add data/economic_calendar.parquet data/rates.parquet \
+          public/economic.html public/data/economic.json
   git commit -m "econ: refresh $(date -u +%FT%TZ)" >/dev/null 2>&1 && git push >/dev/null 2>&1
 fi
