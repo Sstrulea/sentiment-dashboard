@@ -221,7 +221,10 @@ matcher:
     - { pattern: '^Core CPI y/y$',                          indicator: core_cpi }
     - { pattern: '^CPI y/y$',                               indicator: cpi_yoy }
     - { pattern: '^PPI Output y/y$',                        indicator: ppi_yoy }
-    - { pattern: '^GDP q/q$',                               indicator: gdp_qoq }
+    # UK discontinued "GDP q/q" (last 2025-05); the live monthly GDP release with
+    # consensus is "GDP m/m". "GDP 3m/3m" carries no forecast → unusable. The
+    # gdp_qoq quarterly window (110d) keeps this ~2-monthly print current.
+    - { pattern: '^GDP m/m$',                               indicator: gdp_qoq }
     - { pattern: '^S&P Global/CIPS Manufacturing PMI$',     indicator: manufacturing_pmi }
     - { pattern: '^S&P Global/CIPS Services PMI$',          indicator: services_pmi }
     - { pattern: '^Retail Sales m/m$',                      indicator: retail_sales }
