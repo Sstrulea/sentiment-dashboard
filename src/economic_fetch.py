@@ -63,6 +63,7 @@ CALENDAR_COLUMNS = [
     "previous",
     "unit",
     "event_raw",
+    "period",
     "source",
 ]
 
@@ -104,7 +105,7 @@ def load_raw(csv_path: Path | None = None) -> pd.DataFrame:
     df["release_dt"] = st - pd.to_timedelta(off, unit="s")
 
     df = df.dropna(subset=["release_dt"]).reset_index(drop=True)
-    for c in ("country", "currency", "event", "unit"):
+    for c in ("country", "currency", "event", "unit", "period"):
         if c in df.columns:
             df[c] = df[c].fillna("").astype(str).str.strip()
     return df
@@ -161,6 +162,7 @@ def normalize(df: pd.DataFrame, matcher: CompiledMatcher) -> pd.DataFrame:
         key = matcher.match(country, event)
         if key is None:
             continue
+        period = str(getattr(r, "period", "") or "").strip()
         rows.append({
             "release_dt": getattr(r, "release_dt"),
             "country": country,
@@ -171,6 +173,7 @@ def normalize(df: pd.DataFrame, matcher: CompiledMatcher) -> pd.DataFrame:
             "previous": getattr(r, "previous"),
             "unit": getattr(r, "unit", ""),
             "event_raw": event,
+            "period": period,            # MT5 reference period → exact flash/final dedup
             "source": "mt5",
         })
 

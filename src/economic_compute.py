@@ -78,28 +78,63 @@ def _max_age_for(indicator_cfg: dict, defaults: dict, freq: str | None) -> int:
     return int(defaults.get("max_age_days", 120))
 
 
-def _dedup_flash_final(df: pd.DataFrame, gap_days: int | None) -> pd.DataFrame:
-    """Collapse flash/final double prints of one period into the later (final).
+def _valid_period(s: pd.Series) -> pd.Series:
+    """Mask of rows whose MT5 `period` is a usable reference period."""
+    p = s.astype("string").str.strip()
+    return p.notna() & ~p.isin(["", "0", "0.0", "nan", "none", "None", "NaT"])
 
-    `df` is one (currency, indicator) sorted ascending by release_dt. Consecutive
-    prints closer than `gap_days` belong to the same release event (flash then
-    final of one reference period); we keep only the LAST (final) so the rolling
-    sigma isn't polluted by two surprises per period. No `period` column exists in
-    the parquet, so periods are inferred from release-date proximity scaled to the
-    indicator's cadence (flash→final ≪ inter-period gap).
+
+def _keep_latest_published(rows: pd.DataFrame):
+    """Index of the row to keep for one group: the latest release_dt among rows
+    with a non-null `actual` (a future/scheduled row has null actual → never
+    chosen); if the whole group is unpublished, keep its latest row."""
+    published = rows[rows["actual"].notna()]
+    pick = published if not published.empty else rows
+    return pick["release_dt"].idxmax()
+
+
+def _dedup_flash_final(df: pd.DataFrame, gap_days: int | None) -> pd.DataFrame:
+    """Collapse flash/final double prints of one reference period into the single
+    PUBLISHED final, so the current value and the rolling sigma use one print per
+    period (never a flash, never a future/scheduled blank).
+
+    `df` is one (currency, indicator). Primary key is the MT5 `period` column
+    (exact). Rows without a usable period fall back to release-date proximity
+    (gap_days), still guarded so a blank/future row is never selected.
     """
-    if gap_days is None or gap_days <= 0 or len(df) < 2:
+    if df is None or len(df) < 2:
         return df
-    rel = list(df["release_dt"])
-    cluster_ids = [0] * len(df)
-    cid = 0
-    for i in range(1, len(df)):
-        if (rel[i] - rel[i - 1]).days > gap_days:
-            cid += 1
-        cluster_ids[i] = cid
-    out = df.assign(_cluster=cluster_ids)
-    out = out.groupby("_cluster", as_index=False, sort=False).tail(1)
-    return out.drop(columns="_cluster").reset_index(drop=True)
+    df = df.sort_values("release_dt")
+
+    has_period = "period" in df.columns
+    valid = _valid_period(df["period"]) if has_period else pd.Series(False, index=df.index)
+
+    keep: list = []
+    # exact period grouping
+    if valid.any():
+        sub = df[valid]
+        for _, g in sub.groupby(sub["period"].astype("string").str.strip(), sort=False):
+            keep.append(_keep_latest_published(g))
+    # proximity fallback for rows lacking a period
+    rest = df[~valid]
+    if not rest.empty:
+        if gap_days is None or gap_days <= 0:
+            keep.extend(rest.index.tolist())  # no clustering, but the latest-actual
+            #                                   guard in compute still excludes blanks
+        else:
+            rel = list(rest["release_dt"])
+            idx = list(rest.index)
+            cluster = {idx[0]: 0}
+            cid = 0
+            for i in range(1, len(rest)):
+                if (rel[i] - rel[i - 1]).days > gap_days:
+                    cid += 1
+                cluster[idx[i]] = cid
+            rest = rest.assign(_c=[cluster[i] for i in idx])
+            for _, g in rest.groupby("_c", sort=False):
+                keep.append(_keep_latest_published(g))
+
+    return df.loc[sorted(set(keep))].sort_values("release_dt").reset_index(drop=True)
 
 
 def compute_indicator_score(

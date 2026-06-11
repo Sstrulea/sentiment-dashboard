@@ -51,7 +51,21 @@
       "Bash(/Users/sebastian/Documents/projects/macro-data-analysis/.venv/bin/python *)",
       "Bash(chmod +x scripts/econ_refresh.sh)",
       "Bash(zsh -n scripts/econ_refresh.sh)",
-      "Bash([ -d \"$HOME/Documents/projects/macro-data-analysis/.venv\" ])"
+      "Bash([ -d \"$HOME/Documents/projects/macro-data-analysis/.venv\" ])",
+      "Bash(git commit *)",
+      "Bash(sed -n '378,400p' static/style.css)",
+      "Bash(sed -n '/def bias_label/,/return \\\\\"Bullish\\\\\"/p' src/economic_compute.py)",
+      "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' -o /tmp/fred.txt -w '%{http_code}' --max-time 25 https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2)",
+      "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' -o /tmp/stq.txt -w '%{http_code}' --max-time 25 'https://stooq.com/q/d/l/?s=2usy.b&i=d')",
+      "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' -o /tmp/stq2.txt -w '%{http_code}' --max-time 25 'https://stooq.pl/q/d/l/?s=2usy.b&i=d')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); s=d['series']['docs'][0]; print\\('name:',s.get\\('series_name'\\)\\); print\\('freq dims:',s.get\\('dimensions'\\)\\); p=s['period']; v=s['value']; print\\('n=',len\\(p\\),'range',p[0],'->',p[-1]\\); print\\('last3', list\\(zip\\(p[-3:],v[-3:]\\)\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(x['provider_code'],'/',x['dataset_code'],'·',x.get\\('name',''\\)[:70]\\) for x in d['results']['docs']]\")",
+      "Bash(curl -s --max-time 25 \"https://api.db.nomics.world/v22/series/FRED/DGS2?observations=1\")",
+      "Bash(curl -s --max-time 25 \"https://api.db.nomics.world/v22/search?q=2-year+government+bond+yield&limit=3\")",
+      "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' --max-time 25 https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv -o /tmp/jgb.csv)",
+      "Bash(python3 -)",
+      "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' --max-time 30 https://data.snb.ch/api/cube/rendoblid/data/csv/en -o /tmp/snb.csv)",
+      "Bash(PYTHONPATH=. .venv/bin/python *)"
     ]
   }
 }

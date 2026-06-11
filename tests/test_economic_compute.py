@@ -495,3 +495,78 @@ def test_dedup_changes_sigma_path():
     assert deduped["flag"] == "fallback"
     assert raw["flag"] is None
     assert deduped["score"] != raw["score"]
+
+
+# ---------------------------------------------------------------------------
+# Period-based flash/final dedup (replaces fragile proximity for bi-weekly cadence)
+# ---------------------------------------------------------------------------
+
+def _rows_p(ccy, key, dates, actuals, cons, periods):
+    df = pd.DataFrame({
+        "currency": ccy, "indicator_key": key,
+        "release_dt": pd.to_datetime(pd.Series(dates)),
+        "actual": actuals, "consensus": cons, "period": periods,
+    })
+    return df
+
+
+def test_period_dedup_keeps_published_final_not_future_blank():
+    # EU-HICP-like: flash + final per period (~14d apart), interleaved across months,
+    # plus a future scheduled blank for the newest period. Dedup must keep the
+    # PUBLISHED final per period and never the future blank.
+    dates = ["2026-03-31", "2026-04-16", "2026-04-30", "2026-05-20",
+             "2026-06-02", "2026-06-17"]
+    actuals = [1.7, 2.6, 1.9, 3.0, 2.6, None]          # last is future/blank
+    cons = [1.8, 1.7, 2.3, 1.9, 2.6, 2.6]
+    periods = ["2026.03.01", "2026.03.01", "2026.04.01", "2026.04.01",
+               "2026.05.01", "2026.05.01"]
+    df = _rows_p("EUR", "cpi_yoy", dates, actuals, cons, periods)
+    dd = _dedup_flash_final(df.sort_values("release_dt").reset_index(drop=True), 18)
+    # one row per period, each the latest PUBLISHED print
+    assert list(dd["period"]) == ["2026.03.01", "2026.04.01", "2026.05.01"]
+    assert list(dd["actual"]) == [2.6, 3.0, 2.6]
+    # latest published = May 2.6 @ 2026-06-02 (NOT the 2026-06-17 blank)
+    pub = dd[dd["actual"].notna()]
+    assert pub["release_dt"].max() == pd.Timestamp("2026-06-02")
+
+
+def test_period_dedup_scores_latest_published_period():
+    # End-to-end via compute_indicator_score: the score uses May's 2.6, not the
+    # old April flash (1.9) the proximity heuristic used to latch onto.
+    dates = ["2026-03-31", "2026-04-16", "2026-04-30", "2026-05-20",
+             "2026-06-02", "2026-06-17"]
+    actuals = [1.7, 2.6, 1.9, 3.0, 2.6, None]
+    cons = [1.8, 1.7, 2.3, 1.9, 2.6, 2.6]
+    periods = ["2026.03.01", "2026.03.01", "2026.04.01", "2026.04.01",
+               "2026.05.01", "2026.05.01"]
+    df = _rows_p("EUR", "cpi_yoy", dates, actuals, cons, periods)
+    cfg = {"direction": 1, "category": "inflation", "weight": 1.0, "frequency": "monthly"}
+    r = compute_indicator_score(df, cfg, DEFAULTS_FREQ, pd.Timestamp("2026-06-11"),
+                                allow_stale=True, currency="EUR")
+    assert r["actual"] == 2.6
+    assert r["release_dt"] == pd.Timestamp("2026-06-02")
+    assert r["stale"] is False
+
+
+def test_period_dedup_all_blank_group_not_chosen_as_current():
+    # A period with only a future/blank print must not become the "current" value.
+    dates = ["2026-05-02", "2026-06-02"]
+    df = _rows_p("EUR", "cpi_yoy", dates, [2.4, None], [2.3, 2.4],
+                 ["2026.04.01", "2026.05.01"])
+    cfg = {"direction": 1, "category": "inflation", "weight": 1.0, "frequency": "monthly"}
+    r = compute_indicator_score(df, cfg, DEFAULTS_FREQ, pd.Timestamp("2026-06-05"),
+                                allow_stale=True, currency="EUR")
+    assert r["actual"] == 2.4 and r["release_dt"] == pd.Timestamp("2026-05-02")
+
+
+def test_dedup_proximity_fallback_when_period_missing():
+    # No period column → falls back to proximity, still guarded (no blank/future pick).
+    dates = ["2026-04-01", "2026-04-09", "2026-05-01", "2026-05-09"]
+    df = pd.DataFrame({
+        "currency": "GBP", "indicator_key": "manufacturing_pmi",
+        "release_dt": pd.to_datetime(pd.Series(dates)),
+        "actual": [50.0, 50.5, 51.0, None], "consensus": [49, 49, 50, 50],
+    })
+    dd = _dedup_flash_final(df.sort_values("release_dt").reset_index(drop=True), 18)
+    # April pair (8d) collapses to final 50.5; May cluster keeps published 51.0 (not blank)
+    assert list(dd["actual"]) == [50.5, 51.0]
