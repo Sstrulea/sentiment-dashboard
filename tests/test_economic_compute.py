@@ -389,3 +389,109 @@ def test_fx_pair_monetary_differential_in_breakdown():
     eurusd = by["EURUSD"]
     assert eurusd["breakdown"]["base"]["indicators"]["rate_expectations"]["score"] == 2
     assert eurusd["breakdown"]["quote"]["indicators"]["rate_expectations"]["score"] == -1
+
+
+# ---------------------------------------------------------------------------
+# Fix 1 — per-frequency recency window  |  Fix 2 — flash/final dedup
+# ---------------------------------------------------------------------------
+from src.economic_compute import effective_frequency, _max_age_for, _dedup_flash_final
+
+DEFAULTS_FREQ = {
+    **DEFAULTS,
+    "default_frequency": "monthly",
+    "max_age_by_frequency": {"weekly": 14, "monthly": 45, "quarterly": 110},
+    "dedup_gap_days": {"weekly": 3, "monthly": 18, "quarterly": 45},
+}
+DEFAULTS_NODEDUP = {**DEFAULTS_FREQ, "dedup_gap_days": {}}
+
+
+def _rows(ccy, key, dates, actuals, cons):
+    return pd.DataFrame({
+        "currency": ccy, "indicator_key": key,
+        "release_dt": pd.to_datetime(pd.Series(dates)),
+        "actual": actuals, "consensus": cons,
+    }, columns=CALENDAR_COLUMNS)
+
+
+def test_max_age_for_per_frequency():
+    assert _max_age_for({"frequency": "quarterly"}, DEFAULTS_FREQ, "quarterly") == 110
+    assert _max_age_for({"frequency": "monthly"}, DEFAULTS_FREQ, "monthly") == 45
+    assert _max_age_for({"frequency": "weekly"}, DEFAULTS_FREQ, "weekly") == 14
+    assert _max_age_for({"max_age_days": 99}, DEFAULTS_FREQ, "monthly") == 99  # explicit wins
+    assert _max_age_for({}, DEFAULTS_FREQ, None) == 120                        # ultimate fallback
+
+
+def test_effective_frequency_currency_override():
+    cfg = {"frequency": "monthly", "frequency_overrides": {"AUD": "quarterly", "NZD": "quarterly"}}
+    assert effective_frequency(cfg, DEFAULTS_FREQ, "AUD") == "quarterly"
+    assert effective_frequency(cfg, DEFAULTS_FREQ, "USD") == "monthly"
+    assert effective_frequency({}, DEFAULTS_FREQ, "USD") == "monthly"  # default_frequency
+
+
+def test_quarterly_print_kept_within_window():
+    # latest GDP print 100 days old → within quarterly window (110), not stale.
+    dates = [AS_OF - pd.Timedelta(days=d) for d in (370, 280, 190, 100)]
+    df = _rows("CAD", "gdp_qoq", dates, [1.0, 1.1, 1.2, 1.5], [1.0, 1.0, 1.0, 1.0])
+    cfg = {"direction": 1, "category": "growth", "weight": 1.0, "frequency": "quarterly"}
+    r = compute_indicator_score(df, cfg, DEFAULTS_FREQ, AS_OF, allow_stale=True, currency="CAD")
+    assert r is not None and r["stale"] is False
+
+
+def test_monthly_window_drops_old_print_quarterly_keeps_it():
+    # Same 100-day-old latest print: monthly window (45) drops it, quarterly (110) keeps it.
+    dates = [AS_OF - pd.Timedelta(days=d) for d in (190, 145, 100)]
+    df = _rows("USD", "cpi_yoy", dates, [2.0, 2.1, 2.5], [2.0, 2.0, 2.0])
+    monthly = {"direction": 1, "category": "inflation", "weight": 1.0, "frequency": "monthly"}
+    assert compute_indicator_score(df, monthly, DEFAULTS_FREQ, AS_OF, currency="USD") is None
+    r = compute_indicator_score(df, monthly, DEFAULTS_FREQ, AS_OF, allow_stale=True, currency="USD")
+    assert r["stale"] is True
+    quarterly = {**monthly, "frequency": "quarterly"}
+    assert compute_indicator_score(df, quarterly, DEFAULTS_FREQ, AS_OF, currency="USD") is not None
+
+
+def test_per_currency_quarterly_override_protects_nz_cpi():
+    # NZ CPI is quarterly; a 100-day-old print survives for NZD but not USD.
+    dates = [AS_OF - pd.Timedelta(days=d) for d in (280, 190, 100)]
+    df = _rows("NZD", "cpi_yoy", dates, [2.0, 2.1, 2.5], [2.0, 2.0, 2.0])
+    cfg = {"direction": 1, "category": "inflation", "weight": 1.0,
+           "frequency": "monthly", "frequency_overrides": {"NZD": "quarterly"}}
+    assert compute_indicator_score(df, cfg, DEFAULTS_FREQ, AS_OF, currency="NZD") is not None
+    assert compute_indicator_score(df, cfg, DEFAULTS_FREQ, AS_OF, currency="USD") is None
+
+
+# --- Fix 2: flash/final dedup ---
+
+def _flash_final_df():
+    # gaps: flash→final = 8d, final→next flash = 22d (S&P PMI-like). finals are the
+    # later print of each cluster. surprises: flashes ±5 (noisy), finals +1 (calm).
+    offs = [71, 63, 41, 33, 11, 3]                 # days before AS_OF (descending age)
+    dates = [AS_OF - pd.Timedelta(days=d) for d in offs]
+    actuals = [55, 51, 45, 51, 55, 51]             # flash 55/45/55, final 51 each
+    cons = [50, 50, 50, 50, 50, 50]
+    return _rows("GBP", "services_pmi", dates, actuals, cons)
+
+
+def test_dedup_keeps_one_final_per_period():
+    df = _flash_final_df().sort_values("release_dt").reset_index(drop=True)
+    dd = _dedup_flash_final(df, 18)
+    assert len(dd) == 3                            # 6 prints → 3 periods
+    assert list(dd["actual"]) == [51, 51, 51]      # finals kept (flashes 55/45/55 dropped)
+
+
+def test_weekly_series_not_collapsed():
+    dates = [AS_OF - pd.Timedelta(days=7 * i) for i in range(6)][::-1]
+    df = _rows("USD", "jobless_claims", dates, [220, 221, 219, 222, 218, 215],
+               [220] * 6).sort_values("release_dt").reset_index(drop=True)
+    assert len(_dedup_flash_final(df, 3)) == 6      # 7d apart > 3d gap → nothing collapses
+
+
+def test_dedup_changes_sigma_path():
+    df = _flash_final_df()
+    cfg = {"direction": 1, "category": "growth", "weight": 1.0, "frequency": "monthly"}
+    # With dedup: 3 finals (< fallback_min_prints=6) and zero-variance → fallback path.
+    deduped = compute_indicator_score(df, cfg, DEFAULTS_FREQ, AS_OF, currency="GBP")
+    # Without dedup: 6 noisy prints → stable sigma → z path. Different method + score.
+    raw = compute_indicator_score(df, cfg, DEFAULTS_NODEDUP, AS_OF, currency="GBP")
+    assert deduped["flag"] == "fallback"
+    assert raw["flag"] is None
+    assert deduped["score"] != raw["score"]

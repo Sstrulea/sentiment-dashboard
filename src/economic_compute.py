@@ -60,24 +60,69 @@ def _clamp_cell(precise: float) -> int:
 # Atomic per-indicator score
 # ---------------------------------------------------------------------------
 
+def effective_frequency(indicator_cfg: dict, defaults: dict, currency: str | None) -> str | None:
+    """Resolve an indicator's frequency for a currency (per-currency override wins)."""
+    overrides = indicator_cfg.get("frequency_overrides", {}) or {}
+    if currency and currency in overrides:
+        return overrides[currency]
+    return indicator_cfg.get("frequency") or defaults.get("default_frequency")
+
+
+def _max_age_for(indicator_cfg: dict, defaults: dict, freq: str | None) -> int:
+    """Recency window (days): explicit per-indicator override > per-frequency > fallback."""
+    if "max_age_days" in indicator_cfg:
+        return int(indicator_cfg["max_age_days"])
+    by_freq = defaults.get("max_age_by_frequency", {}) or {}
+    if freq and freq in by_freq:
+        return int(by_freq[freq])
+    return int(defaults.get("max_age_days", 120))
+
+
+def _dedup_flash_final(df: pd.DataFrame, gap_days: int | None) -> pd.DataFrame:
+    """Collapse flash/final double prints of one period into the later (final).
+
+    `df` is one (currency, indicator) sorted ascending by release_dt. Consecutive
+    prints closer than `gap_days` belong to the same release event (flash then
+    final of one reference period); we keep only the LAST (final) so the rolling
+    sigma isn't polluted by two surprises per period. No `period` column exists in
+    the parquet, so periods are inferred from release-date proximity scaled to the
+    indicator's cadence (flash→final ≪ inter-period gap).
+    """
+    if gap_days is None or gap_days <= 0 or len(df) < 2:
+        return df
+    rel = list(df["release_dt"])
+    cluster_ids = [0] * len(df)
+    cid = 0
+    for i in range(1, len(df)):
+        if (rel[i] - rel[i - 1]).days > gap_days:
+            cid += 1
+        cluster_ids[i] = cid
+    out = df.assign(_cluster=cluster_ids)
+    out = out.groupby("_cluster", as_index=False, sort=False).tail(1)
+    return out.drop(columns="_cluster").reset_index(drop=True)
+
+
 def compute_indicator_score(
     sub_df: pd.DataFrame,
     indicator_cfg: dict,
     defaults: dict,
     as_of: pd.Timestamp,
     allow_stale: bool = False,
+    currency: str | None = None,
 ) -> dict | None:
     """Score the latest release of one (currency, indicator).
 
-    `sub_df` holds only that indicator's rows for one currency. Returns None if
-    there is no release with a non-NaN `actual` at all (truly absent). If the
-    latest actual is OUTSIDE `max_age_days`:
-      - allow_stale=False (default): returns None (the historical scoring
-        behavior — stale data never enters any average/index).
-      - allow_stale=True: still scores it but marks `stale: True`, so callers
-        can DISPLAY it (greyed) without feeding it into aggregation.
+    `sub_df` holds only that indicator's rows for one currency. Recency uses a
+    per-frequency window (defaults.max_age_by_frequency, resolved via the
+    indicator's frequency + per-currency override) so quarterly prints (GDP) are
+    not dropped while still current. Flash/final double prints are collapsed to
+    the final before scoring so the rolling sigma isn't polluted.
+
+    Returns None if there is no release with a non-NaN `actual` at all (truly
+    absent). If the latest actual is OUTSIDE the window:
+      - allow_stale=False (default): returns None (stale never enters aggregation).
+      - allow_stale=True: scores it but marks `stale: True` for greyed display.
     Returns: {actual, consensus, surprise, z, score, flag, release_dt, stale}.
-    flags: None (z-scored), "fallback", "no_consensus".
     """
     if sub_df is None or sub_df.empty:
         return None
@@ -86,13 +131,17 @@ def compute_indicator_score(
     z_buckets = defaults.get("z_buckets", [1.0, 0.33])
     pct_buckets = defaults.get("pct_buckets", [0.10, 0.02])
     min_prints = int(defaults.get("fallback_min_prints", 6))
-    max_age_days = int(indicator_cfg.get("max_age_days", defaults.get("max_age_days", 120)))
+    freq = effective_frequency(indicator_cfg, defaults, currency)
+    max_age_days = _max_age_for(indicator_cfg, defaults, freq)
+    dedup_gap = (defaults.get("dedup_gap_days", {}) or {}).get(freq)
     direction = float(indicator_cfg.get("direction", 1))
 
     df = sub_df.sort_values("release_dt").reset_index(drop=True)
     df = df.copy()
     df["actual"] = pd.to_numeric(df["actual"], errors="coerce")
     df["consensus"] = pd.to_numeric(df["consensus"], errors="coerce")
+    # Collapse flash/final to one print per period (cleans the sigma baseline).
+    df = _dedup_flash_final(df, dedup_gap)
 
     cutoff = as_of - pd.Timedelta(days=max_age_days)
     fresh = df[df["actual"].notna() & (df["release_dt"] >= cutoff)]
@@ -230,7 +279,8 @@ def compute_currency_scorecard(
         sub = ccy_df[ccy_df["indicator_key"] == key] if not ccy_df.empty else ccy_df
         # allow_stale=True so stale indicators appear in the breakdown (for
         # display), but they are EXCLUDED from the category average/index below.
-        scored = compute_indicator_score(sub, ind_cfg, defaults, as_of, allow_stale=True)
+        scored = compute_indicator_score(sub, ind_cfg, defaults, as_of,
+                                          allow_stale=True, currency=currency)
         if scored is None:
             continue
         breakdown[key] = scored

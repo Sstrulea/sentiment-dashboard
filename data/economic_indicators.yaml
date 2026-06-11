@@ -18,7 +18,22 @@ defaults:
   z_buckets: [1.0, 0.33]       # |z| >= 1.0 -> ±2 ; >= 0.33 -> ±1 ; else 0
   fallback_min_prints: 6       # below this many (actual,consensus) pairs, use pct fallback
   pct_buckets: [0.10, 0.02]    # |pct| >= 0.10 -> ±2 ; >= 0.02 -> ±1 ; else 0
-  max_age_days: 120            # default trailing window for "latest release" per indicator
+  max_age_days: 120            # ultimate fallback when an indicator has no known frequency
+  default_frequency: monthly   # used when an indicator declares no `frequency`
+  # Recency window per frequency (~1.5x the cadence) so the latest print stays
+  # "current" until the next one is due. A quarterly print (e.g. GDP) is NOT
+  # dropped as stale just because it is >45d old.
+  max_age_by_frequency:
+    weekly: 14
+    monthly: 45
+    quarterly: 110
+  # Flash/final collapse: consecutive prints of the SAME indicator closer than
+  # this many days are one release event (flash + final of one period) → keep
+  # only the later (final) so sigma isn't polluted by double prints.
+  dedup_gap_days:
+    weekly: 3
+    monthly: 18
+    quarterly: 45
 
 # Equal-weight categories in v1 (1.0). The rate group cap is a Phase-7
 # calibration concern and lives with the standing pillars (not in scope here).
@@ -34,6 +49,10 @@ categories:
 #   weight        — relative weight within its category (equal=1.0 in v1)
 #   max_age_days  — optional per-indicator override of defaults.max_age_days
 #   currencies    — optional whitelist; absent => all in-scope currencies
+#   frequency     — weekly | monthly | quarterly (drives the recency window +
+#                   flash/final dedup gap). Defaults to defaults.default_frequency.
+#   frequency_overrides — {CCY: frequency} where a currency's cadence differs
+#                   (e.g. AU/NZ CPI are quarterly while most are monthly).
 indicators:
   # --- Inflation (hawkish convention: hotter = bullish currency) ---
   cpi_yoy:
@@ -41,22 +60,29 @@ indicators:
     category: inflation
     direction: 1
     weight: 1.0
+    frequency: monthly
+    frequency_overrides: { AUD: quarterly, NZD: quarterly }
   core_cpi:
     pillar: inflation
     category: inflation
     direction: 1
     weight: 1.0
+    frequency: monthly
+    frequency_overrides: { AUD: quarterly }   # RBA Trimmed Mean CPI is quarterly
   ppi_yoy:
     pillar: inflation
     category: inflation
     direction: 1
     weight: 1.0
+    frequency: monthly
+    frequency_overrides: { AUD: quarterly, NZD: quarterly }
   core_pce:
     pillar: inflation
     category: inflation
     direction: 1
     weight: 1.0
     currencies: [USD]
+    frequency: monthly
 
   # --- Growth ---
   gdp_qoq:
@@ -64,21 +90,26 @@ indicators:
     category: growth
     direction: 1
     weight: 1.0
+    frequency: quarterly       # GDP q/q is quarterly everywhere
   manufacturing_pmi:
     pillar: growth
     category: growth
     direction: 1
     weight: 1.0
+    frequency: monthly
   services_pmi:
     pillar: growth
     category: growth
     direction: 1
     weight: 1.0
+    frequency: monthly
   retail_sales:
     pillar: growth
     category: growth
     direction: 1
     weight: 1.0
+    frequency: monthly
+    frequency_overrides: { NZD: quarterly }   # NZ retail sales is quarterly
 
   # --- Labour ---
   employment_change:           # NFP (US) / Employment Change (AU,CA,NZ) / Claimant (UK)
@@ -86,34 +117,43 @@ indicators:
     category: labour
     direction: 1
     weight: 1.0
+    frequency: monthly
+    frequency_overrides: { EUR: quarterly, NZD: quarterly }
   unemployment_rate:
     pillar: labour
     category: labour
     direction: -1              # higher unemployment = bearish currency
     weight: 1.0
+    frequency: monthly
+    frequency_overrides: { NZD: quarterly }   # NZ unemployment is quarterly
   wage_growth:
     pillar: labour
     category: labour
     direction: 1
     weight: 1.0
+    frequency: monthly         # US AHE / JP Labor Cash Earnings are monthly
+    frequency_overrides: { EUR: quarterly, AUD: quarterly, NZD: quarterly }
   adp:
     pillar: labour
     category: labour
     direction: 1
     weight: 1.0
     currencies: [USD]
+    frequency: monthly
   jolts:
     pillar: labour
     category: labour
     direction: 1
     weight: 1.0
     currencies: [USD]
+    frequency: monthly
   jobless_claims:
     pillar: labour
     category: labour
     direction: -1              # more claims = bearish currency
     weight: 1.0
     currencies: [USD]
+    frequency: weekly
 
   # --- Rates (display-only; weight 0 to avoid double-counting vs the standing
   # Rate-Expectations pillar that is added in Phase 9) ---
@@ -122,6 +162,7 @@ indicators:
     category: rates
     direction: 1
     weight: 0.0
+    frequency: monthly         # display-only; window only affects greying
 
 # ---------------------------------------------------------------------------
 # Matcher: MT5 economic-calendar `event` string -> indicator_key, keyed by the
