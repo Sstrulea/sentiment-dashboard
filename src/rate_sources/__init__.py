@@ -338,6 +338,73 @@ class FredSeriesSource(BaseSource):
         return out
 
 
+class TreasuryRealYieldSource(BaseSource):
+    """Keyless reader for the US Treasury 10y REAL yield (TIPS real yield curve).
+
+    Backup/alternate for FRED DFII10 — works when fredgraph is down. The daily
+    real yield curve is published per-year as CSV with header
+    `Date,"5 YR","7 YR","10 YR","20 YR","30 YR"`; we take the "10 YR" column.
+    Fetches the requested years and concatenates (≥3y gives enough history for
+    a 252-obs vol window + 21-row change). Returns DataFrame(date, value,
+    source="treasury")."""
+    name = "treasury"
+    URL = ("https://home.treasury.gov/resource-center/data-chart-center/"
+           "interest-rates/daily-treasury-rates.csv/{year}/all"
+           "?type=daily_treasury_real_yield_curve"
+           "&field_tdr_date_value={year}&page&_format=csv")
+    COLUMN = "10 YR"
+
+    def fetch_real_10y(self, years: list[int]) -> Optional[pd.DataFrame]:
+        """Fetch + concat the 10y real yield for the given years. Never raises."""
+        self.last_status = ""
+        self.last_note = ""
+        try:
+            return self._fetch_years(years)
+        except Exception as e:
+            self._parse_fail(f"{type(e).__name__}: {e}")
+            return None
+
+    def _parse_year(self, text: str) -> Optional[pd.DataFrame]:
+        df = pd.read_csv(io.StringIO(text))
+        cols = {str(c).strip(): c for c in df.columns}
+        date_col = cols.get("Date") or df.columns[0]
+        ten = cols.get(self.COLUMN)
+        if ten is None:
+            return None
+        out = pd.DataFrame({
+            "date": pd.to_datetime(df[date_col], format="%m/%d/%Y", errors="coerce"),
+            "value": pd.to_numeric(df[ten], errors="coerce"),
+            "source": self.name,
+        })
+        return out.dropna(subset=["date", "value"])
+
+    def _fetch_years(self, years: list[int]) -> Optional[pd.DataFrame]:
+        frames, got = [], []
+        for y in years:
+            r = self._get(self.URL.format(year=y), retries=2)
+            if r is None:
+                got.append(f"{y}:{self.last_note}")
+                continue
+            if self._check_botwall(r):
+                got.append(f"{y}:bot-wall")
+                continue
+            part = self._parse_year(r.text)
+            if part is None or part.empty:
+                got.append(f"{y}:no-10YR")
+                continue
+            frames.append(part)
+        if not frames:
+            if not self.last_status:
+                self._parse_fail("; ".join(got) or "no data")
+            else:
+                self.last_note = "; ".join(got)
+            return None
+        out = (pd.concat(frames, ignore_index=True)
+               .drop_duplicates(subset=["date"], keep="last")
+               .sort_values("date").reset_index(drop=True))
+        return out
+
+
 # ---------------------------------------------------------------------------
 # (c) ECB Data Portal — EUR 2y
 # ---------------------------------------------------------------------------

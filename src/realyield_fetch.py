@@ -1,14 +1,16 @@
-"""Fetch US 10y real yield (FRED DFII10) → data/real_yields.parquet.
+"""Fetch US 10y real yield → data/real_yields.parquet (cross-asset data layer).
 
-Standalone cross-asset data layer, parallel to src/rate_fetch.py. Uses the
-generic keyless FRED-series reader (NOT the currency rate adapter). Merges into a
-deterministic, history-preserving parquet. NOT integrated into any scoring/UI —
-that is 6.3b.
+Two keyless sources, stored as SEPARATE series (never mixed — methodology
+differs, so mixing would create momentum artifacts):
+  - FRED DFII10 (10y TIPS real yield)        → series "DFII10"
+  - US Treasury real yield curve, 10 YR col  → series "REAL_10Y_TSY"
+
+The scoring layer (realyield_compute.select_series) picks the preferred AVAILABLE
+series (DFII10 if fresh, else REAL_10Y_TSY) and scores momentum on that ONE
+series. History-preserving, deterministic merge. NOT wired into scoring/UI here.
 
     python -m src.realyield_fetch            # fetch + write parquet, print report
     python -m src.realyield_fetch --scores   # also print the −2..+2 momentum score
-
-NOTE: FRED is blocked in the CC sandbox; run from the residential terminal.
 """
 from __future__ import annotations
 
@@ -21,8 +23,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from .rate_sources import FredSeriesSource
-from .realyield_compute import compute_realyield_score
+from .rate_sources import FredSeriesSource, TreasuryRealYieldSource
+from .realyield_compute import PREFERRED_SERIES, compute_realyield_score
 
 log = logging.getLogger(__name__)
 
@@ -30,25 +32,49 @@ ROOT = Path(__file__).resolve().parents[1]
 REAL_YIELDS_FILE = ROOT / "data" / "real_yields.parquet"
 COLUMNS = ["date", "series", "yield_pct", "source"]
 
-# Series to track (single US real yield for now; extensible).
-SERIES = {"DFII10": "US 10y TIPS real yield"}
+# series_name -> human label
+SERIES = {
+    "DFII10": "US 10y TIPS real yield (FRED)",
+    "REAL_10Y_TSY": "US 10y real yield (Treasury curve)",
+}
+# Years of Treasury history to pull (current + 2 prior → ≥3y for the 252+21 window).
+TSY_YEARS_BACK = 2
 
 
-def fetch_series(series_id: str) -> Optional[pd.DataFrame]:
-    """Fetch one FRED series → DataFrame(date, series, yield_pct, source), else None."""
-    src = FredSeriesSource(series_id)
+def _rows(dates, series: str, vals, source: str) -> pd.DataFrame:
+    df = pd.DataFrame({
+        "date": pd.to_datetime(dates),
+        "series": series,
+        "yield_pct": pd.to_numeric(vals, errors="coerce"),
+        "source": source,
+    }, columns=COLUMNS)
+    return df
+
+
+def fetch_dfii10() -> Optional[pd.DataFrame]:
+    """FRED DFII10 → DataFrame(date, series='DFII10', yield_pct, source), else None."""
+    src = FredSeriesSource("DFII10")
     raw = src.fetch_series()
     if raw is None:
-        log.warning("%s UNRESOLVED — %s (%s)", series_id, src.last_status, src.last_note[:60])
+        log.warning("DFII10 UNRESOLVED — %s (%s)", src.last_status, src.last_note[:60])
         return None
-    df = pd.DataFrame({
-        "date": pd.to_datetime(raw["date"]),
-        "series": series_id,
-        "yield_pct": pd.to_numeric(raw["value"], errors="coerce"),
-        "source": raw["source"],
-    }, columns=COLUMNS)
-    log.info("%s ← fred_series: n=%d latest=%s",
-             series_id, len(df), df["date"].max().date() if len(df) else "—")
+    df = _rows(raw["date"], "DFII10", raw["value"], "fred")
+    log.info("DFII10 ← fred: n=%d latest=%s", len(df), df["date"].max().date() if len(df) else "—")
+    return df
+
+
+def fetch_treasury_real_10y(today: Optional[date] = None) -> Optional[pd.DataFrame]:
+    """US Treasury 10y real yield → DataFrame(series='REAL_10Y_TSY'), else None."""
+    today = today or date.today()
+    years = list(range(today.year - TSY_YEARS_BACK, today.year + 1))
+    src = TreasuryRealYieldSource()
+    raw = src.fetch_real_10y(years)
+    if raw is None:
+        log.warning("REAL_10Y_TSY UNRESOLVED — %s (%s)", src.last_status, src.last_note[:80])
+        return None
+    df = _rows(raw["date"], "REAL_10Y_TSY", raw["value"], "treasury")
+    log.info("REAL_10Y_TSY ← treasury: n=%d years=%s latest=%s",
+             len(df), years, df["date"].max().date() if len(df) else "—")
     return df
 
 
@@ -70,60 +96,59 @@ def _merge(new: pd.DataFrame) -> pd.DataFrame:
     return combined
 
 
-def update_real_yields(series_ids: Optional[list[str]] = None) -> pd.DataFrame:
-    """Fetch each series and merge into the parquet (dedup last-write-wins on
-    (series, date), history-preserving). A series that fails is logged + skipped."""
-    ids = series_ids or list(SERIES)
-    frames = [df for sid in ids if (df := fetch_series(sid)) is not None]
+def update_real_yields() -> pd.DataFrame:
+    """Fetch both real-yield sources (DFII10 + Treasury) and merge as separate
+    series. Either source failing is logged + skipped; the other still lands."""
+    today = date.today()
+    frames = [f for f in (fetch_dfii10(), fetch_treasury_real_10y(today)) if f is not None]
     if not frames:
-        log.warning("No series resolved this run; parquet unchanged.")
+        log.warning("No real-yield source resolved this run; parquet unchanged.")
         return pd.read_parquet(REAL_YIELDS_FILE) if REAL_YIELDS_FILE.exists() else pd.DataFrame(columns=COLUMNS)
     return _merge(pd.concat(frames, ignore_index=True))
 
 
-def _print_report(df: pd.DataFrame, requested: list[str]) -> None:
+def _print_report(df: pd.DataFrame) -> None:
     print(f"\nreal_yields.parquet: {len(df)} rows, {df['series'].nunique()} series "
           f"→ {REAL_YIELDS_FILE}")
-    print(f"{'SERIES':<10}{'n':>7}  {'history':<26}{'latest':<12}{'status'}")
+    print(f"{'SERIES':<14}{'n':>7}  {'history':<26}{'latest':<12}{'value':>8}{'lag':>8}")
     today = date.today()
-    for sid in requested:
+    for sid in SERIES:
         sub = df[df["series"] == sid]
         if sub.empty:
-            print(f"{sid:<10}{'—':>7}  {'—':<26}{'—':<12}UNRESOLVED")
+            print(f"{sid:<14}{'—':>7}  {'—':<26}{'—':<12}{'—':>8}{'—':>8}")
             continue
         sub = sub.sort_values("date")
         first = pd.Timestamp(sub["date"].iloc[0]).date()
         last = pd.Timestamp(sub["date"].iloc[-1]).date()
+        val = float(sub["yield_pct"].iloc[-1])
         lag = 0 if last >= today else int(np.busday_count(last, today))
-        print(f"{sid:<10}{len(sub):>7}  {f'{first} → {last}':<26}{str(last):<12}lag={lag}bd")
+        print(f"{sid:<14}{len(sub):>7}  {f'{first} → {last}':<26}{str(last):<12}{val:>8.2f}{str(lag)+'bd':>8}")
 
 
-def _print_scores(df: pd.DataFrame, requested: list[str]) -> None:
-    print("\nREAL-YIELD MOMENTUM SCORES (ΔDFII10, raw: rising = +)")
-    print(f"{'SERIES':<10}{'score':>6}  {'delta_w':>9}{'yield':>9}{'z':>8}  {'method':<12}{'stale'}")
-    for sid in requested:
-        s = compute_realyield_score(df, series=sid)
-        if s is None:
-            print(f"{sid:<10}{'—':>6}  {'—':>9}{'—':>9}{'—':>8}  {'no-data':<12}—")
-            continue
-        z = "—" if s.z is None else f"{s.z:+.2f}"
-        dw = "—" if s.delta_w is None else f"{s.delta_w:+.3f}"
-        yld = "—" if s.latest_yield is None else f"{s.latest_yield:.3f}"
-        print(f"{sid:<10}{s.score:>+6}  {dw:>9}{yld:>9}{z:>8}  {s.method:<12}{s.stale}")
+def _print_scores(df: pd.DataFrame) -> None:
+    print("\nREAL-YIELD MOMENTUM (single chosen series; raw: rising = +)")
+    chosen = compute_realyield_score(df)  # auto-select preferred available series
+    print(f"  preference: {PREFERRED_SERIES}")
+    if chosen is None:
+        print("  CHOSEN: none — no usable series.")
+        return
+    z = "—" if chosen.z is None else f"{chosen.z:+.2f}"
+    dw = "—" if chosen.delta_w is None else f"{chosen.delta_w:+.3f}"
+    yld = "—" if chosen.latest_yield is None else f"{chosen.latest_yield:.3f}"
+    print(f"  CHOSEN: {chosen.series}  score={chosen.score:+d}  delta_w={dw}  "
+          f"yield={yld}  z={z}  method={chosen.method}  stale={chosen.stale}")
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Fetch US real yields → data/real_yields.parquet")
-    ap.add_argument("--series", action="append", choices=list(SERIES))
     ap.add_argument("--scores", action="store_true", help="also print the −2..+2 momentum score")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
-    requested = args.series or list(SERIES)
-    df = update_real_yields(requested)
-    _print_report(df, requested)
+    df = update_real_yields()
+    _print_report(df)
     if args.scores:
-        _print_scores(df, requested)
+        _print_scores(df)
     return 0
 
 

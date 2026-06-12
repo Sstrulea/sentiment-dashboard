@@ -29,6 +29,11 @@ VOL_WINDOW = 252        # rolling window of W-changes for the volatility baselin
 MIN_FOR_Z = 60          # need this many W-changes for a stable std → else fallback
 MAX_AGE_BD = 7          # latest obs older than this many business days → stale
 
+# Source preference for the US 10y real yield. DFII10 (FRED) first; the Treasury
+# real-yield-curve series is the keyless backup. The momentum is computed on ONE
+# series only (never mixed) to avoid methodology-difference artifacts.
+PREFERRED_SERIES = ["DFII10", "REAL_10Y_TSY"]
+
 # z → score thresholds (same as rate pillar)
 Z_HI, Z_LO = 1.0, 0.5
 # fallback bands on delta_w (percentage points)
@@ -134,23 +139,71 @@ def compute_realyield_score_for(
                           None if z is None else float(z), method, ref, bool(stale))
 
 
+def select_series(
+    df: pd.DataFrame,
+    preference: Optional[list[str]] = None,
+    as_of: Optional[date] = None,
+    max_age_bd: int = MAX_AGE_BD,
+) -> Optional[str]:
+    """Pick ONE series to score from a multi-series frame.
+
+    Returns the first series in `preference` that is present AND fresh (latest
+    obs within `max_age_bd` business days). If none is fresh, returns the present
+    preferred series with the most recent latest date (so a score still emerges,
+    flagged stale). None if the frame has no usable series.
+    """
+    if df is None or df.empty or "series" not in df.columns:
+        return None
+    preference = preference or PREFERRED_SERIES
+    d = df.copy()
+    d["date"] = pd.to_datetime(d["date"], errors="coerce")
+    d = d.dropna(subset=["date"])
+    if d.empty:
+        return None
+    ref = _to_date(as_of) if as_of is not None else _to_date(d["date"].max())
+
+    present = {s: g["date"].max() for s, g in d.groupby("series")}
+    # honour preference order; series not in the preference list go last
+    ordered = [s for s in preference if s in present] + \
+              [s for s in present if s not in (preference or [])]
+    fresh = [s for s in ordered if _bday_lag(_to_date(present[s]), ref) <= max_age_bd]
+    if fresh:
+        return fresh[0]
+    # none fresh → the present series with the most recent data
+    return max(present, key=lambda s: present[s]) if present else None
+
+
 def compute_realyield_score(
     df: pd.DataFrame,
-    series: str = "DFII10",
+    series: Optional[str] = None,
     as_of: Optional[date] = None,
     W: int = W_DEFAULT,
     vol_window: int = VOL_WINDOW,
     min_for_z: int = MIN_FOR_Z,
     max_age_bd: int = MAX_AGE_BD,
+    preference: Optional[list[str]] = None,
 ) -> Optional[RealYieldScore]:
-    """Momentum score for one real-yield series. Filters to `series` if a
-    `series` column exists. Returns None if the frame has no usable rows."""
+    """Momentum score for one real-yield series.
+
+    If `series` is given, filters to it. If `series` is None and the frame has a
+    `series` column, auto-selects the preferred AVAILABLE series (DFII10 if fresh,
+    else REAL_10Y_TSY) via `select_series` — never mixing series. Returns None if
+    the frame has no usable rows.
+    """
     if df is None or df.empty:
         return None
+
+    chosen = series
     if "series" in df.columns:
-        df = df[df["series"] == series]
+        if chosen is None:
+            chosen = select_series(df, preference=preference, as_of=as_of, max_age_bd=max_age_bd)
+            if chosen is None:
+                return None
+        df = df[df["series"] == chosen]
         if df.empty:
             return None
+    if chosen is None:
+        chosen = "DFII10"  # no series column → label with the canonical name
 
     ref = _to_date(as_of) if as_of is not None else None
     if ref is None:
@@ -160,6 +213,6 @@ def compute_realyield_score(
     if not ys:
         return None
     return compute_realyield_score_for(
-        dates, ys, series, ref, W=W, vol_window=vol_window,
+        dates, ys, chosen, ref, W=W, vol_window=vol_window,
         min_for_z=min_for_z, max_age_bd=max_age_bd,
     )

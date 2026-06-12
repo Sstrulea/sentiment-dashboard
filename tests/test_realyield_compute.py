@@ -186,3 +186,80 @@ def test_default_as_of_uses_latest_date():
     out = compute_realyield_score(_df(dates, [1.0 + 0.01 * i for i in range(n)]))
     assert out.as_of == dates[-1]
     assert out.stale is False
+
+
+# ---------------------------------------------------------------------------
+# 6.3a.2 — multi-source series selection (DFII10 preferred, Treasury backup)
+# ---------------------------------------------------------------------------
+
+from src.realyield_compute import select_series, PREFERRED_SERIES
+
+
+def _multi(dfii_end, tsy_end, n=300):
+    """Two series in one frame with different latest dates."""
+    a = _df(_bdays(n, end=dfii_end), [2.0 + 0.001 * i for i in range(n)], series="DFII10")
+    b = _df(_bdays(n, end=tsy_end), [2.0 + 0.001 * i for i in range(n)], series="REAL_10Y_TSY")
+    return pd.concat([a, b], ignore_index=True)
+
+
+def test_select_prefers_dfii10_when_fresh():
+    df = _multi(dfii_end=AS_OF, tsy_end=AS_OF)
+    assert select_series(df, as_of=AS_OF) == "DFII10"
+
+
+def test_select_falls_back_to_treasury_when_dfii10_stale():
+    # DFII10 latest is 30 calendar days old (stale), Treasury fresh → pick Treasury.
+    df = _multi(dfii_end=AS_OF - timedelta(days=30), tsy_end=AS_OF)
+    assert select_series(df, as_of=AS_OF) == "REAL_10Y_TSY"
+
+
+def test_select_treasury_when_dfii10_absent():
+    df = _df(_bdays(300), [2.0] * 300, series="REAL_10Y_TSY")
+    assert select_series(df, as_of=AS_OF) == "REAL_10Y_TSY"
+
+
+def test_select_none_when_no_series_column():
+    df = pd.DataFrame({"date": _bdays(5), "yield_pct": [1, 2, 3, 4, 5]})
+    assert select_series(df, as_of=AS_OF) is None
+
+
+def test_compute_autoselects_and_does_not_mix():
+    # DFII10 rising, Treasury falling — auto-select must score DFII10 alone (+),
+    # never a blend (which would dilute toward 0).
+    n = 300
+    a = _df(_bdays(n), [1.0 + 0.02 * i for i in range(n)], series="DFII10")
+    b = _df(_bdays(n), [9.0 - 0.02 * i for i in range(n)], series="REAL_10Y_TSY")
+    out = compute_realyield_score(pd.concat([a, b], ignore_index=True), as_of=AS_OF)
+    assert out.series == "DFII10"
+    assert out.score == 2          # DFII10 rising, not mixed/diluted
+
+
+def test_compute_autoselect_treasury_when_dfii10_stale():
+    n = 300
+    a = _df(_bdays(n, end=AS_OF - timedelta(days=30)), [1.0 + 0.02 * i for i in range(n)], series="DFII10")
+    b = _df(_bdays(n, end=AS_OF), [9.0 - 0.02 * i for i in range(n)], series="REAL_10Y_TSY")
+    out = compute_realyield_score(pd.concat([a, b], ignore_index=True), as_of=AS_OF)
+    assert out.series == "REAL_10Y_TSY"
+    assert out.score == -2         # Treasury falling
+
+
+# ---------------------------------------------------------------------------
+# Treasury CSV parse (synthetic, no network)
+# ---------------------------------------------------------------------------
+
+def test_treasury_parse_takes_10yr_column():
+    from src.rate_sources import TreasuryRealYieldSource
+    csv = ('Date,"5 YR","7 YR","10 YR","20 YR","30 YR"\n'
+           '06/11/2026,1.78,1.96,2.16,2.53,2.72\n'
+           '06/10/2026,1.80,1.98,2.18,2.55,2.74\n')
+    src = TreasuryRealYieldSource()
+    out = src._parse_year(csv)
+    assert list(out["value"]) == [2.16, 2.18]
+    assert out["date"].max() == pd.Timestamp("2026-06-11")
+    assert (out["source"] == "treasury").all()
+
+
+def test_treasury_parse_missing_10yr_returns_none():
+    from src.rate_sources import TreasuryRealYieldSource
+    csv = 'Date,"5 YR","7 YR"\n06/11/2026,1.78,1.96\n'
+    assert TreasuryRealYieldSource()._parse_year(csv) is None
