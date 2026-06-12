@@ -287,6 +287,58 @@ class FredSource(BaseSource):
 
 
 # ---------------------------------------------------------------------------
+# Generic FRED single-series reader (NOT currency-keyed)
+# ---------------------------------------------------------------------------
+
+class FredSeriesSource(BaseSource):
+    """Keyless reader for any single FRED series (e.g. DFII10), via the same
+    fredgraph CSV mechanism used by FredSource. Returns a tidy DataFrame
+    (date, value, source) — NOT a per-currency YieldSeries — so it stays out of
+    the currency rate registry. `.` is treated as missing (FRED's NA marker).
+    """
+    name = "fred_series"
+
+    def __init__(self, series_id: str) -> None:
+        super().__init__()
+        self.series_id = series_id
+
+    def fetch_series(self) -> Optional[pd.DataFrame]:
+        """Read-only fetch; returns DataFrame(date, value, source) or None.
+        Never raises — failures are captured in last_status/last_note."""
+        self.last_status = ""
+        self.last_note = ""
+        try:
+            return self._fetch_series()
+        except Exception as e:
+            self._parse_fail(f"{type(e).__name__}: {e}")
+            return None
+
+    def _fetch_series(self) -> Optional[pd.DataFrame]:
+        url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={self.series_id}"
+        r = self._get(url, retries=3)
+        if r is None:
+            return None
+        if self._check_botwall(r):
+            return None
+        df = pd.read_csv(io.StringIO(r.text))
+        date_col = df.columns[0]
+        val_cols = [c for c in df.columns if c != date_col]
+        if not val_cols:
+            self._parse_fail(f"cols {list(df.columns)}")
+            return None
+        out = pd.DataFrame({
+            "date": pd.to_datetime(df[date_col], errors="coerce"),
+            "value": pd.to_numeric(df[val_cols[0]].replace(".", np.nan), errors="coerce"),
+            "source": self.name,
+        })
+        out = out.dropna(subset=["date", "value"]).sort_values("date").reset_index(drop=True)
+        if out.empty:
+            self._parse_fail("no numeric observations")
+            return None
+        return out
+
+
+# ---------------------------------------------------------------------------
 # (c) ECB Data Portal — EUR 2y
 # ---------------------------------------------------------------------------
 
