@@ -19,8 +19,8 @@
 
 scale: 5
 bias_thresholds:
-  mild: 1.3
-  very: 3.0
+  mild: 2.0     # calibrated (6.4): ~p55 of |score| → ~50% Neutral
+  very: 4.4     # calibrated (6.4): ~p90 of |score| → ~12% Very
 
 # Reusable factor presets ------------------------------------------------------
 # Indices: a strong economy / hawkish read is BULLISH for growth, but hot

@@ -493,6 +493,113 @@
     });
   }
 
+  // ---- Cross-Asset section (indices + metals) -----------------------------
+  function caFactor(inst, name) {
+    return (inst.factors || []).find(f => f.name === name) || null;
+  }
+
+  function caFactorCellHtml(inst, name) {
+    const f = caFactor(inst, name);
+    if (!f || !f.present || f.contribution === null || f.contribution === undefined) {
+      return '<td class="econ-cell cell-na" title="not available">—</td>';
+    }
+    // contribution is roughly −2..+2; reuse the FX gradient (saturate at 2).
+    const v = Number(f.contribution);
+    const disp = (Math.abs(v) < 0.05 ? 0 : v);   // squash −0.0 → 0
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(disp, 2)) + ">" +
+      fmtSigned(disp, 1) + "</td>";
+  }
+
+  function renderCrossAsset() {
+    const ca = state.payload.crossasset;
+    const section = document.getElementById("crossassetSection");
+    const wrap = document.getElementById("crossassetContent");
+    if (!section || !wrap || !ca || !(ca.instruments || []).length) return;
+    section.hidden = false;
+
+    const order = ca.factor_order || ["growth", "inflation", "labour", "monetary", "real_yield"];
+    const labels = ca.factor_labels || {};
+    const insts = ca.instruments.slice().sort((a, b) => b.score_precise - a.score_precise);
+
+    const factorHeaders = order.map(k =>
+      '<th class="ind-head grp-' + (k === "real_yield" ? "monetary" : k) + '">' +
+      (labels[k] || k) + '</th>').join("");
+
+    const rows = insts.map(inst => {
+      const bcls = biasClass(inst.bias_label);
+      const cells = order.map(k => caFactorCellHtml(inst, k)).join("");
+      return (
+        '<tr data-ca-symbol="' + escAttr(inst.symbol) + '">' +
+        '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
+        '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
+        '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
+        cells + '</tr>'
+      );
+    }).join("");
+
+    wrap.innerHTML =
+      '<div class="retail-table-scroll econ-scroll">' +
+      '<table class="retail-table econ-table">' +
+      '<thead><tr>' +
+      '<th class="col-sym">Symbol</th><th>Bias</th><th>Score</th>' +
+      factorHeaders +
+      '</tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+
+    wrap.querySelectorAll("tbody tr").forEach(tr => {
+      tr.addEventListener("click", () => openCrossAssetModal(tr.dataset.caSymbol));
+    });
+  }
+
+  function caFactorRow(f, labels) {
+    const present = f.present;
+    const cls = present ? cellClass(Math.round(f.contribution)) : "";
+    const raw = present ? fmtSigned(f.raw, 0) : "—";
+    const contrib = present ? fmtSigned((Math.abs(f.contribution) < 0.05 ? 0 : f.contribution), 1) : "—";
+    const staleTd = present ? "" : ' class="ei-stale"';
+    return (
+      "<tr" + staleTd + ">" +
+      '<td class="ei-name">' + (labels[f.name] || f.name) + '</td>' +
+      '<td class="ei-num">' + raw + '</td>' +
+      '<td class="ei-num">' + fmtSigned(f.sign, 0) + '</td>' +
+      '<td class="ei-num">' + Number(f.weight).toFixed(1) + '</td>' +
+      '<td class="ei-score ' + cls + '">' + contrib + '</td>' +
+      '<td class="ei-flag">' + (present ? "" : '<span class="econ-flag flag-stale" title="factor not available">absent</span>') + '</td>' +
+      '<td class="ei-date">' + (f.source || "") + '</td>' +
+      "</tr>"
+    );
+  }
+
+  function openCrossAssetModal(sym) {
+    const ca = state.payload.crossasset;
+    const inst = (ca.instruments || []).find(i => i.symbol === sym);
+    if (!inst) return;
+    const modal = document.getElementById("econDetailModal");
+    const body = document.getElementById("econDetailContent");
+    const labels = ca.factor_labels || {};
+
+    body.innerHTML =
+      '<header class="modal-header">' +
+      '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ' · ' + inst.home_ccy + ')</small></h2>' +
+      '<div class="muted modal-subhead">' +
+      '<span class="pill ' + biasClass(inst.bias_label) + '">' + inst.bias_label + '</span> ' +
+      '<span class="modal-score">Score ' + fmtSigned(inst.score_precise, 2) + '</span>' +
+      '<span class="modal-formula">' + inst.type + ' · weighted mean over ' + inst.coverage +
+      ' present factor(s) × scale</span></div>' +
+      '</header>' +
+      '<p class="muted econ-modal-note">Each factor contributes sign × weight × raw; the score is the ' +
+      'mean over present factors. Absent factors (e.g. Real Yield until DFII10 is live) are excluded.</p>' +
+      '<div class="modal-grid econ-leg-grid one-col"><div class="modal-card econ-leg">' +
+      '<h3>Factors — ' + (inst.display || inst.symbol) + '</h3>' +
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
+      '<thead><tr><th>Factor</th><th>Raw</th><th>Sign</th><th>Weight</th><th>Contribution</th><th></th><th>Source</th></tr></thead>' +
+      '<tbody>' + (inst.factors || []).map(f => caFactorRow(f, labels)).join("") + '</tbody>' +
+      '</table></div></div></div>';
+
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+  }
+
   // ---- Theme (match other pages) -----------------------------------------
   function applyStoredTheme() {
     try { if (localStorage.getItem("cot-theme") === "dark") document.body.classList.add("dark"); }
@@ -506,6 +613,7 @@
     renderFilters();
     wireModalClose();
     renderTable();
+    renderCrossAsset();
   }
 
   function boot() {

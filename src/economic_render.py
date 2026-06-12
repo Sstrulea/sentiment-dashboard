@@ -28,6 +28,8 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from src.economic_compute import build_payload
 from src.rate_compute import compute_rate_scores
+from src.realyield_compute import compute_realyield_score
+from src.crossasset_compute import compute_crossasset_scores
 from src.static_assets import copy_static_assets
 
 log = logging.getLogger(__name__)
@@ -37,8 +39,21 @@ TEMPLATES_DIR = ROOT / "templates"
 PUBLIC_DIR = ROOT / "public"
 PARQUET = ROOT / "data" / "economic_calendar.parquet"
 RATES_PARQUET = ROOT / "data" / "rates.parquet"
+REAL_YIELDS_PARQUET = ROOT / "data" / "real_yields.parquet"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
+CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
+
+# Display labels for the cross-asset factor columns + instruments.
+CROSSASSET_FACTOR_LABELS = {
+    "growth": "Growth", "inflation": "Inflation", "labour": "Labour",
+    "monetary": "Monetary", "real_yield": "Real Yield",
+}
+CROSSASSET_DISPLAY = {
+    "DJIA": "Dow 30", "SP500": "S&P 500", "NASDAQ": "Nasdaq 100",
+    "DAX": "DAX 40", "NIKKEI": "Nikkei 225", "FTSE100": "FTSE 100",
+    "GOLD": "Gold", "SILVER": "Silver",
+}
 
 # Human-readable labels for the breakdown modal (presentation only — scoring is
 # untouched). Keyed by the taxonomy indicator_key.
@@ -260,6 +275,69 @@ def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> No
                 entry.setdefault("stale", False)
 
 
+def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
+    """Compute the cross-asset section (indices + metals) from the FX payload's
+    per-currency category scores + the US real-yield momentum. Read-only over
+    local parquets; real_yields.parquet missing/empty → real_yield excluded
+    gracefully. Returns a JSON-ready dict (instruments sorted most-bullish first).
+    """
+    try:
+        cfg = _load_yaml(CROSSASSET_YAML)
+    except FileNotFoundError:
+        return {}
+
+    categories_by_ccy = {
+        ccy: card.get("categories", {})
+        for ccy, card in payload.get("currencies", {}).items()
+    }
+
+    real_yield_score = None
+    real_yield_meta = {"present": False, "series": "DFII10"}
+    if REAL_YIELDS_PARQUET.exists():
+        try:
+            rdf = pd.read_parquet(REAL_YIELDS_PARQUET)
+            if len(rdf):
+                rys = compute_realyield_score(rdf, as_of=as_of.date())
+                if rys is not None:
+                    real_yield_score = rys
+                    real_yield_meta = {
+                        "present": True, "series": rys.series, "score": rys.score,
+                        "delta_w": rys.delta_w, "latest_yield": rys.latest_yield,
+                        "z": rys.z, "method": rys.method,
+                        "as_of": rys.as_of.isoformat() if rys.as_of is not None else None,
+                        "stale": rys.stale,
+                    }
+        except Exception as e:
+            log.warning("real_yields.parquet present but unreadable (%s); real_yield excluded.", e)
+
+    scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg)
+
+    # Presentation: label the real_yield factor source with the series actually
+    # scored (DFII10 vs the Treasury REAL_10Y_TSY fallback). Scoring untouched.
+    ry_series = real_yield_meta.get("series") if real_yield_meta.get("present") else None
+
+    instruments = []
+    for sym, r in scores.items():
+        r = dict(r)
+        r["display"] = CROSSASSET_DISPLAY.get(sym, sym)
+        if ry_series:
+            r["factors"] = [
+                {**f, "source": ry_series} if f.get("name") == "real_yield" else f
+                for f in r.get("factors", [])
+            ]
+        instruments.append(r)
+    instruments.sort(key=lambda r: r.get("score_precise", 0.0), reverse=True)
+
+    return {
+        "instruments": instruments,
+        "factor_order": ["growth", "inflation", "labour", "monetary", "real_yield"],
+        "factor_labels": dict(CROSSASSET_FACTOR_LABELS),
+        "real_yield": real_yield_meta,
+        "bias_thresholds": cfg.get("bias_thresholds", {}),
+        "scale": cfg.get("scale"),
+    }
+
+
 def build_economic_payload() -> dict:
     """Read parquet + configs, compute, enrich, and return the JSON-ready payload."""
     indicators_cfg = _load_yaml(INDICATORS_YAML)
@@ -309,6 +387,9 @@ def build_economic_payload() -> dict:
     for inst in payload.get("instruments", []):
         if inst.get("display"):
             inst["display"] = inst["display"].replace("(DXY proxy)", "(DXY)")
+
+    # Cross-Asset block (indices + metals) — separate key, FX payload untouched.
+    payload["crossasset"] = _build_crossasset_block(payload, as_of)
 
     payload["meta"] = meta
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

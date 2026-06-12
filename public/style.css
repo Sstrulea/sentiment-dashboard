@@ -1289,3 +1289,10 @@ table.econ-table td.sym { text-align: left; }
 table.econ-ind-table tr.ei-stale td { color: var(--muted); font-style: italic; opacity: 0.75; }
 table.econ-ind-table tr.ei-stale td.ei-score { background: var(--surface-alt); color: var(--muted); }
 .flag-stale { background: var(--surface-alt); color: var(--muted); cursor: help; }
+
+/* === Cross-Asset section (indices + metals) — reuses econ-table styling === */
+.crossasset-section { margin-top: 36px; }
+.crossasset-section[hidden] { display: none; }
+.crossasset-header { margin-bottom: 6px; }
+.crossasset-header h2 { margin: 0; font-size: 20px; }
+#crossassetContent tbody tr { cursor: pointer; }
