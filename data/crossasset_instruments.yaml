@@ -1,35 +1,28 @@
 # Cross-Asset instrument definitions (indices + metals).
 #
-# Each instrument derives a bias from macro FACTORS:
-#   - category factors (growth/inflation/labour/monetary) read from the
-#     instrument's HOME currency scorecard (build_payload category score_cell);
-#   - real_yield reads the global US 10y real-yield momentum score (DFII10).
+# Each instrument derives a bias from TOP-LEVEL factors {growth, inflation,
+# labour, rates}:
+#   - growth/inflation/labour read the instrument's HOME currency category
+#     score (build_payload `score_cell`, −2..+2);
+#   - `rates` is a COMPOSITE — the weighted mean of its present sub-components
+#     {rate_exp_2y (home-ccy 2y / monetary), real_yield_10y (global US 10y real)}.
+#     Grouping bounds the combined rate signal at ±2 (aligned 2y+10y don't stack
+#     to ±4); a future balance_sheet sub-component slots in here (Step 7).
 #
-# RAW convention (same as the FX category scores and the raw real-yield score):
+# RAW convention (same as the FX category scores + raw real-yield score):
 #   + = hawkish / strong economy / rising yield.
-# `sign` is the multiplier turning that raw into the instrument's directional
-# contribution; `weight` is the factor's weight in the weighted mean.
+# `sign` turns that raw into the instrument's directional contribution; `weight`
+# is the weight in the weighted mean. Instrument score = weighted mean over
+# PRESENT top-level factors × scale — a missing factor (or rate sub-component)
+# is excluded, never zero-filled. No separate USD factor for metals (the USD
+# categories already cover the dollar — avoids double-counting).
 #
-# Instrument score = weighted mean over PRESENT factors of (sign * raw) * scale,
-# so a missing factor (e.g. real_yield when real_yields.parquet is empty, or a
-# Monetary gap on a currency) is simply excluded — never zero-filled.
-#
-# bias_thresholds reuse the FX values (mild 1.3, very 3.0) as a PLACEHOLDER;
-# recalibrated at 6.4.
+# bias_thresholds calibrated at 6.6 (mirror of 6.4 method on the new scoring).
 
 scale: 5
 bias_thresholds:
-  mild: 2.0     # calibrated (6.4): ~p55 of |score| → ~50% Neutral
-  very: 4.4     # calibrated (6.4): ~p90 of |score| → ~12% Very
-
-# Reusable factor presets ------------------------------------------------------
-# Indices: a strong economy / hawkish read is BULLISH for growth, but hot
-# inflation, a hot labour market, hawkish monetary policy and rising real yields
-# are BEARISH (tighter policy / higher discount rate).
-# Metals (USD-denominated, US-macro-driven): everything that lifts the dollar /
-# real yields weighs on gold & silver; growth carries a lighter (0.5) weight.
-# No separate USD factor — the USD category scores already cover the dollar
-# (avoids double-counting).
+  mild: 1.9     # calibrated 6.6 (rates-grouped scoring): ~p55 by-profile |score|
+  very: 4.3     # calibrated 6.6: ~p90 by-profile |score| → ~8% Very
 
 instruments:
   # --- Indices ---
@@ -37,73 +30,97 @@ instruments:
     type: index
     home_ccy: USD
     factors:
-      growth:     { sign: 1,  weight: 1.0 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: 1,  weight: 1.0 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
   SP500:
     type: index
     home_ccy: USD
     factors:
-      growth:     { sign: 1,  weight: 1.0 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: 1,  weight: 1.0 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
   NASDAQ:
     type: index
     home_ccy: USD
     factors:
-      growth:     { sign: 1,  weight: 1.0 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: 1,  weight: 1.0 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
   DAX:
     type: index
     home_ccy: EUR
     factors:
-      growth:     { sign: 1,  weight: 1.0 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: 1,  weight: 1.0 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
   NIKKEI:
     type: index
     home_ccy: JPY
     factors:
-      growth:     { sign: 1,  weight: 1.0 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: 1,  weight: 1.0 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
   FTSE100:
     type: index
     home_ccy: GBP
     factors:
-      growth:     { sign: 1,  weight: 1.0 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: 1,  weight: 1.0 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
 
   # --- Metals (USD home; growth lighter at 0.5) ---
   GOLD:
     type: metal
     home_ccy: USD
     factors:
-      growth:     { sign: -1, weight: 0.5 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: -1, weight: 0.5 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }
   SILVER:
     type: metal
     home_ccy: USD
     factors:
-      growth:     { sign: -1, weight: 0.5 }
-      inflation:  { sign: -1, weight: 1.0 }
-      labour:     { sign: -1, weight: 1.0 }
-      monetary:   { sign: -1, weight: 1.0 }
-      real_yield: { sign: -1, weight: 1.0 }
+      growth:    { sign: -1, weight: 0.5 }
+      inflation: { sign: -1, weight: 1.0 }
+      labour:    { sign: -1, weight: 1.0 }
+      rates:
+        weight: 1.0
+        components:
+          rate_exp_2y:    { sign: -1, weight: 1.0 }
+          real_yield_10y: { sign: -1, weight: 1.0 }

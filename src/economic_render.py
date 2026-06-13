@@ -44,16 +44,39 @@ INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
 
-# Display labels for the cross-asset factor columns + instruments.
+# Display labels for the cross-asset top-level factors + instruments.
 CROSSASSET_FACTOR_LABELS = {
-    "growth": "Growth", "inflation": "Inflation", "labour": "Labour",
-    "monetary": "Monetary", "real_yield": "Real Yield",
+    "growth": "Growth", "inflation": "Inflation", "labour": "Labour Market",
+    "rates": "Rates & Liquidity",
 }
 CROSSASSET_DISPLAY = {
     "DJIA": "Dow 30", "SP500": "S&P 500", "NASDAQ": "Nasdaq 100",
     "DAX": "DAX 40", "NIKKEI": "Nikkei 225", "FTSE100": "FTSE 100",
     "GOLD": "Gold", "SILVER": "Silver",
 }
+
+# FX-style sub-column layout for the cross-asset table: each top-level factor is
+# a column GROUP with sub-columns showing the home-currency raw indicator scores
+# (growth/inflation/labour reuse the FX indicator keys); the `rates` group's
+# sub-columns are the rate composite's components (room for Balance Sheet later).
+CROSSASSET_TABLE_LAYOUT = [
+    {"key": "growth", "label": "Growth", "columns": [
+        ("manufacturing_pmi", "Mfg PMI"), ("services_pmi", "Services"),
+        ("gdp_qoq", "GDP"), ("retail_sales", "Retail")]},
+    {"key": "inflation", "label": "Inflation", "columns": [
+        ("cpi_yoy", "CPI"), ("core_cpi", "Core CPI"),
+        ("core_pce", "Core PCE"), ("ppi_yoy", "PPI")]},
+    {"key": "labour", "label": "Labour Market", "columns": [
+        ("employment_change", "NFP/Emp"), ("unemployment_rate", "Unemp"),
+        ("wage_growth", "Wages"), ("adp", "ADP"), ("jolts", "JOLTS"),
+        ("jobless_claims", "Claims")]},
+    {"key": "rates", "label": "Rates & Liquidity", "columns": [
+        ("rate_exp_2y", "Rate Exp 2Y"), ("real_yield_10y", "10Y Real Yield")]},
+]
+# Home-ccy indicator keys to read from the FX breakdown for the sub-columns.
+CROSSASSET_CATEGORY_KEYS = [
+    k for g in CROSSASSET_TABLE_LAYOUT if g["key"] != "rates" for (k, _) in g["columns"]
+]
 
 # Human-readable labels for the breakdown modal (presentation only — scoring is
 # untouched). Keyed by the taxonomy indicator_key.
@@ -312,25 +335,43 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
 
     scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg)
 
-    # Presentation: label the real_yield factor source with the series actually
-    # scored (DFII10 vs the Treasury REAL_10Y_TSY fallback). Scoring untouched.
-    ry_series = real_yield_meta.get("series") if real_yield_meta.get("present") else None
+    currencies = payload.get("currencies", {}) or {}
+
+    def _home_breakdown(home: str) -> dict:
+        return (currencies.get(home, {}) or {}).get("breakdown", {}) or {}
 
     instruments = []
     for sym, r in scores.items():
         r = dict(r)
         r["display"] = CROSSASSET_DISPLAY.get(sym, sym)
-        if ry_series:
-            r["factors"] = [
-                {**f, "source": ry_series} if f.get("name") == "real_yield" else f
-                for f in r.get("factors", [])
-            ]
+        home = r.get("home_ccy")
+        brk = _home_breakdown(home)
+
+        # FX-style sub-column cells: home-ccy RAW indicator scores.
+        cells: dict[str, dict] = {}
+        for key in CROSSASSET_CATEGORY_KEYS:
+            e = brk.get(key)
+            cells[key] = ({"raw": None, "stale": False} if e is None
+                          else {"raw": e.get("score"), "stale": bool(e.get("stale"))})
+        # Rate sub-columns from the computed rates composite components.
+        rates_factor = next((f for f in r.get("factors", []) if f.get("name") == "rates"), None)
+        comps = {c["name"]: c for c in (rates_factor.get("components", []) if rates_factor else [])}
+        for sub in ("rate_exp_2y", "real_yield_10y"):
+            c = comps.get(sub)
+            cells[sub] = {"raw": (c.get("raw") if (c and c.get("present")) else None),
+                          "stale": False}
+        r["cells"] = cells
         instruments.append(r)
+
     instruments.sort(key=lambda r: r.get("score_precise", 0.0), reverse=True)
 
     return {
         "instruments": instruments,
-        "factor_order": ["growth", "inflation", "labour", "monetary", "real_yield"],
+        "table_layout": [
+            {"key": g["key"], "label": g["label"],
+             "columns": [{"key": k, "label": lbl} for k, lbl in g["columns"]]}
+            for g in CROSSASSET_TABLE_LAYOUT
+        ],
         "factor_labels": dict(CROSSASSET_FACTOR_LABELS),
         "real_yield": real_yield_meta,
         "bias_thresholds": cfg.get("bias_thresholds", {}),

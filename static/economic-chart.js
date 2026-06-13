@@ -494,20 +494,27 @@
   }
 
   // ---- Cross-Asset section (indices + metals) -----------------------------
+  function caLayout() {
+    const ca = state.payload.crossasset || {};
+    return ca.table_layout || [];
+  }
   function caFactor(inst, name) {
     return (inst.factors || []).find(f => f.name === name) || null;
   }
 
-  function caFactorCellHtml(inst, name) {
-    const f = caFactor(inst, name);
-    if (!f || !f.present || f.contribution === null || f.contribution === undefined) {
+  // Sub-column cell = home-ccy RAW indicator reading (blue=hot/strong, red=soft).
+  // The asset's direction (sign applied) is in Score/Bias + the modal.
+  function caCellHtml(inst, key) {
+    const c = (inst.cells || {})[key] || { raw: null };
+    const v = c.raw;
+    if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available">—</td>';
     }
-    // contribution is roughly −2..+2; reuse the FX gradient (saturate at 2).
-    const v = Number(f.contribution);
-    const disp = (Math.abs(v) < 0.05 ? 0 : v);   // squash −0.0 → 0
-    return '<td class="econ-cell"' + styleAttr(gradientStyle(disp, 2)) + ">" +
-      fmtSigned(disp, 1) + "</td>";
+    if (c.stale) {
+      return '<td class="econ-cell ec-stale" title="stale — outside the lookback window">' +
+        fmtScoreCell(v) + "</td>";
+    }
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ">" + fmtScoreCell(v) + "</td>";
   }
 
   function renderCrossAsset() {
@@ -517,17 +524,23 @@
     if (!section || !wrap || !ca || !(ca.instruments || []).length) return;
     section.hidden = false;
 
-    const order = ca.factor_order || ["growth", "inflation", "labour", "monetary", "real_yield"];
-    const labels = ca.factor_labels || {};
+    const layout = caLayout();
     const insts = ca.instruments.slice().sort((a, b) => b.score_precise - a.score_precise);
 
-    const factorHeaders = order.map(k =>
-      '<th class="ind-head grp-' + (k === "real_yield" ? "monetary" : k) + '">' +
-      (labels[k] || k) + '</th>').join("");
+    const groupHeaders = layout.map(g =>
+      '<th colspan="' + g.columns.length + '" class="grp-head grp-' + g.key +
+      '" title="Raw macro reading (blue=hot/strong, red=soft). Directional impact (sign applied) is in Score/Bias + the row modal.">' +
+      g.label + '</th>').join("");
+
+    let subHeaders = "";
+    layout.forEach(g => g.columns.forEach(c => {
+      subHeaders += '<th class="ind-head grp-' + g.key + '">' + c.label + '</th>';
+    }));
 
     const rows = insts.map(inst => {
       const bcls = biasClass(inst.bias_label);
-      const cells = order.map(k => caFactorCellHtml(inst, k)).join("");
+      let cells = "";
+      layout.forEach(g => g.columns.forEach(c => { cells += caCellHtml(inst, c.key); }));
       return (
         '<tr data-ca-symbol="' + escAttr(inst.symbol) + '">' +
         '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
@@ -540,10 +553,11 @@
     wrap.innerHTML =
       '<div class="retail-table-scroll econ-scroll">' +
       '<table class="retail-table econ-table">' +
-      '<thead><tr>' +
-      '<th class="col-sym">Symbol</th><th>Bias</th><th>Score</th>' +
-      factorHeaders +
-      '</tr></thead>' +
+      '<thead>' +
+      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2">Score</th>' +
+      groupHeaders + '</tr>' +
+      '<tr>' + subHeaders + '</tr>' +
+      '</thead>' +
       '<tbody>' + rows + '</tbody></table></div>';
 
     wrap.querySelectorAll("tbody tr").forEach(tr => {
@@ -551,23 +565,58 @@
     });
   }
 
-  function caFactorRow(f, labels) {
-    const present = f.present;
-    const cls = present ? cellClass(Math.round(f.contribution)) : "";
-    const raw = present ? fmtSigned(f.raw, 0) : "—";
-    const contrib = present ? fmtSigned((Math.abs(f.contribution) < 0.05 ? 0 : f.contribution), 1) : "—";
-    const staleTd = present ? "" : ' class="ei-stale"';
+  // Modal: a rate sub-component row (raw / sign / weight / contribution).
+  function caRateRow(c) {
+    const present = c.present;
+    const contrib = present ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
+    const cls = present ? cellClass(Math.round(c.contribution)) : "";
+    const label = c.name === "rate_exp_2y" ? "Rate Expectations (2Y)" : "10Y Real Yield";
     return (
-      "<tr" + staleTd + ">" +
-      '<td class="ei-name">' + (labels[f.name] || f.name) + '</td>' +
-      '<td class="ei-num">' + raw + '</td>' +
-      '<td class="ei-num">' + fmtSigned(f.sign, 0) + '</td>' +
-      '<td class="ei-num">' + Number(f.weight).toFixed(1) + '</td>' +
+      "<tr" + (present ? "" : ' class="ei-stale"') + ">" +
+      '<td class="ei-name">' + label + '</td>' +
+      '<td class="ei-num">' + (present ? fmtSigned(c.raw, 0) : "—") + '</td>' +
+      '<td class="ei-num">' + fmtSigned(c.sign, 0) + '</td>' +
+      '<td class="ei-num">' + Number(c.weight).toFixed(1) + '</td>' +
       '<td class="ei-score ' + cls + '">' + contrib + '</td>' +
-      '<td class="ei-flag">' + (present ? "" : '<span class="econ-flag flag-stale" title="factor not available">absent</span>') + '</td>' +
-      '<td class="ei-date">' + (f.source || "") + '</td>' +
+      '<td class="ei-flag">' + (present ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>') + '</td>' +
+      '<td class="ei-date">' + (c.source || "") + '</td>' +
       "</tr>"
     );
+  }
+
+  // Modal: one category section. growth/inflation/labour show the home-ccy
+  // per-indicator breakdown (reusing the FX indicatorRow); rates shows its
+  // sub-components. The section header carries the signed contribution.
+  function caCatSection(inst, group) {
+    const f = caFactor(inst, group.key);
+    const home = inst.home_ccy;
+    const present = f && f.present;
+    const contrib = present ? fmtSigned((Math.abs(f.contribution) < 0.05 ? 0 : f.contribution), 2) : "—";
+    const cls = present ? cellClass(Math.round(f.contribution)) : "";
+    const signTxt = (f && f.sign !== undefined && f.sign !== null)
+      ? ' <span class="muted">· sign ' + fmtSigned(f.sign, 0) + "</span>" : "";
+    const head =
+      '<div class="econ-cat-head">' + group.label +
+      ' <span class="econ-cat-sub ' + cls + '">contrib ' + contrib + "</span>" + signTxt + "</div>";
+
+    let table;
+    if (group.key === "rates") {
+      const comps = (f && f.components) || [];
+      table =
+        '<thead><tr><th>Sub-component</th><th>Raw</th><th>Sign</th><th>Weight</th><th>Contribution</th><th></th><th>Source</th></tr></thead>' +
+        '<tbody>' + comps.map(caRateRow).join("") + "</tbody>";
+    } else {
+      const brk = ((state.payload.currencies || {})[home] || {}).breakdown || {};
+      const keys = group.columns.map(c => c.key).filter(k => brk[k]);
+      const rowsHtml = keys.length
+        ? keys.map(k => indicatorRow(k, brk[k])).join("")
+        : '<tr><td class="ei-name muted" colspan="8">no home-currency data</td></tr>';
+      table =
+        '<thead><tr><th>Indicator (' + home + ')</th><th>Act</th><th>Cons</th><th>Surp</th><th>z</th><th>Score</th><th>Method</th><th>Release</th></tr></thead>' +
+        '<tbody>' + rowsHtml + "</tbody>";
+    }
+    return '<div class="econ-cat-group">' + head +
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + "</table></div></div>";
   }
 
   function openCrossAssetModal(sym) {
@@ -576,8 +625,8 @@
     if (!inst) return;
     const modal = document.getElementById("econDetailModal");
     const body = document.getElementById("econDetailContent");
-    const labels = ca.factor_labels || {};
 
+    const sections = caLayout().map(g => caCatSection(inst, g)).join("");
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ' · ' + inst.home_ccy + ')</small></h2>' +
@@ -587,14 +636,11 @@
       '<span class="modal-formula">' + inst.type + ' · weighted mean over ' + inst.coverage +
       ' present factor(s) × scale</span></div>' +
       '</header>' +
-      '<p class="muted econ-modal-note">Each factor contributes sign × weight × raw; the score is the ' +
-      'mean over present factors. Absent factors (e.g. Real Yield until DFII10 is live) are excluded.</p>' +
+      '<p class="muted econ-modal-note">Sub-columns show the raw ' + inst.home_ccy +
+      ' macro reading; each category header shows its signed contribution to ' +
+      (inst.display || inst.symbol) + '. Rates groups the 2Y and 10Y-real components (bounded).</p>' +
       '<div class="modal-grid econ-leg-grid one-col"><div class="modal-card econ-leg">' +
-      '<h3>Factors — ' + (inst.display || inst.symbol) + '</h3>' +
-      '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
-      '<thead><tr><th>Factor</th><th>Raw</th><th>Sign</th><th>Weight</th><th>Contribution</th><th></th><th>Source</th></tr></thead>' +
-      '<tbody>' + (inst.factors || []).map(f => caFactorRow(f, labels)).join("") + '</tbody>' +
-      '</table></div></div></div>';
+      sections + '</div></div>';
 
     modal.hidden = false;
     document.body.classList.add("modal-open");
