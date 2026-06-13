@@ -348,17 +348,23 @@ def compute_currency_scorecard(
     # calendar. Weight 1.0 (equal) — provisional until calibration.
     if rate_entry is not None and rate_entry.get("score") is not None:
         rscore = int(rate_entry["score"])
+        is_stale = bool(rate_entry.get("stale"))
         breakdown["rate_expectations"] = dict(rate_entry)
+        # Mirror the calendar-indicator stale policy (see the `not scored.get("stale")`
+        # guard above): a stale rate is kept for DISPLAY (cell value + stale flag,
+        # coverage 0) but EXCLUDED from the currency index.
         categories_out["monetary"] = {
             "score_cell": _clamp_cell(float(rscore)),
             "score_precise": float(rscore),
-            "coverage": 1,
+            "coverage": 0 if is_stale else 1,
+            "stale": is_stale,
         }
-        total_coverage += 1
-        monetary_weight = float(
-            (indicators_cfg.get("categories", {}).get("monetary", {}) or {}).get("weight", 1.0)
-        )
-        cat_scores_for_index.append((float(rscore), monetary_weight))
+        if not is_stale:
+            total_coverage += 1
+            monetary_weight = float(
+                (indicators_cfg.get("categories", {}).get("monetary", {}) or {}).get("weight", 1.0)
+            )
+            cat_scores_for_index.append((float(rscore), monetary_weight))
 
     if cat_scores_for_index:
         wsum = sum(w for _, w in cat_scores_for_index)

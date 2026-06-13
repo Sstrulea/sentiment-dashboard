@@ -77,6 +77,11 @@ CROSSASSET_TABLE_LAYOUT = [
 CROSSASSET_CATEGORY_KEYS = [
     k for g in CROSSASSET_TABLE_LAYOUT if g["key"] != "rates" for (k, _) in g["columns"]
 ]
+# indicator_key -> its category (for applying the per-asset category sign to cells).
+CROSSASSET_KEY_CATEGORY = {
+    k: g["key"] for g in CROSSASSET_TABLE_LAYOUT if g["key"] != "rates"
+    for (k, _) in g["columns"]
+}
 
 # Human-readable labels for the breakdown modal (presentation only — scoring is
 # untouched). Keyed by the taxonomy indicator_key.
@@ -347,19 +352,28 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
         home = r.get("home_ccy")
         brk = _home_breakdown(home)
 
-        # FX-style sub-column cells: home-ccy RAW indicator scores.
+        # Sub-column cells: the PER-ASSET signed score (home-ccy raw × this
+        # instrument's category sign), so each cell already points the right way
+        # for the asset. The per-indicator `direction` is already baked into the
+        # home-ccy raw score; the category sign is the separate asset layer — we
+        # apply it exactly once here.
+        fsign = {f["name"]: f.get("sign") for f in r.get("factors", []) if f.get("sign") is not None}
         cells: dict[str, dict] = {}
         for key in CROSSASSET_CATEGORY_KEYS:
             e = brk.get(key)
-            cells[key] = ({"raw": None, "stale": False} if e is None
-                          else {"raw": e.get("score"), "stale": bool(e.get("stale"))})
-        # Rate sub-columns from the computed rates composite components.
+            raw = None if e is None else e.get("score")
+            if raw is None:
+                cells[key] = {"score": None, "stale": False}
+            else:
+                s = fsign.get(CROSSASSET_KEY_CATEGORY.get(key, ""), 1)
+                cells[key] = {"score": float(s) * raw, "stale": bool(e.get("stale"))}
+        # Rate sub-columns: signed by the component's own sign (already directional).
+        # Shown even when stale (greyed); the stale exclusion happens in the mean.
         rates_factor = next((f for f in r.get("factors", []) if f.get("name") == "rates"), None)
-        comps = {c["name"]: c for c in (rates_factor.get("components", []) if rates_factor else [])}
-        for sub in ("rate_exp_2y", "real_yield_10y"):
-            c = comps.get(sub)
-            cells[sub] = {"raw": (c.get("raw") if (c and c.get("present")) else None),
-                          "stale": False}
+        for c in (rates_factor.get("components", []) if rates_factor else []):
+            raw = c.get("raw")
+            signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
+            cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale"))}
         r["cells"] = cells
         instruments.append(r)
 

@@ -340,9 +340,29 @@ def test_monetary_category_added_with_rate_scores():
     rs = {"USD": _rate(2)}
     p = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF, rate_scores=rs)
     usd = p["currencies"]["USD"]
-    assert usd["categories"]["monetary"] == {"score_cell": 2, "score_precise": 2.0, "coverage": 1}
+    assert usd["categories"]["monetary"] == {
+        "score_cell": 2, "score_precise": 2.0, "coverage": 1, "stale": False}
     assert usd["breakdown"]["rate_expectations"]["score"] == 2
     assert usd["breakdown"]["rate_expectations"]["method"] == "z"
+
+
+def test_stale_monetary_excluded_from_index_but_displayed():
+    # FIX 1a: a stale 2y rate is kept for display (cell value + stale, coverage 0)
+    # but excluded from the currency index — mirroring stale calendar indicators.
+    cal = _make_rows("USD", "gdp_qoq", [100] * 11 + [110], [100] * 12)  # growth +2 only
+    fresh = build_payload(cal, _indicators_cfg(), _instruments_cfg(),
+                          as_of=AS_OF, rate_scores={"USD": _rate(-2, stale=False)})
+    stale = build_payload(cal, _indicators_cfg(), _instruments_cfg(),
+                          as_of=AS_OF, rate_scores={"USD": _rate(-2, stale=True)})
+    su = stale["currencies"]["USD"]
+    # displayed: cell present with value + stale flag, coverage 0
+    assert su["categories"]["monetary"] == {
+        "score_cell": -2, "score_precise": -2.0, "coverage": 0, "stale": True}
+    assert su["breakdown"]["rate_expectations"]["score"] == -2   # still in breakdown
+    # excluded from index: stale index == growth-only index (no monetary pull)
+    growth_only = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF)
+    assert su["index"] == pytest.approx(growth_only["currencies"]["USD"]["index"])
+    assert su["index"] != pytest.approx(fresh["currencies"]["USD"]["index"])
 
 
 def test_index_averages_over_four_categories():

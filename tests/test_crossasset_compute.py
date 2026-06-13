@@ -194,3 +194,45 @@ def test_bias_mild_band():
     sp = res["SP500"]
     assert sp["score_precise"] == pytest.approx(2.5)
     assert sp["bias_label"] == "Bullish"
+
+
+# ---------------------------------------------------------------------------
+# FIX 1b — stale sub-components excluded from the rates mean, kept for display
+# ---------------------------------------------------------------------------
+
+class _StaleRY:
+    score = 2
+    series = "REAL_10Y_TSY"
+    stale = True
+
+
+def test_stale_realyield_excluded_from_rates_but_visible():
+    # Stale real yield + fresh 2y(+2): real_yield_10y must NOT enter the mean
+    # (rates = rate_exp_2y alone = -2), but stays visible (raw +2, stale flag).
+    res = compute_crossasset_scores(_cats(monetary=2), realyield_score=_StaleRY(), config=CONFIG)
+    sp = res["SP500"]
+    ry = _sub(sp, "real_yield_10y")
+    assert ry["present"] is False and ry["stale"] is True
+    assert ry["raw"] == 2                       # still shown
+    rt = _factor(sp, "rates")
+    assert rt["value"] == pytest.approx(-2.0)   # rate_exp_2y only (not blended with stale RY)
+
+
+def test_stale_monetary_cell_excluded_but_visible():
+    # A stale monetary cell (build_payload emits coverage 0 + stale) → rate_exp_2y
+    # excluded from the mean but raw kept; rates = real_yield alone.
+    cats = {"USD": {"monetary": {"score_cell": 2, "coverage": 0, "stale": True}}}
+    res = compute_crossasset_scores(cats, realyield_score=2, config=CONFIG)
+    sp = res["SP500"]
+    re2 = _sub(sp, "rate_exp_2y")
+    assert re2["present"] is False and re2["stale"] is True and re2["raw"] == 2
+    assert _factor(sp, "rates")["value"] == pytest.approx(-2.0)   # real_yield only
+
+
+def test_no_data_monetary_cell_is_absent_not_stale():
+    # coverage 0 WITHOUT stale = genuine no-data → absent (not a stale display row).
+    cats = {"USD": {"monetary": {"score_cell": 0, "coverage": 0}}}
+    res = compute_crossasset_scores(cats, realyield_score=None, config=CONFIG)
+    re2 = _sub(res["SP500"], "rate_exp_2y")
+    assert re2["present"] is False and re2["raw"] is None and re2["stale"] is False
+    assert _factor(res["SP500"], "rates")["present"] is False   # nothing in rates

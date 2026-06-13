@@ -205,3 +205,18 @@ def test_default_as_of_uses_latest_date_in_frame():
     out = compute_rate_scores(df)  # no as_of → ref = latest date in frame
     assert out["USD"].as_of == dates[-1]
     assert out["USD"].stale is False
+
+
+def test_as_of_cut_ignores_future_rows():
+    # FIX 2: rows dated after as_of must not affect the score (structural guard).
+    n = 300
+    dates = _bdays(n, end=AS_OF)
+    rising = _df("USD", dates, [1.0 + 0.02 * i for i in range(n)])
+    # append future rows that would flip momentum down hard
+    fut_dates = [AS_OF + timedelta(days=k) for k in range(1, 40)]
+    future = _df("USD", fut_dates, [100.0 - i for i in range(len(fut_dates))])
+    full = pd.concat([rising, future], ignore_index=True)
+    cut = compute_rate_scores(full, as_of=AS_OF)["USD"]
+    ref = compute_rate_scores(rising, as_of=AS_OF)["USD"]
+    assert cut.rate_score == ref.rate_score == 2
+    assert cut.latest_yield == pytest.approx(ref.latest_yield)

@@ -71,10 +71,42 @@ def _realyield_series(ry: Any) -> str:
     return str(s) if s else "DFII10"
 
 
+def _realyield_stale(ry: Any) -> bool:
+    """Whether the real-yield input is stale (excluded from the mean, kept visible)."""
+    return bool(getattr(ry, "stale", False))
+
+
+def _subcell_display(v: Any) -> tuple[Optional[int], bool, bool]:
+    """For a category-sourced rate sub-component, return (raw_for_display, stale,
+    present_for_mean). A build_payload monetary cell carries `stale` + coverage:
+    when stale we keep its value for display but mark it NOT present (excluded
+    from the mean) — mirroring the calendar stale policy. A genuine no-data cell
+    (coverage 0, not stale) is absent entirely.
+    """
+    if v is None:
+        return None, False, False
+    if isinstance(v, dict):
+        sc = v.get("score_cell")
+        if sc is None:
+            return None, False, False
+        stale = bool(v.get("stale"))
+        if (v.get("coverage") or 0) == 0 and not stale:
+            return None, False, False
+        return int(sc), stale, (not stale)
+    if isinstance(v, float) and math.isnan(v):
+        return None, False, False
+    try:
+        return int(v), False, True
+    except (TypeError, ValueError):
+        return None, False, False
+
+
 def _rates_factor(rates_cfg: dict, cats: dict, realyield_raw: Optional[int],
-                  home: str, ry_label: str) -> tuple[Optional[float], list[dict]]:
-    """Composite rates value = weighted mean of present sub-components (signed),
-    bounded at ±2. Returns (value | None, sub-component rows for UI)."""
+                  realyield_stale: bool, home: str, ry_label: str
+                  ) -> tuple[Optional[float], list[dict]]:
+    """Composite rates value = weighted mean of PRESENT (non-stale) sub-components
+    (signed), bounded at ±2. Stale sub-components are kept in the rows for display
+    (raw value + stale flag) but excluded from the mean. Returns (value|None, rows)."""
     comps_cfg = rates_cfg.get("components", {}) or {}
     sub_rows: list[dict] = []
     num = 0.0
@@ -85,19 +117,21 @@ def _rates_factor(rates_cfg: dict, cats: dict, realyield_raw: Optional[int],
         kind, key = RATE_SUBCOMPONENTS.get(name, ("category", name))
         if kind == "realyield":
             raw = realyield_raw
+            stale = bool(realyield_stale)
+            present = (raw is not None) and not stale
             source = ry_label
         else:
-            raw = _cell(cats.get(key))
+            raw, stale, present = _subcell_display(cats.get(key))
             source = f"{home} {key}"
-        present = raw is not None
-        contribution = (sign * weight * raw) if present else None
+        # Display contribution whenever a value exists (even if stale/excluded).
+        contribution = (sign * weight * raw) if (raw is not None) else None
         if present:
             num += sign * weight * raw
             wsum += weight
         sub_rows.append({
             "name": name, "raw": raw, "sign": sign, "weight": weight,
             "contribution": None if contribution is None else float(contribution),
-            "present": present, "source": source,
+            "present": present, "stale": stale, "source": source,
         })
     rates_value = (num / wsum) if wsum > 0 else None
     return rates_value, sub_rows
@@ -111,6 +145,7 @@ def compute_instrument_score(
     scale: float,
     thresholds: dict,
     realyield_label: str = "DFII10",
+    realyield_stale: bool = False,
 ) -> dict:
     """Score one instrument: weighted mean over present top-level factors × scale."""
     home = inst_cfg.get("home_ccy")
@@ -123,7 +158,8 @@ def compute_instrument_score(
     for name, fc in factors_cfg.items():
         weight = float(fc.get("weight", 1.0))
         if name == RATES_FACTOR:
-            value, sub_rows = _rates_factor(fc, cats, realyield_raw, home, realyield_label)
+            value, sub_rows = _rates_factor(fc, cats, realyield_raw, realyield_stale,
+                                            home, realyield_label)
             present = value is not None
             contribution = (weight * value) if present else None
             if present:
@@ -192,9 +228,11 @@ def compute_crossasset_scores(
     instruments = config.get("instruments", {}) or {}
     ry_raw = _realyield_raw(realyield_score)
     ry_label = _realyield_series(realyield_score)
+    ry_stale = _realyield_stale(realyield_score)
 
     return {
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,
-                                      scale, thresholds, realyield_label=ry_label)
+                                      scale, thresholds, realyield_label=ry_label,
+                                      realyield_stale=ry_stale)
         for sym, cfg in instruments.items()
     }

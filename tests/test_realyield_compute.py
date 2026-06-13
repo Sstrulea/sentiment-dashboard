@@ -263,3 +263,15 @@ def test_treasury_parse_missing_10yr_returns_none():
     from src.rate_sources import TreasuryRealYieldSource
     csv = 'Date,"5 YR","7 YR"\n06/11/2026,1.78,1.96\n'
     assert TreasuryRealYieldSource()._parse_year(csv) is None
+
+
+def test_as_of_cut_ignores_future_rows():
+    # FIX 2: rows after as_of must not affect the score.
+    n = 300
+    rising = _df(_bdays(n, end=AS_OF), [1.0 + 0.02 * i for i in range(n)])
+    fut = _df([AS_OF + timedelta(days=k) for k in range(1, 40)], [100.0 - i for i in range(39)])
+    full = pd.concat([rising, fut], ignore_index=True)
+    cut = compute_realyield_score(full, as_of=AS_OF)
+    ref = compute_realyield_score(rising, as_of=AS_OF)
+    assert cut.score == ref.score == 2
+    assert cut.latest_yield == pytest.approx(ref.latest_yield)

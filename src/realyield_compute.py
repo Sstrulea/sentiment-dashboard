@@ -23,9 +23,9 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-# Defaults — identical thresholds/cadence to the rate pillar.
+# Defaults — identical thresholds/cadence to the rate pillar (src.rate_compute).
 W_DEFAULT = 21          # trading-day offset (~1 month), in ROWS not calendar days
-VOL_WINDOW = 252        # rolling window of W-changes for the volatility baseline
+BASELINE_N = 252        # rolling window of W-changes for the volatility baseline
 MIN_FOR_Z = 60          # need this many W-changes for a stable std → else fallback
 MAX_AGE_BD = 7          # latest obs older than this many business days → stale
 
@@ -104,7 +104,7 @@ def compute_realyield_score_for(
     series: str,
     ref: date,
     W: int = W_DEFAULT,
-    vol_window: int = VOL_WINDOW,
+    baseline_n: int = BASELINE_N,
     min_for_z: int = MIN_FOR_Z,
     max_age_bd: int = MAX_AGE_BD,
 ) -> RealYieldScore:
@@ -123,7 +123,7 @@ def compute_realyield_score_for(
     z: Optional[float] = None
     method = "fallback"
     if len(changes) >= min_for_z:
-        base = changes[-vol_window:]
+        base = changes[-baseline_n:]
         std = float(np.std(base, ddof=1)) if len(base) >= 2 else float("nan")
         if std and not np.isnan(std) and std > 0:
             z = delta_w / std
@@ -178,7 +178,7 @@ def compute_realyield_score(
     series: Optional[str] = None,
     as_of: Optional[date] = None,
     W: int = W_DEFAULT,
-    vol_window: int = VOL_WINDOW,
+    baseline_n: int = BASELINE_N,
     min_for_z: int = MIN_FOR_Z,
     max_age_bd: int = MAX_AGE_BD,
     preference: Optional[list[str]] = None,
@@ -189,9 +189,17 @@ def compute_realyield_score(
     `series` column, auto-selects the preferred AVAILABLE series (DFII10 if fresh,
     else REAL_10Y_TSY) via `select_series` — never mixing series. Returns None if
     the frame has no usable rows.
+
+    Lookahead guard: when `as_of` is given, rows dated after it are dropped here
+    (structural — independent of caller slicing).
     """
     if df is None or df.empty:
         return None
+
+    if as_of is not None and "date" in df.columns:
+        df = df[pd.to_datetime(df["date"], errors="coerce") <= pd.Timestamp(as_of)]
+        if df.empty:
+            return None
 
     chosen = series
     if "series" in df.columns:
@@ -213,6 +221,6 @@ def compute_realyield_score(
     if not ys:
         return None
     return compute_realyield_score_for(
-        dates, ys, chosen, ref, W=W, vol_window=vol_window,
+        dates, ys, chosen, ref, W=W, baseline_n=baseline_n,
         min_for_z=min_for_z, max_age_bd=max_age_bd,
     )

@@ -141,9 +141,17 @@ def compute_rate_scores(
     max_age_bd: int = MAX_AGE_BD,
 ) -> dict[str, RateScore]:
     """Per-currency repricing-momentum scores. Currencies absent from the frame
-    are simply omitted (graceful — no rate row for that currency)."""
+    are simply omitted (graceful — no rate row for that currency).
+
+    Lookahead guard: when `as_of` is given, rows dated after it are dropped here
+    (structural — independent of caller slicing)."""
     if rates_df is None or rates_df.empty:
         return {}
+
+    if as_of is not None and "date" in rates_df.columns:
+        rates_df = rates_df[pd.to_datetime(rates_df["date"], errors="coerce") <= pd.Timestamp(as_of)]
+        if rates_df.empty:
+            return {}
 
     ref = _to_date(as_of) if as_of is not None else None
     if ref is None:

@@ -502,16 +502,17 @@
     return (inst.factors || []).find(f => f.name === name) || null;
   }
 
-  // Sub-column cell = home-ccy RAW indicator reading (blue=hot/strong, red=soft).
-  // The asset's direction (sign applied) is in Score/Bias + the modal.
+  // Sub-column cell = the PER-ASSET signed score (home-ccy raw × category sign),
+  // so blue = bullish-for-this-asset, red = bearish. Sign is applied once in the
+  // render layer; do not re-apply here.
   function caCellHtml(inst, key) {
-    const c = (inst.cells || {})[key] || { raw: null };
-    const v = c.raw;
+    const c = (inst.cells || {})[key] || { score: null };
+    const v = c.score;
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available">—</td>';
     }
     if (c.stale) {
-      return '<td class="econ-cell ec-stale" title="stale — outside the lookback window">' +
+      return '<td class="econ-cell ec-stale" title="stale — outside the lookback window; excluded from scoring">' +
         fmtScoreCell(v) + "</td>";
     }
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ">" + fmtScoreCell(v) + "</td>";
@@ -529,7 +530,7 @@
 
     const groupHeaders = layout.map(g =>
       '<th colspan="' + g.columns.length + '" class="grp-head grp-' + g.key +
-      '" title="Raw macro reading (blue=hot/strong, red=soft). Directional impact (sign applied) is in Score/Bias + the row modal.">' +
+      '" title="Per-asset directional score (home-ccy reading × category sign): blue = bullish for this asset, red = bearish. Click a row for the full breakdown.">' +
       g.label + '</th>').join("");
 
     let subHeaders = "";
@@ -565,27 +566,58 @@
     });
   }
 
-  // Modal: a rate sub-component row (raw / sign / weight / contribution).
+  // Modal: a rate sub-component row (raw / sign / weight / contribution). A stale
+  // component shows its value greyed with a "stale" badge (excluded from the
+  // mean); a genuinely-missing one shows "absent".
   function caRateRow(c) {
-    const present = c.present;
-    const contrib = present ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
-    const cls = present ? cellClass(Math.round(c.contribution)) : "";
+    const hasVal = c.raw !== null && c.raw !== undefined;
+    const contrib = hasVal ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
+    const cls = hasVal ? cellClass(Math.round(c.contribution)) : "";
     const label = c.name === "rate_exp_2y" ? "Rate Expectations (2Y)" : "10Y Real Yield";
+    const flag = c.stale
+      ? '<span class="econ-flag flag-stale" title="stale — shown for visibility, excluded from the rates mean">stale</span>'
+      : (hasVal ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>');
     return (
-      "<tr" + (present ? "" : ' class="ei-stale"') + ">" +
+      "<tr" + (c.present ? "" : ' class="ei-stale"') + ">" +
       '<td class="ei-name">' + label + '</td>' +
-      '<td class="ei-num">' + (present ? fmtSigned(c.raw, 0) : "—") + '</td>' +
+      '<td class="ei-num">' + (hasVal ? fmtSigned(c.raw, 0) : "—") + '</td>' +
       '<td class="ei-num">' + fmtSigned(c.sign, 0) + '</td>' +
       '<td class="ei-num">' + Number(c.weight).toFixed(1) + '</td>' +
       '<td class="ei-score ' + cls + '">' + contrib + '</td>' +
-      '<td class="ei-flag">' + (present ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>') + '</td>' +
+      '<td class="ei-flag">' + flag + '</td>' +
       '<td class="ei-date">' + (c.source || "") + '</td>' +
       "</tr>"
     );
   }
 
+  // Modal per-indicator row for cross-asset: like the FX indicatorRow, but the
+  // Score cell shows the PER-ASSET signed score (home-ccy score × category sign)
+  // and is colored accordingly. Act / Cons / Surp / z stay raw.
+  function caIndicatorRow(key, e, sign) {
+    const meta = indMeta(key);
+    const zTxt = (e.z === null || e.z === undefined) ? "—" : fmtSigned(e.z, 2);
+    const dateTxt = fmtDate(e.release_dt) +
+      (e.age_days !== null && e.age_days !== undefined ? ' <span class="muted">(' + e.age_days + 'd)</span>' : '');
+    const staleBadge = e.stale ? ' <span class="econ-flag flag-stale" title="stale — excluded from the category average">stale</span>' : '';
+    const signed = (e.score === null || e.score === undefined) ? null : sign * e.score;
+    const scoreTxt = (signed === null) ? "—" : fmtScoreCell(signed);
+    const scoreCls = (signed === null) ? "" : cellClass(signed);
+    return (
+      '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
+      '<td class="ei-name">' + (meta.label || key) + '</td>' +
+      '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
+      '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
+      '<td class="ei-num">' + fmtSigned(e.surprise, 2) + '</td>' +
+      '<td class="ei-num">' + zTxt + '</td>' +
+      '<td class="ei-score ' + scoreCls + '">' + scoreTxt + '</td>' +
+      '<td class="ei-flag">' + flagBadge(e.flag) + staleBadge + '</td>' +
+      '<td class="ei-date">' + dateTxt + '</td>' +
+      '</tr>'
+    );
+  }
+
   // Modal: one category section. growth/inflation/labour show the home-ccy
-  // per-indicator breakdown (reusing the FX indicatorRow); rates shows its
+  // per-indicator breakdown with the per-asset signed Score; rates shows its
   // sub-components. The section header carries the signed contribution.
   function caCatSection(inst, group) {
     const f = caFactor(inst, group.key);
@@ -593,6 +625,7 @@
     const present = f && f.present;
     const contrib = present ? fmtSigned((Math.abs(f.contribution) < 0.05 ? 0 : f.contribution), 2) : "—";
     const cls = present ? cellClass(Math.round(f.contribution)) : "";
+    const sign = (f && f.sign !== undefined && f.sign !== null) ? f.sign : 1;
     const signTxt = (f && f.sign !== undefined && f.sign !== null)
       ? ' <span class="muted">· sign ' + fmtSigned(f.sign, 0) + "</span>" : "";
     const head =
@@ -609,7 +642,7 @@
       const brk = ((state.payload.currencies || {})[home] || {}).breakdown || {};
       const keys = group.columns.map(c => c.key).filter(k => brk[k]);
       const rowsHtml = keys.length
-        ? keys.map(k => indicatorRow(k, brk[k])).join("")
+        ? keys.map(k => caIndicatorRow(k, brk[k], sign)).join("")
         : '<tr><td class="ei-name muted" colspan="8">no home-currency data</td></tr>';
       table =
         '<thead><tr><th>Indicator (' + home + ')</th><th>Act</th><th>Cons</th><th>Surp</th><th>z</th><th>Score</th><th>Method</th><th>Release</th></tr></thead>' +
@@ -636,9 +669,10 @@
       '<span class="modal-formula">' + inst.type + ' · weighted mean over ' + inst.coverage +
       ' present factor(s) × scale</span></div>' +
       '</header>' +
-      '<p class="muted econ-modal-note">Sub-columns show the raw ' + inst.home_ccy +
-      ' macro reading; each category header shows its signed contribution to ' +
-      (inst.display || inst.symbol) + '. Rates groups the 2Y and 10Y-real components (bounded).</p>' +
+      '<p class="muted econ-modal-note">Each Score is the per-asset directional score for ' +
+      (inst.display || inst.symbol) + ' (' + inst.home_ccy +
+      ' reading × category sign); blue = bullish, red = bearish. Act / Cons / Surp / z stay raw. ' +
+      'The category header shows the signed contribution; Rates groups the 2Y and 10Y-real components (bounded).</p>' +
       '<div class="modal-grid econ-leg-grid one-col"><div class="modal-card econ-leg">' +
       sections + '</div></div>';
 
