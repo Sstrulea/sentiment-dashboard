@@ -42,6 +42,9 @@ FRED_IDS = {"walcl": "WALCL", "tga": "WTREGEN", "rrp": "RRPONTSYD"}
 # whose span reaches this date or later is a failed fetch, not pre-facility absence.
 RRP_ERA_START = pd.Timestamp("2013-09-23")
 
+# RRPONTSYD is in $ billions on FRED; WALCL/WTREGEN are in $ millions.
+RRP_BILLIONS_TO_MILLIONS = 1000.0
+
 
 def _fetch_leg(fred_id: str) -> Optional[pd.DataFrame]:
     src = FredSeriesSource(fred_id)
@@ -92,9 +95,13 @@ def assemble_net_liquidity(walcl: Optional[pd.DataFrame],
         s = s[~s.index.duplicated(keep="last")]
         return s.reindex(idx).ffill()
 
-    walcl_ff = _series(walcl, "WALCL").rename("walcl")
-    tga_ff = _series(tga, "WTREGEN").rename("tga")
-    rrp_ff = _series(rrp, "RRPONTSYD").rename("rrp").fillna(0.0)   # pre-facility → 0
+    walcl_ff = _series(walcl, "WALCL").rename("walcl")             # $ millions
+    tga_ff = _series(tga, "WTREGEN").rename("tga")                 # $ millions
+    # RRPONTSYD is reported in $ BILLIONS on FRED, while WALCL/WTREGEN are in
+    # $ MILLIONS. Convert RRP billions → millions (×1000) before subtracting,
+    # else a $2.2T RRP subtracts as $2.2M (noise) and net liquidity is inflated.
+    rrp_ff = (_series(rrp, "RRPONTSYD").rename("rrp").fillna(0.0)  # pre-facility → 0
+              * RRP_BILLIONS_TO_MILLIONS)
 
     out = pd.DataFrame({"walcl": walcl_ff, "tga": tga_ff, "rrp": rrp_ff})
     out = out.dropna(subset=["walcl"])                            # need WALCL present

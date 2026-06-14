@@ -42,18 +42,33 @@ def test_assemble_net_liquidity_ffill_and_rrp_zero():
                           "WALCL": [7000.0, 6900.0]})
     tga = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-06"]),
                         "WTREGEN": [800.0, 820.0]})
-    rrp = pd.DataFrame({"date": pd.to_datetime(["2026-01-07"]), "RRPONTSYD": [100.0]})
+    # RRP input is in BILLIONS (FRED units): 0.1 bln → 100 mln after ×1000.
+    rrp = pd.DataFrame({"date": pd.to_datetime(["2026-01-07"]), "RRPONTSYD": [0.1]})
     out = assemble_net_liquidity(walcl, tga, rrp)
     out = out.set_index(out["date"].dt.strftime("%Y-%m-%d"))
     # 2026-01-05 (Mon): WALCL ffill 7000, TGA ffill 800, RRP missing → 0 → NL 6200
     assert out.loc["2026-01-05", "net_liquidity"] == pytest.approx(7000 - 800 - 0)
     # 2026-01-06: TGA updates to 820, RRP still 0 → 7000-820 = 6180
     assert out.loc["2026-01-06", "net_liquidity"] == pytest.approx(7000 - 820 - 0)
-    # 2026-01-08: WALCL still 7000 (next weekly is 01-09), TGA 820, RRP 100 → 6080
+    # 2026-01-08: WALCL still 7000 (next weekly is 01-09), TGA 820, RRP 0.1bln→100mln → 6080
     assert out.loc["2026-01-08", "net_liquidity"] == pytest.approx(7000 - 820 - 100)
+    assert out.loc["2026-01-08", "rrp"] == pytest.approx(100.0)   # 0.1 bln stored as 100 mln
     # 2026-01-09: WALCL updates to 6900 → 6900-820-100 = 5980
     assert out.loc["2026-01-09", "net_liquidity"] == pytest.approx(6900 - 820 - 100)
     assert list(out.columns) == ["date", "net_liquidity", "walcl", "tga", "rrp", "source"]
+
+
+def test_assemble_rrp_billions_to_millions():
+    # Realistic 2022-scale check: WALCL/TGA in $ millions, RRP in $ billions.
+    # 2022-06-ish: WALCL≈8_900_000 mln, TGA≈700_000 mln, RRP≈2_200 bln (=$2.2T).
+    # Without conversion net would be ≈8_197_800 (RRP as 2_200 mln, ~noise);
+    # with ×1000 conversion RRP=2_200_000 mln → net ≈ 6_000_000.
+    walcl = pd.DataFrame({"date": pd.to_datetime(["2022-06-01"]), "WALCL": [8_900_000.0]})
+    tga = pd.DataFrame({"date": pd.to_datetime(["2022-06-01"]), "WTREGEN": [700_000.0]})
+    rrp = pd.DataFrame({"date": pd.to_datetime(["2022-06-01"]), "RRPONTSYD": [2_200.0]})
+    out = assemble_net_liquidity(walcl, tga, rrp).iloc[0]
+    assert out["rrp"] == pytest.approx(2_200_000.0)               # bln → mln
+    assert out["net_liquidity"] == pytest.approx(6_000_000.0)     # not ~8_197_800
 
 
 def test_assemble_requires_walcl():
