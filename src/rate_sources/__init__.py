@@ -10,11 +10,23 @@ Adapter status (verified): USD→FRED DGS2 (DBnomics-FED SVENY02 fallback),
 EUR→ECB SR_2Y, GBP→BoE IUDSNPY, JPY→MoF jgbcm_all.csv (col 2年),
 CAD→BoC BD.CDN.2YR.DQ.YLD, AUD→RBA F2 (Stooq fallback), NZD→RBNZ B2 xlsx
 (Stooq fallback), CHF→SNB rendoblid D0=2J (often stale → Stooq fallback).
+
+Known FX foreign-2y gaps (as of 2026-06, NOT trivially fixable):
+  JPY  — MoF resolves but lags (stale).
+  AUD  — RBA F2 403s behind a bot wall despite a browser UA + Referer + Accept
+         (already set, see RbaSource); not a header tweak. Runs on Stooq cache.
+  NZD  — RBNZ B2 xlsx 403s the same way (browser UA + Referer already set).
+  CHF  — SNB stale; no live primary.
+  Stooq fallback is itself bot-walled intermittently.
+These are real bot walls, not the IPv6 routing issue fixed above (that affected
+connection-level hangs, e.g. FRED — these return an HTTP 403 instead). Left as-is;
+the cross-asset scoring already excludes stale/missing sub-scores from averages.
 """
 from __future__ import annotations
 
 import io
 import logging
+import socket
 import time
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -23,8 +35,18 @@ from typing import Optional, Protocol, runtime_checkable
 import numpy as np
 import pandas as pd
 import requests
+import urllib3.util.connection
 
 log = logging.getLogger(__name__)
+
+# Force IPv4 for all outbound fetches. FRED (and some other endpoints) advertise
+# AAAA records whose IPv6 route is broken from many networks: `requests` picks
+# the IPv6 address and hangs into a ConnectionError after 20–40s, while `curl`
+# silently falls back via Happy Eyeballs and succeeds. This is the real cause of
+# WALCL/TGA/RRP (net liquidity) and DFII10 (real yield) failing from Python while
+# curl works. Pinning the resolver to AF_INET makes requests behave like curl.
+# Global to the fetch process — safe, no source we use is IPv6-only.
+urllib3.util.connection.allowed_gai_family = lambda: socket.AF_INET
 
 CURRENCIES = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"]
 

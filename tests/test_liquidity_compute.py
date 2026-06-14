@@ -60,6 +60,27 @@ def test_assemble_requires_walcl():
     assert assemble_net_liquidity(None, None, None) is None
 
 
+def test_assemble_rejects_degraded_rrp_in_rrp_era():
+    # WALCL/TGA reach 2026 but RRP fetch FAILED (None). Treating RRP=0 over the
+    # RRP era would clobber good history → guard returns None (keep parquet).
+    walcl = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-09"]),
+                          "WALCL": [7000.0, 6900.0]})
+    tga = pd.DataFrame({"date": pd.to_datetime(["2026-01-02"]), "WTREGEN": [800.0]})
+    assert assemble_net_liquidity(walcl, tga, None) is None
+    assert assemble_net_liquidity(walcl, tga, pd.DataFrame()) is None
+
+
+def test_assemble_allows_missing_rrp_pre_facility():
+    # Span entirely before 2013-09 → RRP genuinely did not exist → RRP=0 is correct.
+    walcl = pd.DataFrame({"date": pd.to_datetime(["2010-01-04", "2010-01-11"]),
+                          "WALCL": [2000.0, 2010.0]})
+    tga = pd.DataFrame({"date": pd.to_datetime(["2010-01-04"]), "WTREGEN": [100.0]})
+    out = assemble_net_liquidity(walcl, tga, None)
+    assert out is not None and len(out)
+    assert (out["rrp"] == 0.0).all()
+    assert out["net_liquidity"].iloc[0] == pytest.approx(2000.0 - 100.0 - 0.0)
+
+
 # ---------------------------------------------------------------------------
 # Band scorer (raw: NL falling = + tightening; rising = − easing)
 # ---------------------------------------------------------------------------

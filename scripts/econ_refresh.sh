@@ -8,16 +8,22 @@ git pull --rebase --autostash >/dev/null 2>&1
 cal_before=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
 rates_before=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_before=$(md5 -q data/real_yields.parquet 2>/dev/null)
-# Refresh the calendar (surprises) and the 2y rates (Monetary Policy) before render.
+nl_before=$(md5 -q data/net_liquidity.parquet 2>/dev/null)
+# Refresh the calendar (surprises), the 2y rates (Monetary Policy), real yields,
+# and Fed net liquidity (WALCL−TGA−RRP) before render. liquidity_fetch has a
+# degraded-build guard: a failed RRP leg leaves the parquet untouched.
 ./.venv/bin/python -m src.economic_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.rate_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.realyield_fetch >> /tmp/econ.log 2>&1
+./.venv/bin/python -m src.liquidity_fetch >> /tmp/econ.log 2>&1
 cal_after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
 rates_after=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_after=$(md5 -q data/real_yields.parquet 2>/dev/null)
-if [ "$cal_before" != "$cal_after" ] || [ "$rates_before" != "$rates_after" ] || [ "$ry_before" != "$ry_after" ]; then
+nl_after=$(md5 -q data/net_liquidity.parquet 2>/dev/null)
+if [ "$cal_before" != "$cal_after" ] || [ "$rates_before" != "$rates_after" ] || [ "$ry_before" != "$ry_after" ] || [ "$nl_before" != "$nl_after" ]; then
   ./.venv/bin/python -m src.main --mode economic >> /tmp/econ.log 2>&1
   git add data/economic_calendar.parquet data/rates.parquet data/real_yields.parquet \
+          data/net_liquidity.parquet \
           public/economic.html public/data/economic.json
   git commit -m "econ: refresh $(date -u +%FT%TZ)" >/dev/null 2>&1 && git push >/dev/null 2>&1
 fi

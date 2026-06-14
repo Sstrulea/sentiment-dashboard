@@ -38,6 +38,10 @@ COLUMNS = ["date", "net_liquidity", "walcl", "tga", "rrp", "source"]
 
 FRED_IDS = {"walcl": "WALCL", "tga": "WTREGEN", "rrp": "RRPONTSYD"}
 
+# RRPONTSYD (overnight reverse repo) facility began 2013-09-23. A missing RRP leg
+# whose span reaches this date or later is a failed fetch, not pre-facility absence.
+RRP_ERA_START = pd.Timestamp("2013-09-23")
+
 
 def _fetch_leg(fred_id: str) -> Optional[pd.DataFrame]:
     src = FredSeriesSource(fred_id)
@@ -57,12 +61,28 @@ def assemble_net_liquidity(walcl: Optional[pd.DataFrame],
     (date, WALCL) / (date, WTREGEN) / (date, RRPONTSYD), build net liquidity on a
     business-daily index. WALCL required (defines the span) and forward-filled
     weekly→daily; TGA/RRP forward-filled over weekends/holidays; RRP missing
-    (pre-facility) → 0. Returns the frame (COLUMNS) or None if WALCL is missing."""
+    (pre-facility) → 0. Returns the frame (COLUMNS) or None if WALCL is missing.
+
+    DEGRADED-BUILD GUARD: a *failed* RRP fetch arrives here as None/empty, which
+    is indistinguishable from "pre-facility → 0" only by date. If RRP is missing
+    AND the WALCL span reaches into the RRP era (≥ 2013-09, when RRPONTSYD began),
+    treating RRP as 0 would silently inflate net liquidity by up to ~2.5T (RRP's
+    2022 peak) and clobber good history. In that case we return None so the caller
+    keeps the existing parquet. A genuine recent ~0 RRP still comes back as a
+    non-empty frame from FRED, so it passes the guard."""
     if walcl is None or walcl.empty:
         return None
     legs = [d for d in (walcl, tga, rrp) if d is not None and not d.empty]
     start = walcl["date"].min()
     end = max(d["date"].max() for d in legs)
+
+    rrp_missing = rrp is None or rrp.empty
+    if rrp_missing and end >= RRP_ERA_START:
+        log.warning("RRP fetch returned no data but WALCL span reaches %s (≥ RRP era %s) "
+                    "— refusing to assemble a degraded net liquidity (RRP=0 over the RRP era). "
+                    "Keeping existing parquet.", end.date(), RRP_ERA_START.date())
+        return None
+
     idx = pd.bdate_range(start, end)
 
     def _series(df, col):
