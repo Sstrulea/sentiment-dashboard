@@ -35,6 +35,11 @@ UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
+# FRED (fredgraph.csv) TARPITS browser User-Agents — a Chrome UA hangs/ReadTimeouts
+# while a simple non-browser UA is served instantly. Used ONLY for the FRED CSV
+# sources below (FredSource, FredSeriesSource); non-FRED sources keep `UA` (some,
+# e.g. Stooq/RBA/BoE, need a browser UA to clear their own bot-walls).
+FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
 
 # Qualification thresholds.
 FRESH_LAG_BD = 5     # latest within ~5 business days = fresh
@@ -267,7 +272,8 @@ class FredSource(BaseSource):
 
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
         sid, tenor = self.SERIES[currency]
-        r = self._get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}", retries=3)
+        r = self._get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}", retries=3,
+                      extra_headers={"User-Agent": FRED_UA})
         if r is None:
             return None
         if self._check_botwall(r):
@@ -315,7 +321,7 @@ class FredSeriesSource(BaseSource):
 
     def _fetch_series(self) -> Optional[pd.DataFrame]:
         url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={self.series_id}"
-        r = self._get(url, retries=3)
+        r = self._get(url, retries=3, extra_headers={"User-Agent": FRED_UA})
         if r is None:
             return None
         if self._check_botwall(r):

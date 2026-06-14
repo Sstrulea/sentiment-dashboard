@@ -38,6 +38,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
   SP500:
     type: index
     home_ccy: USD
@@ -50,6 +51,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
   NASDAQ:
     type: index
     home_ccy: USD
@@ -62,6 +64,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
   DAX:
     type: index
     home_ccy: EUR
@@ -74,6 +77,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
   NIKKEI:
     type: index
     home_ccy: JPY
@@ -86,6 +90,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
   FTSE100:
     type: index
     home_ccy: GBP
@@ -98,6 +103,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
 
   # --- Metals (USD home; growth lighter at 0.5) ---
   GOLD:
@@ -112,6 +118,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
   SILVER:
     type: metal
     home_ccy: USD
@@ -124,3 +131,4 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
+          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish

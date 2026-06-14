@@ -21,6 +21,7 @@ def _rates_block():
     return {"weight": 1.0, "components": {
         "rate_exp_2y": {"sign": -1, "weight": 1.0},
         "real_yield_10y": {"sign": -1, "weight": 1.0},
+        "balance_sheet": {"sign": -1, "weight": 1.0},
     }}
 
 CONFIG = {
@@ -236,3 +237,69 @@ def test_no_data_monetary_cell_is_absent_not_stale():
     re2 = _sub(res["SP500"], "rate_exp_2y")
     assert re2["present"] is False and re2["raw"] is None and re2["stale"] is False
     assert _factor(res["SP500"], "rates")["present"] is False   # nothing in rates
+
+
+# ---------------------------------------------------------------------------
+# Step 7 — balance_sheet (Fed net liquidity) sub-component
+# ---------------------------------------------------------------------------
+
+class _Liq:
+    """LiquidityScore-like. score: raw (NL falling = +tightening); stale flag."""
+    def __init__(self, score, stale=False):
+        self.score = score
+        self.stale = stale
+
+
+def test_balance_sheet_present_in_rates():
+    res = compute_crossasset_scores(_cats(), realyield_score=None,
+                                    config=CONFIG, liquidity_score=_Liq(2))
+    bs = _sub(res["SP500"], "balance_sheet")
+    assert bs["present"] is True and bs["raw"] == 2 and bs["sign"] == -1
+    assert bs["contribution"] == pytest.approx(-2.0)   # sign -1 × 1 × 2
+
+
+def test_nl_rising_is_bullish_for_indices_and_gold():
+    # NL rising = easing → liquidity raw NEGATIVE (-2). sign -1 ⇒ +2 contribution
+    # ⇒ MORE bullish for both SP500 and GOLD.
+    rising = compute_crossasset_scores(_cats(), None, CONFIG, liquidity_score=_Liq(-2))
+    falling = compute_crossasset_scores(_cats(), None, CONFIG, liquidity_score=_Liq(2))
+    for sym in ("SP500", "GOLD"):
+        assert rising[sym]["score_precise"] > 0      # easing → bullish
+        assert falling[sym]["score_precise"] < 0     # tightening → bearish
+        assert rising[sym]["score_precise"] > falling[sym]["score_precise"]
+
+
+def test_three_aligned_rate_subs_bounded_at_2_not_3():
+    # 2y +2, real +2, NL falling +2 → all signed -2 → rates mean = -2 (NOT -3).
+    res = compute_crossasset_scores(_cats(monetary=2), realyield_score=2,
+                                    config=CONFIG, liquidity_score=_Liq(2))
+    rt = _factor(res["SP500"], "rates")
+    assert rt["value"] == pytest.approx(-2.0)
+    assert {c["name"] for c in rt["components"] if c["present"]} == {
+        "rate_exp_2y", "real_yield_10y", "balance_sheet"}
+
+
+def test_rate_subs_divergent_cancel():
+    # 2y +2 (signed -2), real -2 (signed +2), NL flat 0 (signed 0) → mean 0.
+    res = compute_crossasset_scores(_cats(monetary=2), realyield_score=-2,
+                                    config=CONFIG, liquidity_score=_Liq(0))
+    assert _factor(res["SP500"], "rates")["value"] == pytest.approx(0.0)
+
+
+def test_stale_balance_sheet_excluded_but_visible():
+    # Stale NL + fresh 2y(+2): balance_sheet excluded from mean (rates = -2 from
+    # 2y alone) but still shown with raw + stale flag.
+    res = compute_crossasset_scores(_cats(monetary=2), realyield_score=None,
+                                    config=CONFIG, liquidity_score=_Liq(2, stale=True))
+    bs = _sub(res["SP500"], "balance_sheet")
+    assert bs["present"] is False and bs["stale"] is True and bs["raw"] == 2
+    assert _factor(res["SP500"], "rates")["value"] == pytest.approx(-2.0)  # 2y only
+
+
+def test_missing_balance_sheet_backward_compatible():
+    # No liquidity_score (default None) → balance_sheet absent; rates = mean of
+    # the two present subs, unchanged from pre-Step-7 behavior.
+    res = compute_crossasset_scores(_cats(monetary=2), realyield_score=2, config=CONFIG)
+    bs = _sub(res["SP500"], "balance_sheet")
+    assert bs["present"] is False and bs["raw"] is None
+    assert _factor(res["SP500"], "rates")["value"] == pytest.approx(-2.0)  # mean(-2,-2)

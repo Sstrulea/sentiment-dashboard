@@ -29,6 +29,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from src.economic_compute import build_payload
 from src.rate_compute import compute_rate_scores
 from src.realyield_compute import compute_realyield_score
+from src.liquidity_compute import compute_liquidity_score
 from src.crossasset_compute import compute_crossasset_scores
 from src.static_assets import copy_static_assets
 
@@ -40,6 +41,7 @@ PUBLIC_DIR = ROOT / "public"
 PARQUET = ROOT / "data" / "economic_calendar.parquet"
 RATES_PARQUET = ROOT / "data" / "rates.parquet"
 REAL_YIELDS_PARQUET = ROOT / "data" / "real_yields.parquet"
+NET_LIQUIDITY_PARQUET = ROOT / "data" / "net_liquidity.parquet"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
@@ -71,7 +73,8 @@ CROSSASSET_TABLE_LAYOUT = [
         ("wage_growth", "Wages"), ("adp", "ADP"), ("jolts", "JOLTS"),
         ("jobless_claims", "Claims")]},
     {"key": "rates", "label": "Rates & Liquidity", "columns": [
-        ("rate_exp_2y", "Rate Exp 2Y"), ("real_yield_10y", "10Y Real Yield")]},
+        ("rate_exp_2y", "Rate Exp 2Y"), ("real_yield_10y", "10Y Real Yield"),
+        ("balance_sheet", "Net Liquidity")]},
 ]
 # Home-ccy indicator keys to read from the FX breakdown for the sub-columns.
 CROSSASSET_CATEGORY_KEYS = [
@@ -338,7 +341,28 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
         except Exception as e:
             log.warning("real_yields.parquet present but unreadable (%s); real_yield excluded.", e)
 
-    scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg)
+    # Fed net liquidity (WALCL−TGA−RRP) → balance_sheet sub-component. Missing
+    # parquet → excluded gracefully (mirrors real_yield).
+    liquidity_score = None
+    liquidity_meta = {"present": False, "series": "NET_LIQUIDITY"}
+    if NET_LIQUIDITY_PARQUET.exists():
+        try:
+            ndf = pd.read_parquet(NET_LIQUIDITY_PARQUET)
+            if len(ndf):
+                ls = compute_liquidity_score(ndf, as_of=as_of.date())
+                if ls is not None:
+                    liquidity_score = ls
+                    liquidity_meta = {
+                        "present": True, "series": "NET_LIQUIDITY", "score": ls.score,
+                        "roc": ls.roc, "latest": ls.latest, "method": ls.method,
+                        "as_of": ls.as_of.isoformat() if ls.as_of is not None else None,
+                        "stale": ls.stale,
+                    }
+        except Exception as e:
+            log.warning("net_liquidity.parquet present but unreadable (%s); balance_sheet excluded.", e)
+
+    scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg,
+                                       liquidity_score=liquidity_score)
 
     currencies = payload.get("currencies", {}) or {}
 
@@ -388,6 +412,7 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
         ],
         "factor_labels": dict(CROSSASSET_FACTOR_LABELS),
         "real_yield": real_yield_meta,
+        "net_liquidity": liquidity_meta,
         "bias_thresholds": cfg.get("bias_thresholds", {}),
         "scale": cfg.get("scale"),
     }

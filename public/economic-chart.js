@@ -573,7 +573,8 @@
     const hasVal = c.raw !== null && c.raw !== undefined;
     const contrib = hasVal ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
     const cls = hasVal ? cellClass(Math.round(c.contribution)) : "";
-    const label = c.name === "rate_exp_2y" ? "Rate Expectations (2Y)" : "10Y Real Yield";
+    const label = ({rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield",
+                    balance_sheet: "Net Liquidity"})[c.name] || c.name;
     const flag = c.stale
       ? '<span class="econ-flag flag-stale" title="stale — shown for visibility, excluded from the rates mean">stale</span>'
       : (hasVal ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>');
@@ -632,12 +633,20 @@
       '<div class="econ-cat-head">' + group.label +
       ' <span class="econ-cat-sub ' + cls + '">contrib ' + contrib + "</span>" + signTxt + "</div>";
 
-    let table;
+    let table, note = "";
     if (group.key === "rates") {
       const comps = (f && f.components) || [];
       table =
         '<thead><tr><th>Sub-component</th><th>Raw</th><th>Sign</th><th>Weight</th><th>Contribution</th><th></th><th>Source</th></tr></thead>' +
         '<tbody>' + comps.map(caRateRow).join("") + "</tbody>";
+      const nl = (state.payload.crossasset || {}).net_liquidity || {};
+      const bits = ["Net Liquidity = WALCL − TGA − RRP"];
+      if (nl.present) {
+        bits.push("21d roc " + (nl.roc == null ? "—" : fmtSigned(nl.roc * 100, 2) + "%/mo"));
+        if (nl.latest != null) bits.push("level " + Number(nl.latest).toFixed(0));
+        if (nl.as_of) bits.push("@ " + fmtDate(nl.as_of) + (nl.stale ? " (stale)" : ""));
+      }
+      note = '<div class="muted" style="font-size:11px;margin-top:4px;">' + bits.join(" · ") + "</div>";
     } else {
       const brk = ((state.payload.currencies || {})[home] || {}).breakdown || {};
       const keys = group.columns.map(c => c.key).filter(k => brk[k]);
@@ -649,7 +658,8 @@
         '<tbody>' + rowsHtml + "</tbody>";
     }
     return '<div class="econ-cat-group">' + head +
-      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + "</table></div></div>";
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + "</table></div>" +
+      note + "</div>";
   }
 
   function openCrossAssetModal(sym) {

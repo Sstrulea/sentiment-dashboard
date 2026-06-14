@@ -27,10 +27,11 @@ from src.economic_compute import bias_label  # read-only reuse (not modified)
 SIMPLE_FACTORS = ("growth", "inflation", "labour")
 RATES_FACTOR = "rates"
 # rate sub-component -> (source kind, key). "category" reads the home-ccy
-# category cell; "realyield" reads the global real-yield momentum score.
+# category cell; "realyield"/"liquidity" read a GLOBAL momentum score.
 RATE_SUBCOMPONENTS = {
     "rate_exp_2y": ("category", "monetary"),   # home-ccy 2y rate expectations
     "real_yield_10y": ("realyield", None),     # global US 10y real yield
+    "balance_sheet": ("liquidity", None),      # global Fed net liquidity (WALCL−TGA−RRP)
 }
 
 
@@ -76,6 +77,17 @@ def _realyield_stale(ry: Any) -> bool:
     return bool(getattr(ry, "stale", False))
 
 
+def _global_raw(g: Any) -> Optional[int]:
+    """Coerce a global momentum input (RealYield/Liquidity score, number, None)
+    to its int score, or None."""
+    if g is None:
+        return None
+    if isinstance(g, (int, float)):
+        return None if (isinstance(g, float) and math.isnan(g)) else int(g)
+    s = getattr(g, "score", None)
+    return None if s is None else int(s)
+
+
 def _subcell_display(v: Any) -> tuple[Optional[int], bool, bool]:
     """For a category-sourced rate sub-component, return (raw_for_display, stale,
     present_for_mean). A build_payload monetary cell carries `stale` + coverage:
@@ -101,12 +113,13 @@ def _subcell_display(v: Any) -> tuple[Optional[int], bool, bool]:
         return None, False, False
 
 
-def _rates_factor(rates_cfg: dict, cats: dict, realyield_raw: Optional[int],
-                  realyield_stale: bool, home: str, ry_label: str
-                  ) -> tuple[Optional[float], list[dict]]:
+def _rates_factor(rates_cfg: dict, cats: dict, home: str,
+                  globals_by_kind: dict) -> tuple[Optional[float], list[dict]]:
     """Composite rates value = weighted mean of PRESENT (non-stale) sub-components
-    (signed), bounded at ±2. Stale sub-components are kept in the rows for display
-    (raw value + stale flag) but excluded from the mean. Returns (value|None, rows)."""
+    (signed), bounded at ±2 regardless of how many components there are. Stale
+    sub-components are kept in the rows for display (raw + stale flag) but excluded
+    from the mean. `globals_by_kind` maps a non-category kind ("realyield",
+    "liquidity") -> (raw|None, stale, source_label). Returns (value|None, rows)."""
     comps_cfg = rates_cfg.get("components", {}) or {}
     sub_rows: list[dict] = []
     num = 0.0
@@ -115,11 +128,9 @@ def _rates_factor(rates_cfg: dict, cats: dict, realyield_raw: Optional[int],
         sign = float(cc.get("sign", 1))
         weight = float(cc.get("weight", 1.0))
         kind, key = RATE_SUBCOMPONENTS.get(name, ("category", name))
-        if kind == "realyield":
-            raw = realyield_raw
-            stale = bool(realyield_stale)
+        if kind in globals_by_kind:
+            raw, stale, source = globals_by_kind[kind]
             present = (raw is not None) and not stale
-            source = ry_label
         else:
             raw, stale, present = _subcell_display(cats.get(key))
             source = f"{home} {key}"
@@ -146,11 +157,18 @@ def compute_instrument_score(
     thresholds: dict,
     realyield_label: str = "DFII10",
     realyield_stale: bool = False,
+    liquidity_raw: Optional[int] = None,
+    liquidity_label: str = "NET_LIQUIDITY",
+    liquidity_stale: bool = False,
 ) -> dict:
     """Score one instrument: weighted mean over present top-level factors × scale."""
     home = inst_cfg.get("home_ccy")
     factors_cfg = inst_cfg.get("factors", {}) or {}
     cats = (categories_by_ccy or {}).get(home, {}) or {}
+    globals_by_kind = {
+        "realyield": (realyield_raw, bool(realyield_stale), realyield_label),
+        "liquidity": (liquidity_raw, bool(liquidity_stale), liquidity_label),
+    }
 
     factor_rows: list[dict] = []
     num = 0.0
@@ -158,8 +176,7 @@ def compute_instrument_score(
     for name, fc in factors_cfg.items():
         weight = float(fc.get("weight", 1.0))
         if name == RATES_FACTOR:
-            value, sub_rows = _rates_factor(fc, cats, realyield_raw, realyield_stale,
-                                            home, realyield_label)
+            value, sub_rows = _rates_factor(fc, cats, home, globals_by_kind)
             present = value is not None
             contribution = (weight * value) if present else None
             if present:
@@ -206,6 +223,7 @@ def compute_crossasset_scores(
     categories_by_ccy: dict,
     realyield_score: Any = None,
     config: Optional[dict] = None,
+    liquidity_score: Any = None,
 ) -> dict:
     """Compute every cross-asset instrument's bias.
 
@@ -213,14 +231,17 @@ def compute_crossasset_scores(
       categories_by_ccy: {CCY: {category: score_cell|None}} or {CCY: {category:
         {"score_cell": int, "coverage": int}}} — from
         build_payload(...)["currencies"][CCY]["categories"].
-      realyield_score: a RealYieldScore, a number, or None (None → the
-        real_yield_10y sub-component is excluded; rates then = rate_exp_2y alone).
+      realyield_score: a RealYieldScore, a number, or None (None → real_yield_10y
+        excluded from the rates composite).
+      liquidity_score: a LiquidityScore, a number, or None (None → balance_sheet
+        excluded). Default None keeps callers backward-compatible.
       config: parsed crossasset_instruments.yaml.
 
     Returns {symbol: {score, score_precise, bias_label, coverage, factors[...]}},
-    where each top-level factor carries its signed `value` + `contribution`, and
-    the `rates` factor additionally carries its `components` (rate_exp_2y,
-    real_yield_10y) with raw/sign/weight/contribution. Pure.
+    where the `rates` factor carries its `components` (rate_exp_2y, real_yield_10y,
+    balance_sheet) with raw/sign/weight/contribution. The composite is the weighted
+    mean over PRESENT (non-stale) sub-components → bounded ±2 even with 3 aligned.
+    Pure.
     """
     config = config or {}
     scale = float(config.get("scale", 5))
@@ -229,10 +250,13 @@ def compute_crossasset_scores(
     ry_raw = _realyield_raw(realyield_score)
     ry_label = _realyield_series(realyield_score)
     ry_stale = _realyield_stale(realyield_score)
+    liq_raw = _global_raw(liquidity_score)
+    liq_stale = bool(getattr(liquidity_score, "stale", False))
 
     return {
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,
                                       scale, thresholds, realyield_label=ry_label,
-                                      realyield_stale=ry_stale)
+                                      realyield_stale=ry_stale,
+                                      liquidity_raw=liq_raw, liquidity_stale=liq_stale)
         for sym, cfg in instruments.items()
     }

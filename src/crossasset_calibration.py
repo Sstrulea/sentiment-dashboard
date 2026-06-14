@@ -32,6 +32,7 @@ import yaml
 from src.economic_compute import bias_label, build_payload
 from src.rate_compute import compute_rate_scores
 from src.realyield_compute import compute_realyield_score
+from src.liquidity_compute import compute_liquidity_score
 from src.crossasset_compute import compute_crossasset_scores
 
 log = logging.getLogger(__name__)
@@ -40,6 +41,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CAL = ROOT / "data" / "economic_calendar.parquet"
 RATES = ROOT / "data" / "rates.parquet"
 REAL_YIELDS = ROOT / "data" / "real_yields.parquet"
+NET_LIQUIDITY = ROOT / "data" / "net_liquidity.parquet"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
@@ -58,6 +60,9 @@ def run_backfill(step: int = 1, max_asof: int = 300):
     cal = pd.read_parquet(CAL); cal["release_dt"] = pd.to_datetime(cal["release_dt"])
     rates = pd.read_parquet(RATES); rates["date"] = pd.to_datetime(rates["date"])
     ry = pd.read_parquet(REAL_YIELDS); ry["date"] = pd.to_datetime(ry["date"])
+    nl = None
+    if NET_LIQUIDITY.exists():
+        nl = pd.read_parquet(NET_LIQUIDITY); nl["date"] = pd.to_datetime(nl["date"])
     ind = yaml.safe_load(open(INDICATORS_YAML))
     inst = yaml.safe_load(open(INSTRUMENTS_YAML))
     ca_cfg = yaml.safe_load(open(CROSSASSET_YAML))
@@ -90,7 +95,12 @@ def run_backfill(step: int = 1, max_asof: int = 300):
             ry_present_days += 1
             ry_chosen_series.add(rys.series)
 
-        scores = compute_crossasset_scores(categories_by_ccy, rys, ca_cfg)
+        ls = None
+        if nl is not None:
+            nl_slice = nl[nl["date"] <= as_of]
+            ls = compute_liquidity_score(nl_slice, as_of=as_of.date()) if len(nl_slice) else None
+
+        scores = compute_crossasset_scores(categories_by_ccy, rys, ca_cfg, liquidity_score=ls)
         for sym, r in scores.items():
             rows.append({
                 "as_of": as_of.date(), "symbol": sym, "type": r["type"],
@@ -221,7 +231,8 @@ def show_today(mild: float, very: float) -> None:
     payload = build_payload(cal, ind, inst, as_of=as_of, rate_scores=rs or None)
     cats = {c: card.get("categories", {}) for c, card in payload["currencies"].items()}
     rys = compute_realyield_score(pd.read_parquet(REAL_YIELDS), as_of=as_of.date()) if REAL_YIELDS.exists() else None
-    scores = compute_crossasset_scores(cats, rys, ca_cfg)
+    ls = compute_liquidity_score(pd.read_parquet(NET_LIQUIDITY), as_of=as_of.date()) if NET_LIQUIDITY.exists() else None
+    scores = compute_crossasset_scores(cats, rys, ca_cfg, liquidity_score=ls)
 
     th = {"mild": mild, "very": very}
     print("\n  TODAY under recommended thresholds (real_yield series: "
