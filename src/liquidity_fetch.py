@@ -165,8 +165,15 @@ def _print_report(df: pd.DataFrame) -> None:
     today = date.today()
     lag = 0 if last >= today else int(np.busday_count(last, today))
     print(f"  history {first} → {last} (lag {lag}bd)")
-    print(f"  latest net_liquidity={sub['net_liquidity'].iloc[-1]:.1f}  "
-          f"(WALCL {sub['walcl'].iloc[-1]:.1f} − TGA {sub['tga'].iloc[-1]:.1f} − RRP {sub['rrp'].iloc[-1]:.1f})")
+    # The committed (manually-built) parquet has only date+net_liquidity; the leg
+    # breakdown is present only on a fresh 6-col build. Guard so the report (hence
+    # the scheduler's liquidity step) never crashes when walcl/tga/rrp are absent.
+    if {"walcl", "tga", "rrp"}.issubset(sub.columns):
+        print(f"  latest net_liquidity={sub['net_liquidity'].iloc[-1]:.1f}  "
+              f"(WALCL {sub['walcl'].iloc[-1]:.1f} − TGA {sub['tga'].iloc[-1]:.1f} − RRP {sub['rrp'].iloc[-1]:.1f})")
+    else:
+        print(f"  latest net_liquidity={sub['net_liquidity'].iloc[-1]:.1f}  "
+              f"(leg breakdown unavailable — net_liquidity-only parquet)")
 
 
 def _print_scores(df: pd.DataFrame) -> None:

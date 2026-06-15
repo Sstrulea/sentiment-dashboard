@@ -8,7 +8,8 @@ import pandas as pd
 import pytest
 
 from src.liquidity_compute import compute_liquidity_score
-from src.liquidity_fetch import assemble_net_liquidity
+from src.liquidity_fetch import assemble_net_liquidity, _print_report
+from src.rate_sources import FredSeriesSource
 
 AS_OF = date(2026, 6, 1)
 W = 21
@@ -175,3 +176,49 @@ def test_default_bands_buckets_at_boundaries():
     assert sub.score == 0
     assert mid.score == -1
     assert big.score == -2
+
+
+# ---------------------------------------------------------------------------
+# _print_report must tolerate a net_liquidity-only parquet (no leg columns),
+# else the scheduler's liquidity step crashes with a KeyError / non-zero exit
+# whenever the committed 2-col parquet is in play (e.g. RRP down at FRED).
+# ---------------------------------------------------------------------------
+
+def test_print_report_tolerates_net_liquidity_only(capsys):
+    df = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-05"]),
+                       "net_liquidity": [6_000_000.0, 6_010_000.0]})
+    _print_report(df)                                  # must NOT raise
+    out = capsys.readouterr().out
+    assert "leg breakdown unavailable" in out
+    assert "WALCL" not in out
+
+
+def test_print_report_shows_legs_when_present(capsys):
+    df = pd.DataFrame({"date": pd.to_datetime(["2026-01-02"]),
+                       "net_liquidity": [6_000_000.0], "walcl": [8_900_000.0],
+                       "tga": [700_000.0], "rrp": [2_200_000.0], "source": ["fred"]})
+    _print_report(df)
+    out = capsys.readouterr().out
+    assert "WALCL" in out and "TGA" in out and "RRP" in out
+
+
+# ---------------------------------------------------------------------------
+# FredSeriesSource: shared CSV parser + curl second-attempt fallback (no network).
+# ---------------------------------------------------------------------------
+
+FRED_CSV = "observation_date,DFII10\n2026-01-02,2.10\n2026-01-03,.\n2026-01-06,2.15\n"
+
+
+def test_parse_fred_csv_drops_na_marker():
+    out = FredSeriesSource("DFII10")._parse_fred_csv(FRED_CSV)
+    assert len(out) == 2                               # FRED '.' NA row dropped
+    assert list(out["value"]) == [2.10, 2.15]
+
+
+def test_curl_fallback_used_when_requests_fails(monkeypatch):
+    src = FredSeriesSource("DFII10")
+    monkeypatch.setattr(src, "_get", lambda *a, **k: None)       # requests path fails
+    monkeypatch.setattr(src, "_curl_csv", lambda url: FRED_CSV)  # curl succeeds
+    out = src._fetch_series()
+    assert out is not None and len(out) == 2
+    assert list(out["value"]) == [2.10, 2.15]

@@ -27,6 +27,7 @@ from __future__ import annotations
 import io
 import logging
 import socket
+import subprocess
 import time
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -344,11 +345,34 @@ class FredSeriesSource(BaseSource):
     def _fetch_series(self) -> Optional[pd.DataFrame]:
         url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={self.series_id}"
         r = self._get(url, retries=3, extra_headers={"User-Agent": FRED_UA})
-        if r is None:
+        text = None if (r is None or self._check_botwall(r)) else r.text
+        if not text or not text.strip():
+            # requests timed out / empty / tarpitted — retry with curl, which uses a
+            # different network stack (Happy Eyeballs) and sometimes succeeds when
+            # requests hangs on the same FRED series. Absolute path for launchd PATH.
+            text = self._curl_csv(url)
+        if not text or not text.strip():
             return None
-        if self._check_botwall(r):
+        return self._parse_fred_csv(text)
+
+    def _curl_csv(self, url: str) -> Optional[str]:
+        """Second-attempt fetch via /usr/bin/curl. Returns CSV text or None."""
+        try:
+            p = subprocess.run(
+                ["/usr/bin/curl", "-s", "--max-time", "20", "--compressed",
+                 "-H", f"User-Agent: {FRED_UA}", url],
+                capture_output=True, text=True, timeout=25,
+            )
+        except (OSError, subprocess.SubprocessError) as e:
+            self._parse_fail(f"curl fallback {type(e).__name__}: {e}")
             return None
-        df = pd.read_csv(io.StringIO(r.text))
+        if p.returncode != 0 or not p.stdout.strip():
+            self._parse_fail(f"curl fallback rc={p.returncode}")
+            return None
+        return p.stdout
+
+    def _parse_fred_csv(self, text: str) -> Optional[pd.DataFrame]:
+        df = pd.read_csv(io.StringIO(text))
         date_col = df.columns[0]
         val_cols = [c for c in df.columns if c != date_col]
         if not val_cols:
