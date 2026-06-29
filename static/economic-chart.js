@@ -287,8 +287,8 @@
       '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
-      cells +
       fxCotCellHtml(inst) +
+      cells +
       "</tr>"
     );
   }
@@ -308,11 +308,12 @@
       g.label + '</th>'
     ).join("");
 
-    // SENTIMENT: top-level group placed AFTER the factor groups (display-only).
+    // SENTIMENT: top-level group placed FIRST (right after Symbol/Bias/Score),
+    // before the macro factor groups. Contributes to Score with weight 0.5.
     const sentimentGroupHeader =
-      '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment (display-only): currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Not included in Score or Bias.">SENTIMENT</th>';
+      '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment: currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
     const sentimentSubHeader =
-      '<th data-sort="cot" class="ind-head grp-sentiment" title="COT positioning (display-only)">COT</th>';
+      '<th data-sort="cot" class="ind-head grp-sentiment" title="COT positioning (weight 0.5 in score)">COT</th>';
 
     let subHeaderCells = "";
     layout.forEach(g => g.columns.forEach(c => {
@@ -328,9 +329,9 @@
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
       '<th rowspan="2" data-sort="score">Score</th>' +
-      groupHeaderCells + sentimentGroupHeader +
+      sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
-      '<tr>' + subHeaderCells + sentimentSubHeader + '</tr>' +
+      '<tr>' + sentimentSubHeader + subHeaderCells + '</tr>' +
       '</thead>' +
       '<tbody>' + instruments.map(renderRow).join("") + '</tbody>' +
       '</table></div>';
@@ -495,6 +496,18 @@
           (state.payload.meta.pair_divisor || 2)
         : "Single currency · score = index × sign";
 
+    // Sentiment (COT) is folded into each currency's index as a weight-0.5
+    // factor; USD pair leg = 0, single USD row = DXY (cell shown).
+    const cot = inst.cot;
+    const sentimentNote = cot
+      ? '<p class="muted econ-modal-note"><strong>Sentiment (COT)</strong> — weight 0.5 in each currency index: ' +
+        (cot.quote
+          ? "base " + cot.base + " " + fmtScoreCell(cot.base_cell) + " − quote " +
+            cot.quote + " " + fmtScoreCell(cot.quote_cell) + " → cell " + fmtScoreCell(cot.cell)
+          : cot.base + " (DXY) cell " + fmtScoreCell(cot.cell)) +
+        ". Flows through the index mean (USD pair leg = 0), not added after.</p>"
+      : "";
+
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ')</small></h2>' +
@@ -505,6 +518,7 @@
       '</header>' +
       '<p class="muted econ-modal-note">Rounded cells can hide divergence — e.g. a Labour score near 0 may be ' +
       'NFP +2 against Jobless Claims −2. The per-indicator rows below show the real spread.</p>' +
+      sentimentNote +
       '<div class="' + gridClass + '">' + legs + '</div>';
 
     modal.hidden = false;
@@ -597,9 +611,10 @@
       '" title="Per-asset directional score (home-ccy reading × category sign): blue = bullish for this asset, red = bearish. Click a row for the full breakdown.">' +
       g.label + '</th>').join("");
 
-    // SENTIMENT: top-level group placed AFTER the factor groups (display-only).
+    // SENTIMENT: top-level group placed FIRST (right after Symbol/Bias/Score),
+    // before the macro factor groups. Contributes to Score with weight 0.5.
     const sentimentGroupHeader =
-      '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment (display-only): large-spec extreme + 4-week flow, contrarian. Blue = bullish for the asset, red = bearish. Not included in Score or Bias.">SENTIMENT</th>';
+      '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
     const sentimentSubHeader = '<th class="ind-head grp-sentiment">COT / P/C</th>';
 
     let subHeaders = "";
@@ -616,7 +631,7 @@
         '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
         '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
-        cells + caCotCellHtml(inst) + '</tr>'
+        caCotCellHtml(inst) + cells + '</tr>'
       );
     }).join("");
 
@@ -625,8 +640,8 @@
       '<table class="retail-table econ-table">' +
       '<thead>' +
       '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2">Score</th>' +
-      groupHeaders + sentimentGroupHeader + '</tr>' +
-      '<tr>' + subHeaders + sentimentSubHeader + '</tr>' +
+      sentimentGroupHeader + groupHeaders + '</tr>' +
+      '<tr>' + sentimentSubHeader + subHeaders + '</tr>' +
       '</thead>' +
       '<tbody>' + rows + '</tbody></table></div>';
 
@@ -731,6 +746,41 @@
       note + "</div>";
   }
 
+  // Modal: the SENTIMENT factor row (cell / sign / weight / contribution). Only
+  // rendered when the instrument carries a sentiment factor (metals + US idx);
+  // foreign indices return "" → no section (score identical to baseline).
+  function caSentimentSection(inst) {
+    const f = caFactor(inst, "sentiment");
+    if (!f) return "";
+    const present = f.present;
+    const contrib = present ? fmtSigned((Math.abs(f.contribution) < 0.05 ? 0 : f.contribution), 2) : "—";
+    const cls = present ? cellClass(Math.round(f.value)) : "";
+    let detail = "—";
+    if (inst.cot) {
+      const c = inst.cot;
+      detail = "COT · level " + fmtScoreCell(c.level) + " + flow " + fmtScoreCell(c.flow) +
+        " = cell " + fmtScoreCell(c.cell) + " · blend " + Number(c.blend).toFixed(0);
+    } else if (inst.sentiment && inst.sentiment.source === "pc") {
+      const c = inst.sentiment;
+      detail = "P/C equity contrarian · percentile " + Number(c.pct).toFixed(0) +
+        " (1Y) → cell " + fmtScoreCell(c.cell);
+    }
+    const head = '<div class="econ-cat-head">Sentiment ' +
+      '<span class="econ-cat-sub ' + cls + '">contrib ' + contrib + '</span>' +
+      ' <span class="muted">· weight ' + Number(f.weight).toFixed(1) + '</span></div>';
+    const table =
+      '<thead><tr><th>Source</th><th>Cell</th><th>Sign</th><th>Weight</th><th>Contribution</th></tr></thead>' +
+      '<tbody><tr>' +
+      '<td class="ei-name">' + detail + '</td>' +
+      '<td class="ei-num">' + (f.raw === null || f.raw === undefined ? "—" : fmtScoreCell(f.raw)) + '</td>' +
+      '<td class="ei-num">' + fmtSigned(f.sign, 0) + '</td>' +
+      '<td class="ei-num">' + Number(f.weight).toFixed(1) + '</td>' +
+      '<td class="ei-score ' + cls + '">' + contrib + '</td>' +
+      '</tr></tbody>';
+    return '<div class="econ-cat-group">' + head +
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + '</table></div></div>';
+  }
+
   function openCrossAssetModal(sym) {
     const ca = state.payload.crossasset;
     const inst = (ca.instruments || []).find(i => i.symbol === sym);
@@ -738,7 +788,8 @@
     const modal = document.getElementById("econDetailModal");
     const body = document.getElementById("econDetailContent");
 
-    const sections = caLayout().map(g => caCatSection(inst, g)).join("");
+    // SENTIMENT first (matches the table column order), then the macro factors.
+    const sections = caSentimentSection(inst) + caLayout().map(g => caCatSection(inst, g)).join("");
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ' · ' + inst.home_ccy + ')</small></h2>' +

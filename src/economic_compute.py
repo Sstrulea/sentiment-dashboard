@@ -367,14 +367,22 @@ def compute_currency_scorecard(
             cat_scores_for_index.append((float(rscore), monetary_weight))
 
     if cat_scores_for_index:
-        wsum = sum(w for _, w in cat_scores_for_index)
-        index = (sum(p * w for p, w in cat_scores_for_index) / wsum) * scale if wsum else 0.0
+        index_num = sum(p * w for p, w in cat_scores_for_index)
+        index_wsum = sum(w for _, w in cat_scores_for_index)
+        index = (index_num / index_wsum) * scale if index_wsum else 0.0
     else:
+        index_num = 0.0
+        index_wsum = 0.0
         index = 0.0
 
     return {
         "currency": currency,
         "index": float(index),
+        # Pre-scale accumulators of the macro (category-only) weighted mean, so the
+        # instrument layer can fold in the SENTIMENT factor without recomputing —
+        # and WITHOUT touching `index`/`categories` (which cross-asset reads).
+        "index_num": float(index_num),
+        "index_wsum": float(index_wsum),
         "coverage": total_coverage,
         "categories": categories_out,
         "breakdown": breakdown,
@@ -435,23 +443,67 @@ def _category_cells(
     return out
 
 
+def _augmented_index(card: dict | None, sentiment_value, sentiment_weight: float,
+                     scale: float) -> float:
+    """Currency index × scale with the SENTIMENT factor folded into the weighted
+    mean. `sentiment_value` None → factor absent (index identical to the macro-only
+    `card["index"]`); a present value (incl. 0 for a USD pair leg) adds its weight
+    to the mean. Reads the stored accumulators; never mutates the card.
+    """
+    if card is None:
+        return 0.0
+    num = float(card.get("index_num", 0.0))
+    wsum = float(card.get("index_wsum", 0.0))
+    if sentiment_value is not None:
+        num += sentiment_weight * float(sentiment_value)
+        wsum += sentiment_weight
+    return (num / wsum) * scale if wsum else 0.0
+
+
 def compute_instrument(
     symbol: str,
     inst_cfg: dict,
     scorecards: dict[str, dict],
     instruments_cfg: dict,
+    sentiment_cells: dict | None = None,
 ) -> dict:
-    """Derive a single instrument payload from precomputed currency scorecards."""
+    """Derive a single instrument payload from precomputed currency scorecards.
+
+    `sentiment_cells` (optional) maps a CFTC COT symbol → its currency's COT cell
+    (EUR/GBP/JPY/CHF/CAD/AUD/NZD + DXY for the dollar). When given, SENTIMENT
+    enters each currency's index as a weight-`sentiment_weight` factor:
+      - a PAIR leg of USD is ABSENT (excluded from that currency's mean — the
+        contracts are already vs-USD, so the dollar must not add a sentiment leg);
+      - the SINGLE US-dollar row uses the DXY contract cell (the dollar's own COT);
+      - every other currency leg uses its own COT cell.
+    `sentiment_cells` None → no sentiment (identical to the macro-only baseline).
+    """
     pair_divisor = float(instruments_cfg.get("pair_divisor", 2))
     thresholds = instruments_cfg.get("bias_thresholds", {}) or {}
     categories_display = instruments_cfg.get("categories_display", []) or []
+    scale = float(instruments_cfg.get("scale", 5))
+    sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
+    sentiment_on = sentiment_cells is not None
     itype = inst_cfg.get("type")
+
+    def _leg_sentiment(ccy: str, in_pair: bool):
+        """SENTIMENT value for a currency leg, or None when the factor is absent.
+        USD inside a pair → ABSENT (excluded from that currency's mean — the
+        contracts are already vs-USD, so the dollar must not add a leg); the
+        single US-dollar row uses the dollar's own DXY cell; any other currency →
+        its own COT cell."""
+        if not sentiment_on:
+            return None
+        if ccy == "USD":
+            return None if in_pair else sentiment_cells.get("DXY")
+        return sentiment_cells.get(ccy)
 
     if itype == "single":
         currency = inst_cfg["currency"]
         sign = float(inst_cfg.get("sign", 1))
         base_card = scorecards.get(currency)
-        score = (base_card["index"] * sign) if base_card else 0.0
+        v_s = _leg_sentiment(currency, in_pair=False)
+        score = (_augmented_index(base_card, v_s, sentiment_weight, scale) * sign) if base_card else 0.0
         quote_card = None
         breakdown = {
             "base": {
@@ -464,8 +516,10 @@ def compute_instrument(
         base, quote = inst_cfg["base"], inst_cfg["quote"]
         base_card = scorecards.get(base)
         quote_card = scorecards.get(quote)
-        base_idx = base_card["index"] if base_card else 0.0
-        quote_idx = quote_card["index"] if quote_card else 0.0
+        v_s_base = _leg_sentiment(base, in_pair=True)
+        v_s_quote = _leg_sentiment(quote, in_pair=True)
+        base_idx = _augmented_index(base_card, v_s_base, sentiment_weight, scale) if base_card else 0.0
+        quote_idx = _augmented_index(quote_card, v_s_quote, sentiment_weight, scale) if quote_card else 0.0
         score = (base_idx - quote_idx) / pair_divisor
         breakdown = {
             "base": {
@@ -525,6 +579,7 @@ def build_payload(
     instruments_cfg: dict,
     as_of: pd.Timestamp | None = None,
     rate_scores: dict | None = None,
+    sentiment_cells: dict | None = None,
 ) -> dict:
     """Compute every currency scorecard and every instrument payload.
 
@@ -533,6 +588,9 @@ def build_payload(
     mapping from the rate engine; when given, each scored currency gains the
     standing `monetary` category. When None, behavior is identical to the
     surprise-only payload (full backward compatibility).
+    `sentiment_cells` (optional) maps a COT symbol → its currency's COT cell;
+    when given, SENTIMENT enters each instrument's score as a weight-0.5 factor
+    (see compute_instrument). When None, scores are the macro-only baseline.
     Returns {"as_of", "currencies", "instruments"}.
     """
     if as_of is None:
@@ -563,7 +621,8 @@ def build_payload(
     }
 
     instrument_payloads = [
-        compute_instrument(sym, cfg, scorecards, instruments_cfg)
+        compute_instrument(sym, cfg, scorecards, instruments_cfg,
+                           sentiment_cells=sentiment_cells)
         for sym, cfg in instruments.items()
     ]
 

@@ -303,3 +303,77 @@ def test_missing_balance_sheet_backward_compatible():
     bs = _sub(res["SP500"], "balance_sheet")
     assert bs["present"] is False and bs["raw"] is None
     assert _factor(res["SP500"], "rates")["value"] == pytest.approx(-2.0)  # mean(-2,-2)
+
+
+# ---------------------------------------------------------------------------
+# SENTIMENT factor (Step 5) — weight-0.5 member of the weighted mean
+# ---------------------------------------------------------------------------
+
+def _cfg_with_sentiment():
+    """SP500 (US index) + DAX (foreign, NO sentiment factor) + GOLD (metal)."""
+    return {
+        "scale": 5,
+        "bias_thresholds": {"mild": 1.9, "very": 4.3},
+        "instruments": {
+            "SP500": {"type": "index", "home_ccy": "USD", "factors": {
+                "growth": {"sign": 1, "weight": 1.0},
+                "inflation": {"sign": -1, "weight": 1.0},
+                "labour": {"sign": -1, "weight": 1.0},
+                "rates": _rates_block(),
+                "sentiment": {"sign": 1, "weight": 0.5},
+            }},
+            "DAX": {"type": "index", "home_ccy": "EUR", "factors": {
+                "growth": {"sign": 1, "weight": 1.0},
+                "inflation": {"sign": -1, "weight": 1.0},
+                "labour": {"sign": -1, "weight": 1.0},
+                "rates": _rates_block(),
+            }},
+        },
+    }
+
+
+def test_sentiment_enters_mean_with_weight_half():
+    cfg = _cfg_with_sentiment()
+    cats = {"USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0}}
+    # No sentiment: num = 1*2 + 1*0 + 1*0 + rates(0) = 2 over wsum 4 → 0.5 ×5 = 2.5
+    base = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                     sentiment_by_symbol=None)["SP500"]
+    # With sentiment +3 (×0.5): num = 2 + 1.5 = 3.5 over wsum 4.5 → 0.7778 ×5 = 3.889
+    withs = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                      sentiment_by_symbol={"SP500": 3})["SP500"]
+    sf = _factor(withs, "sentiment")
+    assert sf["present"] is True
+    assert sf["value"] == pytest.approx(3.0)      # sign 1 × cell 3
+    assert sf["weight"] == 0.5
+    assert sf["contribution"] == pytest.approx(1.5)
+    assert base["score_precise"] == pytest.approx(2.5)
+    assert withs["score_precise"] == pytest.approx(3.5 / 4.5 * 5)
+
+
+def test_sentiment_absent_factor_is_bit_identical():
+    """An instrument without a sentiment factor is unaffected even if a value is
+    supplied for it in the map (DAX has no sentiment factor)."""
+    cfg = _cfg_with_sentiment()
+    cats = {
+        "USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0},
+        "EUR": {"growth": 1, "inflation": -1, "labour": 0, "monetary": 0},
+    }
+    none_map = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                         sentiment_by_symbol=None)["DAX"]
+    full_map = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                         sentiment_by_symbol={"DAX": 4, "SP500": 3})["DAX"]
+    assert none_map["score_precise"] == full_map["score_precise"]
+    assert all(f["name"] != "sentiment" for f in full_map["factors"])
+
+
+def test_sentiment_factor_absent_when_no_value():
+    """Configured sentiment factor but no value in the map → factor excluded."""
+    cfg = _cfg_with_sentiment()
+    cats = {"USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0}}
+    res = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                    sentiment_by_symbol={})["SP500"]
+    sf = _factor(res, "sentiment")
+    assert sf["present"] is False
+    assert sf["contribution"] is None
+    # score equals the no-sentiment baseline
+    assert res["score_precise"] == pytest.approx(2.5)

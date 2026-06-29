@@ -39,6 +39,7 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
   SP500:
     type: index
     home_ccy: USD
@@ -52,6 +53,7 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
   NASDAQ:
     type: index
     home_ccy: USD
@@ -65,6 +67,7 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
   DAX:
     type: index
     home_ccy: EUR
@@ -119,6 +122,7 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (COT metal); weight 0.5 in the score
   SILVER:
     type: metal
     home_ccy: USD
@@ -132,3 +136,4 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (COT metal); weight 0.5 in the score

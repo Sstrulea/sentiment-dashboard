@@ -316,32 +316,24 @@ def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> No
                 entry.setdefault("stale", False)
 
 
-def _attach_cot_cells(instruments: list[dict]) -> None:
-    """Attach the COT SENTIMENT sub-cell to each METAL instrument (in place).
+def _metals_cot_map() -> dict[str, dict]:
+    """{metal_symbol: COT detail dict} from the validated COT engine (read-only).
 
-    DISPLAY-ONLY: the result is never folded into score/score_precise/bias_label.
-    Reuses the validated COT engine (src.cot_score.score_metals over the
-    extremes from src.compute) — read-only, no scoring here. The COT parquet
-    missing/empty → metals simply carry no `cot` key (rendered blank), mirroring
-    the graceful real_yield / net_liquidity handling.
+    Computed ONCE and reused for both the cross-asset SCORE (sentiment factor)
+    and the display sub-cell. Reuses src.cot_score.score_metals over the extremes
+    from src.compute — no scoring logic here. COT parquet missing/empty → {} (so
+    metals carry no `cot` key and are excluded from the sentiment factor exactly
+    like a missing factor), mirroring the graceful real_yield/net_liquidity path.
     """
-    metals = [r for r in instruments if r.get("type") == "metal"]
-    if not metals:
-        return
     try:
         scored = score_metals(load_metals_history())
-    except Exception as e:  # noqa: BLE001 — display-only; never break the page
+    except Exception as e:  # noqa: BLE001 — display-only path; never break the page
         log.warning("COT sentiment unavailable (%s); metals shown blank.", e)
-        return
+        return {}
     if scored.empty:
-        return
-
-    by_symbol = {row["symbol"]: row for _, row in scored.iterrows()}
-    for r in metals:
-        row = by_symbol.get(r["symbol"])
-        if row is None:
-            continue
-        r["cot"] = {
+        return {}
+    return {
+        row["symbol"]: {
             "cell": int(row["cell"]),
             "level": int(row["level"]),
             "flow": int(row["flow"]),
@@ -349,6 +341,8 @@ def _attach_cot_cells(instruments: list[dict]) -> None:
             "z": None if pd.isna(row["z"]) else float(row["z"]),
             "basis": str(row["basis"]),
         }
+        for _, row in scored.iterrows()
+    }
 
 
 def _current_equity_pc_percentile() -> float | None:
@@ -370,59 +364,41 @@ def _current_equity_pc_percentile() -> float | None:
         return None
 
 
-def _attach_pc_index_cells(instruments: list[dict]) -> None:
-    """Attach the P/C SENTIMENT sub-cell to US equity index rows (in place).
+def _us_index_pc(cfg: dict) -> tuple[int | None, dict | None, set[str]]:
+    """(cell, detail, us_index_symbols) for the market-wide US equity P/C score.
 
-    DISPLAY-ONLY: never folded into score/score_precise/bias_label. The CBOE
-    equity put/call ratio is market-wide and US-only, so EVERY US index
-    (type=index, home_ccy=USD) gets the SAME contrarian score; foreign indices
-    (DAX/NIKKEI/FTSE100) are left blank. A missing percentile → blank, not 0.
-    Metals/FX COT cells are untouched.
+    The CBOE equity put/call ratio is market-wide and US-only, so EVERY US index
+    (type=index, home_ccy=USD) gets the SAME contrarian cell; foreign indices
+    (DAX/NIKKEI/FTSE100) get nothing → blank and excluded from the sentiment
+    factor. A missing percentile → cell None (US indices blank, score unchanged).
     """
-    us_indices = [
-        r for r in instruments
-        if r.get("type") == "index" and r.get("home_ccy") == "USD"
-    ]
-    if not us_indices:
-        return
+    instruments_cfg = cfg.get("instruments", {}) or {}
+    us_syms = {
+        sym for sym, c in instruments_cfg.items()
+        if c.get("type") == "index" and c.get("home_ccy") == "USD"
+    }
     pct = _current_equity_pc_percentile()
     if pct is None:
-        return  # no valid percentile → leave US indices blank
-
+        return None, None, us_syms
     cell, detail = pc_index_score(pct)
-    for r in us_indices:
-        r["sentiment"] = {
-            "source": "pc",
-            "cell": int(cell),
-            "pct": float(detail["pct"]),
-            "basis": str(detail["basis"]),
-        }
+    return int(cell), detail, us_syms
 
 
-def _attach_fx_cot_cells(payload: dict) -> None:
-    """Attach the COT SENTIMENT sub-cell to each FX instrument (in place).
+def _fx_currency_cells() -> tuple[dict[str, int], dict[str, dict]]:
+    """(cells, details) per currency COT contract from score_currencies (read-only).
 
-    DISPLAY-ONLY: never folded into score/bias. Reuses the COT engine
-    (src.cot_score.score_currencies over src.compute extremes) — read-only.
-
-    Model: CFTC currency contracts are quoted vs USD, so a currency's COT cell
-    is its score *against the dollar*. An FX-pair cell = pair_cot(leg(base),
-    leg(quote)) with the USD leg = 0 (no DXY here — that would double-count the
-    dollar). The single USD-index row uses the DXY contract directly. A pair
-    whose non-USD leg has no COT data renders blank (no cot key). COT parquet
-    missing/empty → every FX row blank, mirroring real_yield/net_liquidity.
+    Computed ONCE and reused for both the FX SCORE (sentiment factor, via
+    build_payload) and the display sub-cell. cells: {COT_symbol: cell int};
+    details: {COT_symbol: {level, flow, blend, z, basis}}. Empty on failure
+    (FX rows then carry no sentiment in score or display).
     """
-    instruments = payload.get("instruments", []) or []
-    if not instruments:
-        return
     try:
         scored = score_currencies(load_currencies_history())
-    except Exception as e:  # noqa: BLE001 — display-only; never break the page
+    except Exception as e:  # noqa: BLE001 — never break the page
         log.warning("FX COT sentiment unavailable (%s); FX shown blank.", e)
-        return
+        return {}, {}
     if scored.empty:
-        return
-
+        return {}, {}
     cells = {row["symbol"]: int(row["cell"]) for _, row in scored.iterrows()}
     details = {
         row["symbol"]: {
@@ -433,6 +409,23 @@ def _attach_fx_cot_cells(payload: dict) -> None:
         }
         for _, row in scored.iterrows()
     }
+    return cells, details
+
+
+def _attach_fx_cot_cells(payload: dict, cells: dict[str, int],
+                         details: dict[str, dict]) -> None:
+    """Attach the COT SENTIMENT sub-cell to each FX instrument (in place).
+
+    Display sub-cell, reusing the SAME per-currency cells folded into the FX
+    score (build_payload sentiment_cells). CFTC currency contracts are quoted vs
+    USD, so an FX-pair cell = pair_cot(leg(base), leg(quote)) with the USD leg = 0
+    (no DXY here — that would double-count the dollar). The single USD-index row
+    uses the DXY contract directly. A pair whose non-USD leg has no COT data
+    renders blank. No cells → every FX row blank.
+    """
+    instruments = payload.get("instruments", []) or []
+    if not instruments or not cells:
+        return
 
     def _leg(ccy: str | None):
         """(cell, detail) for a leg. USD -> 0 (no detail). Missing ccy -> None."""
@@ -532,8 +525,20 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
         except Exception as e:
             log.warning("net_liquidity.parquet present but unreadable (%s); balance_sheet excluded.", e)
 
+    # SENTIMENT cells computed ONCE (read-only over the COT/P-C engines), then
+    # fed into the SCORE as a weight-0.5 factor AND reused for the display cell.
+    metal_cot = _metals_cot_map()
+    pc_cell, pc_detail, us_index_syms = _us_index_pc(cfg)
+    sentiment_by_symbol: dict[str, int] = {
+        sym: d["cell"] for sym, d in metal_cot.items()
+    }
+    if pc_cell is not None:
+        for sym in us_index_syms:
+            sentiment_by_symbol[sym] = pc_cell
+
     scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg,
-                                       liquidity_score=liquidity_score)
+                                       liquidity_score=liquidity_score,
+                                       sentiment_by_symbol=sentiment_by_symbol)
 
     currencies = payload.get("currencies", {}) or {}
 
@@ -570,15 +575,18 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
             signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
             cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale"))}
         r["cells"] = cells
-        instruments.append(r)
 
-    # SENTIMENT (display-only): attach the COT sub-cell to METAL rows. Read-only
-    # over the COT scoring engine (src.cot_score, which itself reuses compute.py
-    # for the extremes); never folded into score/score_precise/bias_label.
-    _attach_cot_cells(instruments)
-    # SENTIMENT (display-only): attach the P/C sub-cell to US equity INDEX rows
-    # (market-wide contrarian score; foreign indices stay blank).
-    _attach_pc_index_cells(instruments)
+        # SENTIMENT display sub-cell, reusing the SAME cells folded into the score
+        # above: COT for metals, P/C for US indices. Foreign indices get neither.
+        if sym in metal_cot:
+            r["cot"] = metal_cot[sym]
+        elif pc_cell is not None and sym in us_index_syms:
+            r["sentiment"] = {
+                "source": "pc", "cell": pc_cell,
+                "pct": float(pc_detail["pct"]), "basis": str(pc_detail["basis"]),
+            }
+
+        instruments.append(r)
 
     instruments.sort(key=lambda r: r.get("score_precise", 0.0), reverse=True)
 
@@ -630,8 +638,13 @@ def build_economic_payload() -> dict:
             log.warning("rates.parquet present but unreadable (%s); skipping monetary.", e)
             rate_scores = {}
 
+    # SENTIMENT (COT) per currency, computed ONCE: fed into the FX SCORE as a
+    # weight-0.5 factor AND reused for the display sub-cell below.
+    fx_cells, fx_details = _fx_currency_cells()
+
     payload = build_payload(cal, indicators_cfg, instruments_cfg,
-                            as_of=as_of, rate_scores=rate_scores or None)
+                            as_of=as_of, rate_scores=rate_scores or None,
+                            sentiment_cells=fx_cells or None)
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     _enrich_breakdowns(payload, meta["indicators"], as_of)
@@ -647,8 +660,9 @@ def build_economic_payload() -> dict:
         if inst.get("display"):
             inst["display"] = inst["display"].replace("(DXY proxy)", "(DXY)")
 
-    # SENTIMENT (display-only): attach the COT sub-cell to the FX rows.
-    _attach_fx_cot_cells(payload)
+    # SENTIMENT display sub-cell on the FX rows, reusing the same per-currency
+    # cells folded into the FX score above.
+    _attach_fx_cot_cells(payload, fx_cells, fx_details)
 
     # Cross-Asset block (indices + metals) — separate key, FX payload untouched.
     payload["crossasset"] = _build_crossasset_block(payload, as_of)

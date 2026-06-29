@@ -26,6 +26,11 @@ from src.economic_compute import bias_label  # read-only reuse (not modified)
 
 SIMPLE_FACTORS = ("growth", "inflation", "labour")
 RATES_FACTOR = "rates"
+# Display-positioning factor. Its value is the instrument's SENTIMENT cell (COT
+# for metals ±4, P/C for US indices ±3), already in the "+ = bullish for the
+# asset" convention. It enters the weighted mean exactly like a simple factor
+# (no separate scale); a missing sentiment value → factor ABSENT (excluded).
+SENTIMENT_FACTOR = "sentiment"
 # rate sub-component -> (source kind, key). "category" reads the home-ccy
 # category cell; "realyield"/"liquidity" read a GLOBAL momentum score.
 RATE_SUBCOMPONENTS = {
@@ -160,8 +165,15 @@ def compute_instrument_score(
     liquidity_raw: Optional[int] = None,
     liquidity_label: str = "NET_LIQUIDITY",
     liquidity_stale: bool = False,
+    sentiment_value: Optional[int] = None,
 ) -> dict:
-    """Score one instrument: weighted mean over present top-level factors × scale."""
+    """Score one instrument: weighted mean over present top-level factors × scale.
+
+    `sentiment_value` is the instrument's SENTIMENT cell (COT/P/C, already signed
+    "+ = bullish"), or None when the instrument has no sentiment (e.g. foreign
+    indices) — in which case the `sentiment` factor, if configured, is absent and
+    the score is identical to the no-sentiment baseline.
+    """
     home = inst_cfg.get("home_ccy")
     factors_cfg = inst_cfg.get("factors", {}) or {}
     cats = (categories_by_ccy or {}).get(home, {}) or {}
@@ -189,6 +201,23 @@ def compute_instrument_score(
                 "contribution": None if contribution is None else float(contribution),
                 "present": present,
                 "components": sub_rows,
+            })
+        elif name == SENTIMENT_FACTOR:
+            # SENTIMENT cell (±4 COT / ±3 P/C), already signed "+ = bullish".
+            # Enters the mean on its native scale; absent when no value.
+            sign = float(fc.get("sign", 1))
+            raw = sentiment_value
+            present = raw is not None
+            value = (sign * raw) if present else None
+            contribution = (weight * value) if present else None
+            if present:
+                num += weight * value
+                wsum += weight
+            factor_rows.append({
+                "name": name, "raw": raw, "sign": sign, "weight": weight,
+                "value": None if value is None else float(value),
+                "contribution": None if contribution is None else float(contribution),
+                "present": present, "source": "sentiment",
             })
         else:
             sign = float(fc.get("sign", 1))
@@ -224,6 +253,7 @@ def compute_crossasset_scores(
     realyield_score: Any = None,
     config: Optional[dict] = None,
     liquidity_score: Any = None,
+    sentiment_by_symbol: Optional[dict] = None,
 ) -> dict:
     """Compute every cross-asset instrument's bias.
 
@@ -235,6 +265,9 @@ def compute_crossasset_scores(
         excluded from the rates composite).
       liquidity_score: a LiquidityScore, a number, or None (None → balance_sheet
         excluded). Default None keeps callers backward-compatible.
+      sentiment_by_symbol: {symbol: sentiment_cell} (COT/P/C, signed "+ = bullish").
+        A symbol absent here → its `sentiment` factor (if configured) is excluded,
+        so the score is identical to the no-sentiment baseline. Default None.
       config: parsed crossasset_instruments.yaml.
 
     Returns {symbol: {score, score_precise, bias_label, coverage, factors[...]}},
@@ -252,11 +285,13 @@ def compute_crossasset_scores(
     ry_stale = _realyield_stale(realyield_score)
     liq_raw = _global_raw(liquidity_score)
     liq_stale = bool(getattr(liquidity_score, "stale", False))
+    sentiment_by_symbol = sentiment_by_symbol or {}
 
     return {
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,
                                       scale, thresholds, realyield_label=ry_label,
                                       realyield_stale=ry_stale,
-                                      liquidity_raw=liq_raw, liquidity_stale=liq_stale)
+                                      liquidity_raw=liq_raw, liquidity_stale=liq_stale,
+                                      sentiment_value=sentiment_by_symbol.get(sym))
         for sym, cfg in instruments.items()
     }

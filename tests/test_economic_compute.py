@@ -590,3 +590,80 @@ def test_dedup_proximity_fallback_when_period_missing():
     dd = _dedup_flash_final(df.sort_values("release_dt").reset_index(drop=True), 18)
     # April pair (8d) collapses to final 50.5; May cluster keeps published 51.0 (not blank)
     assert list(dd["actual"]) == [50.5, 51.0]
+
+
+# ---------------------------------------------------------------------------
+# SENTIMENT factor in the FX score (Step 6) — weight-0.5 currency-level factor
+# ---------------------------------------------------------------------------
+
+def _instruments_cfg_sent():
+    cfg = _instruments_cfg()
+    cfg["sentiment_weight"] = 0.5
+    return cfg
+
+
+def _eur_usd_growth_cal():
+    # EUR +2 growth beat, USD -2 growth miss → eur_idx +10, usd_idx -10 (cat-only).
+    return pd.concat([
+        _make_rows("EUR", "gdp_qoq", [1.0] * 11 + [2.0], [1.0] * 12),
+        _make_rows("USD", "gdp_qoq", [1.0] * 11 + [0.0], [1.0] * 12),
+    ], ignore_index=True)
+
+
+def test_fx_sentiment_off_is_bit_identical():
+    cal = _eur_usd_growth_cal()
+    off = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF)
+    base = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(),
+                         as_of=AS_OF, sentiment_cells=None)
+    a = {i["symbol"]: i["score"] for i in off["instruments"]}
+    b = {i["symbol"]: i["score"] for i in base["instruments"]}
+    assert a == b  # no sentiment_cells → identical to macro-only baseline
+
+
+def test_fx_usd_pair_leg_is_zero_not_dxy():
+    """EUR/USD must be INVARIANT to the DXY cell (USD pair leg = 0), while the
+    single US-DOLLAR row IS driven by DXY."""
+    cal = _eur_usd_growth_cal()
+    p_hi = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF,
+                         sentiment_cells={"EUR": 4, "DXY": 4})
+    p_lo = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF,
+                         sentiment_cells={"EUR": 4, "DXY": -4})
+    eurusd_hi = next(i for i in p_hi["instruments"] if i["symbol"] == "EURUSD")["score"]
+    eurusd_lo = next(i for i in p_lo["instruments"] if i["symbol"] == "EURUSD")["score"]
+    assert eurusd_hi == eurusd_lo  # DXY irrelevant to a pair → USD leg is 0
+
+    dxy_hi = next(i for i in p_hi["instruments"] if i["symbol"] == "US-DOLLAR")["score"]
+    dxy_lo = next(i for i in p_lo["instruments"] if i["symbol"] == "US-DOLLAR")["score"]
+    assert dxy_hi > dxy_lo  # single USD row DOES use the DXY cell
+
+
+def test_fx_sentiment_base_drives_pair_and_dxy_single():
+    cal = _eur_usd_growth_cal()
+    # Higher EUR sentiment → more bullish EUR/USD.
+    p1 = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF,
+                       sentiment_cells={"EUR": 0, "DXY": 0})
+    p2 = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF,
+                       sentiment_cells={"EUR": 4, "DXY": 0})
+    s1 = next(i for i in p1["instruments"] if i["symbol"] == "EURUSD")["score"]
+    s2 = next(i for i in p2["instruments"] if i["symbol"] == "EURUSD")["score"]
+    assert s2 > s1
+
+    # Single US-DOLLAR uses cell_DXY: negative DXY → more bearish dollar.
+    usd_card = p1["currencies"]["USD"]
+    single0 = next(i for i in p1["instruments"] if i["symbol"] == "US-DOLLAR")["score"]
+    p3 = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF,
+                       sentiment_cells={"EUR": 0, "DXY": -4})
+    single_neg = next(i for i in p3["instruments"] if i["symbol"] == "US-DOLLAR")["score"]
+    assert single_neg < single0
+
+
+def test_fx_sentiment_does_not_touch_index_or_categories():
+    """The macro `index` and `categories` (read by cross-asset) are unchanged when
+    sentiment is supplied — only instrument scores move."""
+    cal = _eur_usd_growth_cal()
+    off = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF)
+    on = build_payload(cal, _indicators_cfg(), _instruments_cfg_sent(), as_of=AS_OF,
+                       sentiment_cells={"EUR": 4, "DXY": -2})
+    for ccy in ("EUR", "USD"):
+        assert off["currencies"][ccy]["index"] == on["currencies"][ccy]["index"]
+        assert off["currencies"][ccy]["categories"] == on["currencies"][ccy]["categories"]

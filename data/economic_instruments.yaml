@@ -28,6 +28,10 @@ currency_for_country:
 categories_display: [growth, inflation, labour, monetary]
 scale: 5
 pair_divisor: 2
+# SENTIMENT (COT) enters each currency's index as a weight-0.5 factor (mirror of
+# the cross-asset step). USD pair leg = 0 (contracts already vs-USD); single USD
+# row = DXY. pair_divisor / scale / bias_thresholds are unchanged.
+sentiment_weight: 0.5
 bias_thresholds:
   very: 3.0     # calibrated (D2): ~p90 of |score| → ~10% Very
   mild: 1.3     # calibrated (D2): ~p55 of |score| → ~55% Neutral
