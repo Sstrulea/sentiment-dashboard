@@ -460,12 +460,48 @@ def _augmented_index(card: dict | None, sentiment_value, sentiment_weight: float
     return (num / wsum) * scale if wsum else 0.0
 
 
+def _leg_eff_wsum(card: dict | None, sentiment_value, sentiment_weight: float) -> float:
+    """Effective total factor weight of a currency leg AFTER sentiment folding —
+    the macro category weight sum (stored `index_wsum`) plus the sentiment weight
+    when a sentiment value is present. Mirrors `_augmented_index`'s denominator.
+    """
+    if card is None:
+        return 0.0
+    wsum = float(card.get("index_wsum", 0.0))
+    if sentiment_value is not None:
+        wsum += sentiment_weight
+    return wsum
+
+
+def _fold_trend(macro_score: float, macro_weight: float, trend_value,
+                trend_weight: float, scale: float) -> float:
+    """Fold the per-instrument TREND cell DIRECTLY into the score as one more
+    member of the existing weighted mean (NOT decomposed base−quote).
+
+    `macro_score` is the existing macro+sentiment score (× scale); `macro_weight`
+    is the aggregate weight that mean already represents (≈ the pair's leg weight,
+    so trend's 0.5 keeps a cross-asset-comparable ~10% pull → scale preserved,
+    bias thresholds unchanged). `trend_value` None → score returned unchanged
+    (trend absent ⇒ bit-identical to the no-trend baseline).
+    """
+    if trend_value is None:
+        return macro_score
+    m = (macro_score / scale) if scale else 0.0          # pre-scale mean (~±2)
+    w = float(macro_weight)
+    if w <= 0:
+        new_mean = float(trend_value)                    # trend is the only factor
+    else:
+        new_mean = (m * w + trend_weight * float(trend_value)) / (w + trend_weight)
+    return new_mean * scale
+
+
 def compute_instrument(
     symbol: str,
     inst_cfg: dict,
     scorecards: dict[str, dict],
     instruments_cfg: dict,
     sentiment_cells: dict | None = None,
+    trend_cells: dict | None = None,
 ) -> dict:
     """Derive a single instrument payload from precomputed currency scorecards.
 
@@ -477,13 +513,22 @@ def compute_instrument(
       - the SINGLE US-dollar row uses the DXY contract cell (the dollar's own COT);
       - every other currency leg uses its own COT cell.
     `sentiment_cells` None → no sentiment (identical to the macro-only baseline).
+
+    `trend_cells` (optional) maps an instrument board key → its TREND cell (±3).
+    UNLIKE sentiment, trend is DIRECT on the pair (NOT decomposed base−quote):
+    the pair's own price series gives one number, folded into the pair's weighted
+    mean as a weight-`trend_weight` factor (see `_fold_trend`). A symbol absent
+    here (e.g. the US-DOLLAR single row — DXY has no series) → trend excluded,
+    score bit-identical to the no-trend baseline.
     """
     pair_divisor = float(instruments_cfg.get("pair_divisor", 2))
     thresholds = instruments_cfg.get("bias_thresholds", {}) or {}
     categories_display = instruments_cfg.get("categories_display", []) or []
     scale = float(instruments_cfg.get("scale", 5))
     sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
+    trend_weight = float(instruments_cfg.get("trend_weight", 0.5))
     sentiment_on = sentiment_cells is not None
+    trend_value = trend_cells.get(symbol) if trend_cells is not None else None
     itype = inst_cfg.get("type")
 
     def _leg_sentiment(ccy: str, in_pair: bool):
@@ -503,7 +548,8 @@ def compute_instrument(
         sign = float(inst_cfg.get("sign", 1))
         base_card = scorecards.get(currency)
         v_s = _leg_sentiment(currency, in_pair=False)
-        score = (_augmented_index(base_card, v_s, sentiment_weight, scale) * sign) if base_card else 0.0
+        macro_score = (_augmented_index(base_card, v_s, sentiment_weight, scale) * sign) if base_card else 0.0
+        macro_weight = _leg_eff_wsum(base_card, v_s, sentiment_weight)
         quote_card = None
         breakdown = {
             "base": {
@@ -520,7 +566,12 @@ def compute_instrument(
         v_s_quote = _leg_sentiment(quote, in_pair=True)
         base_idx = _augmented_index(base_card, v_s_base, sentiment_weight, scale) if base_card else 0.0
         quote_idx = _augmented_index(quote_card, v_s_quote, sentiment_weight, scale) if quote_card else 0.0
-        score = (base_idx - quote_idx) / pair_divisor
+        macro_score = (base_idx - quote_idx) / pair_divisor
+        # Pair aggregate weight = mean of the two legs' effective weights, so the
+        # weight-0.5 trend factor pulls the pair's mean by a cross-asset-comparable
+        # fraction (scale preserved → bias thresholds unchanged).
+        macro_weight = (_leg_eff_wsum(base_card, v_s_base, sentiment_weight)
+                        + _leg_eff_wsum(quote_card, v_s_quote, sentiment_weight)) / 2.0
         breakdown = {
             "base": {
                 "currency": base,
@@ -534,6 +585,10 @@ def compute_instrument(
     else:
         raise ValueError(f"Unknown instrument type {itype!r} for {symbol}")
 
+    # Fold TREND directly into the pair/instrument score (one more weighted-mean
+    # member). trend_value None → score == macro_score (bit-identical baseline).
+    score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, scale)
+
     cells = _category_cells(inst_cfg, base_card, quote_card, categories_display, pair_divisor)
 
     return {
@@ -544,6 +599,8 @@ def compute_instrument(
         "bias": bias_label(score, thresholds),
         "categories": cells,
         "breakdown": breakdown,
+        # Display cell for the TREND column (same value folded into the score).
+        "trend": None if trend_value is None else int(trend_value),
     }
 
 
@@ -580,6 +637,7 @@ def build_payload(
     as_of: pd.Timestamp | None = None,
     rate_scores: dict | None = None,
     sentiment_cells: dict | None = None,
+    trend_cells: dict | None = None,
 ) -> dict:
     """Compute every currency scorecard and every instrument payload.
 
@@ -591,6 +649,9 @@ def build_payload(
     `sentiment_cells` (optional) maps a COT symbol → its currency's COT cell;
     when given, SENTIMENT enters each instrument's score as a weight-0.5 factor
     (see compute_instrument). When None, scores are the macro-only baseline.
+    `trend_cells` (optional) maps an instrument board key → its TREND cell (±3);
+    when given, TREND is folded DIRECTLY into each instrument's score as a
+    weight-0.5 factor. When None, scores are unchanged by trend.
     Returns {"as_of", "currencies", "instruments"}.
     """
     if as_of is None:
@@ -622,7 +683,7 @@ def build_payload(
 
     instrument_payloads = [
         compute_instrument(sym, cfg, scorecards, instruments_cfg,
-                           sentiment_cells=sentiment_cells)
+                           sentiment_cells=sentiment_cells, trend_cells=trend_cells)
         for sym, cfg in instruments.items()
     ]
 

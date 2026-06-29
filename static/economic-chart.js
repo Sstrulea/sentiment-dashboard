@@ -216,6 +216,9 @@
   function rowSortValue(inst, key) {
     if (key === "symbol") return inst.display || inst.symbol;
     if (key === "bias" || key === "score") return inst.score;          // precise float
+    if (key === "trend") {
+      return (inst.trend !== null && inst.trend !== undefined) ? inst.trend : -Infinity;
+    }
     if (key === "cot") {
       const c = inst.cot;
       return (c && c.cell !== null && c.cell !== undefined) ? c.cell : -Infinity;
@@ -254,6 +257,21 @@
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + "</td>";
   }
 
+  // TREND sub-cell for an FX row (display-only). Same divergent color engine as
+  // the factor cells (gradientStyle), on the ±3 trend scale. The pair's own price
+  // series gives one number (NOT decomposed base−quote). Rows without a series
+  // (US-DOLLAR single — DXY not exported) render blank.
+  function trendCellHtml(inst) {
+    const v = inst.trend;
+    if (v === null || v === undefined) {
+      return '<td class="econ-cell cell-empty"></td>';
+    }
+    const tip = "TREND · MA structure (SMA20/50/200) × ADX strength → cell " +
+      fmtScoreCell(v) + " (weight 0.5 in the Score)";
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+  }
+
   // SENTIMENT > COT sub-cell for an FX row (display-only). Same divergent color
   // engine as the factor cells (gradientStyle), on the COT ±4 scale. Pairs whose
   // non-USD leg lacks COT data render blank (no "—", which means N/A).
@@ -287,6 +305,7 @@
       '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
+      trendCellHtml(inst) +
       fxCotCellHtml(inst) +
       cells +
       "</tr>"
@@ -308,8 +327,15 @@
       g.label + '</th>'
     ).join("");
 
-    // SENTIMENT: top-level group placed FIRST (right after Symbol/Bias/Score),
-    // before the macro factor groups. Contributes to Score with weight 0.5.
+    // TREND: top-level group placed FIRST (before SENTIMENT). Price MA structure
+    // × ADX strength, direct on the pair. Contributes to Score with weight 0.5.
+    const trendGroupHeader =
+      '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the pair. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>';
+    const trendSubHeader =
+      '<th data-sort="trend" class="ind-head grp-trend" title="Price trend (weight 0.5 in score)">MA×ADX</th>';
+
+    // SENTIMENT: top-level group placed after TREND, before the macro factor
+    // groups. Contributes to Score with weight 0.5.
     const sentimentGroupHeader =
       '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment: currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
     const sentimentSubHeader =
@@ -329,9 +355,9 @@
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
       '<th rowspan="2" data-sort="score">Score</th>' +
-      sentimentGroupHeader + groupHeaderCells +
+      trendGroupHeader + sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
-      '<tr>' + sentimentSubHeader + subHeaderCells + '</tr>' +
+      '<tr>' + trendSubHeader + sentimentSubHeader + subHeaderCells + '</tr>' +
       '</thead>' +
       '<tbody>' + instruments.map(renderRow).join("") + '</tbody>' +
       '</table></div>';
@@ -566,6 +592,20 @@
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ">" + fmtScoreCell(v) + "</td>";
   }
 
+  // TREND sub-cell (display-only) for a cross-asset row. Direct on the asset's
+  // own price series (±3, gradientStyle scale 3). Rows without a series
+  // (NASDAQ/DAX/NIKKEI/FTSE100) render blank.
+  function caTrendCellHtml(inst) {
+    const v = inst.trend;
+    if (v === null || v === undefined) {
+      return '<td class="econ-cell cell-empty"></td>';
+    }
+    const tip = "TREND · MA structure (SMA20/50/200) × ADX strength → cell " +
+      fmtScoreCell(v) + " (weight 0.5 in the Score)";
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+  }
+
   // SENTIMENT sub-cell (display-only). One column, two sources by row:
   //   - metals  → COT positioning (±4, gradientStyle scale 4)
   //   - US idx  → P/C equity contrarian (±3, gradientStyle scale 3)
@@ -611,8 +651,14 @@
       '" title="Per-asset directional score (home-ccy reading × category sign): blue = bullish for this asset, red = bearish. Click a row for the full breakdown.">' +
       g.label + '</th>').join("");
 
-    // SENTIMENT: top-level group placed FIRST (right after Symbol/Bias/Score),
-    // before the macro factor groups. Contributes to Score with weight 0.5.
+    // TREND: top-level group placed FIRST (before SENTIMENT). Price MA structure
+    // × ADX strength, direct on the asset. Contributes to Score with weight 0.5.
+    const trendGroupHeader =
+      '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the asset. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>';
+    const trendSubHeader = '<th class="ind-head grp-trend">MA×ADX</th>';
+
+    // SENTIMENT: top-level group placed after TREND, before the macro factor
+    // groups. Contributes to Score with weight 0.5.
     const sentimentGroupHeader =
       '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
     const sentimentSubHeader = '<th class="ind-head grp-sentiment">COT / P/C</th>';
@@ -631,7 +677,7 @@
         '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
         '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
-        caCotCellHtml(inst) + cells + '</tr>'
+        caTrendCellHtml(inst) + caCotCellHtml(inst) + cells + '</tr>'
       );
     }).join("");
 
@@ -640,8 +686,8 @@
       '<table class="retail-table econ-table">' +
       '<thead>' +
       '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2">Score</th>' +
-      sentimentGroupHeader + groupHeaders + '</tr>' +
-      '<tr>' + sentimentSubHeader + subHeaders + '</tr>' +
+      trendGroupHeader + sentimentGroupHeader + groupHeaders + '</tr>' +
+      '<tr>' + trendSubHeader + sentimentSubHeader + subHeaders + '</tr>' +
       '</thead>' +
       '<tbody>' + rows + '</tbody></table></div>';
 

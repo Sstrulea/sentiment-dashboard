@@ -39,6 +39,7 @@ from src.rate_compute import compute_rate_scores
 from src.realyield_compute import compute_realyield_score
 from src.liquidity_compute import compute_liquidity_score
 from src.crossasset_compute import compute_crossasset_scores
+from src.trend_score import score_all as trend_score_all
 from src.static_assets import copy_static_assets
 
 log = logging.getLogger(__name__)
@@ -470,7 +471,26 @@ def _attach_fx_cot_cells(payload: dict, cells: dict[str, int],
         }
 
 
-def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
+def _trend_by_symbol() -> dict[str, int]:
+    """{board_key: trend_cell} from the validated TREND engine (read-only).
+
+    Computed ONCE and reused for BOTH the FX score (folded per-pair) and the
+    cross-asset score (folded per-instrument) AND the TREND display column. Each
+    table reads only its own board keys (FX pairs vs GOLD/SILVER/SP500/DJIA), so
+    the shared map never cross-contaminates. Missing/empty parquet → score_all
+    returns all-None → {} (trend excluded everywhere, scores == no-trend
+    baseline), mirroring the graceful COT/real_yield path.
+    """
+    try:
+        res = trend_score_all()
+    except Exception as e:  # noqa: BLE001 — display/scoring add-on; never break the page
+        log.warning("TREND unavailable (%s); trend excluded everywhere.", e)
+        return {}
+    return {k: int(v["trend_cell"]) for k, v in res.items() if v.get("trend_cell") is not None}
+
+
+def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
+                            trend_by_symbol: dict[str, int] | None = None) -> dict:
     """Compute the cross-asset section (indices + metals) from the FX payload's
     per-currency category scores + the US real-yield momentum. Read-only over
     local parquets; real_yields.parquet missing/empty → real_yield excluded
@@ -538,7 +558,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp) -> dict:
 
     scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg,
                                        liquidity_score=liquidity_score,
-                                       sentiment_by_symbol=sentiment_by_symbol)
+                                       sentiment_by_symbol=sentiment_by_symbol,
+                                       trend_by_symbol=trend_by_symbol or {})
 
     currencies = payload.get("currencies", {}) or {}
 
@@ -642,9 +663,14 @@ def build_economic_payload() -> dict:
     # weight-0.5 factor AND reused for the display sub-cell below.
     fx_cells, fx_details = _fx_currency_cells()
 
+    # TREND per board key, computed ONCE: folded into the FX score (per-pair) and
+    # the cross-asset score (per-instrument) AND reused for the TREND column.
+    trend_by_symbol = _trend_by_symbol()
+
     payload = build_payload(cal, indicators_cfg, instruments_cfg,
                             as_of=as_of, rate_scores=rate_scores or None,
-                            sentiment_cells=fx_cells or None)
+                            sentiment_cells=fx_cells or None,
+                            trend_cells=trend_by_symbol or None)
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     _enrich_breakdowns(payload, meta["indicators"], as_of)
@@ -665,7 +691,7 @@ def build_economic_payload() -> dict:
     _attach_fx_cot_cells(payload, fx_cells, fx_details)
 
     # Cross-Asset block (indices + metals) — separate key, FX payload untouched.
-    payload["crossasset"] = _build_crossasset_block(payload, as_of)
+    payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_by_symbol)
 
     payload["meta"] = meta
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

@@ -1304,5 +1304,8 @@ body.dark .grp-head.grp-rates, body.dark .ind-head.grp-rates { background: rgba(
 /* Cross-Asset SENTIMENT (COT) group tint — display-only, slate accent */
 .grp-head.grp-sentiment, .ind-head.grp-sentiment { background: rgba(96,125,139,0.10); }
 body.dark .grp-head.grp-sentiment, body.dark .ind-head.grp-sentiment { background: rgba(96,125,139,0.18); }
+/* TREND (price MA×ADX) group tint — display-only, teal-grey accent */
+.grp-head.grp-trend, .ind-head.grp-trend { background: rgba(38,166,154,0.10); }
+body.dark .grp-head.grp-trend, body.dark .ind-head.grp-trend { background: rgba(38,166,154,0.18); }
 /* Unpopulated SENTIMENT cell (indices, or metals without COT data) — blank */
 table.econ-table td.econ-cell.cell-empty { background: transparent; }

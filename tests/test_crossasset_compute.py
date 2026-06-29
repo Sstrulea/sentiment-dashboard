@@ -377,3 +377,73 @@ def test_sentiment_factor_absent_when_no_value():
     assert sf["contribution"] is None
     # score equals the no-sentiment baseline
     assert res["score_precise"] == pytest.approx(2.5)
+
+
+# ---------------------------------------------------------------------------
+# TREND factor (Step 7) — weight-0.5 member, structural twin of SENTIMENT,
+# DIRECT on the instrument's own price series.
+# ---------------------------------------------------------------------------
+
+def _cfg_with_trend():
+    cfg = _cfg_with_sentiment()
+    cfg["instruments"]["SP500"]["factors"]["trend"] = {"sign": 1, "weight": 0.5}
+    return cfg
+
+
+def test_trend_enters_mean_with_weight_half():
+    cfg = _cfg_with_trend()
+    cats = {"USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0}}
+    # No trend: num = 2 over wsum 4 → 0.5 ×5 = 2.5
+    base = compute_crossasset_scores(cats, realyield_score=0, config=cfg)["SP500"]
+    # With trend +3 (×0.5): num = 2 + 1.5 = 3.5 over wsum 4.5 → 3.889
+    witht = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                      trend_by_symbol={"SP500": 3})["SP500"]
+    tf = _factor(witht, "trend")
+    assert tf["present"] is True
+    assert tf["value"] == pytest.approx(3.0)       # sign 1 × cell 3
+    assert tf["weight"] == 0.5
+    assert tf["contribution"] == pytest.approx(1.5)
+    assert base["score_precise"] == pytest.approx(2.5)
+    assert witht["score_precise"] == pytest.approx(3.5 / 4.5 * 5)
+    assert witht["trend"] == 3                       # display cell carried
+
+
+def test_trend_factor_absent_when_no_value():
+    cfg = _cfg_with_trend()
+    cats = {"USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0}}
+    res = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                    trend_by_symbol={})["SP500"]
+    tf = _factor(res, "trend")
+    assert tf["present"] is False
+    assert tf["contribution"] is None
+    assert res["score_precise"] == pytest.approx(2.5)  # no-trend baseline
+    assert res["trend"] is None
+
+
+def test_trend_not_configured_is_bit_identical():
+    """DAX has no trend factor → score identical even if a value is supplied
+    (mirror of the foreign-index no-sentiment case)."""
+    cfg = _cfg_with_trend()
+    cats = {
+        "USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0},
+        "EUR": {"growth": 1, "inflation": -1, "labour": 0, "monetary": 0},
+    }
+    none_map = compute_crossasset_scores(cats, realyield_score=0, config=cfg)["DAX"]
+    full_map = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                         trend_by_symbol={"DAX": 4, "SP500": 3})["DAX"]
+    assert none_map["score_precise"] == full_map["score_precise"]
+    assert all(f["name"] != "trend" for f in full_map["factors"])
+
+
+def test_trend_and_sentiment_independent_members():
+    """Both factors present → both enter the mean with weight 0.5 each."""
+    cfg = _cfg_with_trend()
+    cats = {"USD": {"growth": 2, "inflation": 0, "labour": 0, "monetary": 0}}
+    res = compute_crossasset_scores(cats, realyield_score=0, config=cfg,
+                                    sentiment_by_symbol={"SP500": 2},
+                                    trend_by_symbol={"SP500": 3})["SP500"]
+    # num = 2 (growth) + 0 + 0 + 0 (rates) + 0.5·2 (sent) + 0.5·3 (trend) = 4.5
+    # wsum = 4 + 0.5 + 0.5 = 5 → 4.5/5 ×5 = 4.5
+    assert res["score_precise"] == pytest.approx(4.5)
+    assert _factor(res, "sentiment")["present"] is True
+    assert _factor(res, "trend")["present"] is True

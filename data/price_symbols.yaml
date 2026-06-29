@@ -1,0 +1,72 @@
+# Price (daily OHLC) symbol map — BOARD key -> BROKER symbol (MT5).
+#
+# The MT5 EA (mt5/PriceHistoryExport.mq5) writes rows keyed by the BROKER
+# symbol; src/price_fetch.py reads this file and rewrites each row to the
+# BOARD key below before merging into data/price_history.parquet. A broker
+# symbol seen in the CSV but absent from this map is skipped (logged); a
+# board key whose broker value is blank/missing simply gets no price series.
+#
+# === ACTION REQUIRED ====================================================
+# Values marked  # TBC  are PLACEHOLDERS guessed from typical brokers. Open
+# MT5 -> Market Watch -> right-click -> Symbols and confirm/replace each with
+# YOUR broker's EXACT name. Watch for:
+#   - FX suffixes (e.g. EURUSD.r / EURUSD.m / EURUSD+ / EURUSDi)
+#   - index naming + cash vs futures (US500 vs SPX500 vs US500Cash, etc.)
+#   - DXY: many brokers do NOT carry it (ICE-licensed). If yours lacks it,
+#     leave it blank ("") and the DXY trend stays empty by design.
+# Keep this list in sync with InpSymbols in the EA (broker side must match).
+# ========================================================================
+
+symbols:
+  # --- FX majors (7) — usually 1:1; confirm any broker suffix ---
+  EURUSD: EURUSD   # TBC
+  GBPUSD: GBPUSD   # TBC
+  USDJPY: USDJPY   # TBC
+  USDCHF: USDCHF   # TBC
+  USDCAD: USDCAD   # TBC
+  AUDUSD: AUDUSD   # TBC
+  NZDUSD: NZDUSD   # TBC
+
+  # --- EUR crosses (6) ---
+  EURGBP: EURGBP   # TBC
+  EURJPY: EURJPY   # TBC
+  EURCHF: EURCHF   # TBC
+  EURAUD: EURAUD   # TBC
+  EURNZD: EURNZD   # TBC
+  EURCAD: EURCAD   # TBC
+
+  # --- GBP crosses (5) ---
+  GBPJPY: GBPJPY   # TBC
+  GBPCHF: GBPCHF   # TBC
+  GBPAUD: GBPAUD   # TBC
+  GBPNZD: GBPNZD   # TBC
+  GBPCAD: GBPCAD   # TBC
+
+  # --- JPY crosses (4) ---
+  AUDJPY: AUDJPY   # TBC
+  NZDJPY: NZDJPY   # TBC
+  CADJPY: CADJPY   # TBC
+  CHFJPY: CHFJPY   # TBC
+
+  # --- Other crosses (6) ---
+  AUDNZD: AUDNZD   # TBC
+  AUDCAD: AUDCAD   # TBC
+  AUDCHF: AUDCHF   # TBC
+  NZDCAD: NZDCAD   # TBC
+  NZDCHF: NZDCHF   # TBC
+  CADCHF: CADCHF   # TBC
+
+  # --- Metals (2) — XAUUSD/XAGUSD near-universal ---
+  GOLD:   XAUUSD   # TBC
+  SILVER: XAGUSD   # TBC
+
+  # --- Indices (6) — naming varies a lot; CONFIRM each ---
+  SP500:   US500   # TBC (alt: SPX500, SP500, US500Cash)
+  NASDAQ:  NAS100  # TBC (alt: USTEC, NDX, NAS100Cash)
+  DJIA:    US30    # TBC (alt: DJ30, DOW30, WS30, US30Cash)
+  DAX:     GER40   # TBC (alt: DE40, GER30, DE30)
+  NIKKEI:  JP225   # TBC (alt: JPN225, NI225)
+  FTSE100: UK100   # TBC (alt: FTSE100, UK100Cash)
+
+  # --- US Dollar Index — HIGH risk of being unavailable ---
+  DXY:     ""      # TBC — alt names: USDX, USDIDX, DX, USDOLLAR; blank = no series

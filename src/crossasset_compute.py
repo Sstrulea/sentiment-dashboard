@@ -31,6 +31,12 @@ RATES_FACTOR = "rates"
 # asset" convention. It enters the weighted mean exactly like a simple factor
 # (no separate scale); a missing sentiment value → factor ABSENT (excluded).
 SENTIMENT_FACTOR = "sentiment"
+# Display-positioning factor. Its value is the instrument's TREND cell (±3 MA
+# structure × ADX strength, from src.trend_score), already "+ = bullish for the
+# asset". Enters the weighted mean exactly like SENTIMENT (weight 0.5, no
+# separate scale); a missing trend value → factor ABSENT (excluded). Cross-asset
+# trend is DIRECT on the instrument's own price series.
+TREND_FACTOR = "trend"
 # rate sub-component -> (source kind, key). "category" reads the home-ccy
 # category cell; "realyield"/"liquidity" read a GLOBAL momentum score.
 RATE_SUBCOMPONENTS = {
@@ -166,6 +172,7 @@ def compute_instrument_score(
     liquidity_label: str = "NET_LIQUIDITY",
     liquidity_stale: bool = False,
     sentiment_value: Optional[int] = None,
+    trend_value: Optional[int] = None,
 ) -> dict:
     """Score one instrument: weighted mean over present top-level factors × scale.
 
@@ -173,6 +180,10 @@ def compute_instrument_score(
     "+ = bullish"), or None when the instrument has no sentiment (e.g. foreign
     indices) — in which case the `sentiment` factor, if configured, is absent and
     the score is identical to the no-sentiment baseline.
+    `trend_value` is the instrument's TREND cell (±3, already "+ = bullish"), or
+    None when the instrument has no price series (e.g. NASDAQ/DAX/NIKKEI/FTSE100)
+    — the `trend` factor, if configured, is then absent and the score is identical
+    to the no-trend baseline. Structurally a twin of `sentiment_value`.
     """
     home = inst_cfg.get("home_ccy")
     factors_cfg = inst_cfg.get("factors", {}) or {}
@@ -219,6 +230,23 @@ def compute_instrument_score(
                 "contribution": None if contribution is None else float(contribution),
                 "present": present, "source": "sentiment",
             })
+        elif name == TREND_FACTOR:
+            # TREND cell (±3), already signed "+ = bullish for the asset". Enters
+            # the mean like SENTIMENT; absent when the instrument has no series.
+            sign = float(fc.get("sign", 1))
+            raw = trend_value
+            present = raw is not None
+            value = (sign * raw) if present else None
+            contribution = (weight * value) if present else None
+            if present:
+                num += weight * value
+                wsum += weight
+            factor_rows.append({
+                "name": name, "raw": raw, "sign": sign, "weight": weight,
+                "value": None if value is None else float(value),
+                "contribution": None if contribution is None else float(contribution),
+                "present": present, "source": "trend",
+            })
         else:
             sign = float(fc.get("sign", 1))
             raw = _cell(cats.get(name))
@@ -245,6 +273,9 @@ def compute_instrument_score(
         "bias_label": bias_label(score_precise, thresholds),
         "coverage": int(sum(1 for f in factor_rows if f["present"])),
         "factors": factor_rows,
+        # Display cell for the TREND column (reused from the same value folded into
+        # the score above); None → blank cell.
+        "trend": None if trend_value is None else int(trend_value),
     }
 
 
@@ -254,6 +285,7 @@ def compute_crossasset_scores(
     config: Optional[dict] = None,
     liquidity_score: Any = None,
     sentiment_by_symbol: Optional[dict] = None,
+    trend_by_symbol: Optional[dict] = None,
 ) -> dict:
     """Compute every cross-asset instrument's bias.
 
@@ -268,6 +300,10 @@ def compute_crossasset_scores(
       sentiment_by_symbol: {symbol: sentiment_cell} (COT/P/C, signed "+ = bullish").
         A symbol absent here → its `sentiment` factor (if configured) is excluded,
         so the score is identical to the no-sentiment baseline. Default None.
+      trend_by_symbol: {symbol: trend_cell} (±3, signed "+ = bullish"). A symbol
+        absent here → its `trend` factor (if configured) is excluded, so the score
+        is identical to the no-trend baseline. Default None. (Cross-asset reads
+        only its own board keys from this map — FX pairs never collide.)
       config: parsed crossasset_instruments.yaml.
 
     Returns {symbol: {score, score_precise, bias_label, coverage, factors[...]}},
@@ -286,12 +322,14 @@ def compute_crossasset_scores(
     liq_raw = _global_raw(liquidity_score)
     liq_stale = bool(getattr(liquidity_score, "stale", False))
     sentiment_by_symbol = sentiment_by_symbol or {}
+    trend_by_symbol = trend_by_symbol or {}
 
     return {
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,
                                       scale, thresholds, realyield_label=ry_label,
                                       realyield_stale=ry_stale,
                                       liquidity_raw=liq_raw, liquidity_stale=liq_stale,
-                                      sentiment_value=sentiment_by_symbol.get(sym))
+                                      sentiment_value=sentiment_by_symbol.get(sym),
+                                      trend_value=trend_by_symbol.get(sym))
         for sym, cfg in instruments.items()
     }

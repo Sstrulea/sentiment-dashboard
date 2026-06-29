@@ -667,3 +667,78 @@ def test_fx_sentiment_does_not_touch_index_or_categories():
     for ccy in ("EUR", "USD"):
         assert off["currencies"][ccy]["index"] == on["currencies"][ccy]["index"]
         assert off["currencies"][ccy]["categories"] == on["currencies"][ccy]["categories"]
+
+
+# ---------------------------------------------------------------------------
+# TREND factor in the FX score — weight-0.5, DIRECT on the pair (NOT base−quote)
+# ---------------------------------------------------------------------------
+
+def _instruments_cfg_trend():
+    cfg = _instruments_cfg_sent()
+    cfg["trend_weight"] = 0.5
+    return cfg
+
+
+def test_fx_trend_off_is_bit_identical():
+    cal = _eur_usd_growth_cal()
+    off = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF)
+    none_ = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(),
+                          as_of=AS_OF, trend_cells=None)
+    a = {i["symbol"]: i["score"] for i in off["instruments"]}
+    b = {i["symbol"]: i["score"] for i in none_["instruments"]}
+    assert a == b  # no trend_cells → identical to the no-trend baseline
+    assert all(i["trend"] is None for i in off["instruments"])
+
+
+def test_fx_trend_folds_direct_on_pair_with_weight_half():
+    cal = _eur_usd_growth_cal()
+    p0 = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells=None)
+    pT = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells={"EURUSD": 3})
+    e0 = next(i for i in p0["instruments"] if i["symbol"] == "EURUSD")
+    eT = next(i for i in pT["instruments"] if i["symbol"] == "EURUSD")
+    assert eT["score"] > e0["score"]          # +3 trend → more bullish
+    assert eT["trend"] == 3                    # display cell = the pair's own cell
+    # Arithmetic: new = (m·W + 0.5·3)/(W+0.5)·scale, W = mean of the two legs'
+    # effective weights (no sentiment supplied here → macro-only index_wsum).
+    scale = 5.0
+    W = (p0["currencies"]["EUR"]["index_wsum"] + p0["currencies"]["USD"]["index_wsum"]) / 2.0
+    m = e0["score"] / scale
+    assert eT["score"] == pytest.approx((m * W + 0.5 * 3) / (W + 0.5) * scale)
+
+
+def test_fx_trend_is_per_pair_not_decomposed():
+    """Trend on EURUSD must NOT leak to instruments sharing a leg — trend is
+    per-pair only, there is no per-currency trend."""
+    cal = _eur_usd_growth_cal()
+    p0 = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells=None)
+    pT = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells={"EURUSD": 3})
+    # US-DOLLAR shares the USD leg but has its own (absent) trend → unchanged.
+    s0 = next(i for i in p0["instruments"] if i["symbol"] == "US-DOLLAR")["score"]
+    sT = next(i for i in pT["instruments"] if i["symbol"] == "US-DOLLAR")["score"]
+    assert s0 == sT
+    assert next(i for i in pT["instruments"] if i["symbol"] == "US-DOLLAR")["trend"] is None
+
+
+def test_fx_trend_unlisted_pair_is_identical():
+    cal = _eur_usd_growth_cal()
+    p0 = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells=None)
+    pT = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells={"GBPJPY": 3})  # EURUSD not listed
+    e0 = next(i for i in p0["instruments"] if i["symbol"] == "EURUSD")["score"]
+    eT = next(i for i in pT["instruments"] if i["symbol"] == "EURUSD")["score"]
+    assert e0 == eT
+
+
+def test_fx_trend_does_not_touch_index_or_categories():
+    cal = _eur_usd_growth_cal()
+    off = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF)
+    on = build_payload(cal, _indicators_cfg(), _instruments_cfg_trend(), as_of=AS_OF,
+                       trend_cells={"EURUSD": 3})
+    for ccy in ("EUR", "USD"):
+        assert off["currencies"][ccy]["index"] == on["currencies"][ccy]["index"]
+        assert off["currencies"][ccy]["categories"] == on["currencies"][ccy]["categories"]
