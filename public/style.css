@@ -1300,3 +1300,9 @@ table.econ-ind-table tr.ei-stale td.ei-score { background: var(--surface-alt); c
 /* Cross-Asset rates group tint (reuses grp-* header styling) */
 .grp-head.grp-rates, .ind-head.grp-rates { background: rgba(0,150,136,0.10); }
 body.dark .grp-head.grp-rates, body.dark .ind-head.grp-rates { background: rgba(0,150,136,0.18); }
+
+/* Cross-Asset SENTIMENT (COT) group tint — display-only, slate accent */
+.grp-head.grp-sentiment, .ind-head.grp-sentiment { background: rgba(96,125,139,0.10); }
+body.dark .grp-head.grp-sentiment, body.dark .ind-head.grp-sentiment { background: rgba(96,125,139,0.18); }
+/* Unpopulated SENTIMENT cell (indices, or metals without COT data) — blank */
+table.econ-table td.econ-cell.cell-empty { background: transparent; }

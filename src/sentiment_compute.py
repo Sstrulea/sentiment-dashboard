@@ -63,6 +63,41 @@ def compute_vix_ratio_metrics(df: pd.DataFrame) -> pd.DataFrame:
 # P/C ratio compute
 # ---------------------------------------------------------------------------
 
+def pc_index_score(pct_1y: float | None) -> tuple[int, dict]:
+    """Contrarian SENTIMENT score (±3) for US equity indices from the P/C ratio.
+
+    Input is the rolling 1Y percentile (0..100) of the CBOE equity put/call
+    ratio (variant ``equity``) — produced by ``compute_pc_metrics`` as
+    ``current["percentile_rank"]``; not recomputed here. LEVEL-ONLY (no flow —
+    that is a COT concept). Contrarian: a high percentile means crowded puts
+    (fear) → bullish (+); a low percentile means crowded calls (greed) →
+    bearish (−). Bands are lower-inclusive / upper-exclusive.
+
+    A missing/insufficient percentile returns ``(0, basis="insufficient_history")``
+    — the BUILDER treats that as "no data" and renders the cell blank rather
+    than a misleading neutral 0.
+    """
+    if pct_1y is None or pd.isna(pct_1y):
+        return 0, {"pct": None, "basis": "insufficient_history"}
+
+    pct = float(pct_1y)
+    if pct >= 90:
+        score = 3
+    elif pct >= 75:
+        score = 2
+    elif pct >= 60:
+        score = 1
+    elif pct >= 40:
+        score = 0
+    elif pct >= 25:
+        score = -1
+    elif pct >= 10:
+        score = -2
+    else:
+        score = -3
+    return score, {"pct": pct, "basis": "pct_1y"}
+
+
 def _load_thresholds(path: str | Path) -> dict:
     with open(path) as f:
         return yaml.safe_load(f)

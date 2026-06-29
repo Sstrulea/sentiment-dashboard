@@ -10,6 +10,7 @@ import pytest
 from src.sentiment_compute import (
     compute_pc_metrics,
     compute_vix_ratio_metrics,
+    pc_index_score,
     _classify_regime,
     _signal_for,
 )
@@ -205,3 +206,35 @@ def test_thresholds_source_rolling_after_warmup():
     out = compute_pc_metrics(df, THRESHOLDS_YAML)
     for variant in ("total", "equity", "index", "spx_spxw", "vix"):
         assert out[variant]["current"]["thresholds_source"] == "rolling_1y"
+
+
+# ---------------------------------------------------------------------------
+# pc_index_score — contrarian SENTIMENT for US indices (display-only)
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "pct, expected",
+    [
+        (95.0, 3), (90.0, 3),           # >= 90
+        (89.999, 2), (75.0, 2),         # [75, 90)
+        (74.999, 1), (60.0, 1),         # [60, 75)
+        (59.999, 0), (40.0, 0),         # [40, 60) dead zone
+        (39.999, -1), (25.0, -1),       # [25, 40)
+        (24.999, -2), (10.0, -2),       # [10, 25)
+        (9.999, -3), (0.0, -3),         # < 10
+        (86.31, 2),                     # live value sanity
+    ],
+)
+def test_pc_index_score_bands(pct, expected):
+    score, meta = pc_index_score(pct)
+    assert score == expected
+    assert meta["pct"] == pytest.approx(pct)
+    assert meta["basis"] == "pct_1y"
+
+
+def test_pc_index_score_insufficient():
+    for bad in (None, float("nan")):
+        score, meta = pc_index_score(bad)
+        assert score == 0
+        assert meta["basis"] == "insufficient_history"
+        assert meta["pct"] is None

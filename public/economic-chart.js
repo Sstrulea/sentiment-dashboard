@@ -216,6 +216,10 @@
   function rowSortValue(inst, key) {
     if (key === "symbol") return inst.display || inst.symbol;
     if (key === "bias" || key === "score") return inst.score;          // precise float
+    if (key === "cot") {
+      const c = inst.cot;
+      return (c && c.cell !== null && c.cell !== undefined) ? c.cell : -Infinity;
+    }
     if (key.indexOf("ind:") === 0) {
       const k = key.slice(4);
       const c = (inst.indicator_cells || {})[k];
@@ -250,6 +254,29 @@
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + "</td>";
   }
 
+  // SENTIMENT > COT sub-cell for an FX row (display-only). Same divergent color
+  // engine as the factor cells (gradientStyle), on the COT ±4 scale. Pairs whose
+  // non-USD leg lacks COT data render blank (no "—", which means N/A).
+  function fxCotCellHtml(inst) {
+    const cot = inst.cot;
+    if (!cot || cot.cell === null || cot.cell === undefined) {
+      return '<td class="econ-cell cell-empty"></td>';
+    }
+    const v = cot.cell;
+    function legTxt(ccy, cell, det) {
+      let t = ccy + " " + fmtScoreCell(cell === null || cell === undefined ? 0 : cell);
+      if (det) t += " (lvl " + fmtScoreCell(det.level) + ", flow " + fmtScoreCell(det.flow) + ")";
+      return t;
+    }
+    const baseTxt = legTxt(cot.base, cot.base_cell, cot.base_detail);
+    const tip = "COT positioning · " + (cot.quote
+      ? "base " + baseTxt + " − quote " + legTxt(cot.quote, cot.quote_cell, cot.quote_detail) +
+        " = cell " + fmtScoreCell(v)
+      : baseTxt + " = cell " + fmtScoreCell(v));
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+  }
+
   function renderRow(inst) {
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
     // Symbol / Bias / Score share one continuous gradient driven by the precise
@@ -261,6 +288,7 @@
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
       cells +
+      fxCotCellHtml(inst) +
       "</tr>"
     );
   }
@@ -280,6 +308,12 @@
       g.label + '</th>'
     ).join("");
 
+    // SENTIMENT: top-level group placed AFTER the factor groups (display-only).
+    const sentimentGroupHeader =
+      '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment (display-only): currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Not included in Score or Bias.">SENTIMENT</th>';
+    const sentimentSubHeader =
+      '<th data-sort="cot" class="ind-head grp-sentiment" title="COT positioning (display-only)">COT</th>';
+
     let subHeaderCells = "";
     layout.forEach(g => g.columns.forEach(c => {
       subHeaderCells += '<th data-sort="ind:' + c.key + '" class="ind-head grp-' + g.category +
@@ -294,9 +328,9 @@
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
       '<th rowspan="2" data-sort="score">Score</th>' +
-      groupHeaderCells +
+      groupHeaderCells + sentimentGroupHeader +
       '</tr>' +
-      '<tr>' + subHeaderCells + '</tr>' +
+      '<tr>' + subHeaderCells + sentimentSubHeader + '</tr>' +
       '</thead>' +
       '<tbody>' + instruments.map(renderRow).join("") + '</tbody>' +
       '</table></div>';
@@ -518,6 +552,36 @@
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ">" + fmtScoreCell(v) + "</td>";
   }
 
+  // SENTIMENT sub-cell (display-only). One column, two sources by row:
+  //   - metals  → COT positioning (±4, gradientStyle scale 4)
+  //   - US idx  → P/C equity contrarian (±3, gradientStyle scale 3)
+  // Rows with neither (foreign indices, or data missing) render blank — no "—",
+  // which means N/A. Same divergent color engine as the factor cells.
+  function caCotCellHtml(inst) {
+    // P/C (US equity indices) — takes precedence; metals never carry .sentiment.
+    const pc = inst.sentiment;
+    if (pc && pc.source === "pc" && pc.cell !== null && pc.cell !== undefined) {
+      const v = pc.cell;
+      const tip = "P/C equity contrarian · percentile " + Number(pc.pct).toFixed(0) +
+        " (1Y) → cell " + fmtScoreCell(v) + " · " + pc.basis;
+      return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
+        ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+    }
+    // COT (metals).
+    const cot = inst.cot;
+    if (!cot || cot.cell === null || cot.cell === undefined) {
+      return '<td class="econ-cell cell-empty"></td>';
+    }
+    const v = cot.cell;
+    const tip = "COT positioning · level " + fmtScoreCell(cot.level) +
+      " + flow " + fmtScoreCell(cot.flow) + " = cell " + fmtScoreCell(v) +
+      " · blend " + Number(cot.blend).toFixed(0) +
+      (cot.z === null || cot.z === undefined ? "" : " · z " + fmtSigned(cot.z, 2)) +
+      " · " + cot.basis;
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+  }
+
   function renderCrossAsset() {
     const ca = state.payload.crossasset;
     const section = document.getElementById("crossassetSection");
@@ -533,6 +597,11 @@
       '" title="Per-asset directional score (home-ccy reading × category sign): blue = bullish for this asset, red = bearish. Click a row for the full breakdown.">' +
       g.label + '</th>').join("");
 
+    // SENTIMENT: top-level group placed AFTER the factor groups (display-only).
+    const sentimentGroupHeader =
+      '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment (display-only): large-spec extreme + 4-week flow, contrarian. Blue = bullish for the asset, red = bearish. Not included in Score or Bias.">SENTIMENT</th>';
+    const sentimentSubHeader = '<th class="ind-head grp-sentiment">COT / P/C</th>';
+
     let subHeaders = "";
     layout.forEach(g => g.columns.forEach(c => {
       subHeaders += '<th class="ind-head grp-' + g.key + '">' + c.label + '</th>';
@@ -547,7 +616,7 @@
         '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
         '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
-        cells + '</tr>'
+        cells + caCotCellHtml(inst) + '</tr>'
       );
     }).join("");
 
@@ -556,8 +625,8 @@
       '<table class="retail-table econ-table">' +
       '<thead>' +
       '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2">Score</th>' +
-      groupHeaders + '</tr>' +
-      '<tr>' + subHeaders + '</tr>' +
+      groupHeaders + sentimentGroupHeader + '</tr>' +
+      '<tr>' + subHeaders + sentimentSubHeader + '</tr>' +
       '</thead>' +
       '<tbody>' + rows + '</tbody></table></div>';
 
