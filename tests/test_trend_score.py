@@ -207,3 +207,51 @@ def test_score_ignores_forming_bar(tmp_path):
     assert filtered["adx"] == pytest.approx(ref["adx"])
     # The forming bar WAS material: it moved the unfiltered ADX.
     assert filtered["adx"] != pytest.approx(unfiltered["adx"])
+
+
+# --- trend signature (cron render trigger) ----------------------------------
+
+def _mk_eurusd(dates, closes):
+    closes = np.asarray(closes, float)
+    return pd.DataFrame({
+        "symbol": "EURUSD", "date": dates,
+        "open": closes, "high": closes + 0.5, "low": closes - 0.5,
+        "close": closes, "source": "mt5",
+    })
+
+
+def test_trend_signature_ignores_forming_bar(tmp_path):
+    """The signature must NOT change when only the forming (current-day) bar's
+    OHLC moves — this is the whole point: hourly intraday ticks don't re-trigger."""
+    from src.trend_signature import trend_signature
+
+    yml = tmp_path / "price_symbols.yaml"
+    yml.write_text("symbols:\n  EURUSD: EURUSD\n")
+    st = pd.Timestamp("2026-06-30")
+    dates = pd.bdate_range(end="2026-06-29", periods=250)
+    closes = 100.0 + np.arange(250) * 1.0
+
+    closed = _mk_eurusd(dates, closes)
+    a = pd.concat([closed, _mk_eurusd(pd.to_datetime(["2026-06-30"]), [closes[-1] + 0.2])])
+    b = pd.concat([closed, _mk_eurusd(pd.to_datetime(["2026-06-30"]), [closes[-1] - 8.0])])
+    pa = tmp_path / "a.parquet"; a.to_parquet(pa, index=False)
+    pb = tmp_path / "b.parquet"; b.to_parquet(pb, index=False)
+
+    assert trend_signature(pa, yml, server_today=st) == trend_signature(pb, yml, server_today=st)
+
+
+def test_trend_signature_changes_on_closed_trend_change(tmp_path):
+    """A genuine change in the CLOSED-bar trend flips the signature (→ re-render)."""
+    from src.trend_signature import trend_signature
+
+    yml = tmp_path / "price_symbols.yaml"
+    yml.write_text("symbols:\n  EURUSD: EURUSD\n")
+    st = pd.Timestamp("2026-06-30")
+    dates = pd.bdate_range(end="2026-06-29", periods=250)
+
+    up = tmp_path / "up.parquet"
+    _mk_eurusd(dates, 100.0 + np.arange(250) * 1.0).to_parquet(up, index=False)   # +3
+    down = tmp_path / "down.parquet"
+    _mk_eurusd(dates, 600.0 - np.arange(250) * 1.0).to_parquet(down, index=False)  # -3
+
+    assert trend_signature(up, yml, server_today=st) != trend_signature(down, yml, server_today=st)

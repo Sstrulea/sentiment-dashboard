@@ -9,7 +9,10 @@ cal_before=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
 rates_before=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_before=$(md5 -q data/real_yields.parquet 2>/dev/null)
 nl_before=$(md5 -q data/net_liquidity.parquet 2>/dev/null)
-ph_before=$(md5 -q data/price_history.parquet 2>/dev/null)
+# Price TREND trigger: hash the trend OUTPUT (trend_cell values), NOT the raw
+# parquet. The EA rewrites the forming bar hourly (parquet md5 churns), but
+# trend_score excludes that bar, so trend_cells change only ~1×/day at rollover.
+trend_before=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
 # Refresh the calendar (surprises), the 2y rates (Monetary Policy), real yields,
 # and Fed net liquidity (WALCL−TGA−RRP) before render. liquidity_fetch is safe to
 # auto-run: the ×1000 RRP units fix is verified, the anti-degradation guard keeps
@@ -21,17 +24,17 @@ ph_before=$(md5 -q data/price_history.parquet 2>/dev/null)
 ./.venv/bin/python -m src.realyield_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.liquidity_fetch >> /tmp/econ.log 2>&1
 # Daily OHLC ingest (MT5 price_history.csv → data/price_history.parquet). Graceful:
-# missing CSV → log + parquet unchanged (never blocks the refresh). The parquet
-# changes ~once/day when the EA writes a new daily bar → md5 differs → one render/
-# day; the other hours md5 is identical → skip (idempotent, no empty commit). The
-# render scores trend on the last CLOSED bar (trend_score excludes the forming bar).
+# missing CSV → log + parquet unchanged (never blocks the refresh). Runs hourly so
+# the parquet always carries fresh OHLC; the RENDER, however, is gated on the trend
+# SIGNATURE (above/below), not on this parquet — so an intraday forming-bar tick
+# alone does NOT trigger a commit. The render scores trend on the last CLOSED bar.
 ./.venv/bin/python -m src.price_fetch >> /tmp/econ.log 2>&1
 cal_after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
 rates_after=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_after=$(md5 -q data/real_yields.parquet 2>/dev/null)
 nl_after=$(md5 -q data/net_liquidity.parquet 2>/dev/null)
-ph_after=$(md5 -q data/price_history.parquet 2>/dev/null)
-if [ "$cal_before" != "$cal_after" ] || [ "$rates_before" != "$rates_after" ] || [ "$ry_before" != "$ry_after" ] || [ "$nl_before" != "$nl_after" ] || [ "$ph_before" != "$ph_after" ]; then
+trend_after=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
+if [ "$cal_before" != "$cal_after" ] || [ "$rates_before" != "$rates_after" ] || [ "$ry_before" != "$ry_after" ] || [ "$nl_before" != "$nl_after" ] || [ "$trend_before" != "$trend_after" ]; then
   ./.venv/bin/python -m src.main --mode economic >> /tmp/econ.log 2>&1
   git add data/economic_calendar.parquet data/rates.parquet data/real_yields.parquet \
           data/net_liquidity.parquet data/price_history.parquet \
