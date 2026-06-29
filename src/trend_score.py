@@ -58,6 +58,14 @@ FACTOR_WEAK = 0.25
 MIN_BARS_SMA = SMA_LONG          # need 200 closes for SMA200
 MIN_BARS_ADX = 2 * ADX_PERIOD + 1  # ~29; ADX needs a couple of smoothing windows
 
+# Daily bars are stamped with the SERVER open date (EA writes TimeToString on the
+# bar's server open time). "Today" in server wall-clock is utcnow + this offset;
+# the bar dated on it is still FORMING and must be excluded (Option A: score the
+# last CLOSED bar). +3 = EET/EEST, the typical MetaQuotes demo server in summer.
+# The cron runs ~01:00–02:00 server, hours from midnight, so a ±1–2h offset error
+# never changes which bar is excluded — robust by design. Calibratable.
+SERVER_UTC_OFFSET_HOURS = 3
+
 
 # ---------------------------------------------------------------------------
 # Small helpers
@@ -194,9 +202,38 @@ def trend_cell(df: pd.DataFrame) -> int | None:
 # Loader + score_all
 # ---------------------------------------------------------------------------
 
-def load_history(parquet_path: Path = PARQUET) -> pd.DataFrame:
+def _server_today(now_utc: pd.Timestamp | None = None) -> pd.Timestamp:
+    """Midnight of the current trading day in SERVER wall-clock.
+
+    server_now = utcnow + SERVER_UTC_OFFSET_HOURS, normalized to midnight. A daily
+    bar dated >= this is the current-day (forming) bar.
+    """
+    now = now_utc if now_utc is not None else pd.Timestamp.utcnow().tz_localize(None)
+    return (pd.Timestamp(now) + pd.Timedelta(hours=SERVER_UTC_OFFSET_HOURS)).normalize()
+
+
+def drop_forming_bar(df: pd.DataFrame, server_today: pd.Timestamp | None = None) -> pd.DataFrame:
+    """Keep only CLOSED daily bars: date strictly before the current server day.
+
+    Excludes the in-formation bar (date == today server). This removes the
+    CURRENT-DAY bar — it does NOT subtract a fixed 1 day — so it is weekend/holiday
+    safe (Monday → last remaining bar is automatically Friday) and a no-op when the
+    parquet is already stale (latest bar already closed).
+    """
+    if df is None or df.empty:
+        return df
+    st = server_today if server_today is not None else _server_today()
+    return df[pd.to_datetime(df["date"]) < st].reset_index(drop=True)
+
+
+def load_history(parquet_path: Path = PARQUET, server_today: pd.Timestamp | None = None,
+                 drop_forming: bool = True) -> pd.DataFrame:
+    """Load the OHLC parquet; by default exclude the forming (current server-day)
+    bar so every downstream computation (SMA20/50/200, ADX) sees only closed bars."""
     df = pd.read_parquet(parquet_path)
     df["date"] = pd.to_datetime(df["date"])
+    if drop_forming:
+        df = drop_forming_bar(df, server_today)
     return df
 
 
@@ -213,16 +250,20 @@ def _empty_entry() -> dict:
     return {k: None for k in ("short", "long", "slope", "raw", "adx", "factor", "trend_cell")}
 
 
-def score_all(parquet_path: Path = PARQUET, yaml_path: Path = SYMBOLS_YAML) -> dict[str, dict]:
+def score_all(parquet_path: Path = PARQUET, yaml_path: Path = SYMBOLS_YAML,
+              server_today: pd.Timestamp | None = None) -> dict[str, dict]:
     """{board_key: {short, long, slope, raw, adx, factor, trend_cell}} for ALL
-    board keys. Instruments without a (sufficient) series get an all-None entry."""
+    board keys. Instruments without a (sufficient) series get an all-None entry.
+
+    The forming (current server-day) bar is excluded at load — scores reflect the
+    last CLOSED daily bar. `server_today` overrides "now" (for tests)."""
     _, board_keys = load_symbol_map(yaml_path)
 
     if not parquet_path.exists():
         log.warning("price_history.parquet absent; all trend cells None.")
         return {k: _empty_entry() for k in board_keys}
 
-    df = load_history(parquet_path)
+    df = load_history(parquet_path, server_today=server_today)
     results: dict[str, dict] = {}
     for key in board_keys:
         g = _series_for(df, key)

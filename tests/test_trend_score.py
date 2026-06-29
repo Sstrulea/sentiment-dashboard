@@ -10,7 +10,9 @@ from src.trend_score import (
     _clamp_round,
     _factor_from_adx,
     _round_half_away,
+    _server_today,
     adx_factor,
+    drop_forming_bar,
     score_all,
     trend_cell,
     trend_components,
@@ -121,10 +123,87 @@ def test_score_all_maps_and_marks_missing(tmp_path):
     up = up[["symbol", "date", "open", "high", "low", "close", "source"]]
     up.to_parquet(pq, index=False)
 
-    res = score_all(parquet_path=pq, yaml_path=yml)
+    res = score_all(parquet_path=pq, yaml_path=yml, server_today=pd.Timestamp("2100-01-01"))
     assert set(res) == {"EURUSD", "GOLD"}
     assert res["EURUSD"]["trend_cell"] == 3
     assert res["EURUSD"]["raw"] == 3
     # GOLD has no series -> all-None entry
     assert res["GOLD"]["trend_cell"] is None
     assert all(res["GOLD"][k] is None for k in ("short", "long", "slope", "raw", "adx", "factor"))
+
+
+# --- Option A: exclude the forming (current server-day) bar -----------------
+
+def test_server_today_applies_offset():
+    # utc 23:30 + 3h crosses midnight → next server day
+    assert _server_today(pd.Timestamp("2026-06-29 23:30")) == pd.Timestamp("2026-06-30")
+    # mid-morning utc + 3h stays the same server day
+    assert _server_today(pd.Timestamp("2026-06-29 10:00")) == pd.Timestamp("2026-06-29")
+
+
+def test_drop_forming_bar_excludes_current_day_only():
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-06-26", "2026-06-29", "2026-06-30"]),
+        "close": [1.0, 2.0, 3.0],
+    })
+    out = drop_forming_bar(df, server_today=pd.Timestamp("2026-06-30"))
+    assert list(out["date"]) == [pd.Timestamp("2026-06-26"), pd.Timestamp("2026-06-29")]
+
+
+def test_drop_forming_bar_weekend_safe_no_minus_one_day():
+    # Monday server day, no Sunday/Saturday bars: the rule removes the CURRENT day,
+    # not "1 day", so the last kept bar is Friday (not "Sunday").
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2026-06-25", "2026-06-26", "2026-06-29"]),  # Thu, Fri, Mon
+        "close": [1.0, 2.0, 3.0],
+    })
+    out = drop_forming_bar(df, server_today=pd.Timestamp("2026-06-29"))  # Monday
+    assert out["date"].max() == pd.Timestamp("2026-06-26")  # Friday, automatically
+
+
+def test_drop_forming_bar_noop_when_already_stale():
+    # Latest bar already closed (before today) → nothing dropped.
+    df = pd.DataFrame({"date": pd.to_datetime(["2026-06-24", "2026-06-25"]), "close": [1.0, 2.0]})
+    out = drop_forming_bar(df, server_today=pd.Timestamp("2026-06-30"))
+    assert len(out) == 2
+
+
+def test_score_ignores_forming_bar(tmp_path):
+    """A current-day bar must NOT affect the score — it's computed on the last
+    closed bar. A wild forming bar changes the unfiltered ADX (proving it's
+    material), yet the filtered score equals the closed-only score."""
+    yml = tmp_path / "price_symbols.yaml"
+    yml.write_text("symbols:\n  EURUSD: EURUSD\n")
+    server_today = pd.Timestamp("2026-06-30")
+
+    n = 250
+    dates = pd.bdate_range(end="2026-06-29", periods=n)  # closed bars, last = Mon 2026-06-29
+    closes = 100.0 + np.arange(n) * 1.0                   # clean uptrend
+
+    def _mk(dts, cl):
+        cl = np.asarray(cl, float)
+        return pd.DataFrame({
+            "symbol": "EURUSD", "date": dts,
+            "open": cl, "high": cl + 0.5, "low": cl - 0.5, "close": cl, "source": "mt5",
+        })
+
+    closed = _mk(dates, closes)
+    # Forming bar (2026-06-30): a violent crash that distorts ADX if counted.
+    today = _mk(pd.to_datetime(["2026-06-30"]), [closes[-1] - 50.0])
+    today.loc[:, "low"] = closes[-1] - 60.0
+
+    pq_all = tmp_path / "all.parquet"
+    pd.concat([closed, today], ignore_index=True).to_parquet(pq_all, index=False)
+    pq_closed = tmp_path / "closed.parquet"
+    closed.to_parquet(pq_closed, index=False)
+
+    filtered = score_all(pq_all, yml, server_today=server_today)["EURUSD"]
+    unfiltered = score_all(pq_all, yml, server_today=pd.Timestamp("2100-01-01"))["EURUSD"]
+    ref = score_all(pq_closed, yml, server_today=pd.Timestamp("2100-01-01"))["EURUSD"]
+
+    # Filtered == closed-only: the forming bar was ignored.
+    assert filtered["trend_cell"] == ref["trend_cell"]
+    assert filtered["raw"] == ref["raw"]
+    assert filtered["adx"] == pytest.approx(ref["adx"])
+    # The forming bar WAS material: it moved the unfiltered ADX.
+    assert filtered["adx"] != pytest.approx(unfiltered["adx"])
