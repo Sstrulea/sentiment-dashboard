@@ -19,7 +19,10 @@ trend_before=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
 # the existing parquet when RRP is missing, and _print_report tolerates a
 # net_liquidity-only parquet (no crash). Self-heals — when FRED serves RRPONTSYD
 # again it rebuilds the 6-col parquet and regenerates public/.
-./.venv/bin/python -m src.economic_fetch >> /tmp/econ.log 2>&1
+# --days-back 14 (was default 4): any release missed for a few days (calendar
+# blip, late actual, multi-estimate revision) auto-recovers on the next refresh.
+# Dedup last-write-wins makes re-ingest idempotent — only a slightly larger read.
+./.venv/bin/python -m src.economic_fetch --days-back 14 >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.rate_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.realyield_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.liquidity_fetch >> /tmp/econ.log 2>&1
@@ -29,6 +32,17 @@ trend_before=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
 # SIGNATURE (above/below), not on this parquet — so an intraday forming-bar tick
 # alone does NOT trigger a commit. The render scores trend on the last CLOSED bar.
 ./.venv/bin/python -m src.price_fetch >> /tmp/econ.log 2>&1
+# Freshness watchdog (non-fatal, GENERAL): warn in the log if ANY source is stale
+# beyond its threshold, so a silent freeze surfaces here too (also flagged in
+# economic.json + the dashboard badge). Never blocks the refresh.
+./.venv/bin/python -c "
+from src.economic_render import _freshness
+import datetime
+f=_freshness()
+for k,v in f.items():
+    if isinstance(v,dict) and v.get('stale'):
+        print(f\"[{datetime.datetime.utcnow():%FT%TZ}] FRESHNESS WARNING: {k} STALE — last update {v['last_update']} ({v['age_days']}d ago)\")
+" >> /tmp/econ.log 2>&1
 cal_after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
 rates_after=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_after=$(md5 -q data/real_yields.parquet 2>/dev/null)

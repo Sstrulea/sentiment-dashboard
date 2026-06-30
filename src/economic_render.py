@@ -51,6 +51,13 @@ PARQUET = ROOT / "data" / "economic_calendar.parquet"
 RATES_PARQUET = ROOT / "data" / "rates.parquet"
 REAL_YIELDS_PARQUET = ROOT / "data" / "real_yields.parquet"
 NET_LIQUIDITY_PARQUET = ROOT / "data" / "net_liquidity.parquet"
+PRICE_HISTORY_PARQUET = ROOT / "data" / "price_history.parquet"
+
+# Per-source freshness thresholds (days). Beyond this, a source is flagged STALE
+# (visible in economic.json + the dashboard badge + the cron watchdog) so a
+# silent freeze surfaces immediately. General — applies to every source, not a
+# single indicator.
+FRESHNESS_STALE_DAYS = {"calendar": 3, "price": 4}
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
@@ -471,6 +478,47 @@ def _attach_fx_cot_cells(payload: dict, cells: dict[str, int],
         }
 
 
+def _freshness(as_of: pd.Timestamp | None = None) -> dict:
+    """Per-source data freshness — GENERAL watchdog over every feed (not a single
+    indicator). Reports {source: {last_update, age_days, stale}} for the calendar
+    (most recent PUBLISHED actual, any currency) and the price feed (most recent
+    bar). `any_stale` rolls them up. Graceful: a missing/unreadable source is
+    simply omitted. Used by the payload (dashboard badge) and the cron watchdog."""
+    if as_of is None:
+        as_of = pd.Timestamp.utcnow().tz_localize(None)
+    out: dict = {}
+
+    def _age(last: pd.Timestamp) -> int:
+        return int((as_of - pd.Timestamp(last)).days)
+
+    try:
+        if PARQUET.exists():
+            c = pd.read_parquet(PARQUET)
+            c["release_dt"] = pd.to_datetime(c["release_dt"], errors="coerce")
+            c["actual"] = pd.to_numeric(c["actual"], errors="coerce")
+            pub = c[c["actual"].notna()]
+            if len(pub):
+                last = pub["release_dt"].max()
+                age = _age(last)
+                out["calendar"] = {"last_update": last.isoformat(), "age_days": age,
+                                   "stale": age > FRESHNESS_STALE_DAYS["calendar"]}
+    except Exception as e:  # noqa: BLE001
+        log.warning("freshness(calendar) unavailable: %s", e)
+
+    try:
+        if PRICE_HISTORY_PARQUET.exists():
+            p = pd.read_parquet(PRICE_HISTORY_PARQUET)
+            last = pd.to_datetime(p["date"]).max()
+            age = _age(last)
+            out["price"] = {"last_update": last.isoformat(), "age_days": age,
+                            "stale": age > FRESHNESS_STALE_DAYS["price"]}
+    except Exception as e:  # noqa: BLE001
+        log.warning("freshness(price) unavailable: %s", e)
+
+    out["any_stale"] = any(isinstance(v, dict) and v.get("stale") for v in out.values())
+    return out
+
+
 def _trend_full() -> dict[str, dict]:
     """{board_key: {short,long,slope,raw,adx,factor,trend_cell}} from the TREND
     engine (read-only). Computed ONCE; the cells feed the FX/cross-asset scores
@@ -707,6 +755,7 @@ def build_economic_payload() -> dict:
     payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_full)
 
     payload["meta"] = meta
+    payload["freshness"] = _freshness(as_of)
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
 

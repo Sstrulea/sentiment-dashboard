@@ -1112,6 +1112,13 @@ body.modal-open { overflow: hidden; }
 }
 .econ-header h1 { margin: 0; font-size: 24px; }
 .econ-meta-bar { color: var(--muted); font-size: 13px; text-align: right; }
+/* Per-source freshness badges in the meta bar (STALE = red, fresh = subtle). */
+.fresh-badge { display: inline-block; padding: 1px 7px; margin-left: 6px; border-radius: 10px;
+  font-size: 11px; font-weight: 600; vertical-align: middle; }
+.fresh-badge.ok { background: rgba(38,166,154,0.15); color: #1a7f72; }
+.fresh-badge.stale { background: rgba(211,47,47,0.18); color: #d32f2f; }
+body.dark .fresh-badge.ok { color: #4db6ac; }
+body.dark .fresh-badge.stale { color: #ef9a9a; }
 .econ-legend { font-size: 12px; line-height: 1.5; margin: 0 0 16px 0; max-width: 900px; }
 .econ-legend b { color: var(--fg); }
 

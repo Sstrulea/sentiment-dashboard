@@ -103,7 +103,24 @@
     parts.push("As of " + fmtAsOf(p.as_of));
     parts.push(p.instruments.length + " instruments");
     if (p.generated_at) parts.push("Generated " + fmtAsOf(p.generated_at));
-    el.textContent = parts.join(" · ");
+    el.innerHTML = parts.join(" · ") + freshnessBadges(p.freshness);
+  }
+
+  // Per-source freshness badges (calendar / price). STALE → red badge so a silent
+  // data freeze is visible instantly without comparing to external sources.
+  function freshnessBadges(f) {
+    if (!f) return "";
+    let out = "";
+    [["calendar", "Calendar"], ["price", "Price"]].forEach(function (pair) {
+      const v = f[pair[0]];
+      if (!v) return;
+      const age = v.age_days <= 0 ? "today" : v.age_days + "d ago";
+      const cls = v.stale ? "fresh-badge stale" : "fresh-badge ok";
+      const txt = (v.stale ? "⚠ STALE " : "") + pair[1] + " " + age;
+      out += ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "") +
+        '">' + txt + "</span>";
+    });
+    return out;
   }
   function fmtAsOf(iso) {
     if (!iso) return "—";
