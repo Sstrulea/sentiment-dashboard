@@ -499,6 +499,66 @@
     );
   }
 
+  // TREND decomposition section for a modal (shared FX + cross-asset). Reads
+  // inst.trend_detail {short,long,slope,raw,adx,factor,trend_cell}. None / all-null
+  // → "no data" (no price series). Placed FIRST (matches the TREND-first column).
+  function trendSectionHtml(detail) {
+    const head0 = '<div class="econ-cat-group"><div class="econ-cat-head">Trend ';
+    if (!detail || detail.trend_cell === null || detail.trend_cell === undefined) {
+      return head0 + '<span class="econ-cat-sub">no data</span></div>' +
+        '<div class="econ-ind-scroll"><p class="muted" style="padding:6px 10px;">' +
+        'No price series for this instrument — trend excluded from the Score.</p></div></div>';
+    }
+    const d = detail, cls = cellClass(d.trend_cell);
+    const head = head0 +
+      '<span class="econ-cat-sub ' + cls + '">cell ' + fmtScoreCell(d.trend_cell) + '</span>' +
+      ' <span class="muted">· weight 0.5 · MA structure × ADX strength</span></div>';
+    const row = (name, v, c) => '<tr><td class="ei-name">' + name + '</td><td class="ei-num ' +
+      (c || "") + '">' + v + '</td></tr>';
+    const rows =
+      row("Short (SMA10 vs SMA20)", fmtScoreCell(d.short), cellClass(d.short)) +
+      row("Long (SMA20 vs SMA50)", fmtScoreCell(d.long), cellClass(d.long)) +
+      row("Slope (SMA20, 10 bars)", fmtScoreCell(d.slope), cellClass(d.slope)) +
+      row("Raw (sum, ±3)", fmtScoreCell(d.raw), "") +
+      row("ADX(14)", Number(d.adx).toFixed(1), "") +
+      row("Strength factor", "×" + Number(d.factor).toFixed(2), "") +
+      row("<strong>Trend cell = clamp(round(raw × factor))</strong>",
+          "<strong>" + fmtScoreCell(d.trend_cell) + "</strong>", cls);
+    return head + '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
+      '<thead><tr><th>Component</th><th>Value</th></tr></thead><tbody>' + rows +
+      '</tbody></table></div></div>';
+  }
+
+  // SENTIMENT (COT) section for an FX modal — a TABLE (parity with cross-asset's
+  // caSentimentSection), replacing the old one-line note. base − quote legs.
+  function fxCotSectionHtml(cot) {
+    const head0 = '<div class="econ-cat-group"><div class="econ-cat-head">Sentiment (COT) ';
+    if (!cot || cot.cell === null || cot.cell === undefined) {
+      return head0 + '<span class="econ-cat-sub">no data</span></div>' +
+        '<div class="econ-ind-scroll"><p class="muted" style="padding:6px 10px;">' +
+        'No COT positioning for this pair.</p></div></div>';
+    }
+    const cls = cellClass(cot.cell);
+    const head = head0 +
+      '<span class="econ-cat-sub ' + cls + '">cell ' + fmtScoreCell(cot.cell) + '</span>' +
+      ' <span class="muted">· weight 0.5 · positioning, base − quote (vs-USD)</span></div>';
+    const legRow = (role, ccy, cell, det) => {
+      if (ccy === null || ccy === undefined) return "";
+      const extra = det ? (" · level " + fmtScoreCell(det.level) + ", flow " + fmtScoreCell(det.flow))
+        : (ccy === "USD" ? " · vs-USD leg = 0" : "");
+      const c = (cell === null || cell === undefined) ? 0 : cell;
+      return '<tr><td class="ei-name">' + role + " " + ccy + extra + '</td><td class="ei-num ' +
+        cellClass(c) + '">' + fmtScoreCell(c) + '</td></tr>';
+    };
+    const rows = legRow("Base", cot.base, cot.base_cell, cot.base_detail) +
+      (cot.quote ? legRow("Quote", cot.quote, cot.quote_cell, cot.quote_detail) : "") +
+      '<tr><td class="ei-name"><strong>Pair cell (base − quote)</strong></td><td class="ei-num ' +
+      cls + '"><strong>' + fmtScoreCell(cot.cell) + '</strong></td></tr>';
+    return head + '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
+      '<thead><tr><th>Leg</th><th>Cell</th></tr></thead><tbody>' + rows +
+      '</tbody></table></div></div>';
+  }
+
   function openModal(symKey) {
     const inst = findInstrument(symKey);
     if (!inst) return;
@@ -522,18 +582,6 @@
           (state.payload.meta.pair_divisor || 2)
         : "Single currency · score = index × sign";
 
-    // Sentiment (COT) is folded into each currency's index as a weight-0.5
-    // factor; USD pair leg = 0, single USD row = DXY (cell shown).
-    const cot = inst.cot;
-    const sentimentNote = cot
-      ? '<p class="muted econ-modal-note"><strong>Sentiment (COT)</strong> — weight 0.5 in each currency index: ' +
-        (cot.quote
-          ? "base " + cot.base + " " + fmtScoreCell(cot.base_cell) + " − quote " +
-            cot.quote + " " + fmtScoreCell(cot.quote_cell) + " → cell " + fmtScoreCell(cot.cell)
-          : cot.base + " (DXY) cell " + fmtScoreCell(cot.cell)) +
-        ". Flows through the index mean (USD pair leg = 0), not added after.</p>"
-      : "";
-
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ')</small></h2>' +
@@ -544,7 +592,9 @@
       '</header>' +
       '<p class="muted econ-modal-note">Rounded cells can hide divergence — e.g. a Labour score near 0 may be ' +
       'NFP +2 against Jobless Claims −2. The per-indicator rows below show the real spread.</p>' +
-      sentimentNote +
+      // TREND first (matches column order), then Sentiment (COT), then the macro legs.
+      trendSectionHtml(inst.trend_detail) +
+      fxCotSectionHtml(inst.cot) +
       '<div class="' + gridClass + '">' + legs + '</div>';
 
     modal.hidden = false;
@@ -835,7 +885,9 @@
     const body = document.getElementById("econDetailContent");
 
     // SENTIMENT first (matches the table column order), then the macro factors.
-    const sections = caSentimentSection(inst) + caLayout().map(g => caCatSection(inst, g)).join("");
+    // TREND first (matches the column order), then SENTIMENT, then macro factors.
+    const sections = trendSectionHtml(inst.trend_detail) + caSentimentSection(inst) +
+      caLayout().map(g => caCatSection(inst, g)).join("");
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ' · ' + inst.home_ccy + ')</small></h2>' +

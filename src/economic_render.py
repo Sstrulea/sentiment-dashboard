@@ -471,26 +471,27 @@ def _attach_fx_cot_cells(payload: dict, cells: dict[str, int],
         }
 
 
-def _trend_by_symbol() -> dict[str, int]:
-    """{board_key: trend_cell} from the validated TREND engine (read-only).
-
-    Computed ONCE and reused for BOTH the FX score (folded per-pair) and the
-    cross-asset score (folded per-instrument) AND the TREND display column. Each
-    table reads only its own board keys (FX pairs vs GOLD/SILVER/SP500/DJIA), so
-    the shared map never cross-contaminates. Missing/empty parquet → score_all
-    returns all-None → {} (trend excluded everywhere, scores == no-trend
-    baseline), mirroring the graceful COT/real_yield path.
-    """
+def _trend_full() -> dict[str, dict]:
+    """{board_key: {short,long,slope,raw,adx,factor,trend_cell}} from the TREND
+    engine (read-only). Computed ONCE; the cells feed the FX/cross-asset scores
+    AND the TREND column, while the full entry feeds the pop-up decomposition.
+    Each table reads only its own board keys (FX pairs vs GOLD/SILVER/SP500/DJIA),
+    so the shared map never cross-contaminates. Missing/empty parquet → score_all
+    returns all-None entries → trend excluded everywhere (graceful)."""
     try:
-        res = trend_score_all()
+        return trend_score_all()
     except Exception as e:  # noqa: BLE001 — display/scoring add-on; never break the page
         log.warning("TREND unavailable (%s); trend excluded everywhere.", e)
         return {}
-    return {k: int(v["trend_cell"]) for k, v in res.items() if v.get("trend_cell") is not None}
+
+
+def _trend_cells(full: dict) -> dict[str, int]:
+    """{board_key: trend_cell} for the present cells only (drops None entries)."""
+    return {k: int(v["trend_cell"]) for k, v in full.items() if v.get("trend_cell") is not None}
 
 
 def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
-                            trend_by_symbol: dict[str, int] | None = None) -> dict:
+                            trend_full: dict[str, dict] | None = None) -> dict:
     """Compute the cross-asset section (indices + metals) from the FX payload's
     per-currency category scores + the US real-yield momentum. Read-only over
     local parquets; real_yields.parquet missing/empty → real_yield excluded
@@ -556,6 +557,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         for sym in us_index_syms:
             sentiment_by_symbol[sym] = pc_cell
 
+    trend_full = trend_full or {}
+    trend_by_symbol = _trend_cells(trend_full)
     scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg,
                                        liquidity_score=liquidity_score,
                                        sentiment_by_symbol=sentiment_by_symbol,
@@ -596,6 +599,9 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
             signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
             cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale"))}
         r["cells"] = cells
+
+        # TREND decomposition for the pop-up (column shows the final cell only).
+        r["trend_detail"] = trend_full.get(sym)
 
         # SENTIMENT display sub-cell, reusing the SAME cells folded into the score
         # above: COT for metals, P/C for US indices. Foreign indices get neither.
@@ -663,9 +669,11 @@ def build_economic_payload() -> dict:
     # weight-0.5 factor AND reused for the display sub-cell below.
     fx_cells, fx_details = _fx_currency_cells()
 
-    # TREND per board key, computed ONCE: folded into the FX score (per-pair) and
-    # the cross-asset score (per-instrument) AND reused for the TREND column.
-    trend_by_symbol = _trend_by_symbol()
+    # TREND per board key, computed ONCE: cells fold into the FX score (per-pair)
+    # and the cross-asset score (per-instrument) AND drive the TREND column; the
+    # full decomposition feeds the pop-up.
+    trend_full = _trend_full()
+    trend_by_symbol = _trend_cells(trend_full)
 
     payload = build_payload(cal, indicators_cfg, instruments_cfg,
                             as_of=as_of, rate_scores=rate_scores or None,
@@ -690,8 +698,13 @@ def build_economic_payload() -> dict:
     # cells folded into the FX score above.
     _attach_fx_cot_cells(payload, fx_cells, fx_details)
 
+    # TREND decomposition for the FX pop-up (the column already shows the final
+    # cell; the modal shows short/long/slope/raw/adx/factor). None entry → "no data".
+    for inst in payload.get("instruments", []):
+        inst["trend_detail"] = trend_full.get(inst["symbol"])
+
     # Cross-Asset block (indices + metals) — separate key, FX payload untouched.
-    payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_by_symbol)
+    payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_full)
 
     payload["meta"] = meta
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")

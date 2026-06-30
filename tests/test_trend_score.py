@@ -84,8 +84,8 @@ def test_whipsaw_weak_adx_pulled_to_zero():
 # --- flat slope -------------------------------------------------------------
 
 def test_flat_slope_is_zero():
-    # rise for 130 bars, then a 70-bar plateau so both SMA50 windows sit fully
-    # inside the constant tail -> slope component 0.
+    # rise for 130 bars, then a 70-bar plateau so both SMA_MID slope windows sit
+    # fully inside the constant tail -> slope component 0.
     rising = 100.0 + np.arange(130) * 1.0
     plateau = np.full(70, rising[-1])
     df = _df(np.concatenate([rising, plateau]))
@@ -97,7 +97,7 @@ def test_flat_slope_is_zero():
 # --- guards -----------------------------------------------------------------
 
 def test_insufficient_data_returns_none():
-    df = _df(100.0 + np.arange(150) * 1.0)  # < 200 closes
+    df = _df(100.0 + np.arange(40) * 1.0)  # < SMA_LONG (50) closes
     assert trend_components(df) is None
     assert trend_cell(df) is None
 

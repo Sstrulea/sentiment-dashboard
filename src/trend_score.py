@@ -42,11 +42,14 @@ PARQUET = ROOT / "data" / "price_history.parquet"
 SYMBOLS_YAML = ROOT / "data" / "price_symbols.yaml"
 
 # --- model constants (all calibratable here, not in code paths) ---
-SMA_SHORT = 20
-SMA_MID = 50
-SMA_LONG = 200
-SLOPE_LOOKBACK = 20
-SLOPE_EPS = 0.0          # dead-zone on the SMA50 slope (absolute, price units)
+# SWING lookbacks (days–weeks), not yearly structure: a swing trader wants the
+# current move, so the longest MA is 50 (not 200). SHORT = SMA_SHORT vs SMA_MID,
+# LONG = SMA_MID vs SMA_LONG, SLOPE = SMA_MID over SLOPE_LOOKBACK bars.
+SMA_SHORT = 10
+SMA_MID = 20
+SMA_LONG = 50
+SLOPE_LOOKBACK = 10
+SLOPE_EPS = 0.0          # dead-zone on the SMA_MID slope (absolute, price units)
 
 ADX_PERIOD = 14
 ADX_STRONG = 22.0        # >= -> factor 1.0
@@ -55,7 +58,7 @@ FACTOR_STRONG = 1.0
 FACTOR_MEDIUM = 0.5
 FACTOR_WEAK = 0.25
 
-MIN_BARS_SMA = SMA_LONG          # need 200 closes for SMA200
+MIN_BARS_SMA = SMA_LONG          # need SMA_LONG (50) closes for the longest MA
 MIN_BARS_ADX = 2 * ADX_PERIOD + 1  # ~29; ADX needs a couple of smoothing windows
 
 # Daily bars are stamped with the SERVER open date (EA writes TimeToString on the
@@ -164,18 +167,22 @@ def compute_adx(df: pd.DataFrame, n: int = ADX_PERIOD) -> pd.Series:
 # ---------------------------------------------------------------------------
 
 def trend_components(df: pd.DataFrame) -> tuple[int, int, int, int] | None:
-    """(short, long, slope, raw) on the close series, or None if < 200 bars."""
+    """(short, long, slope, raw) on the close series, or None if < SMA_LONG bars.
+
+    SHORT = SMA_SHORT vs SMA_MID; LONG = SMA_MID vs SMA_LONG; SLOPE = sign of
+    SMA_MID now vs SMA_MID `SLOPE_LOOKBACK` bars ago. (Swing windows 10/20/50.)
+    """
     closes = pd.to_numeric(df["close"], errors="coerce").dropna().reset_index(drop=True)
     if len(closes) < MIN_BARS_SMA:
         return None
 
-    sma20 = closes.rolling(SMA_SHORT).mean()
-    sma50 = closes.rolling(SMA_MID).mean()
-    sma200 = closes.rolling(SMA_LONG).mean()
+    sma_s = closes.rolling(SMA_SHORT).mean()
+    sma_m = closes.rolling(SMA_MID).mean()
+    sma_l = closes.rolling(SMA_LONG).mean()
 
-    short = 1 if sma20.iloc[-1] > sma50.iloc[-1] else -1
-    long = 1 if sma50.iloc[-1] > sma200.iloc[-1] else -1
-    slope = _slope_sign(sma50.iloc[-1], sma50.iloc[-1 - SLOPE_LOOKBACK])
+    short = 1 if sma_s.iloc[-1] > sma_m.iloc[-1] else -1
+    long = 1 if sma_m.iloc[-1] > sma_l.iloc[-1] else -1
+    slope = _slope_sign(sma_m.iloc[-1], sma_m.iloc[-1 - SLOPE_LOOKBACK])
     raw = short + long + slope
     return short, long, slope, raw
 

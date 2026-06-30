@@ -32,7 +32,7 @@ instruments:
     factors:
       growth:    { sign: 1,  weight: 1.0 }
       inflation: { sign: -1, weight: 1.0 }
-      labour:    { sign: -1, weight: 1.0 }
+      labour:    { sign: 1,  weight: 1.0 }   # risk-on: strong jobs (NFP beat) = bullish US index (A1-aligned)
       rates:
         weight: 1.0
         components:
@@ -47,7 +47,7 @@ instruments:
     factors:
       growth:    { sign: 1,  weight: 1.0 }
       inflation: { sign: -1, weight: 1.0 }
-      labour:    { sign: -1, weight: 1.0 }
+      labour:    { sign: 1,  weight: 1.0 }   # risk-on: strong jobs (NFP beat) = bullish US index (A1-aligned)
       rates:
         weight: 1.0
         components:
@@ -62,7 +62,7 @@ instruments:
     factors:
       growth:    { sign: 1,  weight: 1.0 }
       inflation: { sign: -1, weight: 1.0 }
-      labour:    { sign: -1, weight: 1.0 }
+      labour:    { sign: 1,  weight: 1.0 }   # risk-on: strong jobs (NFP beat) = bullish US index (A1-aligned)
       rates:
         weight: 1.0
         components:
