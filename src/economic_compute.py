@@ -137,6 +137,48 @@ def _dedup_flash_final(df: pd.DataFrame, gap_days: int | None) -> pd.DataFrame:
     return df.loc[sorted(set(keep))].sort_values("release_dt").reset_index(drop=True)
 
 
+def _period_ts(v) -> pd.Timestamp | None:
+    """Parse a calendar `period` value ('YYYY.MM.DD') to a Timestamp, or None."""
+    if v is None:
+        return None
+    s = str(v).strip()
+    if not s or s.lower() in {"nan", "nat", "none", "0", "0.0"}:
+        return None
+    ts = pd.to_datetime(s, errors="coerce")
+    return None if pd.isna(ts) else pd.Timestamp(ts)
+
+
+# A newer scheduled release only SUPERSEDES the served print once it is OVERDUE by
+# more than this normal reporting lag (days, by cadence). A just-due / recently-due
+# release (actual still pending, e.g. a monthly PMI at 30d whose next print is due
+# today) must NOT flag the current reading — that was the STRAT-2 false-positive.
+# Chosen so no in-window cell is ever superseded on a normal lag: max in-window
+# overdue is (window − cadence) ≈ 15 (monthly) / 19 (quarterly) / 7 (weekly).
+_SUPERSEDE_GRACE = {"weekly": 7, "monthly": 20, "quarterly": 25}
+
+
+def _superseded_missing(df: pd.DataFrame, latest: pd.Series, as_of: pd.Timestamp,
+                        freq: str | None) -> bool:
+    """STRAT 2 — the served (older) print is SUPERSEDED by a genuinely MISSED newer
+    release: a scheduled row for a NEWER reference period whose date is OVERDUE by
+    more than the normal reporting lag (`_SUPERSEDE_GRACE`) yet still has no valid
+    `actual`. A release merely due today/recently does NOT supersede (its actual is
+    pending). Only rule (2) excludes; there is no blind cadence rule. Never
+    substitutes forecast/previous for actual.
+    """
+    served_rel = pd.Timestamp(latest["release_dt"])
+    served_per = _period_ts(latest.get("period"))
+    grace = pd.Timedelta(days=_SUPERSEDE_GRACE.get(freq, 20))
+
+    rel = pd.to_datetime(df["release_dt"])
+    overdue_missing = df[df["actual"].isna() & (rel <= as_of - grace) & (rel > served_rel)]
+    for _, r in overdue_missing.iterrows():
+        per = _period_ts(r.get("period"))
+        if served_per is None or per is None or per > served_per:
+            return True
+    return False
+
+
 def compute_indicator_score(
     sub_df: pd.DataFrame,
     indicator_cfg: dict,
@@ -192,6 +234,12 @@ def compute_indicator_score(
     else:
         return None
 
+    # STRAT 2 — expected-next-release gate: a newer release is due-but-missing (or
+    # the served print is overdue vs cadence) → don't serve the old value as fresh.
+    superseded = _superseded_missing(df, latest, as_of, freq)
+    if superseded:
+        stale = True
+
     actual = float(latest["actual"])
     consensus = latest["consensus"]
     release_dt = pd.Timestamp(latest["release_dt"])
@@ -206,6 +254,7 @@ def compute_indicator_score(
             "flag": "no_consensus",
             "release_dt": release_dt,
             "stale": stale,
+            "superseded_missing": superseded,
         }
 
     consensus = float(consensus)
@@ -236,6 +285,7 @@ def compute_indicator_score(
                 "flag": "no_consensus",
                 "release_dt": release_dt,
                 "stale": stale,
+                "superseded_missing": superseded,
             }
         pct = direction * surprise / abs(consensus)
         return {
@@ -247,6 +297,7 @@ def compute_indicator_score(
             "flag": "fallback",
             "release_dt": release_dt,
             "stale": stale,
+            "superseded_missing": superseded,
         }
 
     z = direction * surprise / sigma
@@ -259,6 +310,7 @@ def compute_indicator_score(
         "flag": None,
         "release_dt": release_dt,
         "stale": stale,
+        "superseded_missing": superseded,
     }
 
 

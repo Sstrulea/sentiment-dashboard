@@ -19,10 +19,15 @@ trend_before=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
 # the existing parquet when RRP is missing, and _print_report tolerates a
 # net_liquidity-only parquet (no crash). Self-heals — when FRED serves RRPONTSYD
 # again it rebuilds the 6-col parquet and regenerates public/.
-# --days-back 14 (was default 4): any release missed for a few days (calendar
-# blip, late actual, multi-estimate revision) auto-recovers on the next refresh.
+# --days-back 130 (was 4, then 14): wider than the max staleness window (quarterly
+# 110d) + margin, so a release missed for up to ~4 months still auto-recovers on
+# the next refresh (e.g. a quarterly print published during a calendar outage).
 # Dedup last-write-wins makes re-ingest idempotent — only a slightly larger read.
-./.venv/bin/python -m src.economic_fetch --days-back 14 >> /tmp/econ.log 2>&1
+./.venv/bin/python -m src.economic_fetch --days-back 130 >> /tmp/econ.log 2>&1
+# Guarded FRED fallback (general): fills ONLY genuine MT5 gaps (latest actual NaN)
+# and ONLY when a FRED series continues the MT5 series within 0.1pp. Refuses (leaves
+# the gap) otherwise — never overrides MT5, never fabricates. Idempotent.
+./.venv/bin/python -m src.calendar_fred_fallback >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.rate_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.realyield_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.liquidity_fetch >> /tmp/econ.log 2>&1

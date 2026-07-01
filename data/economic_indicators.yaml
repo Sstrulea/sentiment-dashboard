@@ -262,6 +262,10 @@ matcher:
     - { pattern: '^PPI Output q/q$',                indicator: ppi_yoy }
     - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
     - { pattern: '^Retail Sales q/q$',              indicator: retail_sales }
+    # NZ publishes growth/retail under non-standard names — aliases so they match.
+    - { pattern: '^BusinessNZ Manufacturing Index$', indicator: manufacturing_pmi }
+    - { pattern: '^BusinessNZ Services Index$',      indicator: services_pmi }
+    - { pattern: '^Electronic Card Retail Sales m/m$', indicator: retail_sales }
     - { pattern: '^Employment Change q/q$',         indicator: employment_change }
     - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
     - { pattern: '^Labor Cost Index y/y$',          indicator: wage_growth }
