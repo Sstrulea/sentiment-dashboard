@@ -7,3 +7,7 @@ __pycache__/
 .pytest_cache/
 .vercel
 data/calibration_backfill.csv
+
+# FF spike/backfill provenance (large, local-only; runtime uses data/economic_calendar_ff.parquet)
+data/raw/
+scripts/spike_jblanked/

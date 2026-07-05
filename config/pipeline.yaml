@@ -1,0 +1,17 @@
+# Pipeline source switch (Phase 3). Rollback = set calendar_source back to 'mt5'.
+#   ff  -> economic calendar comes from Forex Factory (src/econ_calendar_ff + ff_refresh)
+#   mt5 -> economic calendar comes from the MT5 EA CSV (src/economic_fetch) [quarantined]
+# MT5 remains the source for OHLC/trend regardless; FRED remains rates/liquidity.
+calendar_source: ff
+
+# FF weekly feed (keyless, public). Fetched each economic-cron tick.
+ff_weekly_url: "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
+# Optional throttle: skip a fetch if the last successful one was newer than this
+# (0 = fetch every tick; the cron cadence itself is unchanged/hourly).
+ff_fetch_interval_minutes: 0
+# Anti-degradation sanity: a good weekly payload must map events for >= this many
+# distinct currencies, else it is quarantined and the last-good parquet is kept.
+ff_min_currencies: 4
+
+# FRED cross-check (Phase 3 Task 2) tolerance in pp for US actuals.
+fred_crosscheck_tol_pp: 0.15

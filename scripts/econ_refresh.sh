@@ -5,41 +5,41 @@ export MT5_FILES_DIR="/Users/sebastian/Library/Application Support/net.metaquote
 REPO="$HOME/projects/macro-data-analysis"
 cd "$REPO" || exit 1
 git pull --rebase --autostash >/dev/null 2>&1
-cal_before=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+
+# Phase 3 — economic calendar source switch (config/pipeline.yaml: ff | mt5 rollback).
+# MT5 remains OHLC/trend; FRED remains rates/liquidity. Default 'ff'.
+CAL_SRC=$(./.venv/bin/python -c "from src.ff_refresh import calendar_source; print(calendar_source())" 2>/dev/null)
+[ -z "$CAL_SRC" ] && CAL_SRC="mt5"   # fail-safe to rollback if config unreadable
+
 rates_before=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_before=$(md5 -q data/real_yields.parquet 2>/dev/null)
 nl_before=$(md5 -q data/net_liquidity.parquet 2>/dev/null)
-# Price TREND trigger: hash the trend OUTPUT (trend_cell values), NOT the raw
-# parquet. The EA rewrites the forming bar hourly (parquet md5 churns), but
-# trend_score excludes that bar, so trend_cells change only ~1×/day at rollover.
+# Price TREND trigger: hash the trend OUTPUT (trend_cell values), not the raw parquet.
 trend_before=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
-# Refresh the calendar (surprises), the 2y rates (Monetary Policy), real yields,
-# and Fed net liquidity (WALCL−TGA−RRP) before render. liquidity_fetch is safe to
-# auto-run: the ×1000 RRP units fix is verified, the anti-degradation guard keeps
-# the existing parquet when RRP is missing, and _print_report tolerates a
-# net_liquidity-only parquet (no crash). Self-heals — when FRED serves RRPONTSYD
-# again it rebuilds the 6-col parquet and regenerates public/.
-# --days-back 130 (was 4, then 14): wider than the max staleness window (quarterly
-# 110d) + margin, so a release missed for up to ~4 months still auto-recovers on
-# the next refresh (e.g. a quarterly print published during a calendar outage).
-# Dedup last-write-wins makes re-ingest idempotent — only a slightly larger read.
-./.venv/bin/python -m src.economic_fetch --days-back 130 >> /tmp/econ.log 2>&1
-# Guarded FRED fallback (general): fills ONLY genuine MT5 gaps (latest actual NaN)
-# and ONLY when a FRED series continues the MT5 series within 0.1pp. Refuses (leaves
-# the gap) otherwise — never overrides MT5, never fabricates. Idempotent.
-./.venv/bin/python -m src.calendar_fred_fallback >> /tmp/econ.log 2>&1
+
+# ---- CALENDAR ingest (source-switched) ----
+if [ "$CAL_SRC" = "ff" ]; then
+  cal_before=$(md5 -q data/economic_calendar_ff.parquet 2>/dev/null)
+  # Fetch FF weekly JSON (keyless) → merge historical FF parquet; anti-degradation
+  # keeps last-good on fetch fail / empty / thin payload; FRED cross-check quarantines
+  # US actuals that disagree with FRED (retroactive, fail-open).
+  ./.venv/bin/python -m src.ff_refresh >> /tmp/econ.log 2>&1
+  cal_after=$(md5 -q data/economic_calendar_ff.parquet 2>/dev/null)
+else
+  # ROLLBACK: MT5 calendar ingest (quarantined behind the flag, not deleted).
+  cal_before=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+  ./.venv/bin/python -m src.economic_fetch --days-back 130 >> /tmp/econ.log 2>&1
+  ./.venv/bin/python -m src.calendar_fred_fallback >> /tmp/econ.log 2>&1
+  cal_after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+fi
+
+# ---- non-calendar fetchers (unchanged) ----
 ./.venv/bin/python -m src.rate_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.realyield_fetch >> /tmp/econ.log 2>&1
 ./.venv/bin/python -m src.liquidity_fetch >> /tmp/econ.log 2>&1
-# Daily OHLC ingest (MT5 price_history.csv → data/price_history.parquet). Graceful:
-# missing CSV → log + parquet unchanged (never blocks the refresh). Runs hourly so
-# the parquet always carries fresh OHLC; the RENDER, however, is gated on the trend
-# SIGNATURE (above/below), not on this parquet — so an intraday forming-bar tick
-# alone does NOT trigger a commit. The render scores trend on the last CLOSED bar.
+# Daily OHLC ingest (MT5 price_history.csv → parquet) — MT5 stays the price/trend source.
 ./.venv/bin/python -m src.price_fetch >> /tmp/econ.log 2>&1
-# Freshness watchdog (non-fatal, GENERAL): warn in the log if ANY source is stale
-# beyond its threshold, so a silent freeze surfaces here too (also flagged in
-# economic.json + the dashboard badge). Never blocks the refresh.
+# Freshness watchdog (non-fatal): warn if any source is stale.
 ./.venv/bin/python -c "
 from src.economic_render import _freshness
 import datetime
@@ -48,15 +48,22 @@ for k,v in f.items():
     if isinstance(v,dict) and v.get('stale'):
         print(f\"[{datetime.datetime.utcnow():%FT%TZ}] FRESHNESS WARNING: {k} STALE — last update {v['last_update']} ({v['age_days']}d ago)\")
 " >> /tmp/econ.log 2>&1
-cal_after=$(md5 -q data/economic_calendar.parquet 2>/dev/null)
+
 rates_after=$(md5 -q data/rates.parquet 2>/dev/null)
 ry_after=$(md5 -q data/real_yields.parquet 2>/dev/null)
 nl_after=$(md5 -q data/net_liquidity.parquet 2>/dev/null)
 trend_after=$(./.venv/bin/python -m src.trend_signature 2>/dev/null)
+
 if [ "$cal_before" != "$cal_after" ] || [ "$rates_before" != "$rates_after" ] || [ "$ry_before" != "$ry_after" ] || [ "$nl_before" != "$nl_after" ] || [ "$trend_before" != "$trend_after" ]; then
   ./.venv/bin/python -m src.main --mode economic >> /tmp/econ.log 2>&1
-  git add data/economic_calendar.parquet data/rates.parquet data/real_yields.parquet \
-          data/net_liquidity.parquet data/price_history.parquet \
-          public/economic.html public/data/economic.json
-  git commit -m "econ: refresh $(date -u +%FT%TZ)" >/dev/null 2>&1 && git push >/dev/null 2>&1
+  # commit the active calendar parquet + shared data + rendered public/.
+  if [ "$CAL_SRC" = "ff" ]; then
+    git add data/economic_calendar_ff.parquet 2>/dev/null
+    [ -f data/ff_quarantine.parquet ] && git add data/ff_quarantine.parquet
+  else
+    git add data/economic_calendar.parquet
+  fi
+  git add data/rates.parquet data/real_yields.parquet data/net_liquidity.parquet \
+          data/price_history.parquet public/economic.html public/data/economic.json
+  git commit -m "econ: refresh $(date -u +%FT%TZ) [cal=$CAL_SRC]" >/dev/null 2>&1 && git push >/dev/null 2>&1
 fi

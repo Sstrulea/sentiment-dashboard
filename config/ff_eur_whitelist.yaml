@@ -1,0 +1,24 @@
+# Explicit whitelist of EUROZONE-AGGREGATE Forex Factory event names (name_raw).
+# Any Currency=EUR event whose name_raw is NOT in this list is EXCLUDED at ingest
+# (logged DEBUG) — this blocks member-state prints (German/French/Italian/Spanish…)
+# that FF also tags Currency=EUR, which would otherwise triple-count into the
+# Eurozone score. Defense-in-depth alongside ff_aliases.yaml (EUR section keys ==
+# this list). Extracted from the spike cache (non-country-prefixed EUR events).
+eur_aggregate:
+  - "CPI Flash Estimate y/y"
+  - "Final CPI y/y"
+  - "Core CPI Flash Estimate y/y"
+  - "Final Core CPI y/y"
+  - "PPI m/m"
+  - "Flash GDP q/q"
+  - "Prelim Flash GDP q/q"
+  - "Revised GDP q/q"
+  - "Flash Manufacturing PMI"
+  - "Final Manufacturing PMI"
+  - "Flash Services PMI"
+  - "Final Services PMI"
+  - "Retail Sales m/m"
+  - "Flash Employment Change q/q"
+  - "Final Employment Change q/q"
+  - "Unemployment Rate"
+  - "Main Refinancing Rate"

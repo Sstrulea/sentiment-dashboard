@@ -680,19 +680,64 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
     }
 
 
+_EMPTY_CAL_COLUMNS = ["currency", "indicator_key", "release_dt", "actual", "consensus"]
+
+
+def _load_calendar_frame() -> pd.DataFrame:
+    """Load the scoring calendar per config/pipeline.yaml `calendar_source` (Phase 3).
+
+      ff  → the FF parquet (data/economic_calendar_ff.parquet) bridged to the MT5
+            calendar schema, minus any FRED-quarantined prints (data/ff_quarantine.parquet).
+      mt5 → the MT5 calendar parquet (pre-Phase-3 behavior) — the rollback path.
+
+    Anti-degradation: a missing/empty FF parquet returns an empty frame (empty page),
+    never the MT5 data — the sources stay cleanly separated.
+    """
+    try:
+        from src.ff_refresh import FF_PARQUET, calendar_source
+        source = calendar_source()
+    except Exception as e:  # noqa: BLE001 — config missing → default to mt5 (safe)
+        log.warning("calendar_source unresolved (%s); defaulting to mt5.", e)
+        source = "mt5"
+
+    if source == "ff":
+        if not FF_PARQUET.exists():
+            log.warning("FF calendar parquet missing — empty Economic page.")
+            return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
+        from src.ff_scoring import build_matcher, to_scoring_frame
+        ffdf = pd.read_parquet(FF_PARQUET)
+        ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
+        cal = to_scoring_frame(ffdf, build_matcher())
+        cal["release_dt"] = pd.to_datetime(cal["release_dt"])
+        q_path = ROOT / "data" / "ff_quarantine.parquet"
+        if q_path.exists() and len(cal):
+            q = pd.read_parquet(q_path)
+            if len(q):
+                q["datetime_utc"] = pd.to_datetime(q["datetime_utc"])
+                key = ["currency", "indicator_key", "release_dt"]
+                qkey = q.rename(columns={"datetime_utc": "release_dt"})[key]
+                before = len(cal)
+                cal = cal.merge(qkey.assign(_q=1), on=key, how="left")
+                cal = cal[cal["_q"].isna()].drop(columns="_q")
+                if len(cal) < before:
+                    log.warning("FF calendar: %d print(s) excluded by FRED quarantine.", before - len(cal))
+        log.info("Economic calendar source = FF (%d scored rows).", len(cal))
+        return cal
+    # --- rollback: MT5 ---
+    if PARQUET.exists():
+        cal = pd.read_parquet(PARQUET)
+        cal["release_dt"] = pd.to_datetime(cal["release_dt"])
+        return cal
+    log.warning("%s missing — rendering an empty Economic page.", PARQUET)
+    return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
+
+
 def build_economic_payload() -> dict:
     """Read parquet + configs, compute, enrich, and return the JSON-ready payload."""
     indicators_cfg = _load_yaml(INDICATORS_YAML)
     instruments_cfg = _load_yaml(INSTRUMENTS_YAML)
 
-    if PARQUET.exists():
-        cal = pd.read_parquet(PARQUET)
-        cal["release_dt"] = pd.to_datetime(cal["release_dt"])
-    else:
-        cal = pd.DataFrame(
-            columns=["currency", "indicator_key", "release_dt", "actual", "consensus"]
-        )
-        log.warning("%s missing — rendering an empty Economic page.", PARQUET)
+    cal = _load_calendar_frame()   # Phase 3: FF (default) or MT5 (rollback) per config
 
     as_of = pd.Timestamp.utcnow().tz_localize(None)
 
