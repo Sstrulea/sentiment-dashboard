@@ -1,0 +1,129 @@
+# Forex Factory raw event name -> canonical (MT5-style) event name, keyed by currency.
+# name_canonical reuses the MT5 event names so Phase 2/3 can feed (currency,
+# name_canonical) through the EXISTING matcher with no downstream change.
+#
+# FLASH/FINAL (deterministic, alias-level — no proximity heuristic):
+#   Exactly ONE variant per (currency, canonical) is mapped here = the SCORED print
+#   (the first/flash estimate, where the surprise happens). Later revisions
+#   (Final/Prelim/Revised/Second) are NOT mapped — they are listed under
+#   `excluded_final_variants` (so they don't reappear as "unmapped" WARNINGs) and
+#   surface only as revision telemetry (see econ_calendar_ff.flash_final_revisions).
+#   Exception: GBP PMI — UK's headline is the FINAL (n≈141) and the flash is a sparse
+#   recent addition (n≈6), so for GBP the Final is scored and the Flash is excluded.
+#
+# "# xf" = transform delta (FF publishes a different transform than the MT5 canonical
+# name implies) — harmless (Phase 2 rebuilds z from FF; surprise is transform-agnostic).
+
+aliases:
+  USD:
+    "CPI y/y": "CPI y/y"
+    "Core CPI m/m": "Core CPI y/y"                       # xf
+    "PPI m/m": "PPI y/y"                                 # xf
+    "Core PCE Price Index m/m": "Core PCE Price Index y/y"  # xf
+    "Advance GDP q/q": "GDP q/q"                         # FLASH (Advance) scored
+    "ISM Manufacturing PMI": "ISM Manufacturing PMI"
+    "ISM Services PMI": "ISM Non-Manufacturing PMI"
+    "Retail Sales m/m": "Retail Sales m/m"
+    "Non-Farm Employment Change": "Nonfarm Payrolls"
+    "Unemployment Rate": "Unemployment Rate"
+    "Average Hourly Earnings m/m": "Average Hourly Earnings y/y"  # xf
+    "ADP Non-Farm Employment Change": "ADP Nonfarm Employment Change"
+    "JOLTS Job Openings": "JOLTS Job Openings"
+    "Unemployment Claims": "Initial Jobless Claims"
+    "Federal Funds Rate": "Fed Interest Rate Decision"
+  EUR:
+    "CPI Flash Estimate y/y": "CPI y/y"                  # FLASH scored
+    "Core CPI Flash Estimate y/y": "Core CPI y/y"        # FLASH scored
+    "PPI m/m": "PPI y/y"                                 # xf
+    "Prelim Flash GDP q/q": "GDP q/q"                    # FLASH (earliest) scored
+    "Flash Manufacturing PMI": "S&P Global Manufacturing PMI"
+    "Flash Services PMI": "S&P Global Services PMI"
+    "Retail Sales m/m": "Retail Sales m/m"
+    "Flash Employment Change q/q": "Employment Change q/q"
+    "Unemployment Rate": "Unemployment Rate"
+    "Main Refinancing Rate": "ECB Interest Rate Decision"
+  GBP:
+    "CPI y/y": "CPI y/y"
+    "Core CPI y/y": "Core CPI y/y"
+    "PPI Output m/m": "PPI Output y/y"                   # xf
+    "GDP m/m": "GDP m/m"
+    "Final Manufacturing PMI": "S&P Global/CIPS Manufacturing PMI"   # UK headline = Final
+    "Final Services PMI": "S&P Global/CIPS Services PMI"             # UK headline = Final
+    "Retail Sales m/m": "Retail Sales m/m"
+    "Claimant Count Change": "Claimant Count Change"
+    "Unemployment Rate": "Unemployment Rate"
+    "Average Earnings Index 3m/y": "Average Weekly Earnings, Total Pay y/y"
+    "Official Bank Rate": "BoE Interest Rate Decision"
+  JPY:
+    "National Core CPI y/y": "CPI y/y"
+    "BOJ Core CPI y/y": "Core CPI y/y"
+    "PPI y/y": "PPI y/y"                                 # (JPY PPI unmodeled in matcher → dropped at bridge)
+    "Prelim GDP q/q": "GDP q/q"                          # FLASH (Prelim) scored
+    "Flash Manufacturing PMI": "au Jibun Bank Manufacturing PMI"
+    "Retail Sales y/y": "Retail Sales m/m"              # xf
+    "Unemployment Rate": "Unemployment Rate"
+    "Average Cash Earnings y/y": "Labor Cash Earnings y/y"
+    "BOJ Policy Rate": "BoJ Interest Rate Decision"
+  AUD:
+    "CPI y/y": "CPI y/y"
+    "Trimmed Mean CPI q/q": "RBA Trimmed Mean CPI y/y"   # xf
+    "PPI q/q": "PPI y/y"                                 # xf
+    "GDP q/q": "GDP q/q"
+    "Flash Manufacturing PMI": "S&P Global Manufacturing PMI"
+    "Flash Services PMI": "S&P Global Services PMI"
+    "Retail Sales m/m": "Retail Sales m/m"
+    "Employment Change": "Employment Change"
+    "Unemployment Rate": "Unemployment Rate"
+    "Wage Price Index q/q": "Wage Price Index y/y"       # xf
+    "Cash Rate": "RBA Interest Rate Decision"
+  NZD:
+    "CPI q/q": "CPI y/y"                                 # xf (NZ CPI is quarterly)
+    "PPI Output q/q": "PPI Output q/q"
+    "GDP q/q": "GDP q/q"
+    "BusinessNZ Manufacturing Index": "BusinessNZ Manufacturing Index"
+    "BusinessNZ Services Index": "BusinessNZ Services Index"
+    "Retail Sales q/q": "Retail Sales q/q"
+    "Electronic Card Retail Sales m/m": "Electronic Card Retail Sales m/m"
+    "Employment Change q/q": "Employment Change q/q"
+    "Unemployment Rate": "Unemployment Rate"
+    "Labor Cost Index q/q": "Labor Cost Index y/y"       # xf
+    "Official Cash Rate": "RBNZ Interest Rate Decision"
+  CAD:
+    "CPI m/m": "CPI y/y"                                 # xf
+    "Core CPI m/m": "Core CPI y/y"                       # xf
+    "IPPI m/m": "IPPI y/y"                               # xf
+    "GDP m/m": "GDP q/q"                                 # xf
+    "Manufacturing PMI": "S&P Global Manufacturing PMI"
+    "Retail Sales m/m": "Retail Sales m/m"
+    "Employment Change": "Employment Change"
+    "Unemployment Rate": "Unemployment Rate"
+    "Overnight Rate": "BoC Interest Rate Decision"
+  CHF:
+    "CPI m/m": "CPI y/y"                                 # xf
+    "PPI m/m": "PPI y/y"                                 # xf
+    "GDP q/q": "GDP q/q"
+    "Manufacturing PMI": "procure.ch Manufacturing PMI"
+    "Retail Sales y/y": "Retail Sales y/y"
+    "Unemployment Rate": "Unemployment Rate"
+    "SNB Policy Rate": "SNB Interest Rate Decision"
+
+# Later-estimate variants EXCLUDED from scoring (surface as revision telemetry only).
+# Each carries the `canonical` of its scored flash counterpart (for pairing) + a reason.
+excluded_final_variants:
+  USD:
+    "Prelim GDP q/q": { canonical: "GDP q/q", reason: "2nd estimate; revision of Advance — telemetry" }
+    "Final GDP q/q":  { canonical: "GDP q/q", reason: "3rd estimate; revision of Advance — telemetry" }
+  EUR:
+    "Final CPI y/y":        { canonical: "CPI y/y", reason: "final revision of the flash estimate — telemetry" }
+    "Final Core CPI y/y":   { canonical: "Core CPI y/y", reason: "final revision of the flash — telemetry" }
+    "Flash GDP q/q":        { canonical: "GDP q/q", reason: "2nd estimate; revision of Prelim Flash — telemetry" }
+    "Revised GDP q/q":      { canonical: "GDP q/q", reason: "revision of Prelim Flash — telemetry" }
+    "Final Manufacturing PMI": { canonical: "S&P Global Manufacturing PMI", reason: "final revision of flash PMI — telemetry" }
+    "Final Services PMI":      { canonical: "S&P Global Services PMI", reason: "final revision of flash PMI — telemetry" }
+    "Final Employment Change q/q": { canonical: "Employment Change q/q", reason: "final revision of flash — telemetry" }
+  GBP:
+    "Flash Manufacturing PMI": { canonical: "S&P Global/CIPS Manufacturing PMI", reason: "sparse UK flash (~6); UK headline Final is scored — telemetry" }
+    "Flash Services PMI":      { canonical: "S&P Global/CIPS Services PMI", reason: "sparse UK flash; Final scored — telemetry" }
+  JPY:
+    "Final GDP q/q":           { canonical: "GDP q/q", reason: "revision of Prelim — telemetry" }
+    "Final Manufacturing PMI": { canonical: "au Jibun Bank Manufacturing PMI", reason: "final revision of flash — telemetry" }

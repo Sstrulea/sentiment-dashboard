@@ -1,0 +1,12 @@
+[
+  {"Name": "Non-Farm Employment Change", "Currency": "USD", "Event_ID": 0, "Category": "Employment", "Impact": "High", "Date": "2026.04.03 15:30:00", "Actual": 185.0, "Forecast": 190.0, "Previous": 200.0, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "Non-Farm Employment Change", "Currency": "USD", "Event_ID": 0, "Category": "Employment", "Impact": "High", "Date": "2026.05.08 15:30:00", "Actual": 115.0, "Forecast": 130.0, "Previous": 179.0, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "Non-Farm Employment Change", "Currency": "USD", "Event_ID": 0, "Category": "Employment", "Impact": "High", "Date": "2026.06.05 15:30:00", "Actual": 172.0, "Forecast": 50.0, "Previous": 129.0, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "Italian Prelim CPI m/m", "Currency": "EUR", "Event_ID": 0, "Category": "Inflation", "Impact": "Medium", "Date": "2026.06.30 11:00:00", "Actual": 0.0, "Forecast": 0.2, "Previous": 0.4, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "German Prelim CPI m/m", "Currency": "EUR", "Event_ID": 0, "Category": "Inflation", "Impact": "High", "Date": "2026.06.30 08:00:00", "Actual": -0.3, "Forecast": 0.0, "Previous": -0.2, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "CPI Flash Estimate y/y", "Currency": "EUR", "Event_ID": 0, "Category": "Inflation", "Impact": "High", "Date": "2026.07.01 12:00:00", "Actual": 2.8, "Forecast": 3.0, "Previous": 3.2, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "CPI m/m", "Currency": "CHF", "Event_ID": 0, "Category": "Inflation", "Impact": "Medium", "Date": "2026.06.01 07:30:00", "Actual": 0.0, "Forecast": 0.1, "Previous": -0.1, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "CPI m/m", "Currency": "CHF", "Event_ID": 0, "Category": "Inflation", "Impact": "Medium", "Date": "2026.08.01 07:30:00", "Actual": 0.0, "Forecast": 0.2, "Previous": 0.0, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "FOMC Member Bowman Speaks", "Currency": "USD", "Event_ID": 0, "Category": "Economy Report", "Impact": "None", "Date": "2026.06.10 18:00:00", "Actual": 0.0, "Forecast": 0.0, "Previous": 0.0, "Outcome": "", "Strength": "", "Quality": ""},
+  {"Name": "CPI y/y", "Currency": "CNY", "Event_ID": 0, "Category": "Inflation", "Impact": "Medium", "Date": "2026.06.09 04:30:00", "Actual": 0.5, "Forecast": 0.4, "Previous": 0.3, "Outcome": "", "Strength": "", "Quality": ""}
+]

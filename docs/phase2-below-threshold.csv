@@ -1,0 +1,8 @@
+currency,indicator,cadence,n,threshold
+AUD,manufacturing_pmi,monthly,7,24
+AUD,services_pmi,monthly,7,24
+CHF,manufacturing_pmi,monthly,7,24
+EUR,manufacturing_pmi,monthly,7,24
+EUR,services_pmi,monthly,7,24
+JPY,manufacturing_pmi,monthly,7,24
+JPY,gdp_qoq,quarterly,2,8
