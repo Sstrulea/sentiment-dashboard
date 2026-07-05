@@ -683,10 +683,14 @@
     const pc = inst.sentiment;
     if (pc && pc.source === "pc" && pc.cell !== null && pc.cell !== undefined) {
       const v = pc.cell;
-      const tip = "P/C equity contrarian · percentile " + Number(pc.pct).toFixed(0) +
-        " (1Y) → cell " + fmtScoreCell(v) + " · " + pc.basis;
-      return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
-        ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+      // foreign indices (DAX/Nikkei/FTSE) take the US P/C as a global-risk PROXY —
+      // marked with a trailing * and an explicit tooltip so it's not read as native.
+      const proxy = pc.proxy === true;
+      const tip = (proxy ? "US equity P/C — global risk proxy · " : "P/C equity contrarian · ") +
+        "percentile " + Number(pc.pct).toFixed(0) + " (1Y) → cell " + fmtScoreCell(v) + " · " + pc.basis;
+      const mark = proxy ? '<sup class="pc-proxy">*</sup>' : "";
+      return '<td class="econ-cell' + (proxy ? ' pc-proxy-cell' : '') + '"' + styleAttr(gradientStyle(v, 3)) +
+        ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + mark + "</td>";
     }
     // COT (metals).
     const cot = inst.cot;
@@ -727,7 +731,7 @@
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
     const sentimentGroupHeader =
-      '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
+      '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Foreign indices (DAX/Nikkei/FTSE, marked *) take the US equity P/C as a global-risk PROXY. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
     const sentimentSubHeader = '<th class="ind-head grp-sentiment">COT / P/C</th>';
 
     let subHeaders = "";
@@ -875,8 +879,9 @@
         " = cell " + fmtScoreCell(c.cell) + " · blend " + Number(c.blend).toFixed(0);
     } else if (inst.sentiment && inst.sentiment.source === "pc") {
       const c = inst.sentiment;
-      detail = "P/C equity contrarian · percentile " + Number(c.pct).toFixed(0) +
-        " (1Y) → cell " + fmtScoreCell(c.cell);
+      detail = (c.proxy === true ? "US equity P/C — global risk proxy · percentile "
+                                 : "P/C equity contrarian · percentile ") +
+        Number(c.pct).toFixed(0) + " (1Y) → cell " + fmtScoreCell(c.cell);
     }
     const head = '<div class="econ-cat-head">Sentiment ' +
       '<span class="econ-cat-sub ' + cls + '">contrib ' + contrib + '</span>' +

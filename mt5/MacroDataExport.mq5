@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|  MacroDataExport.mq5  v1.1                                       |
+//|  MacroDataExport.mq5  v1.2                                       |
 //|  Single EA — exports BOTH:                                       |
 //|    1) MQL5 economic calendar (8 majors) -> economic_calendar.csv |
 //|    2) Daily OHLC for a symbol list      -> price_history.csv     |
@@ -7,14 +7,18 @@
 //|  v1.1: ANTI-DEGRADATION GUARD — if an export produces 0 rows     |
 //|  (e.g. CalendarValueHistory returns 0 during a calendar blip),   |
 //|  the previous CSV is KEPT (not overwritten with a header-only    |
-//|  file). This protects ALL economic/price data, not any one       |
-//|  indicator, so the Python pipeline never loses good data to a     |
-//|  transient MT5-side outage. Plus per-currency calendar diagnostics.|
+//|  file). Plus per-currency calendar diagnostics.                  |
+//|  v1.2: SYMBOL DISCOVERY for indices whose broker name varies     |
+//|  (DAX/FTSE100/Nikkei). Each is a '|'-separated candidate group;  |
+//|  the first candidate that resolves (SymbolSelect + a valid quote |
+//|  + a daily bar) is exported and logged. No candidate → err +     |
+//|  skip (the existing rows==0/err export guard applies naturally). |
+//|  Export logic is UNCHANGED — only the symbol list is extended.   |
 //|                                                                  |
 //|  Run on ONE chart. Both files land in MQL5/Files/. After editing |
-//|  RECOMPILE (F7) and RE-ATTACH for the guard to take effect.      |
+//|  RECOMPILE (F7) and RE-ATTACH.                                    |
 //+------------------------------------------------------------------+
-#property version   "1.10"
+#property version   "1.20"
 #property strict
 
 // --- shared timer ---
@@ -36,7 +40,15 @@ input string InpSymbols =
    "AUDJPY,NZDJPY,CADJPY,CHFJPY,"
    "AUDNZD,AUDCAD,AUDCHF,NZDCAD,NZDCHF,CADCHF,"
    "XAUUSD,XAGUSD,"
-   "US500,NAS100,US30,GER40,JP225,UK100";   // DXY omitted (often absent)
+   "US500,NAS100,US30";   // fixed symbols (DXY omitted); indices below are discovered
+// v1.2 discovery: candidate groups (';'-separated), candidates within a group
+// '|'-separated in preference order. The first that resolves is exported under its
+// broker name (the Python side maps every candidate → board key in price_symbols.yaml).
+// DE40 is confirmed on MetaQuotes-Demo; the rest are alternates.
+input string InpDiscoverSymbols =
+   "DE40|GER40|DE30|GER30;"      // DAX
+   "UK100|FTSE100|UK100Cash;"    // FTSE 100
+   "JP225|JPN225|NIK225|NI225";  // Nikkei 225
 
 string Currencies[] = {"USD","EUR","GBP","JPY","AUD","NZD","CAD","CHF"};
 int    g_tick = 0;   // timer tick counter, for price throttling
@@ -143,10 +155,53 @@ int ParseSymbols(const string csv, string &out[])
    return n;
 }
 
+// v1.2 — resolve a '|'-separated candidate group to the first broker symbol with a
+// valid quote and a daily bar. Returns "" (and logs) if none is available.
+string ResolveSymbol(const string group)
+{
+   string cands[];
+   int k = StringSplit(group, '|', cands);
+   for(int i=0; i<k; i++)
+   {
+      string s = cands[i];
+      StringTrimLeft(s); StringTrimRight(s);
+      if(StringLen(s)==0) continue;
+      if(!SymbolSelect(s, true)) continue;
+      MqlTick tk;
+      if(!SymbolInfoTick(s, tk)) continue;
+      if(tk.bid<=0 && tk.ask<=0 && tk.last<=0) continue;   // no valid quote
+      MqlRates rr[];
+      if(CopyRates(s, PERIOD_D1, 0, 1, rr) <= 0) continue;  // no daily bar
+      PrintFormat("PriceExport discovery: [%s] -> %s (resolved)", group, s);
+      return s;
+   }
+   PrintFormat("PriceExport discovery: [%s] -> NONE (no candidate available) err=%d",
+               group, GetLastError());
+   return "";
+}
+
+// Append each discovered index symbol (one per candidate group) to the export list.
+void AppendDiscovered(string &out[], int &n)
+{
+   string groups[];
+   int g = StringSplit(InpDiscoverSymbols, ';', groups);
+   for(int i=0; i<g; i++)
+   {
+      string grp = groups[i];
+      StringTrimLeft(grp); StringTrimRight(grp);
+      if(StringLen(grp)==0) continue;
+      string sym = ResolveSymbol(grp);
+      if(StringLen(sym)==0) continue;
+      ArrayResize(out, n+1);
+      out[n++] = sym;
+   }
+}
+
 void ExportPrices()
 {
    string symbols[];
    int ns = ParseSymbols(InpSymbols, symbols);
+   AppendDiscovered(symbols, ns);   // v1.2 — extend the list with resolved indices
 
    string tmp = InpPriceFileName + ".tmp";
    int h = FileOpen(tmp, FILE_WRITE|FILE_TXT|FILE_UNICODE);

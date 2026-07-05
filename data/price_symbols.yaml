@@ -60,13 +60,15 @@ symbols:
   GOLD:   XAUUSD   # TBC
   SILVER: XAGUSD   # TBC
 
-  # --- Indices (6) — naming varies a lot; CONFIRM each ---
-  SP500:   US500   # TBC (alt: SPX500, SP500, US500Cash)
-  NASDAQ:  NAS100  # TBC (alt: USTEC, NDX, NAS100Cash)
-  DJIA:    US30    # TBC (alt: DJ30, DOW30, WS30, US30Cash)
-  DAX:     GER40   # TBC (alt: DE40, GER30, DE30)
-  NIKKEI:  JP225   # TBC (alt: JPN225, NI225)
-  FTSE100: UK100   # TBC (alt: FTSE100, UK100Cash)
+  # --- Indices — naming varies a lot. DAX/FTSE100/NIKKEI use candidate LISTS that
+  # mirror the EA v1.2 discovery groups, so whichever broker symbol the EA resolves
+  # and exports maps back to the board key. (load_symbol_map accepts str or list.)
+  SP500:   US500   # confirmed on MetaQuotes-Demo
+  NASDAQ:  NAS100  # TBC (alt: USTEC, NDX, NAS100Cash) — no trend until resolved
+  DJIA:    US30    # confirmed
+  DAX:     [DE40, GER40, DE30, GER30]        # DE40 confirmed on MetaQuotes-Demo
+  FTSE100: [UK100, FTSE100, UK100Cash]
+  NIKKEI:  [JP225, JPN225, NIK225, NI225]
 
   # --- US Dollar Index — HIGH risk of being unavailable ---
   DXY:     ""      # TBC — alt names: USDX, USDIDX, DX, USDOLLAR; blank = no series

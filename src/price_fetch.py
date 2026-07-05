@@ -72,8 +72,11 @@ def _csv_path() -> Path | None:
 def load_symbol_map(yaml_path: Path = SYMBOLS_YAML) -> tuple[dict[str, str], list[str]]:
     """Return (broker_symbol -> board_key, [all board keys]).
 
-    Blank/missing broker values are kept in the board-key list (so they show up
-    as "no data") but excluded from the lookup. Broker symbols are matched
+    A board key's broker value may be a single symbol OR a LIST of candidate
+    symbols (v1.2 EA discovery: the broker name of an index varies — DE40/GER40,
+    UK100/FTSE100, JP225/Nikkei225 — so every candidate maps to the same board key
+    and whichever the EA actually exports resolves correctly). Blank/missing values
+    keep the board key (shown as "no data") but add nothing to the lookup. Matched
     case-sensitively after stripping whitespace.
     """
     with open(yaml_path) as f:
@@ -84,9 +87,11 @@ def load_symbol_map(yaml_path: Path = SYMBOLS_YAML) -> tuple[dict[str, str], lis
     board_keys: list[str] = []
     for board_key, broker_sym in symbols.items():
         board_keys.append(board_key)
-        broker = (str(broker_sym).strip() if broker_sym is not None else "")
-        if broker:
-            broker_to_board[broker] = board_key
+        candidates = broker_sym if isinstance(broker_sym, list) else [broker_sym]
+        for cand in candidates:
+            broker = (str(cand).strip() if cand is not None else "")
+            if broker:
+                broker_to_board[broker] = board_key
     return broker_to_board, board_keys
 
 

@@ -372,24 +372,29 @@ def _current_equity_pc_percentile() -> float | None:
         return None
 
 
-def _us_index_pc(cfg: dict) -> tuple[int | None, dict | None, set[str]]:
-    """(cell, detail, us_index_symbols) for the market-wide US equity P/C score.
+def _us_index_pc(cfg: dict) -> tuple[int | None, dict | None, set[str], set[str]]:
+    """(cell, detail, native_syms, proxy_syms) for the market-wide US equity P/C score.
 
-    The CBOE equity put/call ratio is market-wide and US-only, so EVERY US index
-    (type=index, home_ccy=USD) gets the SAME contrarian cell; foreign indices
-    (DAX/NIKKEI/FTSE100) get nothing → blank and excluded from the sentiment
-    factor. A missing percentile → cell None (US indices blank, score unchanged).
+    The CBOE equity put/call ratio is market-wide: NATIVE consumers are the US indices
+    (type=index, home_ccy=USD). PROXY consumers are instruments flagged
+    `sentiment_proxy: us_equity_pc` (DAX/NIKKEI/FTSE100) — they take the SAME cell as a
+    global-risk proxy (same sign/weight/thresholds; labelled distinctly in the UI). A
+    missing percentile → cell None (all blank, score unchanged).
     """
     instruments_cfg = cfg.get("instruments", {}) or {}
-    us_syms = {
+    native_syms = {
         sym for sym, c in instruments_cfg.items()
         if c.get("type") == "index" and c.get("home_ccy") == "USD"
     }
+    proxy_syms = {
+        sym for sym, c in instruments_cfg.items()
+        if c.get("sentiment_proxy") == "us_equity_pc"
+    }
     pct = _current_equity_pc_percentile()
     if pct is None:
-        return None, None, us_syms
+        return None, None, native_syms, proxy_syms
     cell, detail = pc_index_score(pct)
-    return int(cell), detail, us_syms
+    return int(cell), detail, native_syms, proxy_syms
 
 
 def _fx_currency_cells() -> tuple[dict[str, int], dict[str, dict]]:
@@ -597,13 +602,14 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
     # SENTIMENT cells computed ONCE (read-only over the COT/P-C engines), then
     # fed into the SCORE as a weight-0.5 factor AND reused for the display cell.
     metal_cot = _metals_cot_map()
-    pc_cell, pc_detail, us_index_syms = _us_index_pc(cfg)
+    pc_cell, pc_detail, us_index_syms, pc_proxy_syms = _us_index_pc(cfg)
+    pc_syms = us_index_syms | pc_proxy_syms   # native US indices + foreign proxy consumers
     sentiment_by_symbol: dict[str, int] = {
         sym: d["cell"] for sym, d in metal_cot.items()
     }
     if pc_cell is not None:
-        for sym in us_index_syms:
-            sentiment_by_symbol[sym] = pc_cell
+        for sym in pc_syms:
+            sentiment_by_symbol[sym] = pc_cell   # SAME cell for native + proxy (identical scoring)
 
     trend_full = trend_full or {}
     trend_by_symbol = _trend_cells(trend_full)
@@ -655,10 +661,11 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         # above: COT for metals, P/C for US indices. Foreign indices get neither.
         if sym in metal_cot:
             r["cot"] = metal_cot[sym]
-        elif pc_cell is not None and sym in us_index_syms:
+        elif pc_cell is not None and sym in pc_syms:
             r["sentiment"] = {
                 "source": "pc", "cell": pc_cell,
                 "pct": float(pc_detail["pct"]), "basis": str(pc_detail["basis"]),
+                "proxy": sym in pc_proxy_syms,   # foreign index → US-equity-P/C global-risk proxy
             }
 
         instruments.append(r)

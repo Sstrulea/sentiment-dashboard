@@ -73,6 +73,7 @@ instruments:
   DAX:
     type: index
     home_ccy: EUR
+    sentiment_proxy: us_equity_pc   # foreign index: US equity P/C as a global-risk sentiment proxy
     factors:
       growth:    { sign: 1,  weight: 1.0 }
       inflation: { sign: -1, weight: 1.0 }
@@ -83,9 +84,12 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # US equity P/C proxy cell; weight 0.5 (same as US indices)
+      trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — DE40 series (EA v1.2)
   NIKKEI:
     type: index
     home_ccy: JPY
+    sentiment_proxy: us_equity_pc   # foreign index: US equity P/C as a global-risk sentiment proxy
     factors:
       growth:    { sign: 1,  weight: 1.0 }
       inflation: { sign: -1, weight: 1.0 }
@@ -96,9 +100,12 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # US equity P/C proxy cell; weight 0.5 (same as US indices)
+      trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — JP225 series (EA v1.2)
   FTSE100:
     type: index
     home_ccy: GBP
+    sentiment_proxy: us_equity_pc   # foreign index: US equity P/C as a global-risk sentiment proxy
     factors:
       growth:    { sign: 1,  weight: 1.0 }
       inflation: { sign: -1, weight: 1.0 }
@@ -109,6 +116,8 @@ instruments:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+      sentiment: { sign: 1, weight: 0.5 }   # US equity P/C proxy cell; weight 0.5 (same as US indices)
+      trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — UK100 series (EA v1.2)
 
   # --- Metals (USD home; growth lighter at 0.5) ---
   GOLD:
