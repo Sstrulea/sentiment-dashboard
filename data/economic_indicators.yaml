@@ -15,7 +15,9 @@
 
 defaults:
   surprise_window_k: 12        # rolling window (# of same-indicator prints) for sigma
-  z_buckets: [1.0, 0.33]       # |z| >= 1.0 -> ±2 ; >= 0.33 -> ±1 ; else 0
+  z_buckets: [1.71, 0.81]      # |z| >= 1.71 -> ±2 ; >= 0.81 -> ±1 ; else 0
+  # Recalibrated from the empirical |z| distribution (C2, docs/fundamental-calibration.md):
+  # 1.71 = p87.5 (±2 catches ~12% of prints, was 31.7% at 1.0), 0.81 = p60. Window UNCHANGED.
   fallback_min_prints: 6       # below this many (actual,consensus) pairs, use pct fallback
   pct_buckets: [0.10, 0.02]    # |pct| >= 0.10 -> ±2 ; >= 0.02 -> ±1 ; else 0
   max_age_days: 120            # ultimate fallback when an indicator has no known frequency
