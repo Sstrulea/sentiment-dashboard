@@ -60,9 +60,10 @@ The empirical |z| distribution over **2,238** prints (was 2,556 dirty):
 - Deployed `z_buckets = [1.71, 0.81]` were derived on the CONTAMINATED distribution (fat tails
   from the fake surprises pushed p87.5 up). On clean data, |z|≥1.71 now catches only **8.7%**
   (target 10-15%); |z|≥0.81 catches **39.9%** (was 63.3% dirty).
-- **Candidate on clean data: `[1.54, 0.81]`** — the ±1 threshold is essentially unchanged (0.81),
-  but ±2 should come DOWN from 1.71 → ~1.54 to hit ~12%. **Not changed here** — flagged for a
-  separate recalibration decision now that the baseline is clean.
+- **ADOPTED: `z_buckets = [1.54, 0.81]`** (same pre-registered p87.5 percentile, re-derived on
+  clean data). ±1 unchanged (0.81); ±2 lowered 1.71 → 1.54 so it catches ~12% again on clean
+  data. Incremental impact vs the [1.71, 0.81] state: **2 category cells** (AUD growth 0→−1,
+  CAD inflation 0→+1), **0 bias flips**. Guard test updated to [1.54, 0.81].
 
 ## Tests
 `test_config_can_be_zero_set`, `test_quarantine_zero_actual_and_consensus`,
