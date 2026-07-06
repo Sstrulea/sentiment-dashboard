@@ -9,14 +9,18 @@ import pytest
 from src import trend_score as ts
 from src.trend_score import (
     REGIME_MAP,
-    SLOPE_THRESH_ATR,
+    SLOPE_ENTER,
+    SLOPE_EXIT,
     _clamp,
     _server_today,
     atr,
     drop_forming_bar,
+    hysteresis_step,
+    momentum_hysteresis,
     momentum_score,
     regime_score,
     score_all,
+    slope_atr_series,
     trend_cell,
 )
 
@@ -59,32 +63,62 @@ def test_regime_one_bull_point_is_minus_one():
     assert regime_score(pd.Series(np.concatenate([rise, crash]))) == (1, -1)
 
 
-# --- Layer 2: MOMENTUM thresholds (above / below / exactly at the band) ------
+# --- Layer 2: MOMENTUM hysteresis (enter / exit / band-keeps-state / cold-start) --
 
-def _ramp(slope=1.0, n=250):
-    return pd.Series(100.0 + np.arange(n) * slope)   # SMA50 slope over 20 bars = 20*slope
-
-
-@pytest.mark.parametrize("atr_last,expected", [
-    (20.0, 1),                                # slope_atr = 0.05, clearly above → +1
-    (1.0 / (SLOPE_THRESH_ATR + 0.001), 1),    # slope_atr just above +thresh → +1
-    (1.0 / SLOPE_THRESH_ATR, 0),              # EXACTLY at +thresh → 0 (strict >)
-    (100.0, 0),                               # slope_atr = 0.01 < thresh → 0
-])
-def test_momentum_thresholds_rising(atr_last, expected):
-    # ramp slope 1/bar → SMA50[0]-SMA50[20] = 20 → slope_atr = 1/atr_last
-    _, mom = momentum_score(_ramp(1.0), atr_last)
-    assert mom == expected
+E, X = SLOPE_ENTER, SLOPE_EXIT   # 0.035 / 0.025
 
 
-def test_momentum_symmetric_falling():
-    _, mom = momentum_score(_ramp(-1.0), 1.0 / (SLOPE_THRESH_ATR + 0.001))
-    assert mom == -1
+def test_hysteresis_entry_activates_above_enter():
+    assert hysteresis_step(E + 0.001, 0) == 1        # cross +enter from 0 → +1
+    assert hysteresis_step(-(E + 0.001), 0) == -1    # cross −enter → −1
 
 
-def test_momentum_atr_undefined_is_zero():
-    assert momentum_score(_ramp(1.0), float("nan"))[1] == 0
-    assert momentum_score(_ramp(1.0), 0.0)[1] == 0
+def test_hysteresis_exit_deactivates_below_exit():
+    assert hysteresis_step(X - 0.001, 1) == 0        # was +1, |sa| below exit → 0
+    assert hysteresis_step(-(X - 0.001), -1) == 0
+
+
+def test_hysteresis_band_keeps_previous_state():
+    mid = (E + X) / 2                                # 0.030 — inside the band
+    assert hysteresis_step(mid, 1) == 1              # band, prev +1 → keep +1
+    assert hysteresis_step(-mid, -1) == -1           # band, prev −1 → keep −1
+    assert hysteresis_step(mid, 0) == 0              # band, prev 0 → stay 0 (no activation)
+
+
+def test_hysteresis_cold_start_needs_enter():
+    # no prior state (0): only |slope_atr| > enter activates; the band does NOT
+    assert hysteresis_step((E + X) / 2, 0) == 0      # in band, cold → 0
+    assert hysteresis_step(E + 0.001, 0) == 1        # above enter, cold → +1
+
+
+def test_hysteresis_exactly_at_thresholds():
+    assert hysteresis_step(E, 0) == 0                # exactly enter (not >) → no activate
+    assert hysteresis_step(E, 1) == 1               # at enter, in band (>=exit) → keep
+    assert hysteresis_step(X, 1) == 1               # exactly exit (not <) → still holds
+    assert hysteresis_step(X - 1e-9, 1) == 0        # just below exit → drops
+
+
+def test_hysteresis_nan_is_zero():
+    assert hysteresis_step(float("nan"), 1) == 0
+
+
+def test_momentum_walk_holds_through_band():
+    # activate +1 (above enter), then drift into the band → held; then below exit → 0
+    seq = pd.Series([0.0] * 3 + [E + 0.01] + [(E + X) / 2] * 4)     # rise, then band
+    assert momentum_hysteresis(seq) == 1
+    seq2 = pd.Series([0.0] * 3 + [E + 0.01, (E + X) / 2, X - 0.01])  # rise, band, exit
+    assert momentum_hysteresis(seq2) == 0
+
+
+def test_momentum_cold_start_band_never_activates():
+    # a series that stays inside the band forever → never activates (cold start)
+    assert momentum_hysteresis(pd.Series([(E + X) / 2] * 30)) == 0
+
+
+def test_momentum_score_ramp_activates():
+    # steep clean uptrend → slope_atr well above enter → +1
+    _, mom = momentum_score(_df(100.0 + np.arange(250) * 1.0))
+    assert mom == 1
 
 
 # --- ATR normalization: same relative slope at different price levels → same --
@@ -93,10 +127,10 @@ def test_atr_normalization_scale_invariant():
     c1 = 100.0 + np.arange(250) * 0.5
     k = 50.0
     df1, df2 = _df(c1, spread=0.5), _df(c1 * k, spread=0.5 * k)   # everything ×k
-    m1 = momentum_score(pd.Series(c1), float(atr(df1).iloc[-1]))
-    m2 = momentum_score(pd.Series(c1 * k), float(atr(df2).iloc[-1]))
-    assert m1[1] == m2[1]                          # same momentum score
-    assert m1[0] == pytest.approx(m2[0], rel=1e-6)  # same slope/atr
+    sa1 = slope_atr_series(df1).dropna().iloc[-1]
+    sa2 = slope_atr_series(df2).dropna().iloc[-1]
+    assert sa1 == pytest.approx(sa2, rel=1e-6)                     # slope/atr scale-invariant
+    assert momentum_score(df1)[1] == momentum_score(df2)[1]        # → same momentum
 
 
 # --- clamp + full cell ------------------------------------------------------

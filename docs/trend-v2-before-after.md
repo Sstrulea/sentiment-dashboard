@@ -4,17 +4,14 @@ Same ±3 range ⇒ composite weight (0.5) unchanged. ADX is display-only in v2.
 
 ## TASK 0 — empirical diagnostic verdict (both hypotheses CONFIRMED)
 
-- **(a) NAS/SPX −1 in an uptrend pullback:** v1 `raw = short(SMA10v20) + long(SMA20v50)
-  + slope(SMA20)`. On NAS/SPX the two SHORT terms (`short=−1`, `slope=−1`) are correlated
-  (both read the micro-pullback) → they sum to −2 and, with `long=+1`, give raw −1 → cell −1.
-  Meanwhile the SMA50/200 regime is unambiguously bullish (close>SMA50, close>SMA200,
-  SMA50>SMA200 ⇒ bull_points=3 ⇒ +2). The short terms double-penalize and dominate. ✓
-- **(b) DAX +1 at an ATH breakout:** v1 `raw=+3` (full MA alignment) but `ADX=12.6` (fresh
-  breakout, ADX lags) → factor 0.25 → cell `round(3×0.25)=+1` (damped). ✓ Also confirmed
-  the absolute slope threshold (eps=0) can't scale across instruments (DAX slope/ATR=0.065
-  vs FTSE 0.380) — v2's ATR-normalized slope does.
+- **(a) NAS/SPX −1 in an uptrend pullback:** v1 `raw = short(SMA10v20) + long(SMA20v50) + slope(SMA20)`; the two SHORT terms are correlated (both read the micro-pullback) → −2, dominating the bullish SMA50/200 regime (bull_points=3 ⇒ +2).
+- **(b) DAX +1 at an ATH breakout:** v1 `raw=+3` but `ADX=12.6` (lagging) → factor 0.25 → cell +1 (damped). Absolute slope threshold (eps=0) also can't scale across instruments (DAX slope/ATR=0.065 vs FTSE 0.380) — v2's ATR-normalized slope does.
 
-v2 fixes both: regime (SMA50/200) is dominant and ADX is removed from the score.
+v2 fixes both: SMA50/200 regime is dominant and ADX is removed from the score.
+
+## Momentum HYSTERESIS (addendum)
+
+Momentum uses a slope_atr **hysteresis band** (config/trend.yaml): ±1 activates at `|slope_atr| > slope_enter` (0.035) and persists until `|slope_atr| < slope_exit` (0.025); in the band it keeps the prior state (stateless — derived by walking the historical slope_atr series from price_history.parquet, no persisted state file).
 
 ## Sanity anchors
 - ✅ NASDAQ >= +1  (got NASDAQ=3)
@@ -35,7 +32,7 @@ v2 fixes both: regime (SMA50/200) is dominant and ADX is removed from the score.
 | CHFJPY | -2 | +1 | +0 | +1 | +3 | -0.0199 | 20.6 |
 | DAX | +1 | +2 | +1 | +3 | +2 | 0.0651 | 12.6 |
 | DJIA | +3 | +2 | +1 | +3 | +0 | 0.119 | 26.1 |
-| EURAUD | +3 | -1 | +0 | -1 | -4 | -0.0251 | 33.8 |
+| EURAUD | +3 | -1 | -1 | -2 | -5 | -0.0251 | 33.8 |
 | EURCAD | +2 | +1 | +0 | +1 | -1 | 0.023 | 21.4 |
 | EURCHF | +0 | -1 | +0 | -1 | -1 | 0.0041 | 14.6 |
 | EURGBP | -2 | -2 | -1 | -3 | -1 | -0.056 | 15.0 |
@@ -73,7 +70,7 @@ _*ADX display-only. 36 instruments; 28 changed cell._
 | AUDJPY | -3 | +1 | +1 | +0 | v1 saw SMA10/20/50 momentum; v2 regime=+1 (SMA50/200 structure) dominates, momentum=+0 |
 | AUDUSD | -3 | +1 | +1 | +0 | v1 saw SMA10/20/50 momentum; v2 regime=+1 (SMA50/200 structure) dominates, momentum=+0 |
 | CHFJPY | -2 | +1 | +1 | +0 | v1 saw SMA10/20/50 momentum; v2 regime=+1 (SMA50/200 structure) dominates, momentum=+0 |
-| EURAUD | +3 | -1 | -1 | +0 | v1 saw SMA10/20/50 momentum; v2 regime=-1 (SMA50/200 structure) dominates, momentum=+0 |
+| EURAUD | +3 | -2 | -1 | -1 | v1 saw SMA10/20/50 momentum; v2 regime=-1 (SMA50/200 structure) dominates, momentum=-1 |
 | EURJPY | -1 | +1 | +1 | +0 | v1 saw SMA10/20/50 momentum; v2 regime=+1 (SMA50/200 structure) dominates, momentum=+0 |
 | GBPAUD | +3 | -1 | -1 | +0 | v1 saw SMA10/20/50 momentum; v2 regime=-1 (SMA50/200 structure) dominates, momentum=+0 |
 | NASDAQ | -1 | +3 | +2 | +1 | v1 saw SMA10/20/50 momentum; v2 regime=+2 (SMA50/200 structure) dominates, momentum=+1 |
@@ -93,7 +90,7 @@ _*ADX display-only. 36 instruments; 28 changed cell._
 | CADJPY | -0.50 | Neutral | +1.00 | Neutral |
 | CHFJPY | -3.96 | Very Bearish | -2.29 | Bearish **← bias flip** |
 | DAX | -2.33 | Bearish | -1.33 | Neutral **← bias flip** |
-| EURAUD | +2.41 | Bullish | +0.18 | Neutral **← bias flip** |
+| EURAUD | +2.41 | Bullish | -0.37 | Neutral **← bias flip** |
 | EURCAD | -0.42 | Neutral | -0.92 | Neutral |
 | EURCHF | +2.43 | Bullish | +1.88 | Bullish |
 | EURGBP | -0.54 | Neutral | -1.04 | Neutral |

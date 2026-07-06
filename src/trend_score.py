@@ -55,12 +55,15 @@ def _load_config() -> dict:
         c = {}
     reg = c.get("regime", {}) or {}
     mom = c.get("momentum", {}) or {}
+    # back-compat: a single slope_thresh_atr degenerates to enter==exit (no hysteresis).
+    thresh = mom.get("slope_thresh_atr")
     return {
         "sma_mid": int(reg.get("sma_mid", 50)),
         "sma_long": int(reg.get("sma_long", 200)),
         "slope_lookback": int(mom.get("slope_lookback", 20)),
         "atr_period": int(mom.get("atr_period", 14)),
-        "slope_thresh_atr": float(mom.get("slope_thresh_atr", 0.03)),
+        "slope_enter": float(mom.get("slope_enter", thresh if thresh is not None else 0.035)),
+        "slope_exit": float(mom.get("slope_exit", thresh if thresh is not None else 0.025)),
         "min_bars": int(c.get("min_bars", 200)),
         "adx_period": int(c.get("adx_period", 14)),
     }
@@ -71,7 +74,8 @@ SMA_MID = _CFG["sma_mid"]                 # 50 — regime mid MA + momentum slop
 SMA_LONG = _CFG["sma_long"]               # 200 — regime long MA
 SLOPE_LOOKBACK = _CFG["slope_lookback"]   # 20 bars
 ATR_PERIOD = _CFG["atr_period"]           # 14
-SLOPE_THRESH_ATR = _CFG["slope_thresh_atr"]  # 0.03 (calibration)
+SLOPE_ENTER = _CFG["slope_enter"]         # 0.035 — activate ±1 above this
+SLOPE_EXIT = _CFG["slope_exit"]           # 0.025 — deactivate below this (hysteresis band)
 MIN_BARS = _CFG["min_bars"]               # 200
 ADX_PERIOD = _CFG["adx_period"]           # 14 (display-only)
 
@@ -182,17 +186,50 @@ def regime_score(closes: pd.Series) -> tuple[int, int] | None:
     return bull_points, REGIME_MAP[bull_points]
 
 
-def momentum_score(closes: pd.Series, atr_last: float) -> tuple[float, int]:
-    """Layer 2 — (slope_atr, momentum). slope_atr = (SMA50[0]−SMA50[lookback]) /
-    (lookback × ATR14); ±1 beyond ±SLOPE_THRESH_ATR, else 0. ATR<=0/NaN → (nan, 0)."""
-    closes = pd.to_numeric(closes, errors="coerce").dropna().reset_index(drop=True)
-    if atr_last is None or not np.isfinite(atr_last) or atr_last <= 0 \
-            or len(closes) < SMA_MID + SLOPE_LOOKBACK:
-        return float("nan"), 0
+def slope_atr_series(df: pd.DataFrame) -> pd.Series:
+    """Per-bar slope_atr = (SMA50[t]−SMA50[t−lookback]) / (lookback × ATR14[t]).
+    NaN where undefined (early bars, ATR<=0). Used both for the current display value
+    and for the hysteresis walk."""
+    closes = pd.to_numeric(df["close"], errors="coerce")
     sma_mid = closes.rolling(SMA_MID).mean()
-    slope_atr = (sma_mid.iloc[-1] - sma_mid.iloc[-1 - SLOPE_LOOKBACK]) / (SLOPE_LOOKBACK * atr_last)
-    mom = 1 if slope_atr > SLOPE_THRESH_ATR else (-1 if slope_atr < -SLOPE_THRESH_ATR else 0)
-    return float(slope_atr), mom
+    slope = sma_mid - sma_mid.shift(SLOPE_LOOKBACK)
+    atr_s = atr(df, ATR_PERIOD).replace(0.0, np.nan)
+    return slope / (SLOPE_LOOKBACK * atr_s)
+
+
+def hysteresis_step(slope_atr: float, prev: int, enter: float = None, exit: float = None) -> int:
+    """One hysteresis step: ±1 activates when |slope_atr| > enter (sign of slope_atr),
+    deactivates to 0 when |slope_atr| < exit, and in the band [exit, enter] KEEPS the
+    previous state `prev`. NaN → 0. Cold start = prev 0 → active only if > enter."""
+    enter = SLOPE_ENTER if enter is None else enter
+    exit = SLOPE_EXIT if exit is None else exit
+    if slope_atr is None or not np.isfinite(slope_atr):
+        return 0
+    mag = abs(slope_atr)
+    if mag > enter:
+        return 1 if slope_atr > 0 else -1
+    if mag < exit:
+        return 0
+    return int(prev)   # band [exit, enter] → keep previous state (hysteresis)
+
+
+def momentum_hysteresis(sa_series: pd.Series, enter: float = None, exit: float = None) -> int:
+    """Walk the slope_atr series applying `hysteresis_step` from a cold start (0) to the
+    last bar. Stateless — the final momentum is fully determined by the price history."""
+    m = 0
+    for sa in sa_series:
+        m = hysteresis_step(float(sa) if sa is not None else float("nan"), m, enter, exit)
+    return m
+
+
+def momentum_score(df: pd.DataFrame, enter: float = None, exit: float = None) -> tuple[float, int]:
+    """Layer 2 — (current slope_atr, momentum). Momentum applies HYSTERESIS over the
+    historical slope_atr series (enter/exit band). Returns (nan, 0) if undefined."""
+    sa = slope_atr_series(df)
+    sa_valid = sa.dropna()
+    if sa_valid.empty:
+        return float("nan"), 0
+    return float(sa_valid.iloc[-1]), momentum_hysteresis(sa_valid, enter, exit)
 
 
 def trend_cell(df: pd.DataFrame) -> int | None:
@@ -203,7 +240,7 @@ def trend_cell(df: pd.DataFrame) -> int | None:
     if reg is None:
         return None
     _, regime = reg
-    _, mom = momentum_score(closes, float(atr(df).iloc[-1]) if len(df) else float("nan"))
+    _, mom = momentum_score(df)
     return _clamp(regime + mom)
 
 
@@ -283,8 +320,7 @@ def score_all(parquet_path: Path = PARQUET, yaml_path: Path = SYMBOLS_YAML,
             results[key] = _empty_entry()
             continue
         bull_points, regime = reg
-        atr_val = float(atr(g, ATR_PERIOD).iloc[-1]) if len(g) else float("nan")
-        slope_atr, momentum = momentum_score(closes, atr_val)
+        slope_atr, momentum = momentum_score(g)   # hysteresis walk over the series
         # ADX(14) — display-only trend-quality metadata, NOT part of the score.
         adx_series = compute_adx(g, ADX_PERIOD)
         adx_val = float(adx_series.iloc[-1]) if len(adx_series) else float("nan")

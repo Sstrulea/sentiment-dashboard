@@ -94,6 +94,19 @@ def main() -> int:
     # ---- write report ----
     lines = ["# TREND v2 — before/after (v1 MA×ADX → v2 Regime+Momentum)\n",
              "Same ±3 range ⇒ composite weight (0.5) unchanged. ADX is display-only in v2.\n",
+             "## TASK 0 — empirical diagnostic verdict (both hypotheses CONFIRMED)\n",
+             "- **(a) NAS/SPX −1 in an uptrend pullback:** v1 `raw = short(SMA10v20) + "
+             "long(SMA20v50) + slope(SMA20)`; the two SHORT terms are correlated (both read the "
+             "micro-pullback) → −2, dominating the bullish SMA50/200 regime (bull_points=3 ⇒ +2).\n"
+             "- **(b) DAX +1 at an ATH breakout:** v1 `raw=+3` but `ADX=12.6` (lagging) → factor "
+             "0.25 → cell +1 (damped). Absolute slope threshold (eps=0) also can't scale across "
+             "instruments (DAX slope/ATR=0.065 vs FTSE 0.380) — v2's ATR-normalized slope does.\n"
+             "\nv2 fixes both: SMA50/200 regime is dominant and ADX is removed from the score.\n",
+             "## Momentum HYSTERESIS (addendum)\n",
+             "Momentum uses a slope_atr **hysteresis band** (config/trend.yaml): ±1 activates at "
+             "`|slope_atr| > slope_enter` (0.035) and persists until `|slope_atr| < slope_exit` "
+             "(0.025); in the band it keeps the prior state (stateless — derived by walking the "
+             "historical slope_atr series from price_history.parquet, no persisted state file).\n",
              "## Sanity anchors"]
     for a, ok in anchors.items():
         lines.append(f"- {'✅' if ok else '❌ FAIL'} {a}  (got {a.split()[0]}={cell(a.split()[0])})")

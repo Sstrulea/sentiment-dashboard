@@ -11,6 +11,12 @@ regime:
 momentum:
   slope_lookback: 20        # bars over which the SMA50 slope is measured
   atr_period: 14
-  slope_thresh_atr: 0.03    # CALIBRATION: |slope-per-bar / ATR| threshold for ±1 momentum
+  # HYSTERESIS (replaces the single slope_thresh_atr): momentum ±1 ACTIVATES when
+  # |slope_atr| > slope_enter and PERSISTS until |slope_atr| < slope_exit; in the band
+  # [slope_exit, slope_enter] it keeps the previous state. No prior state (cold start) →
+  # active only if > slope_enter. State is derived by walking the historical slope_atr
+  # series (stateless — the "state" is price_history.parquet), so it is fully reproducible.
+  slope_enter: 0.035        # CALIBRATION: activate ±1 above this
+  slope_exit: 0.025         # CALIBRATION: deactivate to 0 below this
 min_bars: 200               # need SMA_long (200) closes; else trend cell = None
 adx_period: 14              # display-only trend-quality metric
