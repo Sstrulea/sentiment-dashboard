@@ -1,0 +1,16 @@
+# TREND v2 — 3-layer daily trend score (−3…+3). Replaces the MA×ADX design.
+# Layer 1 REGIME (dominant, −2…+2): bull_points = (close>SMA50)+(close>SMA200)+(SMA50>SMA200)
+#   mapped 3→+2, 2→+1, 1→−1, 0→−2 (no neutral state — neutrality comes from momentum).
+# Layer 2 MOMENTUM (−1…+1): slope_atr = (SMA50[0]−SMA50[lookback]) / (lookback × ATR14),
+#   > +thresh → +1, < −thresh → −1, else 0. ATR-normalized so it scales across instruments.
+# Layer 3 ADX: DISPLAY-ONLY ("trend quality"), no effect on the score.
+# Final = clamp(regime + momentum, −3, +3). <min_bars valid closes → None (excluded).
+regime:
+  sma_mid: 50
+  sma_long: 200
+momentum:
+  slope_lookback: 20        # bars over which the SMA50 slope is measured
+  atr_period: 14
+  slope_thresh_atr: 0.03    # CALIBRATION: |slope-per-bar / ATR| threshold for ±1 momentum
+min_bars: 200               # need SMA_long (200) closes; else trend cell = None
+adx_period: 14              # display-only trend-quality metric

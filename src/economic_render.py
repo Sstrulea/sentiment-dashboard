@@ -525,8 +525,8 @@ def _freshness(as_of: pd.Timestamp | None = None) -> dict:
 
 
 def _trend_full() -> dict[str, dict]:
-    """{board_key: {short,long,slope,raw,adx,factor,trend_cell}} from the TREND
-    engine (read-only). Computed ONCE; the cells feed the FX/cross-asset scores
+    """{board_key: {bull_points,regime,slope_atr,momentum,adx,trend_cell}} (TREND v2,
+    read-only). Computed ONCE; the cells feed the FX/cross-asset scores
     AND the TREND column, while the full entry feeds the pop-up decomposition.
     Each table reads only its own board keys (FX pairs vs GOLD/SILVER/SP500/DJIA),
     so the shared map never cross-contaminates. Missing/empty parquet → score_all
