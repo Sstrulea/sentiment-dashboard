@@ -70,6 +70,7 @@ instruments:
           real_yield_10y: { sign: -1, weight: 1.0 }
           balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
       sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
+      trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — USTEC series (EA v1.3)
   DAX:
     type: index
     home_ccy: EUR

@@ -49,6 +49,16 @@ def test_foreign_indices_have_trend_sentiment_and_proxy():
         assert sym in price, f"{sym} board key missing from price_symbols.yaml"
 
 
+def test_nasdaq_has_native_trend_not_proxy():
+    # NASDAQ (USTEC resolved, EA v1.3) gains a trend factor but keeps NATIVE sentiment
+    # (home_ccy USD) — no proxy flag; its board key lists USTEC as a candidate.
+    cfg = yaml.safe_load(open("data/crossasset_instruments.yaml"))["instruments"]["NASDAQ"]
+    assert cfg["factors"].get("trend") == {"sign": 1, "weight": 0.5}
+    assert cfg.get("sentiment_proxy") is None
+    price = yaml.safe_load(open("data/price_symbols.yaml"))["symbols"]["NASDAQ"]
+    assert "USTEC" in price
+
+
 # --- P/C proxy: native vs proxy vs none -------------------------------------
 
 def test_us_index_pc_native_and_proxy_sets():

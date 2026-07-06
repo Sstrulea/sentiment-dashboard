@@ -60,11 +60,13 @@ symbols:
   GOLD:   XAUUSD   # TBC
   SILVER: XAGUSD   # TBC
 
-  # --- Indices — naming varies a lot. DAX/FTSE100/NIKKEI use candidate LISTS that
-  # mirror the EA v1.2 discovery groups, so whichever broker symbol the EA resolves
-  # and exports maps back to the board key. (load_symbol_map accepts str or list.)
+  # --- Indices — naming varies a lot. NASDAQ/DAX/FTSE100/NIKKEI use candidate LISTS
+  # mirroring the EA v1.3 discovery groups, so whichever broker symbol the EA resolves
+  # maps back to the board key. (load_symbol_map accepts str or list.)
+  # MetaQuotes-Demo carries: US500, US30, USTEC (Nasdaq), DE40 (DAX). FTSE100 + NIKKEI
+  # are NOT offered under any candidate → they stay "no data" (no trend), gracefully.
   SP500:   US500   # confirmed on MetaQuotes-Demo
-  NASDAQ:  NAS100  # TBC (alt: USTEC, NDX, NAS100Cash) — no trend until resolved
+  NASDAQ:  [US100, USTEC, NAS100]   # USTEC confirmed (EA v1.3)
   DJIA:    US30    # confirmed
   DAX:     [DE40, GER40, DE30, GER30]        # DE40 confirmed on MetaQuotes-Demo
   FTSE100: [UK100, FTSE100, UK100Cash]
