@@ -15,7 +15,7 @@ AS_OF = pd.Timestamp("2026-07-01")
 COLS = ["currency", "indicator_key", "release_dt", "actual", "consensus", "period"]
 CFG = {"frequency": "monthly", "direction": 1}
 DEFAULTS = {
-    "surprise_window_k": 12, "z_buckets": [1.71, 0.81], "pct_buckets": [0.10, 0.02],
+    "surprise_window_k": 12, "z_buckets": [1.54, 0.81], "pct_buckets": [0.10, 0.02],
     "fallback_min_prints": 6, "max_age_days": 120,
     "max_age_by_frequency": {"weekly": 14, "monthly": 45, "quarterly": 110},
 }
