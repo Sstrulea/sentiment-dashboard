@@ -1,0 +1,38 @@
+instrument,before_score,before_bias,after_score,after_bias
+US-DOLLAR,0.556,Neutral,-0.093,Neutral
+EURUSD,-1.672,Bearish,-1.47,Bearish
+GBPUSD,-1.075,Neutral,-0.873,Neutral
+USDJPY,1.258,Neutral,0.932,Neutral
+USDCHF,4.273,Very Bullish,3.636,Very Bullish
+USDCAD,0.264,Neutral,0.186,Neutral
+AUDUSD,-0.239,Neutral,0.083,Neutral
+NZDUSD,0.465,Neutral,0.314,Neutral
+EURGBP,-1.042,Neutral,-1.042,Neutral
+EURJPY,0.083,Neutral,-0.042,Neutral
+EURCHF,1.878,Bullish,1.437,Bullish
+EURAUD,-0.37,Neutral,-0.494,Neutral
+EURNZD,-1.19,Neutral,-0.838,Neutral
+EURCAD,-0.917,Neutral,-0.792,Neutral
+GBPJPY,0.125,Neutral,0.0,Neutral
+GBPCHF,3.648,Very Bullish,3.207,Very Bullish
+GBPAUD,-0.267,Neutral,-0.391,Neutral
+GBPNZD,-1.643,Bearish,-1.29,Neutral
+GBPCAD,-0.375,Neutral,-0.25,Neutral
+AUDJPY,-0.597,Neutral,-0.597,Neutral
+NZDJPY,1.89,Bullish,1.414,Bullish
+CADJPY,1.0,Neutral,0.75,Neutral
+CHFJPY,-2.29,Bearish,-1.972,Bearish
+AUDNZD,-1.823,Bearish,-1.354,Bearish
+AUDCAD,-1.029,Neutral,-0.782,Neutral
+AUDCHF,2.292,Bullish,1.979,Bullish
+NZDCAD,1.458,Bullish,1.229,Neutral
+NZDCHF,3.49,Very Bullish,2.708,Bullish
+CADCHF,2.722,Bullish,2.158,Bullish
+NIKKEI,1.333,Neutral,1.333,Neutral
+DJIA,1.0,Neutral,0.0,Neutral
+SP500,1.0,Neutral,0.0,Neutral
+NASDAQ,1.0,Neutral,0.0,Neutral
+FTSE100,0.667,Neutral,-0.333,Neutral
+DAX,-1.333,Neutral,-0.333,Neutral
+SILVER,-2.222,Bearish,-1.667,Neutral
+GOLD,-2.778,Bearish,-2.222,Bearish

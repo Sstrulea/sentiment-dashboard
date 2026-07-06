@@ -24,7 +24,7 @@ CALENDAR_COLUMNS = ["currency", "indicator_key", "release_dt", "actual", "consen
 
 DEFAULTS = {
     "surprise_window_k": 12,
-    "z_buckets": [1.0, 0.33],
+    "z_buckets": [1.71, 0.81],   # recalibrated (C2): ±2 at |z|>=1.71, ±1 at |z|>=0.81
     "fallback_min_prints": 6,
     "pct_buckets": [0.10, 0.02],
     "max_age_days": 120,
@@ -53,20 +53,20 @@ def _make_rows(currency, indicator_key, actuals, consensuses, weeks_back_end=0):
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize("v,expected", [
-    (1.0, 2),      # >= hi  (boundary inclusive)
-    (1.5, 2),
-    (0.99, 1),     # just below hi
-    (0.33, 1),     # >= lo  (boundary inclusive)
-    (0.32, 0),     # just below lo
+    (1.71, 2),     # >= hi  (boundary inclusive) — recalibrated production threshold
+    (2.0, 2),
+    (1.70, 1),     # just below hi
+    (0.81, 1),     # >= lo  (boundary inclusive)
+    (0.80, 0),     # just below lo
     (0.0, 0),
-    (-0.32, 0),
-    (-0.33, -1),
-    (-0.99, -1),
-    (-1.0, -2),
+    (-0.80, 0),
+    (-0.81, -1),
+    (-1.70, -1),
+    (-1.71, -2),
     (-2.0, -2),
 ])
 def test_bucket_boundaries_z(v, expected):
-    assert bucket_score(v, [1.0, 0.33]) == expected
+    assert bucket_score(v, [1.71, 0.81]) == expected
 
 
 def test_bucket_pct_thresholds():
@@ -78,8 +78,19 @@ def test_bucket_pct_thresholds():
 
 
 def test_bucket_nan_is_zero():
-    assert bucket_score(float("nan"), [1.0, 0.33]) == 0
-    assert bucket_score(None, [1.0, 0.33]) == 0
+    assert bucket_score(float("nan"), [1.71, 0.81]) == 0
+    assert bucket_score(None, [1.71, 0.81]) == 0
+
+
+def test_production_z_buckets_are_recalibrated():
+    """Guard the adopted C2 recalibration in the production config (window unchanged)."""
+    import yaml
+    from pathlib import Path
+    cfg = yaml.safe_load((Path(__file__).resolve().parents[1] / "data" / "economic_indicators.yaml").read_text())
+    d = cfg["defaults"]
+    assert d["z_buckets"] == [1.71, 0.81]      # C2: ±2 at p87.5, ±1 at p60
+    assert d["surprise_window_k"] == 12         # window NOT changed (C1 not confirmed)
+    assert d["pct_buckets"] == [0.10, 0.02]     # fallback thresholds unchanged
 
 
 # ---------------------------------------------------------------------------
