@@ -1,39 +1,30 @@
 //+------------------------------------------------------------------+
-//|  MacroDataExport.mq5  v1.3                                       |
+//|  MacroDataExport.mq5  v1.31                                      |
 //|  PRICE-ONLY export -> price_history.csv                          |
 //|                                                                  |
-//|  v1.3: economic calendar export REMOVED (calendar migrated to    |
-//|  Forex Factory in the Python pipeline; MT5 is OHLC/trend only).  |
-//|  Index symbols now use DISCOVERY groups (candidates separated    |
-//|  by '|') so broker naming differences resolve automatically:     |
-//|  DE40|GER40, UK100|FTSE100, JPN225|JP225|NIK225,                 |
-//|  US100|USTEC|NAS100. Resolved names are logged.                  |
-//|  v1.1 anti-degradation guard KEPT: a run with 0 rows never       |
-//|  overwrites the previous good CSV.                               |
-//|                                                                  |
-//|  Run on ONE chart. Output lands in MQL5/Files/. After editing    |
-//|  RECOMPILE (F7) and RE-ATTACH.                                   |
+//|  v1.31: symbol list SPLIT into 3 input strings (MT5 truncates    |
+//|  input strings ~250 chars in the properties dialog, which        |
+//|  silently dropped UK100/JPN225 groups in v1.3).                  |
+//|  v1.3: calendar export removed (FF migration); discovery groups. |
+//|  Anti-degradation guard kept.                                    |
 //+------------------------------------------------------------------+
-#property version   "1.30"
+#property version   "1.31"
 #property strict
 
 input int    InpRefreshMinutes = 60;    // price export interval (minutes)
-input int    InpBars           = 400;   // daily bars per symbol (>=300 for SMA200 + buffer)
+input int    InpBars           = 400;   // daily bars per symbol
 input string InpPriceFileName  = "price_history.csv";
-// Entries separated by ','. Alternatives within an entry separated by '|'
-// (first candidate that resolves on this server is used).
-input string InpSymbols =
+// Lists are concatenated. ',' separates entries, '|' separates
+// candidates within an entry (first that resolves is used).
+input string InpSymbolsFX1 =
    "EURUSD,GBPUSD,USDJPY,USDCHF,USDCAD,AUDUSD,NZDUSD,"
-   "EURGBP,EURJPY,EURCHF,EURAUD,EURNZD,EURCAD,"
-   "GBPJPY,GBPCHF,GBPAUD,GBPNZD,GBPCAD,"
-   "AUDJPY,NZDJPY,CADJPY,CHFJPY,"
-   "AUDNZD,AUDCAD,AUDCHF,NZDCAD,NZDCHF,CADCHF,"
-   "XAUUSD,XAGUSD,"
-   "US500,US30,"
-   "US100|USTEC|NAS100,"
-   "DE40|GER40,"
-   "UK100|FTSE100,"
-   "JPN225|JP225|NIK225";
+   "EURGBP,EURJPY,EURCHF,EURAUD,EURNZD,EURCAD";
+input string InpSymbolsFX2 =
+   "GBPJPY,GBPCHF,GBPAUD,GBPNZD,GBPCAD,AUDJPY,NZDJPY,CADJPY,CHFJPY,"
+   "AUDNZD,AUDCAD,AUDCHF,NZDCAD,NZDCHF,CADCHF";
+input string InpSymbolsOther =
+   "XAUUSD,XAGUSD,US500,US30,"
+   "US100|USTEC|NAS100,DE40|GER40,UK100|FTSE100,JPN225|JP225|NIK225";
 
 //+------------------------------------------------------------------+
 int OnInit()
@@ -63,7 +54,6 @@ int SplitTrim(const string src, const ushort sep, string &out[])
    return n;
 }
 
-// Try each '|' candidate; first one with valid D1 data wins.
 string ResolveSymbol(const string group)
 {
    string cand[];
@@ -85,8 +75,9 @@ string ResolveSymbol(const string group)
 //=================== PRICE =========================================
 void ExportPrices()
 {
+   string all = InpSymbolsFX1 + "," + InpSymbolsFX2 + "," + InpSymbolsOther;
    string groups[];
-   int ng = SplitTrim(InpSymbols, ',', groups);
+   int ng = SplitTrim(all, ',', groups);
 
    string tmp = InpPriceFileName + ".tmp";
    int h = FileOpen(tmp, FILE_WRITE|FILE_TXT|FILE_UNICODE);
@@ -125,7 +116,6 @@ void ExportPrices()
    }
    FileClose(h);
 
-   // ANTI-DEGRADATION: never replace a good CSV with an empty one.
    if(rows==0)
    {
       if(FileIsExist(tmp)) FileDelete(tmp);

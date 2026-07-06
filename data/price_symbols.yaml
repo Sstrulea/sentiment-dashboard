@@ -63,8 +63,8 @@ symbols:
   # --- Indices — naming varies a lot. NASDAQ/DAX/FTSE100/NIKKEI use candidate LISTS
   # mirroring the EA v1.3 discovery groups, so whichever broker symbol the EA resolves
   # maps back to the board key. (load_symbol_map accepts str or list.)
-  # MetaQuotes-Demo carries: US500, US30, USTEC (Nasdaq), DE40 (DAX). FTSE100 + NIKKEI
-  # are NOT offered under any candidate → they stay "no data" (no trend), gracefully.
+  # MetaQuotes-Demo (EA v1.31, all 36 resolve): US500, US30, USTEC (Nasdaq), DE40 (DAX),
+  # UK100 (FTSE), JPN225 (Nikkei) — 400 D1 bars each.
   SP500:   US500   # confirmed on MetaQuotes-Demo
   NASDAQ:  [US100, USTEC, NAS100]   # USTEC confirmed (EA v1.3)
   DJIA:    US30    # confirmed
