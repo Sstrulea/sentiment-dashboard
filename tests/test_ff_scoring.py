@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import pandas as pd
 
+import numpy as np
+
 from src.econ_calendar_ff import CANON_COLUMNS
-from src.ff_scoring import detect_cadence, to_scoring_frame
+from src.ff_scoring import detect_cadence, load_can_be_zero, to_scoring_frame
 
 # (currency, name_canonical) for the # xf series in config/ff_aliases.yaml, with the
 # indicator_key they must resolve to via the matcher.
@@ -79,3 +81,52 @@ def test_mt5_and_ff_frames_are_disjoint_in_source():
                               "release_dt": pd.Timestamp("2026-06-10"), "actual": 4.2,
                               "consensus": 4.2, "previous": 4.0, "source": "mt5"}])
     assert set(ff_frame["source"].unique()).isdisjoint(set(mt5_like["source"].unique()))
+
+
+# --- zero-placeholder quarantine gate ---------------------------------------
+
+def _ff_row(ccy, name_canonical, actual, forecast, dt="2026-06-01"):
+    return {"canonical_id": f"{ccy.lower()}_x", "currency": ccy, "name_raw": "raw",
+            "name_canonical": name_canonical, "datetime_utc": pd.Timestamp(dt),
+            "actual": actual, "forecast": forecast, "previous": 1.0,
+            "released": True, "source": "ff"}
+
+
+def test_config_can_be_zero_set():
+    cbz = load_can_be_zero()
+    assert "employment_change" in cbz and "retail_sales" in cbz  # net change / m/m growth
+    assert "unemployment_rate" not in cbz and "manufacturing_pmi" not in cbz  # levels/indices
+    assert "cpi_yoy" not in cbz
+
+
+def test_quarantine_zero_actual_and_consensus():
+    # unemployment_rate (can_be_zero=False): actual==0.0 AND consensus==0.0 → NaN
+    ff = pd.DataFrame([
+        _ff_row("USD", "Unemployment Rate", 0.0, 4.3),      # placeholder actual
+        _ff_row("USD", "Unemployment Rate", 4.2, 0.0),      # placeholder consensus
+        _ff_row("USD", "Unemployment Rate", 4.2, 4.3),      # clean
+    ], columns=CANON_COLUMNS)
+    out = to_scoring_frame(ff)
+    unemp = out[out["indicator_key"] == "unemployment_rate"].reset_index(drop=True)
+    assert np.isnan(unemp.loc[0, "actual"])                 # 0.0 actual quarantined
+    assert np.isnan(unemp.loc[1, "consensus"])              # 0.0 consensus quarantined
+    assert unemp.loc[2, "actual"] == 4.2                    # clean row untouched
+
+
+def test_can_be_zero_true_keeps_zero():
+    # employment_change (can_be_zero=True): a real 0 net-jobs print is KEPT
+    ff = pd.DataFrame([_ff_row("USD", "Nonfarm Payrolls", 0.0, 50.0)], columns=CANON_COLUMNS)
+    out = to_scoring_frame(ff)
+    emp = out[out["indicator_key"] == "employment_change"].iloc[0]
+    assert emp["actual"] == 0.0                             # NOT quarantined
+
+
+def test_historical_placeholder_excluded_from_baseline():
+    # a 0.0 placeholder among real prints must not enter the (actual,consensus) pairs
+    rows = [_ff_row("USD", "CPI y/y", v, c, dt=f"2026-0{m}-01")
+            for m, (v, c) in enumerate([(3.0, 3.0), (0.0, 3.0), (3.1, 3.0)], start=1)]
+    out = to_scoring_frame(pd.DataFrame(rows, columns=CANON_COLUMNS))
+    cpi = out[out["indicator_key"] == "cpi_yoy"]
+    both = cpi[cpi["actual"].notna() & cpi["consensus"].notna()]
+    assert len(both) == 2                                   # the 0.0 placeholder dropped
+    assert 0.0 not in set(both["actual"])

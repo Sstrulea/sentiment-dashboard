@@ -9,6 +9,7 @@ whatever calendar frame it is given — here, only FF rows).
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -18,9 +19,19 @@ import yaml
 from .economic_compute import build_payload
 from .economic_fetch import CompiledMatcher, _load_indicators_cfg
 
+log = logging.getLogger(__name__)
+
 ROOT = Path(__file__).resolve().parents[1]
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
+
+
+def load_can_be_zero(indicators_cfg: Optional[dict] = None) -> set[str]:
+    """Set of indicator_keys where 0.0 is a LEGITIMATE reading (can_be_zero: true).
+    All others default to False → 0.0 actual/consensus is a quarantined placeholder."""
+    cfg = indicators_cfg or _load_indicators_cfg()
+    return {k for k, v in (cfg.get("indicators", {}) or {}).items()
+            if (v or {}).get("can_be_zero") is True}
 
 # matcher is country-keyed; map our currency -> the matcher's country label.
 CCY2COUNTRY = {
@@ -37,29 +48,45 @@ def build_matcher() -> CompiledMatcher:
     return CompiledMatcher(_load_indicators_cfg().get("matcher", {}) or {})
 
 
-def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = None) -> pd.DataFrame:
+def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = None,
+                     can_be_zero: Optional[set[str]] = None) -> pd.DataFrame:
     """FF canonical DataFrame → MT5-schema calendar frame that build_payload accepts.
 
     indicator_key = matcher.match(country(currency), name_canonical). Rows whose
     name_canonical is not modeled for that country (e.g. JPY PPI — the MT5 matcher
     has no JPY PPI pattern either) are DROPPED, giving parity with the MT5 pipeline.
     Every output row carries source='ff' — a series baseline can never mix MT5 rows.
+
+    ZERO-PLACEHOLDER QUARANTINE: for indicators NOT flagged `can_be_zero`, a 0.0
+    `actual` or `consensus` is an FF unreleased/missing placeholder (a delayed or
+    cancelled release) — set to NaN so it never enters the z-baseline as a fake huge
+    surprise (see docs/baseline_variance_audit.csv). Applied to EVERY row, so it
+    cleans both the ongoing weekly ingest AND the historical backfill on read.
     """
     matcher = matcher or build_matcher()
+    cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
+    nan = float("nan")
     recs: list[dict] = []
+    q_actual = q_cons = 0
     for r in ff_df.itertuples(index=False):
         key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
         if key is None:
             continue
+        actual, consensus = r.actual, r.forecast   # FF forecast → MT5 'consensus'
+        if key not in cbz:
+            if actual == 0.0:
+                actual = nan
+                q_actual += 1
+            if consensus == 0.0:
+                consensus = nan
+                q_cons += 1
         recs.append({
-            "currency": r.currency,
-            "indicator_key": key,
-            "release_dt": r.datetime_utc,
-            "actual": r.actual,
-            "consensus": r.forecast,      # FF forecast → MT5 'consensus'
-            "previous": r.previous,
-            "source": "ff",
+            "currency": r.currency, "indicator_key": key, "release_dt": r.datetime_utc,
+            "actual": actual, "consensus": consensus, "previous": r.previous, "source": "ff",
         })
+    if q_actual or q_cons:
+        log.info("Zero-placeholder quarantine: %d actual==0.0 + %d consensus==0.0 → NaN "
+                 "(indicators where can_be_zero is False).", q_actual, q_cons)
     return pd.DataFrame(recs, columns=SCORING_COLUMNS)
 
 

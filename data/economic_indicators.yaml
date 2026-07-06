@@ -55,6 +55,14 @@ categories:
 #                   flash/final dedup gap). Defaults to defaults.default_frequency.
 #   frequency_overrides — {CCY: frequency} where a currency's cadence differs
 #                   (e.g. AU/NZ CPI are quarterly while most are monthly).
+#   can_be_zero   — default FALSE. When FALSE, an actual==0.0 or consensus==0.0 is
+#                   treated as a Forex-Factory "unreleased/missing" placeholder (a
+#                   delayed/cancelled release, e.g. the Oct-2025 US shutdown) and is
+#                   QUARANTINED to NaN at ingest so it never enters the z-baseline as a
+#                   fake huge surprise. TRUE only where 0.0 is a legitimate reading:
+#                   levels/rates/indices (unemployment, PMI, CPI-y/y, claims, jolts, adp)
+#                   are FALSE; net changes / growth rates (employment_change,
+#                   retail_sales, rate decisions) are TRUE.
 indicators:
   # --- Inflation (hawkish convention: hotter = bullish currency) ---
   cpi_yoy:
@@ -112,6 +120,7 @@ indicators:
     weight: 1.0
     frequency: monthly
     frequency_overrides: { NZD: quarterly }   # NZ retail sales is quarterly
+    can_be_zero: true            # m/m growth rate — 0.0 is a legitimate flat month
 
   # --- Labour ---
   employment_change:           # NFP (US) / Employment Change (AU,CA,NZ) / Claimant (UK)
@@ -121,6 +130,7 @@ indicators:
     weight: 1.0
     frequency: monthly
     frequency_overrides: { EUR: quarterly, NZD: quarterly }
+    can_be_zero: true            # net jobs change — 0.0 is a legitimate reading
   unemployment_rate:
     pillar: labour
     category: labour
@@ -165,6 +175,7 @@ indicators:
     direction: 1
     weight: 0.0
     frequency: monthly         # display-only; window only affects greying
+    can_be_zero: true          # a policy rate / no-change decision can legitimately be 0
 
 # ---------------------------------------------------------------------------
 # Matcher: MT5 economic-calendar `event` string -> indicator_key, keyed by the
