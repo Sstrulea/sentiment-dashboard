@@ -349,7 +349,7 @@
     const trendGroupHeader =
       '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the pair. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>';
     const trendSubHeader =
-      '<th data-sort="trend" class="ind-head grp-trend" title="Price trend (weight 0.5 in score)">MA×ADX</th>';
+      '<th data-sort="trend" class="ind-head grp-trend" title="Price trend, −3…+3 (weight 0.5 in score) = Regime (SMA50/200 structure, −2…+2) + Momentum (ATR-normalized SMA50 slope, −1…+1). ADX is display-only trend quality, not in the score.">REGIME+MOM</th>';
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
@@ -517,8 +517,9 @@
   }
 
   // TREND decomposition section for a modal (shared FX + cross-asset). Reads
-  // inst.trend_detail {short,long,slope,raw,adx,factor,trend_cell}. None / all-null
-  // → "no data" (no price series). Placed FIRST (matches the TREND-first column).
+  // inst.trend_detail {bull_points,regime,slope_atr,momentum,adx,trend_cell} (v2).
+  // None / all-null → "no data". Placed FIRST (matches the TREND-first column).
+  // ADX is DISPLAY-ONLY "trend quality" — it does NOT affect the score (regime+momentum).
   function trendSectionHtml(detail) {
     const head0 = '<div class="econ-cat-group"><div class="econ-cat-head">Trend ';
     if (!detail || detail.trend_cell === null || detail.trend_cell === undefined) {
@@ -529,18 +530,20 @@
     const d = detail, cls = cellClass(d.trend_cell);
     const head = head0 +
       '<span class="econ-cat-sub ' + cls + '">cell ' + fmtScoreCell(d.trend_cell) + '</span>' +
-      ' <span class="muted">· weight 0.5 · MA structure × ADX strength</span></div>';
+      ' <span class="muted">· weight 0.5 · Regime + Momentum</span></div>';
     const row = (name, v, c) => '<tr><td class="ei-name">' + name + '</td><td class="ei-num ' +
       (c || "") + '">' + v + '</td></tr>';
+    const slopeAtr = (d.slope_atr === null || d.slope_atr === undefined)
+      ? "—" : Number(d.slope_atr).toFixed(3);
+    const adxTxt = (d.adx === null || d.adx === undefined) ? "—" : Number(d.adx).toFixed(1);
     const rows =
-      row("Short (SMA10 vs SMA20)", fmtScoreCell(d.short), cellClass(d.short)) +
-      row("Long (SMA20 vs SMA50)", fmtScoreCell(d.long), cellClass(d.long)) +
-      row("Slope (SMA20, 10 bars)", fmtScoreCell(d.slope), cellClass(d.slope)) +
-      row("Raw (sum, ±3)", fmtScoreCell(d.raw), "") +
-      row("ADX(14)", Number(d.adx).toFixed(1), "") +
-      row("Strength factor", "×" + Number(d.factor).toFixed(2), "") +
-      row("<strong>Trend cell = clamp(round(raw × factor))</strong>",
-          "<strong>" + fmtScoreCell(d.trend_cell) + "</strong>", cls);
+      row("Regime (SMA50/200 structure, " + d.bull_points + "/3 bull)",
+          fmtScoreCell(d.regime), cellClass(d.regime)) +
+      row("Momentum (SMA50 slope ÷ ATR = " + slopeAtr + ")",
+          fmtScoreCell(d.momentum), cellClass(d.momentum)) +
+      row("<strong>Trend cell = clamp(regime + momentum)</strong>",
+          "<strong>" + fmtScoreCell(d.trend_cell) + "</strong>", cls) +
+      row('ADX(14) <span class="muted">· trend quality, display-only</span>', adxTxt, "");
     return head + '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
       '<thead><tr><th>Component</th><th>Value</th></tr></thead><tbody>' + rows +
       '</tbody></table></div></div>';
@@ -726,7 +729,7 @@
     // × ADX strength, direct on the asset. Contributes to Score with weight 0.5.
     const trendGroupHeader =
       '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the asset. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>';
-    const trendSubHeader = '<th class="ind-head grp-trend">MA×ADX</th>';
+    const trendSubHeader = '<th class="ind-head grp-trend" title="Price trend, −3…+3 = Regime (SMA50/200) + Momentum (ATR-normalized SMA50 slope). ADX display-only.">REGIME+MOM</th>';
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.

@@ -1,29 +1,31 @@
-"""TREND scoring — pure MA-structure technical score per instrument (integer ±3).
+"""TREND scoring v2 — 3-layer daily trend score per instrument (integer −3…+3).
 
 Reads data/price_history.parquet (daily OHLC, BOARD-keyed) and produces one
-integer trend cell in [-3, +3] per instrument. This module is SCORING ONLY —
-no column, no render, no SCORE integration (price first, score after; same
-staging as COT/SENTIMENT).
+integer trend cell in [-3, +3] per instrument. SCORING ONLY (price first, score
+after; same staging as COT/SENTIMENT). Same ±3 range as v1 ⇒ its weight in the
+composite is unchanged.
 
-MODEL (locked) — per instrument, on the daily close series:
-  short  = +1 if SMA20 > SMA50  else -1
-  long   = +1 if SMA50 > SMA200 else -1
-  slope  = sign(SMA50[now] - SMA50[now-20])   (+1 / -1 / 0 within epsilon)
-  raw    = short + long + slope                       in [-3, +3]
-  factor = ADX(14) strength filter:
-             ADX >= 22            -> 1.0
-             15 <= ADX < 22       -> 0.5
-             ADX <  15  (or NaN)  -> 0.25
-  trend_cell = clamp(round(raw * factor), -3, +3)
+MODEL (v2) — per instrument, on the daily CLOSE series (last closed bar):
+  Layer 1 REGIME (dominant, −2…+2):
+    bull_points = (close>SMA50) + (close>SMA200) + (SMA50>SMA200)   each 0/1
+    map 3→+2, 2→+1, 1→−1, 0→−2   (no neutral regime — neutrality is Layer 2's job;
+    a classic uptrend pullback [below SMA50, above SMA200, SMA50>SMA200] = 2 → +1).
+  Layer 2 MOMENTUM (−1…+1):
+    slope_atr = (SMA50[0] − SMA50[lookback]) / (lookback × ATR14)   (ATR-normalized,
+    so the threshold scales across instruments)
+    > +SLOPE_THRESH_ATR → +1;  < −SLOPE_THRESH_ATR → −1;  else 0
+  Layer 3 ADX(14): DISPLAY-ONLY "trend quality" — kept in the payload, shown in the
+    modal, NO effect on the score.
+  trend_cell = clamp(regime + momentum, −3, +3).
   Convention: + = bullish for the instrument (same as SENTIMENT).
 
-Rounding is half-away-from-zero (so 0.5 -> 1, 1.5 -> 2), NOT Python's
-banker's rounding — keeps the ±0.5 cases symmetric and intuitive.
+Rationale (v1 defects fixed): v1 raw = short(SMA10v20)+long(SMA20v50)+slope(SMA20)
+double-penalized short-term pullbacks (position + slope correlated) and its ADX factor
+damped fresh breakouts (low ADX). v2 makes the long regime dominant and ADX display-only.
 
-GUARDS (like COT):
-  < 200 closes (SMA200) OR < ~15 bars (ADX) -> trend = None (empty), not 0.
-  ADX NaN/undefined -> factor 0.25 (most conservative) + log.
-  instrument absent from parquet (NASDAQ/DAX/NIKKEI/FTSE100/DXY) -> None, skip.
+GUARDS: < MIN_BARS (SMA_long, 200) valid closes -> None (excluded, not 0). ATR<=0 /
+undefined -> momentum 0. Instrument absent from parquet -> None, skip.
+Calibration params live in config/trend.yaml (SLOPE_THRESH_ATR etc.).
 """
 from __future__ import annotations
 
@@ -32,6 +34,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from .price_fetch import load_symbol_map
 
@@ -40,26 +43,43 @@ log = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parents[1]
 PARQUET = ROOT / "data" / "price_history.parquet"
 SYMBOLS_YAML = ROOT / "data" / "price_symbols.yaml"
+TREND_YAML = ROOT / "config" / "trend.yaml"
 
-# --- model constants (all calibratable here, not in code paths) ---
-# SWING lookbacks (days–weeks), not yearly structure: a swing trader wants the
-# current move, so the longest MA is 50 (not 200). SHORT = SMA_SHORT vs SMA_MID,
-# LONG = SMA_MID vs SMA_LONG, SLOPE = SMA_MID over SLOPE_LOOKBACK bars.
-SMA_SHORT = 10
-SMA_MID = 20
-SMA_LONG = 50
-SLOPE_LOOKBACK = 10
-SLOPE_EPS = 0.0          # dead-zone on the SMA_MID slope (absolute, price units)
 
-ADX_PERIOD = 14
-ADX_STRONG = 22.0        # >= -> factor 1.0
-ADX_WEAK = 15.0          # >= -> factor 0.5  (else 0.25)
-FACTOR_STRONG = 1.0
-FACTOR_MEDIUM = 0.5
-FACTOR_WEAK = 0.25
+def _load_config() -> dict:
+    """Load config/trend.yaml with safe defaults (missing file/keys -> defaults)."""
+    try:
+        with open(TREND_YAML) as f:
+            c = yaml.safe_load(f) or {}
+    except FileNotFoundError:
+        c = {}
+    reg = c.get("regime", {}) or {}
+    mom = c.get("momentum", {}) or {}
+    # back-compat: a single slope_thresh_atr degenerates to enter==exit (no hysteresis).
+    thresh = mom.get("slope_thresh_atr")
+    return {
+        "sma_mid": int(reg.get("sma_mid", 50)),
+        "sma_long": int(reg.get("sma_long", 200)),
+        "slope_lookback": int(mom.get("slope_lookback", 20)),
+        "atr_period": int(mom.get("atr_period", 14)),
+        "slope_enter": float(mom.get("slope_enter", thresh if thresh is not None else 0.035)),
+        "slope_exit": float(mom.get("slope_exit", thresh if thresh is not None else 0.025)),
+        "min_bars": int(c.get("min_bars", 200)),
+        "adx_period": int(c.get("adx_period", 14)),
+    }
 
-MIN_BARS_SMA = SMA_LONG          # need SMA_LONG (50) closes for the longest MA
-MIN_BARS_ADX = 2 * ADX_PERIOD + 1  # ~29; ADX needs a couple of smoothing windows
+
+_CFG = _load_config()
+SMA_MID = _CFG["sma_mid"]                 # 50 — regime mid MA + momentum slope MA
+SMA_LONG = _CFG["sma_long"]               # 200 — regime long MA
+SLOPE_LOOKBACK = _CFG["slope_lookback"]   # 20 bars
+ATR_PERIOD = _CFG["atr_period"]           # 14
+SLOPE_ENTER = _CFG["slope_enter"]         # 0.035 — activate ±1 above this
+SLOPE_EXIT = _CFG["slope_exit"]           # 0.025 — deactivate below this (hysteresis band)
+MIN_BARS = _CFG["min_bars"]               # 200
+ADX_PERIOD = _CFG["adx_period"]           # 14 (display-only)
+
+REGIME_MAP = {3: 2, 2: 1, 1: -1, 0: -2}
 
 # Daily bars are stamped with the SERVER open date (EA writes TimeToString on the
 # bar's server open time). "Today" in server wall-clock is utcnow + this offset;
@@ -74,34 +94,21 @@ SERVER_UTC_OFFSET_HOURS = 3
 # Small helpers
 # ---------------------------------------------------------------------------
 
-def _round_half_away(x: float) -> int:
-    """Round half AWAY from zero (0.5->1, -0.5->-1), unlike Python's round()."""
-    if not np.isfinite(x):
-        return 0
-    return int(np.sign(x) * np.floor(np.abs(x) + 0.5))
+def _clamp(x: float, lo: int = -3, hi: int = 3) -> int:
+    """Clamp an integer trend score into [-3, +3]."""
+    return int(max(lo, min(hi, x)))
 
 
-def _clamp_round(x: float) -> int:
-    """round-half-away then clamp into [-3, +3]."""
-    return int(max(-3, min(3, _round_half_away(x))))
-
-
-def _slope_sign(now: float, past: float, eps: float = SLOPE_EPS) -> int:
-    diff = now - past
-    if abs(diff) <= eps:
-        return 0
-    return 1 if diff > 0 else -1
-
-
-def _factor_from_adx(adx: float) -> float:
-    """Strength factor from an ADX value; NaN/undefined -> most conservative."""
-    if adx is None or not np.isfinite(adx):
-        return FACTOR_WEAK
-    if adx >= ADX_STRONG:
-        return FACTOR_STRONG
-    if adx >= ADX_WEAK:
-        return FACTOR_MEDIUM
-    return FACTOR_WEAK
+def atr(df: pd.DataFrame, n: int = ATR_PERIOD) -> pd.Series:
+    """ATR(n) via Wilder RMA of true range (used to normalize the momentum slope)."""
+    high = pd.to_numeric(df["high"], errors="coerce")
+    low = pd.to_numeric(df["low"], errors="coerce")
+    close = pd.to_numeric(df["close"], errors="coerce")
+    prev_close = close.shift(1)
+    tr = pd.concat(
+        [high - low, (high - prev_close).abs(), (low - prev_close).abs()], axis=1
+    ).max(axis=1)
+    return _wilder_rma(tr, n)
 
 
 # ---------------------------------------------------------------------------
@@ -166,43 +173,75 @@ def compute_adx(df: pd.DataFrame, n: int = ADX_PERIOD) -> pd.Series:
 # Components / factor / cell  (per-instrument df, ascending by date)
 # ---------------------------------------------------------------------------
 
-def trend_components(df: pd.DataFrame) -> tuple[int, int, int, int] | None:
-    """(short, long, slope, raw) on the close series, or None if < SMA_LONG bars.
-
-    SHORT = SMA_SHORT vs SMA_MID; LONG = SMA_MID vs SMA_LONG; SLOPE = sign of
-    SMA_MID now vs SMA_MID `SLOPE_LOOKBACK` bars ago. (Swing windows 10/20/50.)
-    """
-    closes = pd.to_numeric(df["close"], errors="coerce").dropna().reset_index(drop=True)
-    if len(closes) < MIN_BARS_SMA:
+def regime_score(closes: pd.Series) -> tuple[int, int] | None:
+    """Layer 1 — (bull_points, regime) from SMA50/SMA200 structure, or None if
+    < MIN_BARS closes. bull_points = (close>SMA50)+(close>SMA200)+(SMA50>SMA200)."""
+    closes = pd.to_numeric(closes, errors="coerce").dropna().reset_index(drop=True)
+    if len(closes) < MIN_BARS:
         return None
-
-    sma_s = closes.rolling(SMA_SHORT).mean()
-    sma_m = closes.rolling(SMA_MID).mean()
-    sma_l = closes.rolling(SMA_LONG).mean()
-
-    short = 1 if sma_s.iloc[-1] > sma_m.iloc[-1] else -1
-    long = 1 if sma_m.iloc[-1] > sma_l.iloc[-1] else -1
-    slope = _slope_sign(sma_m.iloc[-1], sma_m.iloc[-1 - SLOPE_LOOKBACK])
-    raw = short + long + slope
-    return short, long, slope, raw
+    sma_mid = closes.rolling(SMA_MID).mean().iloc[-1]
+    sma_long = closes.rolling(SMA_LONG).mean().iloc[-1]
+    px = closes.iloc[-1]
+    bull_points = int(px > sma_mid) + int(px > sma_long) + int(sma_mid > sma_long)
+    return bull_points, REGIME_MAP[bull_points]
 
 
-def adx_factor(df: pd.DataFrame) -> float:
-    """Strength factor in {1.0, 0.5, 0.25} from the latest ADX(14)."""
-    adx = compute_adx(df, ADX_PERIOD)
-    val = float(adx.iloc[-1]) if len(adx) else float("nan")
-    if not np.isfinite(val):
-        log.warning("ADX undefined (NaN); using conservative factor %.2f.", FACTOR_WEAK)
-    return _factor_from_adx(val)
+def slope_atr_series(df: pd.DataFrame) -> pd.Series:
+    """Per-bar slope_atr = (SMA50[t]−SMA50[t−lookback]) / (lookback × ATR14[t]).
+    NaN where undefined (early bars, ATR<=0). Used both for the current display value
+    and for the hysteresis walk."""
+    closes = pd.to_numeric(df["close"], errors="coerce")
+    sma_mid = closes.rolling(SMA_MID).mean()
+    slope = sma_mid - sma_mid.shift(SLOPE_LOOKBACK)
+    atr_s = atr(df, ATR_PERIOD).replace(0.0, np.nan)
+    return slope / (SLOPE_LOOKBACK * atr_s)
+
+
+def hysteresis_step(slope_atr: float, prev: int, enter: float = None, exit: float = None) -> int:
+    """One hysteresis step: ±1 activates when |slope_atr| > enter (sign of slope_atr),
+    deactivates to 0 when |slope_atr| < exit, and in the band [exit, enter] KEEPS the
+    previous state `prev`. NaN → 0. Cold start = prev 0 → active only if > enter."""
+    enter = SLOPE_ENTER if enter is None else enter
+    exit = SLOPE_EXIT if exit is None else exit
+    if slope_atr is None or not np.isfinite(slope_atr):
+        return 0
+    mag = abs(slope_atr)
+    if mag > enter:
+        return 1 if slope_atr > 0 else -1
+    if mag < exit:
+        return 0
+    return int(prev)   # band [exit, enter] → keep previous state (hysteresis)
+
+
+def momentum_hysteresis(sa_series: pd.Series, enter: float = None, exit: float = None) -> int:
+    """Walk the slope_atr series applying `hysteresis_step` from a cold start (0) to the
+    last bar. Stateless — the final momentum is fully determined by the price history."""
+    m = 0
+    for sa in sa_series:
+        m = hysteresis_step(float(sa) if sa is not None else float("nan"), m, enter, exit)
+    return m
+
+
+def momentum_score(df: pd.DataFrame, enter: float = None, exit: float = None) -> tuple[float, int]:
+    """Layer 2 — (current slope_atr, momentum). Momentum applies HYSTERESIS over the
+    historical slope_atr series (enter/exit band). Returns (nan, 0) if undefined."""
+    sa = slope_atr_series(df)
+    sa_valid = sa.dropna()
+    if sa_valid.empty:
+        return float("nan"), 0
+    return float(sa_valid.iloc[-1]), momentum_hysteresis(sa_valid, enter, exit)
 
 
 def trend_cell(df: pd.DataFrame) -> int | None:
-    """Integer trend cell in [-3, +3], or None if data is insufficient."""
-    comp = trend_components(df)
-    if comp is None:
+    """Integer trend cell in [-3, +3] = clamp(regime + momentum), or None if
+    insufficient data. ADX plays no part (display-only)."""
+    closes = pd.to_numeric(df["close"], errors="coerce").dropna().reset_index(drop=True)
+    reg = regime_score(closes)
+    if reg is None:
         return None
-    _, _, _, raw = comp
-    return _clamp_round(raw * adx_factor(df))
+    _, regime = reg
+    _, mom = momentum_score(df)
+    return _clamp(regime + mom)
 
 
 # ---------------------------------------------------------------------------
@@ -254,13 +293,14 @@ def _series_for(df: pd.DataFrame, board_key: str) -> pd.DataFrame:
 
 
 def _empty_entry() -> dict:
-    return {k: None for k in ("short", "long", "slope", "raw", "adx", "factor", "trend_cell")}
+    return {k: None for k in ("bull_points", "regime", "slope_atr", "momentum", "adx", "trend_cell")}
 
 
 def score_all(parquet_path: Path = PARQUET, yaml_path: Path = SYMBOLS_YAML,
               server_today: pd.Timestamp | None = None) -> dict[str, dict]:
-    """{board_key: {short, long, slope, raw, adx, factor, trend_cell}} for ALL
-    board keys. Instruments without a (sufficient) series get an all-None entry.
+    """{board_key: {bull_points, regime, slope_atr, momentum, adx, trend_cell}} for
+    ALL board keys. Instruments without a sufficient series (< MIN_BARS closes) get an
+    all-None entry. ADX is display-only ("trend quality"), no effect on trend_cell.
 
     The forming (current server-day) bar is excluded at load — scores reflect the
     last CLOSED daily bar. `server_today` overrides "now" (for tests)."""
@@ -274,24 +314,23 @@ def score_all(parquet_path: Path = PARQUET, yaml_path: Path = SYMBOLS_YAML,
     results: dict[str, dict] = {}
     for key in board_keys:
         g = _series_for(df, key)
-        comp = trend_components(g) if len(g) >= MIN_BARS_SMA else None
-        if comp is None:
+        closes = pd.to_numeric(g["close"], errors="coerce").dropna().reset_index(drop=True)
+        reg = regime_score(closes)
+        if reg is None:
             results[key] = _empty_entry()
             continue
-        short, long, slope, raw = comp
+        bull_points, regime = reg
+        slope_atr, momentum = momentum_score(g)   # hysteresis walk over the series
+        # ADX(14) — display-only trend-quality metadata, NOT part of the score.
         adx_series = compute_adx(g, ADX_PERIOD)
         adx_val = float(adx_series.iloc[-1]) if len(adx_series) else float("nan")
-        if not np.isfinite(adx_val):
-            log.warning("%s: ADX undefined; conservative factor %.2f.", key, FACTOR_WEAK)
-        factor = _factor_from_adx(adx_val)
         results[key] = {
-            "short": short,
-            "long": long,
-            "slope": slope,
-            "raw": raw,
-            "adx": adx_val,
-            "factor": factor,
-            "trend_cell": _clamp_round(raw * factor),
+            "bull_points": bull_points,
+            "regime": regime,
+            "slope_atr": None if not np.isfinite(slope_atr) else round(float(slope_atr), 4),
+            "momentum": momentum,
+            "adx": None if not np.isfinite(adx_val) else round(adx_val, 1),
+            "trend_cell": _clamp(regime + momentum),
         }
     return results
 
@@ -305,14 +344,16 @@ def _print_report(parquet_path: Path = PARQUET, yaml_path: Path = SYMBOLS_YAML) 
     scored = {k: v for k, v in res.items() if v["trend_cell"] is not None}
     empty = [k for k, v in res.items() if v["trend_cell"] is None]
 
-    print(f"TREND scores — {len(scored)} instrument(s) with data, {len(empty)} None\n")
-    hdr = f"{'board_key':<9} {'short':>5} {'long':>4} {'slope':>5} {'raw':>4} {'ADX':>6} {'factor':>6} {'trend':>5}"
-    print(hdr)
+    print(f"TREND v2 scores — {len(scored)} instrument(s) with data, {len(empty)} None\n")
+    hdr = f"{'board_key':<9} {'bull_pts':>8} {'regime':>6} {'slope/atr':>9} {'mom':>4} {'ADX*':>5} {'trend':>5}"
+    print(hdr + "   (*ADX display-only)")
     print("-" * len(hdr))
     for k in sorted(scored):
         v = scored[k]
-        print(f"{k:<9} {v['short']:>5d} {v['long']:>4d} {v['slope']:>5d} {v['raw']:>4d} "
-              f"{v['adx']:>6.1f} {v['factor']:>6.2f} {v['trend_cell']:>5d}")
+        sa = "—" if v["slope_atr"] is None else f"{v['slope_atr']:>9.3f}"
+        adx = "—" if v["adx"] is None else f"{v['adx']:>5.1f}"
+        print(f"{k:<9} {v['bull_points']:>8d} {v['regime']:>+6d} {sa:>9} {v['momentum']:>+4d} "
+              f"{adx:>5} {v['trend_cell']:>+5d}")
     print()
     print(f"None (no/insufficient series): {', '.join(empty) if empty else '—'}")
 
