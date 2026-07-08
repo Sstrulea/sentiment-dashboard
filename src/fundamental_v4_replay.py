@@ -101,6 +101,64 @@ def _forward_returns() -> dict:
     return out
 
 
+def run_replay_fundamental(step: int = 1) -> tuple:
+    """V4.0 (production std+early) FUNDAMENTAL-ONLY replay: rate_scores/realyield/
+    liquidity all None so the composite is growth+inflation+labour ONLY (no monetary,
+    no rates factor) — the pillar in isolation. Same 829-as-of window as run_replay."""
+    cal = to_scoring_frame(pd.read_parquet(FF), build_matcher())   # gated
+    cal["release_dt"] = pd.to_datetime(cal["release_dt"])
+    ind_cfg = _variant_cfg(yaml.safe_load(open(IND_YAML)), "std", "early")   # V4.0 only
+    inst = yaml.safe_load(open(INST_YAML)); ca_cfg = yaml.safe_load(open(CA_YAML))
+
+    cal_actual = cal[cal["actual"].notna()]
+    last = cal_actual["release_dt"].max().normalize()
+    first = (cal["release_dt"].min() + pd.Timedelta(days=120)).normalize()
+    asofs = pd.bdate_range(first, last)[::step]
+
+    rows = []
+    for as_of in asofs:
+        cal_slice = cal[cal["release_dt"] <= as_of]
+        payload = build_payload(cal_slice, ind_cfg, inst, as_of=as_of, rate_scores=None)
+        for ip in payload["instruments"]:
+            rows.append({"as_of": as_of, "symbol": ip["symbol"],
+                         "cls": "fx" if ip["type"] == "fx" else "single",
+                         "score": ip["score"], "bias": ip["bias"]})
+        cats = {ccy: card.get("categories", {}) for ccy, card in payload["currencies"].items()}
+        ca = compute_crossasset_scores(cats, None, ca_cfg, liquidity_score=None)   # fundamental-only
+        for sym, r in ca.items():
+            rows.append({"as_of": as_of, "symbol": sym, "cls": "cross-asset",
+                         "score": r.get("score_precise", 0.0), "bias": r.get("bias_label")})
+    df = pd.DataFrame(rows); df["as_of"] = pd.to_datetime(df["as_of"])
+    return df, _forward_returns()
+
+
+def attach_trading_day_returns(df: pd.DataFrame, px: dict, horizons) -> pd.DataFrame:
+    """r_H = close[pos+H]/close[pos] − 1 where pos = index of the last trading day
+    on/at-or-before as_of, and pos+H is the H-th subsequent TRADING day in the actual
+    price series (NOT calendar business days). Tail as-ofs with fewer than H trading
+    days available → NaN (EXCLUDED, never truncated to the last close)."""
+    df = df.copy()
+    for H in horizons:
+        df[f"r{H}"] = np.nan
+    for sym, series in px.items():
+        m = (df["symbol"] == sym).values
+        if not m.any():
+            continue
+        dates = series["date"].values
+        closes = series["close"].values.astype(float)
+        n = len(closes)
+        idx = df.loc[m, "as_of"].values
+        pos = np.searchsorted(dates, idx, side="right") - 1     # last close <= as_of
+        for H in horizons:
+            tgt = pos + H
+            r = np.full(len(pos), np.nan)
+            ok = (pos >= 0) & (tgt < n)                          # H trading days must EXIST
+            r[ok] = closes[tgt[ok]] / closes[pos[ok]] - 1.0
+            col = df.columns.get_loc(f"r{H}")
+            df.iloc[np.where(m)[0], col] = r
+    return df
+
+
 def attach_returns(df: pd.DataFrame, px: dict) -> pd.DataFrame:
     """r_H = close(as_of + H bd)/close(as_of) − 1, per symbol. as-of and as-of+H bd
     use the last close on/at-or-before each target date (asof merge)."""
