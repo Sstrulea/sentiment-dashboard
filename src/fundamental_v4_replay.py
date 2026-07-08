@@ -101,13 +101,15 @@ def _forward_returns() -> dict:
     return out
 
 
-def run_replay_fundamental(step: int = 1) -> tuple:
-    """V4.0 (production std+early) FUNDAMENTAL-ONLY replay: rate_scores/realyield/
-    liquidity all None so the composite is growth+inflation+labour ONLY (no monetary,
-    no rates factor) — the pillar in isolation. Same 829-as-of window as run_replay."""
+def run_replay_fundamental(step: int = 1, scoring_variant: str = "prod") -> tuple:
+    """FUNDAMENTAL-ONLY replay (production std+early): rate_scores/realyield/liquidity
+    all None so the composite is growth+inflation+labour ONLY (no monetary, no rates
+    factor) — the pillar in isolation. Same 829-as-of window as run_replay.
+    scoring_variant: 'prod' (production z-buckets) | 'sign' (V4.3)."""
     cal = to_scoring_frame(pd.read_parquet(FF), build_matcher())   # gated
     cal["release_dt"] = pd.to_datetime(cal["release_dt"])
-    ind_cfg = _variant_cfg(yaml.safe_load(open(IND_YAML)), "std", "early")   # V4.0 only
+    ind_cfg = _variant_cfg(yaml.safe_load(open(IND_YAML)), "std", "early")   # V4.0 base
+    ind_cfg["defaults"]["scoring_variant"] = scoring_variant                  # prod | sign (V4.3)
     inst = yaml.safe_load(open(INST_YAML)); ca_cfg = yaml.safe_load(open(CA_YAML))
 
     cal_actual = cal[cal["actual"].notna()]

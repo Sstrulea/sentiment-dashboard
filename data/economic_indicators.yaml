@@ -19,6 +19,8 @@ defaults:
   sigma_method: std            # std (production) | mad (V4.1 robust: 1.4826*MAD, floored)
   quantize: early              # early (production: bucket per indicator) | late (V4.2:
                                # continuous contribution sign(z)*min(2, |z|*2/1.54), |z|<0.2→0)
+  scoring_variant: prod        # prod (production z-buckets) | sign (V4.3: sign(s)·1, gated to
+                               # ·2 when |z|>=z_buckets[0]; no dead-zone — any beat/miss scores)
   z_buckets: [1.54, 0.81]      # |z| >= 1.54 -> ±2 ; >= 0.81 -> ±1 ; else 0
   # Recalibrated C2 on the CLEAN |z| distribution (post zero-placeholder quarantine,
   # docs/zero-placeholder-quarantine.md): 1.54 = p87.5 (±2 catches ~12%), 0.81 = p60. The

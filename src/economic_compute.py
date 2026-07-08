@@ -222,6 +222,8 @@ def compute_indicator_score(
     sigma_method = str(defaults.get("sigma_method", "std")).lower()   # V4: std | mad
     quantize = str(defaults.get("quantize", "early")).lower()         # V4: early | late
     sigma_floor = float(indicator_cfg.get("sigma_floor", 0.0))        # V4 (mad path only)
+    scoring_variant = str(defaults.get("scoring_variant", "prod")).lower()  # V4.3: prod | sign
+    z_hi = float(z_buckets[0]) if z_buckets else 1.54                  # ±1/±2 gate for `sign`
     freq = effective_frequency(indicator_cfg, defaults, currency)
     max_age_days = _max_age_for(indicator_cfg, defaults, freq)
     dedup_gap = (defaults.get("dedup_gap_days", {}) or {}).get(freq)
@@ -313,6 +315,14 @@ def compute_indicator_score(
                 "stale": stale,
                 "superseded_missing": superseded,
             }
+        if scoring_variant == "sign":
+            # V4.3 fallback: sign-only ±1 (no ±2 gate — no z with <6 prints).
+            sc = 0 if round(surprise, 6) == 0 else int(math.copysign(1, direction * surprise))
+            return {
+                "actual": actual, "consensus": consensus, "surprise": surprise, "z": None,
+                "score": sc, "contribution": float(sc), "flag": "fallback",
+                "release_dt": release_dt, "stale": stale, "superseded_missing": superseded,
+            }
         pct = direction * surprise / abs(consensus)
         pct_score = bucket_score(pct, pct_buckets)
         return {
@@ -329,6 +339,16 @@ def compute_indicator_score(
         }
 
     z = direction * surprise / sigma
+    if scoring_variant == "sign":
+        # V4.3 SIGN: any beat/miss scores (no dead-zone); z used ONLY as the ±1/±2 gate.
+        # actual==consensus at reported granularity (round to 6 dp kills float noise) → 0.
+        sc = 0 if round(surprise, 6) == 0 else int(math.copysign(2 if abs(z) >= z_hi else 1,
+                                                                  direction * surprise))
+        return {
+            "actual": actual, "consensus": consensus, "surprise": surprise, "z": z,
+            "score": sc, "contribution": float(sc), "flag": None,
+            "release_dt": release_dt, "stale": stale, "superseded_missing": superseded,
+        }
     score = bucket_score(z, z_buckets)
     # V4.2 late-quantize: the per-indicator CONTRIBUTION to the category mean becomes
     # a continuous z-map; the DISPLAYED cell (`score`) stays bucketed. Under `early`
