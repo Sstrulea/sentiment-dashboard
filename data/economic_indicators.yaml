@@ -15,6 +15,10 @@
 
 defaults:
   surprise_window_k: 12        # rolling window (# of same-indicator prints) for sigma
+  # --- V4 experiment flags (defaults reproduce current production byte-for-byte) ---
+  sigma_method: std            # std (production) | mad (V4.1 robust: 1.4826*MAD, floored)
+  quantize: early              # early (production: bucket per indicator) | late (V4.2:
+                               # continuous contribution sign(z)*min(2, |z|*2/1.54), |z|<0.2→0)
   z_buckets: [1.54, 0.81]      # |z| >= 1.54 -> ±2 ; >= 0.81 -> ±1 ; else 0
   # Recalibrated C2 on the CLEAN |z| distribution (post zero-placeholder quarantine,
   # docs/zero-placeholder-quarantine.md): 1.54 = p87.5 (±2 catches ~12%), 0.81 = p60. The
@@ -68,6 +72,7 @@ categories:
 indicators:
   # --- Inflation (hawkish convention: hotter = bullish currency) ---
   cpi_yoy:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: inflation
     category: inflation
     direction: 1
@@ -75,6 +80,7 @@ indicators:
     frequency: monthly
     frequency_overrides: { AUD: quarterly, NZD: quarterly }
   core_cpi:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: inflation
     category: inflation
     direction: 1
@@ -82,6 +88,7 @@ indicators:
     frequency: monthly
     frequency_overrides: { AUD: quarterly }   # RBA Trimmed Mean CPI is quarterly
   ppi_yoy:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: inflation
     category: inflation
     direction: 1
@@ -89,6 +96,7 @@ indicators:
     frequency: monthly
     frequency_overrides: { AUD: quarterly, NZD: quarterly }
   core_pce:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: inflation
     category: inflation
     direction: 1
@@ -98,24 +106,28 @@ indicators:
 
   # --- Growth ---
   gdp_qoq:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: growth
     category: growth
     direction: 1
     weight: 1.0
     frequency: quarterly       # GDP q/q is quarterly everywhere
   manufacturing_pmi:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: growth
     category: growth
     direction: 1
     weight: 1.0
     frequency: monthly
   services_pmi:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: growth
     category: growth
     direction: 1
     weight: 1.0
     frequency: monthly
   retail_sales:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: growth
     category: growth
     direction: 1
@@ -134,6 +146,7 @@ indicators:
     frequency_overrides: { EUR: quarterly, NZD: quarterly }
     can_be_zero: true            # net jobs change — 0.0 is a legitimate reading
   unemployment_rate:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: labour
     category: labour
     direction: -1              # higher unemployment = bearish currency
@@ -141,6 +154,7 @@ indicators:
     frequency: monthly
     frequency_overrides: { NZD: quarterly }   # NZ unemployment is quarterly
   wage_growth:
+    sigma_floor: 0.1          # V4: floor σ (level/rate/index; robust-σ path only)
     pillar: labour
     category: labour
     direction: 1

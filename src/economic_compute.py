@@ -44,6 +44,17 @@ def bucket_score(signed_value: float, buckets: list[float]) -> int:
     return 0
 
 
+def _late_quantize(z: float) -> float:
+    """V4.2 continuous per-indicator contribution from z (late quantization):
+    |z| < 0.2 → 0.0 (anti-rounding dead-zone); else sign(z)·min(2, |z|·2/1.54).
+    Anchors: z=0.81→1.052, z=1.54→2.0, |z|≥3.0→2.0 (clamped)."""
+    if z is None or (isinstance(z, float) and math.isnan(z)):
+        return 0.0
+    if abs(z) < 0.2:
+        return 0.0
+    return math.copysign(min(2.0, abs(z) * (2.0 / 1.54)), z)
+
+
 def _is_num(v: Any) -> bool:
     return v is not None and not (isinstance(v, float) and math.isnan(v))
 
@@ -208,6 +219,9 @@ def compute_indicator_score(
     z_buckets = defaults.get("z_buckets", [1.0, 0.33])
     pct_buckets = defaults.get("pct_buckets", [0.10, 0.02])
     min_prints = int(defaults.get("fallback_min_prints", 6))
+    sigma_method = str(defaults.get("sigma_method", "std")).lower()   # V4: std | mad
+    quantize = str(defaults.get("quantize", "early")).lower()         # V4: early | late
+    sigma_floor = float(indicator_cfg.get("sigma_floor", 0.0))        # V4 (mad path only)
     freq = effective_frequency(indicator_cfg, defaults, currency)
     max_age_days = _max_age_for(indicator_cfg, defaults, freq)
     dedup_gap = (defaults.get("dedup_gap_days", {}) or {}).get(freq)
@@ -268,7 +282,18 @@ def compute_indicator_score(
     ]
     diffs = (pairs["actual"] - pairs["consensus"]).tail(window_k)
     n_pairs = int(len(diffs))
-    sigma = float(diffs.std(ddof=1)) if n_pairs >= 2 else float("nan")
+    if n_pairs >= 2:
+        if sigma_method == "mad":
+            # V4.1 robust σ on the SAME raw (pre-direction) surprises: 1.4826*MAD,
+            # floored (mad path only). Reduces to a scale estimator like std for
+            # Gaussian data but is outlier-resistant.
+            med = float(diffs.median())
+            sigma = 1.4826 * float((diffs - med).abs().median())
+            sigma = max(sigma, sigma_floor)
+        else:
+            sigma = float(diffs.std(ddof=1))
+    else:
+        sigma = float("nan")
 
     use_fallback = (
         n_pairs < min_prints or sigma == 0.0 or math.isnan(sigma)
@@ -282,18 +307,21 @@ def compute_indicator_score(
                 "surprise": surprise,
                 "z": None,
                 "score": 0,
+                "contribution": 0.0,
                 "flag": "no_consensus",
                 "release_dt": release_dt,
                 "stale": stale,
                 "superseded_missing": superseded,
             }
         pct = direction * surprise / abs(consensus)
+        pct_score = bucket_score(pct, pct_buckets)
         return {
             "actual": actual,
             "consensus": consensus,
             "surprise": surprise,
             "z": None,
-            "score": bucket_score(pct, pct_buckets),
+            "score": pct_score,
+            "contribution": float(pct_score),   # fallback rule unchanged under late-quantize
             "flag": "fallback",
             "release_dt": release_dt,
             "stale": stale,
@@ -301,12 +329,18 @@ def compute_indicator_score(
         }
 
     z = direction * surprise / sigma
+    score = bucket_score(z, z_buckets)
+    # V4.2 late-quantize: the per-indicator CONTRIBUTION to the category mean becomes
+    # a continuous z-map; the DISPLAYED cell (`score`) stays bucketed. Under `early`
+    # (production) contribution == score → byte-identical.
+    contribution = float(score) if quantize != "late" else _late_quantize(z)
     return {
         "actual": actual,
         "consensus": consensus,
         "surprise": surprise,
         "z": z,
-        "score": bucket_score(z, z_buckets),
+        "score": score,
+        "contribution": contribution,
         "flag": None,
         "release_dt": release_dt,
         "stale": stale,
@@ -373,7 +407,10 @@ def compute_currency_scorecard(
         breakdown[key] = scored
         cat = ind_cfg.get("category")
         if cat in per_cat and not scored.get("stale"):
-            per_cat[cat].append((scored["score"], float(ind_cfg.get("weight", 1.0))))
+            # V4: the category mean uses `contribution` (== score under early-quantize,
+            # continuous under late). Falls back to score for any older-shaped entry.
+            per_cat[cat].append((scored.get("contribution", scored["score"]),
+                                 float(ind_cfg.get("weight", 1.0))))
 
     categories_out: dict[str, dict] = {}
     cat_scores_for_index: list[tuple[float, float]] = []
