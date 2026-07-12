@@ -228,7 +228,33 @@ def test_pull_requests_trailing_7_day_range(tmp_path):
     assert seen["from"].isoformat() == "2026-07-05"
 
 
-# --- freshness badge (A4) -------------------------------------------------------
+# --- freshness badges (A4, A5) ---------------------------------------------------
+
+def test_calendar_badge_tracks_active_ff_parquet(tmp_path, monkeypatch):
+    """A5: with calendar_source=ff the calendar badge must watch the ACTIVE FF
+    parquet (datetime_utc/actual) — not the frozen MT5 file, which would pin the
+    badge red forever. Fresh FF actuals (2d old, under the 3d threshold) → not
+    stale; last actual older than the threshold (9d, the incident shape) → stale."""
+    import src.ff_refresh as FR
+    from src.economic_render import _freshness
+    ffp = tmp_path / "ff.parquet"
+    monkeypatch.setattr(FR, "FF_PARQUET", ffp)
+    monkeypatch.setattr(FR, "calendar_source", lambda cfg=None: "ff")
+    monkeypatch.setattr(J, "STATE_JSON", tmp_path / "jb_last_pull.json")   # hermetic
+    as_of = pd.Timestamp("2026-07-12 21:30")
+
+    # published actual 2 days ago + a future schedule row (NaN) → fresh
+    _frame([_canon_row("usd_cpi", "USD", "2026-07-10 12:30", 3.8),
+            _canon_row("usd_cpi", "USD", "2026-07-14 12:30", float("nan"))]).to_parquet(ffp, index=False)
+    f = _freshness(as_of=as_of)
+    assert f["calendar"] == {"last_update": "2026-07-10T12:30:00",
+                             "age_days": 2, "stale": False}
+
+    # last published actual 9 days ago (the 2026-07-03..12 freeze shape) → stale
+    _frame([_canon_row("usd_cpi", "USD", "2026-07-03 12:30", 3.8)]).to_parquet(ffp, index=False)
+    f = _freshness(as_of=as_of)
+    assert f["calendar"]["stale"] is True and f["calendar"]["age_days"] == 9
+    assert f["any_stale"] is True
 
 def test_actuals_pull_badge_after_two_missed_days(tmp_path, monkeypatch):
     """A4: simulate the pull failing for 2 days → the DISTINCT actuals_pull badge
