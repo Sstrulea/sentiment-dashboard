@@ -106,18 +106,23 @@
     el.innerHTML = parts.join(" · ") + freshnessBadges(p.freshness);
   }
 
-  // Per-source freshness badges (calendar / price). STALE → red badge so a silent
-  // data freeze is visible instantly without comparing to external sources.
+  // Per-source freshness badges (calendar / actuals pull / price). STALE → red
+  // badge so a silent data freeze is visible instantly without comparing to
+  // external sources. "Actuals pull" is the daily JBlanked pull — distinct from
+  // calendar-stale (the weekly calendar feed carries no actuals, so the pull can
+  // freeze while the calendar itself keeps updating); age_days === null means no
+  // successful pull was EVER recorded ("never").
   function freshnessBadges(f) {
     if (!f) return "";
     let out = "";
-    [["calendar", "Calendar"], ["price", "Price"]].forEach(function (pair) {
+    [["calendar", "Calendar"], ["actuals_pull", "Actuals pull"], ["price", "Price"]].forEach(function (pair) {
       const v = f[pair[0]];
       if (!v) return;
-      const age = v.age_days <= 0 ? "today" : v.age_days + "d ago";
+      const age = (v.age_days === null || v.age_days === undefined) ? "never"
+        : (v.age_days <= 0 ? "today" : v.age_days + "d ago");
       const cls = v.stale ? "fresh-badge stale" : "fresh-badge ok";
       const txt = (v.stale ? "⚠ STALE " : "") + pair[1] + " " + age;
-      out += ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "") +
+      out += ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "never") +
         '">' + txt + "</span>";
     });
     return out;

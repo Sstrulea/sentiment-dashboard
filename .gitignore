@@ -11,3 +11,7 @@ data/calibration_backfill.csv
 # FF spike/backfill provenance (large, local-only; runtime uses data/economic_calendar_ff.parquet)
 data/raw/
 scripts/spike_jblanked/
+
+# JBlanked daily-pull state + raw payload cache (machine-local; see src/jb_actuals.py)
+data/jb_last_pull.json
+data/jb_raw/

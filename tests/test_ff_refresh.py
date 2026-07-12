@@ -41,6 +41,35 @@ def test_merge_into_empty():
     assert len(out) == 1 and list(out.columns) == CANON_COLUMNS
 
 
+# --- field-aware merge (A2) --------------------------------------------------
+
+def test_merge_field_aware_actual_survives_actualless_redelivery():
+    """A2: the daily JBlanked pull wrote the actual in the evening; the next-day
+    hourly faireconomy tick re-delivers the SAME event without an actual (the
+    weekly feed is structurally actual-less). The actual must survive the
+    re-merge; the schedule fields (forecast/previous) still update."""
+    evening = _canon_row("usd_cpi", "USD", "2026-07-14 12:30", 3.7)
+    redelivery = _canon_row("usd_cpi", "USD", "2026-07-14 12:30", float("nan"))
+    redelivery["forecast"], redelivery["previous"] = 3.9, 3.5
+    out = R.merge_weekly(_frame([evening]), _frame([redelivery]))
+    assert len(out) == 1
+    row = out.iloc[0]
+    assert row["actual"] == pytest.approx(3.7)      # non-null actual never nulled out
+    assert row["forecast"] == pytest.approx(3.9)    # other fields keep last-write-wins
+    assert row["previous"] == pytest.approx(3.5)
+
+
+def test_merge_field_aware_incoming_actual_still_wins():
+    # a JB actual lands on a pre-existing actual-less schedule row…
+    sched = _canon_row("usd_cpi", "USD", "2026-07-14 12:30", float("nan"))
+    jb = _canon_row("usd_cpi", "USD", "2026-07-14 12:30", 3.8)
+    out = R.merge_weekly(_frame([sched]), _frame([jb]))
+    assert out.iloc[0]["actual"] == pytest.approx(3.8)
+    # …and a genuine revision (non-null over non-null) still takes the new value
+    out2 = R.merge_weekly(_frame([jb]), _frame([_canon_row("usd_cpi", "USD", "2026-07-14 12:30", 3.9)]))
+    assert out2.iloc[0]["actual"] == pytest.approx(3.9)
+
+
 # --- anti-degradation guards (keep last-good) -------------------------------
 
 def _good_weekly():

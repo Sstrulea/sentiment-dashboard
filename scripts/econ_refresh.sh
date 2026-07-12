@@ -24,6 +24,13 @@ if [ "$CAL_SRC" = "ff" ]; then
   # keeps last-good on fetch fail / empty / thin payload; FRED cross-check quarantines
   # US actuals that disagree with FRED (retroactive, fail-open).
   ./.venv/bin/python -m src.ff_refresh >> /tmp/econ.log 2>&1
+  # Daily JBlanked actuals pull (the weekly feed above is structurally
+  # actual-less). Window-gated INSIDE the module: first hourly tick at/after
+  # 21:00 UTC with no success recorded in data/jb_last_pull.json pulls; later
+  # ticks retry until success (free tier ~1 call/day; auth JBLANKED_API_KEY
+  # from .env). Fail-open — a JB failure never blocks the rest of the refresh;
+  # its lines carry the "JB pull:" prefix in /tmp/econ.log.
+  ./.venv/bin/python -m src.jb_actuals >> /tmp/econ.log 2>&1
   cal_after=$(md5 -q data/economic_calendar_ff.parquet 2>/dev/null)
 else
   # ROLLBACK: MT5 calendar ingest (quarantined behind the flag, not deleted).

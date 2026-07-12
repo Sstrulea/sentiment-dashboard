@@ -41,9 +41,15 @@ def _sanity_ok(df: pd.DataFrame, min_ccy: int) -> bool:
 
 
 def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.DataFrame:
-    """History-preserving merge: append new prints, update revised ones in place.
-    Dedup key = (canonical_id, datetime_utc), last-write-wins → a re-fetched event
-    (actual now released, or a revision) overwrites its prior row. Deterministic sort."""
+    """History-preserving, FIELD-AWARE merge: append new prints, update revised ones.
+
+    Dedup key = (canonical_id, datetime_utc), last-write-wins per row for the
+    schedule fields (forecast/previous/names) — BUT an existing non-null `actual`
+    is NEVER overwritten by a null/NaN re-delivery. The hybrid flow requires
+    this: the daily JBlanked pull writes actuals in the evening; next-day hourly
+    faireconomy ticks re-deliver the same events actual-less (the weekly feed is
+    structurally actual-less), and whole-row keep="last" would null the actual
+    right back out. A non-null incoming actual (revision) still wins."""
     if existing is None or existing.empty:
         combined = weekly.copy()
     else:
@@ -51,6 +57,11 @@ def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.D
         existing["datetime_utc"] = pd.to_datetime(existing["datetime_utc"])
         combined = pd.concat([existing, weekly], ignore_index=True)
     combined["datetime_utc"] = pd.to_datetime(combined["datetime_utc"])
+    # Field-aware actual: within a key group (concat order = existing first,
+    # incoming last) carry the last non-null actual forward, so the kept (last)
+    # row inherits it unless the incoming row brings its own non-null actual.
+    combined["actual"] = combined.groupby(["canonical_id", "datetime_utc"],
+                                          sort=False)["actual"].ffill()
     combined = (combined.sort_values(["canonical_id", "datetime_utc"])
                 .drop_duplicates(["canonical_id", "datetime_utc"], keep="last")
                 .sort_values(["currency", "canonical_id", "datetime_utc"])

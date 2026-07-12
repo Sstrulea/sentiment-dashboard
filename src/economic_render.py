@@ -56,8 +56,11 @@ PRICE_HISTORY_PARQUET = ROOT / "data" / "price_history.parquet"
 # Per-source freshness thresholds (days). Beyond this, a source is flagged STALE
 # (visible in economic.json + the dashboard badge + the cron watchdog) so a
 # silent freeze surfaces immediately. General — applies to every source, not a
-# single indicator.
-FRESHNESS_STALE_DAYS = {"calendar": 3, "price": 4}
+# single indicator. `actuals_pull` tracks the daily JBlanked pull (the weekly
+# calendar feed is structurally actual-less): no successful pull for >2 days →
+# its own distinct badge, separate from calendar-stale (compared with >=, see
+# _freshness — the 2026-07-03..12 actuals freeze was invisible in logs).
+FRESHNESS_STALE_DAYS = {"calendar": 3, "price": 4, "actuals_pull": 2}
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
@@ -496,19 +499,53 @@ def _freshness(as_of: pd.Timestamp | None = None) -> dict:
     def _age(last: pd.Timestamp) -> int:
         return int((as_of - pd.Timestamp(last)).days)
 
+    # The calendar entry must watch the ACTIVE calendar source (Phase 3): with
+    # calendar_source=ff, the MT5 parquet is frozen — watching it would pin the
+    # badge permanently red/green regardless of what the dashboard scores from.
     try:
-        if PARQUET.exists():
-            c = pd.read_parquet(PARQUET)
-            c["release_dt"] = pd.to_datetime(c["release_dt"], errors="coerce")
+        from src.ff_refresh import FF_PARQUET, calendar_source
+        cal_src = calendar_source()
+    except Exception as e:  # noqa: BLE001 — config unreadable → mt5 (mirrors _load_calendar_frame)
+        log.warning("freshness: calendar_source unresolved (%s); assuming mt5.", e)
+        cal_src, FF_PARQUET = "mt5", None
+    try:
+        cal_path, dt_col = (FF_PARQUET, "datetime_utc") if cal_src == "ff" \
+            else (PARQUET, "release_dt")
+        if cal_path is not None and cal_path.exists():
+            c = pd.read_parquet(cal_path)
+            c[dt_col] = pd.to_datetime(c[dt_col], errors="coerce")
             c["actual"] = pd.to_numeric(c["actual"], errors="coerce")
             pub = c[c["actual"].notna()]
             if len(pub):
-                last = pub["release_dt"].max()
+                last = pub[dt_col].max()
                 age = _age(last)
                 out["calendar"] = {"last_update": last.isoformat(), "age_days": age,
                                    "stale": age > FRESHNESS_STALE_DAYS["calendar"]}
     except Exception as e:  # noqa: BLE001
         log.warning("freshness(calendar) unavailable: %s", e)
+
+    # Daily JBlanked actuals pull (ff source only) — a DISTINCT badge, separate
+    # from calendar-stale: the 2026-07-03..12 actuals freeze was invisible in the
+    # logs (every tick "ok") and the dashboard badge is the one alert channel
+    # that is actually read. No state file (pull never succeeded) → fail-visible.
+    if cal_src == "ff":
+        try:
+            from src.jb_actuals import STATE_JSON, load_state
+            st = load_state(STATE_JSON)
+            last_at = st.get("last_success_at") or st.get("last_success_utc_date")
+            if last_at:
+                last = pd.Timestamp(last_at)
+                age = _age(last)
+                # >= (not >): "no successful pull for >2 days" — with floor'd
+                # int days, age >= 2 is exactly "two evening windows missed".
+                out["actuals_pull"] = {
+                    "last_update": last.isoformat(), "age_days": age,
+                    "stale": age >= FRESHNESS_STALE_DAYS["actuals_pull"]}
+            else:
+                out["actuals_pull"] = {"last_update": None, "age_days": None,
+                                       "stale": True}
+        except Exception as e:  # noqa: BLE001
+            log.warning("freshness(actuals_pull) unavailable: %s", e)
 
     try:
         if PRICE_HISTORY_PARQUET.exists():

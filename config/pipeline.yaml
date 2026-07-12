@@ -15,3 +15,10 @@ ff_min_currencies: 4
 
 # FRED cross-check (Phase 3 Task 2) tolerance in pp for US actuals.
 fred_crosscheck_tol_pp: 0.15
+
+# JBlanked daily actuals pull — the weekly feed above is STRUCTURALLY actual-less
+# (schedule + forecast only), so actuals come from ONE authenticated range call per
+# UTC day (first hourly tick at/after 21:00 UTC; retried next ticks until success;
+# state in data/jb_last_pull.json; raw payloads kept in data/jb_raw/). Auth:
+# JBLANKED_API_KEY in .env (free tier ~1 call/day — never call during dev/tests).
+jb_range_url: "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
