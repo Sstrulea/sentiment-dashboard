@@ -108,8 +108,8 @@ def test_clean_empty_frame():
 # --- window guard + state -----------------------------------------------------
 
 def test_should_pull_window_and_once_per_day():
-    assert not J.should_pull(pd.Timestamp("2026-07-13 20:59"), {})     # before window
-    assert J.should_pull(pd.Timestamp("2026-07-13 21:01"), {})        # first tick in window
+    assert not J.should_pull(pd.Timestamp("2026-07-13 17:59"), {})     # before window
+    assert J.should_pull(pd.Timestamp("2026-07-13 18:01"), {})        # first tick in window
     done = {"last_success_utc_date": "2026-07-13"}
     assert not J.should_pull(pd.Timestamp("2026-07-13 22:01"), done)  # once per UTC day
     assert not J.should_pull(pd.Timestamp("2026-07-13 23:59"), done)
@@ -181,7 +181,7 @@ def test_pull_actuals_end_to_end(tmp_path):
 
 
 def test_pull_skips_before_window_without_fetching(tmp_path):
-    rep = J.pull_actuals(now_utc=pd.Timestamp("2026-07-12 20:05"),
+    rep = J.pull_actuals(now_utc=pd.Timestamp("2026-07-12 17:05"),
                          parquet_path=tmp_path / "ff.parquet",
                          state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                          fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")),

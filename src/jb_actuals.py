@@ -5,7 +5,7 @@ actual-less — it carries only country/date/forecast/impact/previous/title.
 Discovered 2026-07-12: after the JBlanked backfill ended (2026-07-03) no actual
 was ever ingested again while every hourly tick logged "ok". This module adds
 the missing leg of the hybrid flow: once per UTC day (first hourly tick at/after
-21:00 UTC, retried on later ticks until success) ONE authenticated JBlanked
+18:00 UTC, retried on later ticks until success) ONE authenticated JBlanked
 range call (last 7 days) supplies the actuals; the hourly faireconomy ingest
 remains the schedule/forecast source, unchanged.
 
@@ -42,7 +42,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE_JSON = ROOT / "data" / "jb_last_pull.json"
 RAW_DIR = ROOT / "data" / "jb_raw"
 RAW_KEEP = 14                    # newest raw payloads kept on disk
-PULL_HOUR_UTC = 21               # first hourly tick at/after this UTC hour pulls
+PULL_HOUR_UTC = 18               # first hourly tick at/after this UTC hour pulls
 RANGE_DAYS = 7                   # range call spans [today-RANGE_DAYS, today] (UTC)
 DEFAULT_RANGE_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
 
@@ -273,7 +273,7 @@ def main() -> int:
                         format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
     ap = argparse.ArgumentParser(description="Daily JBlanked actuals pull (window-gated)")
     ap.add_argument("--force", action="store_true",
-                    help="bypass the 21:00-UTC/once-per-day guard (manual recovery)")
+                    help="bypass the 18:00-UTC/once-per-day guard (manual recovery)")
     args = ap.parse_args()
     rep = pull_actuals(force=args.force)
     extra = (f" — parquet {rep['rows_before']} -> {rep['rows_after']} rows"
