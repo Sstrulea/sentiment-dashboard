@@ -43,6 +43,7 @@ STATE_JSON = ROOT / "data" / "jb_last_pull.json"
 RAW_DIR = ROOT / "data" / "jb_raw"
 RAW_KEEP = 14                    # newest raw payloads kept on disk
 PULL_HOUR_UTC = 18               # first hourly tick at/after this UTC hour pulls
+RETRY_HOUR_UTC = 7               # morning fallback (~10:00 Europe/Bucharest, summer)
 RANGE_DAYS = 7                   # range call spans [today-RANGE_DAYS, today] (UTC)
 DEFAULT_RANGE_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
 
@@ -66,13 +67,23 @@ def save_state(state: dict, path: Path = STATE_JSON) -> None:
 
 
 def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
-    """Window guard: True on any hourly tick at/after PULL_HOUR_UTC on a UTC day
-    with no successful pull recorded yet. The first such tick pulls; a failure
-    leaves the state untouched, so every later tick retries until success."""
+    """Window guard. Two chances per UTC day, at most ONE successful pull:
+      * evening primary  — any tick at/after PULL_HOUR_UTC;
+      * morning fallback — any tick in [RETRY_HOUR_UTC, PULL_HOUR_UTC) but ONLY
+        when the previous evening produced no success (i.e. we are already
+        behind), so a normal day pulls once in the evening and a missed evening
+        is recovered the next morning.
+    A recorded success for the current UTC day short-circuits both."""
     now = pd.Timestamp(now_utc)
-    if now.hour < PULL_HOUR_UTC:
-        return False
-    return str(state.get("last_success_utc_date", "")) != str(now.date())
+    today = now.date()
+    last = str(state.get("last_success_utc_date", ""))
+    if last == str(today):
+        return False                                    # already succeeded today
+    if now.hour >= PULL_HOUR_UTC:
+        return True                                     # evening primary window
+    if now.hour >= RETRY_HOUR_UTC:
+        return last != str(today - timedelta(days=1))   # morning: only if behind
+    return False                                        # before the morning window
 
 
 # ---------------------------------------------------------------------------
@@ -213,7 +224,7 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
            else pd.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None)))
     state = load_state(state_path)
     if not force and not should_pull(now, state):
-        reason = "before_window" if now.hour < PULL_HOUR_UTC else "already_pulled_today"
+        reason = "already_pulled_today" if str(state.get("last_success_utc_date", "")) == str(now.date()) else "before_window"
         log.info("JB pull: skipped (%s).", reason)
         return {"status": "skipped", "reason": reason}
 
