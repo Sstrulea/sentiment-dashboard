@@ -4,13 +4,14 @@ The faireconomy weekly feed (the Phase 3 calendar source) is STRUCTURALLY
 actual-less — it carries only country/date/forecast/impact/previous/title.
 Discovered 2026-07-12: after the JBlanked backfill ended (2026-07-03) no actual
 was ever ingested again while every hourly tick logged "ok". This module adds
-the missing leg of the hybrid flow: once per UTC day (first hourly tick at/after
-18:00 UTC, retried on later ticks until success) ONE authenticated JBlanked
-range call (last 7 days) supplies the actuals; the hourly faireconomy ingest
+the missing leg of the hybrid flow: once per due window (the most recent 18:00
+UTC instant that has passed — evening when the laptop is awake, otherwise the
+first tick after wake-up) ONE authenticated JBlanked range call (gap-aware
+span) supplies the actuals; the hourly faireconomy ingest
 remains the schedule/forecast source, unchanged.
 
 Free-tier discipline: ≈1 call/day. `should_pull` + the state persisted in
-data/jb_last_pull.json guarantee at most one SUCCESSFUL pull per UTC day; a
+data/jb_last_pull.json guarantee at most one SUCCESSFUL pull per due window; a
 failed attempt leaves the state untouched so the next hourly tick retries.
 Every 200 response is written raw to data/jb_raw/ BEFORE any parsing (newest
 ~14 kept) so a bad payload stays reproducible after the fact.
@@ -42,9 +43,9 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE_JSON = ROOT / "data" / "jb_last_pull.json"
 RAW_DIR = ROOT / "data" / "jb_raw"
 RAW_KEEP = 14                    # newest raw payloads kept on disk
-PULL_HOUR_UTC = 18               # first hourly tick at/after this UTC hour pulls
-RETRY_HOUR_UTC = 7               # morning fallback (~10:00 Europe/Bucharest, summer)
-RANGE_DAYS = 7                   # range call spans [today-RANGE_DAYS, today] (UTC)
+PULL_HOUR_UTC = 18               # end-of-day window opens here (21:00 local, UTC+3)
+RANGE_DAYS = 7                   # MINIMUM range span [today-RANGE_DAYS, today] (UTC)
+MAX_RANGE_DAYS = 60              # cap when catching up after a long absence
 DEFAULT_RANGE_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
 
 
@@ -66,24 +67,50 @@ def save_state(state: dict, path: Path = STATE_JSON) -> None:
     p.write_text(json.dumps(state, indent=1) + "\n")
 
 
-def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
-    """Window guard. Two chances per UTC day, at most ONE successful pull:
-      * evening primary  — any tick at/after PULL_HOUR_UTC;
-      * morning fallback — any tick in [RETRY_HOUR_UTC, PULL_HOUR_UTC) but ONLY
-        when the previous evening produced no success (i.e. we are already
-        behind), so a normal day pulls once in the evening and a missed evening
-        is recovered the next morning.
-    A recorded success for the current UTC day short-circuits both."""
+def due_window_start(now_utc: pd.Timestamp) -> pd.Timestamp:
+    """The most recent PULL_HOUR_UTC instant at or before `now` (UTC-naive)."""
     now = pd.Timestamp(now_utc)
-    today = now.date()
-    last = str(state.get("last_success_utc_date", ""))
-    if last == str(today):
-        return False                                    # already succeeded today
-    if now.hour >= PULL_HOUR_UTC:
-        return True                                     # evening primary window
-    if now.hour >= RETRY_HOUR_UTC:
-        return last != str(today - timedelta(days=1))   # morning: only if behind
-    return False                                        # before the morning window
+    anchor = now.normalize() + pd.Timedelta(hours=PULL_HOUR_UTC)
+    return anchor if now >= anchor else anchor - pd.Timedelta(days=1)
+
+
+def last_success_ts(state: dict) -> Optional[pd.Timestamp]:
+    """Last successful pull as a UTC-naive Timestamp, or None. Migrates the
+    legacy date-only state by reading it as that day's PULL_HOUR_UTC instant."""
+    raw = state.get("last_success_at")
+    if raw:
+        try:
+            ts = pd.Timestamp(raw)
+            return ts.tz_convert(None) if ts.tzinfo is not None else ts
+        except Exception:  # noqa: BLE001
+            pass
+    d = state.get("last_success_utc_date")
+    if d:
+        try:
+            return pd.Timestamp(str(d)).normalize() + pd.Timedelta(hours=PULL_HOUR_UTC)
+        except Exception:  # noqa: BLE001
+            pass
+    return None
+
+
+def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
+    """Due-window guard (wake-triggered). The machine is a laptop that sleeps at
+    night, so a fixed clock window is regularly missed and the old
+    "morning fallback only if last success != yesterday" rule deadlocked: a
+    morning pull marked the day done and blocked the NEXT morning, while the
+    evening window was never reached (asleep) — actuals landed ~2 days late.
+
+    New rule: due_window_start = the most recent PULL_HOUR_UTC instant that has
+    passed; a pull is due while the last SUCCESS predates it. So: evening pull
+    when awake, otherwise the FIRST tick after wake-up, at ANY hour — and at
+    most one successful pull per window, so the free tier (~1 call/day) holds.
+    """
+    now = pd.Timestamp(now_utc)
+    due = due_window_start(now)
+    last = last_success_ts(state)
+    if last is not None and last >= due:
+        return False                                    # window already covered
+    return True                                         # behind → retry on every tick
 
 
 # ---------------------------------------------------------------------------
@@ -224,9 +251,10 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
            else pd.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None)))
     state = load_state(state_path)
     if not force and not should_pull(now, state):
-        reason = "already_pulled_today" if str(state.get("last_success_utc_date", "")) == str(now.date()) else "before_window"
-        log.info("JB pull: skipped (%s).", reason)
-        return {"status": "skipped", "reason": reason}
+        _due, _last = due_window_start(now), last_success_ts(state)
+        log.info("JB pull: skipped (window_covered; window %s, last success %s).",
+                 _due.isoformat(), _last.isoformat() if _last is not None else "never")
+        return {"status": "skipped", "reason": "window_covered"}
 
     cfg = cfg if cfg is not None else _safe_cfg()
     if fetcher is None:
@@ -239,7 +267,9 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
         fetcher = lambda f, t: fetch_range_raw(f, t, api_key=key, url=url)  # noqa: E731
 
     to_d = now.date()
-    from_d = to_d - timedelta(days=RANGE_DAYS)
+    _last = last_success_ts(state)
+    span = RANGE_DAYS if _last is None else max(RANGE_DAYS, (to_d - _last.date()).days + 1)
+    from_d = to_d - timedelta(days=min(span, MAX_RANGE_DAYS))
     try:
         raw_text = fetcher(from_d, to_d)
     except Exception as e:  # noqa: BLE001 — HTTP/network/auth failure
@@ -284,7 +314,7 @@ def main() -> int:
                         format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
     ap = argparse.ArgumentParser(description="Daily JBlanked actuals pull (window-gated)")
     ap.add_argument("--force", action="store_true",
-                    help="bypass the 18:00-UTC/once-per-day guard (manual recovery)")
+                    help="bypass the due-window guard (manual recovery)")
     args = ap.parse_args()
     rep = pull_actuals(force=args.force)
     extra = (f" — parquet {rep['rows_before']} -> {rep['rows_after']} rows"

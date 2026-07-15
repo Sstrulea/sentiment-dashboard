@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from datetime import date
 import pandas as pd
 import pytest
 
@@ -107,13 +108,15 @@ def test_clean_empty_frame():
 
 # --- window guard + state -----------------------------------------------------
 
-def test_should_pull_window_and_once_per_day():
-    assert not J.should_pull(pd.Timestamp("2026-07-13 06:59"), {})     # before window
-    assert J.should_pull(pd.Timestamp("2026-07-13 18:01"), {})        # first tick in window
-    done = {"last_success_utc_date": "2026-07-13"}
-    assert not J.should_pull(pd.Timestamp("2026-07-13 22:01"), done)  # once per UTC day
-    assert not J.should_pull(pd.Timestamp("2026-07-13 23:59"), done)
-    assert J.should_pull(pd.Timestamp("2026-07-14 21:01"), done)      # next day pulls again
+def test_should_pull_due_window_and_once_per_window():
+    """Due-window guard: pull while the last SUCCESS predates the most recent
+    18:00 UTC instant; at most one successful pull per window."""
+    assert J.should_pull(pd.Timestamp("2026-07-13 06:59"), {})         # never pulled -> due
+    assert J.should_pull(pd.Timestamp("2026-07-13 18:01"), {})         # evening window
+    done = {"last_success_at": "2026-07-13T18:30:00"}
+    assert not J.should_pull(pd.Timestamp("2026-07-13 22:01"), done)   # window covered
+    assert not J.should_pull(pd.Timestamp("2026-07-14 10:00"), done)   # same window (< 18:00)
+    assert J.should_pull(pd.Timestamp("2026-07-14 18:01"), done)       # next window
 
 
 def test_should_pull_retries_after_failed_day():
@@ -177,16 +180,17 @@ def test_pull_actuals_end_to_end(tmp_path):
                           state_path=state, raw_dir=raw,
                           fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")),
                           cfg={})
-    assert rep2 == {"status": "skipped", "reason": "already_pulled_today"}
+    assert rep2 == {"status": "skipped", "reason": "window_covered"}
 
 
-def test_pull_skips_before_window_without_fetching(tmp_path):
+def test_pull_skips_when_window_covered_without_fetching(tmp_path):
+    (tmp_path / "s.json").write_text('{"last_success_at": "2026-07-11T19:00:00"}')
     rep = J.pull_actuals(now_utc=pd.Timestamp("2026-07-12 05:05"),
                          parquet_path=tmp_path / "ff.parquet",
                          state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                          fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")),
                          cfg={})
-    assert rep == {"status": "skipped", "reason": "before_window"}
+    assert rep == {"status": "skipped", "reason": "window_covered"}
 
 
 def test_pull_fetch_failure_is_fail_open_and_retryable(tmp_path):
@@ -283,12 +287,50 @@ def test_actuals_pull_badge_after_two_missed_days(tmp_path, monkeypatch):
     assert f["actuals_pull"] == {"last_update": None, "age_days": None, "stale": True}
 
 
-def test_should_pull_morning_fallback_only_when_behind():
-    """Morning fallback fires ONLY when the previous evening produced no success."""
-    assert not J.should_pull(pd.Timestamp("2026-07-13 07:05"),
-                             {"last_success_utc_date": "2026-07-12"})   # evening ok yesterday
-    assert J.should_pull(pd.Timestamp("2026-07-13 07:05"),
-                         {"last_success_utc_date": "2026-07-11"})       # behind -> retry
-    assert J.should_pull(pd.Timestamp("2026-07-13 10:00"), {})          # never pulled -> retry
-    assert not J.should_pull(pd.Timestamp("2026-07-13 06:59"),
-                             {"last_success_utc_date": "2026-07-11"})   # before morning window
+def test_should_pull_catches_up_at_any_hour_after_wakeup():
+    """REGRESSION (prod 2026-07-15): the laptop sleeps through 18:00 UTC, so a
+    missed window must be recovered at the FIRST tick after wake-up, at any
+    hour. The old rule ("morning fallback only if last success != yesterday")
+    deadlocked: a morning pull marked the day done and blocked the next morning
+    while the evening window was never reached -> actuals landed ~2 days late."""
+    behind = {"last_success_at": "2026-07-13T07:51:35"}                # real prod state
+    for hour in ("06:43", "09:43", "10:15", "14:28", "17:00"):         # real skipped ticks
+        assert J.should_pull(pd.Timestamp(f"2026-07-15 {hour}"), behind), hour
+    morning = {"last_success_at": "2026-07-15T10:15:00"}
+    assert not J.should_pull(pd.Timestamp("2026-07-15 11:15"), morning)  # no hammering
+    assert J.should_pull(pd.Timestamp("2026-07-15 18:05"), morning)      # evening = new window
+
+
+def test_should_pull_migrates_legacy_date_only_state():
+    """B6: the pre-existing state format (date only) is read as that day's 18:00Z."""
+    legacy = {"last_success_utc_date": "2026-07-13"}
+    assert not J.should_pull(pd.Timestamp("2026-07-13 22:00"), legacy)  # covered
+    assert J.should_pull(pd.Timestamp("2026-07-15 10:00"), legacy)      # two windows behind
+    assert J.last_success_ts(legacy) == pd.Timestamp("2026-07-13 18:00")
+
+
+def test_range_span_is_gap_aware(tmp_path, monkeypatch):
+    """B5: the range span covers the whole gap (min 7d, capped at 60d)."""
+    seen = {}
+    def fake(f, t):
+        seen["from"], seen["to"] = f, t
+        raise RuntimeError("stop after span check")
+    J.pull_actuals(now_utc=pd.Timestamp("2026-07-15 10:00"),
+                   parquet_path=tmp_path / "ff.parquet",
+                   state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
+                   fetcher=fake, cfg={}, force=True)
+    assert seen["from"] == date(2026, 7, 8)                             # no state -> 7d floor
+    (tmp_path / "s.json").write_text('{"last_success_at": "2026-07-03T18:00:00"}')
+    J.pull_actuals(now_utc=pd.Timestamp("2026-07-15 10:00"),
+                   parquet_path=tmp_path / "ff.parquet",
+                   state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
+                   fetcher=fake, cfg={}, force=True)
+    assert seen["from"] == date(2026, 7, 2)                             # 12d gap -> 13d span
+    (tmp_path / "s.json").write_text('{"last_success_at": "2025-01-01T18:00:00"}')
+    J.pull_actuals(now_utc=pd.Timestamp("2026-07-15 10:00"),
+                   parquet_path=tmp_path / "ff.parquet",
+                   state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
+                   fetcher=fake, cfg={}, force=True)
+    assert seen["from"] == date(2026, 5, 16)                            # capped at 60d
+
+
