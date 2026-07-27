@@ -1,0 +1,4 @@
+method,predicted_sigma_a4,ratio_to_actual
+M1: cross-sectional sigma_a3 (section A) x time-series rho,1.286195105810482,0.9870285917787313
+M2: time-series sigma per currency (pooled) x time-series rho,1.3682572352521767,1.0500032273494055
+"ACTUAL sigma_a4 (measured, section A)",1.303098123523069,1.0

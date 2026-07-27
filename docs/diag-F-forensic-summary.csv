@@ -1,0 +1,5 @@
+symbol,base,quote,base_index,quote_index,base_sentiment,quote_sentiment,stage2_no_sentiment,stage3_with_sentiment,trend_value,stage4_final,final_label,sign_flips
+NZDUSD,NZD,USD,1.9444444444444442,2.0833333333333335,3,,-0.06944444444444464,0.8630952380952379,-3,-1.0031512605042017,Neutral,"A: category diff (raw index, no sentiment) -> B: + SENTIMENT fold (pre-differencing); B: + SENTIMENT fold (pre-differencing) -> C: + TREND fold (final score)"
+GBPUSD,GBP,USD,2.395833333333333,2.0833333333333335,2,,0.15624999999999978,0.5787037037037035,-3,-1.061159844054581,Neutral,B: + SENTIMENT fold (pre-differencing) -> C: + TREND fold (final score)
+AUDUSD,AUD,USD,-1.6666666666666665,2.0833333333333335,1,,-1.875,-1.3988095238095237,0,-1.2342436974789914,Neutral,none
+EURUSD,EUR,USD,2.5,2.0833333333333335,2,,0.20833333333333326,0.6249999999999998,-3,-1.0197368421052635,Neutral,B: + SENTIMENT fold (pre-differencing) -> C: + TREND fold (final score)

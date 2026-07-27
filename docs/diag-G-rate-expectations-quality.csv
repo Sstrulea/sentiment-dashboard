@@ -1,0 +1,9 @@
+ccy,status,method,as_of,stale,latest_yield,delta_w,z,source_latest,source_latest_date,n_rows_in_rates_parquet,days_since_last_obs
+AUD,present (STALE — excluded from index),z,2026-07-28,True,4.5,0.02799999999999958,0.15730068223983065,rba,2026-07-15,3233,13.0
+CAD,"present (live, in index)",z,2026-07-28,False,2.9,0.16999999999999993,1.0466492071307238,boc_valet,2026-07-24,1534,4.0
+CHF,ABSENT (no rows in rates.parquet),,,,,,,,,0,
+EUR,"present (live, in index)",z,2026-07-28,False,2.7719528205,0.2962536955999999,1.999669798260916,ecb,2026-07-24,1235,4.0
+GBP,"present (live, in index)",z,2026-07-28,False,4.6405,0.41270000000000007,2.087437838384018,boe,2026-07-23,2162,5.0
+JPY,present (STALE — excluded from index),z,2026-07-28,True,1.382,-0.018000000000000016,-0.3084923442998254,mof_jgb,2026-06-30,12887,28.0
+NZD,ABSENT (no rows in rates.parquet),,,,,,,,,0,
+USD,"present (live, in index)",z,2026-07-28,False,4.33,0.21999999999999975,1.381838336841471,fred,2026-07-24,16262,4.0

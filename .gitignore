@@ -15,3 +15,8 @@ scripts/spike_jblanked/
 # JBlanked daily-pull state + raw payload cache (machine-local; see src/jb_actuals.py)
 data/jb_last_pull.json
 data/jb_raw/
+
+# Diagnostic scoring audit — throwaway replay cache (machine-local; regenerate
+# via `python -m scripts.diag.run_replay`). The report + CSVs in docs/ are the
+# deliverables, not this pickle.
+scripts/diag/_cache/

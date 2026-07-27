@@ -1,0 +1,16 @@
+column,n,pct_zero_or_blank,dominant_cause,pct_no_data,pct_stale,pct_no_consensus,pct_dead_zone,pct_cancellation
+manufacturing_pmi,1537,68.5,no_consensus,9.8,2.5,48.9,19.7,1.8
+services_pmi,1537,74.0,no_consensus,22.4,1.0,34.4,22.8,0.1
+gdp_qoq,1537,32.3,dead_zone,0.0,12.0,12.4,17.3,2.0
+retail_sales,1537,29.9,dead_zone,0.0,25.4,0.0,26.1,2.7
+cpi_yoy,1537,31.9,dead_zone,0.0,5.5,4.9,18.5,8.3
+core_cpi,1537,45.5,dead_zone,3.4,14.9,21.3,24.3,1.8
+core_pce,1537,97.4,no_data,72.4,5.2,2.6,17.2,0.0
+ppi_yoy,1537,50.5,dead_zone,0.0,19.1,10.6,30.8,1.4
+employment_change,1537,54.1,dead_zone,3.4,1.6,0.0,48.2,2.4
+unemployment_rate,1537,32.4,dead_zone,0.0,7.5,0.0,20.0,9.2
+wage_growth,1537,54.9,dead_zone,10.3,3.6,0.0,41.9,0.7
+adp,1537,99.5,no_data,72.4,1.0,0.0,26.0,0.0
+jolts,1537,90.1,no_data,72.4,1.6,0.0,16.1,0.0
+jobless_claims,1537,84.4,no_data,72.4,3.1,0.0,12.0,0.0
+rate_expectations,1537,45.5,dead_zone,3.4,1.4,0.0,32.5,8.5
