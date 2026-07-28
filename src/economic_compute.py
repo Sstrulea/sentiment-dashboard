@@ -501,25 +501,75 @@ def _leg_eff_wsum(card: dict | None, sentiment_value, sentiment_weight: float) -
     return wsum
 
 
-def _leg_indicator_multiplier(card: dict | None, category: str | None, scale: float) -> float:
-    """Exact marginal effect of a one-unit change in ONE indicator's score on
-    this leg's OWN currency index (pre-sentiment): d(index)/d(score_k) =
-    weight_c / (index_wsum · coverage_c), scaled. Reads `weight`/`coverage`
-    straight off the card's own `categories` cell — no hardcoded weights.
-    0 when the category is absent/stale (excluded from `index_wsum`, so this
-    indicator has no route into the index at all) or `category` is None.
+def _present_categories(card: dict | None) -> dict[str, dict]:
+    """{category: cell} for categories with coverage>0 on this leg's own
+    currency scorecard — the same exclusion already verified numerically in
+    prereg §13.2 (stale/absent categories never appear here; this reads the
+    same `categories` dict, no new logic)."""
+    if card is None:
+        return {}
+    return {cat: cell for cat, cell in (card.get("categories") or {}).items()
+            if (cell.get("coverage") or 0) > 0}
+
+
+def _weighted_mean_over(card: dict | None, categories) -> tuple[float, float]:
+    """(weighted_mean, wsum) of `card`'s category `score_precise` values,
+    restricted to `categories` (a set/iterable of category keys already known
+    present on this leg — e.g. the D1=D intersection). (0.0, 0.0) if none
+    apply. Reads each category's own configured `weight` — no hardcoded 1.0.
     """
-    if card is None or category is None:
+    if card is None or not categories:
+        return 0.0, 0.0
+    present = _present_categories(card)
+    num, wsum = 0.0, 0.0
+    for cat in categories:
+        cell = present.get(cat)
+        if cell is None:
+            continue
+        w = float(cell.get("weight", 1.0))
+        num += float(cell["score_precise"]) * w
+        wsum += w
+    return (num / wsum if wsum else 0.0), wsum
+
+
+def _d2c_sentiment_fold(mean_value: float, sentiment_value, w_s: float) -> float:
+    """§M D2-c SENTIMENT fold (FX pairs only; prereg §10.1/§18): (mean + w_s·s)
+    / (1+w_s) — a CONSTANT effective weight w_s/(1+w_s) regardless of how many
+    categories fed `mean_value`, decoupling SENTIMENT's pull from category
+    coverage (the D-c fix). Replaces the old sentiment_weight/index_wsum
+    formula for FX legs; `sentiment_value` None → mean_value unchanged.
+    """
+    if sentiment_value is None:
+        return mean_value
+    return (mean_value + w_s * float(sentiment_value)) / (1.0 + w_s)
+
+
+def _leg_indicator_multiplier(
+    card: dict | None,
+    category: str | None,
+    scale: float,
+    wsum: float,
+    allowed_categories,
+) -> float:
+    """Exact marginal effect of a one-unit change in ONE indicator's score on
+    this leg's contribution to the pair/instrument score: d(mean)/d(score_k) =
+    weight_c / (wsum · coverage_c), scaled. `wsum`/`allowed_categories` are
+    passed in (not read off the card) so the SAME function serves both the
+    single-type case (wsum = the leg's own full index_wsum, allowed = its own
+    present categories) and the D1=D fx case (wsum = the shared intersection
+    wsum, allowed = the intersection) — see `_fund_contributions`. 0 when the
+    category is absent/stale, outside `allowed_categories`, or None.
+    """
+    if card is None or category is None or category not in allowed_categories:
         return 0.0
     cell = (card.get("categories") or {}).get(category)
     if cell is None or (cell.get("coverage") or 0) <= 0:
         return 0.0
-    index_wsum = card.get("index_wsum", 0.0)
-    if not index_wsum:
+    if not wsum:
         return 0.0
     weight = float(cell.get("weight", 1.0))
     coverage = int(cell["coverage"])
-    return (weight / (index_wsum * coverage)) * scale
+    return (weight / (wsum * coverage)) * scale
 
 
 def _fund_contributions(
@@ -529,15 +579,22 @@ def _fund_contributions(
     is_fx: bool,
     pair_divisor: float,
     scale: float,
+    base_wsum: float,
+    base_allowed,
+    quote_wsum: float = 0.0,
+    quote_allowed=frozenset(),
+    relevant_categories=frozenset(),
 ) -> list[dict]:
     """Per-indicator contribution to the FUND-only (pre-sentiment, pre-trend)
     score — an EXACT linear decomposition: summing every row's `contribution`
-    reconstructs (base_card.index − quote_card.index)/pair_divisor (fx) or
-    base_card.index·sign (single) bit-for-bit (mirrors the reference
-    derivation validated in scripts/diag/section_thirdpath.py). One row per
-    indicator_key present (breakdown entry exists) on EITHER leg — same
-    coverage as the dense table's own cells; a stale entry contributes 0
-    (excluded from the index, same policy as the index itself).
+    reconstructs (base_mean − quote_mean)/pair_divisor (fx, D1=D: means taken
+    over the intersection) or base_mean·sign (single, unrestricted) bit-for-
+    bit. One row per indicator_key present (breakdown entry exists) on EITHER
+    leg — same coverage as the dense table's own cells; a stale entry
+    contributes 0 (excluded, same policy as the index itself). `excluded_from_pair`
+    marks a row whose category is present on this leg's OWN scorecard but was
+    thrown out of THIS pair's intersection (§M M-IMPL-3b) — the underlying
+    data is real and unaffected elsewhere, only this comparison drops it.
     """
     base_bd = (base_card or {}).get("breakdown", {}) or {}
     quote_bd = (quote_card or {}).get("breakdown", {}) or {} if is_fx else {}
@@ -547,21 +604,30 @@ def _fund_contributions(
     for key in keys:
         eb, eq = base_bd.get(key), quote_bd.get(key)
         category = (eb or eq).get("category")
-        base_mult = _leg_indicator_multiplier(base_card, category, scale)
+        base_mult = _leg_indicator_multiplier(base_card, category, scale, base_wsum, base_allowed)
         base_term = (float(eb["score"]) * base_mult) if (eb is not None and not eb.get("stale")) else 0.0
         raw_base = int(eb["score"]) if eb is not None else 0
 
+        excluded = False
         if is_fx:
-            quote_mult = _leg_indicator_multiplier(quote_card, category, scale)
+            quote_mult = _leg_indicator_multiplier(quote_card, category, scale, quote_wsum, quote_allowed)
             quote_term = (float(eq["score"]) * quote_mult) if (eq is not None and not eq.get("stale")) else 0.0
             raw_quote = int(eq["score"]) if eq is not None else 0
             contribution = (base_term - quote_term) / pair_divisor
             raw = raw_base - raw_quote
+            present_somewhere = (eb is not None and not eb.get("stale")) or (eq is not None and not eq.get("stale"))
+            # Only a category that COULD have been in the intersection (i.e. is
+            # one of the board's real categories) counts as "excluded by D1" —
+            # a structurally-irrelevant category (e.g. `rates`, weight 0, never
+            # in `categories_display`) was never a candidate, so it's not this.
+            excluded = bool(category is not None and category in relevant_categories
+                           and category not in base_allowed and present_somewhere)
         else:
             contribution = base_term * sign
             raw = int(raw_base * sign)
 
-        rows.append({"key": key, "category": category, "contribution": float(contribution), "raw": raw})
+        rows.append({"key": key, "category": category, "contribution": float(contribution), "raw": raw,
+                    "excluded_from_pair": excluded})
     return rows
 
 
@@ -618,6 +684,12 @@ def compute_instrument(
     scale = float(instruments_cfg.get("scale", 5))
     sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
     trend_weight = float(instruments_cfg.get("trend_weight", 0.5))
+    # §M D1=D + D2-c — FX PAIRS ONLY (prereg §17/§18); the single US-DOLLAR row
+    # has no second leg to intersect against and keeps sentiment_weight/
+    # trend_weight above, untouched (never measured under D2-c in §5).
+    d2c_w_s = float(instruments_cfg.get("d2c_sentiment_w_s", 0.125))
+    d2c_macro_weight_target = float(instruments_cfg.get("d2c_trend_macro_weight_target", 4.371794871794871))
+    categories_display = instruments_cfg.get("categories_display", []) or []  # parametric — no hardcoded "4"
     sentiment_on = sentiment_cells is not None
     trend_value = trend_cells.get(symbol) if trend_cells is not None else None
     itype = inst_cfg.get("type")
@@ -634,6 +706,9 @@ def compute_instrument(
             return None if in_pair else sentiment_cells.get("DXY")
         return sentiment_cells.get(ccy)
 
+    categories_used = categories_total = None
+    categories_excluded: list[str] = []
+
     if itype == "single":
         currency = inst_cfg["currency"]
         sign = float(inst_cfg.get("sign", 1))
@@ -645,6 +720,11 @@ def compute_instrument(
         is_fx = False
         base_idx_no_sent = _augmented_index(base_card, None, sentiment_weight, scale) if base_card else 0.0
         macro_score_no_sentiment = base_idx_no_sent * sign
+        # No cross-leg comparison here (no D1 intersection concept) — the
+        # single row's own multiplier denominator stays its own full index_wsum.
+        fund_base_wsum = float((base_card or {}).get("index_wsum", 0.0))
+        fund_base_allowed = set(_present_categories(base_card))
+        fund_quote_wsum, fund_quote_allowed = 0.0, frozenset()
         breakdown = {
             "base": {
                 "currency": currency,
@@ -659,18 +739,40 @@ def compute_instrument(
         sign = 1.0  # unused by _fund_contributions when is_fx=True
         v_s_base = _leg_sentiment(base, in_pair=True)
         v_s_quote = _leg_sentiment(quote, in_pair=True)
-        base_idx = _augmented_index(base_card, v_s_base, sentiment_weight, scale) if base_card else 0.0
-        quote_idx = _augmented_index(quote_card, v_s_quote, sentiment_weight, scale) if quote_card else 0.0
-        macro_score = (base_idx - quote_idx) / pair_divisor
-        # Pair aggregate weight = mean of the two legs' effective weights, so the
-        # weight-0.5 trend factor pulls the pair's mean by a cross-asset-comparable
-        # fraction (scale preserved → bias thresholds unchanged).
-        macro_weight = (_leg_eff_wsum(base_card, v_s_base, sentiment_weight)
-                        + _leg_eff_wsum(quote_card, v_s_quote, sentiment_weight)) / 2.0
         is_fx = True
-        base_idx_no_sent = _augmented_index(base_card, None, sentiment_weight, scale) if base_card else 0.0
-        quote_idx_no_sent = _augmented_index(quote_card, None, sentiment_weight, scale) if quote_card else 0.0
+
+        # §M D1 = D: intersect the categories present on BOTH legs (prereg
+        # §17.2/§18) — a category present on only one leg is excluded from
+        # BOTH for this pair's comparison. compute_currency_scorecard (and its
+        # own stale/absence exclusion) is untouched; this operates ONE layer
+        # above it, on the already-computed per-currency `categories`.
+        base_present = set(_present_categories(base_card))
+        quote_present = set(_present_categories(quote_card))
+        intersection = base_present & quote_present
+
+        base_mean, intersection_wsum = _weighted_mean_over(base_card, intersection)
+        quote_mean, _ = _weighted_mean_over(quote_card, intersection)  # same wsum by construction (global weights)
+
+        # §M D2-c: constant-effective-weight SENTIMENT fold on the intersection mean.
+        base_idx_aug = _d2c_sentiment_fold(base_mean, v_s_base, d2c_w_s) * scale
+        quote_idx_aug = _d2c_sentiment_fold(quote_mean, v_s_quote, d2c_w_s) * scale
+        macro_score = (base_idx_aug - quote_idx_aug) / pair_divisor
+
+        # §M D2-c: constant macro_weight for the TREND fold (decouples TREND's
+        # pull from how many categories the pair's legs happen to share).
+        macro_weight = d2c_macro_weight_target
+
+        base_idx_no_sent = base_mean * scale
+        quote_idx_no_sent = quote_mean * scale
         macro_score_no_sentiment = (base_idx_no_sent - quote_idx_no_sent) / pair_divisor
+
+        fund_base_wsum = fund_quote_wsum = intersection_wsum
+        fund_base_allowed = fund_quote_allowed = intersection
+
+        categories_used = len(intersection)
+        categories_total = len(categories_display)
+        categories_excluded = sorted(set(categories_display) - intersection)
+
         breakdown = {
             "base": {
                 "currency": base,
@@ -699,7 +801,9 @@ def compute_instrument(
     # (floating-point noise in practice, ~1e-13) — computed here, once, so a
     # bug in a later render/display layer can never mask itself by
     # recomputing its own "Σ" from a different code path. ---
-    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, scale)
+    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, scale,
+                                        fund_base_wsum, fund_base_allowed, fund_quote_wsum, fund_quote_allowed,
+                                        relevant_categories=set(categories_display))
     sentiment_contribution = macro_score - macro_score_no_sentiment
     trend_contribution = score - macro_score
 
@@ -726,6 +830,12 @@ def compute_instrument(
         "contributions": contributions,
         "contrib_sum": contrib_sum,
         "contrib_residual": contrib_residual,
+        # §M D1=D bookkeeping (FX only; None/[] for single — no cross-leg
+        # comparison there). `categories_used`/`categories_total` drive the
+        # M-IMPL-3(a) flag; `categories_excluded` drives the (b) per-pair marker.
+        "categories_used": categories_used,
+        "categories_total": categories_total,
+        "categories_excluded": categories_excluded,
     }
 
 

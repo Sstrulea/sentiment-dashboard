@@ -65,7 +65,8 @@
       "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' --max-time 25 https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv -o /tmp/jgb.csv)",
       "Bash(python3 -)",
       "Bash(curl -s -A 'Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36' --max-time 30 https://data.snb.ch/api/cube/rendoblid/data/csv/en -o /tmp/snb.csv)",
-      "Bash(PYTHONPATH=. .venv/bin/python *)"
+      "Bash(PYTHONPATH=. .venv/bin/python *)",
+      "Skill(update-config)"
     ]
   }
 }
