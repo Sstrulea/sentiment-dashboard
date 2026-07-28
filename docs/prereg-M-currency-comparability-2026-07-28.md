@@ -575,3 +575,38 @@ Nu redecid — doar reconectez faptele deja măsurate la noul set de candidați 
 - Flag-ul vizual din §15.2 (trei stări) rămâne valid ca SPECIFICAȚIE de UI indiferent de care D1 se alege — dar sub C, categoria NZD/CHF nu mai apare NICIODATĂ ca "celulă cu flag" pe o pereche scorată (perechea în sine dispare); sub D, apare ca înainte (celula există, dar unele contribuții sunt aruncate).
 
 **Nu decid între C și D. Raportez faptele de mai sus și mă opresc**, conform instrucțiunii primite.
+
+---
+
+## 18. DECIZIE FINALĂ §M (2026-07-28) — D1 = D. §M ÎNCHIS DEFINITIV.
+
+**Nimic implementat. Niciun PR.** Secțiunea documentează decizia și cerințele de implementare pentru ciclul următor — nu le execută.
+
+| decizie | rezultat |
+|---|---|
+| **D1** | **D** — differencing pe intersecția categoriilor prezente pe AMBELE legs |
+| E / NULL | eliminate (§17) — violare CN-1, mean-over-present ≡ imputare cu media proprie |
+| C | eliminat (§17.3) — 2/6 clase neevaluabile la poarta M-6; elimină exact perechile (NZD/CHF) pe care ar trebui să le măsoare, deci degradarea nu poate fi observată acolo unde contează cel mai mult |
+| **D2-c** | **neschimbat** — confirmat pe ambele fold-uri (sentiment `w_s=0.125`, trend `macro_weight_target=4.371794871794871`), decizie separată de D1 |
+| **PA-D** | **semnat** — adopt D indiferent de direcția pe care o produce pe NZD/USD azi (sub D1=D + D2-c: scor **+0.233**, Neutral — vs. −1.003/Neutral sub producția curentă; magnitudinea `+1.25` e contribuția izolată a `monetary` USD la diferențiere, măsurată în §thirdpath, aruncată de D pentru ACEASTĂ pereche pentru că NZD nu are categoria). Motivul adopției e conformitatea cu CN-1 și evaluabilitatea (§17.2/17.3), nu rezultatul pe vreo pereche anume. |
+
+### 18.1 Cerințe de implementare (de documentat acum, NU de scris cod)
+
+**1. Flag vizual — pereche scorată pe set redus de categorii.**
+Ori de câte ori intersecția categoriilor prezente pe cele două legs ale unei perechi are mărime <4 (azi: 16/28 perechi, set DINAMIC — se schimbă cu starea zilnică de staleness AUD/JPY, nu doar cu absența structurală NZD/CHF), scorul perechii trebuie să poarte un flag vizibil (analog `stale`/`no_consensus`, nu o simplă notă în tooltip) — ex. "scor pe 3/4 categorii". Mesajul trebuie să indice CÂTE categorii au intrat efectiv în diferențiere (`len(intersecție)`), nu doar un boolean "incomplet".
+
+**2. Datele aruncate rămân în payload și în modal — se aruncă din COMPARAȚIE, nu din AFIȘARE.**
+Sub D, `monetary` al USD (de ex., pe NZDUSD) e exclus din diferențiere pentru ACEA pereche, dar rămâne date reale, măsurate. Cerință: breakdown-ul complet al fiecărui leg (deja neatins de D1 — D nu modifică `compute_currency_scorecard`, doar cum se combină cele două legs la nivel de pereche) rămâne vizibil integral în modal, EXACT ca azi. În plus, categoria/categoriile excluse din intersecție pentru ACEA pereche specifică trebuie marcate distinct (ex. "nu e inclusă în scorul acestei perechi" — nu "stale", nu "no_consensus", un al treilea tip de marcaj, pentru că data e vie și reală, doar aruncată la acest nivel de agregare). Important: aceeași categorie (USD monetary) e INCLUSĂ normal pe alte perechi (EURUSD, unde EUR are și el monetary) — marcajul e per-pereche, nu per-monedă.
+
+**3. §Q1 rămâne ultimul.**
+Neschimbat (§8, §15 istoric): re-derivarea `mild`/`very` la p55/p90 se face pe distribuția rezultată DUPĂ ce §N (cod mort) + D1=D + D2-c + flag-urile de mai sus sunt implementate, nu înainte și nu în paralel.
+
+### 18.2 Ordinea de implementare rămasă (neschimbată din rezumatul final, doar D1 e acum fixat la D)
+
+1. §N — ștergere cod mort `_category_cells` (deja: PR deschis, `cleanup/remove-dead-category-cells`, nemerge)
+2. Tabelul dens → varianta (b) (contribuții reale + scor brut, marcate distinct) — decis anterior
+3. §M — **D1=D + D2-c** (această decizie) + cele 3 cerințe de mai sus
+4. §O — flag cu trei stări (live / stale-recuperabilă / indisponibil permanent), §15.2 — rămâne valabil ca specificație, dar sub D nu se mai aplică unei categorii "aruncate din board" (ca la C), ci unei categorii afișate normal, doar marcată separat per-pereche unde e exclusă din intersecție
+5. §Q1 — ultimul
+
+**§M închis definitiv. Nimic implementat aici. Niciun PR.**
