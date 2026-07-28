@@ -54,6 +54,25 @@
   }
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
+  // Backend-computed contribution lookup (never recomputed here — see
+  // src.economic_compute.compute_instrument, which derives `contributions`/
+  // `contrib_sum`/`contrib_residual` via exact telescoping differences, so a
+  // render-side bug can't mask itself by re-deriving its own "total").
+  // Surfaced via `title` tooltip ONLY — cell box/row height must stay
+  // pixel-identical to the raw-score-only layout; a title attribute never
+  // affects layout.
+  function findContribution(inst, key) {
+    const list = inst.contributions || [];
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].key === key) return list[i].contribution;
+    }
+    return null;
+  }
+  function contribTip(contribution) {
+    if (contribution === null || contribution === undefined || Number.isNaN(contribution)) return "";
+    return "Contributes " + fmtSigned(contribution, 2) + " to Score.";
+  }
+
   // ---- Color classes (COT divergent palette: blue = bullish/buy, red = bearish) ----
   // Divergent scale by magnitude; differentials run to ±4 so we have ±3 tiers.
   function cellClass(score) {
@@ -238,6 +257,9 @@
   function rowSortValue(inst, key) {
     if (key === "symbol") return inst.display || inst.symbol;
     if (key === "bias" || key === "score") return inst.score;          // precise float
+    if (key === "contrib_sum") {
+      return (inst.contrib_sum !== null && inst.contrib_sum !== undefined) ? inst.contrib_sum : -Infinity;
+    }
     if (key === "trend") {
       return (inst.trend !== null && inst.trend !== undefined) ? inst.trend : -Infinity;
     }
@@ -265,18 +287,25 @@
   }
 
   // ---- Table --------------------------------------------------------------
+  // Every cell below shows ONLY the RAW per-indicator score, exactly as on
+  // main — box size, padding, line count all unchanged. The backend-computed
+  // contribution to Score is surfaced EXCLUSIVELY via `title` (hover) so row
+  // height stays pixel-identical; see findContribution()/contribTip().
   function indicatorCellHtml(inst, key) {
     const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
     const v = c.v;
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
     }
+    const tip = contribTip(findContribution(inst, key));
     if (c.stale) {
-      return '<td class="econ-cell ec-stale" title="stale — latest release is outside the lookback window; excluded from scoring">' +
-        fmtScoreCell(v) + '</td>';
+      const staleTip = "stale — latest release is outside the lookback window; excluded from scoring" +
+        (tip ? " " + tip : "");
+      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + fmtScoreCell(v) + '</td>';
     }
     // Continuous gradient on the per-indicator differential (saturates at ±4).
-    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + "</td>";
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
+      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + fmtScoreCell(v) + "</td>";
   }
 
   // TREND sub-cell for an FX row (display-only). Same divergent color engine as
@@ -288,8 +317,9 @@
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-empty"></td>';
     }
+    const contrib = findContribution(inst, "trend");
     const tip = "TREND · MA structure (SMA20/50/200) × ADX strength → cell " +
-      fmtScoreCell(v) + " (weight 0.5 in the Score)";
+      fmtScoreCell(v) + " (weight 0.5 in the Score). " + contribTip(contrib);
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
       ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
   }
@@ -303,6 +333,7 @@
       return '<td class="econ-cell cell-empty"></td>';
     }
     const v = cot.cell;
+    const contrib = findContribution(inst, "sentiment");
     function legTxt(ccy, cell, det) {
       let t = ccy + " " + fmtScoreCell(cell === null || cell === undefined ? 0 : cell);
       if (det) t += " (lvl " + fmtScoreCell(det.level) + ", flow " + fmtScoreCell(det.flow) + ")";
@@ -312,9 +343,52 @@
     const tip = "COT positioning · " + (cot.quote
       ? "base " + baseTxt + " − quote " + legTxt(cot.quote, cot.quote_cell, cot.quote_detail) +
         " = cell " + fmtScoreCell(v)
-      : baseTxt + " = cell " + fmtScoreCell(v));
+      : baseTxt + " = cell " + fmtScoreCell(v)) + ". " + contribTip(contrib);
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
       ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+  }
+
+  // Σ column: the backend-computed sum of every displayed contribution
+  // (FUND + SENTIMENT + TREND), which by construction reconstructs Score
+  // exactly (see compute_instrument's `contrib_sum`/`contrib_residual`). JS
+  // does NOT sum the cells itself — it only compares two numbers the backend
+  // already computed, so a summing bug here can't hide by "agreeing with itself".
+  const CONTRIB_SUM_TOLERANCE = 0.15;
+  function contribSumCellHtml(inst) {
+    const sum = inst.contrib_sum;
+    if (sum === null || sum === undefined || Number.isNaN(sum)) {
+      return '<td class="contrib-sum-cell cell-na"></td>';
+    }
+    const mismatch = Math.abs(sum - inst.score) > CONTRIB_SUM_TOLERANCE;
+    const cls = "contrib-sum-cell" + (mismatch ? " contrib-mismatch" : "");
+    const tip = mismatch
+      ? "Σ (" + fmtSigned(sum, 2) + ") differs from Score (" + fmtSigned(inst.score, 2) + ") by more than " +
+        CONTRIB_SUM_TOLERANCE + " — a displayed contribution is missing or wrong"
+      : "Σ of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score";
+    return '<td class="' + cls + '" title="' + escAttr(tip) + '">' + fmtSigned(sum, 2) +
+      (mismatch ? ' <span class="econ-flag flag-stale" title="' + escAttr(tip) + '">⚠</span>' : "") + "</td>";
+  }
+
+  // §M D1=D: FX pairs score on the INTERSECTION of both legs' present
+  // categories (categories_used/categories_total on the instrument). When
+  // the intersection is reduced, flag it with the exact count — never an
+  // adjective. Lives on the SYMBOL cell (text-align:left), not Score:
+  // Score/Bias are right/center-aligned + shrink-to-fit (width:1%), so a
+  // trailing badge there shifts the digit's own position relative to
+  // rows without a badge (the whole right/center-aligned unit moves as
+  // the badge's width changes column-to-column) — a real misalignment
+  // bug, not cosmetic. Symbol is left-aligned: trailing content never
+  // moves the pair name's start position, so appending it here cannot
+  // misalign anything, on any row, by construction — no browser needed
+  // to confirm this one (M-IMPL-4).
+  function categoriesFlagHtml(inst) {
+    const used = inst.categories_used, total = inst.categories_total;
+    if (used === null || used === undefined || total === null || total === undefined) return "";
+    if (used >= total) return "";
+    const excluded = inst.categories_excluded || [];
+    const tip = "Scored on " + used + "/" + total + " categories (intersection of both legs)" +
+      (excluded.length ? " — " + excluded.map(catLabel).join(", ") + " excluded from this pair" : "");
+    return ' <span class="econ-flag flag-reduced" title="' + escAttr(tip) + '">' + used + "/" + total + "</span>";
   }
 
   function renderRow(inst) {
@@ -324,9 +398,10 @@
     const sg = styleAttr(gradientStyle(inst.score, 6));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
+      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
+      contribSumCellHtml(inst) +
       trendCellHtml(inst) +
       fxCotCellHtml(inst) +
       cells +
@@ -377,6 +452,7 @@
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
       '<th rowspan="2" data-sort="score">Score</th>' +
+      '<th rowspan="2" data-sort="contrib_sum" title="Sum of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent">Σ</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaderCells + '</tr>' +
@@ -463,8 +539,9 @@
     );
   }
 
-  function legHtml(role, currency) {
+  function legHtml(role, currency, excludedCategories) {
     if (!currency) return "";
+    const excluded = excludedCategories || [];
     const card = (state.payload.currencies || {})[currency];
     if (!card) {
       return '<div class="modal-card econ-leg"><h3>' + role + ' — ' + currency +
@@ -491,6 +568,16 @@
           ' · n' + (sub.coverage || 0) + '</span>';
       } else {
         subHtml = '<span class="muted">display-only</span>';
+      }
+      // §M D1=D: this category is present for this currency but was excluded
+      // from THIS pair's intersection (the other leg lacks it) — the raw
+      // score above is real and included normally on other pairs; only its
+      // contribution to THIS pair is zero. Distinct from stale/no-consensus:
+      // this is a property of the comparison, not of the data.
+      if (excluded.indexOf(catKey) !== -1) {
+        const tip = "Excluded from this pair's score — the other leg has no data for this category. " +
+          "Included normally on pairs where both legs have it.";
+        subHtml += ' <span class="econ-flag flag-excluded" title="' + escAttr(tip) + '">excluded here</span>';
       }
       let table;
       if (catKey === "monetary") {
@@ -598,7 +685,7 @@
 
     const gridClass = isFx ? "modal-grid econ-leg-grid" : "modal-grid econ-leg-grid one-col";
     const legs = isFx
-      ? legHtml("Base", base) + legHtml("Quote", quote)
+      ? legHtml("Base", base, inst.categories_excluded) + legHtml("Quote", quote, inst.categories_excluded)
       : legHtml("Currency", base);
 
     const sub =
@@ -615,8 +702,6 @@
       '<span class="modal-score">Score ' + fmtSigned(inst.score, 2) + '</span>' +
       '<span class="modal-formula">' + sub + '</span></div>' +
       '</header>' +
-      '<p class="muted econ-modal-note">Rounded cells can hide divergence — e.g. a Labour score near 0 may be ' +
-      'NFP +2 against Jobless Claims −2. The per-indicator rows below show the real spread.</p>' +
       // TREND first (matches column order), then Sentiment (COT), then the macro legs.
       trendSectionHtml(inst.trend_detail) +
       fxCotSectionHtml(inst.cot) +

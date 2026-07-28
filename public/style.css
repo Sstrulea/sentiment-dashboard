@@ -27,6 +27,7 @@
 
   --info-bg: rgba(33, 150, 243, 0.10);
   --info-border: rgba(33, 150, 243, 0.35);
+  --info-fg: var(--accent);
 
   --warning-bg: rgba(244, 67, 54, 0.12);
   --warning-fg: #c62828;
@@ -36,6 +37,8 @@
   --caution-fg: #a67600;
   --warn-mid-bg: rgba(255, 152, 0, 0.18);
   --warn-mid-fg: #bf5a00;
+  --excluded-bg: rgba(156, 39, 176, 0.12);
+  --excluded-fg: #7b1fa2;
 }
 
 body.dark {
@@ -66,6 +69,7 @@ body.dark {
 
   --info-bg: rgba(100, 181, 246, 0.10);
   --info-border: rgba(100, 181, 246, 0.35);
+  --info-fg: var(--accent);
 
   --warning-bg: rgba(244, 67, 54, 0.15);
   --warning-fg: #ff6b6b;
@@ -75,6 +79,8 @@ body.dark {
   --caution-fg: #ffca28;
   --warn-mid-bg: rgba(255, 152, 0, 0.15);
   --warn-mid-fg: #ffa726;
+  --excluded-bg: rgba(186, 104, 200, 0.18);
+  --excluded-fg: #ce93d8;
 }
 
 * { box-sizing: border-box; }
@@ -1184,6 +1190,9 @@ table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-
 .flag-fb { background: var(--caution-bg); color: var(--caution-fg); cursor: help; }
 .flag-nc { background: var(--warn-mid-bg); color: var(--warn-mid-fg); cursor: help; }
 .flag-stale { background: var(--warning-bg); color: var(--warning-fg); cursor: help; }
+/* §M D1=D markers — inline title-only badges, no row/box size impact (M-IMPL-4). */
+.flag-reduced { background: var(--info-bg); color: var(--info-fg); cursor: help; }
+.flag-excluded { background: var(--excluded-bg); color: var(--excluded-fg); cursor: help; }
 
 @media (max-width: 768px) {
   .econ-header { flex-direction: column; align-items: flex-start; }
@@ -1200,6 +1209,18 @@ table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-
 /* Symbol column shrinks to content (pair codes are short). */
 table.econ-table th.col-sym, table.econ-table td.sym { white-space: nowrap; width: 1%; }
 table.econ-table td.score-cell { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; width: 1%; white-space: nowrap; }
+
+/* Σ column: backend-computed sum of every displayed contribution, next to
+   Score. A new COLUMN only — every existing cell's box/row height is
+   untouched; the per-cell contribution (FUND/TREND/SENTIMENT) is surfaced
+   exclusively via `title` (hover), never as extra visible content. */
+table.econ-table td.contrib-sum-cell {
+  text-align: right; font-variant-numeric: tabular-nums; font-weight: 600;
+  font-size: 12px; width: 1%; white-space: nowrap;
+}
+table.econ-table td.contrib-mismatch {
+  background: var(--warning-bg); color: var(--warning-fg);
+}
 table.econ-table td.bias-cell { width: 1%; white-space: nowrap; }
 
 /* Symbol / Bias / Score = whole-cell fill in the bias color (no pill, no radius).
