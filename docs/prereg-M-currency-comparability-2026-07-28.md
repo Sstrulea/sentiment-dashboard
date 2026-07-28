@@ -232,4 +232,46 @@ Căutare EXTERNĂ (rețea, read-only — **nimic scris în `data/`**), folosind 
 - **D1 rămâne relevant integral pentru NZD** (16/28 perechi conțin NZD sau CHF; dintre acestea, cele cu NZD tot au nevoie de o decizie D1 indiferent de rezultatul de mai sus).
 - Nu am redeschis §O(1) din raportul 2 ca "rezolvat" — am doar RE-VERIFICAT live cele 3 surse cerute și am găsit un rezultat diferit de ipoteza inițială pentru CHF (era catalogat "0 surse" în raportul 2; corect e "sursă găsită, dar stale/neingerată").
 
+---
+
+## 12. Trei verificări suplimentare (2026-07-28, read-only, nimic ingerat, §5 nu a rulat)
+
+### 12.1 Ponderea efectivă a TREND-ului per pereche, grupată pe (n_cat_base, n_cat_quote)
+
+Analog cu D-c (sentiment), calculat pentru toate cele 28 perechi FX, starea curentă (azi): `eff_trend_weight = trend_weight / (macro_weight + trend_weight)`, unde `macro_weight` e media greutăților efective ale celor două legs (din `_leg_eff_wsum`, include deja sentiment-ul acolo unde e prezent).
+
+| grup (n_cat_base, n_cat_quote) | n perechi | medie eff_trend_weight | varianță |
+|---|---:|---:|---:|
+| (4,4) | 6 | 10.26% | 0.0000083 |
+| (3,4) | 4 | 11.44% | 0.0000138 |
+| (4,3) | 12 | 11.22% | 0.0000065 |
+| (3,3) | 6 | **12.50%** | 0.0000000 (exact, toate identice) |
+
+**Grupat pe pereche neordonată** — (3,3): 12.50% · (3,4)∪(4,3): 11.27% · (4,4): 10.26%.
+
+**Varianța totală pe cele 28 perechi: 5.995 × 10⁻⁵** (std ≈ 0.77 puncte procentuale). Micuță în absolut, dar **monotonă și sistematică**, nu zgomot: efectul crește exact cu numărul de categorii lipsă (0 lipsă → 10.0–10.26%, 1 lipsă → ~11.1–11.4%, 2 lipsă → 12.5% exact). Confirmă numeric nota deschisă din §10.1: cuplajul D-c există și la TREND, nu doar la SENTIMENT, în aceeași direcție (mai puține categorii FUND → pondere efectivă mai mare pentru factorii non-FUND). Interval relativ: 10.0% → 12.5% = **+25%** relativ (vs +29% găsit la sentiment, 11.11%→14.29%) — ordin de mărime comparabil.
+
+### 12.2 RBNZ, o singură reîncercare cu configurația care a rezolvat FRED
+
+Config: `User-Agent: macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)` (exact `FRED_UA` din `src/rate_sources.py`) + `urllib3.util.connection.allowed_gai_family` deja pinned la `AF_INET` (activ global, confirmat: `AddressFamily.AF_INET`) + `Referer: https://www.rbnz.govt.nz/statistics`.
+
+**Rezultat: HTTP 403, identic** — pagina întoarsă e `"Website unavailable - Reserve Bank of New Zealand"` (blocaj la nivel de edge/WAF, nu un tarpit dependent de UA ca la FRED). **RBNZ declarat permanent blocat**, conform instrucțiunii — nu se mai reîncearcă acest vector.
+
+### 12.3 SNB CHF — flag și valoare, dacă s-ar ingera azi
+
+**Corecție de premisă**: `max_age_by_frequency` (din `data/economic_indicators.yaml`, weekly:14/monthly:45/quarterly:110) guvernează EXCLUSIV indicatorii de calendar (surprise-based, categoria growth/inflation/labour). Pilonul `monetary`/`rate_expectations` NU trece deloc prin acel mecanism — folosește propriul prag hardcodat din `src/rate_compute.py`: **`MAX_AGE_BD = 7` zile LUCRĂTOARE** (nu calendaristice), verificat direct în `compute_rate_score_for`.
+
+Rulat `compute_rate_score_for` (funcția pură, neschimbată) pe seria SNB chiar fetch-uită (7534 puncte, 1988-01-04 → 2025-07-31), cu `ref = 2026-07-28`:
+
+```
+RateScore(currency='CHF', rate_score=0, delta_w=-0.009, latest_yield=-0.083,
+          z=-0.0709, method='z', as_of=2026-07-28, stale=True)
+```
+
+- **Lag real: 258 zile LUCRĂTOARE** (`np.busday_count`) de la ultima observație (2025-07-31) — de peste 36× pragul de 7 zile. **Flag: STALE**, fără ambiguitate.
+- **Celula `monetary` CHF**, dacă s-ar ingera azi: `score_cell = 0`, `score_precise = 0.0`, `coverage = 0`, `stale = True` — exact structura pe care AUD/JPY o au azi (afișată/greyed, dar EXCLUSĂ din `index_wsum`/`index_num`; indexul CHF ar rămâne neschimbat față de azi, calculat tot din 3 categorii).
+- Deci: chiar dacă seria SNB ar fi ingerată chiar acum, CHF **NU** ar deveni "PREZENTĂ" pentru monetary — ar deveni **STALE** (ca AUD), nu PREZENTĂ. Trecerea de la ABSENTĂ→STALE tot nu rezolvă D-a/D-b/D-c pentru CHF fără o ingestie de date SNB mai proaspete decât 2025-07-31, pe care nu am găsit-o (cube-ul D0=2J pare să nu fi mai avansat de-atât, per `src/rate_sources` — un fapt separat de rezolvat, nu în scopul acestei verificări).
+
+**Nimic ingerat, nimic scris în `data/`.**
+
 **M-am oprit aici, conform instrucțiunii. Nu am rulat §5.**
