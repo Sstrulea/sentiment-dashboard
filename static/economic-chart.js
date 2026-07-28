@@ -372,8 +372,15 @@
   // §M D1=D: FX pairs score on the INTERSECTION of both legs' present
   // categories (categories_used/categories_total on the instrument). When
   // the intersection is reduced, flag it with the exact count — never an
-  // adjective — via `title` only, so the score-cell box is unchanged
-  // (M-IMPL-4, same discipline as the Σ column in PR#3).
+  // adjective. Lives on the SYMBOL cell (text-align:left), not Score:
+  // Score/Bias are right/center-aligned + shrink-to-fit (width:1%), so a
+  // trailing badge there shifts the digit's own position relative to
+  // rows without a badge (the whole right/center-aligned unit moves as
+  // the badge's width changes column-to-column) — a real misalignment
+  // bug, not cosmetic. Symbol is left-aligned: trailing content never
+  // moves the pair name's start position, so appending it here cannot
+  // misalign anything, on any row, by construction — no browser needed
+  // to confirm this one (M-IMPL-4).
   function categoriesFlagHtml(inst) {
     const used = inst.categories_used, total = inst.categories_total;
     if (used === null || used === undefined || total === null || total === undefined) return "";
@@ -391,9 +398,9 @@
     const sg = styleAttr(gradientStyle(inst.score, 6));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
+      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
-      '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + categoriesFlagHtml(inst) + "</td>" +
+      '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
       contribSumCellHtml(inst) +
       trendCellHtml(inst) +
       fxCotCellHtml(inst) +
