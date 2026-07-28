@@ -18,25 +18,11 @@
 # categories already cover the dollar — avoids double-counting).
 #
 # bias_thresholds calibrated at 6.6 (mirror of 6.4 method on the new scoring).
-#
-# §Q1 recalibration (2026-07-28): re-derived on the post-D distribution (same
-# reason as the FX board's economic_instruments.yaml — see
-# docs/Q1-recalibration-2026-07-28.md). mild=1.50 lands close to a real
-# cluster in this board's |score| distribution (p50=1.48, p55=1.50 — ~5% of
-# the mass sits in a 0.02-wide band): measured instability under a ±0.05
-# score perturbation rose from 1.65% to 9.43% of instrument-weeks under the
-# new threshold. Reported and accepted as-is (see the doc) — do not nudge
-# `mild` off the measured percentile to "fix" this without discussing it
-# first; that would be adjusting the result, not the method.
-# GUARDRAIL: re-deriving again requires the SAME kind of evidence that
-# justified this pass — a demonstrated STRUCTURAL JUMP in the score
-# distribution, not merely "the split has drifted from 55/10". A gradual
-# decline does not qualify.
 
 scale: 5
 bias_thresholds:
-  mild: 1.50    # §Q1 (2026-07-28): p55 of |score|, post-D, 53-week window
-  very: 3.33    # §Q1 (2026-07-28): p90 of |score|, post-D, 53-week window
+  mild: 1.9     # calibrated 6.6 (rates-grouped scoring): ~p55 by-profile |score|
+  very: 4.3     # calibrated 6.6: ~p90 by-profile |score| → ~8% Very
 
 instruments:
   # --- Indices ---
