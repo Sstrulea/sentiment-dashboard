@@ -681,9 +681,13 @@ def test_fx_sentiment_does_not_touch_index_or_categories():
 # TREND factor in the FX score — weight-0.5, DIRECT on the pair (NOT base−quote)
 # ---------------------------------------------------------------------------
 
+D2C_MACRO_WEIGHT_TARGET = 4.371794871794871  # prereg §M D2-c signed constant
+
+
 def _instruments_cfg_trend():
     cfg = _instruments_cfg_sent()
     cfg["trend_weight"] = 0.5
+    cfg["d2c_trend_macro_weight_target"] = D2C_MACRO_WEIGHT_TARGET
     return cfg
 
 
@@ -708,10 +712,12 @@ def test_fx_trend_folds_direct_on_pair_with_weight_half():
     eT = next(i for i in pT["instruments"] if i["symbol"] == "EURUSD")
     assert eT["score"] > e0["score"]          # +3 trend → more bullish
     assert eT["trend"] == 3                    # display cell = the pair's own cell
-    # Arithmetic: new = (m·W + 0.5·3)/(W+0.5)·scale, W = mean of the two legs'
-    # effective weights (no sentiment supplied here → macro-only index_wsum).
+    # §M D2-c: the TREND fold's denominator is now the CONSTANT
+    # d2c_trend_macro_weight_target (prereg §13.3/§18) instead of the legs'
+    # own index_wsum — decouples TREND's effective weight from category
+    # coverage. new = (m·W + 0.5·3)/(W+0.5)·scale, W = the constant.
     scale = 5.0
-    W = (p0["currencies"]["EUR"]["index_wsum"] + p0["currencies"]["USD"]["index_wsum"]) / 2.0
+    W = D2C_MACRO_WEIGHT_TARGET
     m = e0["score"] / scale
     assert eT["score"] == pytest.approx((m * W + 0.5 * 3) / (W + 0.5) * scale)
 

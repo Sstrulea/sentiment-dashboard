@@ -369,6 +369,28 @@
       (mismatch ? ' <span class="econ-flag flag-stale" title="' + escAttr(tip) + '">⚠</span>' : "") + "</td>";
   }
 
+  // §M D1=D: FX pairs score on the INTERSECTION of both legs' present
+  // categories (categories_used/categories_total on the instrument). When
+  // the intersection is reduced, flag it with the exact count — never an
+  // adjective. Lives on the SYMBOL cell (text-align:left), not Score:
+  // Score/Bias are right/center-aligned + shrink-to-fit (width:1%), so a
+  // trailing badge there shifts the digit's own position relative to
+  // rows without a badge (the whole right/center-aligned unit moves as
+  // the badge's width changes column-to-column) — a real misalignment
+  // bug, not cosmetic. Symbol is left-aligned: trailing content never
+  // moves the pair name's start position, so appending it here cannot
+  // misalign anything, on any row, by construction — no browser needed
+  // to confirm this one (M-IMPL-4).
+  function categoriesFlagHtml(inst) {
+    const used = inst.categories_used, total = inst.categories_total;
+    if (used === null || used === undefined || total === null || total === undefined) return "";
+    if (used >= total) return "";
+    const excluded = inst.categories_excluded || [];
+    const tip = "Scored on " + used + "/" + total + " categories (intersection of both legs)" +
+      (excluded.length ? " — " + excluded.map(catLabel).join(", ") + " excluded from this pair" : "");
+    return ' <span class="econ-flag flag-reduced" title="' + escAttr(tip) + '">' + used + "/" + total + "</span>";
+  }
+
   function renderRow(inst) {
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
     // Symbol / Bias / Score share one continuous gradient driven by the precise
@@ -376,7 +398,7 @@
     const sg = styleAttr(gradientStyle(inst.score, 6));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
+      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
       contribSumCellHtml(inst) +
@@ -517,8 +539,9 @@
     );
   }
 
-  function legHtml(role, currency) {
+  function legHtml(role, currency, excludedCategories) {
     if (!currency) return "";
+    const excluded = excludedCategories || [];
     const card = (state.payload.currencies || {})[currency];
     if (!card) {
       return '<div class="modal-card econ-leg"><h3>' + role + ' — ' + currency +
@@ -545,6 +568,16 @@
           ' · n' + (sub.coverage || 0) + '</span>';
       } else {
         subHtml = '<span class="muted">display-only</span>';
+      }
+      // §M D1=D: this category is present for this currency but was excluded
+      // from THIS pair's intersection (the other leg lacks it) — the raw
+      // score above is real and included normally on other pairs; only its
+      // contribution to THIS pair is zero. Distinct from stale/no-consensus:
+      // this is a property of the comparison, not of the data.
+      if (excluded.indexOf(catKey) !== -1) {
+        const tip = "Excluded from this pair's score — the other leg has no data for this category. " +
+          "Included normally on pairs where both legs have it.";
+        subHtml += ' <span class="econ-flag flag-excluded" title="' + escAttr(tip) + '">excluded here</span>';
       }
       let table;
       if (catKey === "monetary") {
@@ -652,7 +685,7 @@
 
     const gridClass = isFx ? "modal-grid econ-leg-grid" : "modal-grid econ-leg-grid one-col";
     const legs = isFx
-      ? legHtml("Base", base) + legHtml("Quote", quote)
+      ? legHtml("Base", base, inst.categories_excluded) + legHtml("Quote", quote, inst.categories_excluded)
       : legHtml("Currency", base);
 
     const sub =
