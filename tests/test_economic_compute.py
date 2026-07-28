@@ -292,18 +292,15 @@ def test_fx_pair_is_base_minus_quote_over_divisor():
 
 
 def test_us_only_indicator_does_not_populate_non_usd_pair():
-    # jobless_claims is USD-only; on a EUR/USD pair it appears only on the USD
-    # (quote) side. Here only EUR has gdp data → category differential is driven
-    # by EUR alone, and labour stays at 0 coverage for EUR.
+    # jobless_claims is USD-only; EUR never gets a labour indicator scored, so
+    # EUR's own labour category stays at 0 coverage. Growth is populated from
+    # the gdp_qoq print given here.
     cal = _make_rows("EUR", "gdp_qoq", [1.0] * 11 + [2.0], [1.0] * 12)
     payload = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF)
-    by_sym = {i["symbol"]: i for i in payload["instruments"]}
-    eurusd = by_sym["EURUSD"]
-    # Labour has no coverage on either leg → cell 0.
-    assert eurusd["categories"]["labour"]["score_cell"] == 0
-    assert eurusd["categories"]["labour"]["coverage"] == 0
-    # Growth populated from EUR leg only.
-    assert eurusd["categories"]["growth"]["coverage"] == 1
+    eur = payload["currencies"]["EUR"]
+    assert eur["categories"]["labour"]["score_cell"] == 0
+    assert eur["categories"]["labour"]["coverage"] == 0
+    assert eur["categories"]["growth"]["coverage"] == 1
 
 
 # ---------------------------------------------------------------------------
