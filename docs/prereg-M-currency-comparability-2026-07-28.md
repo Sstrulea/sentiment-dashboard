@@ -447,3 +447,41 @@ Aceeași baterie, cu randamentele forward permutate în interiorul fiecărui (pe
 | C | trece (trivial) | **eșuează/neevaluabil** (2/6 neevaluabile, 1/6 eșuat, 3/6 trec) | **nu trece curat poarta de nedeteriorare** |
 
 **Nicio adopție. Niciun PR. Aceasta e o raportare a rezultatelor pre-înregistrate, nu o recomandare** — §6.3 exclude explicit selecția pe baza îmbunătățirii hit-rate, iar decizia finală (care candidat, dacă vreunul) rămâne a ta.
+
+---
+
+## 15. DECIZIE FINALĂ — §M închis (2026-07-28)
+
+**Nimic implementat. Niciun PR deschis.** Această secțiune documentează decizia, nu o execută.
+
+| decizie | rezultat |
+|---|---|
+| **D1** | **E** — unificare absență structurală cu calea existentă de staleness + flag vizual distinct |
+| C | **respins** — pierde 47.4% din pereche-zile (16/28 perechi, permanent) fără niciun câștig măsurat față de E (§14.5: E trece poarta de nedeteriorare curat, 6/6; C nu, 2/6 neevaluabile + 1/6 eșuat) |
+| D | **respins** — aruncă date măsurate (monetary USD pe perechile cu NZD/CHF), cere cod nou (logica de intersecție per-pereche), fără avantaj empiric față de E (§14.5: ambele trec poarta 6/6; D nu oferă nimic ce E nu oferă deja, la un cost de complexitate și pierdere de informație mai mare) |
+| **D2-c** | **confirmat, pe ambele fold-uri** (sentiment `w_s=0.125`, trend `macro_weight_target=4.371794871794871`) — validat M-4, variație ≈0 pe ambele, §14.4 |
+| PA-3 | **nu se activează** — cel puțin un candidat (de fapt trei: NULL/E/D) a trecut poarta de nedeteriorare, deci clauza „dacă niciun candidat nu trece" nu se declanșează |
+
+### 15.1 Notă pentru docstring-ul viitor (când se implementează — NU acum)
+
+> **E ≡ NULL, numeric.** Cele două candidate produc rezultate identice bit-cu-bit la orice metrică de scoring (§14.0) — diferența e exclusiv de UI (flag vizual). **E NU repară non-comparabilitatea indicilor valutari** (D-a/D-b din §1.1 rămân neatinse: NZD/CHF tot au un index calculat din 3 categorii, nu 4, cu variație sistematic mai mare) — **E doar o face VIZIBILĂ** în loc de silențioasă (azi: categoria lipsește complet din UI pentru NZD/CHF, fără niciun indiciu; sub E: aceeași excludere din index, dar cu celulă + flag afișate). **Comparabilitatea (D-a/D-b) e adresată separat, de D2-c** — care nu schimbă CE intră în medie (asta rămâne treaba lui D1), ci cum se cuplează SENTIMENT/TREND cu acoperirea de categorii (D-c). Cele două decizii (D1=E, D2=D2-c) rezolvă probleme DIFERITE și nu trebuie confundate ca o singură reparație.
+
+### 15.2 Specificația flag-ului vizual (pentru implementare viitoare — NU acum)
+
+Flag-ul trebuie să distingă **trei** stări, nu două (rezultat direct din §M/§11/§12/§13 — a nu se reduce la o singură categorie "lipsă"):
+
+| stare | exemplu azi | cauză | mesaj |
+|---|---|---|---|
+| **live** | CAD, EUR, GBP, USD | date curente (`stale=False`) | (fără flag — comportament normal) |
+| **stale, recuperabilă** | AUD (13 zile lag, sursă `rba`); **CHF, dacă s-ar ingera** (362 zile lag, sursă `snb` — confirmat reachable în §11/§12.3, deci NU e "indisponibil permanent", doar neingerată/veche) | sursa există și răspunde, dar seria nu s-a mai actualizat recent | „serie învechită — se poate reîmprospăta" |
+| **indisponibil permanent** | **NZD** — RBNZ (`rbnz`) blocat la nivel de edge/WAF, confirmat **de două ori** (§11: UA browser standard → HTTP 403; §12.2: UA `macro-data-analysis/1.0` + IPv4-pinned, exact config-ul care a rezolvat FRED → HTTP 403 identic, „Website unavailable"), plus fallback Stooq bot-walled (§11) | sursa primară și fallback-ul sunt ambele blocate, reconfirmat, nu un fluke tranzitoriu | „sursă indisponibilă — nu reîncercăm automat" |
+
+**CHF nu se pune în aceeași categorie cu NZD.** CHF are o sursă (SNB) care a răspuns cu succes chiar în această investigație (7534 puncte, până la 2025-07-31) — starea corectă pentru CHF, sub E, ar fi "stale, recuperabilă" (identică structural cu AUD), NU "indisponibil permanent" ca NZD. Diferența dintre cele două valute (una are un fetch reușit dar vechi, cealaltă are un blocaj confirmat de rețea de două ori) trebuie păstrată vizibil în UI, nu colapsată într-un singur "no data".
+
+---
+
+## §M ÎNCHIS.
+
+**Următorul pas (nu în acest document): §N** — cele două calcule bilaterale divergente (`_build_indicator_cells` vs `_category_cells`, raportul 2 §N — bug pur, fără decizie normativă de luat). Apoi implementarea (D1=E + D2-c + flag-urile din §15.2). Apoi **§Q1, ultimul** — re-derivarea `mild`/`very` la p55/p90, pe distribuția rezultată după ce §N + §M + implementarea sunt așezate (motivul e neschimbat, §8: calibrarea pe o distribuție care urmează să se schimbe e lecția din corupția consensului MT5).
+
+**Nimic implementat aici. Niciun PR.**
