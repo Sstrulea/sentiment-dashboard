@@ -60,6 +60,7 @@ Declarate explicit, ca să nu se strecoare în timpul implementării:
 | **C** | Excludere: perechile cu leg incomplet nu primesc scor, primesc `insufficient_coverage` | nicio afirmație nemăsurată |
 | **D** | Differencing pe intersecția seturilor de categorii prezente în **ambele** legs | nicio afirmație nemăsurată |
 | **NULL** | Se păstrează mean-over-present. Se documentează degradarea în docstring + flag vizual | nicio afirmație nemăsurată, dar comparabilitatea rămâne ruptă |
+| **E** *(adăugat 2026-07-28, §13)* | Absența STRUCTURALĂ (NZD/CHF, `rate_scores.get(ccy) is None`) primește aceeași celulă ca staleness-ul deja existent: `{score_cell:0, score_precise:0.0, coverage:0, stale:True}` + flag vizual — reutilizează calea EXISTENTĂ din `compute_currency_scorecard`/`rate_compute.py`, nu una nouă. | nicio afirmație nemăsurată — vezi verificarea decisivă din §13.2: calea existentă EXCLUDE, nu include-cu-0 |
 
 ### 3.2 Constrângere normativă — se decide ÎNAINTE de date
 
@@ -275,3 +276,66 @@ RateScore(currency='CHF', rate_score=0, delta_w=-0.009, latest_yield=-0.083,
 **Nimic ingerat, nimic scris în `data/`.**
 
 **M-am oprit aici, conform instrucțiunii. Nu am rulat §5.**
+
+---
+
+## 13. Candidatul E + verificarea decisivă + D2-c extins la TREND (2026-07-28)
+
+### 13.1 Candidatul E (adăugat la §3.1)
+
+Absența STRUCTURALĂ (NZD, CHF — `rate_scores.get(ccy) is None`, deci `categories_out` nu primește deloc cheia `"monetary"`) ar primi, sub E, exact aceeași formă de celulă pe care STALENESS o produce deja azi pentru AUD/JPY: `{score_cell:0, score_precise:0.0, coverage:0, stale:True}`, plus un flag vizual (inexistent azi pentru acest caz — azi categoria lipsește complet din UI, nu apare deloc, vezi raportul 2 §M). Mecanismul de excludere nu e nou — e calea deja folosită de `rate_compute.py`/`compute_currency_scorecard` pentru staleness, reutilizată pentru absență.
+
+### 13.2 Verificarea decisivă — EXCLUDERE, confirmat numeric pe AUD
+
+**Cod** (`src/economic_compute.py`, `compute_currency_scorecard`):
+
+```python
+categories_out["monetary"] = {
+    "score_cell": _clamp_cell(float(rscore)),
+    "score_precise": float(rscore),
+    "coverage": 0 if is_stale else 1,
+    "stale": is_stale,
+}
+if not is_stale:                              # <- gate-ul decisiv
+    total_coverage += 1
+    monetary_weight = float(...)
+    cat_scores_for_index.append((float(rscore), monetary_weight))
+```
+
+Când `is_stale=True`, blocul `if not is_stale:` NU rulează — celula `monetary` e scrisă în `categories_out` (pentru afișare), dar NU e adăugată niciodată în `cat_scores_for_index`, deci nu contribuie NICI la numărător (`index_num`), NICI la numitor (`index_wsum`). E excludere structurală, nu includere-cu-0.
+
+**Confirmare numerică, AUD, azi (2026-07-28):**
+
+```
+AUD categories: growth=-0.6667 (cov3), inflation=-1.0 (cov2), labour=+0.6667 (cov3), monetary=0.0 (cov0, stale=True)
+AUD index_wsum (din payload) = 3.0        <- NU 4.0
+AUD index_num  (din payload) = -1.0
+
+varianta EXCLUSĂ           : mean(-0.6667, -1.0, +0.6667) × 5 = -1.666666666666667
+varianta INCLUSĂ-CU-0      : mean(-0.6667, -1.0, +0.6667, 0.0) × 5 = -1.25
+AUD index ACTUAL (payload) : -1.666666666666667   <- match EXACT cu varianta EXCLUSĂ (diferență < 1e-9)
+                                                       NU cu varianta inclusă-cu-0
+```
+
+**Verdict: EXCLUSĂ din numitor, confirmat atât din cod cât și numeric pe AUD, fără ambiguitate.**
+
+**Consecință directă asupra lui E**: pentru că mecanismul EXISTENT pentru staleness deja exclude (nu include-cu-0), candidatul E — care doar reutilizează acest mecanism pentru cazul de absență structurală — **NU cade sub CN-1**. E nu e echivalentul candidatului B (care impune numitor fix 4 cu valoare 0 inclusă — o afirmație nemăsurată, "nu a existat surpriză"). E face o afirmație goală: "nu există date, celula nu contribuie, dar e vizibilă". **E rămâne candidat valid alături de C, D, NULL.**
+
+### 13.3 D2-c extins la TREND — SEMNAT
+
+Colapsare analogă cu §10.1 (SENTIMENT), acum pentru fold-ul TREND (`_fold_trend`, `macro_weight`). În loc de `macro_weight = (leg_eff_wsum(base) + leg_eff_wsum(quote)) / 2` (variază 3.5–4.5 pe pereche, cf. §12.1), se folosește un **numitor constant, calibrat**:
+
+```
+macro_weight_target = 4.371794871794871
+eff_trend_weight = trend_weight / (macro_weight_target + trend_weight) = 0.5 / 4.871794871794871 = 10.2632%
+```
+
+calibrat exact pe media grupului de referință (4,4) de azi (0.5/4.75 și 0.5/5.0, mediate = 0.10263157894736842) — aceeași logică de calibrare ca `w_s=0.125` de la SENTIMENT (§10.1): grupul de referință (acoperire completă) își păstrează ponderea efectivă actuală medie; toate celelalte grupuri ((3,4), (4,3), (3,3)) converg la ACEEAȘI 10.2632%, indiferent de câte categorii au legs-urile.
+
+**Notă de consistență**: la fel ca la SENTIMENT, D2-c NU impută nimic în FUND — schimbă doar cum se combină TREND cu media (deja corect calculată, peste categoriile prezente) a legs-urilor. D1 (tratamentul absenței) rămâne complet separat și neafectat de această decizie.
+
+### 13.4 PA-2 — rămâne NESEMNAT, dar observație
+
+Condiționat explicit de rezultatul §13.2 (acum rezolvat: EXCLUDERE, E supraviețuiește). Nu am semnat PA-2 în numele tău. Observație factuală, nu decizie: cu E confirmat viabil și ieftin (reutilizează cod existent, zero risc de imputare), scenariul pe care PA-2 îl acoperea explicit ("dacă D1=C e SINGURUL candidat care trece, accept scoaterea a 16/28 perechi") devine mai puțin probabil să fie singurul rezultat posibil — dar asta nu elimină nevoia semnăturii tale dacă, după măsurătorile §5, C tot iese singurul supraviețuitor pentru vreun motiv neanticipat aici.
+
+**§5 nu a rulat. Nimic ingerat, nimic scris în `data/`.**
