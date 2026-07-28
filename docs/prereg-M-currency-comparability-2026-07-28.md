@@ -485,3 +485,36 @@ Flag-ul trebuie să distingă **trei** stări, nu două (rezultat direct din §M
 **Următorul pas (nu în acest document): §N** — cele două calcule bilaterale divergente (`_build_indicator_cells` vs `_category_cells`, raportul 2 §N — bug pur, fără decizie normativă de luat). Apoi implementarea (D1=E + D2-c + flag-urile din §15.2). Apoi **§Q1, ultimul** — re-derivarea `mild`/`very` la p55/p90, pe distribuția rezultată după ce §N + §M + implementarea sunt așezate (motivul e neschimbat, §8: calibrarea pe o distribuție care urmează să se schimbe e lecția din corupția consensului MT5).
 
 **Nimic implementat aici. Niciun PR.**
+
+---
+
+## §16 — Re-verificare externă NZD/CHF (2026-07-28, read-only, nimic ingerat)
+
+Cerută separat, după §M ÎNCHIS: (1) încercare directă de descărcare a XLSX-ului RBNZ B2 pornind de la pagina de statistici (nu doar URL-urile hardcodate), (2) verificare dacă seria SNB CHF interogată în §11/§12.3 e corectă sau o arhivă/frecvență greșită.
+
+### 16.1 — RBNZ: trei căi noi încercate, toate blocate, dar cu context nou important
+
+- **Pagina reorganizată**: căutarea a găsit URL-ul curent al seriei (`https://www.rbnz.govt.nz/statistics/series/exchange-and-interest-rates/wholesale-interest-rates`) — diferit de vechea structură `/statistics/series/b/b2/` din `src/rate_sources.py`. Testat cu `curl` (UA Chrome complet, fără WebFetch): **HTTP 403**, identic pe pagina generală `/statistics` — blocaj la nivel de domeniu/edge, nu de UA sau de cale specifică.
+- **Oglindă data.govt.nz** (`catalogue.data.govt.nz/dataset/wholesale-interest-rates`): pagina HTML, pagina de resursă, ȘI endpoint-ul JSON al API-ului CKAN (`/api/3/action/resource_show`, `/api/3/action/package_show`) — toate returnează **HTTP 200 dar conținutul e o pagină de provocare Imperva** ("Pardon Our Interruption", necesită JS), nu date. Testat cu `curl`, aceeași problemă indiferent de `Accept` header sau path.
+- **Descoperire importantă, din snippet-uri de căutare** (nu din fetch direct, pagina RBNZ însăși fiind blocată): fișierul **"Wholesale Interest Rates – B2 Daily (2018-current)" a fost DISCONTINUAT** — RBNZ a trecut la o sursă nouă de date de la **NZFMA** (New Zealand Financial Markets Association): seriile sunt acum **rate de închidere (closing, end-of-day)**, nu rate de la jumătatea zilei, publicate cu **o zi lag**, efectiv din **luni, 25 august 2025**. Benchmark-urile 1, 2, 5 și 10 ani pe obligațiuni guvernamentale există explicit ca serii ("indicative closing-rates at 5.10pm, published by NZFMA") — deci **benchmark-ul de 2 ani EXISTĂ conceptual**, dar fișierul XLSX vechi hardcodat în cod probabil nu mai e actualizat de atunci (metodologie schimbată, posibil și cale schimbată).
+- **NZFBF** (`nzfbf.co.nz` — New Zealand Financial Benchmark Facility, administratorul de benchmark menționat), un domeniu NOU, NEBLOCAT (testat cu WebFetch, funcționează): are pagini `/benchmarks/closing-rates/` și `/benchmarks/closing-rates/nzgs` (New Zealand Government Bonds) — dar sunt pagini **informative/metodologice** (link către un PDF de metodologie, `NZGS-Closing-Rates---Methodology-January-2026.pdf`), **fără tabel de date sau link de download vizibil** pe paginile verificate. Nu am explorat exhaustiv tot site-ul (ar putea exista un portal de date separat, autentificat sau nu, pe care nu l-am găsit).
+
+**Verdict RBNZ**: rămâne genuin blocat pe toate căile testate (3 domenii, 5 URL-uri distincte, 2 unelte diferite). Noutatea reală nu e o cale de acces, ci confirmarea DIN SURSE EXTERNE (Scoop News, alertele RBNZ) că fișierul vechi a fost discontinuat printr-o schimbare de metodologie/sursă (NZFMA) din 25 august 2025 — asta explică probabil de ce RBNZ-ul hardcodat în cod nu ar mai funcționa oricum, dincolo de blocajul de edge.
+
+### 16.2 — SNB CHF: NU e eroare de arhivă/frecvență — e un cub complet ÎNGHEȚAT, confirmat din metadata proprie
+
+Re-interogat direct `https://data.snb.ch/api/cube/rendoblid/data/csv/en` (același endpoint ca în `SnbSource`), de data asta inspectând ÎNTREG fișierul (5.46 MB, 146,828 rânduri), nu doar seria "2J" extrasă.
+
+**Metadata din chiar antetul fișierului**:
+```
+"CubeId";"rendoblid"
+"PublishingDate";"2025-09-01 14:29"
+```
+
+**Toate cele 22 de dimensiuni D0 din cub** (1J…30J, 10J1, E, K, P, GK, IKH, AAA, AA, A) **se opresc la exact aceeași dată: 2025-07-31** — nu doar "2J". Deci nu e o eroare de selecție a maturității/cubului din partea noastră: verificat via `https://data.snb.ch/api/cube/rendoblid/dimensions/en` că `D0=2J` chiar înseamnă "2 years" sub "CHF Swiss Confederation bond issues" (categoria corectă, guvernamentală, nu corporate/cantonal). **Cubul ÎNTREG a fost publicat ultima dată pe 2025-09-01 și conține date doar până la 2025-07-31** — un îngheț la nivel de sursă (SNB), nu o problemă de frecvență (nu e "anual" — cubul avea cadență zilnică până s-a oprit) și nu o eroare de interogare de partea noastră.
+
+Nu am găsit (în timpul alocat) un cub succesor cu alt nume pe portalul SNB — `rendoblim` (varianta lunară) există ca frate, dar e frecvență mai joasă, nu un înlocuitor mai proaspăt. Pagina portalului SNB (`data.snb.ch/en/topics/ziredev/cube/rendoblid`) e un SPA — nu am putut extrage din ea vreo notă explicită de discontinuare (doar un mesaj de compatibilitate browser la fetch necompilat JS).
+
+**Verdict CHF**: seria interogată în §11/§12.3 era CEA CORECTĂ (cub + dimensiune corecte); staleness-ul de 362 zile nu vine dintr-o greșeală de query, ci dintr-un îngheț confirmat la sursă (metadata proprie a fișierului). Caracterizarea din §15.2 ("stale, recuperabilă") rămâne corectă ca stare AZI, dar "recuperabilă" ar necesita ca SNB să reia publicarea cubului `rendoblid` — nu ține de o cerere diferită de-a noastră.
+
+**Nimic ingerat. Nimic scris în `data/`. M-am oprit aici.**
