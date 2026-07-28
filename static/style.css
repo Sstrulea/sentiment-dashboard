@@ -1200,6 +1200,18 @@ table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-
 /* Symbol column shrinks to content (pair codes are short). */
 table.econ-table th.col-sym, table.econ-table td.sym { white-space: nowrap; width: 1%; }
 table.econ-table td.score-cell { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; width: 1%; white-space: nowrap; }
+
+/* Σ column: backend-computed sum of every displayed contribution, next to
+   Score. A new COLUMN only — every existing cell's box/row height is
+   untouched; the per-cell contribution (FUND/TREND/SENTIMENT) is surfaced
+   exclusively via `title` (hover), never as extra visible content. */
+table.econ-table td.contrib-sum-cell {
+  text-align: right; font-variant-numeric: tabular-nums; font-weight: 600;
+  font-size: 12px; width: 1%; white-space: nowrap;
+}
+table.econ-table td.contrib-mismatch {
+  background: var(--warning-bg); color: var(--warning-fg);
+}
 table.econ-table td.bias-cell { width: 1%; white-space: nowrap; }
 
 /* Symbol / Bias / Score = whole-cell fill in the bias color (no pill, no radius).

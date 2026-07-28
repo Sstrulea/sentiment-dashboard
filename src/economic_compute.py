@@ -370,8 +370,13 @@ def compute_currency_scorecard(
                                           allow_stale=True, currency=currency)
         if scored is None:
             continue
+        # `category` is stamped onto the breakdown entry (not just used locally)
+        # so a later consumer (compute_instrument's per-indicator contribution
+        # attribution) can look up which category — and therefore which
+        # coverage/weight — an indicator belongs to, without re-reading
+        # indicators_cfg.
+        scored["category"] = cat = ind_cfg.get("category")
         breakdown[key] = scored
-        cat = ind_cfg.get("category")
         if cat in per_cat and not scored.get("stale"):
             per_cat[cat].append((scored["score"], float(ind_cfg.get("weight", 1.0))))
 
@@ -382,6 +387,7 @@ def compute_currency_scorecard(
         entries = per_cat.get(cat, [])
         coverage = len(entries)
         total_coverage += coverage
+        weight = float(cat_meta.get("weight", 1.0))
         wsum = sum(w for _, w in entries)
         if coverage > 0 and wsum > 0:
             precise = sum(s * w for s, w in entries) / wsum
@@ -391,9 +397,10 @@ def compute_currency_scorecard(
             "score_cell": _clamp_cell(precise) if coverage > 0 else 0,
             "score_precise": float(precise),
             "coverage": coverage,
+            "weight": weight,
         }
         if coverage > 0:
-            cat_scores_for_index.append((precise, float(cat_meta.get("weight", 1.0))))
+            cat_scores_for_index.append((precise, weight))
 
     # Standing monetary category (Rate Expectations). Same shape as a surprise
     # category but its score comes from the precomputed rate engine, not the
@@ -401,7 +408,10 @@ def compute_currency_scorecard(
     if rate_entry is not None and rate_entry.get("score") is not None:
         rscore = int(rate_entry["score"])
         is_stale = bool(rate_entry.get("stale"))
-        breakdown["rate_expectations"] = dict(rate_entry)
+        monetary_weight = float(
+            (indicators_cfg.get("categories", {}).get("monetary", {}) or {}).get("weight", 1.0)
+        )
+        breakdown["rate_expectations"] = dict(rate_entry, category="monetary")
         # Mirror the calendar-indicator stale policy (see the `not scored.get("stale")`
         # guard above): a stale rate is kept for DISPLAY (cell value + stale flag,
         # coverage 0) but EXCLUDED from the currency index.
@@ -409,13 +419,11 @@ def compute_currency_scorecard(
             "score_cell": _clamp_cell(float(rscore)),
             "score_precise": float(rscore),
             "coverage": 0 if is_stale else 1,
+            "weight": monetary_weight,
             "stale": is_stale,
         }
         if not is_stale:
             total_coverage += 1
-            monetary_weight = float(
-                (indicators_cfg.get("categories", {}).get("monetary", {}) or {}).get("weight", 1.0)
-            )
             cat_scores_for_index.append((float(rscore), monetary_weight))
 
     if cat_scores_for_index:
@@ -491,6 +499,70 @@ def _leg_eff_wsum(card: dict | None, sentiment_value, sentiment_weight: float) -
     if sentiment_value is not None:
         wsum += sentiment_weight
     return wsum
+
+
+def _leg_indicator_multiplier(card: dict | None, category: str | None, scale: float) -> float:
+    """Exact marginal effect of a one-unit change in ONE indicator's score on
+    this leg's OWN currency index (pre-sentiment): d(index)/d(score_k) =
+    weight_c / (index_wsum · coverage_c), scaled. Reads `weight`/`coverage`
+    straight off the card's own `categories` cell — no hardcoded weights.
+    0 when the category is absent/stale (excluded from `index_wsum`, so this
+    indicator has no route into the index at all) or `category` is None.
+    """
+    if card is None or category is None:
+        return 0.0
+    cell = (card.get("categories") or {}).get(category)
+    if cell is None or (cell.get("coverage") or 0) <= 0:
+        return 0.0
+    index_wsum = card.get("index_wsum", 0.0)
+    if not index_wsum:
+        return 0.0
+    weight = float(cell.get("weight", 1.0))
+    coverage = int(cell["coverage"])
+    return (weight / (index_wsum * coverage)) * scale
+
+
+def _fund_contributions(
+    base_card: dict | None,
+    quote_card: dict | None,
+    sign: float,
+    is_fx: bool,
+    pair_divisor: float,
+    scale: float,
+) -> list[dict]:
+    """Per-indicator contribution to the FUND-only (pre-sentiment, pre-trend)
+    score — an EXACT linear decomposition: summing every row's `contribution`
+    reconstructs (base_card.index − quote_card.index)/pair_divisor (fx) or
+    base_card.index·sign (single) bit-for-bit (mirrors the reference
+    derivation validated in scripts/diag/section_thirdpath.py). One row per
+    indicator_key present (breakdown entry exists) on EITHER leg — same
+    coverage as the dense table's own cells; a stale entry contributes 0
+    (excluded from the index, same policy as the index itself).
+    """
+    base_bd = (base_card or {}).get("breakdown", {}) or {}
+    quote_bd = (quote_card or {}).get("breakdown", {}) or {} if is_fx else {}
+    keys = sorted(set(base_bd) | set(quote_bd))
+
+    rows: list[dict] = []
+    for key in keys:
+        eb, eq = base_bd.get(key), quote_bd.get(key)
+        category = (eb or eq).get("category")
+        base_mult = _leg_indicator_multiplier(base_card, category, scale)
+        base_term = (float(eb["score"]) * base_mult) if (eb is not None and not eb.get("stale")) else 0.0
+        raw_base = int(eb["score"]) if eb is not None else 0
+
+        if is_fx:
+            quote_mult = _leg_indicator_multiplier(quote_card, category, scale)
+            quote_term = (float(eq["score"]) * quote_mult) if (eq is not None and not eq.get("stale")) else 0.0
+            raw_quote = int(eq["score"]) if eq is not None else 0
+            contribution = (base_term - quote_term) / pair_divisor
+            raw = raw_base - raw_quote
+        else:
+            contribution = base_term * sign
+            raw = int(raw_base * sign)
+
+        rows.append({"key": key, "category": category, "contribution": float(contribution), "raw": raw})
+    return rows
 
 
 def _fold_trend(macro_score: float, macro_weight: float, trend_value,
@@ -570,6 +642,9 @@ def compute_instrument(
         macro_score = (_augmented_index(base_card, v_s, sentiment_weight, scale) * sign) if base_card else 0.0
         macro_weight = _leg_eff_wsum(base_card, v_s, sentiment_weight)
         quote_card = None
+        is_fx = False
+        base_idx_no_sent = _augmented_index(base_card, None, sentiment_weight, scale) if base_card else 0.0
+        macro_score_no_sentiment = base_idx_no_sent * sign
         breakdown = {
             "base": {
                 "currency": currency,
@@ -581,6 +656,7 @@ def compute_instrument(
         base, quote = inst_cfg["base"], inst_cfg["quote"]
         base_card = scorecards.get(base)
         quote_card = scorecards.get(quote)
+        sign = 1.0  # unused by _fund_contributions when is_fx=True
         v_s_base = _leg_sentiment(base, in_pair=True)
         v_s_quote = _leg_sentiment(quote, in_pair=True)
         base_idx = _augmented_index(base_card, v_s_base, sentiment_weight, scale) if base_card else 0.0
@@ -591,6 +667,10 @@ def compute_instrument(
         # fraction (scale preserved → bias thresholds unchanged).
         macro_weight = (_leg_eff_wsum(base_card, v_s_base, sentiment_weight)
                         + _leg_eff_wsum(quote_card, v_s_quote, sentiment_weight)) / 2.0
+        is_fx = True
+        base_idx_no_sent = _augmented_index(base_card, None, sentiment_weight, scale) if base_card else 0.0
+        quote_idx_no_sent = _augmented_index(quote_card, None, sentiment_weight, scale) if quote_card else 0.0
+        macro_score_no_sentiment = (base_idx_no_sent - quote_idx_no_sent) / pair_divisor
         breakdown = {
             "base": {
                 "currency": base,
@@ -608,6 +688,31 @@ def compute_instrument(
     # member). trend_value None → score == macro_score (bit-identical baseline).
     score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, scale)
 
+    # --- Contribution breakdown (display-only; NEVER feeds `score` — it is
+    # derived FROM the already-computed score/macro_score/macro_score_no_sentiment
+    # via exact telescoping differences, so summing every row here always
+    # reconstructs `score` bit-for-bit, by construction, not by approximation:
+    #   sum(fund contributions)      == macro_score_no_sentiment
+    #   + sentiment_contribution     == macro_score
+    #   + trend_contribution         == score
+    # `contrib_residual` is the leftover after summing the DISPLAYED rows only
+    # (floating-point noise in practice, ~1e-13) — computed here, once, so a
+    # bug in a later render/display layer can never mask itself by
+    # recomputing its own "Σ" from a different code path. ---
+    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, scale)
+    sentiment_contribution = macro_score - macro_score_no_sentiment
+    trend_contribution = score - macro_score
+
+    if sentiment_on:
+        contributions.append({"key": "sentiment", "category": None,
+                             "contribution": float(sentiment_contribution), "raw": None})
+    if trend_value is not None:
+        contributions.append({"key": "trend", "category": None,
+                             "contribution": float(trend_contribution), "raw": int(trend_value)})
+
+    contrib_sum = float(sum(r["contribution"] for r in contributions))
+    contrib_residual = float(score) - contrib_sum
+
     return {
         "symbol": symbol,
         "display": inst_cfg.get("display", symbol),
@@ -617,6 +722,10 @@ def compute_instrument(
         "breakdown": breakdown,
         # Display cell for the TREND column (same value folded into the score).
         "trend": None if trend_value is None else int(trend_value),
+        # Backend-computed contribution breakdown (display-only, see above).
+        "contributions": contributions,
+        "contrib_sum": contrib_sum,
+        "contrib_residual": contrib_residual,
     }
 
 
