@@ -54,6 +54,22 @@
   }
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
+  // Backend-computed contribution lookup (never recomputed here — see
+  // src.economic_compute.compute_instrument, which derives `contributions`/
+  // `contrib_sum`/`contrib_residual` via exact telescoping differences, so a
+  // render-side bug can't mask itself by re-deriving its own "total").
+  function findContribution(inst, key) {
+    const list = inst.contributions || [];
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].key === key) return list[i].contribution;
+    }
+    return null;
+  }
+  function contribSpan(contribution) {
+    if (contribution === null || contribution === undefined || Number.isNaN(contribution)) return "";
+    return '<span class="econ-contrib">' + fmtSigned(contribution, 2) + "</span>";
+  }
+
   // ---- Color classes (COT divergent palette: blue = bullish/buy, red = bearish) ----
   // Divergent scale by magnitude; differentials run to ±4 so we have ±3 tiers.
   function cellClass(score) {
@@ -238,6 +254,9 @@
   function rowSortValue(inst, key) {
     if (key === "symbol") return inst.display || inst.symbol;
     if (key === "bias" || key === "score") return inst.score;          // precise float
+    if (key === "contrib_sum") {
+      return (inst.contrib_sum !== null && inst.contrib_sum !== undefined) ? inst.contrib_sum : -Infinity;
+    }
     if (key === "trend") {
       return (inst.trend !== null && inst.trend !== undefined) ? inst.trend : -Infinity;
     }
@@ -265,18 +284,27 @@
   }
 
   // ---- Table --------------------------------------------------------------
+  // Every cell below shows the RAW per-indicator score as before (primary,
+  // unchanged) plus its backend-computed contribution to Score as a smaller
+  // secondary line (`econ-contrib`) — never recomputed here, see
+  // findContribution(). Raw and contribution are DIFFERENT numbers: raw is
+  // the undiluted base−quote differential; contribution is raw's actual
+  // (small) share of Score once it's weighed against every other category/
+  // factor. Both stay visible, distinctly marked, so neither reads as "the"
+  // number.
   function indicatorCellHtml(inst, key) {
     const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
     const v = c.v;
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
     }
+    const sub = contribSpan(findContribution(inst, key));
     if (c.stale) {
       return '<td class="econ-cell ec-stale" title="stale — latest release is outside the lookback window; excluded from scoring">' +
-        fmtScoreCell(v) + '</td>';
+        fmtScoreCell(v) + sub + '</td>';
     }
     // Continuous gradient on the per-indicator differential (saturates at ±4).
-    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + "</td>";
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + sub + "</td>";
   }
 
   // TREND sub-cell for an FX row (display-only). Same divergent color engine as
@@ -288,10 +316,11 @@
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-empty"></td>';
     }
+    const contrib = findContribution(inst, "trend");
     const tip = "TREND · MA structure (SMA20/50/200) × ADX strength → cell " +
-      fmtScoreCell(v) + " (weight 0.5 in the Score)";
+      fmtScoreCell(v) + " (weight 0.5 in the Score; contributes " + fmtSigned(contrib, 2) + " to Score)";
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
-      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + contribSpan(contrib) + "</td>";
   }
 
   // SENTIMENT > COT sub-cell for an FX row (display-only). Same divergent color
@@ -303,6 +332,7 @@
       return '<td class="econ-cell cell-empty"></td>';
     }
     const v = cot.cell;
+    const contrib = findContribution(inst, "sentiment");
     function legTxt(ccy, cell, det) {
       let t = ccy + " " + fmtScoreCell(cell === null || cell === undefined ? 0 : cell);
       if (det) t += " (lvl " + fmtScoreCell(det.level) + ", flow " + fmtScoreCell(det.flow) + ")";
@@ -312,9 +342,30 @@
     const tip = "COT positioning · " + (cot.quote
       ? "base " + baseTxt + " − quote " + legTxt(cot.quote, cot.quote_cell, cot.quote_detail) +
         " = cell " + fmtScoreCell(v)
-      : baseTxt + " = cell " + fmtScoreCell(v));
+      : baseTxt + " = cell " + fmtScoreCell(v)) + " (contributes " + fmtSigned(contrib, 2) + " to Score)";
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
-      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + contribSpan(contrib) + "</td>";
+  }
+
+  // Σ column: the backend-computed sum of every displayed contribution
+  // (FUND + SENTIMENT + TREND), which by construction reconstructs Score
+  // exactly (see compute_instrument's `contrib_sum`/`contrib_residual`). JS
+  // does NOT sum the cells itself — it only compares two numbers the backend
+  // already computed, so a summing bug here can't hide by "agreeing with itself".
+  const CONTRIB_SUM_TOLERANCE = 0.15;
+  function contribSumCellHtml(inst) {
+    const sum = inst.contrib_sum;
+    if (sum === null || sum === undefined || Number.isNaN(sum)) {
+      return '<td class="contrib-sum-cell cell-na"></td>';
+    }
+    const mismatch = Math.abs(sum - inst.score) > CONTRIB_SUM_TOLERANCE;
+    const cls = "contrib-sum-cell" + (mismatch ? " contrib-mismatch" : "");
+    const tip = mismatch
+      ? "Σ (" + fmtSigned(sum, 2) + ") differs from Score (" + fmtSigned(inst.score, 2) + ") by more than " +
+        CONTRIB_SUM_TOLERANCE + " — a displayed contribution is missing or wrong"
+      : "Σ of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score";
+    return '<td class="' + cls + '" title="' + escAttr(tip) + '">' + fmtSigned(sum, 2) +
+      (mismatch ? ' <span class="econ-flag flag-stale" title="' + escAttr(tip) + '">⚠</span>' : "") + "</td>";
   }
 
   function renderRow(inst) {
@@ -327,6 +378,7 @@
       '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
+      contribSumCellHtml(inst) +
       trendCellHtml(inst) +
       fxCotCellHtml(inst) +
       cells +
@@ -377,6 +429,7 @@
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
       '<th rowspan="2" data-sort="score">Score</th>' +
+      '<th rowspan="2" data-sort="contrib_sum" title="Sum of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent">Σ</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaderCells + '</tr>' +
