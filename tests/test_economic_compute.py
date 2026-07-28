@@ -349,7 +349,7 @@ def test_monetary_category_added_with_rate_scores():
     p = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF, rate_scores=rs)
     usd = p["currencies"]["USD"]
     assert usd["categories"]["monetary"] == {
-        "score_cell": 2, "score_precise": 2.0, "coverage": 1, "stale": False}
+        "score_cell": 2, "score_precise": 2.0, "coverage": 1, "weight": 1.0, "stale": False}
     assert usd["breakdown"]["rate_expectations"]["score"] == 2
     assert usd["breakdown"]["rate_expectations"]["method"] == "z"
 
@@ -365,7 +365,7 @@ def test_stale_monetary_excluded_from_index_but_displayed():
     su = stale["currencies"]["USD"]
     # displayed: cell present with value + stale flag, coverage 0
     assert su["categories"]["monetary"] == {
-        "score_cell": -2, "score_precise": -2.0, "coverage": 0, "stale": True}
+        "score_cell": -2, "score_precise": -2.0, "coverage": 0, "weight": 1.0, "stale": True}
     assert su["breakdown"]["rate_expectations"]["score"] == -2   # still in breakdown
     # excluded from index: stale index == growth-only index (no monetary pull)
     growth_only = build_payload(cal, _indicators_cfg(), _instruments_cfg(), as_of=AS_OF)
