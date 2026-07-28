@@ -58,6 +58,9 @@
   // src.economic_compute.compute_instrument, which derives `contributions`/
   // `contrib_sum`/`contrib_residual` via exact telescoping differences, so a
   // render-side bug can't mask itself by re-deriving its own "total").
+  // Surfaced via `title` tooltip ONLY — cell box/row height must stay
+  // pixel-identical to the raw-score-only layout; a title attribute never
+  // affects layout.
   function findContribution(inst, key) {
     const list = inst.contributions || [];
     for (let i = 0; i < list.length; i++) {
@@ -65,9 +68,9 @@
     }
     return null;
   }
-  function contribSpan(contribution) {
+  function contribTip(contribution) {
     if (contribution === null || contribution === undefined || Number.isNaN(contribution)) return "";
-    return '<span class="econ-contrib">' + fmtSigned(contribution, 2) + "</span>";
+    return "Contributes " + fmtSigned(contribution, 2) + " to Score.";
   }
 
   // ---- Color classes (COT divergent palette: blue = bullish/buy, red = bearish) ----
@@ -284,27 +287,25 @@
   }
 
   // ---- Table --------------------------------------------------------------
-  // Every cell below shows the RAW per-indicator score as before (primary,
-  // unchanged) plus its backend-computed contribution to Score as a smaller
-  // secondary line (`econ-contrib`) — never recomputed here, see
-  // findContribution(). Raw and contribution are DIFFERENT numbers: raw is
-  // the undiluted base−quote differential; contribution is raw's actual
-  // (small) share of Score once it's weighed against every other category/
-  // factor. Both stay visible, distinctly marked, so neither reads as "the"
-  // number.
+  // Every cell below shows ONLY the RAW per-indicator score, exactly as on
+  // main — box size, padding, line count all unchanged. The backend-computed
+  // contribution to Score is surfaced EXCLUSIVELY via `title` (hover) so row
+  // height stays pixel-identical; see findContribution()/contribTip().
   function indicatorCellHtml(inst, key) {
     const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
     const v = c.v;
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
     }
-    const sub = contribSpan(findContribution(inst, key));
+    const tip = contribTip(findContribution(inst, key));
     if (c.stale) {
-      return '<td class="econ-cell ec-stale" title="stale — latest release is outside the lookback window; excluded from scoring">' +
-        fmtScoreCell(v) + sub + '</td>';
+      const staleTip = "stale — latest release is outside the lookback window; excluded from scoring" +
+        (tip ? " " + tip : "");
+      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + fmtScoreCell(v) + '</td>';
     }
     // Continuous gradient on the per-indicator differential (saturates at ±4).
-    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ">" + fmtScoreCell(v) + sub + "</td>";
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
+      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + fmtScoreCell(v) + "</td>";
   }
 
   // TREND sub-cell for an FX row (display-only). Same divergent color engine as
@@ -318,9 +319,9 @@
     }
     const contrib = findContribution(inst, "trend");
     const tip = "TREND · MA structure (SMA20/50/200) × ADX strength → cell " +
-      fmtScoreCell(v) + " (weight 0.5 in the Score; contributes " + fmtSigned(contrib, 2) + " to Score)";
+      fmtScoreCell(v) + " (weight 0.5 in the Score). " + contribTip(contrib);
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 3)) +
-      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + contribSpan(contrib) + "</td>";
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
   }
 
   // SENTIMENT > COT sub-cell for an FX row (display-only). Same divergent color
@@ -342,9 +343,9 @@
     const tip = "COT positioning · " + (cot.quote
       ? "base " + baseTxt + " − quote " + legTxt(cot.quote, cot.quote_cell, cot.quote_detail) +
         " = cell " + fmtScoreCell(v)
-      : baseTxt + " = cell " + fmtScoreCell(v)) + " (contributes " + fmtSigned(contrib, 2) + " to Score)";
+      : baseTxt + " = cell " + fmtScoreCell(v)) + ". " + contribTip(contrib);
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
-      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + contribSpan(contrib) + "</td>";
+      ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
   }
 
   // Σ column: the backend-computed sum of every displayed contribution
