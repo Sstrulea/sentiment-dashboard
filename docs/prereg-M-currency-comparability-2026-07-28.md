@@ -450,7 +450,9 @@ Aceeași baterie, cu randamentele forward permutate în interiorul fiecărui (pe
 
 ---
 
-## 15. DECIZIE FINALĂ — §M închis (2026-07-28)
+## 15. DECIZIE FINALĂ — §M închis (2026-07-28) — **⚠️ SUPRASEDATĂ, vezi §17**
+
+**⚠️ Decizia D1=E de mai jos a fost redeschisă și invalidată în §17 (2026-07-28): E violează CN-1** (mean-over-present e algebric identic cu o imputare, exact ce CN-1 interzice). Secțiunea rămâne ca înregistrare istorică a raționamentului la momentul respectiv — **nu mai e decizia curentă**.
 
 **Nimic implementat. Niciun PR deschis.** Această secțiune documentează decizia, nu o execută.
 
@@ -518,3 +520,58 @@ Nu am găsit (în timpul alocat) un cub succesor cu alt nume pe portalul SNB —
 **Verdict CHF**: seria interogată în §11/§12.3 era CEA CORECTĂ (cub + dimensiune corecte); staleness-ul de 362 zile nu vine dintr-o greșeală de query, ci dintr-un îngheț confirmat la sursă (metadata proprie a fișierului). Caracterizarea din §15.2 ("stale, recuperabilă") rămâne corectă ca stare AZI, dar "recuperabilă" ar necesita ca SNB să reia publicarea cubului `rendoblid` — nu ține de o cerere diferită de-a noastră.
 
 **Nimic ingerat. Nimic scris în `data/`. M-am oprit aici.**
+
+---
+
+## §M REDESCHIS (2026-07-28)
+
+**§O confirmat închis** (NZD/CHF permanent indisponibile — §16). **§M redeschis**: decizia D1=E din §15 s-a bazat pe o premisă greșită. Documentat mai jos. **Nu decid între candidații rămași — raportez și mă opresc**, conform instrucțiunii.
+
+### 17.1 Eroarea — E (și NULL) violează CN-1
+
+**Afirmația**: mean-over-present e algebric IDENTIC cu o imputare — anume, imputarea categoriei absente cu MEDIA propriilor categorii prezente ale acelei valute, urmată de o medie pe numitor fix (N=4).
+
+**Demonstrație** (identitate matematică generală, nu doar coincidență numerică): fie `x_1,...,x_n` categoriile prezente (n din N=4 posibile, ponderi egale 1.0). Mean-over-present = `(x_1+...+x_n)/n`. Dacă se impută fiecare din cele `N-n` categorii absente cu valoarea `m = (x_1+...+x_n)/n` (media celor prezente) și apoi se calculează media pe numitorul FIX N, rezultatul e:
+
+```
+[ (x_1+...+x_n) + (N-n)·m ] / N  =  [ n·m + (N-n)·m ] / N  =  N·m / N  =  m
+```
+
+**Exact aceeași valoare.** Nu o aproximare — o identitate algebrică: a media valorile prezente ȘI a le împărți la n E MATEMATIC ECHIVALENT cu a impută absentele cu media prezentelor și a împărți la N. Cele două formulări descriu ACELAȘI număr.
+
+**Confirmare numerică, NZD, azi** (`docs/prereg-...md` §13.2 folosise deja acest exemplu, dar pentru altă întrebare):
+
+```
+categorii prezente: growth=0.0, inflation=0.5, labour=0.6667  (n=3)
+mean-over-present           = (0+0.5+0.6667)/3           = 0.388889  →  index = 1.944444
+imputare monetary=media celor 3, apoi /4  = (0+0.5+0.6667+0.388889)/4 = 0.388889  →  index = 1.944444
+identic la 1e-12
+```
+
+**Consecință**: E și NULL (numeric identice, §14.0) **fac o afirmație nemăsurată** — anume "monetary pentru NZD s-ar comporta ca media propriilor sale growth/inflation/labour" — exact genul de afirmație pe care CN-1 a fost adoptată să o interzică. Diferența față de candidatul A (imputare cu media cross-secțională GLOBALĂ) e doar CE anume se impută (media proprie a valutei, nu media tuturor valutelor) — dar mecanismul (o valoare nemăsurată calculată și lăsată să influențeze indexul) e identic în esență.
+
+**Eroarea din §13.2/§15**: verificarea de-atunci a confirmat corect că, LA NIVEL DE COD, categoria stale/absentă nu e adăugată explicit în `cat_scores_for_index` (nicio linie de cod nu scrie o valoare imputată undeva) — asta a fost interpretat drept "excludere, deci fără afirmație nemăsurată". Eroarea: **mecanismul de cod (excludere) și rezultatul aritmetic (echivalent cu imputare) sunt lucruri diferite**. CN-1 vorbește despre rezultat ("nicio valoare nemăsurată nu poate intra în index"), nu despre mecanismul de implementare. Excluderea la nivel de cod nu previne echivalența aritmetică la nivel de rezultat.
+
+### 17.2 Candidații rămași sub CN-1 strict
+
+| candidat | supraviețuiește CN-1 strict? | motiv |
+|---|---|---|
+| A | NU (deja eliminat, §10) | imputare explicită cu media cross-secțională |
+| B | NU (deja eliminat, §10) | imputare explicită cu 0 |
+| **E / NULL** | **NU (nou, §17.1)** | mean-over-present ≡ imputare cu media proprie a valutei — aceeași familie de eroare ca A/B, doar cu altă valoare imputată |
+| **C** | **DA** | când scorează o pereche, ambele legs au N=4 categorii complete — n=N întotdeauna, deci nu există nicio diferență între "mediat peste prezente" și "mediat peste toate" (nimic lipsă de imputat). Nicio afirmație nemăsurată. |
+| **D** | **DA** | mediază peste INTERSECȚIA categoriilor prezente pe AMBELE legs — nu impută nimic; ARUNCĂ date reale (ex. monetary USD pe o pereche cu NZD), dar nu inventează niciuna. Nicio afirmație nemăsurată. |
+
+**Sub CN-1 strict, supraviețuiesc DOAR C și D.**
+
+### 17.3 Ce înseamnă asta pentru măsurătorile deja făcute (§5, §14) — fără decizie
+
+Nu redecid — doar reconectez faptele deja măsurate la noul set de candidați valizi:
+
+- **D** a trecut poarta de nedeteriorare (M-6) curat, 6/6 combinații clasă×orizont (§14.5).
+- **C** nu a trecut curat: 2/6 neevaluabile (clasa `affected_NZD_CHF`, n=0 la ambele orizonturi — perechile cu NZD/CHF sunt excluse permanent, nu doar degradate) + 1/6 eșuat (`ALL`/H10, −2.37pp, efect de compoziție, nu degradare reală pe segmentul `unaffected` luat singur, care e +0.31pp).
+- **PA-2** (semnat) și **PA-3** rămân cum au fost — PA-3 tot nu se activează, pentru că **D** (nu mai NULL/E) trece poarta, deci clauza "dacă niciun candidat nu trece" tot nu se declanșează.
+- **D2-c** (§10.1, §13.3, ambele fold-uri) rămâne neafectată de această redeschidere — e o decizie separată (D-c, cuplaj pondere-acoperire), independentă de D1 (D-a/D-b, tratamentul absenței). Nu se redeschide.
+- Flag-ul vizual din §15.2 (trei stări) rămâne valid ca SPECIFICAȚIE de UI indiferent de care D1 se alege — dar sub C, categoria NZD/CHF nu mai apare NICIODATĂ ca "celulă cu flag" pe o pereche scorată (perechea în sine dispare); sub D, apare ca înainte (celula există, dar unele contribuții sunt aruncate).
+
+**Nu decid între C și D. Raportez faptele de mai sus și mă opresc**, conform instrucțiunii primite.
