@@ -174,13 +174,62 @@ Motivul pentru 5-ultimul: pașii 1-4 schimbă distribuția scorurilor. Calibrare
 
 ## 10. Semnătură
 
-**Decizii de luat înainte de orice cod:**
+**Decizii luate (2026-07-28):**
 
-| | |
+| | decizie |
 |---|---|
-| CN-1 (nicio valoare nemăsurată în index) | adoptată / respinsă |
-| Set de candidați D1 rămași după CN-1 | ____________ |
-| D2 (decuplare numitor) | D2-a / D2-b |
-| PA-1 … PA-5 | semnate / nesemnate |
+| CN-1 (nicio valoare nemăsurată în index) | **adoptată** |
+| Set de candidați D1 rămași după CN-1 | **C, D, NULL** (A, B cad) |
+| D2 (decuplare numitor) | **D2-c** (corectată — vezi §10.1, NU D2-b literal) |
+| PA-1 | semnat |
+| PA-2 | **amânat** — vezi §10.2 |
+| PA-3 | semnat |
+| PA-4 | semnat |
+| PA-5 | semnat |
 
-**Fără aceste decizii completate, măsurătorile nu se rulează.**
+### 10.1 D2-c — formularea corectată (înlocuiește D2-b)
+
+D2-b literal ("numitor constant, independent de numărul de categorii prezente") a fost respinsă: un numitor constant aplicat peste o sumă calculată doar din categoriile prezente e echivalent numeric cu imputarea la zero a categoriilor absente (exact ce CN-1 interzice). Formularea corectă decuplează ponderea EFECTIVĂ a sentimentului de acoperire, păstrând în același timp media doar peste categoriile prezente (D1 neatins de D2):
+
+```
+leg = (mean(categorii_prezente) + w_s · s) / (1 + w_s)
+```
+
+cu **w_s = 0.125**, ales să păstreze ponderea efectivă actuală a valutelor cu 4 categorii: `w_s/(1+w_s) = 0.125/1.125 = 11.11%` (identică cu status quo pentru CAD/EUR/GBP/USD). Pentru valutele cu 3 categorii (NZD, CHF, și AUD/JPY când stale), ponderea efectivă scade de la 14.29% (actual) la **11.11%** — aceeași ca restul, indiferent de acoperire.
+
+**Deschis, nespecificat de George:** formula de mai sus acoperă doar leg-ul SENTIMENT. Cuplajul analog la nivelul TREND (`macro_weight` din `_fold_trend`, care e media greutăților efective ale ambelor legs și deci variază 3.5–4.5 pe pereche) nu are încă o formulă corectată echivalentă. Nu extind principiul la TREND fără semnătură explicită — rămâne o decizie separată, semnalată aici, nu implementată.
+
+### 10.2 PA-2 — amânat, condiționat de §O extern
+
+Înainte de a rula orice măsurătoare din §5, se rulează o căutare EXTERNĂ (rețea) pentru serii 2y NZD/CHF: RBNZ, SNB, BIS. Dacă apare o sursă utilizabilă, §O(1) din raportul 2 se redeschide, D1 devine parțial irelevant (categoria devine prezentă peste tot), iar PA-2 nu mai trebuie semnat separat. Rezultatul căutării: **§11 (addendum)**, mai jos.
+
+**Fără rezolvarea §11 (sau semnarea explicită a PA-2), măsurătorile §5 nu se rulează.**
+
+---
+
+## 11. Addendum — §O extern (rulat 2026-07-28)
+
+Căutare EXTERNĂ (rețea, read-only — **nimic scris în `data/`**), folosind adaptoarele existente din `src/rate_sources.py` (RBNZ, SNB, Stooq) plus o verificare independentă BIS. Rezultate live, chiar acum:
+
+| sursă | valută | rezultat |
+|---|---|---|
+| **RBNZ B2 xlsx** (`RbnzSource`) | NZD | **HTTP 403** (bot-wall, confirmat live) |
+| **Stooq** (`StooqSource`, fallback declarat) | NZD | **BOT-WALL** (`2nzy.b:bot-wall`, confirmat live) |
+| BIS (`stats.bis.org`, catalogul complet de dataflow-uri) | NZD | **Nu există un dataflow de randamente guvernamentale** — catalogul BIS conține `WS_CBPOL` (rate de politică monetară ale băncilor centrale), NU randamente de piață pe 2 ani. Nu e un substitut legitim (instrument diferit) — nefolosit. |
+| **SNB rendoblid, cube D0=2J** (`SnbSource`) | CHF | **SUCCES** — 7534 puncte, 1988-01-04 → **2025-07-31**, ultima valoare −0.083% |
+| Stooq (fallback) | CHF | BOT-WALL (`2chy.b:bot-wall`) |
+| BIS | CHF | la fel ca NZD — niciun dataflow de randamente guvernamentale |
+
+### Interpretare
+
+- **NZD rămâne complet blocat**: sursa primară (RBNZ) e bot-walled cu HTTP 403 chiar acum, fallback-ul (Stooq) e de asemenea bot-walled chiar acum, iar BIS nu publică deloc randamente guvernamentale de 2 ani (doar rate de politică monetară — un instrument diferit, nu l-am substituit). **PA-2 rămâne activ pentru NZD** — nicio sursă nouă nu a apărut.
+- **CHF NU mai e "fără sursă"** — sursa SNB directă (deja codată în `src/rate_sources.SnbSource`, niciodată operaționalizată în `rate_fetch.py`/`data/rates.parquet`) răspunde cu succes ACUM și întoarce 7534 puncte istorice pe exact tenorul corect (2J/2-year), până la 2025-07-31. Asta e **362 de zile** vechime față de azi (2026-07-28) — mult peste `MAX_AGE_BD=7` zile lucrătoare, deci ar intra STALE, nu live, dacă ar fi ingerată. Dar e o schimbare calitativă reală: CHF trece din **ABSENT structural** (0 rânduri, niciodată) în **recuperabil-dar-stale** — exact profilul AUD de azi, nu profilul NZD. Confirmă nota din `src/rate_sources/__init__.py` ("CHF → SNB rendoblid D0=2J, often stale").
+- **Nu am scris nimic în `data/rates.parquet` sau altundeva.** Fetch-ul a fost strict pentru a răspunde la întrebarea "există o sursă" — ingerarea (dacă se decide) e o acțiune separată, neautorizată aici.
+
+### Consecință asupra deciziilor din §10
+
+- **PA-2 rămâne NESEMNAT, dar cu scop redus**: relevant doar pentru NZD (singura valută încă genuin fără sursă). Pentru CHF, D1 (C/D/NULL) devine opțional — dacă se decide ingerarea seriei SNB găsite, CHF s-ar comporta ca AUD (STALE, exclus din index, dar NU necesită o decizie D1 despre "categorie absentă structural").
+- **D1 rămâne relevant integral pentru NZD** (16/28 perechi conțin NZD sau CHF; dintre acestea, cele cu NZD tot au nevoie de o decizie D1 indiferent de rezultatul de mai sus).
+- Nu am redeschis §O(1) din raportul 2 ca "rezolvat" — am doar RE-VERIFICAT live cele 3 surse cerute și am găsit un rezultat diferit de ipoteza inițială pentru CHF (era catalogat "0 surse" în raportul 2; corect e "sursă găsită, dar stale/neingerată").
+
+**M-am oprit aici, conform instrucțiunii. Nu am rulat §5.**
