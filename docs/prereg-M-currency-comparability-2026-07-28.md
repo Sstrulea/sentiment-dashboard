@@ -339,3 +339,111 @@ calibrat exact pe media grupului de referință (4,4) de azi (0.5/4.75 și 0.5/5
 Condiționat explicit de rezultatul §13.2 (acum rezolvat: EXCLUDERE, E supraviețuiește). Nu am semnat PA-2 în numele tău. Observație factuală, nu decizie: cu E confirmat viabil și ieftin (reutilizează cod existent, zero risc de imputare), scenariul pe care PA-2 îl acoperea explicit ("dacă D1=C e SINGURUL candidat care trece, accept scoaterea a 16/28 perechi") devine mai puțin probabil să fie singurul rezultat posibil — dar asta nu elimină nevoia semnăturii tale dacă, după măsurătorile §5, C tot iese singurul supraviețuitor pentru vreun motiv neanticipat aici.
 
 **§5 nu a rulat. Nimic ingerat, nimic scris în `data/`.**
+
+---
+
+## 14. §5 — rezultate (2026-07-28) — PA-2 semnat, măsurători rulate
+
+PA-2 semnat de George. Rulat M-1…M-7 pentru D1 ∈ {C, D, E, NULL}, toate combinate cu D2-c pe AMBELE fold-uri (`w_s=0.125` sentiment, `macro_weight_target=4.371794871794871` trend). Fereastra: 2025-07-25 → 2026-07-21, 53 puncte, 28 perechi FX. **Nicio adopție — doar rezultate.**
+
+Scripturi: `scripts/diag/prereg_m_candidates.py` (motorul de scoring per candidat), `scripts/diag/section5_measurements.py` (bateria M-1…M-7). CSV: `diag-M1-M2-M3-summary.csv`, `diag-M5-candidates-long.csv`, `diag-M6-forward-returns-long.csv`, `diag-M6-M7-gate-deltas.csv`.
+
+### 14.0 Notă preliminară: E ≡ NULL, numeric, peste tot
+
+Confirmat: E și NULL produc rezultate **identice bit-cu-bit** la fiecare metrică (M-1…M-6). Motivul e structural, nu o coincidență: ambele calculează media FUND peste categoriile PROPRII prezente ale fiecărei valute (mecanismul deja verificat exclus, nu inclus-cu-0, în §13.2) — diferența dintre E și NULL era definită doar la nivel de UI (flag vizual pentru absență structurală vs. absență tăcută), ceva ce niciuna din metricile M-1…M-7 nu poate vedea. Rapoartez ambele separat mai jos pentru trasabilitate, dar sunt un singur rezultat numeric.
+
+### 14.1 M-1 — acoperire
+
+| candidat | % perechi scorabile | perechi/zi (medie) |
+|---|---:|---:|
+| NULL | 100.0% | 28.00/28 |
+| E | 100.0% | 28.00/28 |
+| D | 100.0% | 28.00/28 |
+| **C** | **52.6%** | **14.72/28** |
+
+Sub C, **47.4% din pereche-zile nu primesc niciun scor**. Verificat: perechile care conțin NZD sau CHF sunt **excluse 100% din timp, permanent** — nu doar "uneori", pentru că NZD/CHF nu ajung NICIODATĂ la 4 categorii (absență structurală, nu fluctuație de staleness ca AUD/JPY). Sub C, board-ul FX pierde definitiv 16/28 perechi.
+
+### 14.2 M-2 — flip-uri de bias vs producția curentă (neschimbată)
+
+| candidat | rată flip | n flip / n total |
+|---|---:|---:|
+| NULL / E | 3.2% | 47/1484 |
+| D | 9.6% | 142/1484 |
+| C | 0.4%* | 3/780 |
+
+*rata de flip a lui C e calculată DOAR pe cele 780 pereche-zile pe care C încă le scorează — nu e comparabilă direct cu 3.2%/9.6% (eșantion mai mic, sistematic mai ușor: perechile cu NZD/CHF, cele mai afectate de D1, sunt complet absente din acest calcul pentru C).
+
+D2-c singur (fără nicio schimbare de D1, cazul NULL/E) produce deja 3.2% flip-uri față de producția curentă — efectul decuplării ponderii, izolat de orice decizie D1.
+
+### 14.3 M-3 — σ, percentile, split de bias
+
+| candidat | σ mediu | p55 | p90 | p95 | max | %Neutral | %Very |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| NULL / E | 1.343 | 1.12 | 2.44 | 2.80 | 4.41 | 60.8% | 3.8% |
+| D | 1.328 | 1.11 | 2.41 | 2.77 | 4.53 | 61.7% | 3.4% |
+| C | 1.273 | 1.14 | 2.41 | 2.75 | 4.16 | 60.0% | 3.1% |
+
+Nicio schimbare dramatică față de producția curentă (σ≈1.37, raportul 1 §C) — D2-c e o corecție structurală, nu o reponderare agresivă ca V1 (raportul 1 §H, care dubla σ). C are cel mai mic σ și cea mai mică coadă Very, dar pe un eșantion de doar 6-15 perechi/zi (cele cu 4 categorii complete), nu 28.
+
+### 14.4 M-4 — criteriul PRIMAR: varianța ponderii efective de pilon
+
+| pilon | valoare unică (toate valutele/perechile) | varianță |
+|---|---:|---:|
+| SENTIMENT | 11.11111...% | **7.7×10⁻³⁴ ≈ 0** |
+| TREND | 10.26316...% | **0.0 exact** |
+
+**Criteriul primar (§6.1) e satisfăcut — dar IDENTIC și TRIVIAL pentru toate cele 4 candidate D1.** M-4 depinde exclusiv de D2-c (constantele `w_s`/`macro_weight_target`), nu de tratamentul categoriei absente. **M-4 nu discriminează între C/D/E/NULL** — validează doar că D2-c e cablat corect (confirmă analitic ce am semnat în §10.1/§13.3), nu ajută la alegerea între candidații D1.
+
+### 14.5 M-6 — poarta de nedeteriorare (hit-rate H=5/H=10, corectat de base-rate, pe clase)
+
+Clase: `affected_NZD_CHF` (perechi care conțin NZD sau CHF, ținta directă a lui D1) vs `unaffected` (nici un leg NZD/CHF) vs `ALL`. Hit-rate corectat = rată brută de acuratețe direcțională − baseline naiv (direcția majoritară a randamentului forward, pe ACELAȘI eșantion evaluat de acel candidat). Prag: delta ≥ −2.00pp.
+
+| candidat | clasă | orizont | actual (corectat) | candidat (corectat) | Δ (pp) | rezultat |
+|---|---|---:|---:|---:|---:|---|
+| NULL/E | affected | H5 | 1.05% | 3.37% | **+2.32** | PASS |
+| NULL/E | unaffected | H5 | −2.52% | −2.55% | −0.02 | PASS |
+| NULL/E | ALL | H5 | −0.83% | 0.17% | +1.00 | PASS |
+| NULL/E | affected | H10 | 4.41% | 5.49% | +1.08 | PASS |
+| NULL/E | unaffected | H10 | −1.30% | −1.31% | −0.01 | PASS |
+| NULL/E | ALL | H10 | 1.38% | 1.79% | +0.41 | PASS |
+| D | affected | H5 | 1.05% | 2.77% | +1.72 | PASS |
+| D | unaffected | H5 | −2.52% | −2.22% | +0.30 | PASS |
+| D | ALL | H5 | −0.83% | 0.00% | +0.83 | PASS |
+| D | affected | H10 | 4.41% | 4.56% | +0.15 | PASS |
+| D | unaffected | H10 | −1.30% | −1.31% | −0.01 | PASS |
+| D | ALL | H10 | 1.38% | 1.28% | −0.10 | PASS |
+| **C** | **affected** | **H5** | 1.05% | **n=0** | — | **NEEVALUABIL** |
+| C | unaffected | H5 | −2.52% | −1.92% | +0.60 | PASS |
+| C | ALL | H5 | −0.83% | −1.92% | −1.09 | PASS |
+| **C** | **affected** | **H10** | 4.41% | **n=0** | — | **NEEVALUABIL** |
+| C | unaffected | H10 | −1.30% | −0.99% | +0.31 | PASS |
+| **C** | **ALL** | **H10** | 1.38% | −0.99% | **−2.37** | **FAIL** |
+
+**Rezultat: NULL, E, D trec poarta pe toate cele 6 combinații clasă×orizont. C nu.** C are DOUĂ probleme distincte, ambele structurale (nu statistice):
+1. **Clasa `affected_NZD_CHF` e complet neevaluabilă (n=0) la ambele orizonturi** — nu doar că C "scade" performanța pe perechile cu NZD/CHF, e că NU MAI EXISTĂ nicio poziție de evaluat acolo. Un gate de nedeteriorare nu poate certifica "nu degradează" ceva ce nu mai există.
+2. **`ALL`/H10 pică gate-ul cu −2.37pp** — dar ăsta e un efect de COMPOZIȚIE, nu de degradare reală: segmentul `unaffected` singur, sub C, e cu +0.31pp (nedegradat). Căderea de pe `ALL` vine din faptul că `ALL` sub producția curentă include perechile `affected` (care aveau cel mai mare corectat, +4.41pp la H10), iar `ALL` sub C nu le mai include deloc — se compară populații diferite, nu aceeași populație înainte/după.
+
+### 14.6 M-7 — placebo (permutare temporală, seed=20260728)
+
+Aceeași baterie, cu randamentele forward permutate în interiorul fiecărui (pereche, orizont), rupând alinierea temporală reală. Deltele placebo (candidat − actual, sub permutare):
+
+| candidat | clasă | orizont | Δ real (pp) | Δ placebo (pp) |
+|---|---|---:|---:|---:|
+| NULL/E | affected | H5 | +2.32 | +0.17 |
+| NULL/E | affected | H10 | +1.08 | +0.78 |
+| D | affected | H5 | +1.72 | −1.26 |
+| D | affected | H10 | +0.15 | +0.41 |
+| (toate) | unaffected | ambele | ≤ 0.60 | ≤ 0.32 |
+
+**Deltele reale sunt de aceeași magnitudine (ordin de mărime) ca deltele placebo** — pe `unaffected`, diferența reală vs placebo e practic indistinctă de zgomot în ambele cazuri. Singura excepție notabilă e NULL/E pe `affected`/H5 (+2.32pp real vs +0.17pp placebo — o diferență reală mai mare decât zgomotul placebo acolo), dar conform §6.3, **nu folosesc asta ca argument pentru selecție** — doar o raportez. Per §6.4: nimic aici nu declanșează gate-ul de placebo ("dacă placebo produce aceeași îmbunătățire ca datele reale, e artefact") într-un mod care ar invalida rezultatul de NEdeteriorare de la M-6 — gate-ul M-6 a fost deja trecut pe baza pragului absolut (−2pp), nu pe baza mărimii îmbunătățirii.
+
+### 14.7 Rezumat mecanic, fără adopție
+
+| candidat | M-4 (primar) | M-6 (poartă) | verdict mecanic |
+|---|---|---|---|
+| NULL | trece (trivial) | trece (6/6) | **supraviețuiește ambele criterii** |
+| E | trece (trivial) | trece (6/6) | **supraviețuiește ambele criterii** (identic numeric cu NULL) |
+| D | trece (trivial) | trece (6/6) | **supraviețuiește ambele criterii** |
+| C | trece (trivial) | **eșuează/neevaluabil** (2/6 neevaluabile, 1/6 eșuat, 3/6 trec) | **nu trece curat poarta de nedeteriorare** |
+
+**Nicio adopție. Niciun PR. Aceasta e o raportare a rezultatelor pre-înregistrate, nu o recomandare** — §6.3 exclude explicit selecția pe baza îmbunătățirii hit-rate, iar decizia finală (care candidat, dacă vreunul) rămâne a ta.

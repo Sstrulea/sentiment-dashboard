@@ -1,0 +1,5 @@
+candidate,pct_scorable,n_scorable_avg_per_day,flip_rate_pct_vs_current,n_flipped,n_total_scored,mean_sigma,p55,p90,p95,max,pct_neutral,pct_very_bull_bear
+NULL,100.0,28.0,3.2,47,1484,1.343,1.12,2.44,2.8,4.41,60.8,3.8
+E,100.0,28.0,3.2,47,1484,1.343,1.12,2.44,2.8,4.41,60.8,3.8
+D,100.0,28.0,9.6,142,1484,1.328,1.11,2.41,2.77,4.53,61.7,3.4
+C,52.6,14.72,0.4,3,780,1.273,1.14,2.41,2.75,4.16,60.0,3.1
