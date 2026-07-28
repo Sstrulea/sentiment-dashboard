@@ -669,8 +669,6 @@
       '<span class="modal-score">Score ' + fmtSigned(inst.score, 2) + '</span>' +
       '<span class="modal-formula">' + sub + '</span></div>' +
       '</header>' +
-      '<p class="muted econ-modal-note">Rounded cells can hide divergence — e.g. a Labour score near 0 may be ' +
-      'NFP +2 against Jobless Claims −2. The per-indicator rows below show the real spread.</p>' +
       // TREND first (matches column order), then Sentiment (COT), then the macro legs.
       trendSectionHtml(inst.trend_detail) +
       fxCotSectionHtml(inst.cot) +
