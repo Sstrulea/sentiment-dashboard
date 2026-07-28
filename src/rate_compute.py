@@ -8,6 +8,26 @@ recent volatility. Rising yields = hawkish = positive (bullish for the currency)
 
 `rates_df` schema: currency, date, yield_pct (+ optional tenor/source). Pure and
 deterministic given `as_of`; safe to unit-test with synthetic frames.
+
+§O CLOSED (2026-07-28) — NZD and CHF are permanently excluded from this
+currency's `monetary` category; full investigation in
+docs/section-O-nzd-chf-closure-2026-07-28.md. Summary: RBNZ (NZD 2y) is
+blocked at the network edge on every path tried (3 domains, 5 URLs, 2
+tools, reconfirmed twice) and its source series was discontinued
+2025-08-25 in favor of NZFMA closing rates with no working replacement
+found; SNB's CHF cube (`rendoblid`) is frozen at the source per its own
+file metadata (`PublishingDate: 2025-09-01`, all 22 dimensions stop at
+2025-07-31) — not a fetch/query mistake on our side. Both are treated as
+structurally dead, not transiently stale — no automatic retry.
+
+A three-state staleness flag (live / stale-but-recoverable / permanently
+unavailable) was drafted for this module to make retry priority visible,
+but was never built: §M ultimately adopted D1=D (intersection-of-
+present-categories differencing), which handles a missing category
+structurally rather than via a staleness flag, and the dashboard already
+marks a category excluded from a specific pair's comparison ("excluded
+here", PR #4). No new flag is planned unless a new NZD/CHF 2y source
+becomes available (see the reopen condition in the closure doc).
 """
 from __future__ import annotations
 
