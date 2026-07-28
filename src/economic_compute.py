@@ -463,38 +463,6 @@ def bias_label(score: float, thresholds: dict) -> str:
     return "Bullish" if direction_bull else "Bearish"
 
 
-def _category_cells(
-    inst_cfg: dict,
-    base_card: dict | None,
-    quote_card: dict | None,
-    categories_display: list[str],
-    pair_divisor: float,
-) -> dict[str, dict]:
-    """Per-category display cells for an instrument (precise + clamped int)."""
-    out: dict[str, dict] = {}
-    is_fx = inst_cfg.get("type") == "fx"
-    sign = float(inst_cfg.get("sign", 1))
-    for cat in categories_display:
-        base_cat = (base_card or {}).get("categories", {}).get(cat, {})
-        quote_cat = (quote_card or {}).get("categories", {}).get(cat, {})
-        base_precise = float(base_cat.get("score_precise", 0.0))
-        base_cov = int(base_cat.get("coverage", 0))
-        if is_fx:
-            quote_precise = float(quote_cat.get("score_precise", 0.0))
-            quote_cov = int(quote_cat.get("coverage", 0))
-            precise = (base_precise - quote_precise) / pair_divisor
-            coverage = base_cov + quote_cov
-        else:
-            precise = base_precise * sign
-            coverage = base_cov
-        out[cat] = {
-            "score_cell": _clamp_cell(precise) if coverage > 0 else 0,
-            "score_precise": float(precise),
-            "coverage": coverage,
-        }
-    return out
-
-
 def _augmented_index(card: dict | None, sentiment_value, sentiment_weight: float,
                      scale: float) -> float:
     """Currency index × scale with the SENTIMENT factor folded into the weighted
@@ -575,7 +543,6 @@ def compute_instrument(
     """
     pair_divisor = float(instruments_cfg.get("pair_divisor", 2))
     thresholds = instruments_cfg.get("bias_thresholds", {}) or {}
-    categories_display = instruments_cfg.get("categories_display", []) or []
     scale = float(instruments_cfg.get("scale", 5))
     sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
     trend_weight = float(instruments_cfg.get("trend_weight", 0.5))
@@ -641,15 +608,12 @@ def compute_instrument(
     # member). trend_value None → score == macro_score (bit-identical baseline).
     score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, scale)
 
-    cells = _category_cells(inst_cfg, base_card, quote_card, categories_display, pair_divisor)
-
     return {
         "symbol": symbol,
         "display": inst_cfg.get("display", symbol),
         "type": itype,
         "score": float(score),
         "bias": bias_label(score, thresholds),
-        "categories": cells,
         "breakdown": breakdown,
         # Display cell for the TREND column (same value folded into the score).
         "trend": None if trend_value is None else int(trend_value),
