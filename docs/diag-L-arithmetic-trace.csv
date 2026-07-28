@@ -1,0 +1,57 @@
+symbol,step,value
+NZDUSD,symbol,NZDUSD
+NZDUSD,base,NZD
+NZDUSD,quote,USD
+NZDUSD,base_index_num,1.1666666666666665
+NZDUSD,base_index_wsum,3.0
+NZDUSD,quote_index_num,1.6666666666666667
+NZDUSD,quote_index_wsum,4.0
+NZDUSD,"base_index_raw (card['index'], displayed in leg header)",1.9444444444444442
+NZDUSD,"quote_index_raw (card['index'], displayed in leg header)",2.0833333333333335
+NZDUSD,v_s_base (sentiment on base leg),3
+NZDUSD,v_s_quote (sentiment on quote leg),
+NZDUSD,base_idx_aug (_augmented_index),3.8095238095238093
+NZDUSD,quote_idx_aug (_augmented_index),2.0833333333333335
+NZDUSD,macro_score = (base_idx_aug - quote_idx_aug)/pair_divisor,0.8630952380952379
+NZDUSD,base_wsum_eff (_leg_eff_wsum),3.5
+NZDUSD,quote_wsum_eff (_leg_eff_wsum),4.0
+NZDUSD,macro_weight (avg of leg eff wsums),3.75
+NZDUSD,trend_value,-3
+NZDUSD,m = macro_score/scale (_fold_trend),0.1726190476190476
+NZDUSD,new_mean = (m*w + trend_weight*trend)/(w+trend_weight),-0.20063025210084034
+NZDUSD,score = new_mean*scale (== inst['score']),-1.0031512605042017
+NZDUSD,"inst['score'] (production, from payload)",-1.0031512605042017
+NZDUSD,reconciles (1e-6),True
+NZDUSD,"bias_label(score, thresholds)",Neutral
+NZDUSD,inst['bias'] (production),Neutral
+NZDUSD,"displayed_cot_pair_cell (pair_cot(base_cell, quote_cell))",3
+NZDUSD,table_display (fmtScoreInt = round(score)),-1
+NZDUSD,"modal_display (fmtSigned, 2dp)",-1.00
+USDJPY,symbol,USDJPY
+USDJPY,base,USD
+USDJPY,quote,JPY
+USDJPY,base_index_num,1.6666666666666667
+USDJPY,base_index_wsum,4.0
+USDJPY,quote_index_num,1.3333333333333333
+USDJPY,quote_index_wsum,3.0
+USDJPY,"base_index_raw (card['index'], displayed in leg header)",2.0833333333333335
+USDJPY,"quote_index_raw (card['index'], displayed in leg header)",2.2222222222222223
+USDJPY,v_s_base (sentiment on base leg),
+USDJPY,v_s_quote (sentiment on quote leg),3
+USDJPY,base_idx_aug (_augmented_index),2.0833333333333335
+USDJPY,quote_idx_aug (_augmented_index),4.0476190476190474
+USDJPY,macro_score = (base_idx_aug - quote_idx_aug)/pair_divisor,-0.982142857142857
+USDJPY,base_wsum_eff (_leg_eff_wsum),4.0
+USDJPY,quote_wsum_eff (_leg_eff_wsum),3.5
+USDJPY,macro_weight (avg of leg eff wsums),3.75
+USDJPY,trend_value,3
+USDJPY,m = macro_score/scale (_fold_trend),-0.1964285714285714
+USDJPY,new_mean = (m*w + trend_weight*trend)/(w+trend_weight),0.17962184873949583
+USDJPY,score = new_mean*scale (== inst['score']),0.8981092436974791
+USDJPY,"inst['score'] (production, from payload)",0.8981092436974791
+USDJPY,reconciles (1e-6),True
+USDJPY,"bias_label(score, thresholds)",Neutral
+USDJPY,inst['bias'] (production),Neutral
+USDJPY,"displayed_cot_pair_cell (pair_cot(base_cell, quote_cell))",-3
+USDJPY,table_display (fmtScoreInt = round(score)),1
+USDJPY,"modal_display (fmtSigned, 2dp)",+0.90

@@ -1,0 +1,33 @@
+ccy,category,state,root_cause
+AUD,growth,PRESENT,live
+AUD,inflation,PRESENT,live
+AUD,labour,PRESENT,live
+AUD,monetary,STALE,rate_expectations present but latest obs older than MAX_AGE_BD -> excluded from index
+CAD,growth,PRESENT,live
+CAD,inflation,PRESENT,live
+CAD,labour,PRESENT,live
+CAD,monetary,PRESENT,live
+CHF,growth,PRESENT,live
+CHF,inflation,PRESENT,live
+CHF,labour,PRESENT,live
+CHF,monetary,ABSENT,no rate_expectations entry; 0 rows for CHF in data/rates.parquet
+EUR,growth,PRESENT,live
+EUR,inflation,PRESENT,live
+EUR,labour,PRESENT,live
+EUR,monetary,PRESENT,live
+GBP,growth,PRESENT,live
+GBP,inflation,PRESENT,live
+GBP,labour,PRESENT,live
+GBP,monetary,PRESENT,live
+JPY,growth,PRESENT,live
+JPY,inflation,PRESENT,live
+JPY,labour,PRESENT,live
+JPY,monetary,STALE,rate_expectations present but latest obs older than MAX_AGE_BD -> excluded from index
+NZD,growth,PRESENT,live
+NZD,inflation,PRESENT,live
+NZD,labour,PRESENT,live
+NZD,monetary,ABSENT,no rate_expectations entry; 0 rows for NZD in data/rates.parquet
+USD,growth,PRESENT,live
+USD,inflation,PRESENT,live
+USD,labour,PRESENT,live
+USD,monetary,PRESENT,live
