@@ -1,0 +1,30 @@
+name: econ-test
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - name: FRED probe (decide splitul)
+        run: |
+          python -m src.rate_fetch      || echo "FAIL rate_fetch"
+          python -m src.realyield_fetch || echo "FAIL realyield_fetch"
+          python -m src.liquidity_fetch || echo "FAIL liquidity_fetch"
+
+      - name: FF probe (keyless)
+        run: python -m src.ff_refresh
+
+      - name: Render probe
+        run: python -m src.main --mode economic
+
+      - name: Ce s-ar fi schimbat
+        run: git status --short
