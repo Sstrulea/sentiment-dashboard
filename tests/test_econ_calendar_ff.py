@@ -14,11 +14,15 @@ import pytest
 
 from src.econ_calendar_ff import (
     CANON_COLUMNS,
+    _canonicalize,
     canonical_id,
     detect_revisions,
+    ff_row_failures,
     flash_final_revisions,
     iso_to_utc,
     jblanked_to_utc,
+    load_aliases,
+    load_eur_whitelist,
     normalize_ff_value,
     parse_ff_weekly,
     parse_jblanked_range,
@@ -76,9 +80,41 @@ def test_normalize_ff_value(raw, expected):
 
 
 def test_normalize_unknown_suffix_raises_loud_with_name():
-    # unknown suffix -> ValueError (fail loud, no silent mis-scale), name in message
+    # unknown suffix -> ValueError (fail loud, no silent mis-scale), name in message.
+    # This is the correct contract: a silently-degraded unknown value is exactly
+    # the 12-jul pathology. Verified explicitly to still pass after Patch A.
     with pytest.raises(ValueError, match="Fancy Index"):
         normalize_ff_value("5X", name="Fancy Index")
+
+
+# --- HOTFIX 2026-07-29 (Patch A): operator-prefixed values only ------------
+# '<1.00%' is a valid band-ceiling notation FF uses for BOJ; stripping the
+# leading operator and re-parsing continues the series (same rate as the plain
+# '1.00' print in June 2026). Anything else still raises — fail-loud intact.
+
+def test_normalize_operator_lt_value_is_stripped():
+    assert normalize_ff_value("<1.00%", name="BOJ Policy Rate") == pytest.approx(1.0)
+
+
+def test_normalize_operator_gt_value_is_stripped():
+    assert normalize_ff_value(">3.5%", name="x") == pytest.approx(3.5)
+
+
+def test_normalize_unknown_suffix_still_raises_5x():
+    with pytest.raises(ValueError):
+        normalize_ff_value("5X", name="x")
+
+
+def test_normalize_non_operator_garbage_still_raises_tbd():
+    # 'TBD' has no leading operator to strip -> falls straight through to the
+    # original fail-loud parser, same as '5X'. Not a recoverable value.
+    with pytest.raises(ValueError):
+        normalize_ff_value("TBD", name="x")
+
+
+def test_normalize_none_and_empty_string_unchanged():
+    assert np.isnan(normalize_ff_value(None))
+    assert np.isnan(normalize_ff_value(""))
 
 
 # --- canonical id (period-suffix stripped) ----------------------------------
@@ -191,6 +227,39 @@ def test_dual_parser_same_event_same_id_datetime_and_value():
 def test_weekly_member_state_also_dropped():
     w = parse_ff_weekly(WEEKLY, now_utc=NOW)
     assert not (w["name_raw"] == "German Prelim CPI m/m").any()
+
+
+# --- HOTFIX 2026-07-29: a corrupted cell must not sink the whole weekly payload ---
+
+OPERATOR_VALUE = FIX / "ff_weekly_operator_value.json"
+
+
+def test_weekly_with_operator_prefixed_cell_survives_parse():
+    # regression for the 2026-07-24 BOJ '<1.00%' incident: before the hotfix this
+    # raised ValueError out of _canonicalize -> parse_ff_weekly -> refresh() caught
+    # it at the payload level and quarantined all 92 events for 4 days. The fixture
+    # also carries one genuinely-bad AUD row (Patch A2: isolated, not fatal).
+    w = parse_ff_weekly(OPERATOR_VALUE, now_utc=pd.Timestamp("2026-07-20"))
+    assert len(w) == 4                                  # 5 rows in, 1 bad AUD row skipped
+    assert set(w["currency"]) == {"USD", "EUR", "GBP", "JPY"}
+    boj = w[w["canonical_id"] == "jpy_core_cpi"].iloc[0]
+    assert boj["forecast"] == pytest.approx(1.0)         # '<1.00%' recovered, not dropped
+    fails = ff_row_failures()
+    assert fails == {"AUD/Retail Sales m/m": 1}
+
+
+def test_canonicalize_logs_warning_on_row_failure(caplog):
+    rows = [
+        {"currency": "USD", "name_raw": "CPI y/y", "dt_utc": pd.Timestamp("2026-07-15 08:30"),
+         "actual_raw": "3.1%", "forecast_raw": "3.0%", "previous_raw": "3.2%"},
+        {"currency": "AUD", "name_raw": "Retail Sales m/m", "dt_utc": pd.Timestamp("2026-07-19 09:30"),
+         "actual_raw": "0.3%", "forecast_raw": "TBD", "previous_raw": "0.4%"},
+    ]
+    with caplog.at_level(logging.WARNING, logger="src.econ_calendar_ff"):
+        out = _canonicalize(rows, pd.Timestamp("2026-07-20"), load_aliases(), load_eur_whitelist())
+    assert len(out) == 1 and out.iloc[0]["currency"] == "USD"       # bad row skipped, good survives
+    assert ff_row_failures() == {"AUD/Retail Sales m/m": 1}
+    assert any("rând(uri) sărite" in r.message for r in caplog.records)
 
 
 # --- deterministic flash/final (alias-level, no proximity) ------------------

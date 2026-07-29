@@ -117,6 +117,33 @@ def test_good_payload_merges(tmp_path, monkeypatch):
     assert len(pd.read_parquet(p)) == 6                        # 1 existing + 5 new
 
 
+# --- HOTFIX 2026-07-29: mass-NaN forecast guard (Patch A degrades cells, not raises) ---
+
+def test_guard_mass_row_failures_quarantines_and_keeps_last_good(tmp_path, monkeypatch):
+    # Patch A2 isolates per-row parse failures inside _canonicalize (a single bad
+    # cell no longer aborts the payload), but a feed-wide format change producing
+    # MORE row failures than mapped rows must still fall back to last-good.
+    p = _write_existing(tmp_path)
+    weekly = _good_weekly()                             # 5 mapped rows
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: weekly)
+    import src.econ_calendar_ff as E
+    monkeypatch.setattr(E, "ff_row_failures", lambda: {"USD/x": 10})   # 10 > 5 mapped
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False}, parquet_path=p)
+    assert rep["status"] == "degraded"
+    assert len(pd.read_parquet(p)) == 1                        # unchanged
+
+
+def test_guard_few_row_failures_does_not_quarantine(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    weekly = _good_weekly()                             # 5 mapped rows
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: weekly)
+    import src.econ_calendar_ff as E
+    monkeypatch.setattr(E, "ff_row_failures", lambda: {"USD/x": 1})    # 1 < 5 mapped
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False}, parquet_path=p)
+    assert rep["status"] == "ok"
+    assert len(pd.read_parquet(p)) == 6
+
+
 # --- source flag (ff vs mt5 rollback) ---------------------------------------
 
 def test_calendar_source_flag_and_rollback(tmp_path):

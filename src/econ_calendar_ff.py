@@ -172,6 +172,17 @@ def _now_utc(now_utc: Optional[pd.Timestamp]) -> pd.Timestamp:
     return pd.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None))
 
 
+# HOTFIX 2026-07-29 (Patch A2) — izolare pe rând: un rând care crapă la parsare
+# (fail-loud normalize_ff_value) nu mai oprește tot payload-ul; e sărit și numărat.
+# Semantică per-apel — _canonicalize e chemat și de parse_jblanked_range.
+_FF_ROW_FAILURES: dict[str, int] = {}
+
+
+def ff_row_failures() -> dict[str, int]:
+    """Rânduri sărite din cauza unei erori de parsare la ultimul _canonicalize."""
+    return dict(_FF_ROW_FAILURES)
+
+
 def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
                   aliases: dict, eur_wl: set[str],
                   excluded_finals: Optional[dict] = None) -> pd.DataFrame:
@@ -180,12 +191,16 @@ def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
     Final/revision variants (excluded_finals) are dropped from scoring at DEBUG (they
     surface as revision telemetry, not unmapped WARNINGs). Value normalization runs
     ONLY AFTER an event passes the matcher — so unmapped events (auctions/speeches,
-    e.g. composite '3.86|2.9') are dropped and never trigger the fail-loud normalizer."""
+    e.g. composite '3.86|2.9') are dropped and never trigger the fail-loud normalizer.
+    A row whose value fails to parse (genuinely invalid, not an operator-prefix
+    recoverable by normalize_ff_value) is skipped and counted in _FF_ROW_FAILURES
+    rather than aborting the whole payload — see Patch A2, 2026-07-29."""
     now = _now_utc(now_utc)
     excluded_finals = excluded_finals or {}
     out: list[dict] = []
     n_eur_dropped = n_final = 0
     unmapped_counts: dict[tuple, int] = {}   # (ccy, name_raw) -> count, aggregated
+    _FF_ROW_FAILURES.clear()
     for r in rows:
         ccy = r["currency"]
         name_raw = r["name_raw"]
@@ -208,10 +223,16 @@ def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
         if dt is None or pd.isna(dt):
             log.warning("Unparseable datetime, skipped: %s | %r", ccy, name_raw)
             continue
-        # normalize values only now (mapped event) — fail loud on a genuine bad value
-        actual_v = normalize_ff_value(r["actual_raw"], name=name_raw)
-        forecast_v = normalize_ff_value(r["forecast_raw"], name=name_raw)
-        previous_v = normalize_ff_value(r["previous_raw"], name=name_raw)
+        # normalize values only now (mapped event) — fail loud on a genuine bad value,
+        # but isolated to THIS row (Patch A2): a bad cell no longer sinks the payload.
+        try:
+            actual_v = normalize_ff_value(r["actual_raw"], name=name_raw)
+            forecast_v = normalize_ff_value(r["forecast_raw"], name=name_raw)
+            previous_v = normalize_ff_value(r["previous_raw"], name=name_raw)
+        except ValueError:
+            key = f"{ccy}/{name_raw}"
+            _FF_ROW_FAILURES[key] = _FF_ROW_FAILURES.get(key, 0) + 1
+            continue
         released = pd.Timestamp(dt) < now
         actual = actual_v if released else float("nan")   # trap 3: gate by DATE
         out.append({
@@ -226,6 +247,9 @@ def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
             "released": bool(released),
             "source": SOURCE,
         })
+    if _FF_ROW_FAILURES:
+        log.warning("FF ingest: %d rând(uri) sărite (eroare de parsare): %s",
+                    sum(_FF_ROW_FAILURES.values()), list(_FF_ROW_FAILURES)[:5])
     if unmapped_counts:
         # AGGREGATED unmapped summary (name_raw × count) — reviewable at each ingest so a
         # future alias gap (a modeled indicator falling through) is visible, not buried in
@@ -405,6 +429,30 @@ def detect_revisions(df: pd.DataFrame, *, tol: float = 0.06) -> pd.DataFrame:
         log.info("FF revisions detected (telemetry): %d point(s).", len(recs))
     return pd.DataFrame(recs, columns=["canonical_id", "datetime_utc", "prior_actual",
                                        "reported_previous", "revision"])
+
+
+# ---------------------------------------------------------------------------
+# HOTFIX 2026-07-29 — gramatica valorilor FF: prefixe de operator.
+# FF publică rata BOJ ca '<1.00%' (plafon de bandă). Istoricul din parquet arată
+# aceeași rată scrisă plain ('1.00' în iunie 2026), deci stripping-ul operatorului
+# CONTINUĂ seria fără discontinuitate — nu e mixare de convenții.
+# Doar prefixele de operator sunt acceptate. Orice altă valoare invalidă ridică
+# mai departe: contractul fail-loud rămâne intact.
+# ---------------------------------------------------------------------------
+_ff_value_original = normalize_ff_value
+_FF_OPERATORS = "<>≤≥≈~± "
+
+
+def normalize_ff_value(raw, *, name: str = "") -> float:  # noqa: F811
+    try:
+        return _ff_value_original(raw, name=name)
+    except ValueError:
+        if not isinstance(raw, str):
+            raise
+        stripped = raw.strip().lstrip(_FF_OPERATORS).strip()
+        if not stripped or stripped == raw.strip():
+            raise                                    # nu era prefix de operator
+        return _ff_value_original(stripped, name=name)   # ridică dacă tot e invalid
 
 
 if __name__ == "__main__":

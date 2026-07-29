@@ -15,3 +15,6 @@ scripts/spike_jblanked/
 # JBlanked daily-pull state + raw payload cache (machine-local; see src/jb_actuals.py)
 data/jb_last_pull.json
 data/jb_raw/
+
+# manual FF calendar recovery backup (bc4fa96, 2026-07-29) — local-only, not part of the hotfix
+data/economic_calendar_ff.parquet.bak
