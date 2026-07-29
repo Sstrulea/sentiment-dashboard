@@ -271,7 +271,7 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
     span = RANGE_DAYS if _last is None else max(RANGE_DAYS, (to_d - _last.date()).days + 1)
     from_d = to_d - timedelta(days=min(span, MAX_RANGE_DAYS))
     try:
-        raw_text = fetcher(from_d, to_d)
+        raw_text = fetcher(from_d, to_d + timedelta(days=1))  # JB to este EXCLUSIV
     except Exception as e:  # noqa: BLE001 — HTTP/network/auth failure
         log.warning("JB pull: range fetch FAILED (%s); will retry next tick.", str(e)[:120])
         return {"status": "fetch_failed"}

@@ -228,7 +228,7 @@ def test_pull_requests_trailing_7_day_range(tmp_path):
     J.pull_actuals(now_utc=NOW, parquet_path=tmp_path / "ff.parquet",
                    state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                    fetcher=fetcher, cfg={})
-    assert seen["to"].isoformat() == "2026-07-12"
+    assert seen["to"].isoformat() == "2026-07-13"  # JB to este EXCLUSIV -> cere ziua+1
     assert seen["from"].isoformat() == "2026-07-05"
 
 
