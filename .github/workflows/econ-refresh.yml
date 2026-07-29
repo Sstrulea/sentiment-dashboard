@@ -1,0 +1,58 @@
+name: econ-refresh
+on:
+  schedule:
+    - cron: '5 * * * 1-5'
+    - cron: '5 */4 * * 0,6'
+  workflow_dispatch:
+
+concurrency:
+  group: econ-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - name: Calendar FF
+        run: python -m src.ff_refresh
+
+      - name: Actuals JBlanked
+        env:
+          JBLANKED_API_KEY: ${{ secrets.JBLANKED_API_KEY }}
+        run: python -m src.jb_actuals
+
+      - name: FRED
+        run: |
+          python -m src.rate_fetch
+          python -m src.realyield_fetch
+          python -m src.liquidity_fetch
+
+      - name: Render
+        run: python -m src.main --mode economic
+
+      - name: Commit + push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/economic_calendar_ff.parquet data/jb_last_pull.json data/jb_raw/ \
+                  data/rates.parquet data/real_yields.parquet data/net_liquidity.parquet \
+                  public/economic.html public/data/economic.json
+          [ -f data/ff_quarantine.parquet ] && git add data/ff_quarantine.parquet || true
+          git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
+          git commit -m "econ: refresh $(date -u +%FT%TZ) [ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push origin main && exit 0
+            sleep 5
+          done
+          exit 1
