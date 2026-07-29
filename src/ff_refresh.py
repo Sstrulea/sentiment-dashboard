@@ -96,6 +96,23 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
                     weekly["currency"].nunique(), min_ccy)
         return {"status": "thin", "rows_before": n_before, "rows_after": n_before, "merged": 0}
 
+    # HOTFIX 2026-07-29 — Patch A2 sare rândurile care crapă la parsare, ca un
+    # defect de o celulă să nu mai carantineze tot payload-ul (pana de 4 zile,
+    # 24-28 iulie). Dar o schimbare de format în MASĂ trebuie să păstreze
+    # comportamentul vechi: mai bine last-good decât un weekly ciuruit.
+    from .econ_calendar_ff import ff_row_failures
+    _fails = ff_row_failures()
+    n_failed = sum(_fails.values())
+    if n_failed and n_failed > len(weekly):
+        log.warning("FF weekly: %d rând(uri) au eșuat la parsare vs %d mapate (%s); "
+                    "QUARANTINE — păstrez last-good (%d rows).",
+                    n_failed, len(weekly), list(_fails)[:5], n_before)
+        return {"status": "degraded", "rows_before": n_before,
+                "rows_after": n_before, "merged": 0}
+    if n_failed:
+        log.warning("FF ingest: %d rând(uri) sărite: %s", n_failed,
+                    "; ".join(f"{k}×{v}" for k, v in list(_fails.items())[:5]))
+
     merged = merge_weekly(existing, weekly)
     parquet_path.parent.mkdir(parents=True, exist_ok=True)
     merged.to_parquet(parquet_path, index=False)
