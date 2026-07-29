@@ -13,8 +13,8 @@ data/raw/
 scripts/spike_jblanked/
 
 # JBlanked daily-pull state + raw payload cache (machine-local; see src/jb_actuals.py)
-data/jb_last_pull.json
-data/jb_raw/
+# data/jb_last_pull.json — TRACKED: runnerul GitHub e efemer, starea trebuie sa persiste in repo
+# data/jb_raw/ — TRACKED: payload brut pentru replay (ne-a salvat pe 29 iul)
 
 # manual FF calendar recovery backup (bc4fa96, 2026-07-29) — local-only, not part of the hotfix
 data/economic_calendar_ff.parquet.bak
