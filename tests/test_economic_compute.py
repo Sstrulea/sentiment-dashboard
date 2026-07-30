@@ -262,6 +262,46 @@ def test_empty_calendar_yields_zero_index():
     assert card["coverage"] == 0
 
 
+def test_display_only_category_excluded_from_scored_aggregation():
+    """Regression: the ENTIRE isolation of a display-only indicator (e.g. AUD's
+    cpi_monthly / trimmed_mean_cpi_monthly, data/economic_indicators.yaml) is
+    that its `category` (inflation_display) is NOT a key in `categories:` —
+    weight: 0.0 alone does NOT achieve this (verified empirically before
+    wiring: category=inflation + weight=0.0 still inflated coverage 2->3).
+    If someone later adds `inflation_display` to `categories:`, or repoints a
+    display-only indicator at a real category name, this test catches the
+    silent coverage/score_precise corruption before it reaches production.
+
+    AUD inflation is the real fixture shape: 2 scored indicators (N=2) plus
+    one display-only print present — coverage must stay 2, not 3.
+    """
+    ind_cfg = _indicators_cfg()
+    ind_cfg["indicators"]["core_cpi"] = {
+        "pillar": "inflation", "category": "inflation", "direction": 1, "weight": 1.0,
+    }
+    ind_cfg["indicators"]["cpi_monthly"] = {
+        "pillar": "inflation", "category": "inflation_display", "direction": 1, "weight": 0.0,
+    }
+    cal_with = pd.concat([
+        _make_rows("AUD", "cpi_yoy", [3.0] * 12, [3.2] * 12),
+        _make_rows("AUD", "core_cpi", [2.5] * 12, [2.7] * 12),
+        _make_rows("AUD", "cpi_monthly", [-0.1], [0.2]),
+    ], ignore_index=True)
+    card_with = compute_currency_scorecard(cal_with, "AUD", ind_cfg, _instruments_cfg(), AS_OF)
+
+    assert card_with["categories"]["inflation"]["coverage"] == 2   # NOT 3
+    assert "inflation_display" not in card_with["categories"]      # never a real category key
+    assert "cpi_monthly" in card_with["breakdown"]                 # still visible for display
+    assert card_with["breakdown"]["cpi_monthly"]["category"] == "inflation_display"
+
+    # Removing the display-only print entirely must change NOTHING scored —
+    # proving cpi_monthly's presence contributes zero, not just a zero score.
+    cal_without = cal_with[cal_with["indicator_key"] != "cpi_monthly"]
+    card_without = compute_currency_scorecard(cal_without, "AUD", ind_cfg, _instruments_cfg(), AS_OF)
+    assert card_with["categories"]["inflation"] == card_without["categories"]["inflation"]
+    assert card_with["index"] == card_without["index"]
+
+
 # ---------------------------------------------------------------------------
 # Instrument derivation: FX pair = (base - quote)/divisor
 # ---------------------------------------------------------------------------

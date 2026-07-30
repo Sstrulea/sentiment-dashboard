@@ -179,6 +179,37 @@ indicators:
     frequency: monthly         # display-only; window only affects greying
     can_be_zero: true          # a policy rate / no-change decision can legitimately be 0
 
+  # --- Inflation, display-only (AUD's monthly CPI Indicator, not z-scored) ---
+  # `category: inflation_display` is a DIFFERENT key from `inflation` above,
+  # deliberately outside `categories:` (only growth/inflation/labour are keys
+  # there) — same mechanism as `interest_rate_decision`/`rates`: a category not
+  # in `categories_cfg` never becomes a key in `per_cat`, so these can never be
+  # aggregated into any category's coverage/score_precise, regardless of
+  # weight. weight: 0.0 is redundant belt-and-suspenders (kept for the same
+  # reason interest_rate_decision keeps it), not the actual isolation
+  # mechanism — verified empirically before adding these (AUD inflation
+  # coverage stays 2, score_precise/index/all 7 AUD-leg pair biases unchanged).
+  # `cpi_yoy`/`core_cpi` above remain AUD's scored inflation prints; these are
+  # additional, unscored context only.
+  cpi_monthly:
+    pillar: inflation
+    category: inflation_display
+    direction: 1
+    weight: 0.0
+    frequency: monthly
+  trimmed_mean_cpi_monthly:
+    pillar: inflation
+    category: inflation_display
+    direction: 1
+    weight: 0.0
+    frequency: monthly
+    # NO can_be_zero here, deliberately — do not add it. The 2026-07-29 print
+    # shows actual=0.0, but FF itself published 0.3 that day; JBlanked's feed
+    # delivered a corrupted 0.0 for this print (same-day pattern as the known
+    # AUD CPI y/y 0.0-vs-3.8 corruption). This is bad SOURCE data, not a
+    # legitimate flat month — can_be_zero would let a future corrupted 0.0
+    # print silently past the zero-placeholder quarantine as if it were real.
+
 # ---------------------------------------------------------------------------
 # Matcher: MT5 economic-calendar `event` string -> indicator_key, keyed by the
 # MT5 `country` field. Reconciled against REAL event names observed in
@@ -271,6 +302,8 @@ matcher:
     - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
     - { pattern: '^Wage Price Index y/y$',          indicator: wage_growth }
     - { pattern: '^RBA Interest Rate Decision$',    indicator: interest_rate_decision }
+    - { pattern: '^Monthly CPI Indicator m/m$',      indicator: cpi_monthly }
+    - { pattern: '^Monthly Trimmed Mean CPI m/m$',   indicator: trimmed_mean_cpi_monthly }
 
   New Zealand:
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
