@@ -67,6 +67,20 @@ aliases:
   AUD:
     "CPI y/y": "CPI y/y"
     "Trimmed Mean CPI q/q": "RBA Trimmed Mean CPI y/y"   # xf
+    # NEW canonicals (not xf onto the y/y/q/q series above): ABS switched to the
+    # Monthly CPI Indicator; these are a DIFFERENT cadence/transform of a related
+    # but distinct release, not a substitute reading of "CPI y/y" or "RBA Trimmed
+    # Mean CPI y/y". Deliberately named so canonical_id() (period-suffix-stripped
+    # slug) does NOT collide with the existing y/y canonicals — "CPI m/m" would
+    # slug to the SAME aud_cpi id as "CPI y/y" and silently merge two series with
+    # different scale/variance into one z-score baseline (and one clean_jblanked_
+    # actuals dedup bucket). "RBA Trimmed Mean CPI y/y" (quarterly) is stale 274d
+    # as of 2026-07-30 — see docs — but that's a scoring/matcher wiring gap, not
+    # fixed by this alias addition; these rows land in the FF-canonical parquet
+    # under their own canonical_id and are NOT yet routed to any indicator_key in
+    # data/economic_indicators.yaml's matcher (no pattern matches these strings).
+    "CPI m/m": "Monthly CPI Indicator m/m"
+    "Trimmed Mean CPI m/m": "Monthly Trimmed Mean CPI m/m"
     "PPI q/q": "PPI y/y"                                 # xf
     "GDP q/q": "GDP q/q"
     "Flash Manufacturing PMI": "S&P Global Manufacturing PMI"
