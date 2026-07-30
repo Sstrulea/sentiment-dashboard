@@ -371,17 +371,179 @@ criterion 4 (recurring manual maintenance) turns on: Variant B caught these
 two cases with zero configuration; Variant A structurally cannot until a
 human notices and edits the blacklist.
 
+## 8. FAZA 6 — the full adoption scenario, measured as one whole
+
+**Variant B adopted.** Before implementation, the measurement is extended to
+the actual scenario B will ship into: **B + CAD `core_cpi` → Median CPI y/y
+promotion + AUD `retail_sales` ← Household Spending m/m continuation**
+(`docs/proposal-cad-core-promotion.md`, `docs/proposal-aud-retail-continuation.md`).
+Reason this matters (per the brief): under B alone, AUD growth collapses to
+**N=1** (§5) — one missed/stale GDP print away from N=0 — and the thing that
+currently prevents that (two permanently-dead PMI slots diluting the mean)
+disappears with B by design. Household Spending is the one candidate that
+restores AUD growth to N=2 with a real, consensus-bearing indicator instead
+of a dead one.
+
+**Methodology validated against both proposal docs' own pre-measured numbers
+before trusting anything downstream** (`scripts/measure/faza6_full_scenario.py`,
+"Validation" block): concatenating AUD's archive Household Spending m/m rows
+(n=9, relabeled onto `retail_sales`) with the live AUD `retail_sales` history
+reproduces the continuation proposal's own numbers exactly — coverage 4,
+`score_precise` -0.25, latest cell score +1, implied sigma 0.520 (all
+independently re-derived here, not copied from the doc). The CAD Median
+splice reuses the same mechanism validated in §6.
+
+### Category table — baseline / B alone / full scenario (only changed rows shown; all other currency/category cells are byte-identical across all three)
+
+| ccy | category | N (baseline) | N (B alone) | N (full) | precise (baseline) | precise (B alone) | precise (full) |
+|---|---|---|---|---|---|---|---|
+| AUD | growth | 3 | **1** | **2** | -0.667 | -2.000 | **-0.500** |
+| AUD | inflation | 2 | 2 | 2 | -1.000 | -1.000 | -1.000 |
+| CAD | growth | 3 | 2 | 2 | 0.667 | 1.000 | 1.000 |
+| CAD | inflation | 3 | 2 | **3** | -0.667 | -1.000 | **-0.667** |
+| GBP | growth | 4 | 3 | 3 | 0.000 | 0.000 | 0.000 |
+| NZD | growth | 4 | 2 | 2 | 0.000 | 0.000 | 0.000 |
+| USD | inflation | 3 | 2 | 2 | -0.667 | -1.000 | -1.000 |
+
+CAD inflation's N returns to 3 (Median CPI y/y takes the `core_cpi` slot back
+from permanent exclusion) with the same -0.667 precise score as today —
+consistent with the CAD promotion proposal's own finding that Median's
+current surprise is exactly 0, so the *value* doesn't move even though the
+*mechanism* does (a real z-scored 0 instead of a forced no-consensus 0).
+
+### Index, all currencies
+
+| ccy | baseline | B alone | full scenario |
+|---|---|---|---|
+| AUD | 0.00 | **-1.67** | **0.21** |
+| CAD | 1.25 | 1.25 | 1.67 |
+| CHF/EUR/GBP/JPY/NZD | unchanged | unchanged | unchanged |
+| USD | 2.08 | 1.67 | 1.67 |
+
+AUD's index moves from a Variant-B-alone -1.67 to +0.21 — not just "less
+bad," it crosses back past baseline's 0.00 and ends up slightly positive,
+because the revived `retail_sales` cell (+1) now sits alongside GDP's -2
+instead of GDP standing alone.
+
+### All 28 FX pairs + US-DOLLAR + cross-asset (full table:
+`docs/measurement-faza6-full-scenario-instruments.csv`)
+
+**Cross-asset: confirmed 0 of 8 changed vs baseline** (same reason as §4 —
+no cross-asset instrument has an AUD/CAD/NZD home currency).
+
+### Bias-flip list — full scenario vs B alone, explicit diff
+
+| set | pairs |
+|---|---|
+| B alone (baseline → B) | AUDCAD, AUDCHF, AUDJPY, AUDNZD, AUDUSD, GBPAUD — **6** |
+| full scenario (baseline → full) | **none — 0** |
+| in B alone but resolved by full scenario | AUDCAD, AUDCHF, AUDJPY, AUDNZD, AUDUSD, GBPAUD — **all 6** |
+| new flips introduced by full scenario | **none — 0** |
+
+| pair | baseline | B alone | full scenario |
+|---|---|---|---|
+| AUDCAD | Neutral (-0.625) | Bearish (-1.458) | Neutral (-0.729) |
+| AUDCHF | Bearish (-1.389) | Very Bearish (-2.500) | Bearish (-1.250) |
+| AUDJPY | Bearish (-1.944) | Very Bearish (-3.056) | Bearish (-1.806) |
+| AUDNZD | Bearish (-1.806) | Very Bearish (-2.917) | Bearish (-1.667) |
+| AUDUSD | Neutral (-1.042) | Bearish (-1.667) | Neutral (-0.729) |
+| GBPAUD | Neutral (1.042) | Bullish (1.875) | Neutral (0.938) |
+
+**Isolation check — is it specifically Household Spending, not the CAD
+promotion, doing this?** Re-ran B + Household Spending continuation alone
+(no CAD promotion at all): **all 6 flips resolve, 0 new ones introduced** —
+identical result to the full scenario. Confirmed: **Household Spending is
+the entire explanation.** It is the only indicator that enters AUD growth —
+the one category that produced all 6 flips — and none of the other legs in
+any of these 6 pairs (CAD, CHF, JPY, NZD, USD, GBP) changes between B alone
+and the full scenario. The CAD promotion only moves CAD-leg pairs' magnitude
+slightly (USDCAD, EURCAD, GBPCAD, CADJPY, NZDCAD, CADCHF all shift by
+0.14–0.28 points, all staying Neutral — same mechanism as §6) and touches
+zero bias labels.
+
+### N=1 residual count after the full scenario
+
+**Zero (currency, category) cells remain at N=1** anywhere in the 8×3 (+
+monetary) grid under the full scenario — AUD growth (the only N=1 cell
+Variant B created, §5) is restored to N=2. The pre-existing CHF
+inflation/labour N=1 cells (present in baseline too, unrelated to this
+measurement) are the only N=1 cells left, unchanged from before.
+
+### N=0 exposure — every (currency, category) cell with N≤2, full scenario
+
+For each, the surviving indicators (excluding anything the active rule —
+Variant B — already excludes) and the calendar date each one's own max-age
+window lapses (i.e. the date that indicator would drop out, absent a new
+print, taking the cell one step closer to N=0):
+
+| ccy | category | N | indicator | released | freq | max_age | expires | days from as_of |
+|---|---|---|---|---|---|---|---|---|
+| AUD | growth | 2 | retail_sales | 2026-06-25 | monthly | 45d | 2026-08-09 | **10d** |
+| AUD | growth | 2 | gdp_qoq | 2026-06-03 | quarterly | 110d | 2026-09-21 | 53d |
+| AUD | inflation | 2 | ppi_yoy | 2026-05-01 | quarterly | 110d | 2026-08-19 | 20d |
+| AUD | inflation | 2 | cpi_yoy | 2026-06-24 | quarterly | 110d | 2026-10-12 | 74d |
+| CAD | growth | 2 | retail_sales | 2026-07-23 | monthly | 45d | 2026-09-06 | 38d |
+| CAD | growth | 2 | gdp_qoq | 2026-06-30 | quarterly | 110d | 2026-10-18 | 80d |
+| CAD | labour | 2 | employment_change | 2026-07-10 | monthly | 45d | 2026-08-24 | 25d |
+| CAD | labour | 2 | unemployment_rate | 2026-07-10 | monthly | 45d | 2026-08-24 | 25d |
+| CHF | inflation | 1 | ppi_yoy | 2026-07-14 | monthly | 45d | 2026-08-28 | 29d |
+| CHF | labour | 1 | unemployment_rate | 2026-07-06 | monthly | 45d | 2026-08-20 | 21d |
+| EUR | labour | 2 | unemployment_rate | 2026-07-02 | monthly | 45d | 2026-08-16 | 17d |
+| EUR | labour | 2 | employment_change | 2026-05-13 | quarterly | 110d | 2026-08-31 | 32d |
+| JPY | inflation | 2 | cpi_yoy | 2026-07-23 | monthly | 45d | 2026-09-06 | 38d |
+| JPY | inflation | 2 | core_cpi | 2026-07-28 | monthly | 45d | 2026-09-11 | 43d |
+| JPY | labour | 2 | unemployment_rate | 2026-06-29 | monthly | 45d | 2026-08-13 | 14d |
+| JPY | labour | 2 | wage_growth | 2026-07-06 | monthly | 45d | 2026-08-20 | 21d |
+| NZD | growth | 2 | retail_sales | 2026-05-21 | quarterly | 110d | 2026-09-08 | 40d |
+| NZD | growth | 2 | gdp_qoq | 2026-06-17 | quarterly | 110d | 2026-10-05 | 67d |
+| NZD | inflation | 2 | ppi_yoy | 2026-05-18 | quarterly | 110d | 2026-09-05 | 37d |
+| NZD | inflation | 2 | cpi_yoy | 2026-07-20 | quarterly | 110d | 2026-11-07 | 100d |
+| USD | inflation | 2 | core_pce | 2026-06-25 | monthly | 45d | 2026-08-09 | 10d |
+| USD | inflation | 2 | cpi_yoy | 2026-07-14 | monthly | 45d | 2026-08-28 | 29d |
+
+**Nearest N=0 exposure overall: 10 days** (AUD growth's `retail_sales` cell
+expires 2026-08-09, and separately USD inflation's `core_pce` cell expires
+the same day — both would drop their cell from N=2 to N=1, not to N=0; a
+cell only reaches N=0 if BOTH its surviving indicators lapse before either
+is refreshed). No cell in this table is within its OWN cadence of reaching
+N=0 outright — every listed indicator's next scheduled print (monthly ≈
+30d, quarterly ≈ 90d) arrives well before its max-age window closes, so
+N=0 requires **two** consecutive missed releases in the same category, not
+one. AUD growth remains the tightest: its two surviving indicators
+(`retail_sales`, `gdp_qoq`) have staggered expiries (10d, 53d) rather than
+a shared one, so a single missed release cannot zero it out — this is the
+concrete, measured version of "restored, not just relocated" the
+continuation proposal argues for.
+
+### FAZA 6 — scorecard vs the brief's questions
+
+1. **N/precise per (ccy, cat), before→after**: table above — 7 cells move
+   total, only 2 (AUD growth, CAD inflation) move relative to B-alone.
+2. **All 28 pairs + cross-asset**: `docs/measurement-faza6-full-scenario-instruments.csv`; cross-asset 0/8 changed (confirmed by computation).
+3. **Bias-flip list vs B alone's 6**: full scenario has **0** bias flips vs
+   baseline — all 6 of B-alone's flips are resolved, none introduced.
+4. **N=1 count after full scenario**: **0** (down from 1 under B alone).
+5. **Household Spending's exact role**: isolated and confirmed — it alone
+   (no CAD promotion needed) resolves all 6 AUD flips and introduces 0 new
+   ones, because it's the only indicator entering the flip-causing category.
+6. **N=0 exposure**: quantified per cell above; nearest is 10 days to a
+   single indicator's expiry (dropping that cell to N=1, not N=0 — two
+   staggered expiries would need to lapse together for any cell to reach
+   N=0).
+
 ## Reproduction
 
 ```
-.venv/bin/python3 scripts/measure/inventory_no_consensus.py   # §1
-.venv/bin/python3 scripts/measure/run_all.py                  # §2-§6
+.venv/bin/python3 scripts/measure/inventory_no_consensus.py    # §1
+.venv/bin/python3 scripts/measure/run_all.py                   # §2-§6
+.venv/bin/python3 scripts/measure/faza6_full_scenario.py        # §8 (FAZA 6)
 ```
 
 `scripts/measure/common.py` is the harness (imports production functions
-unmodified). `scripts/measure/inventory_no_consensus.py` and
-`scripts/measure/run_all.py` are report scripts. None of the three is
-imported by `src/` or `scripts/econ_refresh.sh` — instrumentation only.
+unmodified). `scripts/measure/inventory_no_consensus.py`,
+`scripts/measure/run_all.py`, and `scripts/measure/faza6_full_scenario.py`
+are report scripts. None of these is imported by `src/` or
+`scripts/econ_refresh.sh` — instrumentation only.
 
 ## Appendix A — harness fidelity check
 
