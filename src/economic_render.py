@@ -128,6 +128,10 @@ INDICATOR_LABELS = {
     "rate_expectations": "Rate Expectations (2y)",
     "cpi_monthly": "Monthly CPI Indicator (m/m)",
     "trimmed_mean_cpi_monthly": "Trimmed Mean CPI (m/m)",
+    "common_cpi_yoy": "Common CPI (y/y)",
+    "median_cpi_yoy": "Median CPI (y/y)",
+    "trimmed_cpi_yoy": "Trimmed CPI (y/y)",
+    "household_spending": "Household Spending (m/m)",
 }
 
 CATEGORY_LABEL_FALLBACK = {
@@ -137,6 +141,7 @@ CATEGORY_LABEL_FALLBACK = {
     "monetary": "Monetary Policy",
     "rates": "Rates (display-only)",
     "inflation_display": "Inflation (display-only)",
+    "growth_display": "Growth (display-only)",
 }
 
 # Dense per-indicator table layout (EdgeFinder-style): one column per indicator,
@@ -234,7 +239,7 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
     }
 
     cat_meta: dict[str, dict] = {}
-    for key in list(categories_cfg) + ["monetary", "rates", "inflation_display"]:
+    for key in list(categories_cfg) + ["monetary", "rates", "inflation_display", "growth_display"]:
         cat_meta[key] = {
             "label": (categories_cfg.get(key, {}) or {}).get(
                 "label", CATEGORY_LABEL_FALLBACK.get(key, key.title())

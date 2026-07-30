@@ -86,6 +86,13 @@ aliases:
     "Flash Manufacturing PMI": "S&P Global Manufacturing PMI"
     "Flash Services PMI": "S&P Global Services PMI"
     "Retail Sales m/m": "Retail Sales m/m"
+    # ABS retired "Retail Sales m/m" 2025-07-31 (last print), replaced by
+    # "Household Spending m/m" starting 2025-10-02 (2-month gap, clean
+    # cutover — see docs/proposal-aud-retail-continuation.md). NOT xf'd onto
+    # "Retail Sales m/m" here — distributions are close enough in scale that
+    # continuation may be viable, but that's a scoring decision (the proposal
+    # doc), not this wiring pass. Own canonical, no collision risk either way.
+    "Household Spending m/m": "Household Spending m/m"
     "Employment Change": "Employment Change"
     "Unemployment Rate": "Unemployment Rate"
     "Wage Price Index q/q": "Wage Price Index y/y"       # xf
@@ -112,6 +119,14 @@ aliases:
     "Employment Change": "Employment Change"
     "Unemployment Rate": "Unemployment Rate"
     "Overnight Rate": "BoC Interest Rate Decision"
+    # NEW canonicals, display-only (data/economic_indicators.yaml: category
+    # inflation_display) — NOT xf onto "Core CPI y/y" above (which is fed by
+    # "Core CPI m/m", the wrong-unit series). These are BoC's native y/y core
+    # inflation measures; each name is distinct enough that canonical_id()
+    # (period-suffix-stripped slug) does not collide with cad_core_cpi.
+    "Common CPI y/y": "Common CPI y/y"
+    "Median CPI y/y": "Median CPI y/y"
+    "Trimmed CPI y/y": "Trimmed CPI y/y"
   CHF:
     "CPI m/m": "CPI y/y"                                 # xf
     "PPI m/m": "PPI y/y"                                 # xf

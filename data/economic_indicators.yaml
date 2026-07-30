@@ -124,6 +124,38 @@ indicators:
     frequency_overrides: { NZD: quarterly }   # NZ retail sales is quarterly
     can_be_zero: true            # m/m growth rate — 0.0 is a legitimate flat month
 
+  # --- Growth, display-only (AUD's replacement for Retail Sales m/m — ABS
+  # retired it 2025-07-31 in favor of "Household Spending m/m") ---
+  # `category: growth_display` mirrors `inflation_display` exactly: a key NOT
+  # present in `categories:`, so it can never become a `per_cat` key
+  # regardless of weight — verified (not assumed) before adding, same gate
+  # check as inflation_display: scoring (_present_categories/categories_
+  # display), and the client JS (dynamic category discovery, generic
+  # "display-only" branch) are both generic on category name, no hardcoding
+  # found on "inflation_display" or the 3 scored category names anywhere.
+  # AUD's `retail_sales` above is dead (last print 2025-07-31, 364d, already
+  # excluded by the staleness gate) — this is additional, unscored context
+  # only, not a substitute. See docs/proposal-aud-retail-continuation.md for
+  # whether continuation (same canonical) is viable.
+  household_spending:
+    pillar: growth
+    category: growth_display
+    direction: 1
+    weight: 0.0
+    frequency: monthly
+    can_be_zero: true            # m/m growth rate, same type as retail_sales
+                                  # above (which has this TRUE by the same
+                                  # convention) — a net-change series, not a
+                                  # level/index. The archive's one actual=0.0
+                                  # (2025-10-02, this series' first print) has
+                                  # no independent same-day cross-check to
+                                  # confirm/rule out corruption the way the
+                                  # trimmed_mean_cpi_monthly case did (that had
+                                  # a same-day headline print to compare
+                                  # against); the type-based convention is
+                                  # what's driving this, not a verified-clean
+                                  # print.
+
   # --- Labour ---
   employment_change:           # NFP (US) / Employment Change (AU,CA,NZ) / Claimant (UK)
     pillar: labour
@@ -209,6 +241,32 @@ indicators:
     # AUD CPI y/y 0.0-vs-3.8 corruption). This is bad SOURCE data, not a
     # legitimate flat month — can_be_zero would let a future corrupted 0.0
     # print silently past the zero-placeholder quarantine as if it were real.
+
+  # --- Inflation, display-only (CAD's three native BoC core-inflation
+  # measures — Common/Median/Trimmed CPI y/y, config/ff_aliases.yaml). Same
+  # `inflation_display` isolation as AUD's cpi_monthly above: this category
+  # is NOT a key in `categories:`, so it never becomes a `per_cat` key
+  # regardless of weight. CAD's scored `core_cpi` today is fed by "Core CPI
+  # m/m" (the wrong-unit series, see docs/proposal-cad-core-promotion.md) —
+  # these three are additional, unscored, correct-unit context only.
+  common_cpi_yoy:
+    pillar: inflation
+    category: inflation_display
+    direction: 1
+    weight: 0.0
+    frequency: monthly
+  median_cpi_yoy:
+    pillar: inflation
+    category: inflation_display
+    direction: 1
+    weight: 0.0
+    frequency: monthly
+  trimmed_cpi_yoy:
+    pillar: inflation
+    category: inflation_display
+    direction: 1
+    weight: 0.0
+    frequency: monthly
 
 # ---------------------------------------------------------------------------
 # Matcher: MT5 economic-calendar `event` string -> indicator_key, keyed by the
@@ -304,6 +362,7 @@ matcher:
     - { pattern: '^RBA Interest Rate Decision$',    indicator: interest_rate_decision }
     - { pattern: '^Monthly CPI Indicator m/m$',      indicator: cpi_monthly }
     - { pattern: '^Monthly Trimmed Mean CPI m/m$',   indicator: trimmed_mean_cpi_monthly }
+    - { pattern: '^Household Spending m/m$',         indicator: household_spending }
 
   New Zealand:
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
@@ -329,6 +388,9 @@ matcher:
     - { pattern: '^Employment Change$',             indicator: employment_change }
     - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
     - { pattern: '^BoC Interest Rate Decision$',    indicator: interest_rate_decision }
+    - { pattern: '^Common CPI y/y$',                indicator: common_cpi_yoy }
+    - { pattern: '^Median CPI y/y$',                indicator: median_cpi_yoy }
+    - { pattern: '^Trimmed CPI y/y$',                indicator: trimmed_cpi_yoy }
 
   Switzerland:
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }

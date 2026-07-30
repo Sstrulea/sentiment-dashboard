@@ -302,6 +302,66 @@ def test_display_only_category_excluded_from_scored_aggregation():
     assert card_with["index"] == card_without["index"]
 
 
+def test_growth_display_category_excluded_from_scored_aggregation():
+    """Regression: mirrors test_display_only_category_excluded_from_scored_
+    aggregation exactly, for `growth_display` (AUD's household_spending,
+    data/economic_indicators.yaml) — a SEPARATE virtual category from
+    inflation_display, added on the same "category not in `categories:`"
+    mechanism. Must independently catch BOTH regression paths: a display-only
+    indicator repointed directly at a real category (`growth`), and
+    `growth_display` itself later promoted into `categories:`.
+
+    AUD growth is the real fixture shape: 2 scored indicators (N=2) plus one
+    display-only print present — coverage must stay 2, not 3.
+    """
+    ind_cfg = _indicators_cfg()
+    ind_cfg["indicators"]["retail_sales"] = {
+        "pillar": "growth", "category": "growth", "direction": 1, "weight": 1.0,
+    }
+    ind_cfg["indicators"]["household_spending"] = {
+        "pillar": "growth", "category": "growth_display", "direction": 1, "weight": 0.0,
+    }
+    cal_with = pd.concat([
+        _make_rows("AUD", "gdp_qoq", [2.0] * 12, [1.8] * 12),
+        _make_rows("AUD", "retail_sales", [0.5] * 12, [0.3] * 12),
+        _make_rows("AUD", "household_spending", [1.3], [0.5]),
+    ], ignore_index=True)
+    card_with = compute_currency_scorecard(cal_with, "AUD", ind_cfg, _instruments_cfg(), AS_OF)
+
+    assert card_with["categories"]["growth"]["coverage"] == 2   # NOT 3
+    assert "growth_display" not in card_with["categories"]      # never a real category key
+    assert "household_spending" in card_with["breakdown"]       # still visible for display
+    assert card_with["breakdown"]["household_spending"]["category"] == "growth_display"
+
+    # Removing the display-only print entirely must change NOTHING scored —
+    # proving household_spending's presence contributes zero, not just a
+    # zero score.
+    cal_without = cal_with[cal_with["indicator_key"] != "household_spending"]
+    card_without = compute_currency_scorecard(cal_without, "AUD", ind_cfg, _instruments_cfg(), AS_OF)
+    assert card_with["categories"]["growth"] == card_without["categories"]["growth"]
+    assert card_with["index"] == card_without["index"]
+
+    # Regression path 1: repointing directly at a real category name must
+    # inflate coverage (proves the test is actually sensitive to the bug).
+    ind_cfg_broken = _indicators_cfg()
+    ind_cfg_broken["indicators"]["retail_sales"] = ind_cfg["indicators"]["retail_sales"]
+    ind_cfg_broken["indicators"]["household_spending"] = {
+        "pillar": "growth", "category": "growth", "direction": 1, "weight": 0.0,
+    }
+    card_broken = compute_currency_scorecard(cal_with, "AUD", ind_cfg_broken, _instruments_cfg(), AS_OF)
+    assert card_broken["categories"]["growth"]["coverage"] == 3   # the bug this test guards against
+
+    # Regression path 2: promoting growth_display into `categories:` must
+    # make it visible as its own category key (proves the second assertion
+    # above is load-bearing, not incidentally true).
+    ind_cfg_promoted = _indicators_cfg()
+    ind_cfg_promoted["categories"]["growth_display"] = {"weight": 1.0, "label": "promoted by mistake"}
+    ind_cfg_promoted["indicators"]["retail_sales"] = ind_cfg["indicators"]["retail_sales"]
+    ind_cfg_promoted["indicators"]["household_spending"] = ind_cfg["indicators"]["household_spending"]
+    card_promoted = compute_currency_scorecard(cal_with, "AUD", ind_cfg_promoted, _instruments_cfg(), AS_OF)
+    assert "growth_display" in card_promoted["categories"]        # the bug this test guards against
+
+
 # ---------------------------------------------------------------------------
 # Instrument derivation: FX pair = (base - quote)/divisor
 # ---------------------------------------------------------------------------
