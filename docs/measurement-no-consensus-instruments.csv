@@ -1,0 +1,30 @@
+symbol,baseline_score,baseline_bias,variantA_score,variantA_bias,variantB_score,variantB_bias
+US-DOLLAR,2.0833,Bullish,2.0833,Bullish,1.6667,Bullish
+EURUSD,0.2083,Neutral,0.2083,Neutral,0.4167,Neutral
+GBPUSD,0.0,Neutral,0.0,Neutral,0.2083,Neutral
+USDJPY,-1.3889,Bearish,-1.3889,Bearish,-1.6667,Bearish
+USDCHF,-0.8333,Neutral,-0.8333,Neutral,-1.1111,Neutral
+USDCAD,0.4167,Neutral,0.4167,Neutral,0.2083,Neutral
+AUDUSD,-1.0417,Neutral,-1.875,Bearish,-1.6667,Bearish
+NZDUSD,1.25,Bullish,1.25,Bullish,1.5278,Bullish
+EURGBP,0.2083,Neutral,0.2083,Neutral,0.2083,Neutral
+EURJPY,-1.1111,Neutral,-1.1111,Neutral,-1.1111,Neutral
+EURCHF,-0.5556,Neutral,-0.5556,Neutral,-0.5556,Neutral
+EURAUD,1.25,Bullish,2.0833,Bullish,2.0833,Bullish
+EURNZD,-0.9722,Neutral,-0.9722,Neutral,-0.9722,Neutral
+EURCAD,0.625,Neutral,0.625,Neutral,0.625,Neutral
+GBPJPY,-1.3889,Bearish,-1.3889,Bearish,-1.3889,Bearish
+GBPCHF,-0.8333,Neutral,-0.8333,Neutral,-0.8333,Neutral
+GBPAUD,1.0417,Neutral,1.875,Bullish,1.875,Bullish
+GBPNZD,-1.25,Bearish,-1.25,Bearish,-1.25,Bearish
+GBPCAD,0.4167,Neutral,0.4167,Neutral,0.4167,Neutral
+AUDJPY,-1.9444,Bearish,-3.0556,Very Bearish,-3.0556,Very Bearish
+NZDJPY,-0.1389,Neutral,-0.1389,Neutral,-0.1389,Neutral
+CADJPY,-1.1111,Neutral,-1.1111,Neutral,-1.1111,Neutral
+CHFJPY,-0.5556,Neutral,-0.5556,Neutral,-0.5556,Neutral
+AUDNZD,-1.8056,Bearish,-2.9167,Very Bearish,-2.9167,Very Bearish
+AUDCAD,-0.625,Neutral,-1.4583,Bearish,-1.4583,Bearish
+AUDCHF,-1.3889,Bearish,-2.5,Very Bearish,-2.5,Very Bearish
+NZDCAD,0.9722,Neutral,0.9722,Neutral,0.9722,Neutral
+NZDCHF,0.4167,Neutral,0.4167,Neutral,0.4167,Neutral
+CADCHF,-0.5556,Neutral,-0.5556,Neutral,-0.5556,Neutral
