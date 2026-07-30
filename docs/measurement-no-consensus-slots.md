@@ -10,6 +10,13 @@ and `to_scoring_frame` from `src/ff_scoring.py`) against the real, live
 in `scripts/measure/` (harness + report scripts, clearly marked as
 instrumentation, never imported by anything under `src/`).
 
+**Exception, flagged where it occurs (§6, §8):** the CAD Median CPI y/y and
+AUD Household Spending promotion/continuation scenarios are computed from
+`data/archive/ff_calendar_range.json` (read-only, via `parse_jblanked_range`)
+because neither series has any row in the live parquet — those two sections
+measure a **hypothetical post-backfill state**, not today's production data.
+See the blocker callout at the top of §8 for what that implies for adoption.
+
 Harness fidelity check (done before trusting any variant number): re-running
 the production aggregation path through the measurement harness reproduces
 `build_payload`'s real output **bit-for-bit** — 0 mismatches across all 8
@@ -372,6 +379,30 @@ two cases with zero configuration; Variant A structurally cannot until a
 human notices and edits the blacklist.
 
 ## 8. FAZA 6 — the full adoption scenario, measured as one whole
+
+> **ADOPTION BLOCKER, verified after this section was first written (not
+> caveated clearly enough below on the first pass — corrected here):** every
+> number in §8 that involves AUD Household Spending, and every number in §6
+> that involves CAD Median CPI y/y, is computed from `data/archive/`, **not**
+> the live `data/economic_calendar_ff.parquet`. Directly checked: the live
+> parquet spans 2023-01-02 → 2026-07-31 (2895 rows) and contains **zero**
+> rows matching "Household" in `name_raw` or `name_canonical`, any currency —
+> if a backfill had ever run, the archive's 9 AUD rows (Oct 2025–Jun 2026)
+> would already be inside that range. They aren't. **Neither promotion this
+> section relies on is live; both require the same backfill-merge step the
+> respective proposal docs call out** (`docs/proposal-cad-core-promotion.md`
+> "Cost: backfill is required, not optional"; `docs/proposal-aud-retail-
+> continuation.md` "Cost: backfill required, same caveat as the CAD
+> proposal") — that step has not been done. Additionally, for Household
+> Spending specifically: its last archive print is 2026-06-25 (median
+> inter-print gap 29.5 days, so the next was projected ~2026-07-24–26); the
+> last 5 daily JBlanked pulls (`data/jb_raw/jb_range_2026-07-{26..30}*.json`,
+> covering exactly 2026-07-23→2026-07-30) contain **zero** AUD Household
+> Spending events, so whether the live feed even carries this event at all
+> is currently unconfirmed — a second, independent gap beyond "backfill not
+> yet run." **Everything below is the measurement of what B + both
+> promotions WOULD produce if both were backfilled and Household Spending
+> keeps printing live — not a description of anything deployable today.**
 
 **Variant B adopted.** Before implementation, the measurement is extended to
 the actual scenario B will ship into: **B + CAD `core_cpi` → Median CPI y/y
