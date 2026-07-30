@@ -363,6 +363,63 @@ def test_growth_display_category_excluded_from_scored_aggregation():
 
 
 # ---------------------------------------------------------------------------
+# Variant B — no_consensus rows excluded from N (docs/measurement-no-consensus-slots.md)
+# ---------------------------------------------------------------------------
+
+def test_no_consensus_indicator_excluded_from_coverage_but_shown_in_breakdown():
+    """A `no_consensus` print (latest actual valid, forecast missing/NaN) is
+    excluded from its category's N — mirroring `stale` — but stays visible in
+    `breakdown` for drill-down. AUD growth's real shape: GDP has consensus,
+    Manufacturing PMI structurally never does (docs/measurement-no-consensus-
+    slots.md §1a) — coverage must be 1 (GDP only), not 2."""
+    ind_cfg = _indicators_cfg()
+    ind_cfg["indicators"]["manufacturing_pmi"] = {
+        "pillar": "growth", "category": "growth", "direction": 1, "weight": 1.0,
+    }
+    cal = pd.concat([
+        _make_rows("AUD", "gdp_qoq", [0.3] * 12, [0.5] * 12),
+        _make_rows("AUD", "manufacturing_pmi", [51.7], [np.nan]),
+    ], ignore_index=True)
+    card = compute_currency_scorecard(cal, "AUD", ind_cfg, _instruments_cfg(), AS_OF)
+
+    assert card["categories"]["growth"]["coverage"] == 1          # GDP only, NOT 2
+    assert "manufacturing_pmi" in card["breakdown"]               # still visible for display
+    assert card["breakdown"]["manufacturing_pmi"]["flag"] == "no_consensus"
+    assert card["breakdown"]["manufacturing_pmi"]["stale"] is False   # excluded for a DIFFERENT reason than stale
+
+    # Removing the no-consensus print entirely must change NOTHING scored —
+    # proving its presence contributes zero, not just a zero score (same
+    # isolation property already verified for stale/display-only entries).
+    cal_without = cal[cal["indicator_key"] != "manufacturing_pmi"]
+    card_without = compute_currency_scorecard(cal_without, "AUD", ind_cfg, _instruments_cfg(), AS_OF)
+    assert card["categories"]["growth"] == card_without["categories"]["growth"]
+    assert card["index"] == card_without["index"]
+
+
+def test_can_be_zero_style_zero_consensus_stays_in_coverage():
+    """A row whose consensus is a LEGITIMATE 0.0 (not the FF zero-placeholder —
+    that quarantine already happened upstream in ff_scoring.to_scoring_frame
+    for can_be_zero indicators like retail_sales/employment_change/
+    interest_rate_decision, data/economic_indicators.yaml) must NOT be treated
+    as no_consensus: `_is_num(0.0)` is True, so it never reaches the
+    `flag == "no_consensus"` branch this task added. Coverage must include it."""
+    ind_cfg = _indicators_cfg()
+    ind_cfg["indicators"]["retail_sales"] = {
+        "pillar": "growth", "category": "growth", "direction": 1, "weight": 1.0,
+    }
+    cal = pd.concat([
+        _make_rows("USD", "gdp_qoq", [1.0] * 12, [1.0] * 12),
+        # 12 prior pairs (both non-zero) + a LEGITIMATE flat-month 0.0 consensus latest.
+        _make_rows("USD", "retail_sales", [0.3] * 11 + [0.0], [0.2] * 11 + [0.0]),
+    ], ignore_index=True)
+    card = compute_currency_scorecard(cal, "USD", ind_cfg, _instruments_cfg(), AS_OF)
+
+    assert card["breakdown"]["retail_sales"]["flag"] != "no_consensus"
+    assert card["breakdown"]["retail_sales"]["consensus"] == 0.0
+    assert card["categories"]["growth"]["coverage"] == 2   # gdp_qoq + retail_sales, both counted
+
+
+# ---------------------------------------------------------------------------
 # Instrument derivation: FX pair = (base - quote)/divisor
 # ---------------------------------------------------------------------------
 

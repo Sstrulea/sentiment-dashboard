@@ -333,6 +333,16 @@ def compute_currency_scorecard(
 ) -> dict:
     """Aggregate one currency: indicator scores -> category subtotals -> index.
 
+    An indicator's LATEST scored release is excluded from its category's N
+    (coverage) — but still shown in `breakdown` for drill-down — under either
+    of two conditions: `stale` (outside its recency window) or `flag ==
+    "no_consensus"` (no valid forecast to compare against, so its score is a
+    forced 0 that means "can't tell", not "no surprise"). Both are diluting-
+    otherwise, since a forced/absent 0 pulls a category's mean toward neutral
+    with no real information behind it — this is the Variant B fix (measured
+    in `docs/measurement-no-consensus-slots.md`): a no-consensus print is
+    treated exactly like a stale one, not counted as a real surprise.
+
     `rate_entry` (optional) adds the standing **monetary** category with the
     single sub-indicator `rate_expectations` (score = rate_entry["score"]). When
     None, the scorecard is identical to the surprise-only behavior (3 categories).
@@ -377,7 +387,14 @@ def compute_currency_scorecard(
         # indicators_cfg.
         scored["category"] = cat = ind_cfg.get("category")
         breakdown[key] = scored
-        if cat in per_cat and not scored.get("stale"):
+        # A `no_consensus` print (latest actual has no valid forecast — the
+        # zero-placeholder quarantine in ff_scoring.to_scoring_frame already
+        # nulled a genuine FF-unreleased 0.0; can_be_zero indicators keep their
+        # legitimate 0.0 consensus there and never reach this flag) is excluded
+        # from N exactly like `stale`: displayed in the breakdown for drill-down
+        # (with its own badge), never diluting the category average with a
+        # forced 0 that means "no surprise computable", not "no surprise".
+        if cat in per_cat and not scored.get("stale") and scored.get("flag") != "no_consensus":
             per_cat[cat].append((scored["score"], float(ind_cfg.get("weight", 1.0))))
 
     categories_out: dict[str, dict] = {}
