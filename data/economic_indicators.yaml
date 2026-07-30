@@ -124,19 +124,16 @@ indicators:
     frequency_overrides: { NZD: quarterly }   # NZ retail sales is quarterly
     can_be_zero: true            # m/m growth rate — 0.0 is a legitimate flat month
 
-  # --- Growth, display-only (AUD's replacement for Retail Sales m/m — ABS
-  # retired it 2025-07-31 in favor of "Household Spending m/m") ---
-  # `category: growth_display` mirrors `inflation_display` exactly: a key NOT
-  # present in `categories:`, so it can never become a `per_cat` key
-  # regardless of weight — verified (not assumed) before adding, same gate
-  # check as inflation_display: scoring (_present_categories/categories_
-  # display), and the client JS (dynamic category discovery, generic
-  # "display-only" branch) are both generic on category name, no hardcoding
-  # found on "inflation_display" or the 3 scored category names anywhere.
-  # AUD's `retail_sales` above is dead (last print 2025-07-31, 364d, already
-  # excluded by the staleness gate) — this is additional, unscored context
-  # only, not a substitute. See docs/proposal-aud-retail-continuation.md for
-  # whether continuation (same canonical) is viable.
+  # --- Growth, display-only slot — RETIRED 2026-07-30
+  # (docs/proposal-aud-retail-continuation.md, docs/measurement-no-consensus-
+  # slots.md §8): `retail_sales` above is now CONTINUED under "Household
+  # Spending m/m" (matcher below repointed from household_spending -> retail_
+  # sales) instead of feeding this separate, permanently weight-0 slot.
+  # Definition kept (not deleted) for history/backfill-script reference, but
+  # it has NO matcher rule anywhere below — permanently unreachable, never a
+  # `per_cat` entry regardless. `category: growth_display` (a key NOT present
+  # in `categories:`, so it can never become a `per_cat` key regardless of
+  # weight) is the same isolation mechanism `inflation_display` uses.
   household_spending:
     pillar: growth
     category: growth_display
@@ -242,19 +239,28 @@ indicators:
     # legitimate flat month — can_be_zero would let a future corrupted 0.0
     # print silently past the zero-placeholder quarantine as if it were real.
 
-  # --- Inflation, display-only (CAD's three native BoC core-inflation
-  # measures — Common/Median/Trimmed CPI y/y, config/ff_aliases.yaml). Same
+  # --- Inflation, display-only (CAD's native BoC core-inflation measures —
+  # Common/Median/Trimmed CPI y/y, config/ff_aliases.yaml). Same
   # `inflation_display` isolation as AUD's cpi_monthly above: this category
   # is NOT a key in `categories:`, so it never becomes a `per_cat` key
-  # regardless of weight. CAD's scored `core_cpi` today is fed by "Core CPI
-  # m/m" (the wrong-unit series, see docs/proposal-cad-core-promotion.md) —
-  # these three are additional, unscored, correct-unit context only.
+  # regardless of weight.
   common_cpi_yoy:
     pillar: inflation
     category: inflation_display
     direction: 1
     weight: 0.0
     frequency: monthly
+  # RETIRED as a display-only slot 2026-07-30 (docs/proposal-cad-core-
+  # promotion.md, docs/measurement-no-consensus-slots.md §6): CAD's scored
+  # `core_cpi` was permanently `no_consensus` (fed by "Core CPI m/m", wrong
+  # unit, 0/54 forecasts ever) — median_cpi_yoy is now PROMOTED into that
+  # slot instead (matcher below: Canada's `^Median CPI y/y$` -> core_cpi, the
+  # old `^Core CPI y/y$` -> core_cpi rule removed). Definition kept (not
+  # deleted) for history/backfill-script reference, but it has NO matcher
+  # rule anywhere below — permanently unreachable, never a `per_cat` entry
+  # regardless. Displaying the identical number twice (once scored as
+  # core_cpi, once again here as inert display-only) would be redundant, not
+  # useful — see docs/measurement-no-consensus-slots.md §6 backfill notes.
   median_cpi_yoy:
     pillar: inflation
     category: inflation_display
@@ -362,7 +368,16 @@ matcher:
     - { pattern: '^RBA Interest Rate Decision$',    indicator: interest_rate_decision }
     - { pattern: '^Monthly CPI Indicator m/m$',      indicator: cpi_monthly }
     - { pattern: '^Monthly Trimmed Mean CPI m/m$',   indicator: trimmed_mean_cpi_monthly }
-    - { pattern: '^Household Spending m/m$',         indicator: household_spending }
+    # retail_sales CONTINUED 2026-07-30 under Household Spending m/m
+    # (docs/proposal-aud-retail-continuation.md): ABS retired "Retail Sales
+    # m/m" 2025-07-31 (the rule above stays — harmless, that raw event just
+    # never fires again); "Household Spending m/m" now feeds retail_sales
+    # DIRECTLY (concatenation, not replacement — old + new history share one
+    # indicator_key, one trailing-sigma baseline). Was routed to the
+    # `household_spending` display-only slot (weight 0, category
+    # growth_display); that rule is REMOVED here, not left alongside this
+    # one, so a future live print can only ever go to ONE indicator.
+    - { pattern: '^Household Spending m/m$',         indicator: retail_sales }
 
   New Zealand:
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
@@ -379,7 +394,18 @@ matcher:
     - { pattern: '^RBNZ Interest Rate Decision$',   indicator: interest_rate_decision }
 
   Canada:
-    - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
+    # core_cpi PROMOTED 2026-07-30 (docs/proposal-cad-core-promotion.md):
+    # was '^Core CPI y/y$' (fed by "Core CPI m/m", wrong unit, 0/54 forecasts
+    # ever — permanently no_consensus). Now fed by "Median CPI y/y" (BoC's
+    # own native y/y core measure, real varying consensus, 43/43 in the
+    # backfilled history). The old rule is REMOVED, not left alongside this
+    # one — "Core CPI y/y" (still produced going forward by the untouched
+    # "Core CPI m/m" xf alias, config/ff_aliases.yaml) is deliberately left
+    # UNMAPPED from here on: it must never again feed any indicator_key, or
+    # a future ingest would silently mix wrong-unit m/m prints back into
+    # whatever bucket picks it up. Old rows already in the parquet under
+    # that canonical name are untouched (harmless, orphaned history).
+    - { pattern: '^Median CPI y/y$',                indicator: core_cpi }
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
     - { pattern: '^IPPI y/y$',                      indicator: ppi_yoy }
     - { pattern: '^GDP q/q$',                       indicator: gdp_qoq }
@@ -389,7 +415,6 @@ matcher:
     - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
     - { pattern: '^BoC Interest Rate Decision$',    indicator: interest_rate_decision }
     - { pattern: '^Common CPI y/y$',                indicator: common_cpi_yoy }
-    - { pattern: '^Median CPI y/y$',                indicator: median_cpi_yoy }
     - { pattern: '^Trimmed CPI y/y$',                indicator: trimmed_cpi_yoy }
 
   Switzerland:
