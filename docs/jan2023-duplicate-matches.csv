@@ -1,0 +1,73 @@
+currency,canonical_id,name_raw,datetime_2023,datetime_2024_match,actual,forecast
+AUD,aud_cpi,CPI y/y,2023-01-10 00:30:00,2024-01-10 00:30:00,4.3,4.4
+AUD,aud_cpi,CPI y/y,2023-01-31 00:30:00,2024-01-31 00:30:00,3.4,3.7
+AUD,aud_employment_change,Employment Change,2023-01-18 00:30:00,2024-01-18 00:30:00,-65.1,15.4
+AUD,aud_rba_trimmed_mean_cpi,Trimmed Mean CPI q/q,2023-01-31 00:30:00,2024-01-31 00:30:00,0.8,0.9
+AUD,aud_retail_sales,Retail Sales m/m,2023-01-09 00:30:00,2024-01-09 00:30:00,2.0,1.2
+AUD,aud_retail_sales,Retail Sales m/m,2023-01-30 00:30:00,2024-01-30 00:30:00,-2.7,-1.9
+AUD,aud_unemployment_rate,Unemployment Rate,2023-01-18 00:30:00,2024-01-18 00:30:00,3.9,3.9
+CAD,cad_boc_interest_rate_decision,Overnight Rate,2023-01-24 14:45:00,2024-01-24 14:45:00,5.0,5.0
+CAD,cad_common_cpi,Common CPI y/y,2023-01-16 13:30:00,2024-01-16 13:30:00,3.9,3.8
+CAD,cad_core_cpi,Core CPI m/m,2023-01-16 13:30:00,2024-01-16 13:30:00,-0.5,0.0
+CAD,cad_cpi,CPI m/m,2023-01-16 13:30:00,2024-01-16 13:30:00,-0.3,-0.3
+CAD,cad_employment_change,Employment Change,2023-01-05 13:30:00,2024-01-05 13:30:00,0.1,12.2
+CAD,cad_gdp,GDP m/m,2023-01-31 13:30:00,2024-01-31 13:30:00,0.2,0.1
+CAD,cad_ippi,IPPI m/m,2023-01-17 13:30:00,2024-01-17 13:30:00,-1.5,-0.7
+CAD,cad_median_cpi,Median CPI y/y,2023-01-16 13:30:00,2024-01-16 13:30:00,3.6,3.3
+CAD,cad_retail_sales,Retail Sales m/m,2023-01-19 13:30:00,2024-01-19 13:30:00,-0.2,0.0
+CAD,cad_s_p_global_manufacturing_pmi,Manufacturing PMI,2023-01-03 08:30:00,2024-01-03 08:30:00,43.0,43.0
+CAD,cad_trimmed_cpi,Trimmed CPI y/y,2023-01-16 13:30:00,2024-01-16 13:30:00,3.7,3.4
+CAD,cad_unemployment_rate,Unemployment Rate,2023-01-05 13:30:00,2024-01-05 13:30:00,5.8,5.9
+CHF,chf_cpi,CPI m/m,2023-01-08 07:30:00,2024-01-08 07:30:00,0.0,-0.1
+CHF,chf_ppi,PPI m/m,2023-01-19 07:30:00,2024-01-19 07:30:00,-0.6,-0.6
+CHF,chf_retail_sales,Retail Sales y/y,2023-01-08 07:30:00,2024-01-08 07:30:00,0.7,0.0
+CHF,chf_retail_sales,Retail Sales y/y,2023-01-31 07:30:00,2024-01-31 07:30:00,-0.8,0.9
+CHF,chf_unemployment_rate,Unemployment Rate,2023-01-09 06:45:00,2024-01-09 06:45:00,2.2,2.2
+EUR,eur_core_cpi,Core CPI Flash Estimate y/y,2023-01-05 10:00:00,2024-01-05 10:00:00,3.4,3.4
+EUR,eur_cpi,CPI Flash Estimate y/y,2023-01-05 10:00:00,2024-01-05 10:00:00,2.9,3.0
+EUR,eur_ecb_interest_rate_decision,Main Refinancing Rate,2023-01-25 13:15:00,2024-01-25 13:15:00,4.5,4.5
+EUR,eur_gdp,Prelim Flash GDP q/q,2023-01-30 10:00:00,2024-01-30 10:00:00,0.0,-0.1
+EUR,eur_ppi,PPI m/m,2023-01-05 10:00:00,2024-01-05 10:00:00,-0.3,-0.1
+EUR,eur_retail_sales,Retail Sales m/m,2023-01-08 10:00:00,2024-01-08 10:00:00,-0.3,-0.3
+EUR,eur_unemployment_rate,Unemployment Rate,2023-01-09 10:00:00,2024-01-09 10:00:00,6.4,6.5
+GBP,gbp_average_weekly_earnings_total_pay,Average Earnings Index 3m/y,2023-01-16 07:00:00,2024-01-16 07:00:00,6.5,6.8
+GBP,gbp_claimant_count_change,Claimant Count Change,2023-01-16 07:00:00,2024-01-16 07:00:00,11.7,18.1
+GBP,gbp_core_cpi,Core CPI y/y,2023-01-17 07:00:00,2024-01-17 07:00:00,5.1,4.9
+GBP,gbp_cpi,CPI y/y,2023-01-17 07:00:00,2024-01-17 07:00:00,4.0,3.8
+GBP,gbp_gdp,GDP m/m,2023-01-12 07:00:00,2024-01-12 07:00:00,0.3,0.2
+GBP,gbp_ppi_output,PPI Output m/m,2023-01-17 07:00:00,2024-01-17 07:00:00,-0.6,-0.2
+GBP,gbp_retail_sales,Retail Sales m/m,2023-01-19 07:00:00,2024-01-19 07:00:00,-3.2,-0.5
+GBP,gbp_s_p_global_cips_manufacturing_pmi,Final Manufacturing PMI,2023-01-04 00:30:00,2024-01-04 00:30:00,47.9,47.7
+GBP,gbp_s_p_global_cips_manufacturing_pmi,Final Manufacturing PMI,2023-02-01 00:30:00,2024-02-01 00:30:00,48.0,48.0
+GBP,gbp_s_p_global_cips_services_pmi,Final Services PMI,2023-01-04 09:00:00,2024-01-04 09:00:00,48.8,48.1
+GBP,gbp_s_p_global_cips_services_pmi,Final Services PMI,2023-01-04 09:30:00,2024-01-04 09:30:00,53.4,52.7
+GBP,gbp_s_p_global_cips_services_pmi,Final Services PMI,2023-01-04 14:45:00,2024-01-04 14:45:00,51.4,51.3
+GBP,gbp_unemployment_rate,Unemployment Rate,2023-01-16 07:00:00,2024-01-16 07:00:00,4.2,4.2
+JPY,jpy_boj_interest_rate_decision,BOJ Policy Rate,2023-01-23 03:09:00,2024-01-23 03:09:00,-0.1,-0.1
+JPY,jpy_core_cpi,BOJ Core CPI y/y,2023-01-23 05:00:00,2024-01-23 05:00:00,2.6,2.8
+JPY,jpy_cpi,National Core CPI y/y,2023-01-18 23:30:00,2024-01-18 23:30:00,2.3,2.3
+JPY,jpy_labor_cash_earnings,Average Cash Earnings y/y,2023-01-09 23:30:00,2024-01-09 23:30:00,0.2,1.5
+JPY,jpy_unemployment_rate,Unemployment Rate,2023-01-29 23:30:00,2024-01-29 23:30:00,2.4,2.5
+NZD,nzd_businessnz_manufacturing_index,BusinessNZ Manufacturing Index,2023-01-18 21:30:00,2024-01-18 21:30:00,43.1,0.0
+NZD,nzd_businessnz_services_index,BusinessNZ Services Index,2023-01-22 21:30:00,2024-01-22 21:30:00,48.8,0.0
+NZD,nzd_cpi,CPI q/q,2023-01-23 21:45:00,2024-01-23 21:45:00,0.5,0.5
+USD,usd_adp_nonfarm_employment_change,ADP Non-Farm Employment Change,2023-01-04 13:15:00,2024-01-04 13:15:00,164.0,120.0
+USD,usd_adp_nonfarm_employment_change,ADP Non-Farm Employment Change,2023-01-31 13:15:00,2024-01-31 13:15:00,107.0,148.0
+USD,usd_average_hourly_earnings,Average Hourly Earnings m/m,2023-01-05 13:30:00,2024-01-05 13:30:00,0.4,0.3
+USD,usd_core_cpi,Core CPI m/m,2023-01-11 13:30:00,2024-01-11 13:30:00,0.3,0.3
+USD,usd_core_pce_price_index,Core PCE Price Index m/m,2023-01-26 13:30:00,2024-01-26 13:30:00,0.2,0.2
+USD,usd_cpi,CPI y/y,2023-01-11 13:30:00,2024-01-11 13:30:00,3.4,3.2
+USD,usd_fed_interest_rate_decision,Federal Funds Rate,2023-01-31 19:00:00,2024-01-31 19:00:00,5.5,5.5
+USD,usd_gdp,Advance GDP q/q,2023-01-25 13:30:00,2024-01-25 13:30:00,3.3,2.0
+USD,usd_initial_jobless_claims,Unemployment Claims,2023-01-04 13:30:00,2024-01-04 13:30:00,202.0,217.0
+USD,usd_initial_jobless_claims,Unemployment Claims,2023-01-11 13:30:00,2024-01-11 13:30:00,202.0,209.0
+USD,usd_initial_jobless_claims,Unemployment Claims,2023-01-18 13:30:00,2024-01-18 13:30:00,187.0,206.0
+USD,usd_initial_jobless_claims,Unemployment Claims,2023-01-25 13:30:00,2024-01-25 13:30:00,214.0,199.0
+USD,usd_ism_manufacturing_pmi,ISM Manufacturing PMI,2023-01-03 15:00:00,2024-01-03 15:00:00,47.4,47.2
+USD,usd_ism_non_manufacturing_pmi,ISM Services PMI,2023-01-05 15:00:00,2024-01-05 15:00:00,50.6,52.5
+USD,usd_jolts_job_openings,JOLTS Job Openings,2023-01-03 15:00:00,2024-01-03 15:00:00,8.79,8.84
+USD,usd_jolts_job_openings,JOLTS Job Openings,2023-01-30 15:00:00,2024-01-30 15:00:00,9.03,8.73
+USD,usd_nonfarm_payrolls,Non-Farm Employment Change,2023-01-05 13:30:00,2024-01-05 13:30:00,216.0,168.0
+USD,usd_ppi,PPI m/m,2023-01-12 13:30:00,2024-01-12 13:30:00,-0.1,0.1
+USD,usd_retail_sales,Retail Sales m/m,2023-01-17 13:30:00,2024-01-17 13:30:00,0.6,0.4
+USD,usd_unemployment_rate,Unemployment Rate,2023-01-05 13:30:00,2024-01-05 13:30:00,3.7,3.8
