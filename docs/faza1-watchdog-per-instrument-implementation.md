@@ -107,6 +107,35 @@ reîmprospătează, deci o alertă acolo e acționabilă) declanșează eșecul.
   notat, nu construit (ar fi extindere de scop dincolo de "watchdog per
   instrument pentru price").
 
+## Fire deschise, consemnate — fără acțiune acum
+
+1. **`price` calculat și afișat, dar exclus din gate → vizibil doar în
+   jurnal, pe care nu-l citește nimeni de obicei.** Decizia de a nu ieși cu
+   `exit 1` pe `price` rămâne corectă (§ "De ce `price` nu iese niciodată cu
+   `exit 1`"), dar asta lasă FTSE100-ul detectat fără nicio cale de ieșire
+   vizibilă spre un om. Când se conectează garda, are nevoie de un canal
+   separat de vizibilitate — badge în dashboard (lângă cele existente pentru
+   `calendar`/`actuals_pull`/`price` agregat) sau un raport afișat undeva
+   citit efectiv, nu doar log de CI. Nerezolvat aici.
+
+2. **Pragul de 4.5 zile pentru FTSE100 (derivat azi din istoricul propriu)
+   ar putea fi prea strâns pentru sărbători cu închidere multi-zi** (Crăciun,
+   Paște — unde bursa londoneză poate sta închisă 3-4 zile consecutive, peste
+   ce a prins fereastra de 90 de zile folosită la derivare azi). De verificat
+   când se conectează garda: rulează `instrument_cadence_threshold` pe
+   ferestre de 90 de zile poziționate chiar înainte de fiecare Crăciun/Paște
+   din istoricul `price_history.parquet` (2023-2026) și confirmă că pragul
+   derivat acolo tot acoperă gap-ul real observat, fără fals-pozitiv. Nu
+   testat acum — consemnat pentru verificare la conectare.
+
+3. **Orbirea pe `calendar`** (§ audit de mai sus — CHF mut 17 zile, mascat de
+   agregatul peste 8 valute) **urcă pe listă imediat după FAZA 2** a acestui
+   task. CHF e deja degradat pe partea de date prin zerourile anulate
+   (`docs/faza1-chf-cpi-zero-placeholder-inventory.md`, seria de audit
+   anterioară) — o orbire de watchdog pe deasupra unei serii deja fragile e a
+   doua cale independentă prin care o problemă CHF ar trece neobservată.
+   Nefixat aici.
+
 ## Reproducere
 
 ```bash
