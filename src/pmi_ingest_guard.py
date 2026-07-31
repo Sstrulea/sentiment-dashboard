@@ -20,6 +20,21 @@ transition (verified empirically for all 8 currencies in Faza 3a/3c — CHF/
 JPY/EUR/GBP/CAD's own correctly-labeled series all hold a fixed local
 release time year-round), so a trailing MODE of local hour never needs a
 DST correction and never flags a normal DST shift as a deviation.
+
+KNOWN GAP — the 76-row US S&P Global Final PMI cluster (09:45 America/
+New_York, docs/pmi-reattribution-before-after.md) is NOT covered by this
+guard, and can never be, as currently designed: the guard flags a deviation
+from a series' OWN trailing dominant local hour — it has nothing to compare
+against when USD has never had a single correctly-labeled S&P Global PMI
+print to begin with (unlike EUR/JPY/CHF, whose own 2026 copies gave this
+guard a real baseline). If JBlanked ever resumes mislabeling that same
+09:45-ET pattern under GBP/CAD's currency tag again, this guard stays
+silent — there is no USD baseline for the row to deviate from, and the
+GBP/CAD side may itself show a plausible (if wrong) dominant hour once
+enough contaminated rows accumulate. Closing this gap requires the same
+taxonomy decision noted in FAZA 3 (a USD S&P Global PMI indicator_key,
+separate from ISM) — until then, this is a real, standing blind spot, not
+a hypothetical one.
 """
 from __future__ import annotations
 
