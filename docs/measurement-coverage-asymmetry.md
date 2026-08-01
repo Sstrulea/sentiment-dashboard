@@ -4,13 +4,21 @@ Status: **investigație încheiată.** Branch `measure/coverage-asymmetry`,
 worktree `../macro-dev`. Zero cod de producție, zero config modificat —
 instrumentar în `scripts/measure/`.
 
-> **⚠️ Istoricul dinaintea lui 2026-07-29 NU e reproductibil cu codul
-> curent.** Șase commit-uri de config (`z_buckets` recalibrat de două ori,
-> adoptarea Variantei B, promovarea CAD Median CPI y/y, alias-uri AUD noi
-> pentru CPI lunar) și trei corecții retroactive ale
-> `data/economic_calendar_ff.parquet` (purjarea a 64 de rânduri duplicate
-> din ianuarie 2023, reatribuirea a 139 de rânduri PMI la CHF/JPY/EUR,
-> replay-ul CAD Median CPI din 20 iulie) cad toate în acest interval.
+> **⚠️ Istoricul dinaintea lui 2026-07-31T12:01Z NU e reproductibil cu
+> codul curent** (corectat 2026-08-01 — versiunea anterioară a acestei
+> note spunea greșit "2026-07-29"; verificat direct prin testarea mai
+> multor commit-uri istorice ale `public/data/economic.json`: `aa61011`
+> la 09:46Z tot eșuează, `597faeb` la 12:01Z e primul care se potrivește
+> exact — eroarea de dată a fost prinsă în `eval/bucket-c-candidates`
+> când o măsurare ulterioară a încercat să folosească fereastra validată
+> pentru un panel și a recalculat granița). Șase commit-uri de config
+> (`z_buckets` recalibrat de două ori, adoptarea Variantei B, promovarea
+> CAD Median CPI y/y, alias-uri AUD noi pentru CPI lunar) și trei corecții
+> retroactive ale `data/economic_calendar_ff.parquet` (purjarea a 64 de
+> rânduri duplicate din ianuarie 2023, reatribuirea a 139 de rânduri PMI
+> la CHF/JPY/EUR, replay-ul CAD Median CPI din 20 iulie) cad toate în
+> intervalul 2026-07-30T21:13Z — 2026-07-31T09:58Z, imediat înainte de
+> graniță.
 > Reconstrucția din acest document folosește DELIBERAT regulile și datele
 > de AZI aplicate retroactiv (un counterfactual controlat — vezi secțiunea
 > de validare mai jos pentru de ce și cum a fost verificat), NU o redare

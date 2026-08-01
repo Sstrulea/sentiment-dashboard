@@ -1,0 +1,18 @@
+candidate,faza1_rank,days_active,days_total,pct_active,n_delta_ge_025,pct_delta_ge_025_of_active,pct_delta_ge_025_of_total,n_bias_flip_days,pct_bias_flip_days_of_active,n_bias_flip_events,delta_abs_p25,delta_abs_median,delta_abs_p75,delta_abs_max
+AUD/Private Capital Expenditure q/q,16,1255,1301,96.5,874,69.6,67.2,867,69.1,2376,0.0,0.5,0.8333,2.0
+AUD/Import Prices q/q,19,1280,1301,98.4,759,59.3,58.3,820,64.1,1492,0.1667,0.3333,0.4167,0.9167
+JPY/Prelim GDP Price Index y/y,21,1265,1301,97.2,743,58.7,57.1,756,59.8,1441,0.1667,0.3333,0.5,1.5
+AUD/Company Operating Profits q/q,18,1107,1301,85.1,632,57.1,48.6,617,55.7,1388,0.0,0.3333,0.6667,2.0
+JPY/Core Machinery Orders m/m,6,1273,1301,97.8,659,51.8,50.7,636,50.0,1190,0.0,0.3333,0.5,2.0
+JPY/SPPI y/y,20,1269,1301,97.5,584,46.0,44.9,626,49.3,1226,0.1667,0.1667,0.5,1.5
+JPY/Prelim Industrial Production m/m,24,1233,1301,94.8,562,45.6,43.2,578,46.9,989,0.0,0.1667,0.3333,2.0
+JPY/Capital Spending q/y,17,1176,1301,90.4,534,45.4,41.0,582,49.5,1173,0.0,0.1667,0.5,2.0
+JPY/Tokyo Core CPI y/y,1,1272,1301,97.8,538,42.3,41.4,601,47.2,1068,0.1667,0.1667,0.375,1.0
+USD/Import Prices m/m,15,1245,1301,95.7,507,40.7,39.0,617,49.6,1171,0.0833,0.1667,0.35,1.0
+USD/Durable Goods Orders m/m,5,1248,1301,95.9,481,38.5,37.0,609,48.8,1031,0.075,0.15,0.35,1.0
+USD/Advance GDP Price Index q/q,22,1103,1301,84.8,408,37.0,31.4,480,43.5,827,0.05,0.1,0.3,1.0
+USD/Personal Income m/m,14,1227,1301,94.3,445,36.3,34.2,644,52.5,1060,0.0833,0.2,0.3,0.7
+USD/Prelim Unit Labor Costs q/q,23,1232,1301,94.7,392,31.8,30.1,564,45.8,884,0.0476,0.1667,0.2857,2.0
+USD/Personal Spending m/m,13,1243,1301,95.5,379,30.5,29.1,514,41.4,854,0.05,0.1,0.25,0.7
+GBP/Industrial Production m/m,3,1240,1301,95.3,345,27.8,26.5,436,35.2,647,0.05,0.15,0.25,0.6667
+USD/Industrial Production m/m,4,1181,1301,90.8,311,26.3,23.9,484,41.0,734,0.05,0.1,0.25,0.8333

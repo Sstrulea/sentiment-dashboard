@@ -1,0 +1,523 @@
+step,added,symbol,score,bias
+0,(baseline),US-DOLLAR,0.41666666666666663,Neutral
+0,(baseline),EURUSD,-0.41666666666666663,Neutral
+0,(baseline),GBPUSD,-0.06944444444444436,Neutral
+0,(baseline),USDJPY,-0.9027777777777779,Neutral
+0,(baseline),USDCHF,2.5694444444444446,Very Bullish
+0,(baseline),USDCAD,-2.4305555555555554,Very Bearish
+0,(baseline),AUDUSD,-1.4583333333333333,Bearish
+0,(baseline),NZDUSD,0.7638888888888888,Neutral
+0,(baseline),EURGBP,-0.34722222222222227,Neutral
+0,(baseline),EURJPY,-1.3194444444444444,Bearish
+0,(baseline),EURCHF,2.1527777777777777,Bullish
+0,(baseline),EURAUD,1.0416666666666667,Neutral
+0,(baseline),EURNZD,-1.1805555555555554,Bearish
+0,(baseline),EURCAD,-2.8472222222222223,Very Bearish
+0,(baseline),GBPJPY,-0.9722222222222222,Neutral
+0,(baseline),GBPCHF,2.5,Very Bullish
+0,(baseline),GBPAUD,1.3888888888888888,Bullish
+0,(baseline),GBPNZD,-0.8333333333333331,Neutral
+0,(baseline),GBPCAD,-2.5,Very Bearish
+0,(baseline),AUDJPY,-2.361111111111111,Bearish
+0,(baseline),NZDJPY,-0.13888888888888906,Neutral
+0,(baseline),CADJPY,1.5277777777777777,Bullish
+0,(baseline),CHFJPY,-3.4722222222222223,Very Bearish
+0,(baseline),AUDNZD,-2.2222222222222223,Bearish
+0,(baseline),AUDCAD,-3.888888888888889,Very Bearish
+0,(baseline),AUDCHF,1.1111111111111112,Neutral
+0,(baseline),NZDCAD,-1.6666666666666667,Bearish
+0,(baseline),NZDCHF,3.333333333333333,Very Bullish
+0,(baseline),CADCHF,5.0,Very Bullish
+1,JPY/Tokyo Core CPI y/y,US-DOLLAR,0.41666666666666663,Neutral
+1,JPY/Tokyo Core CPI y/y,EURUSD,-0.41666666666666663,Neutral
+1,JPY/Tokyo Core CPI y/y,GBPUSD,-0.06944444444444436,Neutral
+1,JPY/Tokyo Core CPI y/y,USDJPY,-0.9027777777777779,Neutral
+1,JPY/Tokyo Core CPI y/y,USDCHF,2.5694444444444446,Very Bullish
+1,JPY/Tokyo Core CPI y/y,USDCAD,-2.4305555555555554,Very Bearish
+1,JPY/Tokyo Core CPI y/y,AUDUSD,-1.4583333333333333,Bearish
+1,JPY/Tokyo Core CPI y/y,NZDUSD,0.7638888888888888,Neutral
+1,JPY/Tokyo Core CPI y/y,EURGBP,-0.34722222222222227,Neutral
+1,JPY/Tokyo Core CPI y/y,EURJPY,-1.3194444444444444,Bearish
+1,JPY/Tokyo Core CPI y/y,EURCHF,2.1527777777777777,Bullish
+1,JPY/Tokyo Core CPI y/y,EURAUD,1.0416666666666667,Neutral
+1,JPY/Tokyo Core CPI y/y,EURNZD,-1.1805555555555554,Bearish
+1,JPY/Tokyo Core CPI y/y,EURCAD,-2.8472222222222223,Very Bearish
+1,JPY/Tokyo Core CPI y/y,GBPJPY,-0.9722222222222222,Neutral
+1,JPY/Tokyo Core CPI y/y,GBPCHF,2.5,Very Bullish
+1,JPY/Tokyo Core CPI y/y,GBPAUD,1.3888888888888888,Bullish
+1,JPY/Tokyo Core CPI y/y,GBPNZD,-0.8333333333333331,Neutral
+1,JPY/Tokyo Core CPI y/y,GBPCAD,-2.5,Very Bearish
+1,JPY/Tokyo Core CPI y/y,AUDJPY,-2.361111111111111,Bearish
+1,JPY/Tokyo Core CPI y/y,NZDJPY,-0.13888888888888906,Neutral
+1,JPY/Tokyo Core CPI y/y,CADJPY,1.5277777777777777,Bullish
+1,JPY/Tokyo Core CPI y/y,CHFJPY,-3.4722222222222223,Very Bearish
+1,JPY/Tokyo Core CPI y/y,AUDNZD,-2.2222222222222223,Bearish
+1,JPY/Tokyo Core CPI y/y,AUDCAD,-3.888888888888889,Very Bearish
+1,JPY/Tokyo Core CPI y/y,AUDCHF,1.1111111111111112,Neutral
+1,JPY/Tokyo Core CPI y/y,NZDCAD,-1.6666666666666667,Bearish
+1,JPY/Tokyo Core CPI y/y,NZDCHF,3.333333333333333,Very Bullish
+1,JPY/Tokyo Core CPI y/y,CADCHF,5.0,Very Bullish
+2,GBP/Industrial Production m/m,US-DOLLAR,0.41666666666666663,Neutral
+2,GBP/Industrial Production m/m,EURUSD,-0.41666666666666663,Neutral
+2,GBP/Industrial Production m/m,GBPUSD,0.01388888888888895,Neutral
+2,GBP/Industrial Production m/m,USDJPY,-0.9027777777777779,Neutral
+2,GBP/Industrial Production m/m,USDCHF,2.5694444444444446,Very Bullish
+2,GBP/Industrial Production m/m,USDCAD,-2.4305555555555554,Very Bearish
+2,GBP/Industrial Production m/m,AUDUSD,-1.4583333333333333,Bearish
+2,GBP/Industrial Production m/m,NZDUSD,0.7638888888888888,Neutral
+2,GBP/Industrial Production m/m,EURGBP,-0.4305555555555556,Neutral
+2,GBP/Industrial Production m/m,EURJPY,-1.3194444444444444,Bearish
+2,GBP/Industrial Production m/m,EURCHF,2.1527777777777777,Bullish
+2,GBP/Industrial Production m/m,EURAUD,1.0416666666666667,Neutral
+2,GBP/Industrial Production m/m,EURNZD,-1.1805555555555554,Bearish
+2,GBP/Industrial Production m/m,EURCAD,-2.8472222222222223,Very Bearish
+2,GBP/Industrial Production m/m,GBPJPY,-0.8888888888888888,Neutral
+2,GBP/Industrial Production m/m,GBPCHF,2.5833333333333335,Very Bullish
+2,GBP/Industrial Production m/m,GBPAUD,1.4722222222222223,Bullish
+2,GBP/Industrial Production m/m,GBPNZD,-0.7499999999999998,Neutral
+2,GBP/Industrial Production m/m,GBPCAD,-2.4166666666666665,Very Bearish
+2,GBP/Industrial Production m/m,AUDJPY,-2.361111111111111,Bearish
+2,GBP/Industrial Production m/m,NZDJPY,-0.13888888888888906,Neutral
+2,GBP/Industrial Production m/m,CADJPY,1.5277777777777777,Bullish
+2,GBP/Industrial Production m/m,CHFJPY,-3.4722222222222223,Very Bearish
+2,GBP/Industrial Production m/m,AUDNZD,-2.2222222222222223,Bearish
+2,GBP/Industrial Production m/m,AUDCAD,-3.888888888888889,Very Bearish
+2,GBP/Industrial Production m/m,AUDCHF,1.1111111111111112,Neutral
+2,GBP/Industrial Production m/m,NZDCAD,-1.6666666666666667,Bearish
+2,GBP/Industrial Production m/m,NZDCHF,3.333333333333333,Very Bullish
+2,GBP/Industrial Production m/m,CADCHF,5.0,Very Bullish
+3,USD/Industrial Production m/m,US-DOLLAR,0.3333333333333333,Neutral
+3,USD/Industrial Production m/m,EURUSD,-0.375,Neutral
+3,USD/Industrial Production m/m,GBPUSD,0.05555555555555561,Neutral
+3,USD/Industrial Production m/m,USDJPY,-0.9444444444444445,Neutral
+3,USD/Industrial Production m/m,USDCHF,2.5277777777777777,Very Bullish
+3,USD/Industrial Production m/m,USDCAD,-2.4722222222222223,Very Bearish
+3,USD/Industrial Production m/m,AUDUSD,-1.4166666666666667,Bearish
+3,USD/Industrial Production m/m,NZDUSD,0.8055555555555555,Neutral
+3,USD/Industrial Production m/m,EURGBP,-0.4305555555555556,Neutral
+3,USD/Industrial Production m/m,EURJPY,-1.3194444444444444,Bearish
+3,USD/Industrial Production m/m,EURCHF,2.1527777777777777,Bullish
+3,USD/Industrial Production m/m,EURAUD,1.0416666666666667,Neutral
+3,USD/Industrial Production m/m,EURNZD,-1.1805555555555554,Bearish
+3,USD/Industrial Production m/m,EURCAD,-2.8472222222222223,Very Bearish
+3,USD/Industrial Production m/m,GBPJPY,-0.8888888888888888,Neutral
+3,USD/Industrial Production m/m,GBPCHF,2.5833333333333335,Very Bullish
+3,USD/Industrial Production m/m,GBPAUD,1.4722222222222223,Bullish
+3,USD/Industrial Production m/m,GBPNZD,-0.7499999999999998,Neutral
+3,USD/Industrial Production m/m,GBPCAD,-2.4166666666666665,Very Bearish
+3,USD/Industrial Production m/m,AUDJPY,-2.361111111111111,Bearish
+3,USD/Industrial Production m/m,NZDJPY,-0.13888888888888906,Neutral
+3,USD/Industrial Production m/m,CADJPY,1.5277777777777777,Bullish
+3,USD/Industrial Production m/m,CHFJPY,-3.4722222222222223,Very Bearish
+3,USD/Industrial Production m/m,AUDNZD,-2.2222222222222223,Bearish
+3,USD/Industrial Production m/m,AUDCAD,-3.888888888888889,Very Bearish
+3,USD/Industrial Production m/m,AUDCHF,1.1111111111111112,Neutral
+3,USD/Industrial Production m/m,NZDCAD,-1.6666666666666667,Bearish
+3,USD/Industrial Production m/m,NZDCHF,3.333333333333333,Very Bullish
+3,USD/Industrial Production m/m,CADCHF,5.0,Very Bullish
+4,USD/Durable Goods Orders m/m,US-DOLLAR,0.2777777777777778,Neutral
+4,USD/Durable Goods Orders m/m,EURUSD,-0.3472222222222222,Neutral
+4,USD/Durable Goods Orders m/m,GBPUSD,0.08333333333333337,Neutral
+4,USD/Durable Goods Orders m/m,USDJPY,-0.9722222222222223,Neutral
+4,USD/Durable Goods Orders m/m,USDCHF,2.5,Very Bullish
+4,USD/Durable Goods Orders m/m,USDCAD,-2.5,Very Bearish
+4,USD/Durable Goods Orders m/m,AUDUSD,-1.3888888888888888,Bearish
+4,USD/Durable Goods Orders m/m,NZDUSD,0.8333333333333333,Neutral
+4,USD/Durable Goods Orders m/m,EURGBP,-0.4305555555555556,Neutral
+4,USD/Durable Goods Orders m/m,EURJPY,-1.3194444444444444,Bearish
+4,USD/Durable Goods Orders m/m,EURCHF,2.1527777777777777,Bullish
+4,USD/Durable Goods Orders m/m,EURAUD,1.0416666666666667,Neutral
+4,USD/Durable Goods Orders m/m,EURNZD,-1.1805555555555554,Bearish
+4,USD/Durable Goods Orders m/m,EURCAD,-2.8472222222222223,Very Bearish
+4,USD/Durable Goods Orders m/m,GBPJPY,-0.8888888888888888,Neutral
+4,USD/Durable Goods Orders m/m,GBPCHF,2.5833333333333335,Very Bullish
+4,USD/Durable Goods Orders m/m,GBPAUD,1.4722222222222223,Bullish
+4,USD/Durable Goods Orders m/m,GBPNZD,-0.7499999999999998,Neutral
+4,USD/Durable Goods Orders m/m,GBPCAD,-2.4166666666666665,Very Bearish
+4,USD/Durable Goods Orders m/m,AUDJPY,-2.361111111111111,Bearish
+4,USD/Durable Goods Orders m/m,NZDJPY,-0.13888888888888906,Neutral
+4,USD/Durable Goods Orders m/m,CADJPY,1.5277777777777777,Bullish
+4,USD/Durable Goods Orders m/m,CHFJPY,-3.4722222222222223,Very Bearish
+4,USD/Durable Goods Orders m/m,AUDNZD,-2.2222222222222223,Bearish
+4,USD/Durable Goods Orders m/m,AUDCAD,-3.888888888888889,Very Bearish
+4,USD/Durable Goods Orders m/m,AUDCHF,1.1111111111111112,Neutral
+4,USD/Durable Goods Orders m/m,NZDCAD,-1.6666666666666667,Bearish
+4,USD/Durable Goods Orders m/m,NZDCHF,3.333333333333333,Very Bullish
+4,USD/Durable Goods Orders m/m,CADCHF,5.0,Very Bullish
+5,JPY/Core Machinery Orders m/m,US-DOLLAR,0.2777777777777778,Neutral
+5,JPY/Core Machinery Orders m/m,EURUSD,-0.3472222222222222,Neutral
+5,JPY/Core Machinery Orders m/m,GBPUSD,0.08333333333333337,Neutral
+5,JPY/Core Machinery Orders m/m,USDJPY,-0.9027777777777779,Neutral
+5,JPY/Core Machinery Orders m/m,USDCHF,2.5,Very Bullish
+5,JPY/Core Machinery Orders m/m,USDCAD,-2.5,Very Bearish
+5,JPY/Core Machinery Orders m/m,AUDUSD,-1.3888888888888888,Bearish
+5,JPY/Core Machinery Orders m/m,NZDUSD,0.8333333333333333,Neutral
+5,JPY/Core Machinery Orders m/m,EURGBP,-0.4305555555555556,Neutral
+5,JPY/Core Machinery Orders m/m,EURJPY,-1.25,Bearish
+5,JPY/Core Machinery Orders m/m,EURCHF,2.1527777777777777,Bullish
+5,JPY/Core Machinery Orders m/m,EURAUD,1.0416666666666667,Neutral
+5,JPY/Core Machinery Orders m/m,EURNZD,-1.1805555555555554,Bearish
+5,JPY/Core Machinery Orders m/m,EURCAD,-2.8472222222222223,Very Bearish
+5,JPY/Core Machinery Orders m/m,GBPJPY,-0.8194444444444444,Neutral
+5,JPY/Core Machinery Orders m/m,GBPCHF,2.5833333333333335,Very Bullish
+5,JPY/Core Machinery Orders m/m,GBPAUD,1.4722222222222223,Bullish
+5,JPY/Core Machinery Orders m/m,GBPNZD,-0.7499999999999998,Neutral
+5,JPY/Core Machinery Orders m/m,GBPCAD,-2.4166666666666665,Very Bearish
+5,JPY/Core Machinery Orders m/m,AUDJPY,-2.291666666666667,Bearish
+5,JPY/Core Machinery Orders m/m,NZDJPY,-0.06944444444444464,Neutral
+5,JPY/Core Machinery Orders m/m,CADJPY,1.597222222222222,Bullish
+5,JPY/Core Machinery Orders m/m,CHFJPY,-3.4027777777777777,Very Bearish
+5,JPY/Core Machinery Orders m/m,AUDNZD,-2.2222222222222223,Bearish
+5,JPY/Core Machinery Orders m/m,AUDCAD,-3.888888888888889,Very Bearish
+5,JPY/Core Machinery Orders m/m,AUDCHF,1.1111111111111112,Neutral
+5,JPY/Core Machinery Orders m/m,NZDCAD,-1.6666666666666667,Bearish
+5,JPY/Core Machinery Orders m/m,NZDCHF,3.333333333333333,Very Bullish
+5,JPY/Core Machinery Orders m/m,CADCHF,5.0,Very Bullish
+6,USD/Personal Spending m/m,US-DOLLAR,0.23809523809523808,Neutral
+6,USD/Personal Spending m/m,EURUSD,-0.32738095238095233,Neutral
+6,USD/Personal Spending m/m,GBPUSD,0.10317460317460322,Neutral
+6,USD/Personal Spending m/m,USDJPY,-0.9226190476190477,Neutral
+6,USD/Personal Spending m/m,USDCHF,2.4801587301587302,Very Bullish
+6,USD/Personal Spending m/m,USDCAD,-2.5198412698412698,Very Bearish
+6,USD/Personal Spending m/m,AUDUSD,-1.369047619047619,Bearish
+6,USD/Personal Spending m/m,NZDUSD,0.853174603174603,Neutral
+6,USD/Personal Spending m/m,EURGBP,-0.4305555555555556,Neutral
+6,USD/Personal Spending m/m,EURJPY,-1.25,Bearish
+6,USD/Personal Spending m/m,EURCHF,2.1527777777777777,Bullish
+6,USD/Personal Spending m/m,EURAUD,1.0416666666666667,Neutral
+6,USD/Personal Spending m/m,EURNZD,-1.1805555555555554,Bearish
+6,USD/Personal Spending m/m,EURCAD,-2.8472222222222223,Very Bearish
+6,USD/Personal Spending m/m,GBPJPY,-0.8194444444444444,Neutral
+6,USD/Personal Spending m/m,GBPCHF,2.5833333333333335,Very Bullish
+6,USD/Personal Spending m/m,GBPAUD,1.4722222222222223,Bullish
+6,USD/Personal Spending m/m,GBPNZD,-0.7499999999999998,Neutral
+6,USD/Personal Spending m/m,GBPCAD,-2.4166666666666665,Very Bearish
+6,USD/Personal Spending m/m,AUDJPY,-2.291666666666667,Bearish
+6,USD/Personal Spending m/m,NZDJPY,-0.06944444444444464,Neutral
+6,USD/Personal Spending m/m,CADJPY,1.597222222222222,Bullish
+6,USD/Personal Spending m/m,CHFJPY,-3.4027777777777777,Very Bearish
+6,USD/Personal Spending m/m,AUDNZD,-2.2222222222222223,Bearish
+6,USD/Personal Spending m/m,AUDCAD,-3.888888888888889,Very Bearish
+6,USD/Personal Spending m/m,AUDCHF,1.1111111111111112,Neutral
+6,USD/Personal Spending m/m,NZDCAD,-1.6666666666666667,Bearish
+6,USD/Personal Spending m/m,NZDCHF,3.333333333333333,Very Bullish
+6,USD/Personal Spending m/m,CADCHF,5.0,Very Bullish
+7,USD/Personal Income m/m,US-DOLLAR,0.41666666666666663,Neutral
+7,USD/Personal Income m/m,EURUSD,-0.41666666666666663,Neutral
+7,USD/Personal Income m/m,GBPUSD,0.01388888888888895,Neutral
+7,USD/Personal Income m/m,USDJPY,-0.8333333333333335,Neutral
+7,USD/Personal Income m/m,USDCHF,2.5694444444444446,Very Bullish
+7,USD/Personal Income m/m,USDCAD,-2.4305555555555554,Very Bearish
+7,USD/Personal Income m/m,AUDUSD,-1.4583333333333333,Bearish
+7,USD/Personal Income m/m,NZDUSD,0.7638888888888888,Neutral
+7,USD/Personal Income m/m,EURGBP,-0.4305555555555556,Neutral
+7,USD/Personal Income m/m,EURJPY,-1.25,Bearish
+7,USD/Personal Income m/m,EURCHF,2.1527777777777777,Bullish
+7,USD/Personal Income m/m,EURAUD,1.0416666666666667,Neutral
+7,USD/Personal Income m/m,EURNZD,-1.1805555555555554,Bearish
+7,USD/Personal Income m/m,EURCAD,-2.8472222222222223,Very Bearish
+7,USD/Personal Income m/m,GBPJPY,-0.8194444444444444,Neutral
+7,USD/Personal Income m/m,GBPCHF,2.5833333333333335,Very Bullish
+7,USD/Personal Income m/m,GBPAUD,1.4722222222222223,Bullish
+7,USD/Personal Income m/m,GBPNZD,-0.7499999999999998,Neutral
+7,USD/Personal Income m/m,GBPCAD,-2.4166666666666665,Very Bearish
+7,USD/Personal Income m/m,AUDJPY,-2.291666666666667,Bearish
+7,USD/Personal Income m/m,NZDJPY,-0.06944444444444464,Neutral
+7,USD/Personal Income m/m,CADJPY,1.597222222222222,Bullish
+7,USD/Personal Income m/m,CHFJPY,-3.4027777777777777,Very Bearish
+7,USD/Personal Income m/m,AUDNZD,-2.2222222222222223,Bearish
+7,USD/Personal Income m/m,AUDCAD,-3.888888888888889,Very Bearish
+7,USD/Personal Income m/m,AUDCHF,1.1111111111111112,Neutral
+7,USD/Personal Income m/m,NZDCAD,-1.6666666666666667,Bearish
+7,USD/Personal Income m/m,NZDCHF,3.333333333333333,Very Bullish
+7,USD/Personal Income m/m,CADCHF,5.0,Very Bullish
+8,USD/Import Prices m/m,US-DOLLAR,0.75,Neutral
+8,USD/Import Prices m/m,EURUSD,-0.5833333333333333,Neutral
+8,USD/Import Prices m/m,GBPUSD,-0.15277777777777773,Neutral
+8,USD/Import Prices m/m,USDJPY,-0.6666666666666667,Neutral
+8,USD/Import Prices m/m,USDCHF,2.736111111111111,Very Bullish
+8,USD/Import Prices m/m,USDCAD,-2.263888888888889,Bearish
+8,USD/Import Prices m/m,AUDUSD,-1.625,Bearish
+8,USD/Import Prices m/m,NZDUSD,0.5972222222222221,Neutral
+8,USD/Import Prices m/m,EURGBP,-0.4305555555555556,Neutral
+8,USD/Import Prices m/m,EURJPY,-1.25,Bearish
+8,USD/Import Prices m/m,EURCHF,2.1527777777777777,Bullish
+8,USD/Import Prices m/m,EURAUD,1.0416666666666667,Neutral
+8,USD/Import Prices m/m,EURNZD,-1.1805555555555554,Bearish
+8,USD/Import Prices m/m,EURCAD,-2.8472222222222223,Very Bearish
+8,USD/Import Prices m/m,GBPJPY,-0.8194444444444444,Neutral
+8,USD/Import Prices m/m,GBPCHF,2.5833333333333335,Very Bullish
+8,USD/Import Prices m/m,GBPAUD,1.4722222222222223,Bullish
+8,USD/Import Prices m/m,GBPNZD,-0.7499999999999998,Neutral
+8,USD/Import Prices m/m,GBPCAD,-2.4166666666666665,Very Bearish
+8,USD/Import Prices m/m,AUDJPY,-2.291666666666667,Bearish
+8,USD/Import Prices m/m,NZDJPY,-0.06944444444444464,Neutral
+8,USD/Import Prices m/m,CADJPY,1.597222222222222,Bullish
+8,USD/Import Prices m/m,CHFJPY,-3.4027777777777777,Very Bearish
+8,USD/Import Prices m/m,AUDNZD,-2.2222222222222223,Bearish
+8,USD/Import Prices m/m,AUDCAD,-3.888888888888889,Very Bearish
+8,USD/Import Prices m/m,AUDCHF,1.1111111111111112,Neutral
+8,USD/Import Prices m/m,NZDCAD,-1.6666666666666667,Bearish
+8,USD/Import Prices m/m,NZDCHF,3.333333333333333,Very Bullish
+8,USD/Import Prices m/m,CADCHF,5.0,Very Bullish
+9,AUD/Private Capital Expenditure q/q,US-DOLLAR,0.75,Neutral
+9,AUD/Private Capital Expenditure q/q,EURUSD,-0.5833333333333333,Neutral
+9,AUD/Private Capital Expenditure q/q,GBPUSD,-0.15277777777777773,Neutral
+9,AUD/Private Capital Expenditure q/q,USDJPY,-0.6666666666666667,Neutral
+9,AUD/Private Capital Expenditure q/q,USDCHF,2.736111111111111,Very Bullish
+9,AUD/Private Capital Expenditure q/q,USDCAD,-2.263888888888889,Bearish
+9,AUD/Private Capital Expenditure q/q,AUDUSD,-0.9305555555555556,Neutral
+9,AUD/Private Capital Expenditure q/q,NZDUSD,0.5972222222222221,Neutral
+9,AUD/Private Capital Expenditure q/q,EURGBP,-0.4305555555555556,Neutral
+9,AUD/Private Capital Expenditure q/q,EURJPY,-1.25,Bearish
+9,AUD/Private Capital Expenditure q/q,EURCHF,2.1527777777777777,Bullish
+9,AUD/Private Capital Expenditure q/q,EURAUD,0.34722222222222227,Neutral
+9,AUD/Private Capital Expenditure q/q,EURNZD,-1.1805555555555554,Bearish
+9,AUD/Private Capital Expenditure q/q,EURCAD,-2.8472222222222223,Very Bearish
+9,AUD/Private Capital Expenditure q/q,GBPJPY,-0.8194444444444444,Neutral
+9,AUD/Private Capital Expenditure q/q,GBPCHF,2.5833333333333335,Very Bullish
+9,AUD/Private Capital Expenditure q/q,GBPAUD,0.7777777777777779,Neutral
+9,AUD/Private Capital Expenditure q/q,GBPNZD,-0.7499999999999998,Neutral
+9,AUD/Private Capital Expenditure q/q,GBPCAD,-2.4166666666666665,Very Bearish
+9,AUD/Private Capital Expenditure q/q,AUDJPY,-1.5972222222222223,Bearish
+9,AUD/Private Capital Expenditure q/q,NZDJPY,-0.06944444444444464,Neutral
+9,AUD/Private Capital Expenditure q/q,CADJPY,1.597222222222222,Bullish
+9,AUD/Private Capital Expenditure q/q,CHFJPY,-3.4027777777777777,Very Bearish
+9,AUD/Private Capital Expenditure q/q,AUDNZD,-1.5277777777777777,Bearish
+9,AUD/Private Capital Expenditure q/q,AUDCAD,-3.1944444444444446,Very Bearish
+9,AUD/Private Capital Expenditure q/q,AUDCHF,1.8055555555555556,Bullish
+9,AUD/Private Capital Expenditure q/q,NZDCAD,-1.6666666666666667,Bearish
+9,AUD/Private Capital Expenditure q/q,NZDCHF,3.333333333333333,Very Bullish
+9,AUD/Private Capital Expenditure q/q,CADCHF,5.0,Very Bullish
+10,JPY/Capital Spending q/y,US-DOLLAR,0.75,Neutral
+10,JPY/Capital Spending q/y,EURUSD,-0.5833333333333333,Neutral
+10,JPY/Capital Spending q/y,GBPUSD,-0.15277777777777773,Neutral
+10,JPY/Capital Spending q/y,USDJPY,-0.45833333333333326,Neutral
+10,JPY/Capital Spending q/y,USDCHF,2.736111111111111,Very Bullish
+10,JPY/Capital Spending q/y,USDCAD,-2.263888888888889,Bearish
+10,JPY/Capital Spending q/y,AUDUSD,-0.9305555555555556,Neutral
+10,JPY/Capital Spending q/y,NZDUSD,0.5972222222222221,Neutral
+10,JPY/Capital Spending q/y,EURGBP,-0.4305555555555556,Neutral
+10,JPY/Capital Spending q/y,EURJPY,-1.0416666666666665,Neutral
+10,JPY/Capital Spending q/y,EURCHF,2.1527777777777777,Bullish
+10,JPY/Capital Spending q/y,EURAUD,0.34722222222222227,Neutral
+10,JPY/Capital Spending q/y,EURNZD,-1.1805555555555554,Bearish
+10,JPY/Capital Spending q/y,EURCAD,-2.8472222222222223,Very Bearish
+10,JPY/Capital Spending q/y,GBPJPY,-0.6111111111111109,Neutral
+10,JPY/Capital Spending q/y,GBPCHF,2.5833333333333335,Very Bullish
+10,JPY/Capital Spending q/y,GBPAUD,0.7777777777777779,Neutral
+10,JPY/Capital Spending q/y,GBPNZD,-0.7499999999999998,Neutral
+10,JPY/Capital Spending q/y,GBPCAD,-2.4166666666666665,Very Bearish
+10,JPY/Capital Spending q/y,AUDJPY,-1.3888888888888888,Bearish
+10,JPY/Capital Spending q/y,NZDJPY,0.13888888888888884,Neutral
+10,JPY/Capital Spending q/y,CADJPY,1.8055555555555556,Bullish
+10,JPY/Capital Spending q/y,CHFJPY,-3.1944444444444446,Very Bearish
+10,JPY/Capital Spending q/y,AUDNZD,-1.5277777777777777,Bearish
+10,JPY/Capital Spending q/y,AUDCAD,-3.1944444444444446,Very Bearish
+10,JPY/Capital Spending q/y,AUDCHF,1.8055555555555556,Bullish
+10,JPY/Capital Spending q/y,NZDCAD,-1.6666666666666667,Bearish
+10,JPY/Capital Spending q/y,NZDCHF,3.333333333333333,Very Bullish
+10,JPY/Capital Spending q/y,CADCHF,5.0,Very Bullish
+11,AUD/Company Operating Profits q/q,US-DOLLAR,0.75,Neutral
+11,AUD/Company Operating Profits q/q,EURUSD,-0.5833333333333333,Neutral
+11,AUD/Company Operating Profits q/q,GBPUSD,-0.15277777777777773,Neutral
+11,AUD/Company Operating Profits q/q,USDJPY,-0.45833333333333326,Neutral
+11,AUD/Company Operating Profits q/q,USDCHF,2.736111111111111,Very Bullish
+11,AUD/Company Operating Profits q/q,USDCAD,-2.263888888888889,Bearish
+11,AUD/Company Operating Profits q/q,AUDUSD,-1.0,Neutral
+11,AUD/Company Operating Profits q/q,NZDUSD,0.5972222222222221,Neutral
+11,AUD/Company Operating Profits q/q,EURGBP,-0.4305555555555556,Neutral
+11,AUD/Company Operating Profits q/q,EURJPY,-1.0416666666666665,Neutral
+11,AUD/Company Operating Profits q/q,EURCHF,2.1527777777777777,Bullish
+11,AUD/Company Operating Profits q/q,EURAUD,0.4166666666666667,Neutral
+11,AUD/Company Operating Profits q/q,EURNZD,-1.1805555555555554,Bearish
+11,AUD/Company Operating Profits q/q,EURCAD,-2.8472222222222223,Very Bearish
+11,AUD/Company Operating Profits q/q,GBPJPY,-0.6111111111111109,Neutral
+11,AUD/Company Operating Profits q/q,GBPCHF,2.5833333333333335,Very Bullish
+11,AUD/Company Operating Profits q/q,GBPAUD,0.8472222222222223,Neutral
+11,AUD/Company Operating Profits q/q,GBPNZD,-0.7499999999999998,Neutral
+11,AUD/Company Operating Profits q/q,GBPCAD,-2.4166666666666665,Very Bearish
+11,AUD/Company Operating Profits q/q,AUDJPY,-1.4583333333333333,Bearish
+11,AUD/Company Operating Profits q/q,NZDJPY,0.13888888888888884,Neutral
+11,AUD/Company Operating Profits q/q,CADJPY,1.8055555555555556,Bullish
+11,AUD/Company Operating Profits q/q,CHFJPY,-3.1944444444444446,Very Bearish
+11,AUD/Company Operating Profits q/q,AUDNZD,-1.597222222222222,Bearish
+11,AUD/Company Operating Profits q/q,AUDCAD,-3.263888888888889,Very Bearish
+11,AUD/Company Operating Profits q/q,AUDCHF,1.7361111111111112,Bullish
+11,AUD/Company Operating Profits q/q,NZDCAD,-1.6666666666666667,Bearish
+11,AUD/Company Operating Profits q/q,NZDCHF,3.333333333333333,Very Bullish
+11,AUD/Company Operating Profits q/q,CADCHF,5.0,Very Bullish
+12,AUD/Import Prices q/q,US-DOLLAR,0.75,Neutral
+12,AUD/Import Prices q/q,EURUSD,-0.5833333333333333,Neutral
+12,AUD/Import Prices q/q,GBPUSD,-0.15277777777777773,Neutral
+12,AUD/Import Prices q/q,USDJPY,-0.45833333333333326,Neutral
+12,AUD/Import Prices q/q,USDCHF,2.736111111111111,Very Bullish
+12,AUD/Import Prices q/q,USDCAD,-2.263888888888889,Bearish
+12,AUD/Import Prices q/q,AUDUSD,-0.7222222222222221,Neutral
+12,AUD/Import Prices q/q,NZDUSD,0.5972222222222221,Neutral
+12,AUD/Import Prices q/q,EURGBP,-0.4305555555555556,Neutral
+12,AUD/Import Prices q/q,EURJPY,-1.0416666666666665,Neutral
+12,AUD/Import Prices q/q,EURCHF,2.1527777777777777,Bullish
+12,AUD/Import Prices q/q,EURAUD,0.13888888888888884,Neutral
+12,AUD/Import Prices q/q,EURNZD,-1.1805555555555554,Bearish
+12,AUD/Import Prices q/q,EURCAD,-2.8472222222222223,Very Bearish
+12,AUD/Import Prices q/q,GBPJPY,-0.6111111111111109,Neutral
+12,AUD/Import Prices q/q,GBPCHF,2.5833333333333335,Very Bullish
+12,AUD/Import Prices q/q,GBPAUD,0.5694444444444444,Neutral
+12,AUD/Import Prices q/q,GBPNZD,-0.7499999999999998,Neutral
+12,AUD/Import Prices q/q,GBPCAD,-2.4166666666666665,Very Bearish
+12,AUD/Import Prices q/q,AUDJPY,-1.1805555555555554,Bearish
+12,AUD/Import Prices q/q,NZDJPY,0.13888888888888884,Neutral
+12,AUD/Import Prices q/q,CADJPY,1.8055555555555556,Bullish
+12,AUD/Import Prices q/q,CHFJPY,-3.1944444444444446,Very Bearish
+12,AUD/Import Prices q/q,AUDNZD,-1.3194444444444442,Bearish
+12,AUD/Import Prices q/q,AUDCAD,-2.986111111111111,Very Bearish
+12,AUD/Import Prices q/q,AUDCHF,2.013888888888889,Bullish
+12,AUD/Import Prices q/q,NZDCAD,-1.6666666666666667,Bearish
+12,AUD/Import Prices q/q,NZDCHF,3.333333333333333,Very Bullish
+12,AUD/Import Prices q/q,CADCHF,5.0,Very Bullish
+13,JPY/SPPI y/y,US-DOLLAR,0.75,Neutral
+13,JPY/SPPI y/y,EURUSD,-0.5833333333333333,Neutral
+13,JPY/SPPI y/y,GBPUSD,-0.15277777777777773,Neutral
+13,JPY/SPPI y/y,USDJPY,-0.45833333333333326,Neutral
+13,JPY/SPPI y/y,USDCHF,2.736111111111111,Very Bullish
+13,JPY/SPPI y/y,USDCAD,-2.263888888888889,Bearish
+13,JPY/SPPI y/y,AUDUSD,-0.7222222222222221,Neutral
+13,JPY/SPPI y/y,NZDUSD,0.5972222222222221,Neutral
+13,JPY/SPPI y/y,EURGBP,-0.4305555555555556,Neutral
+13,JPY/SPPI y/y,EURJPY,-1.0416666666666665,Neutral
+13,JPY/SPPI y/y,EURCHF,2.1527777777777777,Bullish
+13,JPY/SPPI y/y,EURAUD,0.13888888888888884,Neutral
+13,JPY/SPPI y/y,EURNZD,-1.1805555555555554,Bearish
+13,JPY/SPPI y/y,EURCAD,-2.8472222222222223,Very Bearish
+13,JPY/SPPI y/y,GBPJPY,-0.6111111111111109,Neutral
+13,JPY/SPPI y/y,GBPCHF,2.5833333333333335,Very Bullish
+13,JPY/SPPI y/y,GBPAUD,0.5694444444444444,Neutral
+13,JPY/SPPI y/y,GBPNZD,-0.7499999999999998,Neutral
+13,JPY/SPPI y/y,GBPCAD,-2.4166666666666665,Very Bearish
+13,JPY/SPPI y/y,AUDJPY,-1.1805555555555554,Bearish
+13,JPY/SPPI y/y,NZDJPY,0.13888888888888884,Neutral
+13,JPY/SPPI y/y,CADJPY,1.8055555555555556,Bullish
+13,JPY/SPPI y/y,CHFJPY,-3.1944444444444446,Very Bearish
+13,JPY/SPPI y/y,AUDNZD,-1.3194444444444442,Bearish
+13,JPY/SPPI y/y,AUDCAD,-2.986111111111111,Very Bearish
+13,JPY/SPPI y/y,AUDCHF,2.013888888888889,Bullish
+13,JPY/SPPI y/y,NZDCAD,-1.6666666666666667,Bearish
+13,JPY/SPPI y/y,NZDCHF,3.333333333333333,Very Bullish
+13,JPY/SPPI y/y,CADCHF,5.0,Very Bullish
+14,JPY/Prelim GDP Price Index y/y,US-DOLLAR,0.75,Neutral
+14,JPY/Prelim GDP Price Index y/y,EURUSD,-0.5833333333333333,Neutral
+14,JPY/Prelim GDP Price Index y/y,GBPUSD,-0.15277777777777773,Neutral
+14,JPY/Prelim GDP Price Index y/y,USDJPY,-0.6249999999999999,Neutral
+14,JPY/Prelim GDP Price Index y/y,USDCHF,2.736111111111111,Very Bullish
+14,JPY/Prelim GDP Price Index y/y,USDCAD,-2.263888888888889,Bearish
+14,JPY/Prelim GDP Price Index y/y,AUDUSD,-0.7222222222222221,Neutral
+14,JPY/Prelim GDP Price Index y/y,NZDUSD,0.5972222222222221,Neutral
+14,JPY/Prelim GDP Price Index y/y,EURGBP,-0.4305555555555556,Neutral
+14,JPY/Prelim GDP Price Index y/y,EURJPY,-1.2083333333333333,Bearish
+14,JPY/Prelim GDP Price Index y/y,EURCHF,2.1527777777777777,Bullish
+14,JPY/Prelim GDP Price Index y/y,EURAUD,0.13888888888888884,Neutral
+14,JPY/Prelim GDP Price Index y/y,EURNZD,-1.1805555555555554,Bearish
+14,JPY/Prelim GDP Price Index y/y,EURCAD,-2.8472222222222223,Very Bearish
+14,JPY/Prelim GDP Price Index y/y,GBPJPY,-0.7777777777777777,Neutral
+14,JPY/Prelim GDP Price Index y/y,GBPCHF,2.5833333333333335,Very Bullish
+14,JPY/Prelim GDP Price Index y/y,GBPAUD,0.5694444444444444,Neutral
+14,JPY/Prelim GDP Price Index y/y,GBPNZD,-0.7499999999999998,Neutral
+14,JPY/Prelim GDP Price Index y/y,GBPCAD,-2.4166666666666665,Very Bearish
+14,JPY/Prelim GDP Price Index y/y,AUDJPY,-1.347222222222222,Bearish
+14,JPY/Prelim GDP Price Index y/y,NZDJPY,-0.02777777777777779,Neutral
+14,JPY/Prelim GDP Price Index y/y,CADJPY,1.6388888888888888,Bullish
+14,JPY/Prelim GDP Price Index y/y,CHFJPY,-3.361111111111111,Very Bearish
+14,JPY/Prelim GDP Price Index y/y,AUDNZD,-1.3194444444444442,Bearish
+14,JPY/Prelim GDP Price Index y/y,AUDCAD,-2.986111111111111,Very Bearish
+14,JPY/Prelim GDP Price Index y/y,AUDCHF,2.013888888888889,Bullish
+14,JPY/Prelim GDP Price Index y/y,NZDCAD,-1.6666666666666667,Bearish
+14,JPY/Prelim GDP Price Index y/y,NZDCHF,3.333333333333333,Very Bullish
+14,JPY/Prelim GDP Price Index y/y,CADCHF,5.0,Very Bullish
+15,USD/Advance GDP Price Index q/q,US-DOLLAR,0.6944444444444443,Neutral
+15,USD/Advance GDP Price Index q/q,EURUSD,-0.5555555555555555,Neutral
+15,USD/Advance GDP Price Index q/q,GBPUSD,-0.12499999999999989,Neutral
+15,USD/Advance GDP Price Index q/q,USDJPY,-0.6527777777777777,Neutral
+15,USD/Advance GDP Price Index q/q,USDCHF,2.7083333333333335,Very Bullish
+15,USD/Advance GDP Price Index q/q,USDCAD,-2.2916666666666665,Bearish
+15,USD/Advance GDP Price Index q/q,AUDUSD,-0.6944444444444443,Neutral
+15,USD/Advance GDP Price Index q/q,NZDUSD,0.625,Neutral
+15,USD/Advance GDP Price Index q/q,EURGBP,-0.4305555555555556,Neutral
+15,USD/Advance GDP Price Index q/q,EURJPY,-1.2083333333333333,Bearish
+15,USD/Advance GDP Price Index q/q,EURCHF,2.1527777777777777,Bullish
+15,USD/Advance GDP Price Index q/q,EURAUD,0.13888888888888884,Neutral
+15,USD/Advance GDP Price Index q/q,EURNZD,-1.1805555555555554,Bearish
+15,USD/Advance GDP Price Index q/q,EURCAD,-2.8472222222222223,Very Bearish
+15,USD/Advance GDP Price Index q/q,GBPJPY,-0.7777777777777777,Neutral
+15,USD/Advance GDP Price Index q/q,GBPCHF,2.5833333333333335,Very Bullish
+15,USD/Advance GDP Price Index q/q,GBPAUD,0.5694444444444444,Neutral
+15,USD/Advance GDP Price Index q/q,GBPNZD,-0.7499999999999998,Neutral
+15,USD/Advance GDP Price Index q/q,GBPCAD,-2.4166666666666665,Very Bearish
+15,USD/Advance GDP Price Index q/q,AUDJPY,-1.347222222222222,Bearish
+15,USD/Advance GDP Price Index q/q,NZDJPY,-0.02777777777777779,Neutral
+15,USD/Advance GDP Price Index q/q,CADJPY,1.6388888888888888,Bullish
+15,USD/Advance GDP Price Index q/q,CHFJPY,-3.361111111111111,Very Bearish
+15,USD/Advance GDP Price Index q/q,AUDNZD,-1.3194444444444442,Bearish
+15,USD/Advance GDP Price Index q/q,AUDCAD,-2.986111111111111,Very Bearish
+15,USD/Advance GDP Price Index q/q,AUDCHF,2.013888888888889,Bullish
+15,USD/Advance GDP Price Index q/q,NZDCAD,-1.6666666666666667,Bearish
+15,USD/Advance GDP Price Index q/q,NZDCHF,3.333333333333333,Very Bullish
+15,USD/Advance GDP Price Index q/q,CADCHF,5.0,Very Bullish
+16,USD/Prelim Unit Labor Costs q/q,US-DOLLAR,0.6944444444444443,Neutral
+16,USD/Prelim Unit Labor Costs q/q,EURUSD,-0.5555555555555555,Neutral
+16,USD/Prelim Unit Labor Costs q/q,GBPUSD,-0.12499999999999989,Neutral
+16,USD/Prelim Unit Labor Costs q/q,USDJPY,-0.6527777777777777,Neutral
+16,USD/Prelim Unit Labor Costs q/q,USDCHF,2.7083333333333335,Very Bullish
+16,USD/Prelim Unit Labor Costs q/q,USDCAD,-2.2916666666666665,Bearish
+16,USD/Prelim Unit Labor Costs q/q,AUDUSD,-0.6944444444444443,Neutral
+16,USD/Prelim Unit Labor Costs q/q,NZDUSD,0.625,Neutral
+16,USD/Prelim Unit Labor Costs q/q,EURGBP,-0.4305555555555556,Neutral
+16,USD/Prelim Unit Labor Costs q/q,EURJPY,-1.2083333333333333,Bearish
+16,USD/Prelim Unit Labor Costs q/q,EURCHF,2.1527777777777777,Bullish
+16,USD/Prelim Unit Labor Costs q/q,EURAUD,0.13888888888888884,Neutral
+16,USD/Prelim Unit Labor Costs q/q,EURNZD,-1.1805555555555554,Bearish
+16,USD/Prelim Unit Labor Costs q/q,EURCAD,-2.8472222222222223,Very Bearish
+16,USD/Prelim Unit Labor Costs q/q,GBPJPY,-0.7777777777777777,Neutral
+16,USD/Prelim Unit Labor Costs q/q,GBPCHF,2.5833333333333335,Very Bullish
+16,USD/Prelim Unit Labor Costs q/q,GBPAUD,0.5694444444444444,Neutral
+16,USD/Prelim Unit Labor Costs q/q,GBPNZD,-0.7499999999999998,Neutral
+16,USD/Prelim Unit Labor Costs q/q,GBPCAD,-2.4166666666666665,Very Bearish
+16,USD/Prelim Unit Labor Costs q/q,AUDJPY,-1.347222222222222,Bearish
+16,USD/Prelim Unit Labor Costs q/q,NZDJPY,-0.02777777777777779,Neutral
+16,USD/Prelim Unit Labor Costs q/q,CADJPY,1.6388888888888888,Bullish
+16,USD/Prelim Unit Labor Costs q/q,CHFJPY,-3.361111111111111,Very Bearish
+16,USD/Prelim Unit Labor Costs q/q,AUDNZD,-1.3194444444444442,Bearish
+16,USD/Prelim Unit Labor Costs q/q,AUDCAD,-2.986111111111111,Very Bearish
+16,USD/Prelim Unit Labor Costs q/q,AUDCHF,2.013888888888889,Bullish
+16,USD/Prelim Unit Labor Costs q/q,NZDCAD,-1.6666666666666667,Bearish
+16,USD/Prelim Unit Labor Costs q/q,NZDCHF,3.333333333333333,Very Bullish
+16,USD/Prelim Unit Labor Costs q/q,CADCHF,5.0,Very Bullish
+17,JPY/Prelim Industrial Production m/m,US-DOLLAR,0.6944444444444443,Neutral
+17,JPY/Prelim Industrial Production m/m,EURUSD,-0.5555555555555555,Neutral
+17,JPY/Prelim Industrial Production m/m,GBPUSD,-0.12499999999999989,Neutral
+17,JPY/Prelim Industrial Production m/m,USDJPY,-0.5138888888888891,Neutral
+17,JPY/Prelim Industrial Production m/m,USDCHF,2.7083333333333335,Very Bullish
+17,JPY/Prelim Industrial Production m/m,USDCAD,-2.2916666666666665,Bearish
+17,JPY/Prelim Industrial Production m/m,AUDUSD,-0.6944444444444443,Neutral
+17,JPY/Prelim Industrial Production m/m,NZDUSD,0.625,Neutral
+17,JPY/Prelim Industrial Production m/m,EURGBP,-0.4305555555555556,Neutral
+17,JPY/Prelim Industrial Production m/m,EURJPY,-1.0694444444444446,Neutral
+17,JPY/Prelim Industrial Production m/m,EURCHF,2.1527777777777777,Bullish
+17,JPY/Prelim Industrial Production m/m,EURAUD,0.13888888888888884,Neutral
+17,JPY/Prelim Industrial Production m/m,EURNZD,-1.1805555555555554,Bearish
+17,JPY/Prelim Industrial Production m/m,EURCAD,-2.8472222222222223,Very Bearish
+17,JPY/Prelim Industrial Production m/m,GBPJPY,-0.6388888888888891,Neutral
+17,JPY/Prelim Industrial Production m/m,GBPCHF,2.5833333333333335,Very Bullish
+17,JPY/Prelim Industrial Production m/m,GBPAUD,0.5694444444444444,Neutral
+17,JPY/Prelim Industrial Production m/m,GBPNZD,-0.7499999999999998,Neutral
+17,JPY/Prelim Industrial Production m/m,GBPCAD,-2.4166666666666665,Very Bearish
+17,JPY/Prelim Industrial Production m/m,AUDJPY,-1.2083333333333335,Bearish
+17,JPY/Prelim Industrial Production m/m,NZDJPY,0.11111111111111083,Neutral
+17,JPY/Prelim Industrial Production m/m,CADJPY,1.7777777777777777,Bullish
+17,JPY/Prelim Industrial Production m/m,CHFJPY,-3.2222222222222223,Very Bearish
+17,JPY/Prelim Industrial Production m/m,AUDNZD,-1.3194444444444442,Bearish
+17,JPY/Prelim Industrial Production m/m,AUDCAD,-2.986111111111111,Very Bearish
+17,JPY/Prelim Industrial Production m/m,AUDCHF,2.013888888888889,Bullish
+17,JPY/Prelim Industrial Production m/m,NZDCAD,-1.6666666666666667,Bearish
+17,JPY/Prelim Industrial Production m/m,NZDCHF,3.333333333333333,Very Bullish
+17,JPY/Prelim Industrial Production m/m,CADCHF,5.0,Very Bullish

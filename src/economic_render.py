@@ -132,6 +132,19 @@ INDICATOR_LABELS = {
     "median_cpi_yoy": "Median CPI (y/y)",
     "trimmed_cpi_yoy": "Trimmed CPI (y/y)",
     "household_spending": "Household Spending (m/m)",
+    # Bucket-C candidates, approved 2026-08-01 (docs/bucket-c-merit-evaluation.md).
+    "tokyo_core_cpi_yoy": "Tokyo Core CPI (YoY)",
+    "industrial_production_mm": "Industrial Production (MoM)",
+    "durable_goods_orders_mm": "Durable Goods Orders (MoM)",
+    "core_machinery_orders_mm": "Core Machinery Orders (MoM)",
+    "personal_spending_mm": "Personal Spending (MoM)",
+    "personal_income_mm": "Personal Income (MoM)",
+    "import_prices": "Import Prices",
+    "capital_expenditure": "Capital Expenditure",
+    "company_operating_profits_qoq": "Company Operating Profits (QoQ)",
+    "sppi_yoy": "Services PPI (YoY)",
+    "gdp_price_index": "GDP Price Index",
+    "unit_labor_costs_qoq": "Unit Labor Costs (QoQ)",
 }
 
 CATEGORY_LABEL_FALLBACK = {
