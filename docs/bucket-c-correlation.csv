@@ -1,0 +1,100 @@
+category,currency,name_raw,existing_indicator,n_common_months,corr
+growth,AUD,Private Capital Expenditure q/q,gdp_qoq,1,
+growth,AUD,Private Capital Expenditure q/q,manufacturing_pmi,0,
+growth,AUD,Private Capital Expenditure q/q,retail_sales,12,-0.044
+growth,AUD,Private Capital Expenditure q/q,services_pmi,0,
+growth,AUD,Company Operating Profits q/q,gdp_qoq,11,0.095
+growth,AUD,Company Operating Profits q/q,manufacturing_pmi,0,
+growth,AUD,Company Operating Profits q/q,retail_sales,8,-0.11
+growth,AUD,Company Operating Profits q/q,services_pmi,0,
+growth,CAD,Trade Balance,gdp_qoq,24,-0.027
+growth,CAD,Trade Balance,manufacturing_pmi,2,
+growth,CAD,Trade Balance,retail_sales,40,0.22
+growth,CHF,Trade Balance,gdp_qoq,8,-0.078
+growth,CHF,Trade Balance,manufacturing_pmi,32,0.216
+growth,CHF,Trade Balance,retail_sales,27,0.233
+growth,GBP,Industrial Production m/m,gdp_qoq,31,0.531
+growth,GBP,Industrial Production m/m,manufacturing_pmi,39,0.168
+growth,GBP,Industrial Production m/m,retail_sales,40,-0.003
+growth,GBP,Industrial Production m/m,services_pmi,41,-0.346
+growth,JPY,Trade Balance,gdp_qoq,2,
+growth,JPY,Trade Balance,manufacturing_pmi,34,-0.049
+growth,JPY,Trade Balance,retail_sales,40,0.321
+growth,JPY,Prelim Industrial Production m/m,gdp_qoq,2,
+growth,JPY,Prelim Industrial Production m/m,manufacturing_pmi,33,-0.039
+growth,JPY,Prelim Industrial Production m/m,retail_sales,40,-0.006
+growth,JPY,Core Machinery Orders m/m,gdp_qoq,2,
+growth,JPY,Core Machinery Orders m/m,manufacturing_pmi,34,0.416
+growth,JPY,Core Machinery Orders m/m,retail_sales,40,0.099
+growth,JPY,Capital Spending q/y,gdp_qoq,1,
+growth,JPY,Capital Spending q/y,manufacturing_pmi,11,-0.421
+growth,JPY,Capital Spending q/y,retail_sales,13,-0.017
+growth,NZD,Trade Balance,gdp_qoq,13,-0.511
+growth,NZD,Trade Balance,manufacturing_pmi,0,
+growth,NZD,Trade Balance,retail_sales,13,0.0
+growth,NZD,Trade Balance,services_pmi,0,
+growth,USD,Trade Balance,gdp_qoq,12,0.489
+growth,USD,Trade Balance,manufacturing_pmi,40,-0.261
+growth,USD,Trade Balance,retail_sales,40,0.13
+growth,USD,Trade Balance,services_pmi,39,-0.043
+growth,USD,Durable Goods Orders m/m,gdp_qoq,12,-0.306
+growth,USD,Durable Goods Orders m/m,manufacturing_pmi,40,-0.156
+growth,USD,Durable Goods Orders m/m,retail_sales,40,-0.098
+growth,USD,Durable Goods Orders m/m,services_pmi,39,-0.084
+growth,USD,Personal Spending m/m,gdp_qoq,12,-0.197
+growth,USD,Personal Spending m/m,manufacturing_pmi,39,-0.216
+growth,USD,Personal Spending m/m,retail_sales,39,0.343
+growth,USD,Personal Spending m/m,services_pmi,38,0.22
+growth,USD,Personal Income m/m,gdp_qoq,11,-0.461
+growth,USD,Personal Income m/m,manufacturing_pmi,38,0.177
+growth,USD,Personal Income m/m,retail_sales,38,-0.165
+growth,USD,Personal Income m/m,services_pmi,37,0.069
+growth,USD,Industrial Production m/m,gdp_qoq,11,-0.068
+growth,USD,Industrial Production m/m,manufacturing_pmi,38,0.133
+growth,USD,Industrial Production m/m,retail_sales,38,-0.132
+growth,USD,Industrial Production m/m,services_pmi,37,0.143
+inflation,AUD,Import Prices q/q,core_cpi,10,0.407
+inflation,AUD,Import Prices q/q,cpi_yoy,15,0.34
+inflation,AUD,Import Prices q/q,ppi_yoy,11,-0.164
+inflation,GBP,RPI y/y,core_cpi,41,0.56
+inflation,GBP,RPI y/y,cpi_yoy,41,0.707
+inflation,GBP,RPI y/y,ppi_yoy,26,-0.142
+inflation,JPY,Tokyo Core CPI y/y,core_cpi,37,-0.044
+inflation,JPY,Tokyo Core CPI y/y,cpi_yoy,38,0.229
+inflation,JPY,SPPI y/y,core_cpi,40,-0.094
+inflation,JPY,SPPI y/y,cpi_yoy,41,0.054
+inflation,JPY,Prelim GDP Price Index y/y,core_cpi,14,-0.561
+inflation,JPY,Prelim GDP Price Index y/y,cpi_yoy,14,-0.457
+inflation,USD,Prelim UoM Inflation Expectations,core_cpi,37,-0.325
+inflation,USD,Prelim UoM Inflation Expectations,core_pce,36,0.247
+inflation,USD,Prelim UoM Inflation Expectations,cpi_yoy,40,-0.06
+inflation,USD,Prelim UoM Inflation Expectations,ppi_yoy,33,-0.361
+inflation,USD,Import Prices m/m,core_cpi,36,0.185
+inflation,USD,Import Prices m/m,core_pce,36,-0.131
+inflation,USD,Import Prices m/m,cpi_yoy,39,0.267
+inflation,USD,Import Prices m/m,ppi_yoy,32,0.479
+inflation,USD,Advance GDP Price Index q/q,core_cpi,12,0.144
+inflation,USD,Advance GDP Price Index q/q,core_pce,11,
+inflation,USD,Advance GDP Price Index q/q,cpi_yoy,13,0.185
+inflation,USD,Advance GDP Price Index q/q,ppi_yoy,10,-0.053
+labour,CAD,Labor Productivity q/q,employment_change,13,-0.042
+labour,CAD,Labor Productivity q/q,unemployment_rate,12,0.295
+labour,USD,Prelim Nonfarm Productivity q/q,adp,9,-0.655
+labour,USD,Prelim Nonfarm Productivity q/q,employment_change,14,0.023
+labour,USD,Prelim Nonfarm Productivity q/q,jobless_claims,14,-0.061
+labour,USD,Prelim Nonfarm Productivity q/q,jolts,9,-0.345
+labour,USD,Prelim Nonfarm Productivity q/q,unemployment_rate,14,0.152
+labour,USD,Prelim Nonfarm Productivity q/q,wage_growth,14,0.047
+labour,USD,Prelim Unit Labor Costs q/q,adp,9,0.507
+labour,USD,Prelim Unit Labor Costs q/q,employment_change,14,-0.239
+labour,USD,Prelim Unit Labor Costs q/q,jobless_claims,14,-0.157
+labour,USD,Prelim Unit Labor Costs q/q,jolts,9,0.322
+labour,USD,Prelim Unit Labor Costs q/q,unemployment_rate,14,0.134
+labour,USD,Prelim Unit Labor Costs q/q,wage_growth,14,0.059
+monetary,AUD,Private Sector Credit m/m,(none scored),0,
+monetary,GBP,M4 Money Supply m/m,(none scored),0,
+monetary,GBP,Net Lending to Individuals m/m,(none scored),0,
+monetary,GBP,MPC Official Bank Rate Votes,(none scored),0,
+monetary,JPY,Monetary Base y/y,(none scored),0,
+monetary,JPY,M2 Money Stock y/y,(none scored),0,
+monetary,JPY,Bank Lending y/y,(none scored),0,

@@ -1,0 +1,34 @@
+category,currency,name_raw,cadence,n,expected_gap_days,max_gap_days,big_gaps_count,zero_actual_count,zero_forecast_count,outlier_count_6mad
+growth,AUD,Private Capital Expenditure q/q,quarterly,14,91,98,0,3,1,1
+growth,AUD,Company Operating Profits q/q,quarterly,12,91,181,2,1,0,0
+growth,CAD,Trade Balance,monthly,43,30,65,2,2,0,0
+growth,CHF,Trade Balance,monthly,36,30,70,1,0,0,0
+growth,GBP,Industrial Production m/m,monthly,42,30,63,1,2,4,0
+growth,JPY,Trade Balance,monthly,45,30,68,1,3,1,0
+growth,JPY,Prelim Industrial Production m/m,monthly,42,30,91,1,4,0,0
+growth,JPY,Core Machinery Orders m/m,monthly,42,30,63,1,3,1,1
+growth,JPY,Capital Spending q/y,quarterly,13,91,183,1,2,0,0
+growth,NZD,Trade Balance,monthly,43,30,69,1,1,0,0
+growth,USD,Trade Balance,monthly,44,30,76,2,2,1,5
+growth,USD,Durable Goods Orders m/m,monthly,43,30,64,2,4,0,1
+growth,USD,Personal Spending m/m,monthly,42,30,70,2,3,1,0
+growth,USD,Personal Income m/m,monthly,41,30,70,3,3,1,2
+growth,USD,Industrial Production m/m,monthly,41,30,91,2,4,7,0
+inflation,AUD,Import Prices q/q,quarterly,17,91,97,0,3,1,0
+inflation,GBP,RPI y/y,monthly,43,30,61,1,1,1,7
+inflation,JPY,Tokyo Core CPI y/y,monthly,46,30,74,1,2,1,0
+inflation,JPY,SPPI y/y,monthly,42,30,60,1,1,1,1
+inflation,JPY,Prelim GDP Price Index y/y,quarterly,14,91,94,0,0,0,0
+inflation,USD,Prelim UoM Inflation Expectations,monthly,42,30,70,1,2,42,0
+inflation,USD,Import Prices m/m,monthly,41,30,78,2,5,2,0
+inflation,USD,Advance GDP Price Index q/q,quarterly,16,91,205,1,2,1,0
+labour,CAD,Labor Productivity q/q,quarterly,13,91,182,1,0,0,0
+labour,USD,Prelim Nonfarm Productivity q/q,quarterly,14,91,154,0,0,0,0
+labour,USD,Prelim Unit Labor Costs q/q,quarterly,14,91,154,0,0,1,0
+monetary,AUD,Private Sector Credit m/m,monthly,44,30,62,1,7,1,0
+monetary,GBP,M4 Money Supply m/m,monthly,45,30,36,0,5,2,0
+monetary,GBP,Net Lending to Individuals m/m,monthly,45,30,56,1,2,0,0
+monetary,GBP,MPC Official Bank Rate Votes,quarterly,15,91,364,1,6,6,0
+monetary,JPY,Monetary Base y/y,monthly,43,30,64,1,3,1,0
+monetary,JPY,M2 Money Stock y/y,monthly,42,30,66,1,2,1,0
+monetary,JPY,Bank Lending y/y,monthly,42,30,64,1,3,1,9
