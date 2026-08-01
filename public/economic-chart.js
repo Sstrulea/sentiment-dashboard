@@ -391,6 +391,34 @@
     return ' <span class="econ-flag flag-reduced" title="' + escAttr(tip) + '">' + used + "/" + total + "</span>";
   }
 
+  // N (coverage) per scored category (growth/inflation/labour — NOT monetary,
+  // which comes from the rate-expectations engine, not the calendar) for BOTH
+  // legs of an FX row. Surfaced ONLY as a tooltip on the existing symbol cell
+  // (zero new visible pixels, discreet per spec) — the dense table's 4 fixed
+  // columns per category never explain how many indicators actually fed
+  // score_precise (could be more than 4 since the bucket-C additions); this
+  // makes that count checkable inline, consistent with the drill-down's own
+  // "· n{coverage}" format (see legHtml). A single-type instrument (no quote
+  // leg) shows just the one currency.
+  function categoriesNTooltip(inst) {
+    const base = inst.breakdown && inst.breakdown.base;
+    if (!base) return "";
+    const quote = inst.breakdown && inst.breakdown.quote;
+    const baseCard = (state.payload.currencies || {})[base.currency];
+    const quoteCard = quote ? (state.payload.currencies || {})[quote.currency] : null;
+    const nOf = (card, cat) => (card && card.categories && card.categories[cat]
+      ? card.categories[cat].coverage : 0);
+    const lines = ["growth", "inflation", "labour"].map(cat => {
+      const label = catLabel(cat);
+      const baseN = base.currency + " N" + nOf(baseCard, cat);
+      if (quote) {
+        return label + ": " + baseN + " · " + quote.currency + " N" + nOf(quoteCard, cat);
+      }
+      return label + ": " + baseN;
+    });
+    return lines.join("\n");
+  }
+
   function renderRow(inst) {
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
     // Symbol / Bias / Score share one continuous gradient driven by the precise
@@ -398,7 +426,8 @@
     const sg = styleAttr(gradientStyle(inst.score, 6));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym"' + sg + ">" + (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
+      '<td class="sym"' + sg + ' title="' + escAttr(categoriesNTooltip(inst)) + '">' +
+      (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
       contribSumCellHtml(inst) +
@@ -732,6 +761,20 @@
     const ca = state.payload.crossasset || {};
     return ca.table_layout || [];
   }
+
+  // N (coverage) per scored category for a cross-asset instrument's SINGLE
+  // home currency — simpler than the FX version (categoriesNTooltip), no
+  // base/quote pair to reconcile. Same scope (growth/inflation/labour only).
+  function caCategoriesNTooltip(inst) {
+    const home = inst.home_ccy;
+    if (!home) return "";
+    const card = (state.payload.currencies || {})[home];
+    const nOf = cat => (card && card.categories && card.categories[cat]
+      ? card.categories[cat].coverage : 0);
+    return ["growth", "inflation", "labour"]
+      .map(cat => catLabel(cat) + ": " + home + " N" + nOf(cat))
+      .join("\n");
+  }
   function caFactor(inst, name) {
     return (inst.factors || []).find(f => f.name === name) || null;
   }
@@ -838,7 +881,8 @@
       layout.forEach(g => g.columns.forEach(c => { cells += caCellHtml(inst, c.key); }));
       return (
         '<tr data-ca-symbol="' + escAttr(inst.symbol) + '">' +
-        '<td class="sym biasfill ' + bcls + '">' + (inst.display || inst.symbol) + '</td>' +
+        '<td class="sym biasfill ' + bcls + '" title="' + escAttr(caCategoriesNTooltip(inst)) + '">' +
+        (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
         '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
         caTrendCellHtml(inst) + caCotCellHtml(inst) + cells + '</tr>'
