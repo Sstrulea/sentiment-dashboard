@@ -4,6 +4,17 @@ Status: **investigație + măsurare, zero cod, zero config scris**. Branch
 `fix/watchdog-per-instrument`, worktree `../macro-dev`. Adopția e decizie
 separată — acest document e livrabilul FAZA 2, nu o implementare.
 
+> **BLOCAT PENTRU ADOPȚIE până ~2026-08-04.** Testul falsificabil (§ mai
+> jos) nu s-a putut executa — printul CHF CPI următor nu a apărut încă.
+> Scenariul combinat mișcă biasul a 4 perechi (toate cu picior USD sau CHF),
+> dar 4 din cele 14 serii (29%) rămân neverificate prin discriminatorul
+> `data/jb_raw/` — inclusiv CHF `cpi_yoy`, seria cea mai gravă (13/45,
+> 28.9%) și singura pentru care testul falsificabil oferă o verificare
+> directă, pe date, nu pe presupunere. O decizie de adopție luată acum ar
+> însemna 4 flip-uri de bias acceptate cu aproape o treime din serii
+> neverificate. Așteaptă până printul de ~4 august confirmă sau infirmă
+> comportamentul de ingest pe un caz real, live — apoi reevaluează.
+
 ## Recapitulare — problema
 
 `can_be_zero` (`data/economic_indicators.yaml`) e un flag pe DEFINIȚIA
@@ -209,6 +220,26 @@ per-valută ar fi acceptat un placeholder netratat. Nu e o garanție pentru
 restul de 4 serii neverificabile (CHF cpi_yoy, CHF gdp_qoq, CAD gdp_qoq,
 CAD ppi_yoy — în afara ferestrei `jb_raw`) — risc rezidual necuantificabil
 cu datele disponibile azi.
+
+### Verificare suplimentară — istoricul git al `data/jb_raw/`, nu doar directorul curent
+
+Fișierele `jb_raw` se rotesc (`RAW_KEEP=14`), dar cele scoase din director
+rămân recuperabile din istoricul git — directorul a intrat în git la commit
+`cd8eb3f` (2026-07-29, "Mac ramane doar sursa de pret"). Verificat exhaustiv,
+toate commit-urile care ating `data/jb_raw/`: **15 payload-uri distincte au
+existat vreodată în git**, acoperind împreună **2026-07-09 → 2026-07-31** —
+cu 2 zile mai devreme decât fereastra curentă din director (care pornea de
+la 07-13/07-16), recuperate din arborele commit-ului `cd8eb3f` însuși
+(`jb_range_2026-07-16T062108Z.json`, `jb_range_2026-07-17T055905Z.json`).
+
+**Nu schimbă concluzia**: niciuna din cele 4 serii neverificabile nu are un
+rând `0.0` semnalat în inventar care să cadă în fereastra extinsă
+(07-09→07-31). Cel mai apropiat: CHF `cpi_yoy` pe 2026-07-02 — tot cu ~7
+zile în afara marginii de jos (07-09). CHF `gdp_qoq` (ultimul zero
+2026-02-25), CAD `gdp_qoq` (2026-01-30) și CAD `ppi_yoy` (2026-02-20) sunt
+cu luni în afara oricărei ferestre recuperabile din git. **Cele 4 rămân
+neverificabile — confirmat exhaustiv pe tot istoricul git disponibil, nu
+doar pe directorul curent, nu doar presupus.**
 
 ## 5. Criterii de acceptare pre-înregistrate
 
