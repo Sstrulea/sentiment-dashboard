@@ -27,10 +27,16 @@ from src.calendar_freshness_guard import (  # noqa: E402
     currency_freshness_report,
     check_pending_actuals_in_jb_raw,
 )
+from src.alert_exceptions import (  # noqa: E402
+    load_exceptions,
+    classify_stale_rows,
+    find_orphaned_exceptions,
+)
 
 FF_PARQUET = ROOT / "data" / "economic_calendar_ff.parquet"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 JB_RAW_DIR = ROOT / "data" / "jb_raw"
+ALERT_EXCEPTIONS_YAML = ROOT / "config" / "alert_exceptions.yaml"
 
 CCY2COUNTRY = {"USD": "United States", "EUR": "European Union", "GBP": "United Kingdom",
               "JPY": "Japan", "AUD": "Australia", "NZD": "New Zealand",
@@ -83,12 +89,36 @@ def main() -> int:
         jb_check = check_pending_actuals_in_jb_raw(
             JB_RAW_DIR, parse_jblanked_range, build_matcher, stale_rows, parquet_last_dates)
 
+    exceptions = load_exceptions(ALERT_EXCEPTIONS_YAML)
+    stale_row_list = stale_rows.to_dict("records")
+    classified = classify_stale_rows(stale_row_list, exceptions, as_of, scope="calendar")
+    classified_by_key = {(c["currency"], c["indicator_key"]): c for c in classified}
+
+    any_gate_alert = False
     for ccy in report["stale_currencies"]:
         for ind in report["by_currency"][ccy]["stale_indicators"]:
             key = (ccy, ind["indicator_key"])
             extra = jb_check.get(key, {"status": "not_checked (no jb_raw payloads)"})
+            c = classified_by_key[key]
             print(f"  {ccy} {ind['indicator_key']}: last={ind['last_date']} "
                  f"age={ind['age_days']}d (threshold {ind['threshold_days']}d) -- {extra}")
+            if c["exception_note"]:
+                print(f"    {c['exception_note']}")
+            if c["gate"] == "alert":
+                any_gate_alert = True
+
+    orphans = find_orphaned_exceptions(stale_row_list, exceptions, scope="calendar")
+    if orphans:
+        print()
+        print(f"NOTE: {len(orphans)} exception(s) in {ALERT_EXCEPTIONS_YAML.name} no longer "
+             f"apply (series not currently stale) — REMOVABLE, review before it masks a recurrence:")
+        for exc in orphans:
+            print(f"  {exc['currency']} {exc['indicator']} (review_by was {exc['review_by']})")
+
+    if not any_gate_alert:
+        print()
+        print("OK — all stale series are covered by an active exception.")
+        return 0
 
     print("FAIL")
     return 1

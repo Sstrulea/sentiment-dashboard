@@ -1,0 +1,57 @@
+# Freshness-alert exceptions (docs/proposal-alert-suppression.md, Option A).
+#
+# Suppresses a KNOWN, documented, currently-unfixed staleness from the
+# exit-1 gate — never silently forever: `review_by` is ENFORCED (checked
+# against as_of on every run, not just recorded). Past `review_by`, the
+# exception is treated as EXPIRED — the alert returns, loudly, with the
+# expiry date in the message, distinct from a brand-new defect.
+#
+# Scoped strictly to (currency, indicator) — an exception here can NEVER
+# suppress a different series. A newly-stale series, or a different
+# indicator on the SAME currency, always alerts independently of any
+# exception listed below.
+#
+# `review_by` is chosen from each series' own next-expected-publication
+# date, not arbitrarily — see the reasoning in each entry's comment.
+
+exceptions:
+  - scope: calendar
+    currency: AUD
+    indicator: core_cpi
+    reason: >
+      ABS moved AUD CPI to monthly cadence; the mapped canonical
+      (RBA Trimmed Mean CPI y/y, quarterly) has been dead since 2025-10-29
+      and will never print again under that name/cadence. Fixing this
+      needs a taxonomy decision (repoint to a monthly replacement,
+      mirroring the CAD Core CPI -> Median CPI y/y promotion) — not
+      something that resolves by waiting.
+    doc: docs/faza1-watchdog-per-instrument-implementation.md
+    # review_by: AUD's monthly "Monthly Trimmed Mean CPI m/m" (the most
+    # plausible replacement canonical) had its FIRST print ever on
+    # 2026-07-29 (n=1 — too thin to evaluate a promotion yet). ABS's own
+    # monthly cadence puts the SECOND print at ~2026-08-29. review_by gives
+    # a few days' buffer past that for the actuals pull to land, so by this
+    # date there are 2 real prints to judge whether a promotion proposal
+    # (like CAD's) is even viable — not an arbitrary "check back in a month".
+    review_by: "2026-09-01"
+
+  - scope: calendar
+    currency: USD
+    indicator: core_cpi
+    reason: >
+      JBlanked delivers a native "Core CPI y/y" event (real y/y level) as
+      a SEPARATE, unmapped raw name (config/ff_aliases.yaml has no identity
+      alias for it) — silently dropped as unmapped. The row that IS mapped
+      ("Core CPI m/m", aliased with an xf transform) came in as actual=0.0
+      on 2026-07-14, itself flagged "Bad Data" by JBlanked, and was
+      correctly zero-quarantined to NaN by scoring — leaving no valid
+      actual for July at all despite a real 2.6 sitting unused in the same
+      feed under a different raw name.
+    doc: docs/calendar-freshness-per-currency.md
+    # review_by: USD Core CPI publishes monthly, median 30-day gap; last
+    # (defective) print 2026-07-14 -> next expected ~2026-08-13. review_by
+    # gives about a week past that for the daily actuals pull to have run,
+    # so by this date there's a second live data point confirming whether
+    # the native-y/y-unmapped + m/m-zero-quarantine pattern recurs (making
+    # the case for an alias fix stronger) or was a one-off.
+    review_by: "2026-08-20"

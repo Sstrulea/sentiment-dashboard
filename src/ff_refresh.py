@@ -79,6 +79,20 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
     existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
     n_before = 0 if existing is None else len(existing)
 
+    # Archive the raw weekly SCHEDULE payload (data/ff_raw/) — additive,
+    # fully decoupled from the merge/quarantine path below (own independent
+    # fetch, own try/except). A failure here never affects `refresh()`'s
+    # return value or the anti-degradation contract.
+    if cfg.get("archive_ff_weekly", True):
+        try:
+            from .ff_raw_archive import fetch_and_archive_weekly
+            arch = fetch_and_archive_weekly(url, now_utc=now_utc)
+            if arch["status"] == "saved":
+                log.info("FF weekly raw archive: saved %s (rotated out %d).",
+                         arch["path"], len(arch.get("rotated_out", [])))
+        except Exception as e:  # noqa: BLE001 — advisory; never break the refresh
+            log.warning("FF weekly raw archive skipped (%s).", str(e)[:80])
+
     # --- fetch + parse (graceful) ---
     try:
         weekly = parse_ff_weekly(url, now_utc=now_utc)
