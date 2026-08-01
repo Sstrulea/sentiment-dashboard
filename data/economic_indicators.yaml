@@ -274,6 +274,99 @@ indicators:
     weight: 0.0
     frequency: monthly
 
+  # --- Bucket-C candidates, approved 2026-08-01 (all 17) — see
+  # docs/bucket-c-merit-evaluation.md (merit, FAZA 1),
+  # docs/bucket-c-impact-measurement.md (single-date impact, FAZA 2),
+  # docs/bucket-c-panel-measurement.md (counterfactual frequency panel).
+  # Direction is +1 for all 17 (every one was rated "clear, higher=bullish"
+  # in FAZA 1 — none of the direction-ambiguous FAZA-1 "intreaba" candidates
+  # are here). Scored (weight 1.0, real category), not display-only.
+  tokyo_core_cpi_yoy:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+    currencies: [JPY]
+    frequency: monthly
+  industrial_production_mm:            # USD/GBP headline + JPY flash (Prelim)
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [USD, GBP, JPY]
+    frequency: monthly
+  durable_goods_orders_mm:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+    frequency: monthly
+  core_machinery_orders_mm:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [JPY]
+    frequency: monthly
+  personal_spending_mm:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+    frequency: monthly
+  personal_income_mm:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+    frequency: monthly
+  import_prices:                       # USD m/m + AUD q/q
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+    currencies: [USD, AUD]
+    frequency: monthly
+    frequency_overrides: { AUD: quarterly }
+  capital_expenditure:                 # AUD Private Capex q/q + JPY Capital Spending q/y
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [AUD, JPY]
+    frequency: quarterly
+  company_operating_profits_qoq:
+    pillar: growth
+    category: growth
+    direction: 1
+    weight: 1.0
+    currencies: [AUD]
+    frequency: quarterly
+  sppi_yoy:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+    currencies: [JPY]
+    frequency: monthly
+  gdp_price_index:                     # JPY Prelim y/y + USD Advance q/q (flash-scored)
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+    currencies: [USD, JPY]
+    frequency: quarterly
+  unit_labor_costs_qoq:
+    pillar: labour
+    category: labour
+    direction: 1
+    weight: 1.0
+    currencies: [USD]
+    frequency: quarterly
+
 # ---------------------------------------------------------------------------
 # Matcher: MT5 economic-calendar `event` string -> indicator_key, keyed by the
 # MT5 `country` field. Reconciled against REAL event names observed in
@@ -313,6 +406,14 @@ matcher:
     - { pattern: '^JOLTS Job Openings$',            indicator: jolts }
     - { pattern: '^Initial Jobless Claims$',        indicator: jobless_claims }
     - { pattern: '^Fed Interest Rate Decision$',    indicator: interest_rate_decision }
+    # Bucket-C candidates, approved 2026-08-01.
+    - { pattern: '^Industrial Production m/m$',     indicator: industrial_production_mm }
+    - { pattern: '^Durable Goods Orders m/m$',      indicator: durable_goods_orders_mm }
+    - { pattern: '^Personal Spending m/m$',         indicator: personal_spending_mm }
+    - { pattern: '^Personal Income m/m$',           indicator: personal_income_mm }
+    - { pattern: '^Import Prices m/m$',             indicator: import_prices }
+    - { pattern: '^Advance GDP Price Index q/q$',   indicator: gdp_price_index }
+    - { pattern: '^Prelim Unit Labor Costs q/q$',   indicator: unit_labor_costs_qoq }
 
   European Union:
     - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
@@ -342,6 +443,8 @@ matcher:
     - { pattern: '^Unemployment Rate$',                     indicator: unemployment_rate }
     - { pattern: '^Average Weekly Earnings, Total Pay y/y$', indicator: wage_growth }
     - { pattern: '^BoE Interest Rate Decision$',            indicator: interest_rate_decision }
+    # Bucket-C candidate, approved 2026-08-01.
+    - { pattern: '^Industrial Production m/m$',             indicator: industrial_production_mm }
 
   Japan:
     - { pattern: '^Core CPI y/y$',                  indicator: core_cpi }
@@ -353,6 +456,13 @@ matcher:
     - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
     - { pattern: '^Labor Cash Earnings y/y$',       indicator: wage_growth }
     - { pattern: '^BoJ Interest Rate Decision$',    indicator: interest_rate_decision }
+    # Bucket-C candidates, approved 2026-08-01.
+    - { pattern: '^Tokyo Core CPI y/y$',            indicator: tokyo_core_cpi_yoy }
+    - { pattern: '^Core Machinery Orders m/m$',     indicator: core_machinery_orders_mm }
+    - { pattern: '^Capital Spending q/y$',          indicator: capital_expenditure }
+    - { pattern: '^SPPI y/y$',                      indicator: sppi_yoy }
+    - { pattern: '^Prelim GDP Price Index y/y$',    indicator: gdp_price_index }
+    - { pattern: '^Prelim Industrial Production m/m$', indicator: industrial_production_mm }
 
   Australia:
     - { pattern: '^RBA Trimmed Mean CPI y/y$',      indicator: core_cpi }
@@ -378,6 +488,10 @@ matcher:
     # growth_display); that rule is REMOVED here, not left alongside this
     # one, so a future live print can only ever go to ONE indicator.
     - { pattern: '^Household Spending m/m$',         indicator: retail_sales }
+    # Bucket-C candidates, approved 2026-08-01.
+    - { pattern: '^Private Capital Expenditure q/q$', indicator: capital_expenditure }
+    - { pattern: '^Company Operating Profits q/q$',  indicator: company_operating_profits_qoq }
+    - { pattern: '^Import Prices q/q$',               indicator: import_prices }
 
   New Zealand:
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }

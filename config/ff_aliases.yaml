@@ -31,6 +31,17 @@ aliases:
     "JOLTS Job Openings": "JOLTS Job Openings"
     "Unemployment Claims": "Initial Jobless Claims"
     "Federal Funds Rate": "Fed Interest Rate Decision"
+    # NEW canonicals, bucket-C candidates approved 2026-08-01 (see
+    # docs/bucket-c-merit-evaluation.md, docs/bucket-c-panel-measurement.md)
+    # — identity aliases (no MT5-era name to reuse), same convention as
+    # CAD/AUD's native FF canonicals below.
+    "Industrial Production m/m": "Industrial Production m/m"
+    "Durable Goods Orders m/m": "Durable Goods Orders m/m"
+    "Personal Spending m/m": "Personal Spending m/m"
+    "Personal Income m/m": "Personal Income m/m"
+    "Import Prices m/m": "Import Prices m/m"
+    "Advance GDP Price Index q/q": "Advance GDP Price Index q/q"
+    "Prelim Unit Labor Costs q/q": "Prelim Unit Labor Costs q/q"
   EUR:
     "CPI Flash Estimate y/y": "CPI y/y"                  # FLASH scored
     "Core CPI Flash Estimate y/y": "Core CPI y/y"        # FLASH scored
@@ -54,6 +65,8 @@ aliases:
     "Unemployment Rate": "Unemployment Rate"
     "Average Earnings Index 3m/y": "Average Weekly Earnings, Total Pay y/y"
     "Official Bank Rate": "BoE Interest Rate Decision"
+    # NEW canonical, bucket-C candidate approved 2026-08-01.
+    "Industrial Production m/m": "Industrial Production m/m"
   JPY:
     "National Core CPI y/y": "CPI y/y"
     "BOJ Core CPI y/y": "Core CPI y/y"
@@ -64,6 +77,13 @@ aliases:
     "Unemployment Rate": "Unemployment Rate"
     "Average Cash Earnings y/y": "Labor Cash Earnings y/y"
     "BOJ Policy Rate": "BoJ Interest Rate Decision"
+    # NEW canonicals, bucket-C candidates approved 2026-08-01.
+    "Tokyo Core CPI y/y": "Tokyo Core CPI y/y"
+    "Core Machinery Orders m/m": "Core Machinery Orders m/m"
+    "Capital Spending q/y": "Capital Spending q/y"
+    "SPPI y/y": "SPPI y/y"
+    "Prelim GDP Price Index y/y": "Prelim GDP Price Index y/y"
+    "Prelim Industrial Production m/m": "Prelim Industrial Production m/m"
   AUD:
     "CPI y/y": "CPI y/y"
     "Trimmed Mean CPI q/q": "RBA Trimmed Mean CPI y/y"   # xf
@@ -97,6 +117,10 @@ aliases:
     "Unemployment Rate": "Unemployment Rate"
     "Wage Price Index q/q": "Wage Price Index y/y"       # xf
     "Cash Rate": "RBA Interest Rate Decision"
+    # NEW canonicals, bucket-C candidates approved 2026-08-01.
+    "Private Capital Expenditure q/q": "Private Capital Expenditure q/q"
+    "Company Operating Profits q/q": "Company Operating Profits q/q"
+    "Import Prices q/q": "Import Prices q/q"
   NZD:
     "CPI q/q": "CPI y/y"                                 # xf (NZ CPI is quarterly)
     "PPI Output q/q": "PPI Output q/q"
