@@ -86,7 +86,7 @@ def _write_existing(tmp_path):
 def test_guard_fetch_failed_keeps_last_good(tmp_path, monkeypatch):
     p = _write_existing(tmp_path)
     monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("HTTP 500")))
-    rep = R.refresh(now_utc=NOW, cfg={"run_fred_crosscheck": False}, parquet_path=p)
+    rep = R.refresh(now_utc=NOW, cfg={"run_fred_crosscheck": False, "archive_ff_weekly": False}, parquet_path=p)
     assert rep["status"] == "fetch_failed"
     assert len(pd.read_parquet(p)) == 1                        # unchanged
 
@@ -94,7 +94,7 @@ def test_guard_fetch_failed_keeps_last_good(tmp_path, monkeypatch):
 def test_guard_empty_payload_quarantines(tmp_path, monkeypatch):
     p = _write_existing(tmp_path)
     monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _frame([]))
-    rep = R.refresh(now_utc=NOW, cfg={"run_fred_crosscheck": False}, parquet_path=p)
+    rep = R.refresh(now_utc=NOW, cfg={"run_fred_crosscheck": False, "archive_ff_weekly": False}, parquet_path=p)
     assert rep["status"] == "empty"
     assert len(pd.read_parquet(p)) == 1
 
@@ -104,7 +104,7 @@ def test_guard_thin_payload_quarantines(tmp_path, monkeypatch):
     thin = _frame([_canon_row("usd_cpi", "USD", "2026-07-06", 1.0),
                    _canon_row("eur_cpi", "EUR", "2026-07-06", 1.0)])   # only 2 ccy < 4
     monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: thin)
-    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False}, parquet_path=p)
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False, "archive_ff_weekly": False}, parquet_path=p)
     assert rep["status"] == "thin"
     assert len(pd.read_parquet(p)) == 1
 
@@ -112,7 +112,7 @@ def test_guard_thin_payload_quarantines(tmp_path, monkeypatch):
 def test_good_payload_merges(tmp_path, monkeypatch):
     p = _write_existing(tmp_path)
     monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
-    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False}, parquet_path=p)
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False, "archive_ff_weekly": False}, parquet_path=p)
     assert rep["status"] == "ok"
     assert len(pd.read_parquet(p)) == 6                        # 1 existing + 5 new
 
@@ -128,7 +128,7 @@ def test_guard_mass_row_failures_quarantines_and_keeps_last_good(tmp_path, monke
     monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: weekly)
     import src.econ_calendar_ff as E
     monkeypatch.setattr(E, "ff_row_failures", lambda: {"USD/x": 10})   # 10 > 5 mapped
-    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False}, parquet_path=p)
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False, "archive_ff_weekly": False}, parquet_path=p)
     assert rep["status"] == "degraded"
     assert len(pd.read_parquet(p)) == 1                        # unchanged
 
@@ -139,7 +139,7 @@ def test_guard_few_row_failures_does_not_quarantine(tmp_path, monkeypatch):
     monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: weekly)
     import src.econ_calendar_ff as E
     monkeypatch.setattr(E, "ff_row_failures", lambda: {"USD/x": 1})    # 1 < 5 mapped
-    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False}, parquet_path=p)
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False, "archive_ff_weekly": False}, parquet_path=p)
     assert rep["status"] == "ok"
     assert len(pd.read_parquet(p)) == 6
 
@@ -181,3 +181,34 @@ def test_crosscheck_quarantines_only_mismatch():
                         "value": [100 * (1.01 ** (i / 12)) for i in range(13)]})
     q2 = crosscheck_us(ff, fetcher=lambda sid: bad)
     assert len(q2) == 1 and q2.iloc[0]["indicator_key"] == "cpi_yoy"
+
+
+# --- FAZA 2 (fix/alert-noise-and-ff-archive): raw weekly archive hook -------
+
+def test_archive_hook_fires_when_enabled(tmp_path, monkeypatch):
+    """Wiring check only (no network): archive_ff_weekly=True must call
+    fetch_and_archive_weekly exactly once, with the configured URL."""
+    p = _write_existing(tmp_path)
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
+    calls = []
+    import src.ff_raw_archive as A
+    monkeypatch.setattr(A, "fetch_and_archive_weekly",
+                        lambda url, **k: calls.append(url) or {"status": "saved", "path": "x", "rotated_out": []})
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False,
+                                      "archive_ff_weekly": True}, parquet_path=p)
+    assert rep["status"] == "ok"
+    assert len(calls) == 1
+
+
+def test_archive_hook_failure_never_breaks_refresh(tmp_path, monkeypatch):
+    """The archive call raising must not affect refresh()'s own report or
+    the merge — mirrors the FRED cross-check block's own fail-open shape."""
+    p = _write_existing(tmp_path)
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
+    import src.ff_raw_archive as A
+    monkeypatch.setattr(A, "fetch_and_archive_weekly",
+                        lambda url, **k: (_ for _ in ()).throw(RuntimeError("network down")))
+    rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False,
+                                      "archive_ff_weekly": True}, parquet_path=p)
+    assert rep["status"] == "ok"
+    assert len(pd.read_parquet(p)) == 6
