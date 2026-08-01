@@ -1,0 +1,433 @@
+step,added,currency,category,score_precise,n
+0,(baseline),EUR,growth,-0.25,4
+0,(baseline),EUR,inflation,-1.0,3
+0,(baseline),EUR,labour,1.0,2
+0,(baseline),CHF,growth,0.6666666666666666,3
+0,(baseline),CHF,inflation,-1.5,2
+0,(baseline),CHF,labour,-2.0,1
+0,(baseline),AUD,growth,-0.5,2
+0,(baseline),AUD,inflation,-1.0,2
+0,(baseline),AUD,labour,0.0,3
+0,(baseline),CAD,growth,1.0,2
+0,(baseline),CAD,inflation,0.6666666666666666,3
+0,(baseline),CAD,labour,1.5,2
+0,(baseline),USD,growth,0.25,4
+0,(baseline),USD,inflation,0.0,4
+0,(baseline),USD,labour,0.0,6
+0,(baseline),GBP,growth,-0.5,4
+0,(baseline),GBP,inflation,-0.3333333333333333,3
+0,(baseline),GBP,labour,1.0,3
+0,(baseline),NZD,growth,0.0,2
+0,(baseline),NZD,inflation,0.5,2
+0,(baseline),NZD,labour,0.6666666666666666,3
+0,(baseline),JPY,growth,1.3333333333333333,3
+0,(baseline),JPY,inflation,0.0,2
+0,(baseline),JPY,labour,0.0,2
+1,JPY/Tokyo Core CPI y/y,EUR,growth,-0.25,4
+1,JPY/Tokyo Core CPI y/y,EUR,inflation,-1.0,3
+1,JPY/Tokyo Core CPI y/y,EUR,labour,1.0,2
+1,JPY/Tokyo Core CPI y/y,CHF,growth,0.6666666666666666,3
+1,JPY/Tokyo Core CPI y/y,CHF,inflation,-1.5,2
+1,JPY/Tokyo Core CPI y/y,CHF,labour,-2.0,1
+1,JPY/Tokyo Core CPI y/y,AUD,growth,-0.5,2
+1,JPY/Tokyo Core CPI y/y,AUD,inflation,-1.0,2
+1,JPY/Tokyo Core CPI y/y,AUD,labour,0.0,3
+1,JPY/Tokyo Core CPI y/y,CAD,growth,1.0,2
+1,JPY/Tokyo Core CPI y/y,CAD,inflation,0.6666666666666666,3
+1,JPY/Tokyo Core CPI y/y,CAD,labour,1.5,2
+1,JPY/Tokyo Core CPI y/y,USD,growth,0.25,4
+1,JPY/Tokyo Core CPI y/y,USD,inflation,0.0,4
+1,JPY/Tokyo Core CPI y/y,USD,labour,0.0,6
+1,JPY/Tokyo Core CPI y/y,GBP,growth,-0.5,4
+1,JPY/Tokyo Core CPI y/y,GBP,inflation,-0.3333333333333333,3
+1,JPY/Tokyo Core CPI y/y,GBP,labour,1.0,3
+1,JPY/Tokyo Core CPI y/y,NZD,growth,0.0,2
+1,JPY/Tokyo Core CPI y/y,NZD,inflation,0.5,2
+1,JPY/Tokyo Core CPI y/y,NZD,labour,0.6666666666666666,3
+1,JPY/Tokyo Core CPI y/y,JPY,growth,1.3333333333333333,3
+1,JPY/Tokyo Core CPI y/y,JPY,inflation,0.0,3
+1,JPY/Tokyo Core CPI y/y,JPY,labour,0.0,2
+2,GBP/Industrial Production m/m,EUR,growth,-0.25,4
+2,GBP/Industrial Production m/m,EUR,inflation,-1.0,3
+2,GBP/Industrial Production m/m,EUR,labour,1.0,2
+2,GBP/Industrial Production m/m,CHF,growth,0.6666666666666666,3
+2,GBP/Industrial Production m/m,CHF,inflation,-1.5,2
+2,GBP/Industrial Production m/m,CHF,labour,-2.0,1
+2,GBP/Industrial Production m/m,AUD,growth,-0.5,2
+2,GBP/Industrial Production m/m,AUD,inflation,-1.0,2
+2,GBP/Industrial Production m/m,AUD,labour,0.0,3
+2,GBP/Industrial Production m/m,CAD,growth,1.0,2
+2,GBP/Industrial Production m/m,CAD,inflation,0.6666666666666666,3
+2,GBP/Industrial Production m/m,CAD,labour,1.5,2
+2,GBP/Industrial Production m/m,USD,growth,0.25,4
+2,GBP/Industrial Production m/m,USD,inflation,0.0,4
+2,GBP/Industrial Production m/m,USD,labour,0.0,6
+2,GBP/Industrial Production m/m,GBP,growth,-0.4,5
+2,GBP/Industrial Production m/m,GBP,inflation,-0.3333333333333333,3
+2,GBP/Industrial Production m/m,GBP,labour,1.0,3
+2,GBP/Industrial Production m/m,NZD,growth,0.0,2
+2,GBP/Industrial Production m/m,NZD,inflation,0.5,2
+2,GBP/Industrial Production m/m,NZD,labour,0.6666666666666666,3
+2,GBP/Industrial Production m/m,JPY,growth,1.3333333333333333,3
+2,GBP/Industrial Production m/m,JPY,inflation,0.0,3
+2,GBP/Industrial Production m/m,JPY,labour,0.0,2
+3,USD/Industrial Production m/m,EUR,growth,-0.25,4
+3,USD/Industrial Production m/m,EUR,inflation,-1.0,3
+3,USD/Industrial Production m/m,EUR,labour,1.0,2
+3,USD/Industrial Production m/m,CHF,growth,0.6666666666666666,3
+3,USD/Industrial Production m/m,CHF,inflation,-1.5,2
+3,USD/Industrial Production m/m,CHF,labour,-2.0,1
+3,USD/Industrial Production m/m,AUD,growth,-0.5,2
+3,USD/Industrial Production m/m,AUD,inflation,-1.0,2
+3,USD/Industrial Production m/m,AUD,labour,0.0,3
+3,USD/Industrial Production m/m,CAD,growth,1.0,2
+3,USD/Industrial Production m/m,CAD,inflation,0.6666666666666666,3
+3,USD/Industrial Production m/m,CAD,labour,1.5,2
+3,USD/Industrial Production m/m,USD,growth,0.2,5
+3,USD/Industrial Production m/m,USD,inflation,0.0,4
+3,USD/Industrial Production m/m,USD,labour,0.0,6
+3,USD/Industrial Production m/m,GBP,growth,-0.4,5
+3,USD/Industrial Production m/m,GBP,inflation,-0.3333333333333333,3
+3,USD/Industrial Production m/m,GBP,labour,1.0,3
+3,USD/Industrial Production m/m,NZD,growth,0.0,2
+3,USD/Industrial Production m/m,NZD,inflation,0.5,2
+3,USD/Industrial Production m/m,NZD,labour,0.6666666666666666,3
+3,USD/Industrial Production m/m,JPY,growth,1.3333333333333333,3
+3,USD/Industrial Production m/m,JPY,inflation,0.0,3
+3,USD/Industrial Production m/m,JPY,labour,0.0,2
+4,USD/Durable Goods Orders m/m,EUR,growth,-0.25,4
+4,USD/Durable Goods Orders m/m,EUR,inflation,-1.0,3
+4,USD/Durable Goods Orders m/m,EUR,labour,1.0,2
+4,USD/Durable Goods Orders m/m,CHF,growth,0.6666666666666666,3
+4,USD/Durable Goods Orders m/m,CHF,inflation,-1.5,2
+4,USD/Durable Goods Orders m/m,CHF,labour,-2.0,1
+4,USD/Durable Goods Orders m/m,AUD,growth,-0.5,2
+4,USD/Durable Goods Orders m/m,AUD,inflation,-1.0,2
+4,USD/Durable Goods Orders m/m,AUD,labour,0.0,3
+4,USD/Durable Goods Orders m/m,CAD,growth,1.0,2
+4,USD/Durable Goods Orders m/m,CAD,inflation,0.6666666666666666,3
+4,USD/Durable Goods Orders m/m,CAD,labour,1.5,2
+4,USD/Durable Goods Orders m/m,USD,growth,0.16666666666666666,6
+4,USD/Durable Goods Orders m/m,USD,inflation,0.0,4
+4,USD/Durable Goods Orders m/m,USD,labour,0.0,6
+4,USD/Durable Goods Orders m/m,GBP,growth,-0.4,5
+4,USD/Durable Goods Orders m/m,GBP,inflation,-0.3333333333333333,3
+4,USD/Durable Goods Orders m/m,GBP,labour,1.0,3
+4,USD/Durable Goods Orders m/m,NZD,growth,0.0,2
+4,USD/Durable Goods Orders m/m,NZD,inflation,0.5,2
+4,USD/Durable Goods Orders m/m,NZD,labour,0.6666666666666666,3
+4,USD/Durable Goods Orders m/m,JPY,growth,1.3333333333333333,3
+4,USD/Durable Goods Orders m/m,JPY,inflation,0.0,3
+4,USD/Durable Goods Orders m/m,JPY,labour,0.0,2
+5,JPY/Core Machinery Orders m/m,EUR,growth,-0.25,4
+5,JPY/Core Machinery Orders m/m,EUR,inflation,-1.0,3
+5,JPY/Core Machinery Orders m/m,EUR,labour,1.0,2
+5,JPY/Core Machinery Orders m/m,CHF,growth,0.6666666666666666,3
+5,JPY/Core Machinery Orders m/m,CHF,inflation,-1.5,2
+5,JPY/Core Machinery Orders m/m,CHF,labour,-2.0,1
+5,JPY/Core Machinery Orders m/m,AUD,growth,-0.5,2
+5,JPY/Core Machinery Orders m/m,AUD,inflation,-1.0,2
+5,JPY/Core Machinery Orders m/m,AUD,labour,0.0,3
+5,JPY/Core Machinery Orders m/m,CAD,growth,1.0,2
+5,JPY/Core Machinery Orders m/m,CAD,inflation,0.6666666666666666,3
+5,JPY/Core Machinery Orders m/m,CAD,labour,1.5,2
+5,JPY/Core Machinery Orders m/m,USD,growth,0.16666666666666666,6
+5,JPY/Core Machinery Orders m/m,USD,inflation,0.0,4
+5,JPY/Core Machinery Orders m/m,USD,labour,0.0,6
+5,JPY/Core Machinery Orders m/m,GBP,growth,-0.4,5
+5,JPY/Core Machinery Orders m/m,GBP,inflation,-0.3333333333333333,3
+5,JPY/Core Machinery Orders m/m,GBP,labour,1.0,3
+5,JPY/Core Machinery Orders m/m,NZD,growth,0.0,2
+5,JPY/Core Machinery Orders m/m,NZD,inflation,0.5,2
+5,JPY/Core Machinery Orders m/m,NZD,labour,0.6666666666666666,3
+5,JPY/Core Machinery Orders m/m,JPY,growth,1.25,4
+5,JPY/Core Machinery Orders m/m,JPY,inflation,0.0,3
+5,JPY/Core Machinery Orders m/m,JPY,labour,0.0,2
+6,USD/Personal Spending m/m,EUR,growth,-0.25,4
+6,USD/Personal Spending m/m,EUR,inflation,-1.0,3
+6,USD/Personal Spending m/m,EUR,labour,1.0,2
+6,USD/Personal Spending m/m,CHF,growth,0.6666666666666666,3
+6,USD/Personal Spending m/m,CHF,inflation,-1.5,2
+6,USD/Personal Spending m/m,CHF,labour,-2.0,1
+6,USD/Personal Spending m/m,AUD,growth,-0.5,2
+6,USD/Personal Spending m/m,AUD,inflation,-1.0,2
+6,USD/Personal Spending m/m,AUD,labour,0.0,3
+6,USD/Personal Spending m/m,CAD,growth,1.0,2
+6,USD/Personal Spending m/m,CAD,inflation,0.6666666666666666,3
+6,USD/Personal Spending m/m,CAD,labour,1.5,2
+6,USD/Personal Spending m/m,USD,growth,0.14285714285714285,7
+6,USD/Personal Spending m/m,USD,inflation,0.0,4
+6,USD/Personal Spending m/m,USD,labour,0.0,6
+6,USD/Personal Spending m/m,GBP,growth,-0.4,5
+6,USD/Personal Spending m/m,GBP,inflation,-0.3333333333333333,3
+6,USD/Personal Spending m/m,GBP,labour,1.0,3
+6,USD/Personal Spending m/m,NZD,growth,0.0,2
+6,USD/Personal Spending m/m,NZD,inflation,0.5,2
+6,USD/Personal Spending m/m,NZD,labour,0.6666666666666666,3
+6,USD/Personal Spending m/m,JPY,growth,1.25,4
+6,USD/Personal Spending m/m,JPY,inflation,0.0,3
+6,USD/Personal Spending m/m,JPY,labour,0.0,2
+7,USD/Personal Income m/m,EUR,growth,-0.25,4
+7,USD/Personal Income m/m,EUR,inflation,-1.0,3
+7,USD/Personal Income m/m,EUR,labour,1.0,2
+7,USD/Personal Income m/m,CHF,growth,0.6666666666666666,3
+7,USD/Personal Income m/m,CHF,inflation,-1.5,2
+7,USD/Personal Income m/m,CHF,labour,-2.0,1
+7,USD/Personal Income m/m,AUD,growth,-0.5,2
+7,USD/Personal Income m/m,AUD,inflation,-1.0,2
+7,USD/Personal Income m/m,AUD,labour,0.0,3
+7,USD/Personal Income m/m,CAD,growth,1.0,2
+7,USD/Personal Income m/m,CAD,inflation,0.6666666666666666,3
+7,USD/Personal Income m/m,CAD,labour,1.5,2
+7,USD/Personal Income m/m,USD,growth,0.25,8
+7,USD/Personal Income m/m,USD,inflation,0.0,4
+7,USD/Personal Income m/m,USD,labour,0.0,6
+7,USD/Personal Income m/m,GBP,growth,-0.4,5
+7,USD/Personal Income m/m,GBP,inflation,-0.3333333333333333,3
+7,USD/Personal Income m/m,GBP,labour,1.0,3
+7,USD/Personal Income m/m,NZD,growth,0.0,2
+7,USD/Personal Income m/m,NZD,inflation,0.5,2
+7,USD/Personal Income m/m,NZD,labour,0.6666666666666666,3
+7,USD/Personal Income m/m,JPY,growth,1.25,4
+7,USD/Personal Income m/m,JPY,inflation,0.0,3
+7,USD/Personal Income m/m,JPY,labour,0.0,2
+8,USD/Import Prices m/m,EUR,growth,-0.25,4
+8,USD/Import Prices m/m,EUR,inflation,-1.0,3
+8,USD/Import Prices m/m,EUR,labour,1.0,2
+8,USD/Import Prices m/m,CHF,growth,0.6666666666666666,3
+8,USD/Import Prices m/m,CHF,inflation,-1.5,2
+8,USD/Import Prices m/m,CHF,labour,-2.0,1
+8,USD/Import Prices m/m,AUD,growth,-0.5,2
+8,USD/Import Prices m/m,AUD,inflation,-1.0,2
+8,USD/Import Prices m/m,AUD,labour,0.0,3
+8,USD/Import Prices m/m,CAD,growth,1.0,2
+8,USD/Import Prices m/m,CAD,inflation,0.6666666666666666,3
+8,USD/Import Prices m/m,CAD,labour,1.5,2
+8,USD/Import Prices m/m,USD,growth,0.25,8
+8,USD/Import Prices m/m,USD,inflation,0.2,5
+8,USD/Import Prices m/m,USD,labour,0.0,6
+8,USD/Import Prices m/m,GBP,growth,-0.4,5
+8,USD/Import Prices m/m,GBP,inflation,-0.3333333333333333,3
+8,USD/Import Prices m/m,GBP,labour,1.0,3
+8,USD/Import Prices m/m,NZD,growth,0.0,2
+8,USD/Import Prices m/m,NZD,inflation,0.5,2
+8,USD/Import Prices m/m,NZD,labour,0.6666666666666666,3
+8,USD/Import Prices m/m,JPY,growth,1.25,4
+8,USD/Import Prices m/m,JPY,inflation,0.0,3
+8,USD/Import Prices m/m,JPY,labour,0.0,2
+9,AUD/Private Capital Expenditure q/q,EUR,growth,-0.25,4
+9,AUD/Private Capital Expenditure q/q,EUR,inflation,-1.0,3
+9,AUD/Private Capital Expenditure q/q,EUR,labour,1.0,2
+9,AUD/Private Capital Expenditure q/q,CHF,growth,0.6666666666666666,3
+9,AUD/Private Capital Expenditure q/q,CHF,inflation,-1.5,2
+9,AUD/Private Capital Expenditure q/q,CHF,labour,-2.0,1
+9,AUD/Private Capital Expenditure q/q,AUD,growth,0.3333333333333333,3
+9,AUD/Private Capital Expenditure q/q,AUD,inflation,-1.0,2
+9,AUD/Private Capital Expenditure q/q,AUD,labour,0.0,3
+9,AUD/Private Capital Expenditure q/q,CAD,growth,1.0,2
+9,AUD/Private Capital Expenditure q/q,CAD,inflation,0.6666666666666666,3
+9,AUD/Private Capital Expenditure q/q,CAD,labour,1.5,2
+9,AUD/Private Capital Expenditure q/q,USD,growth,0.25,8
+9,AUD/Private Capital Expenditure q/q,USD,inflation,0.2,5
+9,AUD/Private Capital Expenditure q/q,USD,labour,0.0,6
+9,AUD/Private Capital Expenditure q/q,GBP,growth,-0.4,5
+9,AUD/Private Capital Expenditure q/q,GBP,inflation,-0.3333333333333333,3
+9,AUD/Private Capital Expenditure q/q,GBP,labour,1.0,3
+9,AUD/Private Capital Expenditure q/q,NZD,growth,0.0,2
+9,AUD/Private Capital Expenditure q/q,NZD,inflation,0.5,2
+9,AUD/Private Capital Expenditure q/q,NZD,labour,0.6666666666666666,3
+9,AUD/Private Capital Expenditure q/q,JPY,growth,1.25,4
+9,AUD/Private Capital Expenditure q/q,JPY,inflation,0.0,3
+9,AUD/Private Capital Expenditure q/q,JPY,labour,0.0,2
+10,JPY/Capital Spending q/y,EUR,growth,-0.25,4
+10,JPY/Capital Spending q/y,EUR,inflation,-1.0,3
+10,JPY/Capital Spending q/y,EUR,labour,1.0,2
+10,JPY/Capital Spending q/y,CHF,growth,0.6666666666666666,3
+10,JPY/Capital Spending q/y,CHF,inflation,-1.5,2
+10,JPY/Capital Spending q/y,CHF,labour,-2.0,1
+10,JPY/Capital Spending q/y,AUD,growth,0.3333333333333333,3
+10,JPY/Capital Spending q/y,AUD,inflation,-1.0,2
+10,JPY/Capital Spending q/y,AUD,labour,0.0,3
+10,JPY/Capital Spending q/y,CAD,growth,1.0,2
+10,JPY/Capital Spending q/y,CAD,inflation,0.6666666666666666,3
+10,JPY/Capital Spending q/y,CAD,labour,1.5,2
+10,JPY/Capital Spending q/y,USD,growth,0.25,8
+10,JPY/Capital Spending q/y,USD,inflation,0.2,5
+10,JPY/Capital Spending q/y,USD,labour,0.0,6
+10,JPY/Capital Spending q/y,GBP,growth,-0.4,5
+10,JPY/Capital Spending q/y,GBP,inflation,-0.3333333333333333,3
+10,JPY/Capital Spending q/y,GBP,labour,1.0,3
+10,JPY/Capital Spending q/y,NZD,growth,0.0,2
+10,JPY/Capital Spending q/y,NZD,inflation,0.5,2
+10,JPY/Capital Spending q/y,NZD,labour,0.6666666666666666,3
+10,JPY/Capital Spending q/y,JPY,growth,1.0,5
+10,JPY/Capital Spending q/y,JPY,inflation,0.0,3
+10,JPY/Capital Spending q/y,JPY,labour,0.0,2
+11,AUD/Company Operating Profits q/q,EUR,growth,-0.25,4
+11,AUD/Company Operating Profits q/q,EUR,inflation,-1.0,3
+11,AUD/Company Operating Profits q/q,EUR,labour,1.0,2
+11,AUD/Company Operating Profits q/q,CHF,growth,0.6666666666666666,3
+11,AUD/Company Operating Profits q/q,CHF,inflation,-1.5,2
+11,AUD/Company Operating Profits q/q,CHF,labour,-2.0,1
+11,AUD/Company Operating Profits q/q,AUD,growth,0.25,4
+11,AUD/Company Operating Profits q/q,AUD,inflation,-1.0,2
+11,AUD/Company Operating Profits q/q,AUD,labour,0.0,3
+11,AUD/Company Operating Profits q/q,CAD,growth,1.0,2
+11,AUD/Company Operating Profits q/q,CAD,inflation,0.6666666666666666,3
+11,AUD/Company Operating Profits q/q,CAD,labour,1.5,2
+11,AUD/Company Operating Profits q/q,USD,growth,0.25,8
+11,AUD/Company Operating Profits q/q,USD,inflation,0.2,5
+11,AUD/Company Operating Profits q/q,USD,labour,0.0,6
+11,AUD/Company Operating Profits q/q,GBP,growth,-0.4,5
+11,AUD/Company Operating Profits q/q,GBP,inflation,-0.3333333333333333,3
+11,AUD/Company Operating Profits q/q,GBP,labour,1.0,3
+11,AUD/Company Operating Profits q/q,NZD,growth,0.0,2
+11,AUD/Company Operating Profits q/q,NZD,inflation,0.5,2
+11,AUD/Company Operating Profits q/q,NZD,labour,0.6666666666666666,3
+11,AUD/Company Operating Profits q/q,JPY,growth,1.0,5
+11,AUD/Company Operating Profits q/q,JPY,inflation,0.0,3
+11,AUD/Company Operating Profits q/q,JPY,labour,0.0,2
+12,AUD/Import Prices q/q,EUR,growth,-0.25,4
+12,AUD/Import Prices q/q,EUR,inflation,-1.0,3
+12,AUD/Import Prices q/q,EUR,labour,1.0,2
+12,AUD/Import Prices q/q,CHF,growth,0.6666666666666666,3
+12,AUD/Import Prices q/q,CHF,inflation,-1.5,2
+12,AUD/Import Prices q/q,CHF,labour,-2.0,1
+12,AUD/Import Prices q/q,AUD,growth,0.25,4
+12,AUD/Import Prices q/q,AUD,inflation,-0.6666666666666666,3
+12,AUD/Import Prices q/q,AUD,labour,0.0,3
+12,AUD/Import Prices q/q,CAD,growth,1.0,2
+12,AUD/Import Prices q/q,CAD,inflation,0.6666666666666666,3
+12,AUD/Import Prices q/q,CAD,labour,1.5,2
+12,AUD/Import Prices q/q,USD,growth,0.25,8
+12,AUD/Import Prices q/q,USD,inflation,0.2,5
+12,AUD/Import Prices q/q,USD,labour,0.0,6
+12,AUD/Import Prices q/q,GBP,growth,-0.4,5
+12,AUD/Import Prices q/q,GBP,inflation,-0.3333333333333333,3
+12,AUD/Import Prices q/q,GBP,labour,1.0,3
+12,AUD/Import Prices q/q,NZD,growth,0.0,2
+12,AUD/Import Prices q/q,NZD,inflation,0.5,2
+12,AUD/Import Prices q/q,NZD,labour,0.6666666666666666,3
+12,AUD/Import Prices q/q,JPY,growth,1.0,5
+12,AUD/Import Prices q/q,JPY,inflation,0.0,3
+12,AUD/Import Prices q/q,JPY,labour,0.0,2
+13,JPY/SPPI y/y,EUR,growth,-0.25,4
+13,JPY/SPPI y/y,EUR,inflation,-1.0,3
+13,JPY/SPPI y/y,EUR,labour,1.0,2
+13,JPY/SPPI y/y,CHF,growth,0.6666666666666666,3
+13,JPY/SPPI y/y,CHF,inflation,-1.5,2
+13,JPY/SPPI y/y,CHF,labour,-2.0,1
+13,JPY/SPPI y/y,AUD,growth,0.25,4
+13,JPY/SPPI y/y,AUD,inflation,-0.6666666666666666,3
+13,JPY/SPPI y/y,AUD,labour,0.0,3
+13,JPY/SPPI y/y,CAD,growth,1.0,2
+13,JPY/SPPI y/y,CAD,inflation,0.6666666666666666,3
+13,JPY/SPPI y/y,CAD,labour,1.5,2
+13,JPY/SPPI y/y,USD,growth,0.25,8
+13,JPY/SPPI y/y,USD,inflation,0.2,5
+13,JPY/SPPI y/y,USD,labour,0.0,6
+13,JPY/SPPI y/y,GBP,growth,-0.4,5
+13,JPY/SPPI y/y,GBP,inflation,-0.3333333333333333,3
+13,JPY/SPPI y/y,GBP,labour,1.0,3
+13,JPY/SPPI y/y,NZD,growth,0.0,2
+13,JPY/SPPI y/y,NZD,inflation,0.5,2
+13,JPY/SPPI y/y,NZD,labour,0.6666666666666666,3
+13,JPY/SPPI y/y,JPY,growth,1.0,5
+13,JPY/SPPI y/y,JPY,inflation,0.0,4
+13,JPY/SPPI y/y,JPY,labour,0.0,2
+14,JPY/Prelim GDP Price Index y/y,EUR,growth,-0.25,4
+14,JPY/Prelim GDP Price Index y/y,EUR,inflation,-1.0,3
+14,JPY/Prelim GDP Price Index y/y,EUR,labour,1.0,2
+14,JPY/Prelim GDP Price Index y/y,CHF,growth,0.6666666666666666,3
+14,JPY/Prelim GDP Price Index y/y,CHF,inflation,-1.5,2
+14,JPY/Prelim GDP Price Index y/y,CHF,labour,-2.0,1
+14,JPY/Prelim GDP Price Index y/y,AUD,growth,0.25,4
+14,JPY/Prelim GDP Price Index y/y,AUD,inflation,-0.6666666666666666,3
+14,JPY/Prelim GDP Price Index y/y,AUD,labour,0.0,3
+14,JPY/Prelim GDP Price Index y/y,CAD,growth,1.0,2
+14,JPY/Prelim GDP Price Index y/y,CAD,inflation,0.6666666666666666,3
+14,JPY/Prelim GDP Price Index y/y,CAD,labour,1.5,2
+14,JPY/Prelim GDP Price Index y/y,USD,growth,0.25,8
+14,JPY/Prelim GDP Price Index y/y,USD,inflation,0.2,5
+14,JPY/Prelim GDP Price Index y/y,USD,labour,0.0,6
+14,JPY/Prelim GDP Price Index y/y,GBP,growth,-0.4,5
+14,JPY/Prelim GDP Price Index y/y,GBP,inflation,-0.3333333333333333,3
+14,JPY/Prelim GDP Price Index y/y,GBP,labour,1.0,3
+14,JPY/Prelim GDP Price Index y/y,NZD,growth,0.0,2
+14,JPY/Prelim GDP Price Index y/y,NZD,inflation,0.5,2
+14,JPY/Prelim GDP Price Index y/y,NZD,labour,0.6666666666666666,3
+14,JPY/Prelim GDP Price Index y/y,JPY,growth,1.0,5
+14,JPY/Prelim GDP Price Index y/y,JPY,inflation,0.2,5
+14,JPY/Prelim GDP Price Index y/y,JPY,labour,0.0,2
+15,USD/Advance GDP Price Index q/q,EUR,growth,-0.25,4
+15,USD/Advance GDP Price Index q/q,EUR,inflation,-1.0,3
+15,USD/Advance GDP Price Index q/q,EUR,labour,1.0,2
+15,USD/Advance GDP Price Index q/q,CHF,growth,0.6666666666666666,3
+15,USD/Advance GDP Price Index q/q,CHF,inflation,-1.5,2
+15,USD/Advance GDP Price Index q/q,CHF,labour,-2.0,1
+15,USD/Advance GDP Price Index q/q,AUD,growth,0.25,4
+15,USD/Advance GDP Price Index q/q,AUD,inflation,-0.6666666666666666,3
+15,USD/Advance GDP Price Index q/q,AUD,labour,0.0,3
+15,USD/Advance GDP Price Index q/q,CAD,growth,1.0,2
+15,USD/Advance GDP Price Index q/q,CAD,inflation,0.6666666666666666,3
+15,USD/Advance GDP Price Index q/q,CAD,labour,1.5,2
+15,USD/Advance GDP Price Index q/q,USD,growth,0.25,8
+15,USD/Advance GDP Price Index q/q,USD,inflation,0.16666666666666666,6
+15,USD/Advance GDP Price Index q/q,USD,labour,0.0,6
+15,USD/Advance GDP Price Index q/q,GBP,growth,-0.4,5
+15,USD/Advance GDP Price Index q/q,GBP,inflation,-0.3333333333333333,3
+15,USD/Advance GDP Price Index q/q,GBP,labour,1.0,3
+15,USD/Advance GDP Price Index q/q,NZD,growth,0.0,2
+15,USD/Advance GDP Price Index q/q,NZD,inflation,0.5,2
+15,USD/Advance GDP Price Index q/q,NZD,labour,0.6666666666666666,3
+15,USD/Advance GDP Price Index q/q,JPY,growth,1.0,5
+15,USD/Advance GDP Price Index q/q,JPY,inflation,0.2,5
+15,USD/Advance GDP Price Index q/q,JPY,labour,0.0,2
+16,USD/Prelim Unit Labor Costs q/q,EUR,growth,-0.25,4
+16,USD/Prelim Unit Labor Costs q/q,EUR,inflation,-1.0,3
+16,USD/Prelim Unit Labor Costs q/q,EUR,labour,1.0,2
+16,USD/Prelim Unit Labor Costs q/q,CHF,growth,0.6666666666666666,3
+16,USD/Prelim Unit Labor Costs q/q,CHF,inflation,-1.5,2
+16,USD/Prelim Unit Labor Costs q/q,CHF,labour,-2.0,1
+16,USD/Prelim Unit Labor Costs q/q,AUD,growth,0.25,4
+16,USD/Prelim Unit Labor Costs q/q,AUD,inflation,-0.6666666666666666,3
+16,USD/Prelim Unit Labor Costs q/q,AUD,labour,0.0,3
+16,USD/Prelim Unit Labor Costs q/q,CAD,growth,1.0,2
+16,USD/Prelim Unit Labor Costs q/q,CAD,inflation,0.6666666666666666,3
+16,USD/Prelim Unit Labor Costs q/q,CAD,labour,1.5,2
+16,USD/Prelim Unit Labor Costs q/q,USD,growth,0.25,8
+16,USD/Prelim Unit Labor Costs q/q,USD,inflation,0.16666666666666666,6
+16,USD/Prelim Unit Labor Costs q/q,USD,labour,0.0,7
+16,USD/Prelim Unit Labor Costs q/q,GBP,growth,-0.4,5
+16,USD/Prelim Unit Labor Costs q/q,GBP,inflation,-0.3333333333333333,3
+16,USD/Prelim Unit Labor Costs q/q,GBP,labour,1.0,3
+16,USD/Prelim Unit Labor Costs q/q,NZD,growth,0.0,2
+16,USD/Prelim Unit Labor Costs q/q,NZD,inflation,0.5,2
+16,USD/Prelim Unit Labor Costs q/q,NZD,labour,0.6666666666666666,3
+16,USD/Prelim Unit Labor Costs q/q,JPY,growth,1.0,5
+16,USD/Prelim Unit Labor Costs q/q,JPY,inflation,0.2,5
+16,USD/Prelim Unit Labor Costs q/q,JPY,labour,0.0,2
+17,JPY/Prelim Industrial Production m/m,EUR,growth,-0.25,4
+17,JPY/Prelim Industrial Production m/m,EUR,inflation,-1.0,3
+17,JPY/Prelim Industrial Production m/m,EUR,labour,1.0,2
+17,JPY/Prelim Industrial Production m/m,CHF,growth,0.6666666666666666,3
+17,JPY/Prelim Industrial Production m/m,CHF,inflation,-1.5,2
+17,JPY/Prelim Industrial Production m/m,CHF,labour,-2.0,1
+17,JPY/Prelim Industrial Production m/m,AUD,growth,0.25,4
+17,JPY/Prelim Industrial Production m/m,AUD,inflation,-0.6666666666666666,3
+17,JPY/Prelim Industrial Production m/m,AUD,labour,0.0,3
+17,JPY/Prelim Industrial Production m/m,CAD,growth,1.0,2
+17,JPY/Prelim Industrial Production m/m,CAD,inflation,0.6666666666666666,3
+17,JPY/Prelim Industrial Production m/m,CAD,labour,1.5,2
+17,JPY/Prelim Industrial Production m/m,USD,growth,0.25,8
+17,JPY/Prelim Industrial Production m/m,USD,inflation,0.16666666666666666,6
+17,JPY/Prelim Industrial Production m/m,USD,labour,0.0,7
+17,JPY/Prelim Industrial Production m/m,GBP,growth,-0.4,5
+17,JPY/Prelim Industrial Production m/m,GBP,inflation,-0.3333333333333333,3
+17,JPY/Prelim Industrial Production m/m,GBP,labour,1.0,3
+17,JPY/Prelim Industrial Production m/m,NZD,growth,0.0,2
+17,JPY/Prelim Industrial Production m/m,NZD,inflation,0.5,2
+17,JPY/Prelim Industrial Production m/m,NZD,labour,0.6666666666666666,3
+17,JPY/Prelim Industrial Production m/m,JPY,growth,0.8333333333333334,6
+17,JPY/Prelim Industrial Production m/m,JPY,inflation,0.2,5
+17,JPY/Prelim Industrial Production m/m,JPY,labour,0.0,2
