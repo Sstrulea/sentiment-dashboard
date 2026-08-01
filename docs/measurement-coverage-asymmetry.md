@@ -1,8 +1,23 @@
 # Măsurarea efectului asimetriei de acoperire asupra scorurilor de pereche
 
-Status: **investigație, în lucru — pre-înregistrare scrisă înainte de rulare.**
-Branch `measure/coverage-asymmetry`, worktree `../macro-dev`. Zero cod de
-producție, zero config modificat — instrumentar în `scripts/measure/`.
+Status: **investigație încheiată.** Branch `measure/coverage-asymmetry`,
+worktree `../macro-dev`. Zero cod de producție, zero config modificat —
+instrumentar în `scripts/measure/`.
+
+> **⚠️ Istoricul dinaintea lui 2026-07-29 NU e reproductibil cu codul
+> curent.** Șase commit-uri de config (`z_buckets` recalibrat de două ori,
+> adoptarea Variantei B, promovarea CAD Median CPI y/y, alias-uri AUD noi
+> pentru CPI lunar) și trei corecții retroactive ale
+> `data/economic_calendar_ff.parquet` (purjarea a 64 de rânduri duplicate
+> din ianuarie 2023, reatribuirea a 139 de rânduri PMI la CHF/JPY/EUR,
+> replay-ul CAD Median CPI din 20 iulie) cad toate în acest interval.
+> Reconstrucția din acest document folosește DELIBERAT regulile și datele
+> de AZI aplicate retroactiv (un counterfactual controlat — vezi secțiunea
+> de validare mai jos pentru de ce și cum a fost verificat), NU o redare
+> literală a ce s-a afișat pe dashboard la acea dată. **Orice analiză
+> viitoare care presupune un replay literal al istoricului dinaintea
+> acestei date va fi greșită** — parquet-ul nu e strict append-only, iar
+> regulile de scoring s-au schimbat de mai multe ori în fereastră.
 
 ## Context stabilit deja
 
