@@ -1,0 +1,317 @@
+currency,name_raw,count,both_valid,actual_distinct,forecast_distinct,cadence,median_gap_days,date_min,date_max,real_signal,passes_threshold,bucket,reason
+CHF,Bank Holiday,151,151,1,1,weekly,7.0,2022-12-31,2026-05-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,10-y Bond Auction,128,128,91,1,weekly,8.0,2023-01-05,2026-07-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,CB Leading Index m/m,121,121,18,10,weekly,6.5,2023-01-18,2026-06-18,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,GDT Price Index,114,114,58,1,monthly,13.0,2023-01-02,2026-06-16,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,President Trump Speaks,104,104,1,1,weekly,4.0,2025-01-20,2026-07-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Bowman Speaks,104,104,1,1,weekly,7.5,2023-01-17,2026-06-25,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,30-y Bond Auction,101,101,78,1,weekly,7.0,2023-01-11,2026-03-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,BOE Gov Bailey Speaks,98,98,1,1,weekly,10.0,2023-01-10,2026-07-03,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Goolsbee Speaks,94,94,2,2,weekly,7.0,2023-02-28,2026-06-25,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Williams Speaks,90,90,1,1,weekly,9.5,2023-01-10,2026-06-25,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Barr Speaks,87,87,1,1,weekly,9.0,2023-01-09,2026-06-06,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Barkin Speaks,77,77,1,1,weekly,7.5,2023-01-03,2026-06-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Waller Speaks,77,77,1,1,monthly,13.0,2023-01-16,2026-05-31,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Bostic Speaks,73,73,1,1,weekly,8.0,2023-01-08,2026-02-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Pill Speaks,69,69,1,1,monthly,12.0,2023-01-08,2026-06-29,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,API Weekly Statistical Bulletin,65,65,1,1,weekly,7.0,2025-04-08,2026-06-30,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Daly Speaks,55,55,1,1,monthly,14.0,2023-01-19,2026-07-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Westpac Consumer Sentiment,55,55,44,1,monthly,27.0,2023-01-15,2026-06-16,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,Prelim Machine Tool Orders y/y,55,55,42,1,monthly,28.0,2023-01-15,2026-06-09,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Monetary Policy Meeting Minutes,54,54,1,1,monthly,21.5,2023-01-22,2026-06-30,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Mann Speaks,52,52,1,1,monthly,23.0,2023-01-07,2026-07-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Cook Speaks,49,49,1,1,monthly,17.5,2023-01-06,2026-05-27,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,BRC Shop Price Index y/y,47,47,33,13,monthly,28.0,2023-01-02,2026-06-29,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Gov Macklem Speaks,45,45,1,1,monthly,26.0,2023-01-10,2026-07-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Challenger Job Cuts y/y,45,45,42,1,monthly,28.0,2023-01-04,2026-07-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Kashkari Speaks,45,45,1,1,monthly,15.0,2023-03-01,2026-06-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Logan Speaks,45,45,1,1,monthly,17.0,2023-01-18,2026-06-03,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,UBS Economic Expectations,44,44,41,1,monthly,28.0,2023-01-25,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Rightmove HPI m/m,44,44,26,1,monthly,28.0,2023-01-15,2026-06-14,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Visitor Arrivals m/m,44,44,35,1,monthly,29.0,2023-01-18,2026-06-11,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Core PPI m/m,44,44,12,6,monthly,29.0,2023-01-12,2026-06-11,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Building Consents m/m,43,43,40,1,monthly,29.0,2023-01-10,2026-07-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Commodity Prices y/y,43,43,41,1,monthly,30.0,2023-01-02,2026-07-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,ANZ Business Confidence,43,43,38,1,monthly,30.0,2023-01-27,2026-06-30,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,MI Leading Index m/m,43,43,7,1,monthly,28.0,2023-01-23,2026-06-17,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,NAB Business Confidence,43,43,15,1,monthly,28.0,2023-01-23,2026-06-09,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Foreign Currency Reserves,43,43,29,1,monthly,30.0,2023-01-09,2026-06-05,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Credit Card Spending y/y,42,42,33,1,monthly,30.0,2023-01-24,2026-06-22,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,MI Inflation Expectations,42,42,20,1,monthly,28.0,2023-01-18,2026-06-11,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Revised UoM Inflation Expectations,41,41,24,3,monthly,28.0,2023-01-27,2026-06-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,FPI m/m,41,41,25,1,monthly,30.0,2023-01-17,2026-06-15,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,ANZ Commodity Prices m/m,41,41,33,1,monthly,29.5,2023-01-10,2026-06-04,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,MI Inflation Gauge m/m,41,41,13,1,monthly,28.0,2023-01-15,2026-06-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,ANZ Job Advertisements m/m,38,38,25,1,monthly,28.0,2023-01-15,2026-06-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Jefferson Speaks,38,38,1,1,monthly,19.0,2023-02-24,2026-05-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,BOJ Press Conference,37,37,1,1,quarterly,47.0,2023-01-18,2026-06-16,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Musalem Speaks,37,37,1,1,monthly,19.0,2024-07-11,2026-05-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Chair Powell Speaks,37,37,1,1,monthly,28.0,2023-01-10,2026-03-30,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Breeden Speaks,36,36,1,1,monthly,17.0,2023-11-13,2026-06-30,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Greene Speaks,36,36,1,1,monthly,16.0,2023-11-17,2026-06-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,NIESR GDP Estimate,34,34,9,1,monthly,28.0,2023-01-12,2025-04-10,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Gov Bullock Speaks,33,33,1,1,monthly,24.0,2023-02-23,2026-06-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Harker Speaks,33,33,1,1,monthly,11.0,2023-01-12,2025-06-06,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,BOJ Gov Ueda Speaks,32,32,1,1,monthly,33.5,2023-02-24,2026-06-03,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,ADP Weekly Employment Change,30,30,23,1,weekly,7.0,2025-12-08,2026-06-23,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Beige Book,30,30,1,1,monthly,42.0,2023-01-17,2026-06-03,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Meeting Minutes,30,30,1,1,monthly,43.0,2023-01-03,2026-05-20,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Press Conference,29,29,1,1,monthly,42.0,2023-01-31,2026-06-17,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Press Conference,29,29,1,1,monthly,42.0,2023-01-24,2026-06-10,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Hammack Speaks,29,29,1,1,monthly,20.0,2024-10-02,2026-06-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,BOJ Summary of Opinions,28,28,1,1,quarterly,46.0,2023-01-25,2026-06-23,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Summary of Deliberations,27,27,1,1,quarterly,48.0,2023-02-08,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Miran Speaks,26,26,1,1,weekly,6.5,2025-09-25,2026-04-16,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Kugler Speaks,26,26,1,1,monthly,19.0,2024-02-07,2025-07-17,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SNB Chairman Jordan Speaks,26,26,1,1,monthly,11.0,2023-01-18,2024-09-12,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Dhingra Speaks,24,24,1,1,monthly,35.0,2023-03-08,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Daylight Saving Time Shift,24,24,1,1,monthly,16.5,2023-03-12,2025-11-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,NAB Quarterly Business Confidence,23,23,7,1,quarterly,83.0,2023-02-01,2026-06-25,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Schmid Speaks,21,21,1,1,monthly,24.0,2024-10-03,2026-06-04,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Gov Orr Speaks,21,21,1,1,monthly,27.0,2023-02-22,2025-03-05,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Press Conference,20,20,1,1,monthly,42.0,2024-02-06,2026-06-16,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Rate Statement,20,20,1,1,quarterly,69.0,2023-02-07,2026-06-16,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SNB Chairman Schlegel Speaks,19,19,1,1,monthly,25.0,2024-10-01,2026-05-28,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Assist Gov Hunter Speaks,19,19,1,1,quarterly,47.0,2024-03-11,2026-05-19,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Collins Speaks,19,19,1,1,monthly,21.0,2024-08-22,2026-05-13,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Cleveland Fed Inflation Expectations,19,19,12,1,quarterly,90.0,2023-05-22,2026-05-11,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,BOE Credit Conditions Survey,18,18,1,1,quarterly,90.5,2023-01-18,2026-07-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Deputy Gov Hauser Speaks,18,18,1,1,quarterly,47.0,2024-06-07,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,NZIER Business Confidence,18,18,13,1,quarterly,84.0,2023-01-15,2026-04-20,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Annual Budget Release,17,17,1,1,monthly,41.0,2023-03-15,2026-05-28,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Mortgage Delinquencies,17,17,14,1,quarterly,90.5,2023-02-16,2026-05-14,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Statement,17,17,1,1,quarterly,90.0,2023-01-31,2026-04-29,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Monetary Policy Report,17,17,1,1,quarterly,91.0,2023-01-24,2026-04-29,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Taylor Speaks,16,16,1,1,monthly,33.0,2025-01-15,2026-06-23,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,BOJ Outlook Report,16,16,1,1,quarterly,91.5,2023-01-18,2026-04-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Rogers Speaks,15,15,1,1,quarterly,49.0,2023-03-09,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Press Conference,15,15,1,1,quarterly,84.0,2023-02-22,2026-05-27,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Monetary Policy Statement,15,15,1,1,quarterly,91.0,2023-02-22,2026-05-27,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Business Outlook Survey,15,15,1,1,quarterly,91.0,2023-01-15,2026-04-20,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Corporate Profits q/q,14,14,12,1,quarterly,91.0,2023-02-23,2026-05-25,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Inflation Expectations q/q,14,14,13,1,quarterly,90.0,2023-02-14,2026-05-13,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Lombardelli Speaks,14,14,1,1,monthly,34.0,2024-11-25,2026-05-07,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Monetary Policy Statement,14,14,1,1,quarterly,91.0,2023-02-10,2026-05-05,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Assist Gov Kent Speaks,13,13,1,1,quarterly,105.0,2023-03-19,2026-06-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SNB Monetary Policy Assessment,13,13,1,1,quarterly,90.5,2023-03-23,2026-06-18,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Economic Projections,13,13,1,1,quarterly,91.0,2023-03-22,2026-06-17,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Consumer Inflation Expectations,13,13,9,1,quarterly,91.0,2023-03-17,2026-06-12,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Rate Statement,13,13,1,1,quarterly,90.5,2023-03-08,2026-06-10,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Manufacturing Sales q/q,13,13,13,1,quarterly,91.0,2023-03-09,2026-06-08,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Bulletin,13,13,1,1,quarterly,91.0,2023-01-25,2026-05-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Monetary Policy Report Hearings,13,13,1,1,quarterly,91.5,2023-02-09,2026-05-20,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Loan Officer Survey,13,13,1,1,quarterly,91.0,2023-02-06,2026-05-04,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,BOE Inflation Letter,12,12,1,1,quarterly,91.0,2023-03-23,2026-04-30,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Ramsden Speaks,12,12,1,1,quarterly,91.0,2023-02-07,2026-03-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SNB Quarterly Bulletin,11,11,1,1,quarterly,94.5,2023-03-29,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Chair Powell Testifies,11,11,1,1,quarterly,53.0,2023-03-07,2025-06-25,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,BOE Quarterly Bulletin,11,11,1,1,monthly,31.0,2023-08-24,2025-01-21,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Treasury Sec Yellen Speaks,11,11,1,1,monthly,22.0,2023-03-16,2024-10-17,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Gov Lowe Speaks,11,11,1,1,monthly,22.5,2023-02-15,2023-09-07,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Paulson Speaks,10,10,1,1,monthly,15.5,2025-10-13,2026-05-29,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Gov Board Member Tschudin Speaks,10,10,1,1,monthly,27.0,2024-11-21,2026-04-21,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Rate Statement,10,10,1,1,quarterly,91.0,2023-04-05,2026-04-08,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SECO Economic Forecasts,10,10,1,1,quarterly,93.0,2023-03-16,2026-03-18,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Mester Speaks,10,10,1,1,weekly,7.0,2024-02-06,2024-05-21,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Gov Breman Speaks,9,9,1,1,monthly,20.0,2025-12-01,2026-05-27,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Gov Board Member Martin Speaks,8,8,1,1,quarterly,111.0,2024-04-18,2026-06-24,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Assist Gov Jones Speaks,8,8,1,1,monthly,34.0,2025-09-12,2026-06-17,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Financial Stability Report,8,8,1,1,annual,181.0,2023-05-08,2026-05-08,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Kozicki Speaks,8,8,1,1,quarterly,147.0,2023-06-27,2026-03-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Gravelle Speaks,8,8,1,1,quarterly,128.0,2023-03-29,2025-11-06,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,President Biden Speaks,8,8,1,1,quarterly,111.0,2023-01-26,2024-11-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Haskel Speaks,8,8,1,1,monthly,12.0,2023-05-19,2024-07-08,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Gov Board Member Schlegel Speaks,8,8,1,1,quarterly,63.0,2023-01-24,2024-04-09,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Cunliffe Speaks,8,8,1,1,monthly,15.0,2023-02-07,2023-10-26,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,10-y Bond Auction,7,7,7,1,monthly,29.0,2026-01-06,2026-07-02,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SNB Press Conference,7,7,1,1,quarterly,136.5,2023-03-23,2026-06-18,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,FPC Meeting Minutes,7,7,1,1,annual,185.0,2023-03-29,2026-04-01,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Financial Stability Review,7,7,1,1,annual,182.0,2023-04-06,2026-03-19,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Monetary Policy Report,7,7,1,1,annual,216.0,2023-06-16,2026-02-19,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Gov Hawkesby Speaks,7,7,1,1,monthly,21.0,2025-05-07,2025-11-26,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Tenreyro Speaks,7,7,1,1,weekly,7.5,2023-02-24,2023-06-29,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,CB Leading Index m/m,6,6,4,1,monthly,29.0,2026-01-16,2026-06-19,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,CB Leading Index m/m,6,6,4,1,monthly,29.0,2026-01-16,2026-06-12,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,30-y Bond Auction,6,6,6,1,monthly,29.0,2026-01-13,2026-06-11,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,10-y Bond Auction,6,6,6,1,monthly,29.0,2026-01-12,2026-06-10,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Westpac Consumer Sentiment,6,6,6,1,monthly,28.0,2026-01-12,2026-06-09,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,Bank Holiday,6,6,1,1,monthly,24.0,2026-01-10,2026-05-04,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Treasury Currency Report,6,6,1,1,annual,202.0,2023-06-16,2026-01-29,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,30-y Bond Auction,5,5,5,1,monthly,28.0,2026-01-08,2026-06-10,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Financial Stability Report,5,5,1,1,annual,182.5,2023-10-31,2026-05-05,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,BOE Financial Stability Report,5,5,1,1,annual,188.0,2023-07-12,2025-12-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,RBNZ Statement of Intent,5,5,1,1,weekly,10.0,2024-06-27,2025-07-16,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Gov Board Member Maechler Speaks,5,5,1,1,monthly,34.0,2023-02-03,2023-06-26,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,SNB Financial Stability Report,4,4,1,1,annual,364.0,2023-06-22,2026-07-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Bank Holiday,4,4,1,1,quarterly,46.0,2025-12-31,2026-06-30,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,Monetary Policy Meeting Minutes,4,4,1,1,monthly,43.0,2026-01-27,2026-06-18,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+NZD,Bank Holiday,4,4,1,1,monthly,35.0,2025-12-31,2026-05-30,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,BOC Financial System Review,4,4,1,1,annual,364.0,2023-05-18,2026-05-28,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Vincent Speaks,4,4,1,1,annual,351.0,2023-10-03,2026-05-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Mid-Year Economic and Fiscal Outlook,4,4,1,1,sub-weekly/irregular,2.0,2024-12-15,2025-12-15,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,MPC Member Broadbent Speaks,4,4,1,1,annual,163.0,2023-02-27,2024-05-20,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Bank Holiday,3,3,1,1,quarterly,82.0,2026-01-18,2026-07-02,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,Monetary Policy Statement,3,3,1,1,quarterly,71.5,2026-01-23,2026-06-16,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Summary of Monetary Policy Discussions,3,3,1,1,quarterly,87.0,2025-10-23,2026-04-16,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Autumn Forecast Statement,3,3,1,1,annual,366.5,2023-11-22,2025-11-26,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Mendes Speaks,3,3,1,1,annual,297.5,2024-02-14,2025-10-02,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Bank Stress Test Results,3,3,1,1,annual,365.0,2023-06-28,2025-06-27,False,True,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Bank Holiday,2,2,1,1,quarterly,132.0,2026-01-24,2026-06-06,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Treasury Sec Bessent Speaks,2,2,1,1,weekly,5.0,2026-05-28,2026-06-03,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Bank Holiday,2,2,1,1,quarterly,122.0,2025-12-31,2026-05-03,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Parliamentary Elections,2,2,1,1,irregular,567.0,2023-10-12,2025-05-01,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Annual Report,2,2,1,1,annual,372.0,2023-10-19,2024-10-25,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Beaudry Speaks,2,2,1,1,quarterly,111.0,2023-02-16,2023-06-08,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,BOJ Gov Kuroda Speaks,2,2,1,1,quarterly,76.0,2023-01-10,2023-03-28,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Chairman Warsh Speaks,1,1,1,1,n<2,,2026-07-01,2026-07-01,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Bank Stress Test Results,1,1,1,1,n<2,,2026-06-24,2026-06-24,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Monetary Policy Summary,1,1,1,1,n<2,,2026-06-18,2026-06-18,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Powell Speaks,1,1,1,1,n<2,,2026-06-01,2026-06-01,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Chair Nomination Vote,1,1,1,1,n<2,,2026-05-13,2026-05-13,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Gov Council Member Alexopoulos Speaks,1,1,1,1,n<2,,2026-05-13,2026-05-13,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,Annual Budget Release,1,1,1,1,n<2,,2026-05-12,2026-05-12,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Chairman-Designate Warsh Testifies,1,1,1,1,n<2,,2026-04-21,2026-04-21,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CHF,Daylight Saving Time Shift,1,1,1,1,n<2,,2026-03-29,2026-03-29,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+CAD,Daylight Saving Time Shift,1,1,1,1,n<2,,2026-03-08,2026-03-08,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+GBP,Annual Budget Release,1,1,1,1,n<2,,2026-03-03,2026-03-03,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+JPY,Lower House Elections,1,1,1,1,n<2,,2026-02-07,2026-02-07,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Congressional Elections,1,1,1,1,n<2,,2024-11-04,2024-11-04,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+AUD,RBA Assist Gov Ellis Speaks,1,1,1,1,n<2,,2023-05-03,2023-05-03,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Fed Announcement,1,1,1,1,n<2,,2023-03-12,2023-03-12,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,FOMC Member Brainard Speaks,1,1,1,1,n<2,,2023-01-19,2023-01-19,False,False,A,"fara semnal real (valori constante/placeholder — discurs, licitatie, sarbatoare, sau sub prag)"
+USD,Flash Manufacturing PMI,180,180,84,70,monthly,29.0,2023-01-23,2026-06-23,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Flash Services PMI,142,142,69,58,monthly,29.5,2023-01-23,2026-06-23,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,RCM/TIPP Economic Optimism,55,55,37,30,monthly,28.0,2023-01-09,2026-06-02,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Richmond Manufacturing Index,51,51,21,19,monthly,28.0,2023-01-23,2026-06-23,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Factory Orders m/m,46,46,35,31,monthly,29.0,2023-01-05,2026-07-02,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+GBP,GfK Consumer Confidence,45,45,18,21,monthly,28.0,2023-01-20,2026-06-18,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+CAD,Ivey PMI,45,45,38,32,monthly,30.0,2023-01-05,2026-06-05,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,CB Consumer Confidence,44,44,40,38,monthly,28.0,2023-01-30,2026-06-30,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Core Durable Goods Orders m/m,44,44,15,8,monthly,29.5,2023-01-25,2026-06-25,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+GBP,CBI Realized Sales,44,44,32,30,monthly,30.0,2023-01-25,2026-06-25,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+GBP,CBI Industrial Order Expectations,44,44,24,23,monthly,29.0,2023-01-24,2026-06-23,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,ISM Manufacturing Prices,43,43,38,41,monthly,30.0,2023-01-03,2026-07-01,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+CHF,KOF Economic Barometer,43,43,32,33,monthly,30.0,2023-01-30,2026-06-30,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Philly Fed Manufacturing Index,43,43,38,41,monthly,28.0,2023-01-18,2026-06-18,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Core Retail Sales m/m,43,43,19,13,monthly,30.0,2023-01-17,2026-06-17,True,True,B,redundant cu retail_sales deja scorat
+USD,Empire State Manufacturing Index,43,43,40,37,monthly,30.0,2023-01-16,2026-06-15,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Prelim UoM Consumer Sentiment,43,43,38,40,monthly,28.0,2023-01-13,2026-06-12,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,NFIB Small Business Index,43,43,35,38,monthly,28.0,2023-01-09,2026-06-09,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+GBP,BRC Retail Sales Monitor y/y,43,43,34,29,monthly,28.0,2023-01-09,2026-06-08,True,True,B,redundant cu retail_sales deja scorat
+GBP,Construction PMI,43,43,38,35,monthly,29.5,2023-01-05,2026-06-04,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Chicago PMI,42,42,37,36,monthly,30.5,2023-01-31,2026-06-30,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+CAD,Core Retail Sales m/m,42,42,25,20,monthly,29.0,2023-01-19,2026-06-19,True,True,B,redundant cu retail_sales deja scorat
+JPY,Revised Industrial Production m/m,42,42,35,31,monthly,30.0,2023-01-18,2026-06-12,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+JPY,Economy Watchers Sentiment,42,42,37,39,monthly,30.0,2023-01-12,2026-06-08,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+USD,Revised UoM Consumer Sentiment,41,41,40,39,monthly,28.0,2023-01-27,2026-06-26,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+GBP,Manufacturing Production m/m,41,41,25,13,monthly,29.0,2023-01-12,2026-06-12,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+USD,CPI m/m,41,41,9,9,monthly,29.0,2023-01-11,2026-06-10,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+JPY,Leading Indicators,41,41,33,30,monthly,30.0,2023-01-11,2026-06-05,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+CHF,SECO Consumer Climate,37,37,15,17,monthly,30.0,2023-02-02,2026-06-15,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+GBP,Final GDP q/q,34,34,20,19,monthly,21.0,2023-03-08,2026-06-30,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+NZD,Core Retail Sales q/q,17,17,12,12,quarterly,91.0,2023-02-26,2026-05-21,True,True,B,redundant cu retail_sales deja scorat
+USD,Prelim GDP Price Index q/q,14,14,12,11,quarterly,91.0,2023-02-23,2026-05-28,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+GBP,Prelim GDP q/q,14,14,7,6,quarterly,91.0,2023-02-10,2026-05-14,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+AUD,CPI q/q,14,14,11,7,quarterly,90.0,2023-01-25,2025-10-29,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+GBP,Revised Business Investment q/q,13,13,12,12,quarterly,91.5,2023-03-31,2026-06-30,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+USD,Final GDP Price Index q/q,13,13,12,11,quarterly,91.0,2023-03-30,2026-06-25,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+JPY,BSI Manufacturing Index,13,13,12,12,quarterly,91.0,2023-03-12,2026-06-10,True,True,B,sondaj de sentiment/incredere — redundant cu semnalul PMI/growth existent sau cu alte sondaje similare
+JPY,Final GDP Price Index y/y,13,13,10,9,quarterly,91.0,2023-03-08,2026-06-08,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+USD,Revised Nonfarm Productivity q/q,13,13,13,13,quarterly,90.5,2023-03-02,2026-06-04,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+USD,Revised Unit Labor Costs q/q,13,13,11,13,quarterly,90.5,2023-03-02,2026-06-04,True,True,B,varianta/vintage ulterioara a unei serii deja candidate sau deja scorate
+JPY,Tokyo Core CPI y/y,46,46,25,24,monthly,28.0,2023-01-08,2026-06-25,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+GBP,M4 Money Supply m/m,45,45,17,13,monthly,30.0,2023-01-04,2026-06-29,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+GBP,Net Lending to Individuals m/m,45,45,33,31,monthly,30.0,2023-01-04,2026-06-29,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+JPY,Trade Balance,45,45,36,36,monthly,28.0,2023-01-18,2026-06-16,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+AUD,Private Sector Credit m/m,44,44,8,6,monthly,30.0,2023-01-31,2026-06-30,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+USD,Trade Balance,44,44,39,40,monthly,29.0,2023-01-05,2026-06-09,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+JPY,Monetary Base y/y,43,43,36,38,monthly,30.0,2023-01-04,2026-07-01,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+USD,Durable Goods Orders m/m,43,43,34,32,monthly,30.0,2023-01-25,2026-06-25,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+NZD,Trade Balance,43,43,42,40,monthly,29.0,2023-01-28,2026-06-18,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+GBP,RPI y/y,43,43,30,27,monthly,28.0,2023-01-17,2026-06-17,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+CAD,Trade Balance,43,43,34,34,monthly,29.0,2023-01-05,2026-06-09,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+JPY,Prelim Industrial Production m/m,42,42,30,34,monthly,31.0,2023-01-30,2026-06-29,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+USD,Personal Spending m/m,42,42,13,11,monthly,28.0,2023-01-26,2026-06-25,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+JPY,SPPI y/y,42,42,17,19,monthly,30.0,2023-01-25,2026-06-23,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+JPY,Core Machinery Orders m/m,42,42,37,30,monthly,28.0,2023-01-17,2026-06-16,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+USD,Prelim UoM Inflation Expectations,42,42,22,1,monthly,28.0,2023-01-13,2026-06-12,False,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+GBP,Industrial Production m/m,42,42,21,10,monthly,29.0,2023-01-12,2026-06-12,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+JPY,M2 Money Stock y/y,42,42,22,23,monthly,29.0,2023-01-12,2026-06-08,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+JPY,Bank Lending y/y,42,42,18,19,monthly,31.0,2023-01-11,2026-06-07,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+USD,Personal Income m/m,41,41,13,6,monthly,28.0,2023-01-26,2026-06-25,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+USD,Import Prices m/m,41,41,16,16,monthly,29.5,2023-01-13,2026-06-16,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+USD,Industrial Production m/m,41,41,17,10,monthly,30.0,2023-01-17,2026-06-15,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+CHF,Trade Balance,36,36,34,29,monthly,29.0,2023-01-24,2025-12-18,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+AUD,Import Prices q/q,17,17,13,13,quarterly,91.0,2023-01-27,2026-04-30,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+USD,Advance GDP Price Index q/q,16,16,12,14,quarterly,91.0,2023-01-25,2026-04-30,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+GBP,MPC Official Bank Rate Votes,15,15,6,4,quarterly,69.5,2023-02-02,2026-06-18,True,True,C,"candidat verificat (monetary), curat (detector: single-cluster / DST 1h benign)"
+AUD,Private Capital Expenditure q/q,14,14,12,9,quarterly,91.0,2023-02-23,2026-05-28,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+JPY,Prelim GDP Price Index y/y,14,14,10,10,quarterly,92.0,2023-02-13,2026-05-18,True,True,C,"candidat verificat (inflation), curat (detector: single-cluster / DST 1h benign)"
+USD,Prelim Nonfarm Productivity q/q,14,14,14,13,quarterly,91.0,2023-02-02,2026-05-07,True,True,C,"candidat verificat (labour), curat (detector: single-cluster / DST 1h benign)"
+USD,Prelim Unit Labor Costs q/q,14,14,13,13,quarterly,91.0,2023-02-02,2026-05-07,True,True,C,"candidat verificat (labour), curat (detector: single-cluster / DST 1h benign)"
+CAD,Labor Productivity q/q,13,13,11,7,quarterly,91.0,2023-03-03,2026-06-03,True,True,C,"candidat verificat (labour), curat (detector: single-cluster / DST 1h benign)"
+JPY,Capital Spending q/y,13,13,12,13,quarterly,91.0,2023-03-01,2026-05-31,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+AUD,Company Operating Profits q/q,12,12,12,10,quarterly,92.0,2023-02-27,2026-06-02,True,True,C,"candidat verificat (growth), curat (detector: single-cluster / DST 1h benign)"
+USD,Crude Oil Inventories,196,196,114,66,weekly,7.0,2023-01-04,2026-07-01,True,True,D,nu se incadreaza in growth/inflation/labour/monetary (marfa energetica)
+USD,Natural Gas Storage,191,191,130,134,weekly,7.0,2023-01-04,2026-07-02,True,True,D,nu se incadreaza in growth/inflation/labour/monetary (marfa energetica)
+GBP,Current Account,132,132,114,118,weekly,8.0,2023-01-11,2026-06-30,True,True,D,cadenta implauzibila (UK Current Account e trimestrial; gap saptamanal observat sugereaza contaminare); detector: fara cluster orar dominant clar
+USD,Goods Trade Balance,117,117,101,94,weekly,8.0,2023-01-11,2026-06-26,True,True,D,CONFIRMAT compus: detectorul gaseste 4 clustere orare distincte (12:30/06:00/00:30/01:30) -- cel putin 2-3 serii diferite sub acelasi nume; USD Trade Balance (curat) e candidatul corect
+USD,Housing Starts,81,81,50,40,monthly,25.0,2023-01-16,2026-06-16,True,True,D,CONFIRMAT compus: doua populatii de valori disjuncte (200-294 vs 0.0-1.63) la ore de release diferite (12:13-15 vs 12:30-13:30)
+USD,Federal Budget Balance,50,50,42,44,monthly,29.0,2023-01-11,2026-06-10,True,True,D,fiscal -- nicio categorie din cele 4 nu se potriveste
+CAD,Capacity Utilization Rate,48,48,28,29,monthly,28.0,2023-01-17,2026-03-13,True,True,D,"cadenta observata (lunar) nu se potriveste cu StatCan (trimestrial real) -- neverificat cu detectorul, precautie"
+USD,Construction Spending m/m,47,47,15,11,monthly,30.0,2023-01-02,2026-07-01,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+JPY,Housing Starts y/y,45,45,40,36,monthly,30.0,2023-01-31,2026-06-30,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,Building Permits,45,45,22,19,monthly,30.0,2023-01-18,2026-06-16,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+GBP,Halifax HPI m/m,45,45,19,12,monthly,30.5,2023-01-05,2026-06-05,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+GBP,Nationwide HPI m/m,44,44,16,11,monthly,30.0,2023-01-31,2026-07-01,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+AUD,Building Approvals m/m,44,44,38,35,monthly,29.0,2023-01-09,2026-07-01,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,New Home Sales,44,44,39,35,monthly,29.0,2023-01-25,2026-06-24,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,Pending Home Sales m/m,44,44,36,24,monthly,29.0,2023-01-26,2026-06-17,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,HPI m/m,43,43,14,11,monthly,28.0,2023-01-30,2026-06-30,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+GBP,Mortgage Approvals,43,43,21,21,monthly,30.5,2023-01-04,2026-06-29,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+GBP,Public Sector Net Borrowing,43,43,37,38,monthly,29.0,2023-01-23,2026-06-19,True,True,D,fiscal -- gol de categorie
+USD,TIC Long-Term Purchases,43,43,42,38,monthly,30.0,2023-01-18,2026-06-18,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+USD,Business Inventories m/m,43,43,9,8,monthly,30.0,2023-01-17,2026-06-17,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+GBP,HPI y/y,43,43,36,34,monthly,28.0,2023-01-17,2026-06-17,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,NAHB Housing Market Index,43,43,21,19,monthly,30.0,2023-01-17,2026-06-15,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+GBP,Construction Output m/m,43,43,22,14,monthly,29.0,2023-01-12,2026-06-12,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+GBP,RICS House Price Balance,43,43,35,35,monthly,28.0,2023-01-18,2026-06-10,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,Existing Home Sales,43,43,36,27,monthly,29.0,2023-01-19,2026-06-09,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+CAD,RMPI m/m,42,42,32,29,monthly,30.0,2023-01-17,2026-06-18,True,True,D,suprapunere ambigua cu ppi_yoy existent (materii prime vs produs industrial)
+CAD,NHPI m/m,42,42,8,5,monthly,30.0,2023-01-23,2026-06-17,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+CAD,Foreign Securities Purchases,42,42,38,40,monthly,30.0,2023-01-17,2026-06-16,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+CAD,Wholesale Sales m/m,42,42,29,29,monthly,31.0,2023-01-15,2026-06-15,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+JPY,Tertiary Industry Activity m/m,42,42,24,12,monthly,30.0,2023-01-17,2026-06-15,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+GBP,Index of Services 3m/3m,42,42,12,14,monthly,29.0,2023-01-12,2026-06-12,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+USD,Consumer Credit m/m,42,42,40,33,monthly,30.0,2023-01-08,2026-06-05,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+JPY,Household Spending y/y,42,42,33,36,monthly,31.0,2023-01-08,2026-06-04,True,True,D,suprapunere ambigua cu retail_sales deja scorat pentru JPY
+USD,S&P/CS Composite-20 HPI y/y,41,41,35,33,monthly,28.0,2023-01-30,2026-06-30,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+CAD,Manufacturing Sales m/m,41,41,31,31,monthly,31.0,2023-01-15,2026-06-15,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+CAD,Building Permits m/m,41,41,40,34,monthly,30.0,2023-01-09,2026-06-11,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+USD,Final Wholesale Inventories m/m,41,41,14,14,monthly,30.0,2023-01-10,2026-06-09,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+USD,Wards Total Vehicle Sales,41,41,20,18,monthly,30.0,2023-01-02,2026-04-30,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+USD,Prelim Wholesale Inventories m/m,39,39,14,10,monthly,30.0,2023-01-25,2026-06-26,True,True,D,tehnic/flux de capital/inventar — relevanta FX ambigua
+GBP,PPI Input m/m,38,38,20,16,monthly,28.0,2023-01-17,2026-06-17,True,True,D,suprapunere ambigua cu ppi_yoy existent (input vs output stage)
+GBP,Housing Equity Withdrawal q/q,19,19,15,14,quarterly,91.0,2023-01-11,2026-04-08,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+NZD,PPI Input q/q,15,15,12,8,quarterly,91.0,2023-02-20,2026-05-18,True,True,D,"suprapunere ambigua cu ppi_yoy existent (input vs output stage) -- decizie de trading, nu automata"
+GBP,Prelim Business Investment q/q,14,14,13,13,quarterly,91.0,2023-02-10,2026-05-14,True,True,D,"componenta GDP, relevanta FX redusa/nisa"
+USD,Employment Cost Index q/q,14,14,7,5,quarterly,92.0,2023-01-31,2026-04-30,True,True,D,suprapunere ambigua cu wage_growth existent (masura de cost al muncii vs AHE)
+GBP,BOE Monetary Policy Report,14,14,2,2,quarterly,91.0,2023-02-02,2026-04-30,False,True,D,nu e un print numeric standard -- ambiguu
+JPY,Tankan Manufacturing Index,13,13,11,9,quarterly,91.0,2023-04-02,2026-06-30,True,True,D,"posibil superior/complementar manufacturing_pmi existent (sondaj oficial BOJ) -- decizie de trading, nu redundanta automata"
+JPY,Tankan Non-Manufacturing Index,13,13,9,9,quarterly,91.0,2023-04-02,2026-06-30,True,True,D,posibil superior/complementar services_pmi existent -- decizie de trading
+NZD,Overseas Trade Index q/q,13,13,13,12,quarterly,91.5,2023-03-01,2026-06-02,True,True,D,"indice de preturi comert, suprapunere partiala cu conceptul Trade Balance"
+AUD,Construction Work Done q/q,13,13,13,9,quarterly,91.0,2023-02-22,2026-05-27,True,True,D,locuinte/constructii — nicio categorie din cele 4 nu se potriveste (gol de taxonomie)
+AUD,Goods Trade Balance,7,7,7,7,monthly,28.0,2026-01-08,2026-07-02,True,False,D,semnal real dar sub pragul de esantion (7<24 pt. cadenta monthly) — de urmarit
+USD,Final Manufacturing PMI,7,7,7,7,monthly,30.0,2026-01-02,2026-07-01,True,False,D,semnal real dar sub pragul de esantion (7<24 pt. cadenta monthly) — de urmarit
+JPY,Consumer Confidence,7,7,7,7,monthly,31.0,2026-01-08,2026-07-01,True,False,D,semnal real dar sub pragul de esantion (7<24 pt. cadenta monthly) — de urmarit
+USD,Capacity Utilization Rate,6,6,4,5,monthly,31.0,2026-01-16,2026-06-15,True,False,D,semnal real dar sub pragul de esantion (6<24 pt. cadenta monthly) — de urmarit
+CAD,Housing Starts,6,6,6,6,monthly,31.0,2026-01-16,2026-06-15,True,False,D,semnal real dar sub pragul de esantion (6<24 pt. cadenta monthly) — de urmarit
+GBP,Goods Trade Balance,6,6,6,6,monthly,29.0,2026-01-15,2026-06-12,True,False,D,semnal real dar sub pragul de esantion (6<24 pt. cadenta monthly) — de urmarit
+JPY,Current Account,6,6,6,5,monthly,28.0,2026-01-12,2026-06-07,True,False,D,semnal real dar sub pragul de esantion (6<24 pt. cadenta monthly) — de urmarit
+USD,Final Services PMI,5,5,5,5,monthly,29.0,2026-01-06,2026-06-03,True,False,D,semnal real dar sub pragul de esantion (5<24 pt. cadenta monthly) — de urmarit
+USD,Current Account,3,3,3,3,quarterly,80.0,2026-01-14,2026-06-24,True,False,D,semnal real dar sub pragul de esantion (3<8 pt. cadenta quarterly) — de urmarit
+CAD,Current Account,3,3,3,3,quarterly,90.0,2026-02-26,2026-05-28,True,False,D,semnal real dar sub pragul de esantion (3<8 pt. cadenta quarterly) — de urmarit
+USD,Omdia Total Vehicle Sales,2,2,2,2,monthly,29.0,2026-06-01,2026-06-30,True,False,D,semnal real dar sub pragul de esantion (2<24 pt. cadenta monthly) — de urmarit
+NZD,Current Account,2,2,2,2,quarterly,91.0,2026-03-17,2026-06-16,True,False,D,semnal real dar sub pragul de esantion (2<8 pt. cadenta quarterly) — de urmarit
+USD,Core CPI y/y,2,2,2,2,monthly,29.0,2026-05-12,2026-06-10,True,False,D,semnal real dar sub pragul de esantion (2<24 pt. cadenta monthly) — de urmarit
+AUD,Current Account,2,2,2,2,quarterly,91.0,2026-03-03,2026-06-02,True,False,D,semnal real dar sub pragul de esantion (2<8 pt. cadenta quarterly) — de urmarit
