@@ -87,14 +87,62 @@ Am încercat să verific empiric care aliniere e corectă:
   săptămânii — **exact dizolvarea la care task-ul se aștepta**, imposibil
   de atribuit vizual unei singure publicări.
 
-**Concluzie onestă**: nu am putut confirma sau infirma alinierea corectă
-pentru JPY/NZD cu efort rezonabil — verificarea circulară (am nevoie de
-un semnal curat ca să confirm alinierea, dar diluarea D1 e exact
-problema pe care task-ul o semnalează). Pentru pragul de fezabilitate
-nu a contat (7 perechi oricum, identic sub ambele alinieri) — dar dacă
-fereastra de preț crește suficient încât JPY/NZD să devină testabile pe
-viitor, **alinierea trebuie rezolvată înainte, nu presupusă** — 80-87%
-din evenimentele acestor două valute sunt exact în zona ambiguă.
+**Concluzie inițială (infirmată parțial mai jos)**: nu am putut confirma
+sau infirma alinierea corectă pentru JPY/NZD cu efort rezonabil prin
+corelații — verificarea circulară (am nevoie de un semnal curat ca să
+confirm alinierea, dar diluarea D1 e exact problema pe care task-ul o
+semnalează).
+
+### 3b. Rezolvat parțial, fără corelații — `datetime_utc` (partea de
+calendar) e confirmat corect; ambiguitatea rămâne strict pe partea de preț
+
+Metodă cerută separat: comparat `datetime_utc` direct cu ora de
+publicare cunoscută public, pentru 8 serii cu program fix (nu corelații).
+
+**JPY** (JST = UTC+9, fără DST — test simplu, fără variație sezonieră):
+
+| Indicator | Ora publicării (JST, cunoscută) | UTC așteptat | UTC observat în parquet |
+|---|---|---|---|
+| Tokyo Core CPI y/y | 8:30 | 23:30 (ziua anterioară) | 23:30 (46/48), 22:30 (2/48) |
+| National CPI y/y (`jpy_cpi`) | 8:30 | 23:30 | 23:30 (43/44) |
+| Unemployment Rate | 8:30 | 23:30 | 23:30 (42/43) |
+| Retail Sales m/m | 8:50 | 23:50 | 23:50 (40/42) |
+| PPI y/y | 8:50 | 23:50 | 23:50 (42/42) |
+
+Potrivire aproape perfectă pe toate cele 5 (câteva excepții izolate —
+1-2 apariții per serie — consistente cu reprogramări reale ocazionale,
+nu cu un offset sistematic; JST nu are DST, deci nu există o explicație
+sezonieră pentru ele).
+
+**NZD** (NZST=UTC+12 / NZDT=UTC+13, cu DST — test mai tare, pentru că
+un offset greșit ar produce un tipar INCONSISTENT sezonier, nu doar
+constant):
+
+`nzd_cpi` (10:45 AM ora locală NZ, program fix Stats NZ), pe tot
+istoricul 2023-2026: **21:45 UTC în lunile ianuarie/octombrie (NZDT,
++13) și 22:45 UTC în aprilie/iulie (NZST, +12)** — exact tiparul sezonier
+așteptat pentru un ceas DST-aware corect. Identic pentru
+`nzd_employment_change`/`nzd_unemployment_rate` (aceleași 21:45/22:45,
+aceeași alternanță sezonieră).
+
+**Concluzie, verificată nu presupusă: `datetime_utc` nu are niciun
+offset — nici pentru JPY, nici pentru NZD.** Conversia UTC (via
+`jblanked_to_utc`) e corectă, inclusiv gestionarea DST pentru NZD.
+Presupunerea că problema de aliniere ar putea veni din partea de
+calendar **e infirmată** — sursa oricărei probleme de aliniere e
+EXCLUSIV `data/price_history.parquet` (fusul serverului MT5 pentru
+bara D1), nicidecum `data/economic_calendar_ff.parquet`.
+
+**Afectează ceva în scoring?** Verificat, nu presupus: **nu.**
+`datetime_utc`/`release_dt` alimentează direct `compute_indicator_score`
+(fereastra de prospețime `max_age_days`, gruparea flash/final
+`dedup_gap_days`, poarta `released` prin dată) — fiind confirmat corect,
+niciunul din aceste mecanisme e afectat pentru JPY/NZD. Singurul lucru
+blocat de ambiguitatea rămasă e analiza preț↔surpriză de mai sus — care
+oricum e deja nefezabilă din lipsă de fereastră (punctul 2), independent
+de alinierea D1. **Nimic de reparat în scoring; nimic de reparat în
+calendar — problema, dacă o fi vreodată relevantă, e strict în ingest-ul
+de preț MT5.**
 
 ## Ce NU spune această măsurare
 
@@ -113,9 +161,11 @@ oprit la "nemăsurabilă cu încredere". Nu pot spune:
 Măsurarea devine parțial fezabilă (pentru indicatorii lunari) pe măsură
 ce `data/price_history.parquet` acumulează mai multe luni — reverifică
 pragul de 30 peste ~8-10 luni. Pentru indicatorii trimestriali, ar avea
-nevoie de ani. Pentru JPY/NZD specific, alinierea de fus a prețului D1
-trebuie confirmată direct cu brokerul/EA înainte de orice măsurare —
-nu poate fi dedusă din date cu încredere, cum s-a verificat aici.
+nevoie de ani. Pentru JPY/NZD specific: `datetime_utc` (partea de
+calendar) e confirmat corect (§3b) — rămâne DOAR fusul serverului MT5 al
+prețului D1 de confirmat direct cu brokerul/EA înainte de orice măsurare
+viitoare pe aceste două valute; nu poate fi dedus din prețuri cu
+încredere (§3), dar nici nu mai e o necunoscută pe partea de calendar.
 
 ## Ce NU s-a făcut (conform scope)
 
