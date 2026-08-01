@@ -1,8 +1,28 @@
 # Proposal — suprimarea alertelor cronice pentru watchdog-urile de freshness
 
-Status: **analiză, zero cod scris**. Branch `fix/alert-noise-and-ff-archive`,
-worktree `../macro-dev`. **STOP înainte de implementare, cum s-a cerut** —
-recomandarea de mai jos e pentru confirmare, nu execuție.
+Status: **implementat** (opțiunea A, confirmată). Branch
+`fix/alert-noise-and-ff-archive`, worktree `../macro-dev`.
+
+## Implementare
+
+- `config/alert_exceptions.yaml` — cele două excepții cunoscute (AUD/USD
+  `core_cpi`), fiecare cu motiv, referință la document, `review_by` derivat
+  din următoarea publicare așteptată a fiecărei serii (nu arbitrar — vezi
+  comentariile din fișier).
+- `src/alert_exceptions.py` — `classify_stale_rows` (aplică excepțiile,
+  expirare zgomotoasă cu data în mesaj) + `find_orphaned_exceptions`
+  (excepții a căror serie nu mai e stale — semnalate ca ștergibile).
+- `scripts/check_calendar_freshness.py` — conectat: rândurile excepate nu
+  mai declanșează `exit 1`; cele expirate sau netriajate da, cu mesaj
+  distinct.
+- 9 teste noi (`tests/test_alert_exceptions.py`), acoperind exact cele trei
+  cerințe: expirare zgomotoasă, orfani semnalați, și criteriul
+  nenegociabil — un defect nou (altă serie SAU alt indicator pe aceeași
+  valută) alertează mereu, indiferent de excepțiile active. 463 teste verzi
+  (454 + 9).
+
+Analiza originală (opțiunile A/B/C, tabelul comparativ, motivele
+recomandării) rămâne mai jos neschimbată, ca înregistrare a deciziei.
 
 ## Problema exactă
 
