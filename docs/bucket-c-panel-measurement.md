@@ -4,6 +4,9 @@ Status: **investigație încheiată.** Branch `eval/bucket-c-candidates`,
 worktree `../macro-dev`. Zero scriere în parquet, zero modificări de
 config — panelul e calculat integral în memorie.
 
+**Decizie ulterioară (după acest document)**: toți cei 17 aprobați pentru
+adăugare — vezi `docs/bucket-c-implementation.md` pentru FAZA 3.
+
 ## Metodă — counterfactual, aceeași ca la măsurarea de asimetrie
 
 **Aceeași limitare, marcată explicit ca acolo**: regulile de scoring de
@@ -98,6 +101,45 @@ cine mișcă scorurile cel mai des.
   jumătatea inferioară la frecvență (locurile 11,13,15,17) — consistent
   cu observația din FAZA 2 că adăugarea lor cumulată la USD/growth nu a
   schimbat nimic net.
+
+## Interpretarea corelației negative — ce măsoară de fapt frecvența
+
+**Aprobare primită**: se adaugă toți cei 17, pentru că niciun clasament
+disponibil nu justifică o selecție — meritul (FAZA 1) nu prezice frecvența
+(ρ = -0.38), iar frecvența nu prezice valoarea de tranzacționare (mai jos).
+
+De ce corelația e negativă, nu doar zero: **frecvența cu care un candidat
+mișcă scorul cu ≥0.25 măsoară cât de IMPREVIZIBIL e, nu cât de
+INFORMATIV**. `score_precise` se mișcă atunci când `actual` diferă de
+`consensus` — un consens SLAB (piața nu are o estimare bună) produce
+surprize mari și frecvente, indiferent dacă indicatorul contează pentru
+cineva. Un indicator **High-impact** ca Tokyo Core CPI are consens STRÂNS
+tocmai pentru că e urmărit intens — mulți analiști îl modelează, deci
+`actual` rareori se abate mult de la `consensus`, deci mișcă scorul mai
+rar. `AUD Private Capital Expenditure q/q`, cu impact FF `None`, e urmărit
+de puțini, consensul e mai slab calibrat, iar surprizele sunt mari și
+frecvente — nu pentru că informația contează mai mult, ci pentru că
+nimeni nu a "prețuit-o" bine în avans.
+
+**Deci: frecvența e proxy pentru predictibilitatea consensului, nu pentru
+valoarea indicatorului.** Cele două măsurători din această evaluare —
+meritul (FAZA 1, folosind impactul FF ca proxy de relevanță) și frecvența
+(acest document, folosind mișcarea scorului ca proxy de imprevizibilitate)
+— răspund la întrebări diferite, nu la variante ale aceleiași întrebări.
+Aici e coerent: ρ negativă e explicabilă mecanic, nu o coincidență.
+
+### Fir deschis, fără acțiune
+
+Nici meritul FF, nici frecvența nu măsoară ce contează de fapt pentru un
+dashboard de trading: **dacă surpriza mișcă efectiv prețul**. Asta ar
+cere corelarea surprizei (`actual - consensus`) cu mișcarea prețului
+instrumentului în fereastra post-publicare (ex. rentabilitatea pe 15-60
+min după release) — o măsurătoare complet diferită de tot ce s-a făcut
+până acum în această evaluare (care a folosit doar `score_precise`/bias
+intern, niciodată prețul de piață). Ar atinge **toți indicatorii
+existenți deja scorați, nu doar cei 17 candidați** — e o întrebare despre
+tot modelul, nu despre bucket C. Notat aici ca fir deschis explicit,
+nicio acțiune luată.
 
 ## Ce nu se schimbă
 
