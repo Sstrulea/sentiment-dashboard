@@ -87,9 +87,33 @@ def _valid_period(s: pd.Series) -> pd.Series:
 def _keep_latest_published(rows: pd.DataFrame):
     """Index of the row to keep for one group: the latest release_dt among rows
     with a non-null `actual` (a future/scheduled row has null actual → never
-    chosen); if the whole group is unpublished, keep its latest row."""
+    chosen); if the whole group is unpublished, keep its latest row.
+
+    Among published rows, a NONZERO actual beats a zero one, regardless of
+    which is more recent (docs/dedup-latest-wins-bug.md). "Latest wins" alone
+    assumes a later release_dt is more authoritative — true for a genuine
+    flash→final revision, false for a ghost/placeholder row (actual=0.0,
+    forecast/previous copied from its real neighbor) that happens to be
+    published a few hours or days AFTER the real print instead of before (the
+    more common CHF/GBP direction). Only reachable for `can_be_zero: true`
+    indicators — everywhere else `to_scoring_frame` turns actual==0.0 into NaN
+    before this ever runs, so it's excluded by the `published` filter already.
+
+    Known theoretical risk, not observed: a genuine later revision inside the
+    same dedup cluster (up to `gap_days` apart) that corrects a real flash
+    DOWN to an honest 0.0 would be wrongly passed over in favor of the stale
+    flash. Checked against every confirmed real instance in the current
+    dataset (4, across employment_change/interest_rate_decision/retail_sales)
+    — all 4 carry forecast/previous identical to their cluster neighbor, the
+    fingerprint of a duplicate ghost row, not a distinct revision with its own
+    values. No counterexample found; revisit if a future case has genuinely
+    different forecast/previous from its neighbor.
+    """
     published = rows[rows["actual"].notna()]
-    pick = published if not published.empty else rows
+    if published.empty:
+        return rows["release_dt"].idxmax()
+    nonzero = published[published["actual"] != 0.0]
+    pick = nonzero if not nonzero.empty else published
     return pick["release_dt"].idxmax()
 
 

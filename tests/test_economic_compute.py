@@ -758,6 +758,45 @@ def test_dedup_proximity_fallback_when_period_missing():
 
 
 # ---------------------------------------------------------------------------
+# Fix 3 — _keep_latest_published: nonzero beats zero regardless of timestamp
+# (docs/dedup-latest-wins-bug.md — the JPY Retail Sales 2026-04-29 case: a
+# ghost/placeholder row published AFTER the real print used to win on
+# "latest wins" alone)
+# ---------------------------------------------------------------------------
+
+def test_ghost_zero_published_after_real_value_no_longer_wins():
+    # JPY Retail Sales 2026-04-29: real print (1.7) at 22:50, ghost placeholder
+    # (0.0, forecast/previous copied from the real row) an hour later at 23:50.
+    # "Latest wins" alone used to pick the ghost; the fix must pick the real one.
+    df = _rows("JPY", "retail_sales",
+               ["2026-04-29 22:50", "2026-04-29 23:50"], [1.7, 0.0], [0.9, 0.9])
+    dd = _dedup_flash_final(df.sort_values("release_dt").reset_index(drop=True), 18)
+    assert len(dd) == 1
+    assert dd["actual"].iloc[0] == 1.7
+
+
+def test_all_zero_group_falls_back_to_latest_unchanged():
+    # Every published row in the cluster is a genuine 0.0 (e.g. a real "no
+    # change" reading) -- with no nonzero candidate to prefer, behavior must
+    # stay exactly what it was before the fix: latest release_dt wins.
+    df = _rows("USD", "employment_change",
+               ["2024-01-05", "2024-01-10"], [0.0, 0.0], [0.0, 0.0])
+    dd = _dedup_flash_final(df.sort_values("release_dt").reset_index(drop=True), 18)
+    assert len(dd) == 1
+    assert dd["actual"].iloc[0] == 0.0
+    assert dd["release_dt"].iloc[0] == pd.Timestamp("2024-01-10")  # still the latest
+
+
+def test_group_without_zeros_is_unaffected():
+    # No zero anywhere in the cluster -- the fix's nonzero/zero split never
+    # engages, ordinary flash/final "latest wins" behavior is identical.
+    df = _flash_final_df().sort_values("release_dt").reset_index(drop=True)
+    dd = _dedup_flash_final(df, 18)
+    assert len(dd) == 3
+    assert list(dd["actual"]) == [51, 51, 51]   # unchanged from test_dedup_keeps_one_final_per_period
+
+
+# ---------------------------------------------------------------------------
 # SENTIMENT factor in the FX score (Step 6) — weight-0.5 currency-level factor
 # ---------------------------------------------------------------------------
 
