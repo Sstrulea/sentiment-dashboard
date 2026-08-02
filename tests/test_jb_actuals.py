@@ -334,3 +334,51 @@ def test_range_span_is_gap_aware(tmp_path, monkeypatch):
     assert seen["from"] == date(2026, 5, 16)                            # capped at 60d
 
 
+# --- flagged_bad quality lookup (fix/can-be-zero-transform, 2026-08 audit) --
+
+def test_build_flagged_bad_lookup_whitelist_on_real_fixture():
+    # real capture, not synthetic -- zero raises expected against known vocab
+    lookup = J.build_flagged_bad_lookup(raw_dir=Path("/nonexistent"), archive_path=FIXTURE)
+    assert len(lookup) > 0
+    assert all(isinstance(v, bool) for v in lookup.values())
+
+
+def test_build_flagged_bad_lookup_raises_on_unrecognized_quality(tmp_path):
+    # a value present but in NEITHER QUALITY_ACCEPTED nor QUALITY_FLAGGED must
+    # crash -- whitelist discipline, not "anything not explicitly bad is fine".
+    # Deliberately NOT added to either set (that's the whole point of the test).
+    bogus = tmp_path / "jb_range_bogus.json"
+    bogus.write_text(json.dumps([{
+        "Name": "CPI m/m", "Currency": "CHF", "Date": "2026.07.02 09:30:00",
+        "Actual": 0.0, "Forecast": 0.1, "Previous": 0.2,
+        "Quality": "Revised Data", "Strength": "Strong Data",
+    }]))
+    with pytest.raises(ValueError, match="unrecognized Quality 'Revised Data'"):
+        J.build_flagged_bad_lookup(raw_dir=tmp_path, archive_path=None)
+
+
+def test_build_flagged_bad_lookup_raises_on_unrecognized_strength(tmp_path):
+    bogus = tmp_path / "jb_range_bogus.json"
+    bogus.write_text(json.dumps([{
+        "Name": "CPI m/m", "Currency": "CHF", "Date": "2026.07.02 09:30:00",
+        "Actual": 0.0, "Forecast": 0.1, "Previous": 0.2,
+        "Quality": "Good Data", "Strength": "Moderate Data",
+    }]))
+    with pytest.raises(ValueError, match="unrecognized Strength 'Moderate Data'"):
+        J.build_flagged_bad_lookup(raw_dir=tmp_path, archive_path=None)
+
+
+def test_build_flagged_bad_lookup_absent_field_is_not_raise_and_not_clean(tmp_path):
+    # field ABSENT (key missing on the raw dict entirely) is a THIRD state,
+    # distinct from "present but unrecognized" (raises) and "present, known"
+    # (accepted/flagged) -- no signal, no raise, no lookup entry created.
+    absent = tmp_path / "jb_range_absent.json"
+    absent.write_text(json.dumps([{
+        "Name": "CPI m/m", "Currency": "CHF", "Date": "2026.07.02 09:30:00",
+        "Actual": 0.0, "Forecast": 0.1, "Previous": 0.2,
+        # no "Quality", no "Strength" key at all
+    }]))
+    lookup = J.build_flagged_bad_lookup(raw_dir=tmp_path, archive_path=None)
+    assert ("CHF", "CPI m/m", date(2026, 7, 2)) not in lookup
+
+

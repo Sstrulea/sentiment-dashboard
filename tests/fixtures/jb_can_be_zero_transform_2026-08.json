@@ -1,0 +1,58 @@
+[
+  {
+    "Name": "CPI m/m",
+    "Currency": "CHF",
+    "Event_ID": 756020001,
+    "Category": "Consumer Inflation Report",
+    "Impact": "High",
+    "Date": "2026.07.02 09:30:00",
+    "Actual": 0.0,
+    "Forecast": 0.1,
+    "Previous": 0.2,
+    "Outcome": "Actual < Forecast < Previous",
+    "Strength": "Strong Data",
+    "Quality": "Good Data"
+  },
+  {
+    "Name": "CPI m/m",
+    "Currency": "CHF",
+    "Event_ID": 756020001,
+    "Category": "Consumer Inflation Report",
+    "Impact": "High",
+    "Date": "2026.07.02 08:30:00",
+    "Actual": 0.0,
+    "Forecast": 0.1,
+    "Previous": 0.2,
+    "Outcome": "Actual < Forecast < Previous",
+    "Strength": "Strong Data",
+    "Quality": "Good Data"
+  },
+  {
+    "Name": "CPI y/y",
+    "Currency": "GBP",
+    "Event_ID": 826010012,
+    "Category": "Consumer Inflation Report",
+    "Impact": "High",
+    "Date": "2024.01.15 09:00:00",
+    "Actual": 0.0,
+    "Forecast": 0.0,
+    "Previous": 0.0,
+    "Outcome": "Actual = Forecast = Previous",
+    "Strength": "Weak Data",
+    "Quality": "Bad Data"
+  },
+  {
+    "Name": "Core CPI m/m",
+    "Currency": "USD",
+    "Event_ID": 840030006,
+    "Category": "Consumer Inflation Report",
+    "Impact": "High",
+    "Date": "2026.07.14 15:30:00",
+    "Actual": 0.0,
+    "Forecast": 0.2,
+    "Previous": 0.2,
+    "Outcome": "Actual < Forecast = Previous",
+    "Strength": "Strong Data",
+    "Quality": "Bad Data"
+  }
+]

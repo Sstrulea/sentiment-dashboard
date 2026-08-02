@@ -34,7 +34,7 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from .econ_calendar_ff import CANON_COLUMNS, parse_jblanked_range
+from .econ_calendar_ff import CANON_COLUMNS, jblanked_to_utc, parse_jblanked_range
 from .ff_refresh import FF_PARQUET, load_pipeline_config, merge_weekly
 
 log = logging.getLogger(__name__)
@@ -175,6 +175,100 @@ def clean_jblanked_actuals(jb: pd.DataFrame,
               .sort_values(["currency", "canonical_id", "datetime_utc"])
               .reset_index(drop=True))
     return out[CANON_COLUMNS]
+
+
+# ---------------------------------------------------------------------------
+# Raw-payload quality lookup (fix/can-be-zero-transform)
+# ---------------------------------------------------------------------------
+
+ARCHIVE_JSON = ROOT / "data" / "archive" / "ff_calendar_range.json"
+
+# WHITELIST, not blacklist (2026-08 audit finding: the original blacklist let
+# an unrecognized future Quality/Strength value silently pass as "not bad" —
+# the exact silent-corruption risk this guard exists to prevent). Verified
+# closed against ALL available jb_raw history (disk + git, 2194 raw rows,
+# 2026-08): exactly these values, nothing else, ever.
+QUALITY_ACCEPTED = {"Good Data"}
+QUALITY_FLAGGED = {"Bad Data", "Data Not Loaded"}
+STRENGTH_ACCEPTED = {"Strong Data", "Weak Data"}
+STRENGTH_FLAGGED = {"Data Not Loaded"}
+
+
+def _field_verdict(value, accepted: set, flagged: set, *, field: str,
+                   currency: str, name_raw: str, dt) -> Optional[bool]:
+    """None = field ABSENT on this raw event (no signal — NOT the same as
+    "unknown value"; see build_flagged_bad_lookup). True = flagged. False =
+    accepted. FAIL LOUD (same discipline as normalize_ff_value): a PRESENT
+    value that is in neither set raises, with currency/name_raw/datetime/value
+    — a future JBlanked Quality/Strength value must crash this decision, not
+    silently fall through as clean."""
+    if value is None:
+        return None
+    if value in flagged:
+        return True
+    if value in accepted:
+        return False
+    raise ValueError(
+        f"unrecognized {field} {value!r} for currency={currency!r} "
+        f"name_raw={name_raw!r} datetime={dt} "
+        f"(accepted={sorted(accepted)}, flagged={sorted(flagged)})"
+    )
+
+
+def build_flagged_bad_lookup(raw_dir: Path = RAW_DIR,
+                             archive_path: Optional[Path] = ARCHIVE_JSON
+                             ) -> dict[tuple[str, str, date], bool]:
+    """(currency, name_raw, UTC release date) -> True if ANY raw JBlanked event
+    at that key (backfill archive + retained daily-pull payloads) carries
+    Quality or Strength in the FLAGGED whitelist (QUALITY_FLAGGED /
+    STRENGTH_FLAGGED).
+
+    Used by ff_scoring.to_scoring_frame's can_be_zero suffix-widening guard: a
+    0.0 actual whose real transform is m/m or q/q is only treated as
+    legitimate if this lookup says it is NOT flagged. `Bad Data` catches a
+    real-shaped print JBlanked itself considers questionable (measured
+    2026-08: 53/107 candidate zeros); `Data Not Loaded` catches the classic
+    unreleased placeholder landing as literal 0.0 because the backfill
+    (data/archive/, this function's `archive_path`) never went through
+    `clean_jblanked_actuals` above — measured 2026-08: 22/107 candidates,
+    NOT caught by a Quality/Strength == 'Bad Data' check alone.
+
+    Per-event field ABSENCE ("no signal", `_field_verdict` returns None) is
+    NOT confused with a PRESENT-but-unrecognized value (raises). An event
+    where BOTH Quality and Strength are absent contributes nothing to the
+    lookup for its key — it neither marks it flagged nor clean, leaving it to
+    another event at the same key, or to the caller's lookup-miss default.
+
+    A MISSING key (no raw event found for that currency/name_raw/date in
+    either source) is the caller's responsibility to treat conservatively —
+    this function only returns entries it actually found; it never fabricates
+    a `False`. Pure read-only I/O, no mutation of either source.
+    """
+    lookup: dict[tuple[str, str, date], bool] = {}
+    sources: list[list[dict]] = []
+    if archive_path is not None and Path(archive_path).exists():
+        sources.append(json.loads(Path(archive_path).read_text()))
+    if raw_dir is not None and Path(raw_dir).exists():
+        for p in sorted(Path(raw_dir).glob("jb_range_*.json")):
+            sources.append(json.loads(p.read_text()))
+    for events in sources:
+        for e in events:
+            dt = jblanked_to_utc(e.get("Date", ""))
+            if dt is None:
+                continue
+            currency = str(e.get("Currency", "")).strip()
+            name_raw = str(e.get("Name", "")).strip()
+            q = _field_verdict(e.get("Quality"), QUALITY_ACCEPTED, QUALITY_FLAGGED,
+                               field="Quality", currency=currency, name_raw=name_raw, dt=dt)
+            s = _field_verdict(e.get("Strength"), STRENGTH_ACCEPTED, STRENGTH_FLAGGED,
+                               field="Strength", currency=currency, name_raw=name_raw, dt=dt)
+            verdicts = [v for v in (q, s) if v is not None]
+            if not verdicts:
+                continue  # both fields absent on this event -- no signal
+            bad = any(verdicts)
+            key = (currency, name_raw, dt.date())
+            lookup[key] = lookup.get(key, False) or bad
+    return lookup
 
 
 # ---------------------------------------------------------------------------

@@ -50,6 +50,16 @@ ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
 
 _PERIOD_SUFFIX = re.compile(r"\s+(y/y|q/q|m/m|3m/y|q/y|w/w)\s*$", re.IGNORECASE)
+_KNOWN_PERIOD_SUFFIXES = {"y/y", "q/q", "m/m", "3m/y", "q/y", "w/w"}
+# Broader than _PERIOD_SUFFIX: matches ANY trailing "<word>/<word>"-shaped token,
+# not just the known ones — used by extract_period_suffix to fail loud on an
+# UNRECOGNIZED slash-shaped suffix (e.g. a future "6m/y") instead of silently
+# treating it as "no suffix". Deliberately does NOT try to catch no-slash
+# conventions (e.g. "MoM") — validated empirically (2026-08) against every
+# name_raw feeding a scored indicator today: a broader "any short trailing
+# token" heuristic false-positives on legitimate suffix-less names ("ISM
+# Manufacturing PMI" ends in "PMI", same shape as "MoM").
+_TRAILING_SLASH_TOKEN = re.compile(r"\s+(\d*[A-Za-z]+/[A-Za-z]+)\s*$")
 
 
 # ---------------------------------------------------------------------------
@@ -160,6 +170,30 @@ def canonical_id(currency: str, name_canonical: str) -> str:
     stable id, e.g. ('USD','Core CPI y/y') -> 'usd_core_cpi'."""
     base = f"{currency}_{_strip_period(name_canonical)}".lower()
     return re.sub(r"_+", "_", re.sub(r"[^a-z0-9]+", "_", base)).strip("_")
+
+
+def extract_period_suffix(name_raw: str) -> str:
+    """The REAL trailing period-transform token of a raw JBlanked/FF event name,
+    e.g. 'CPI m/m' -> 'm/m', 'Employment Change' -> 'none'.
+
+    FAIL LOUD (same discipline as normalize_ff_value): a trailing "<word>/<word>"
+    -shaped token that ISN'T one of the known suffixes raises ValueError instead
+    of silently returning 'none' — a future feed name using an unmodeled slash
+    convention (e.g. '6m/y') must crash a can_be_zero decision that depends on
+    it, not silently fall back to always-quarantine. A name with NO trailing
+    slash token (levels/counts/decisions — 'Employment Change', 'Federal Funds
+    Rate') genuinely has no period suffix: returns 'none', no raise. Validated
+    (2026-08) against every name_raw feeding a scored indicator today: 0 raises.
+    """
+    if not isinstance(name_raw, str):
+        raise ValueError(f"name_raw must be str, got {type(name_raw)!r}")
+    m = _TRAILING_SLASH_TOKEN.search(name_raw)
+    if m is None:
+        return "none"
+    token = m.group(1).lower()
+    if token not in _KNOWN_PERIOD_SUFFIXES:
+        raise ValueError(f"unrecognized period suffix {token!r} in name_raw {name_raw!r}")
+    return token
 
 
 # ---------------------------------------------------------------------------

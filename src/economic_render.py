@@ -770,9 +770,11 @@ def _load_calendar_frame() -> pd.DataFrame:
             log.warning("FF calendar parquet missing — empty Economic page.")
             return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
         from src.ff_scoring import build_matcher, to_scoring_frame
+        from src.jb_actuals import build_flagged_bad_lookup
         ffdf = pd.read_parquet(FF_PARQUET)
         ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
-        cal = to_scoring_frame(ffdf, build_matcher())
+        flagged_bad = build_flagged_bad_lookup()
+        cal = to_scoring_frame(ffdf, build_matcher(), flagged_bad=flagged_bad)
         cal["release_dt"] = pd.to_datetime(cal["release_dt"])
         q_path = ROOT / "data" / "ff_quarantine.parquet"
         if q_path.exists() and len(cal):
