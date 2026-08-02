@@ -102,6 +102,101 @@ parte — nu e "neschimbat", e un print real schimbat cu altul.
 Recuperarea lui depinde de rezolvarea problemei generale de duplicare
 descrise mai sus. Nu se rezolvă separat.
 
+## FAZA 0 (2026-08) — diagnostic D1-D5, verdict: SUB PRAG
+
+Măsurătoare de continuare, `scripts/measure/archive_duplicate_diagnosis.py`
+(read-only). Criteriul de acceptare fixat înainte de măsurătoare: un fix se
+justifică doar dacă colapsarea tuturor celor 146 de grupuri produce ≥3 bias
+flips pe perechi FX, sau ≥1 flip plus ≥10 serii cu schimbare de scor de
+celulă.
+
+### Verdict
+
+Colapsând toate cele 146 de grupuri (regula 1c: identice → un rând,
+divergente → excluse ambele/toate, fail-safe) — 22 grupuri identice
+colapsate, 17 divergente excluse, pe 29 perechi (currency, indicator_key)
+cu `n` modificat:
+
+```
+BIAS FLIPS: 0
+Serii cu schimbare de scor de celulă: 0
+```
+
+**SUB PRAG.** Impactul pe scoring azi e zero. Cauza: majoritatea rândurilor
+afectate cad în afara ferestrei de rulare K=12 folosite la z-score — sunt
+printuri istorice (2023-2025), nu cele mai recente K prints ale seriei.
+
+### D1 — DOUĂ fenomene distincte, separare curată
+
+Max span în clasa ±1h = 1.25h; min span în cealaltă clasă = 4.25h — zero
+suprapunere, nu e o distribuție cu coadă lungă.
+
+| clasă | grupuri | % divergente | valute | indicator_key |
+|---|---|---|---|---|
+| ±1h DST | 57 | 52.6% | toate 8 valutele | 19 tipuri |
+| aceeași zi, multi-h | 89 | **94.4%** | **doar CAD, GBP** | **doar manufacturing_pmi, services_pmi** |
+
+**Ipoteză neverificată, notată pentru viitor**: clasa a doua nu arată ca
+corupție — arată ca o serie de republicare STRUCTURATĂ de sursă: span-uri
+discrete recurente (0.5h, 4.25h, 5.25h, 5.75h, 8h, 13.25h, 14.25h — nu
+distribuție continuă), grupuri de 3-4 copii, fiecare cu `forecast` ȘI
+`previous` diferit (nu doar `actual`). Dacă ipoteza se confirmă, cheia
+noastră de grupare pe zi calendaristică e prea largă pentru acest tipar —
+nu s-a investigat mai departe în această fază.
+
+### D2 — GBP PMI (fenomenul dominant al clasei a doua)
+
+`name_raw` 100% uniform (`Final Manufacturing PMI` / `Final Services PMI`)
+— NU e coliziune Flash/Final, aliasul funcționează corect. Quality/Strength
+diferă între copii în **61/75 (81%)** din grupuri. Niciun câștigător
+sistematic la tiebreak (prima copie mai aproape de `previous`-ul
+următorului print: 31 cazuri; ultima: 19; egalitate: 0) — **confirmă că
+tiebreak-ul nu e automatizabil**, consistent cu observația independentă de
+mai jos.
+
+### D3 — 100% origine archive, ZERO chei brute duplicate
+
+```
+Rânduri COMPLET IDENTICE duplicate: 0
+(Name, Currency, Date wall-clock) duplicate: 0
+```
+
+NU e artefact de download sau concatenare a arhivei — fiecare rând are un
+(Name, Currency, Date) unic; sursa a trimis efectiv timestamp-uri distincte.
+`data/jb_raw/` are 60 de grupuri proprii (înainte de curățare), dar
+`clean_jblanked_actuals` grupează pe exact aceeași cheie
+(`canonical_id`, `_date` — `src/jb_actuals.py:148,151`) și le colapsează
+deja înainte de merge în parquet. Fenomenul e confinat structural la
+backfill-ul din arhivă — nu e risc activ pe calea live.
+
+### D5 — propagare prin `previous`: parțial confirmată
+
+```
+BACKWARD (previous-ul grupului == placeholder mai vechi din serie): 0/114
+FORWARD (previous-ul printului URMĂTOR == o copie a acestui grup): 30/114 (26.3%)
+```
+
+Ipoteza specifică (propagare înapoi a unui 0.0 placeholder) infirmată
+(0%). Tiparul mai larg — o dublură lasă urmă vizibilă în `previous`-ul
+printului următor din serie — e real și nu izolat (26.3%), dar
+neacționabil azi (vezi verdictul de mai sus).
+
+### Dată de expirare a verdictului
+
+"Sub prag" e valabil pentru fereastra K=12 curentă, nu permanent. Un grup
+duplicat NOU care apare într-o zi scorată recent (ultimele K printuri ale
+unei serii) NU are impact zero — verdictul de azi se bazează pe faptul că
+duplicatele cunoscute sunt istorice. Reevaluează dacă watchdog-ul de
+freshness semnalează un print CAD/GBP PMI anormal, sau dacă o nouă rulare a
+`archive_duplicate_diagnosis.py` arată grupuri duplicate în ultimele ~12
+luni pentru o serie scorată.
+
+### Comenzi de reproducere
+
+```
+./.venv/bin/python scripts/measure/archive_duplicate_diagnosis.py
+```
+
 ## Recomandare implicită (nu o decizie — doar unde ar trebui privit)
 
 Problema aparține unui script de curățare aplicat retroactiv pe arhivă (gen
