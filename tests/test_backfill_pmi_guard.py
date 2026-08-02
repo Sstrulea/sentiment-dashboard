@@ -43,13 +43,35 @@ def _row(cid, ccy, name_canonical, dt, actual=1.0, forecast=1.0):
     }
 
 
-def test_pmi_guard_constant_matches_real_parquet(migration):
-    """Integration check: the real, current parquet's PMI counts must still
-    equal the known post-purge baseline. Fails loudly if anything (this
-    migration re-run, a future refresh, a bad merge) ever changes them."""
+def test_purge_holds_no_foreign_hour_row_reappears(migration):
+    """Integration check: the purge must never come undone — but the
+    invariant that actually matters is NOT a frozen row count.
+
+    An earlier version of this test asserted `_pmi_counts(df) ==
+    PMI_GUARD` (an exact count). That assertion breaks on every legitimate
+    monthly PMI print (each of these series gains a row every month,
+    forever, by design) — it can't tell "count grew because a real print
+    landed" from "count grew because contamination came back", so it fails
+    identically either way and teaches nothing. Worse: after a few of these
+    routine failures, the reflex fix is to bump the constant without
+    checking why — exactly the moment a real recontamination would slip
+    through unnoticed.
+
+    What must actually hold, forever, regardless of how many legitimate
+    prints accumulate: none of the known-contaminated-then-purged
+    canonical_ids ever shows a row at a foreign local hour again — the
+    SAME check `src.pmi_ingest_guard.country_hour_guard` already runs for
+    every series in the ingest. Reusing it here tests the property, not a
+    snapshot."""
+    from src.pmi_ingest_guard import country_hour_guard
     df = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    counts = migration._pmi_counts(df)
-    assert counts == migration.PMI_GUARD
+    flagged = country_hour_guard(df)
+    recontaminated = flagged[flagged["canonical_id"].isin(migration.PMI_GUARD.keys())]
+    assert recontaminated.empty, (
+        f"a known-purged PMI series shows a foreign-local-hour row again "
+        f"— investigate before assuming this is routine growth: "
+        f"{recontaminated.to_dict('records')}"
+    )
 
 
 def test_target_series_filter_never_admits_a_pmi_row(migration):

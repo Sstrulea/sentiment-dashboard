@@ -40,13 +40,32 @@ def _row(cid, ccy, name_canonical, dt, actual=1.0, forecast=1.0):
     }
 
 
-def test_pmi_guard_constant_matches_real_parquet(migration):
-    """Integration check: the real, current parquet's PMI counts must still
-    equal the known post-purge baseline. Fails loudly if anything (this
-    migration re-run, a future refresh, a bad merge) ever changes them."""
+def test_purge_holds_no_foreign_hour_row_reappears(migration):
+    """Integration check: the purge must never come undone — but the
+    invariant that matters is NOT a frozen row count.
+
+    An earlier version asserted `_pmi_counts(df) == PMI_GUARD` (an exact
+    count). These series each gain a row every month, forever, by design,
+    so that assertion breaks on every legitimate print exactly like it
+    would on a real recontamination — it can't tell the two apart, and
+    repeated routine failures train a reflex to bump the constant without
+    checking why. See tests/test_backfill_pmi_guard.py for the identical
+    reasoning (this file mirrors that one's migration-1 fix).
+
+    What must hold, regardless of how many legitimate prints accumulate:
+    none of the known-contaminated-then-purged canonical_ids ever shows a
+    row at a foreign local hour again — reusing
+    `src.pmi_ingest_guard.country_hour_guard`, the same check the ingest
+    itself runs, tests the property instead of a snapshot."""
+    from src.pmi_ingest_guard import country_hour_guard
     df = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    counts = migration._pmi_counts(df)
-    assert counts == migration.PMI_GUARD
+    flagged = country_hour_guard(df)
+    recontaminated = flagged[flagged["canonical_id"].isin(migration.PMI_GUARD.keys())]
+    assert recontaminated.empty, (
+        f"a known-purged PMI series shows a foreign-local-hour row again "
+        f"— investigate before assuming this is routine growth: "
+        f"{recontaminated.to_dict('records')}"
+    )
 
 
 def test_target_series_filter_never_admits_a_pmi_row(migration):
@@ -104,12 +123,22 @@ def test_merge_weekly_additive_backfill_leaves_pmi_rows_untouched(migration):
 
 
 def test_all_17_target_canonical_ids_present_with_expected_counts(migration):
-    """Integration check on the real parquet: every backfilled series has
-    exactly its reviewed row count (EXPECTED_COUNTS) — catches silent data
-    drift, not just a failed merge."""
+    """Integration check on the real parquet: every backfilled series has AT
+    LEAST its reviewed row count (EXPECTED_COUNTS) — catches the failure
+    this test exists for (a silent merge that drops or fails to backfill
+    rows) without also failing on ordinary forward progress.
+
+    EXPECTED_COUNTS was measured once, at backfill time. These are live,
+    still-scored series (unlike the PMI purge, there is no "this must never
+    grow again" story here) — a new print lands on schedule and the count
+    legitimately grows past its recorded value, exactly like
+    tests/test_backfill_pmi_guard.py's PMI-count assertion did. A floor
+    (`got >= want`) still catches the real regression (rows missing or a
+    failed backfill) while not breaking on the calendar simply moving
+    forward."""
     df = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
     for ccy, name in migration.TARGET_SERIES:
         cid = migration.canonical_id(ccy, name)
         got = int((df["canonical_id"] == cid).sum())
         want = migration.EXPECTED_COUNTS[cid]
-        assert got == want, f"{cid}: {got} rows, expected {want}"
+        assert got >= want, f"{cid}: {got} rows, expected at least {want}"
