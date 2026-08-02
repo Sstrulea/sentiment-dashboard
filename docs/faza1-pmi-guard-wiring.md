@@ -1,8 +1,7 @@
-# FAZA 1 — conectarea gărzii PMI: blocată, un al treilea obstacol găsit
+# FAZA 1 — conectarea gărzii PMI
 
-Status: **investigație — cod scris, testat, apoi REVERTAT înainte de commit.**
-Branch `fix/guard-units-visibility`, worktree `../macro-dev`. FAZA 1 se
-oprește aici; FAZA 2 și FAZA 3 continuă independent, cum a permis task-ul.
+Status: **implementat (opțiunea 1, aprobată).** Branch
+`fix/guard-units-visibility`, worktree `../macro-dev`.
 
 ## Cele două obstacole cunoscute — rezolvate, cu design concret
 
@@ -114,34 +113,132 @@ de bază (că "oglindirea FRED" e suficientă). Am **revenit codul** (`git
 checkout --`) în loc să-l păstrez necomis — nu era sigur de lăsat pe disc
 ca și cum ar fi gata.
 
-## Opțiuni pentru continuare — decizie a utilizatorului
+## Decizia adoptată: opțiunea 1 — doar rândurile noi ale ciclului curent
 
-1. **Limitează garda la datele NOI ale ciclului curent**, nu la tot
-   istoricul. `country_hour_guard(merged)` tot primește istoricul complet
-   (are nevoie de el pentru fereastra de referință), dar scrierea în
-   carantină s-ar limita la rândurile a căror cheie
-   `(canonical_id, datetime_utc)` există în payload-ul `weekly` proaspăt
-   parsat — adică "a apărut ceva nou azi care deviază", nu "orice a
-   deviat vreodată în istorie". Cea mai mică schimbare, cel mai apropiată
-   de intenția inițială (prinde contaminare NOUĂ la ingest, nu re-judecă
-   istoricul).
-2. **Curăță manual cele 23 cunoscute** (documentate mai sus) ca excepții
-   explicite înainte de a activa scanarea completă — risc: clusterul JPY
-   rămâne nerezolvat, deci orice excepție acolo ar fi o presupunere, nu o
-   verificare.
-3. **Altă propunere** — dacă niciuna din cele de mai sus nu se potrivește.
+`country_hour_guard(merged)` tot primește istoricul complet (are nevoie
+de el pentru fereastra de referință a orei dominante), dar scrierea în
+carantină se limitează la rândurile a căror cheie
+`(canonical_id, datetime_utc)` există în payload-ul `weekly` proaspăt
+parsat din acest ciclu — "a apărut ceva nou care deviază", nu "orice a
+deviat vreodată în istorie".
 
-Recomand opțiunea 1 — e cea mai mică, cea mai aproape de ce task-ul a
-cerut literal, și nu cere să rezolv acum cele trei fenomene găsite (rămân
-documentate, nu ascunse).
+**Motivul, nu doar dimensiunea**: contaminarea cross-country e o
+proprietate a sursei LA MOMENTUL LIVRĂRII. Un rând nou cu oră deviantă
+e suspect acum, pentru că tocmai a sosit. Unul vechi poate fi contaminare
+— dar la fel de bine poate fi un shutdown, o publicare de urgență, sau o
+revizuire (exact ce s-a găsit în clusterul USD). Garda judecă doar ce
+poate judeca, prin construcție — fără să inventeze o distincție pe care
+n-o poate face din oră singură.
+
+### Implementare
+
+`src/ff_refresh.py`, în blocul de după merge (fostul bloc FRED, acum
+FRED + PMI unificate): `country_hour_guard(merged)` rulează pe tot
+istoricul (pentru fereastra de referință), apoi rezultatul e filtrat la
+`(canonical_id, datetime_utc)` prezente în `weekly` — nu în `merged`.
+Restul (enrichment `indicator_key` via matcher, scrierea partajată în
+`ff_quarantine.parquet` cu păstrarea rândurilor din verificarea care a
+eșuat acest ciclu) rămâne cum a fost proiectat la obstacolele 1 și 2.
+
+### Verificări — toate 5, rulate concret
+
+1. **Rulat pe starea curentă reală**: `test_pmi_guard_real_current_
+   parquet_zero_quarantines` — parquet-ul de producție ca `existing`,
+   un payload `weekly` normal (doar evenimente din "săptămâna curentă",
+   fără nicio legătură cu cele 23 de anomalii istorice) → **zero**
+   carantinări cu `reason=country_mismatch`. Cele 23 rămân neatinse.
+2. **Rând nou cu oră străină** (`test_pmi_guard_quarantines_a_new_
+   foreign_hour_row`) → carantinat, cu `indicator_key` rezolvat corect.
+3. **Același rând, doar în istoric** (`test_pmi_guard_ignores_the_same_
+   anomaly_when_only_in_history`) → ignorat; verificat explicit că
+   `country_hour_guard` NEFILTRAT tot l-ar fi prins (dovadă că excluderea
+   vine din filtrul de ciclu, nu dintr-un accident).
+4. **Carantina FRED supraviețuiește** unui ciclu complet cu garda PMI
+   activă simultan (`test_fred_quarantine_survives_a_cycle_with_pmi_
+   guard_also_enabled`).
+5. **`pytest`**: 489 verzi (485 + 4 noi).
+
+## Ce NU s-a adăugat: verificarea de plauzibilitate a valorii
+
+**Respinsă, deliberat, pentru acum** — nu pentru că ideea e greșită
+(motivul dat e corect: contaminarea aduce o valoare dintr-o distribuție
+greșită, o publicare întârziată rămâne în distribuția proprie a seriei),
+ci pentru că **singurele 23 de rânduri disponibile pentru a o calibra
+nu conțin niciun al doilea caz confirmat de contaminare reală** — sunt
+shutdown SUA, triplicare CHF/GBP, și 2 rânduri JPY nerezolvate. Construi
+o regulă de plauzibilitate acum ar însemna curve-fit pe aceste 23,
+optimizat să le clasifice corect retroactiv, fără nicio garanție că
+generalizează la un caz NOU de contaminare reală (singurul lucru pentru
+care garda a fost construită și validată — cele 219 rânduri PMI
+GBP/CAD din decontaminarea 2026-07-30).
+
+**Consemnat ca variantă complementară pentru viitor**: dacă apare un al
+doilea caz confirmat de contaminare cross-country (nu doar o disruptare
+de tip shutdown), o verificare de plauzibilitate a valorii (ex.
+comparație cu distribuția robustă — mediană/MAD — a seriei proprii,
+similar cu ce s-a folosit deja în auditul candidaților bucket-C pentru
+detectarea seriilor compuse) ar putea completa ora ca al doilea semnal
+independent. Nu se construiește azi.
+
+## Fire deschise, separate — consemnate, nu rezolvate azi
+
+### 1. Triplicarea CHF/GBP — defect de deduplicare, nu de gardă
+
+Același eveniment apare de 2-3 ori la ~9-10 ore distanță: primele 1-2
+apariții cu `actual=0.0` (placeholder, neeliberat încă), ultima cu
+valoarea reală (`chf_ppi`: 2025-04-13 21:00 actual=0.0 → 2025-04-14
+06:30 actual=0.0 → 2025-04-14 06:35 actual=0.1). Nu-i o decizie
+"contaminare sau nu" — ambele rânduri vin de la sursa corectă, pentru
+perioada corectă. E o problemă de **care rând păstrezi** dintre mai
+multe pentru aceeași perioadă de referință — deduplicare, nu carantină.
+Nici verificarea de oră, nici cea de plauzibilitate a valorii (dacă s-ar
+construi vreodată) nu rezolvă asta direct — ar cere o regulă separată
+(ex. dacă există un rând mai nou pentru aceeași perioadă de referință
+cu `actual` valid, la <24h distanță, și rândul mai vechi are
+`actual=0.0` — păstrează doar cel mai nou). Nefăcut azi — în afara
+scopului FAZA 1.
+
+### 2. USD GDP — Q3 și Q4 2025 lipsesc complet, nerecuperabil
+
+`usd_gdp` (Advance GDP q/q) are cadență trimestrială curată din 2023
+până la 2025-07-30 — apoi Q3 2025 (aștept ~2025-10-30) și Q4 2025
+(aștept ~2026-01-30) **lipsesc complet, nu doar întârziate**. Un singur
+print de "recuperare" apare la **2026-02-20** (`actual=0.0,
+forecast=2.8`) — nici măcar prezent în `data/archive/ff_calendar_range.
+json`. Aceeași fereastră ca shutdown-ul SUA din clusterul de mai sus.
+**Nerecuperabil din sursele disponibile** (arhivă, `jb_raw`, `ff_raw` —
+niciuna nu are Q3/Q4 2025 GDP pentru SUA). Consemnat, nu reparat — ar
+cere o sursă externă (BEA direct) în afara scopului acestei task.
+
+### 3. `employment_change: can_be_zero: true` — verificat, e o problemă reală și ACTIVĂ azi
+
+Verificat direct, nu presupus: `wage_growth` și `unemployment_rate` (fără
+`can_be_zero`) au propriile placeholder-uri `0.0` din 2025-10-02 corect
+neutralizate (NaN) de carantina zero-placeholder existentă. **`employment_
+change` (NFP), cu `can_be_zero: true`, NU** — rândul din 2025-10-02
+(`actual=0.0, consensus=52.0`) rămâne activ ca o "citire legitimă de
+0 locuri de muncă noi".
+
+Verificat și impactul: numărând înapoi de la cel mai recent print USD
+NFP (azi, 2026-08), acest rând e al **11-lea din ultimele 12** —
+**înăuntrul ferestrei curente de rulare a sigma** (`surprise_window_k:
+12`). O surpriză falsă de -52 (actual 0 vs consensus 52) infla artificial
+sigma pentru `employment_change`/USD chiar acum, ceea ce comprimă
+(dampens) toate scorurile z recente ale acestui indicator pentru USD —
+nu doar o curiozitate istorică. Nefăcut azi (ar fi o schimbare de
+scoring/carantină în afara scopului FAZA 1) — dar semnalat explicit ca
+o problemă REALĂ, verificată, nu o presupunere.
 
 ## Ce NU s-a făcut
 
-- Nicio schimbare în `src/ff_refresh.py` sau `tests/test_ff_refresh.py` —
-  scrise, testate, apoi revenite (`git checkout --`).
+- Nicio verificare de plauzibilitate a valorii — argumentat mai sus,
+  consemnată ca variantă viitoare, nu construită.
+- Cele 3 fire deschise (deduplicare CHF/GBP, USD GDP lipsă, `can_be_zero`
+  pe employment_change) — documentate, nicio reparație.
 - `src/pmi_ingest_guard.py` neatins — rămâne pur, testat separat.
-- Nicio decizie luată pe cele 23 de rânduri — documentate, nu carantinate.
 
 ## Livrabile
 
 - `docs/faza1-pmi-guard-wiring.md` — acest document.
+- `src/ff_refresh.py` — legarea (opțiunea 1).
+- `tests/test_ff_refresh.py` — 4 teste noi.
