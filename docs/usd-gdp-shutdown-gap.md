@@ -171,6 +171,19 @@ rânduri din ianuarie 2023 (1 zi distanță, mult sub `gap_days=45` trimestrial)
 dar parquet-ul rămâne inconsistent (o serie curățată la sursă, cealaltă nu).
 Consemnat pentru o eventuală curățare viitoare, nu de azi.
 
+**σ umflat de fereastra shutdown-ului comprimă z-scorurile — mecanism
+general, efect vizibil doar aproape de prag.** Măsurat în §5: doar 2 din 12
+serii afectate (`jolts`, `retail_sales`) au σ vizibil umflat de printurile
+de după gol; restul sunt neschimbate sau chiar mai calme. `jolts` e cazul
+vizibil azi (z=0.7435 sub pragul real 0.81) pentru că surpriza lui curentă
+e suficient de aproape de graniță ca umflarea de ~41% să conteze; alte
+serii cu σ la fel de umflat (`retail_sales`) nu arată efectul pentru că
+surpriza lor curentă e departe de prag (sau exact 0.0). Excluderea
+ferestrei de shutdown din calculul σ ar fi curve-fitting pe un singur caz
+confirmat (`jolts`), fără al doilea exemplu independent care s-o justifice
+— exact riscul respins deja pentru garda PMI și pentru criteriul
+`can_be_zero`. Notat ca observație de mecanism, nu ca problemă de rezolvat.
+
 ## Ce NU s-a făcut
 
 - Nicio încercare de recuperare a Q3/Q4 2025 — nu există nicăieri.

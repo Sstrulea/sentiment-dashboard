@@ -277,6 +277,13 @@ suficient" — nu un prag nou inventat. Scalarea cu √N urmează eroarea
 standard a unei medii (SE ~ σ/√N pentru surprize aproximativ independente):
 N=1→0.5, N=2→0.707, N=3→0.866, N≥4→1.0 (plafonat, nu amplifică).
 
+> **Notă (2026-08-02)**: `CADENCE_THRESHOLD` e cod mort în raport cu
+> scoring-ul live (vezi `docs/proposal-staleness-gate.md` §4) — pragul real
+> care guvernează scoring-ul e `fallback_min_prints=6`. Referința de mai sus
+> folosește constanta doar ca precedent de convenție pentru N=4, nu ca
+> afirmație că un gate activ o citește; nicio schimbare la propunerea de
+> shrinkage (neadoptată oricum, per titlul secțiunii).
+
 Scop: doar categoriile calendaristice (growth/inflation/labour);
 `monetary` neatins (nu vine din N de calendar). Comparație macro-only
 (fără sentiment/trend/rate — mirror la `ff_scoring.score_calendar`, ca
