@@ -73,7 +73,16 @@ indicators:
     direction: 1
     weight: 1.0
     frequency: monthly
-    frequency_overrides: { AUD: quarterly, NZD: quarterly }
+    # AUD override REMOVED 2026-08 (fix/aud-cpi-frequency-override): ABS moved
+    # AUD headline CPI y/y to monthly cadence — measured real median interval
+    # over the last 12 raw prints is 28d, not the ~91d "quarterly" this
+    # override claimed. With quarterly wrongly configured,
+    # dedup_gap_days["quarterly"]=45d collapsed 44 raw rows to 2 (treating
+    # consecutive monthly prints as flash/final of the same release), pushing
+    # n below fallback_min_prints and producing a permanent `fallback`/z=None
+    # badge despite 41 real (actual, consensus) pairs existing. NZD is
+    # unaffected (measured ~91d, genuinely quarterly) and keeps its override.
+    frequency_overrides: { NZD: quarterly }
   core_cpi:
     pillar: inflation
     category: inflation
