@@ -63,6 +63,13 @@ cu un `indicator_key` existent, cadență stabilă, verificate individual
 pentru non-compunere (cluster orar unic sau shift DST de 1h cu valori care
 se suprapun ca interval).
 
+> **Notă (2026-08-02)**: `CADENCE_THRESHOLD` e cod mort în raport cu
+> scoring-ul live — nefolosit de `economic_compute.py`/`economic_render.py`,
+> vezi `docs/proposal-staleness-gate.md` §4. Pragul folosit aici a fost
+> aplicat corect ca prag manual de audit (exact ce cerea task-ul), nu ca
+> presupunere despre un gate activ în producție — concluziile de mai sus
+> rămân valide neschimbate.
+
 ### Inflation (8)
 
 | Valută | Nume brut | N (ambele valide) | Cadență |

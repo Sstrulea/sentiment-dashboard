@@ -67,6 +67,12 @@ lor de cadență cu marjă. Am aplicat pragul pe cadență (consistent cu
 instrucțiunea explicită din același task: "Verifică... că
 `CADENCE_THRESHOLD` e satisfăcut cu marjă"), nu 24 literal. Marje:
 
+> **Notă (2026-08-02)**: `CADENCE_THRESHOLD` e cod mort în raport cu
+> scoring-ul live (nefolosit de `economic_compute.py`/`economic_render.py`,
+> vezi `docs/proposal-staleness-gate.md` §4) — folosit aici corect ca prag
+> manual de audit pentru decizia de backfill, nu ca un gate activ în
+> producție. Marjele și concluziile de mai jos rămân valide neschimbate.
+
 | Candidat | N | Prag (cadență) | Marjă |
 |---|---:|---:|---:|
 | AUD Company Operating Profits q/q | 12 | 8 | **+4 (cea mai mică)** |
