@@ -121,6 +121,30 @@ def test_can_be_zero_true_keeps_zero():
     assert emp["actual"] == 0.0                             # NOT quarantined
 
 
+def test_can_be_zero_false_ghost_zero_already_nan_before_dedup():
+    # docs/dedup-latest-wins-bug.md: the _keep_latest_published fix (nonzero
+    # beats zero within a dedup cluster) only matters for can_be_zero: true
+    # indicators. For unemployment_rate (can_be_zero=False), a 0.0 published
+    # AFTER the real value -- the exact ordering that broke JPY retail_sales
+    # -- must already be NaN by the time _dedup_flash_final runs, so the fix
+    # never has anything to do here: the NaN is excluded by the `published`
+    # filter regardless of which _keep_latest_published version is in use.
+    from src.economic_compute import _dedup_flash_final
+    ff = pd.DataFrame([
+        _ff_row("USD", "Unemployment Rate", 4.2, 4.3, dt="2026-06-01 12:00"),  # real, first
+        _ff_row("USD", "Unemployment Rate", 0.0, 4.3, dt="2026-06-01 13:00"),  # ghost, later
+    ], columns=CANON_COLUMNS)
+    out = to_scoring_frame(ff)
+    unemp = out[out["indicator_key"] == "unemployment_rate"].sort_values("release_dt")
+    # the later, ghost row is already NaN here -- before dedup ever runs
+    assert unemp["actual"].iloc[0] == 4.2
+    assert np.isnan(unemp["actual"].iloc[1])
+
+    dd = _dedup_flash_final(unemp.reset_index(drop=True), 18)
+    assert len(dd) == 1
+    assert dd["actual"].iloc[0] == 4.2                      # real value kept, untouched by the fix
+
+
 def test_historical_placeholder_excluded_from_baseline():
     # a 0.0 placeholder among real prints must not enter the (actual,consensus) pairs
     rows = [_ff_row("USD", "CPI y/y", v, c, dt=f"2026-0{m}-01")
