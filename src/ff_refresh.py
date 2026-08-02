@@ -131,16 +131,94 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
     parquet_path.parent.mkdir(parents=True, exist_ok=True)
     merged.to_parquet(parquet_path, index=False)
 
-    # FRED cross-check on US actuals (retroactive, fail-open) → quarantine file.
+    # Cross-check + ingest-guard quarantines (retroactive/advisory, EACH fail-open
+    # independently) → ONE shared data/ff_quarantine.parquet. See
+    # docs/faza1-pmi-guard-wiring.md for why a naive `q.to_parquet(...)` per
+    # check would erase the other's rows, and why the PMI guard is scoped to
+    # NEW rows only (below), not a full-history rescan.
+    _quarantine_updates: dict[str, pd.DataFrame] = {}   # reason -> this cycle's rows
+
     if cfg.get("run_fred_crosscheck", True):
         try:
             from .ff_fred_crosscheck import crosscheck_us
             q = crosscheck_us(merged, now_utc=now_utc)
-            q.to_parquet(QUARANTINE_PARQUET, index=False)
+            if len(q):
+                q = q.assign(reason="fred_mismatch")
+            _quarantine_updates["fred_mismatch"] = q
             if len(q):
                 log.warning("FRED cross-check quarantined %d US print(s).", len(q))
         except Exception as e:  # noqa: BLE001 — advisory; never break the refresh
             log.warning("FRED cross-check skipped (%s).", str(e)[:80])
+
+    # PMI/country-hour ingest guard (docs/proposal-pmi-ingest-guard.md,
+    # src/pmi_ingest_guard.py) — catches a mislabeled-country release (e.g. a US
+    # S&P Global PMI print tagged GBP/CAD) at ingest. Scoped to THIS CYCLE'S
+    # newly-arrived rows only (Option 1, docs/faza1-pmi-guard-wiring.md): the
+    # guard needs the full merged history to compute each series' trailing
+    # dominant local hour, but a deviation is only actionable for a row that
+    # JUST arrived — cross-country contamination is a property of the source
+    # AT THE MOMENT OF DELIVERY; an old historical deviation could just as
+    # easily be a genuine disruption (verified: the Oct-Nov 2025 US government
+    # shutdown delayed BLS/BEA releases, producing the exact same "deviates
+    # from trailing hour" signature on real, non-contaminated data — see the
+    # doc's "USD GDP" and "employment_change can_be_zero" open threads). The
+    # guard judges only what it CAN judge: hour deviation on arrival.
+    # KNOWN GAP, unchanged: never covers the US S&P Global Final PMI cluster
+    # itself (see src/pmi_ingest_guard.py's module docstring).
+    if cfg.get("run_pmi_ingest_guard", True):
+        try:
+            from .pmi_ingest_guard import country_hour_guard
+            from .ff_scoring import CCY2COUNTRY, build_matcher
+            all_flags = country_hour_guard(merged)
+            if len(all_flags):
+                new_keys = set(zip(weekly["canonical_id"], weekly["datetime_utc"]))
+                is_new = [
+                    (cid, dt) in new_keys
+                    for cid, dt in zip(all_flags["canonical_id"], all_flags["datetime_utc"])
+                ]
+                n_old = int(len(all_flags) - sum(is_new))
+                flags = all_flags[is_new].copy()
+                if n_old:
+                    log.info("PMI ingest guard: %d historical deviation(s) not in this cycle's "
+                            "payload — left untouched (Option 1 scope).", n_old)
+            else:
+                flags = all_flags
+            if len(flags):
+                lookup = (merged.drop_duplicates(subset=["currency", "canonical_id", "datetime_utc"])
+                                .set_index(["currency", "canonical_id", "datetime_utc"])["name_canonical"])
+                flags = flags.merge(lookup, left_on=["currency", "canonical_id", "datetime_utc"],
+                                    right_index=True, how="left")
+                matcher = build_matcher()
+                flags["indicator_key"] = [
+                    matcher.match(CCY2COUNTRY.get(ccy, ""), name)
+                    for ccy, name in zip(flags["currency"], flags["name_canonical"])
+                ]
+                n_unmapped = int(flags["indicator_key"].isna().sum())
+                flags = flags[flags["indicator_key"].notna()].drop(columns=["name_canonical"])
+                if n_unmapped:
+                    log.info("PMI ingest guard: %d flagged row(s) already unmapped to any "
+                            "indicator_key — no scoring exclusion needed.", n_unmapped)
+            _quarantine_updates["country_mismatch"] = flags
+            if len(flags):
+                log.warning("PMI ingest guard: quarantined %d NEW print(s) with anomalous "
+                           "local release hour.", len(flags))
+        except Exception as e:  # noqa: BLE001 — advisory; never break the refresh
+            log.warning("PMI ingest guard skipped (%s).", str(e)[:80])
+
+    if _quarantine_updates:
+        if QUARANTINE_PARQUET.exists():
+            existing_q = pd.read_parquet(QUARANTINE_PARQUET)
+            if len(existing_q) and "reason" not in existing_q.columns:
+                existing_q["reason"] = "fred_mismatch"   # legacy rows predate the shared-file schema
+        else:
+            existing_q = pd.DataFrame(columns=["reason"])
+        if len(existing_q):
+            kept = existing_q[~existing_q["reason"].isin(_quarantine_updates.keys())]
+        else:
+            kept = existing_q
+        parts = [df for df in [kept, *_quarantine_updates.values()] if len(df)]
+        combined = pd.concat(parts, ignore_index=True, sort=False) if parts else kept
+        combined.to_parquet(QUARANTINE_PARQUET, index=False)
 
     # ingest report: aggregated unmapped summary (makes a future alias gap visible)
     try:
