@@ -89,7 +89,19 @@ indicators:
     direction: 1
     weight: 1.0
     frequency: monthly
-    frequency_overrides: { AUD: quarterly }   # RBA Trimmed Mean CPI is quarterly
+    # AUD REMOVED 2026-08 (docs/board-data-loss-round3.md +
+    # config/alert_exceptions.yaml): the mapped canonical, RBA Trimmed
+    # Mean CPI y/y, is dead — ABS moved AUD CPI to monthly cadence, last
+    # print 2025-10-29, will never print again under that name/cadence.
+    # Numerically a no-op today (a stale slot already contributes
+    # nothing to score_precise) — this removes a permanently-empty
+    # slot, not a live one; AUD's replacement monthly CPI reporting is
+    # now scored directly as cpi_monthly/trimmed_mean_cpi_monthly
+    # above. NZD/CHF were never in a whitelist here either (no matcher
+    # rule ever routed to core_cpi for them) and are listed below only
+    # to keep their existing no_data applicability unchanged — this
+    # currencies: list changes AUD's applicability alone.
+    currencies: [USD, EUR, GBP, JPY, CAD, NZD, CHF]
   ppi_yoy:
     pillar: inflation
     category: inflation
@@ -217,30 +229,40 @@ indicators:
     frequency: monthly         # display-only; window only affects greying
     can_be_zero: true          # a policy rate / no-change decision can legitimately be 0
 
-  # --- Inflation, display-only (AUD's monthly CPI Indicator, not z-scored) ---
-  # `category: inflation_display` is a DIFFERENT key from `inflation` above,
-  # deliberately outside `categories:` (only growth/inflation/labour are keys
-  # there) — same mechanism as `interest_rate_decision`/`rates`: a category not
-  # in `categories_cfg` never becomes a key in `per_cat`, so these can never be
-  # aggregated into any category's coverage/score_precise, regardless of
-  # weight. weight: 0.0 is redundant belt-and-suspenders (kept for the same
-  # reason interest_rate_decision keeps it), not the actual isolation
-  # mechanism — verified empirically before adding these (AUD inflation
-  # coverage stays 2, score_precise/index/all 7 AUD-leg pair biases unchanged).
-  # `cpi_yoy`/`core_cpi` above remain AUD's scored inflation prints; these are
-  # additional, unscored context only.
+  # --- Inflation, PROMOTED 2026-08 (AUD only — docs/board-data-loss-
+  # round3.md + PR #8's archive backfill landed both series at exactly
+  # n=6, fallback_min_prints, z-scored not pct — confirmed via
+  # compute_indicator_score before this change, not assumed). AUD's
+  # quarterly `core_cpi` (RBA Trimmed Mean CPI y/y) is dead — ABS moved
+  # AUD CPI to monthly cadence, last print 2025-10-29, see config/
+  # alert_exceptions.yaml — and AUD `cpi_yoy` alone is a thin (single-
+  # indicator) inflation category. These two ARE AUD's replacement
+  # monthly CPI reporting (ABS's own Monthly CPI Indicator, headline and
+  # trimmed-mean), not a proxy for something else.
+  #
+  # `currencies: [AUD]` is deliberate and load-bearing, not decorative:
+  # neither indicator_key has a matcher rule under any OTHER country
+  # block (verified — grep the `matcher:` section below, `indicator:
+  # cpi_monthly` / `indicator: trimmed_mean_cpi_monthly` appear ONLY
+  # under `Australia:`), so no other currency could ever populate these
+  # keys regardless — this whitelist makes that structural fact
+  # explicit and machine-enforced rather than incidental, so a future
+  # alias/matcher addition for another currency can never silently
+  # inherit AUD's weight/category by routing through the same key.
   cpi_monthly:
     pillar: inflation
-    category: inflation_display
+    category: inflation
     direction: 1
-    weight: 0.0
+    weight: 1.0
     frequency: monthly
+    currencies: [AUD]
   trimmed_mean_cpi_monthly:
     pillar: inflation
-    category: inflation_display
+    category: inflation
     direction: 1
-    weight: 0.0
+    weight: 1.0
     frequency: monthly
+    currencies: [AUD]
     # NO can_be_zero here, deliberately — do not add it. The 2026-07-29 print
     # shows actual=0.0, but FF itself published 0.3 that day; JBlanked's feed
     # delivered a corrupted 0.0 for this print (same-day pattern as the known

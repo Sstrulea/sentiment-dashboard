@@ -152,9 +152,17 @@ CATEGORY_LABEL_FALLBACK = {
     "inflation": "Inflation",
     "labour": "Labour Market",
     "monetary": "Monetary Policy",
-    "rates": "Rates (display-only)",
-    "inflation_display": "Inflation (display-only)",
-    "growth_display": "Growth (display-only)",
+    # "(display-only)" dropped 2026-08 — static/economic-chart.js's legHtml
+    # already appends its own "display-only" badge, DERIVED from data (absence
+    # of the key in card.categories, not this label) — the parenthetical was
+    # hardcoded on top of it, doubling to "X (DISPLAY-ONLY) DISPLAY-ONLY" in
+    # the drawer, and would go stale the moment a category like this one is
+    # ever promoted (as inflation_display's AUD members were). Keep the badge,
+    # drop the parenthetical. CROSSASSET_TABLE_LAYOUT's "Rates & Liquidity" is
+    # a separate, hardcoded label in its own literal list below — unaffected.
+    "rates": "Rates",
+    "inflation_display": "Inflation",
+    "growth_display": "Growth",
 }
 
 # Dense per-indicator table layout (EdgeFinder-style): one column per indicator,
