@@ -266,57 +266,42 @@ def test_real_actual_inside_window_stays_fresh_with_raw_calendar_df_too():
     assert row["reason"] is None
 
 
-def test_regression_quarantine_blind_spot_behavioral():
-    """Behavioral regression, using ONLY names that already exist on `main`:
-    `per_currency_indicator_freshness`, `currency_freshness_report`, plus
-    `src.ff_scoring.to_scoring_frame`/`build_matcher` (unmodified by this fix,
-    present on `main` too) to build a realistically-quarantined fixture the
-    way production data actually looks, rather than hand-nulling a value.
+def test_scored_frame_input_reports_quarantined_as_stale():
+    """CHARACTERIZATION test, not a regression test — it pins the library's
+    CONTRACT given correct input, and nothing more. It passes on `main` too
+    (verified empirically below), because `per_currency_indicator_freshness`
+    was never the buggy code: given a properly-scored `calendar_df`, its
+    `actual.notna()` row-filtering was always correct, unchanged by this fix.
+    This test alone would NOT have caught the real bug and does NOT protect
+    against a regression of it — a caller that goes back to handing this
+    function a RAW frame sails right through this test, because the test
+    controls its own input and always builds it correctly.
 
-    Fixture: AUD `import_prices`, one OLD real print (200d before as_of —
-    already past its own 110d quarterly threshold on its own) and one RECENT
-    print (5d before as_of) whose actual is 0.0 — the exact shape `to_scoring_
-    frame` quarantines to NaN for a non-`can_be_zero` indicator (confirmed:
-    `import_prices` carries no `can_be_zero` in `data/economic_indicators.yaml`).
-    Assert AUD comes out stale.
+    That protection — the one that actually matters, and the one that WOULD
+    fail if the bug came back — is `test_load_scored_calendar_quarantines_
+    zero_actual` below: it calls the production loader itself
+    (`scripts.check_calendar_freshness._load_scored_calendar`), which is the
+    thing that used to build the wrong frame. See that test's docstring for
+    the proof it locks the fix (revert-and-rerun output pasted there and in
+    the PR description).
 
-    HONEST CAVEAT, verified empirically, not assumed: this specific
-    assertion does NOT fail on `main`. Checked by running this exact fixture,
-    unmodified, through `main`'s own `per_currency_indicator_freshness`
+    What THIS test does verify: using ONLY names that exist on `main`
+    (`per_currency_indicator_freshness`, `currency_freshness_report`, plus
+    `src.ff_scoring.to_scoring_frame`/`build_matcher`, unmodified by this fix
+    and present on `main` too) to build a realistically-quarantined fixture
+    — AUD `import_prices`, one OLD real print (200d before as_of, already
+    past its own 110d quarterly threshold on its own) and one RECENT print
+    (5d before as_of) whose actual is 0.0, the exact shape `to_scoring_frame`
+    quarantines to NaN for a non-`can_be_zero` indicator (confirmed:
+    `import_prices` carries no `can_be_zero` in
+    `data/economic_indicators.yaml`) — the function correctly reports AUD
+    stale, using the OLD (surviving) print's age, not the quarantined one's.
+
+    Confirmed empirically that this passes on `main`: ran this exact fixture
+    unmodified through `main`'s own `per_currency_indicator_freshness`
     (4-arg call, no `raw_calendar_df`/`severity`/`reason` — all of that is
-    additive) — it ALSO reports AUD stale there. That is expected, not a
-    hole in the fix: `per_currency_indicator_freshness` never implemented
-    the quarantine itself and never needed to fix its own row-filtering logic
-    (`actual.notna()` was always correct given a properly-scored input) — the
-    bug was entirely that `scripts/check_calendar_freshness.py`, the guard's
-    ONLY production caller, built its `calendar_df` from the RAW parquet
-    instead of calling `to_scoring_frame` at all. No fixture fed through
-    THIS function, on ANY commit, was ever going to disprove that, because
-    this function isn't where the bug lived — the caller is. That is proven
-    the other way, against a real `main` worktree using `main`'s actual
-    production code path (not a synthetic fixture, not this test file):
-
-        $ git worktree add /tmp/main-baseline main
-        (on /tmp/main-baseline, main's scripts/check_calendar_freshness.py
-         _load_calendar_with_indicator_key + per_currency_indicator_freshness,
-         AUD import_prices, as_of=2026-08-04)
-        status  fresh          <-- the bug, live, on main
-        last_date  2026-07-30 01:30:00
-        age_days   5
-        threshold_days  110
-
-        (same script, same as_of, run on this branch — now calls
-         _load_scored_calendar instead)
-        status  stale          <-- fixed
-        last_date  2026-01-29 00:30:00
-        age_scored  187
-        severity  DEAD          <-- see Task 2 below: DEAD here is itself
-                                    wrong when raw_calendar_df isn't passed;
-                                    the anchor test below passes it and gets
-                                    STALE, correctly.
-
-    (Full output pasted in the PR description — this docstring keeps the
-    committed proof text; the numbers above are the actual captured run.)
+    additive) and it ALSO reports AUD stale there. Not a hole in the fix —
+    proof positive that this function was never where the bug lived.
     """
     import yaml
     from src.ff_scoring import to_scoring_frame, build_matcher
@@ -351,6 +336,59 @@ def test_regression_quarantine_blind_spot_behavioral():
     row = out[out["indicator_key"] == "import_prices"].iloc[0]
     assert row["status"] == "stale"
     assert row["last_date"] == old_date   # the quarantined newer print is invisible to status, correctly
+
+
+def test_load_scored_calendar_quarantines_zero_actual(monkeypatch):
+    """THE lock for the fix, at the layer where the bug actually lived —
+    `scripts.check_calendar_freshness._load_scored_calendar` itself, not the
+    pure `per_currency_indicator_freshness` (see the characterization test
+    above for why that one alone doesn't protect against this).
+
+    Fixture: one row whose actual is a 0.0 that `to_scoring_frame` quarantines
+    (`import_prices` has no `can_be_zero`, and this synthetic (currency,
+    name_raw, date) key has no entry in the real `build_flagged_bad_lookup()`
+    result — a missing key defaults to flagged/blocked, i.e. NOT widened, by
+    that function's own documented contract — so the 0.0 is unconditionally
+    nulled). `pd.read_parquet` is monkeypatched (module-global, auto-reverted
+    by pytest) to return this fixture regardless of path — safe here because
+    `build_flagged_bad_lookup` reads JSON (jb_raw/archive), never parquet.
+
+    Asserts the LOADER returns that row with actual NaN — i.e. proves
+    `_load_scored_calendar` genuinely routes through `to_scoring_frame` and
+    doesn't just relabel the raw parquet.
+
+    PROOF THIS LOCKS THE FIX (manual, not part of the automated suite — a
+    scratch worktree edit, run once, output pasted here and in the PR body):
+    reverted `_load_scored_calendar`'s body in a scratch worktree to skip
+    `to_scoring_frame` entirely (the exact old-bug shape — raw parquet +
+    indicator_key attached, no quarantine), reran this test:
+
+        FAILED tests/test_calendar_freshness_guard.py::test_load_scored_calendar_quarantines_zero_actual
+        AssertionError: loader must route through to_scoring_frame's quarantine — got actual=0.0, expected NaN
+        assert False
+
+    Failed on the VALUE assertion, not on import or collection — confirms
+    this test would have caught the exact original bug, unlike the
+    ImportError-based version this replaced.
+    """
+    import scripts.check_calendar_freshness as ccf
+    from src.econ_calendar_ff import CANON_COLUMNS
+
+    fixture = pd.DataFrame([{
+        "canonical_id": "aud_import_prices_loader_fixture", "currency": "AUD",
+        "name_raw": "Import Prices q/q", "name_canonical": "Import Prices q/q",
+        "datetime_utc": pd.Timestamp("2026-07-30"), "actual": 0.0, "forecast": 0.0,
+        "previous": 0.1, "released": True, "source": "ff",
+    }], columns=CANON_COLUMNS)
+
+    monkeypatch.setattr(ccf.pd, "read_parquet", lambda path: fixture)
+
+    out = ccf._load_scored_calendar()
+    row = out[(out["currency"] == "AUD") & (out["indicator_key"] == "import_prices")].iloc[0]
+    assert pd.isna(row["actual"]), (
+        f"loader must route through to_scoring_frame's quarantine — got "
+        f"actual={row['actual']!r}, expected NaN"
+    )
 
 
 def test_anchor_five_scored_stale_pairs_at_as_of_2026_08_04():
