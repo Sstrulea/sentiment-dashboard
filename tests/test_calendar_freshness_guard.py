@@ -358,18 +358,39 @@ def test_load_scored_calendar_quarantines_zero_actual(monkeypatch):
     doesn't just relabel the raw parquet.
 
     PROOF THIS LOCKS THE FIX (manual, not part of the automated suite — a
-    scratch worktree edit, run once, output pasted here and in the PR body):
-    reverted `_load_scored_calendar`'s body in a scratch worktree to skip
-    `to_scoring_frame` entirely (the exact old-bug shape — raw parquet +
-    indicator_key attached, no quarantine), reran this test:
+    scratch worktree edit, run once, EXACT captured output pasted here and
+    in the PR body): reverted `_load_scored_calendar`'s body in a scratch
+    worktree to
+
+        def _load_scored_calendar() -> pd.DataFrame:
+            with open(INDICATORS_YAML) as f:
+                ind_cfg = yaml.safe_load(f)
+            return _load_raw_calendar_with_indicator_key(ind_cfg)
+
+    — the exact old-bug shape (raw parquet + indicator_key attached, no
+    `to_scoring_frame`, no quarantine) — and reran the full test file:
 
         FAILED tests/test_calendar_freshness_guard.py::test_load_scored_calendar_quarantines_zero_actual
-        AssertionError: loader must route through to_scoring_frame's quarantine — got actual=0.0, expected NaN
-        assert False
+        FAILED tests/test_calendar_freshness_guard.py::test_anchor_five_scored_stale_pairs_at_as_of_2026_08_04
+        2 failed, 23 passed in 0.97s
 
-    Failed on the VALUE assertion, not on import or collection — confirms
-    this test would have caught the exact original bug, unlike the
-    ImportError-based version this replaced.
+    THIS test's failure specifically:
+
+        AssertionError: loader must route through to_scoring_frame's quarantine — got actual=np.float64(0.0), expected NaN
+        assert False
+         +  where False = <function isna at 0x10d2d7920>(np.float64(0.0))
+
+    Failed on the VALUE assertion (line ~388, `assert pd.isna(row["actual"])`),
+    not on import or collection — confirms this test would have caught the
+    exact original bug, unlike the ImportError-based version it replaced.
+
+    ADDITIONAL COVERAGE found by the same revert, not asked for but worth
+    knowing: `test_anchor_five_scored_stale_pairs_at_as_of_2026_08_04` (which
+    calls `_load_scored_calendar` through the real production path, not a
+    synthetic fixture) ALSO fails on the revert — `stale.index` drops AUD
+    `import_prices` and JPY `capital_expenditure` back out, i.e. it
+    independently reproduces the exact real-world regression this whole PR
+    is about. No other test in the file is affected by this specific revert.
     """
     import scripts.check_calendar_freshness as ccf
     from src.econ_calendar_ff import CANON_COLUMNS
