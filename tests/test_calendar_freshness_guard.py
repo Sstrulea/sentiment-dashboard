@@ -81,7 +81,7 @@ def test_absent_indicator_is_no_data_not_stale():
     out = per_currency_indicator_freshness(cal, IND_CFG, AS_OF, currencies=["GBP"])
     gdp_row = out[out["indicator_key"] == "gdp_qoq"].iloc[0]
     assert gdp_row["status"] == "no_data"
-    assert pd.isna(gdp_row["age_days"])
+    assert pd.isna(gdp_row["age_scored"])
     cpi_row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
     assert cpi_row["status"] == "fresh"
     assert gdp_row["status"] != cpi_row["status"]
@@ -183,13 +183,14 @@ def test_severity_periods_missed_forces_dead_under_2x_threshold():
     # overridden). age=187d is only 1.70x threshold (< 2x = 220) -- the pure
     # ratio rule alone would call this merely STALE. But quarterly's expected
     # cadence is 91d (_CADENCE_DAYS), so 187d is >= 2 missed periods (2.05x)
-    # -- this is the real AUD import_prices shape (docs/diag-aud-inflation-
-    # round1.md Q5) and must classify as DEAD via the periods-missed clause.
+    # -- classifies DEAD via the periods-missed clause. No raw_calendar_df
+    # here -> reason is None (not QUARANTINED) -> severity grades on
+    # age_scored, unchanged from before Task 2's age_raw correction.
     cal = pd.DataFrame([_row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=187))])
     out = per_currency_indicator_freshness(cal, IND_CFG, AS_OF, currencies=["AUD"])
     row = out[out["indicator_key"] == "core_cpi"].iloc[0]
     assert row["status"] == "stale"
-    assert row["age_days"] == 187
+    assert row["age_scored"] == 187
     assert row["threshold_days"] == 110
     assert row["severity"] == "DEAD"
 
@@ -265,50 +266,109 @@ def test_real_actual_inside_window_stays_fresh_with_raw_calendar_df_too():
     assert row["reason"] is None
 
 
-def test_regression_quarantine_blind_spot_must_be_stale_not_fresh():
-    """THE regression this whole fix exists for. On `main`, before this fix,
-    `scripts/check_calendar_freshness.py` builds its calendar_df from the RAW
-    parquet (`_load_calendar_with_indicator_key`) — actual==0.0 rows the
-    scoring engine quarantines to NaN still read as present/fresh actuals to
-    the guard. `docs/diag-aud-inflation-round1.md` Q5 measured this LIVE:
-    raw-frame run reports 3 stale currencies; the scored-frame run (what the
-    dashboard actually aggregates) reports 5 stale pairs across 4 currencies
-    — AUD `import_prices` (last SCORED actual 2026-01-29, 187d old) is one of
-    the two the raw-frame run silently missed (JPY `capital_expenditure` is
-    the other, see the anchor test below).
+def test_regression_quarantine_blind_spot_behavioral():
+    """Behavioral regression, using ONLY names that already exist on `main`:
+    `per_currency_indicator_freshness`, `currency_freshness_report`, plus
+    `src.ff_scoring.to_scoring_frame`/`build_matcher` (unmodified by this fix,
+    present on `main` too) to build a realistically-quarantined fixture the
+    way production data actually looks, rather than hand-nulling a value.
 
-    `scripts.check_calendar_freshness._load_scored_calendar` does not exist
-    on `main` at all (ImportError) — this test fails outright there, which is
-    the point: the fix isn't a tweak to the pure per_currency_indicator_
-    freshness math (that was always correct given scored input), it's that
-    NOTHING in the shipped pipeline ever called it with scored input.
+    Fixture: AUD `import_prices`, one OLD real print (200d before as_of —
+    already past its own 110d quarterly threshold on its own) and one RECENT
+    print (5d before as_of) whose actual is 0.0 — the exact shape `to_scoring_
+    frame` quarantines to NaN for a non-`can_be_zero` indicator (confirmed:
+    `import_prices` carries no `can_be_zero` in `data/economic_indicators.yaml`).
+    Assert AUD comes out stale.
+
+    HONEST CAVEAT, verified empirically, not assumed: this specific
+    assertion does NOT fail on `main`. Checked by running this exact fixture,
+    unmodified, through `main`'s own `per_currency_indicator_freshness`
+    (4-arg call, no `raw_calendar_df`/`severity`/`reason` — all of that is
+    additive) — it ALSO reports AUD stale there. That is expected, not a
+    hole in the fix: `per_currency_indicator_freshness` never implemented
+    the quarantine itself and never needed to fix its own row-filtering logic
+    (`actual.notna()` was always correct given a properly-scored input) — the
+    bug was entirely that `scripts/check_calendar_freshness.py`, the guard's
+    ONLY production caller, built its `calendar_df` from the RAW parquet
+    instead of calling `to_scoring_frame` at all. No fixture fed through
+    THIS function, on ANY commit, was ever going to disprove that, because
+    this function isn't where the bug lived — the caller is. That is proven
+    the other way, against a real `main` worktree using `main`'s actual
+    production code path (not a synthetic fixture, not this test file):
+
+        $ git worktree add /tmp/main-baseline main
+        (on /tmp/main-baseline, main's scripts/check_calendar_freshness.py
+         _load_calendar_with_indicator_key + per_currency_indicator_freshness,
+         AUD import_prices, as_of=2026-08-04)
+        status  fresh          <-- the bug, live, on main
+        last_date  2026-07-30 01:30:00
+        age_days   5
+        threshold_days  110
+
+        (same script, same as_of, run on this branch — now calls
+         _load_scored_calendar instead)
+        status  stale          <-- fixed
+        last_date  2026-01-29 00:30:00
+        age_scored  187
+        severity  DEAD          <-- see Task 2 below: DEAD here is itself
+                                    wrong when raw_calendar_df isn't passed;
+                                    the anchor test below passes it and gets
+                                    STALE, correctly.
+
+    (Full output pasted in the PR description — this docstring keeps the
+    committed proof text; the numbers above are the actual captured run.)
     """
     import yaml
-    from scripts.check_calendar_freshness import _load_scored_calendar, INDICATORS_YAML
+    from src.ff_scoring import to_scoring_frame, build_matcher
+    from src.econ_calendar_ff import CANON_COLUMNS
 
     as_of = pd.Timestamp("2026-08-04")
-    with open(INDICATORS_YAML) as f:
-        ind_cfg = yaml.safe_load(f)
+    old_date = as_of - pd.Timedelta(days=200)   # already stale on its own (>110d quarterly threshold)
+    new_date = as_of - pd.Timedelta(days=5)     # in-window, but a quarantine-shaped 0.0
 
-    cal_scored = _load_scored_calendar()
-    out = per_currency_indicator_freshness(cal_scored, ind_cfg, as_of, currencies=["AUD"])
-    row = out[out["indicator_key"] == "import_prices"].iloc[0]
-    assert row["status"] == "stale", (
-        f"AUD import_prices must be STALE once fed the SCORED frame — got "
-        f"{row['status']!r} (last_date={row['last_date']}, age_days={row['age_days']})"
+    def _canon_row(dt, actual):
+        return {"canonical_id": "aud_import_prices_fixture", "currency": "AUD",
+                "name_raw": "Import Prices q/q", "name_canonical": "Import Prices q/q",
+                "datetime_utc": dt, "actual": actual, "forecast": 0.0 if actual == 0.0 else 0.3,
+                "previous": 0.2, "released": True, "source": "ff"}
+
+    raw = pd.DataFrame([_canon_row(old_date, 3.3), _canon_row(new_date, 0.0)],
+                       columns=CANON_COLUMNS)
+
+    # Real production matcher + quarantine (both exist on main, unmodified).
+    scored = to_scoring_frame(raw, build_matcher())
+    assert scored[scored["release_dt"] == new_date]["actual"].isna().all(), (
+        "fixture setup check: the recent 0.0 print must actually be the "
+        "kind of row to_scoring_frame quarantines, or this test proves nothing"
     )
-    assert row["last_date"] == pd.Timestamp("2026-01-29 00:30:00")
-    assert row["age_days"] == 187
+
+    with open(Path(__file__).resolve().parents[1] / "data" / "economic_indicators.yaml") as f:
+        real_ind_cfg = yaml.safe_load(f)
+
+    out = per_currency_indicator_freshness(scored, real_ind_cfg, as_of, currencies=["AUD"])
+    report = currency_freshness_report(out)
+    assert "AUD" in report["stale_currencies"]
+    row = out[out["indicator_key"] == "import_prices"].iloc[0]
+    assert row["status"] == "stale"
+    assert row["last_date"] == old_date   # the quarantined newer print is invisible to status, correctly
 
 
 def test_anchor_five_scored_stale_pairs_at_as_of_2026_08_04():
-    """Numeric anchor, docs/diag-aud-inflation-round1.md Q5: running the
-    (now scored-aware) guard against the real parquet at as_of=2026-08-04
-    must report EXACTLY these 5 (currency, indicator_key) pairs stale — not
-    the 3 the raw-frame guard used to report. If the real parquet has moved
-    on (nightly `econ-refresh` CI) and this no longer holds, that is a
-    genuine discrepancy to investigate and report, NOT something to
-    adjust this pin to match.
+    """Numeric anchor, docs/diag-aud-inflation-round1.md Q5 (as corrected by
+    Task 2's age_raw severity fix): running the scored-aware guard against
+    the real parquet at as_of=2026-08-04 must report EXACTLY these 5
+    (currency, indicator_key) pairs stale — not the 3 the raw-frame guard
+    used to report. If the real parquet has moved on (nightly `econ-refresh`
+    CI) and this no longer holds, that is a genuine discrepancy to
+    investigate and report, NOT something to adjust this pin to match.
+
+    AUD `import_prices` severity changed from DEAD to STALE relative to the
+    first version of this pin: its age_scored (187d) alone cleared the
+    2-missed-periods bar, but its age_raw (5d — the most recent RAW row,
+    2026-07-30, is genuinely fresh, just quarantined) does not. Grading
+    severity on age_raw when reason == QUARANTINED (Task 2) fixes the
+    mislabel. JPY capital_expenditure (also QUARANTINED, age_raw=65d) does
+    not change — 65d was already under the DEAD bar either way.
     """
     import yaml
     from scripts.check_calendar_freshness import (
@@ -325,11 +385,11 @@ def test_anchor_five_scored_stale_pairs_at_as_of_2026_08_04():
     stale = out[out["status"] == "stale"].set_index(["currency", "indicator_key"])
 
     expected = {
-        ("AUD", "core_cpi"):            {"age_days": 279, "threshold_days": 110, "severity": "DEAD",  "reason": "NO_ROW"},
-        ("AUD", "import_prices"):       {"age_days": 187, "threshold_days": 110, "severity": "DEAD",  "reason": "QUARANTINED"},
-        ("GBP", "ppi_yoy"):             {"age_days": 48,  "threshold_days": 45,  "severity": "STALE", "reason": "NO_ROW"},
-        ("JPY", "capital_expenditure"): {"age_days": 155, "threshold_days": 110, "severity": "STALE", "reason": "QUARANTINED"},
-        ("USD", "core_cpi"):            {"age_days": 55,  "threshold_days": 45,  "severity": "STALE", "reason": "NO_ROW"},
+        ("AUD", "core_cpi"):            {"age_scored": 279, "age_raw": 279, "threshold_days": 110, "severity": "DEAD",  "reason": "NO_ROW"},
+        ("AUD", "import_prices"):       {"age_scored": 187, "age_raw": 5,   "threshold_days": 110, "severity": "STALE", "reason": "QUARANTINED"},
+        ("GBP", "ppi_yoy"):             {"age_scored": 48,  "age_raw": 13,  "threshold_days": 45,  "severity": "STALE", "reason": "NO_ROW"},
+        ("JPY", "capital_expenditure"): {"age_scored": 155, "age_raw": 65,  "threshold_days": 110, "severity": "STALE", "reason": "QUARANTINED"},
+        ("USD", "core_cpi"):            {"age_scored": 55,  "age_raw": 21,  "threshold_days": 45,  "severity": "STALE", "reason": "NO_ROW"},
     }
 
     assert set(stale.index) == set(expected), (
@@ -341,6 +401,75 @@ def test_anchor_five_scored_stale_pairs_at_as_of_2026_08_04():
         for field, val in exp.items():
             actual = stale.loc[key, field]
             assert actual == val, f"{key} {field}: expected {val}, got {actual}"
+
+
+# ---------------------------------------------------------------------------
+# Task 2 — severity must not mislabel a live-but-quarantined series as DEAD.
+# ---------------------------------------------------------------------------
+
+def test_quarantined_pair_with_fresh_raw_row_is_not_mislabeled_dead():
+    # The exact mislabel this fix targets: age_scored alone (200d, on an
+    # indicator whose 2x-threshold/periods-missed bar it clears) would say
+    # DEAD. But the raw feed has a much more recent row (10d old) sitting
+    # quarantined -- the series is alive, just blocked. Must NOT be DEAD.
+    scored = pd.DataFrame([_row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=200))])
+    raw = pd.DataFrame([
+        _row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=200)),
+        _row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=10), actual=0.0),  # quarantined, fresh
+    ])
+    out = per_currency_indicator_freshness(scored, IND_CFG, AS_OF, currencies=["AUD"],
+                                           raw_calendar_df=raw)
+    row = out[out["indicator_key"] == "core_cpi"].iloc[0]
+    assert row["status"] == "stale"          # scoring genuinely has no current number -- correct
+    assert row["reason"] == "QUARANTINED"
+    assert row["age_scored"] == 200
+    assert row["age_raw"] == 10
+    assert row["severity"] != "DEAD"         # THE mislabel this test guards against
+    assert row["severity"] == "STALE"
+
+
+def test_quarantined_pair_with_old_raw_row_too_is_still_dead():
+    # Contrast case: reason is QUARANTINED (raw has a *slightly* newer row
+    # than scored), but that raw row is ALSO old/skipped enough periods --
+    # must still be DEAD. Confirms the fix grades on age_raw, not "any
+    # QUARANTINED reason auto-downgrades to STALE".
+    scored = pd.DataFrame([_row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=400))])
+    raw = pd.DataFrame([
+        _row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=400)),
+        _row("AUD", "core_cpi", AS_OF - pd.Timedelta(days=250), actual=0.0),  # still 2.5+ periods old
+    ])
+    out = per_currency_indicator_freshness(scored, IND_CFG, AS_OF, currencies=["AUD"],
+                                           raw_calendar_df=raw)
+    row = out[out["indicator_key"] == "core_cpi"].iloc[0]
+    assert row["reason"] == "QUARANTINED"
+    assert row["age_raw"] == 250
+    assert row["severity"] == "DEAD"
+
+
+def test_no_row_reason_severity_still_grades_on_age_scored():
+    # reason == NO_ROW (not QUARANTINED) -> severity must grade on
+    # age_scored even when age_raw is present AND smaller. Raw has a row
+    # 20d ago, but its actual is NULL (a scheduled-but-unreleased event, not
+    # a quarantined one) -- that's still NO_ROW (nothing VALID more recent
+    # than scored), yet it DOES pull age_raw down to 20 (age_raw counts any
+    # raw row, null actual included -- module docstring). If severity used
+    # age_raw here it would read STALE (20d, well under a 45d monthly
+    # threshold); grading on age_scored (300d) correctly reads DEAD. This is
+    # the real GBP ppi_yoy / USD core_cpi shape from the anchor test above
+    # (both NO_ROW with age_raw < age_scored) -- confirms severity isn't
+    # naively "use age_raw whenever raw_calendar_df is supplied".
+    scored = pd.DataFrame([_row("USD", "cpi_yoy", AS_OF - pd.Timedelta(days=300))])
+    raw = pd.DataFrame([
+        _row("USD", "cpi_yoy", AS_OF - pd.Timedelta(days=300)),
+        _row("USD", "cpi_yoy", AS_OF - pd.Timedelta(days=20), actual=float("nan")),
+    ])
+    out = per_currency_indicator_freshness(scored, IND_CFG, AS_OF, currencies=["USD"],
+                                           raw_calendar_df=raw)
+    row = out.iloc[0]
+    assert row["reason"] == "NO_ROW"
+    assert row["age_scored"] == 300
+    assert row["age_raw"] == 20
+    assert row["severity"] == "DEAD"
 
 
 def test_jb_raw_check_distinguishes_available_vs_absent():

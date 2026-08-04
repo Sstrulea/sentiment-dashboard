@@ -129,8 +129,8 @@ def main() -> int:
             extra = jb_check.get(key, {"status": "not_checked (no jb_raw payloads)"})
             c = classified_by_key[key]
             print(f"  {ccy} {ind['indicator_key']}: [{ind['severity']}/{ind['reason']}] "
-                 f"last={ind['last_date']} age={ind['age_days']}d "
-                 f"(threshold {ind['threshold_days']}d) -- {extra}")
+                 f"last={ind['last_date']} age_scored={ind['age_scored']}d "
+                 f"age_raw={ind['age_raw']}d (threshold {ind['threshold_days']}d) -- {extra}")
             if c["exception_note"]:
                 print(f"    {c['exception_note']}")
             if c["gate"] == "alert":
