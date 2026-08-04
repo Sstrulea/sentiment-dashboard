@@ -9,6 +9,18 @@ Unlike `price`, `calendar` IS refreshed by GitHub Actions
 `python -m src.jb_actuals` steps) — a stale calendar badge here is
 actionable from a cloud job, so this script's exit code is meant to gate a
 workflow the same way (see scripts/check_freshness.py's CLOUD_REFRESHED_SOURCES).
+
+fix/freshness-guard-scored-view (2026-08, docs/diag-aud-inflation-round1.md
+Q5): this script used to build `cal` straight off the RAW parquet + matcher
+and feed that to `per_currency_indicator_freshness` — before
+`ff_scoring.to_scoring_frame`'s zero-placeholder quarantine ever ran, so a
+quarantined actual==0.0 (JBlanked "Data Not Loaded") looked like a present,
+fresh actual to the gate. `per_currency_indicator_freshness` now REQUIRES the
+SCORED frame; `_load_scored_calendar` below builds it via the same
+`to_scoring_frame` + `build_flagged_bad_lookup` call the real dashboard uses
+(`src.economic_render`), read-only, no scoring/config change. The raw frame
+is kept and passed as `raw_calendar_df` purely so the guard can label WHY a
+row is non-fresh (`reason`: NO_ROW vs QUARANTINED).
 """
 from __future__ import annotations
 
@@ -27,6 +39,8 @@ from src.calendar_freshness_guard import (  # noqa: E402
     currency_freshness_report,
     check_pending_actuals_in_jb_raw,
 )
+from src.ff_scoring import to_scoring_frame, build_matcher  # noqa: E402
+from src.jb_actuals import build_flagged_bad_lookup  # noqa: E402
 from src.alert_exceptions import (  # noqa: E402
     load_exceptions,
     classify_stale_rows,
@@ -43,7 +57,8 @@ CCY2COUNTRY = {"USD": "United States", "EUR": "European Union", "GBP": "United K
               "CAD": "Canada", "CHF": "Switzerland"}
 
 
-def _load_calendar_with_indicator_key(ind_cfg: dict) -> pd.DataFrame:
+def _load_raw_calendar_with_indicator_key(ind_cfg: dict) -> pd.DataFrame:
+    """Pre-quarantine — used only as `raw_calendar_df` (the `reason` signal)."""
     df = pd.read_parquet(FF_PARQUET)
     df["datetime_utc"] = pd.to_datetime(df["datetime_utc"])
     matcher = CompiledMatcher(ind_cfg.get("matcher", {}))
@@ -52,14 +67,27 @@ def _load_calendar_with_indicator_key(ind_cfg: dict) -> pd.DataFrame:
     return df.rename(columns={"datetime_utc": "release_dt"})
 
 
+def _load_scored_calendar() -> pd.DataFrame:
+    """Post-quarantine — what the dashboard actually scores, and now what
+    the freshness guard evaluates. Same call the real render path makes
+    (`src.economic_render`): `to_scoring_frame` + the production
+    `flagged_bad` lookup, so a JBlanked "Data Not Loaded" zero is nulled here
+    exactly like it is for scoring."""
+    ff_df = pd.read_parquet(FF_PARQUET)
+    flagged_bad = build_flagged_bad_lookup()
+    return to_scoring_frame(ff_df, build_matcher(), flagged_bad=flagged_bad)
+
+
 def main() -> int:
     as_of = pd.Timestamp.utcnow().tz_localize(None)
 
     with open(INDICATORS_YAML) as f:
         ind_cfg = yaml.safe_load(f)
 
-    cal = _load_calendar_with_indicator_key(ind_cfg)
-    per_indicator = per_currency_indicator_freshness(cal, ind_cfg, as_of)
+    cal_scored = _load_scored_calendar()
+    cal_raw = _load_raw_calendar_with_indicator_key(ind_cfg)
+    per_indicator = per_currency_indicator_freshness(
+        cal_scored, ind_cfg, as_of, raw_calendar_df=cal_raw)
     report = currency_freshness_report(per_indicator)
 
     print("=== Calendar freshness report (per currency, per-indicator threshold) ===")
@@ -100,8 +128,9 @@ def main() -> int:
             key = (ccy, ind["indicator_key"])
             extra = jb_check.get(key, {"status": "not_checked (no jb_raw payloads)"})
             c = classified_by_key[key]
-            print(f"  {ccy} {ind['indicator_key']}: last={ind['last_date']} "
-                 f"age={ind['age_days']}d (threshold {ind['threshold_days']}d) -- {extra}")
+            print(f"  {ccy} {ind['indicator_key']}: [{ind['severity']}/{ind['reason']}] "
+                 f"last={ind['last_date']} age_scored={ind['age_scored']}d "
+                 f"age_raw={ind['age_raw']}d (threshold {ind['threshold_days']}d) -- {extra}")
             if c["exception_note"]:
                 print(f"    {c['exception_note']}")
             if c["gate"] == "alert":

@@ -19,6 +19,58 @@ of its scored (weight > 0) indicators exceeds ITS OWN threshold. This
 correctly flags USD `core_cpi` (51d/45d) and AUD `core_cpi` (275d/110d)
 today, and correctly does not flag CHF.
 
+fix/freshness-guard-scored-view (2026-08, docs/diag-aud-inflation-round1.md
+Q5): `per_currency_indicator_freshness` was being fed the RAW parquet by its
+only production caller (`scripts/check_calendar_freshness.py`) — BEFORE
+`ff_scoring.to_scoring_frame`'s zero-placeholder quarantine runs. A row whose
+`actual` the quarantine nulls (e.g. a JBlanked "Data Not Loaded" 0.0, AUD
+`import_prices` 2026-07-30) still reads as a present, non-null actual to a
+guard looking at the raw frame — so it reported "fresh" for a series the
+scoring engine itself treats as having no valid print in months. Measured:
+raw-frame run reports 3 stale currencies; scored-frame run reports 5 stale
+(currency, indicator_key) pairs across 4 currencies. This function now
+REQUIRES its caller to pass the SCORED frame (`calendar_df`, post-quarantine
+`actual`) — that is the only change to what gets EVALUATED. Nothing here
+calls into `ff_scoring`/`economic_compute` differently or touches a
+threshold; the caller decides which frame to build, this function just
+stopped silently accepting either one as equivalent. `raw_calendar_df` is a
+new, optional, second frame (pre-quarantine) used ONLY to label *why* a
+non-fresh row is non-fresh (`reason`, below) and to compute `age_raw`
+(below) — never `status` or `threshold_days`.
+
+Also adds, per (currency, indicator_key) row:
+  - `age_scored` — the ORIGINAL `age_days`, renamed for clarity now that a
+    second age exists: days since the last actual that SURVIVED quarantine.
+    `status` (`stale`/`fresh`/`no_data`) is still decided from this one,
+    unchanged — the series genuinely has no current valid number feeding
+    scoring, and that fact belongs in `status` regardless of what's sitting
+    quarantined upstream.
+  - `age_raw` — days since the most recent RAW row for this pair, ANY
+    actual (not filtered by non-null) — i.e. has this event even fired
+    recently, independent of data quality. `None` unless `raw_calendar_df`
+    is supplied.
+  - `reason` (only set when `status != "fresh"`, and only when
+    `raw_calendar_df` is supplied): `NO_ROW` if the raw feed has no row with
+    a non-null actual more recent than what's showing as fresh — a genuine
+    gap; `QUARANTINED` if the raw feed DOES have a more recent row with a
+    non-null actual that the scored frame nulled — the AUD `import_prices`
+    failure mode. These are different failures needing different follow-up
+    (chase the data provider vs. re-examine the quarantine/can_be_zero
+    config) and must not be reported identically.
+  - `severity` (only set when `status == "stale"`): `STALE` if age is within
+    1x-2x its own threshold_days; `DEAD` if age exceeds 2x threshold_days OR
+    the indicator's own expected cadence implies >=2 whole periods have been
+    missed. **The age fed into this check is `age_raw`, not `age_scored`,
+    whenever `reason == QUARANTINED`** — a live series sitting behind a
+    quarantined print is blocked, not dead, and grading it on `age_scored`
+    alone silently overstates the problem: AUD `import_prices` at
+    age_scored=187d/threshold=110d cleared the 2x-periods-missed bar and
+    read DEAD, even though its most recent RAW row (age_raw) was 5 days
+    old. Measured 2026-08 (docs/diag-aud-inflation-round1.md Q5 + this
+    fix's PR): of the 5 real stale pairs, only this one's severity changes
+    (DEAD -> STALE) under the corrected input; the other QUARANTINED pair
+    (JPY `capital_expenditure`, age_raw=65d) was already STALE either way.
+
 Pure — no I/O beyond what's passed in.
 """
 from __future__ import annotations
@@ -27,12 +79,64 @@ import pandas as pd
 
 from src.economic_compute import effective_frequency, _max_age_for, _indicator_applies
 
+# Expected inter-print interval per configured frequency tier, days. Used
+# ONLY for the `severity` "periods missed" check below — a local, monitoring-
+# only convention (matches the expected_gap_days convention already used in
+# docs/bucket-c-quality.csv), NOT the scoring engine's own dedup_gap_days or
+# max_age_by_frequency (those are untouched, still economic_indicators.yaml's).
+_CADENCE_DAYS = {"weekly": 7, "monthly": 30, "quarterly": 91}
+
+
+def _severity(age_days: float, threshold_days: float, freq: str | None) -> str | None:
+    """Only meaningful for an already-`stale` row. `age_days` here is
+    whichever age the caller decided is the right one to grade severity on
+    (age_scored normally, age_raw when reason == QUARANTINED — see module
+    docstring) — this function itself doesn't know or care which."""
+    if age_days is None or threshold_days is None:
+        return None
+    period_days = _CADENCE_DAYS.get(freq)
+    periods_missed = (age_days / period_days) if period_days else None
+    if age_days > 2 * threshold_days or (periods_missed is not None and periods_missed >= 2):
+        return "DEAD"
+    return "STALE"
+
+
+def _raw_signal(raw_calendar_df: "pd.DataFrame | None", ccy: str, key: str,
+                scored_last_date, as_of: pd.Timestamp) -> tuple["str | None", "float | None"]:
+    """(reason, age_raw) for a (currency, indicator_key) pair. `None, None`
+    if no `raw_calendar_df` was supplied — can't tell without it.
+
+    `reason` (NO_ROW vs QUARANTINED) is decided from raw rows WITH a
+    non-null actual only — a row nobody ever populated isn't evidence either
+    way. `age_raw` is computed from ALL raw rows for the pair regardless of
+    whether their actual is null — the "has this event even fired" signal,
+    independent of quarantine/data-quality (module docstring)."""
+    if raw_calendar_df is None:
+        return None, None
+    pair_sub = raw_calendar_df[(raw_calendar_df["currency"] == ccy)
+                               & (raw_calendar_df["indicator_key"] == key)]
+    age_raw = None
+    if not pair_sub.empty:
+        raw_last_any = pd.to_datetime(pair_sub["release_dt"]).max()
+        age_raw = float((as_of.normalize() - raw_last_any.normalize()).days)
+
+    raw_sub = pair_sub[pair_sub["actual"].notna()]
+    if raw_sub.empty:
+        reason = "NO_ROW"
+    else:
+        raw_last_date = pd.to_datetime(raw_sub["release_dt"]).max()
+        reason = ("QUARANTINED"
+                 if (scored_last_date is None or raw_last_date > pd.Timestamp(scored_last_date))
+                 else "NO_ROW")
+    return reason, age_raw
+
 
 def per_currency_indicator_freshness(
     calendar_df: pd.DataFrame,
     indicators_cfg: dict,
     as_of: pd.Timestamp,
     currencies: list[str] | None = None,
+    raw_calendar_df: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """One row per (currency, indicator_key) that applies to that currency
     and is actually SCORED (weight > 0 — display-only slots are excluded,
@@ -40,6 +144,19 @@ def per_currency_indicator_freshness(
     prior audit). `status` ∈ {stale, fresh, no_data}. Mirrors
     `_max_age_for`'s existing, already-validated per-frequency window —
     not a new statistic.
+
+    `calendar_df` MUST be the SCORED frame — `src.ff_scoring.to_scoring_frame`'s
+    output (or equivalent), post zero-placeholder quarantine. `status` and
+    `age_scored` are decided against ITS `actual` column only, unchanged
+    logic from before this frame requirement was made explicit. Passing the
+    raw pre-quarantine frame here reintroduces the exact blind spot this
+    function exists to close (module docstring).
+
+    `raw_calendar_df`, optional, same (currency, indicator_key, release_dt,
+    actual) shape but PRE-quarantine: used only to populate `reason` and
+    `age_raw` on non-fresh rows (module docstring) — never affects
+    `status`/`age_scored`/`threshold_days`, but DOES feed `severity` when
+    `reason == QUARANTINED` (module docstring).
     """
     defaults = indicators_cfg.get("defaults", {}) or {}
     indicators = indicators_cfg.get("indicators", {}) or {}
@@ -59,18 +176,28 @@ def per_currency_indicator_freshness(
                               & (calendar_df["indicator_key"] == key)
                               & calendar_df["actual"].notna()]
             if sub.empty:
+                reason, age_raw = _raw_signal(raw_calendar_df, ccy, key, None, as_of)
                 rows.append({"currency": ccy, "indicator_key": key, "status": "no_data",
-                            "last_date": None, "age_days": None, "threshold_days": None})
+                            "last_date": None, "age_scored": None, "age_raw": age_raw,
+                            "threshold_days": None, "severity": None, "reason": reason})
                 continue
             last_date = pd.to_datetime(sub["release_dt"]).max()
-            age_days = (as_of.normalize() - last_date.normalize()).days
+            age_scored = (as_of.normalize() - last_date.normalize()).days
             freq = effective_frequency(ind_cfg, defaults, ccy)
             threshold = _max_age_for(ind_cfg, defaults, freq)
-            status = "stale" if age_days > threshold else "fresh"
+            status = "stale" if age_scored > threshold else "fresh"
+            reason, age_raw = (_raw_signal(raw_calendar_df, ccy, key, last_date, as_of)
+                               if status != "fresh" else (None, None))
+            severity = None
+            if status == "stale":
+                severity_age = age_raw if (reason == "QUARANTINED" and age_raw is not None) else age_scored
+                severity = _severity(severity_age, threshold, freq)
             rows.append({"currency": ccy, "indicator_key": key, "status": status,
-                        "last_date": last_date, "age_days": age_days, "threshold_days": threshold})
+                        "last_date": last_date, "age_scored": age_scored, "age_raw": age_raw,
+                        "threshold_days": threshold, "severity": severity, "reason": reason})
     return pd.DataFrame(rows, columns=["currency", "indicator_key", "status",
-                                       "last_date", "age_days", "threshold_days"])
+                                       "last_date", "age_scored", "age_raw", "threshold_days",
+                                       "severity", "reason"])
 
 
 def currency_freshness_report(per_indicator: pd.DataFrame) -> dict:
@@ -85,7 +212,9 @@ def currency_freshness_report(per_indicator: pd.DataFrame) -> dict:
             "stale_indicators": [
                 {"indicator_key": r["indicator_key"],
                  "last_date": r["last_date"].isoformat() if r["last_date"] is not None else None,
-                 "age_days": r["age_days"], "threshold_days": r["threshold_days"]}
+                 "age_scored": r["age_scored"], "age_raw": r["age_raw"],
+                 "threshold_days": r["threshold_days"],
+                 "severity": r["severity"], "reason": r["reason"]}
                 for _, r in stale.iterrows()
             ],
             "no_data_indicators": sorted(no_data["indicator_key"].tolist()),
