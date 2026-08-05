@@ -15,26 +15,17 @@
 # date, not arbitrarily — see the reasoning in each entry's comment.
 
 exceptions:
-  - scope: calendar
-    currency: AUD
-    indicator: core_cpi
-    reason: >
-      ABS moved AUD CPI to monthly cadence; the mapped canonical
-      (RBA Trimmed Mean CPI y/y, quarterly) has been dead since 2025-10-29
-      and will never print again under that name/cadence. Fixing this
-      needs a taxonomy decision (repoint to a monthly replacement,
-      mirroring the CAD Core CPI -> Median CPI y/y promotion) — not
-      something that resolves by waiting.
-    doc: docs/faza1-watchdog-per-instrument-implementation.md
-    # review_by: AUD's monthly "Monthly Trimmed Mean CPI m/m" (the most
-    # plausible replacement canonical) had its FIRST print ever on
-    # 2026-07-29 (n=1 — too thin to evaluate a promotion yet). ABS's own
-    # monthly cadence puts the SECOND print at ~2026-08-29. review_by gives
-    # a few days' buffer past that for the actuals pull to land, so by this
-    # date there are 2 real prints to judge whether a promotion proposal
-    # (like CAD's) is even viable — not an arbitrary "check back in a month".
-    review_by: "2026-09-01"
-
+  # AUD core_cpi entry REMOVED 2026-08 (the taxonomy decision this entry's
+  # own comment called for): core_cpi's currency whitelist no longer
+  # includes AUD at all (data/economic_indicators.yaml) — the dead RBA
+  # Trimmed Mean CPI y/y slot is gone, not merely stale, so there is no
+  # (AUD, core_cpi) scored slot left for an exception to apply to.
+  # AUD's replacement monthly CPI reporting is now scored directly as
+  # cpi_monthly / trimmed_mean_cpi_monthly (promoted the same change,
+  # mirroring the CAD Core CPI -> Median CPI y/y promotion this entry
+  # referenced). Removed rather than rewritten: find_orphaned_exceptions
+  # would flag a rewritten entry the same way — there's nothing left to
+  # except.
   - scope: calendar
     currency: USD
     indicator: core_cpi
