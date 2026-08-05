@@ -107,10 +107,19 @@ def test_aud_core_cpi_no_longer_applies(indicators_cfg):
 
 
 def test_other_currencies_core_cpi_applicability_unchanged(indicators_cfg):
+    """As of this test's own change (fix/aud-inflation-monthly-promotion),
+    NZD/CHF still applied here -- they were listed in the whitelist purely
+    to preserve their pre-existing no_data applicability, unaffected by the
+    AUD removal. feat/board-slot-cleanup-and-cad-promotion later removed
+    NZD/CHF from core_cpi's scope for real (docs/empty-slot-routing-audit.md:
+    both are NO SERIES, zero prints ever under any name) -- this pin is
+    updated to that, not reverted."""
     cfg = indicators_cfg["indicators"]["core_cpi"]
-    still_applies = {"USD", "EUR", "GBP", "JPY", "CAD", "NZD", "CHF"}
+    still_applies = {"USD", "EUR", "GBP", "JPY", "CAD"}
     for ccy in still_applies:
         assert _indicator_applies(ccy, cfg) is True, ccy
+    for ccy in {"NZD", "CHF"}:
+        assert _indicator_applies(ccy, cfg) is False, ccy
 
 
 def test_aud_core_cpi_absent_from_every_scored_slot(scored_frame, indicators_cfg):

@@ -97,11 +97,17 @@ indicators:
     # nothing to score_precise) — this removes a permanently-empty
     # slot, not a live one; AUD's replacement monthly CPI reporting is
     # now scored directly as cpi_monthly/trimmed_mean_cpi_monthly
-    # above. NZD/CHF were never in a whitelist here either (no matcher
-    # rule ever routed to core_cpi for them) and are listed below only
-    # to keep their existing no_data applicability unchanged — this
-    # currencies: list changes AUD's applicability alone.
-    currencies: [USD, EUR, GBP, JPY, CAD, NZD, CHF]
+    # above.
+    #
+    # NZD/CHF REMOVED 2026-08 (docs/empty-slot-routing-audit.md, Part A):
+    # both were `no_data` — zero valid prints ever, confirmed by
+    # exhaustive per-currency raw-name enumeration across parquet,
+    # archive, and jb_raw (no core/trimmed CPI variant exists for either
+    # under any name). Never had a matcher rule routing to core_cpi
+    # either, so this is a no-op on scoring — it removes two
+    # permanently-empty slots that were inflating configured coverage,
+    # making the reported N honest.
+    currencies: [USD, EUR, GBP, JPY, CAD]
   ppi_yoy:
     pillar: inflation
     category: inflation
@@ -136,6 +142,15 @@ indicators:
     direction: 1
     weight: 1.0
     frequency: monthly
+    # JPY/CHF REMOVED 2026-08 (docs/empty-slot-routing-audit.md, Part A):
+    # both `no_data` — zero valid prints ever. JPY's own matcher already
+    # has an unreachable `services_pmi` rule (`^au Jibun Bank Services
+    # PMI$`) but no raw event under any name ever aliases to it — Japan's
+    # PMI coverage in this feed is Manufacturing-only. CHF has no
+    # services-PMI-named raw event at all. Removing both is a no-op on
+    # scoring (both already contributed 0 coverage); it makes configured
+    # coverage match actual coverage for the currencies that remain.
+    currencies: [USD, EUR, GBP, AUD, NZD, CAD]
   retail_sales:
     pillar: growth
     category: growth
@@ -183,6 +198,11 @@ indicators:
     frequency: monthly
     frequency_overrides: { EUR: quarterly, NZD: quarterly }
     can_be_zero: true            # net jobs change — 0.0 is a legitimate reading
+    # JPY/CHF REMOVED 2026-08 (docs/empty-slot-routing-audit.md, Part A):
+    # both `no_data` — zero valid prints ever under any name (both track
+    # only Unemployment Rate, no separate "change in employment" release).
+    # No-op on scoring; makes configured coverage honest.
+    currencies: [USD, EUR, GBP, AUD, NZD, CAD]
   unemployment_rate:
     pillar: labour
     category: labour
@@ -196,7 +216,17 @@ indicators:
     direction: 1
     weight: 1.0
     frequency: monthly         # US AHE / JP Labor Cash Earnings are monthly
-    frequency_overrides: { EUR: quarterly, AUD: quarterly, NZD: quarterly }
+    # EUR/CAD/CHF REMOVED 2026-08 (docs/empty-slot-routing-audit.md, Part
+    # A): all three `no_data` — zero valid prints ever, no wage/earnings/
+    # labour-cost series under any name (checked at EU-aggregate and every
+    # carried EUR country level too). The EUR entry below is dropped from
+    # frequency_overrides along with it — unreachable now that EUR is out
+    # of the whitelist (`_indicator_applies` gates before
+    # `effective_frequency` is ever consulted for an excluded currency),
+    # not a separate threshold change. AUD/NZD keep their override,
+    # unaffected. No-op on scoring; makes configured coverage honest.
+    currencies: [USD, GBP, JPY, AUD, NZD]
+    frequency_overrides: { AUD: quarterly, NZD: quarterly }
   adp:
     pillar: labour
     category: labour
@@ -275,12 +305,37 @@ indicators:
   # `inflation_display` isolation as AUD's cpi_monthly above: this category
   # is NOT a key in `categories:`, so it never becomes a `per_cat` key
   # regardless of weight.
+  # PROMOTED 2026-08 (CAD only — docs/empty-slot-routing-audit.md Part C +
+  # docs/aud-inflation-independence-check.md for the methodology this
+  # mirrors): n=43 valid scored prints, z-scored not pct (confirmed via
+  # compute_indicator_score before this change, sigma=0.108). Release-date
+  # independence checked first, per the AUD precedent: coincides with
+  # CAD's scored cpi_yoy/core_cpi on ~100% of shared opportunities (43/43),
+  # the large majority at an identical minute-level timestamp — the same
+  # one-publication/complementary-measures structure the AUD promotion
+  # relied on, not duplicate scoring of one reading. `currencies: [CAD]`
+  # is deliberate and load-bearing: no matcher rule for common_cpi_yoy
+  # exists under any other country block.
   common_cpi_yoy:
     pillar: inflation
-    category: inflation_display
+    category: inflation
     direction: 1
-    weight: 0.0
+    weight: 1.0
     frequency: monthly
+    currencies: [CAD]
+  # PROMOTED 2026-08 (CAD only — same basis as common_cpi_yoy above): n=41
+  # valid scored prints, z-scored not pct, sigma=0.100. Coincides with
+  # CAD's scored cpi_yoy/core_cpi on ~100% of shared opportunities (41/41),
+  # the large majority at an identical minute-level timestamp.
+  # `currencies: [CAD]` is deliberate and load-bearing, same reasoning as
+  # above.
+  trimmed_cpi_yoy:
+    pillar: inflation
+    category: inflation
+    direction: 1
+    weight: 1.0
+    frequency: monthly
+    currencies: [CAD]
   # RETIRED as a display-only slot 2026-07-30 (docs/proposal-cad-core-
   # promotion.md, docs/measurement-no-consensus-slots.md §6): CAD's scored
   # `core_cpi` was permanently `no_consensus` (fed by "Core CPI m/m", wrong
@@ -293,12 +348,6 @@ indicators:
   # core_cpi, once again here as inert display-only) would be redundant, not
   # useful — see docs/measurement-no-consensus-slots.md §6 backfill notes.
   median_cpi_yoy:
-    pillar: inflation
-    category: inflation_display
-    direction: 1
-    weight: 0.0
-    frequency: monthly
-  trimmed_cpi_yoy:
     pillar: inflation
     category: inflation_display
     direction: 1
@@ -487,6 +536,11 @@ matcher:
     - { pattern: '^Unemployment Rate$',             indicator: unemployment_rate }
     - { pattern: '^Labor Cash Earnings y/y$',       indicator: wage_growth }
     - { pattern: '^BoJ Interest Rate Decision$',    indicator: interest_rate_decision }
+    # ADDED 2026-08 (docs/empty-slot-routing-audit.md, Part B): MATCHER GAP
+    # — raw "PPI y/y" is already aliased (config/ff_aliases.yaml, identity)
+    # and has 42 real prints in the parquet (2023-01-15 through 2026-07-09),
+    # but had no matcher rule, so the rows never reached ppi_yoy.
+    - { pattern: '^PPI y/y$',                       indicator: ppi_yoy }
     # Bucket-C candidates, approved 2026-08-01.
     - { pattern: '^Tokyo Core CPI y/y$',            indicator: tokyo_core_cpi_yoy }
     - { pattern: '^Core Machinery Orders m/m$',     indicator: core_machinery_orders_mm }

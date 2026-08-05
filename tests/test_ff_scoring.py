@@ -67,9 +67,15 @@ def test_xf_series_resolve_and_are_ff_only():
 
 
 def test_unmodeled_series_dropped_for_parity():
-    # JPY PPI is not in the MT5 matcher (JPY has no PPI pattern) -> dropped in both
-    # sources, preserving parity. Its rows never reach the scoring frame.
-    ff = pd.DataFrame([_ff_row("JPY", "PPI y/y", 2.0, "2026-06-01")], columns=CANON_COLUMNS)
+    # GBP "PPI Input m/m" has no matcher rule under any indicator_key (it
+    # measures producer input costs, a different concept from the output-
+    # price ppi_yoy slot GBP's "PPI Output m/m" already feeds — deliberately
+    # left unrouted, docs/empty-slot-routing-audit.md Part B) -> dropped in
+    # both sources, preserving parity. Its rows never reach the scoring
+    # frame. (Was JPY "PPI y/y" until feat/board-slot-cleanup-and-cad-
+    # promotion added Japan's missing ppi_yoy matcher rule — that series is
+    # no longer unmodeled, so this pins a still-genuinely-unrouted one.)
+    ff = pd.DataFrame([_ff_row("GBP", "PPI Input m/m", 2.0, "2026-06-01")], columns=CANON_COLUMNS)
     frame = to_scoring_frame(ff)
     assert frame.empty
 
@@ -309,7 +315,14 @@ PINNED_DERIVED_CAN_BE_ZERO = {
     ("JPY", "core_machinery_orders_mm"): True, ("JPY", "cpi_yoy"): False,
     ("JPY", "gdp_price_index"): False, ("JPY", "gdp_qoq"): True,
     ("JPY", "industrial_production_mm"): True, ("JPY", "interest_rate_decision"): True,
-    ("JPY", "manufacturing_pmi"): False, ("JPY", "retail_sales"): True, ("JPY", "sppi_yoy"): False,
+    ("JPY", "manufacturing_pmi"): False,
+    # ("JPY", "ppi_yoy") added feat/board-slot-cleanup-and-cad-promotion:
+    # Japan's matcher gained a ppi_yoy rule (was unmodeled, dropped before
+    # this pin existed). Raw name "PPI y/y" is already y/y (suffix "y/y",
+    # not in {"m/m","q/q"}) and ppi_yoy carries no explicit can_be_zero ->
+    # False, same derivation every other row here uses.
+    ("JPY", "ppi_yoy"): False,
+    ("JPY", "retail_sales"): True, ("JPY", "sppi_yoy"): False,
     ("JPY", "tokyo_core_cpi_yoy"): False, ("JPY", "unemployment_rate"): False,
     ("JPY", "wage_growth"): False,
     ("NZD", "cpi_yoy"): True, ("NZD", "employment_change"): True, ("NZD", "gdp_qoq"): True,
