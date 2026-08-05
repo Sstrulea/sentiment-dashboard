@@ -130,6 +130,18 @@ indicators:
     direction: 1
     weight: 1.0
     frequency: quarterly       # GDP q/q is quarterly everywhere
+    # CAD override ADDED 2026-08 (docs/diag-cad-gdp-fallback.md): CAD's
+    # gdp_qoq is fed via config/ff_aliases.yaml's "GDP m/m": "GDP q/q" # xf
+    # — genuinely monthly data (24-39d gaps), not quarterly. The static
+    # `quarterly` frequency gave _dedup_flash_final a 45d dedup_gap, which
+    # never sees a gap in CAD's real cadence, so the ENTIRE history
+    # collapsed into one flash/final cluster: 42 rows -> 2 kept -> 1 with
+    # a valid consensus -> n_pairs=1, sigma=nan, forced pct fallback,
+    # saturating to +2 on an ordinary 0.1pp beat (25% of a 0.40 consensus).
+    # The same data z-scores to sigma=0.109, z=0.923, score +1. This
+    # override tells the engine CAD's true cadence; every other currency's
+    # gdp_qoq (genuinely quarterly) is untouched.
+    frequency_overrides: { CAD: monthly }
   manufacturing_pmi:
     pillar: growth
     category: growth
