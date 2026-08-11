@@ -106,6 +106,53 @@ def test_clean_empty_frame():
     assert out.empty and list(out.columns) == CANON_COLUMNS
 
 
+# --- preserve_zero_actuals (fix/ingest-preserve-zeros) ------------------------
+
+def test_clean_preserve_zero_actuals_false_matches_default_on_real_fixture():
+    """Default (False) must be bit-identical to explicitly passing False, on the
+    real payload used by every other cleaning test — no behavior change for the
+    existing archive_backfill caller, which never passes the new kwarg."""
+    default = J.clean_jblanked_actuals(_parse_fixture())
+    explicit_false = J.clean_jblanked_actuals(_parse_fixture(), preserve_zero_actuals=False)
+    pd.testing.assert_frame_equal(default, explicit_false)
+
+
+def test_clean_preserve_zero_actuals_true_keeps_lone_zero():
+    """preserve_zero_actuals=True: a group with ONLY a 0.0 actual (no real value
+    anywhere) is no longer nulled — the 0.0 survives as the ingested actual, so
+    ff_scoring's can_be_zero widening can judge it instead of never seeing it."""
+    jb = _frame([_canon_row("eur_flat_print", "EUR", "2026-07-10 12:30", 0.0)])
+    cleaned = J.clean_jblanked_actuals(jb, preserve_zero_actuals=True)
+    row = cleaned[cleaned["canonical_id"] == "eur_flat_print"].iloc[0]
+    assert row["actual"] == pytest.approx(0.0)
+
+    # default (False) still nulls the same lone-zero group
+    cleaned_default = J.clean_jblanked_actuals(jb)
+    row_default = cleaned_default[cleaned_default["canonical_id"] == "eur_flat_print"].iloc[0]
+    assert pd.isna(row_default["actual"])
+
+
+def test_clean_preserve_zero_actuals_real_still_beats_zero_in_dst_dup():
+    """The 'real beats zero' pick inside a ±1h DST duplicate is untouched by the
+    flag either way — only the final all-zero/no-real nulling step changes."""
+    for flag in (False, True):
+        cleaned = J.clean_jblanked_actuals(_parse_fixture(), preserve_zero_actuals=flag)
+        cad = cleaned[cleaned["canonical_id"] == "cad_employment_change"]
+        assert len(cad) == 1 and cad.iloc[0]["actual"] == pytest.approx(18.2)
+
+
+def test_clean_preserve_zero_actuals_aligns_timestamp_to_schedule():
+    """Re-alignment to the faireconomy schedule row (step 3) still applies to a
+    row whose 0.0 actual was preserved rather than nulled."""
+    jb = _frame([_canon_row("eur_flat_print", "EUR", "2026-07-10 12:30", 0.0)])
+    schedule = _frame([_canon_row("eur_flat_print", "EUR", "2026-07-10 12:00",
+                                  float("nan"), forecast=2.0)])
+    cleaned = J.clean_jblanked_actuals(jb, schedule=schedule, preserve_zero_actuals=True)
+    row = cleaned.iloc[0]
+    assert row["actual"] == pytest.approx(0.0)
+    assert row["datetime_utc"] == pd.Timestamp("2026-07-10 12:00")
+
+
 # --- window guard + state -----------------------------------------------------
 
 def test_should_pull_due_window_and_once_per_window():

@@ -118,7 +118,8 @@ def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
 # ---------------------------------------------------------------------------
 
 def clean_jblanked_actuals(jb: pd.DataFrame,
-                           schedule: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+                           schedule: Optional[pd.DataFrame] = None, *,
+                           preserve_zero_actuals: bool = False) -> pd.DataFrame:
     """De-dup/repair a PARSED JBlanked range frame (canonical schema) — pure.
 
     Empirical defects of the range payload (validated on the real capture
@@ -131,10 +132,18 @@ def clean_jblanked_actuals(jb: pd.DataFrame,
 
     Per (canonical_id, UTC calendar date) group:
       1. keep the rows with a REAL actual (non-NaN and != 0.0) when any exists;
-         otherwise the group survives as a SCHEDULE row — actual 0.0 is by
-         definition the unreleased placeholder here, so it is nulled rather
-         than ingested as a fake print (known trade-off: a genuine 0.0 print is
-         indistinguishable and stays unfilled until revised);
+         otherwise the group survives as a SCHEDULE row. By default
+         (preserve_zero_actuals=False) a lone actual=0.0 is nulled here rather
+         than ingested, since at this layer it is indistinguishable from the
+         "Data Not Loaded" placeholder. With preserve_zero_actuals=True this
+         nulling is skipped and 0.0 is kept as the actual — ingest records what
+         the feed sent rather than discarding it; distinguishing a genuine 0.0
+         print from the placeholder is deferred to ff_scoring.to_scoring_frame's
+         can_be_zero widening (name_raw m/m|q/q suffix + build_flagged_bad_lookup
+         Quality/Strength check), which quarantines the flagged ones instead of
+         guessing at ingest time. The "real beats zero" pick below is unchanged
+         either way — this only affects the case where NO row in the group has
+         a real value;
       2. collapse to ONE row: the last after sorting on datetime_utc;
       3. re-align the kept row's datetime_utc to the schedule row already in
          the parquet for the same (canonical_id, date) — the faireconomy hour
@@ -151,7 +160,7 @@ def clean_jblanked_actuals(jb: pd.DataFrame,
     for _key, g in df.groupby(["canonical_id", "_date"], sort=False):
         real = g[g["actual"].notna() & (g["actual"] != 0.0)]
         pick = (real if len(real) else g).sort_values("datetime_utc").iloc[-1].copy()
-        if not len(real):
+        if not len(real) and not preserve_zero_actuals:
             pick["actual"] = float("nan")   # placeholder 0.0 → schedule row
         picked.append(pick)
     out = pd.DataFrame(picked)
@@ -386,7 +395,7 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
 
     parquet_path = Path(parquet_path)
     existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
-    cleaned = clean_jblanked_actuals(jb, schedule=existing)
+    cleaned = clean_jblanked_actuals(jb, schedule=existing, preserve_zero_actuals=True)
     merged = merge_weekly(existing, cleaned)
     parquet_path.parent.mkdir(parents=True, exist_ok=True)
     merged.to_parquet(parquet_path, index=False)
