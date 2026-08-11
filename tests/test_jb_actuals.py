@@ -282,30 +282,90 @@ def test_pull_requests_trailing_7_day_range(tmp_path):
 # --- freshness badges (A4, A5) ---------------------------------------------------
 
 def test_calendar_badge_tracks_active_ff_parquet(tmp_path, monkeypatch):
-    """A5: with calendar_source=ff the calendar badge must watch the ACTIVE FF
-    parquet (datetime_utc/actual) — not the frozen MT5 file, which would pin the
-    badge red forever. Fresh FF actuals (2d old, under the 3d threshold) → not
-    stale; last actual older than the threshold (9d, the incident shape) → stale."""
+    """A5, UPDATED by fix/calendar-freshness-measures-source: with
+    calendar_source=ff the calendar badge now watches ff_refresh's OWN
+    last-successful-run state (data/ff_last_refresh.json) — SOURCE, not
+    content. This test used to seed the FF parquet directly and assert the
+    badge tracked the most recent PUBLISHED actual; that was exactly the
+    structural false-positive the fix closes (a quiet window with no new
+    prints — weekend, no scheduled releases — read as "stale" regardless of
+    whether ff_refresh itself was running fine). Reassigned here to seed
+    ff_refresh's state file instead; the fresh/stale transition and
+    any_stale rollup this test guards are otherwise unchanged. See
+    test_calendar_badge_survives_a_quiet_content_window below for the
+    regression case this fix actually targets."""
     import src.ff_refresh as FR
     from src.economic_render import _freshness
-    ffp = tmp_path / "ff.parquet"
-    monkeypatch.setattr(FR, "FF_PARQUET", ffp)
+    fp = tmp_path / "ff_last_refresh.json"
     monkeypatch.setattr(FR, "calendar_source", lambda cfg=None: "ff")
+    monkeypatch.setattr(FR, "STATE_JSON", fp)
     monkeypatch.setattr(J, "STATE_JSON", tmp_path / "jb_last_pull.json")   # hermetic
     as_of = pd.Timestamp("2026-07-12 21:30")
 
-    # published actual 2 days ago + a future schedule row (NaN) → fresh
-    _frame([_canon_row("usd_cpi", "USD", "2026-07-10 12:30", 3.8),
-            _canon_row("usd_cpi", "USD", "2026-07-14 12:30", float("nan"))]).to_parquet(ffp, index=False)
+    # last successful ff_refresh 2 days ago → fresh
+    FR.save_state({"last_success_at": "2026-07-10T12:30:00"}, fp)
     f = _freshness(as_of=as_of)
     assert f["calendar"] == {"last_update": "2026-07-10T12:30:00",
                              "age_days": 2, "stale": False}
 
-    # last published actual 9 days ago (the 2026-07-03..12 freeze shape) → stale
-    _frame([_canon_row("usd_cpi", "USD", "2026-07-03 12:30", 3.8)]).to_parquet(ffp, index=False)
+    # last successful run 9 days ago (the source itself stalled) → stale
+    FR.save_state({"last_success_at": "2026-07-03T12:30:00"}, fp)
     f = _freshness(as_of=as_of)
     assert f["calendar"]["stale"] is True and f["calendar"]["age_days"] == 9
     assert f["any_stale"] is True
+
+
+def test_calendar_badge_survives_a_quiet_content_window(tmp_path, monkeypatch):
+    """THE regression this fix targets: ff_refresh ran successfully TODAY
+    (state file fresh), but the FF parquet's most recent PUBLISHED actual is
+    old (a quiet window — weekend, no scheduled releases, exactly like the
+    real 2026-08-11 case: last actual 2026-08-07, refresh ran fine at
+    08-11T05:10). Under the OLD content-based reading this was a false-
+    positive STALE badge; under source-based reading it must be fresh."""
+    import src.ff_refresh as FR
+    from src.economic_render import _freshness
+    fp = tmp_path / "ff_last_refresh.json"
+    monkeypatch.setattr(FR, "calendar_source", lambda cfg=None: "ff")
+    monkeypatch.setattr(FR, "STATE_JSON", fp)
+    monkeypatch.setattr(J, "STATE_JSON", tmp_path / "jb_last_pull.json")
+    as_of = pd.Timestamp("2026-08-11 14:00")
+
+    FR.save_state({"last_success_at": "2026-08-11T05:10:39"}, fp)   # ran fine today
+    f = _freshness(as_of=as_of)
+    assert f["calendar"]["stale"] is False and f["calendar"]["age_days"] == 0
+
+
+def test_calendar_badge_absent_state_is_never_not_silently_fresh(tmp_path, monkeypatch):
+    """No state file at all (ff_refresh never succeeded, or history predates
+    this fix) → fail-visible, same contract as actuals_pull's own absent-
+    state case — never a silent stale=False."""
+    import src.ff_refresh as FR
+    from src.economic_render import _freshness
+    fp = tmp_path / "ff_last_refresh.json"   # never written
+    monkeypatch.setattr(FR, "calendar_source", lambda cfg=None: "ff")
+    monkeypatch.setattr(FR, "STATE_JSON", fp)
+    monkeypatch.setattr(J, "STATE_JSON", tmp_path / "jb_last_pull.json")
+    f = _freshness(as_of=pd.Timestamp("2026-08-11 14:00"))
+    assert f["calendar"] == {"last_update": None, "age_days": None, "stale": True}
+
+
+def test_calendar_badge_mt5_rollback_still_content_based(tmp_path, monkeypatch):
+    """Out of scope for this fix, explicitly: the mt5 rollback path (pre-
+    Phase-3) has no ff_refresh state to read and keeps the old content-based
+    reading over data/economic_calendar.parquet, unchanged."""
+    import src.ff_refresh as FR
+    from src.economic_render import _freshness
+    monkeypatch.setattr(FR, "calendar_source", lambda cfg=None: "mt5")
+    monkeypatch.setattr(J, "STATE_JSON", tmp_path / "jb_last_pull.json")
+    mt5p = tmp_path / "mt5.parquet"
+    monkeypatch.setattr("src.economic_render.PARQUET", mt5p)
+    as_of = pd.Timestamp("2026-07-12 21:30")
+    pd.DataFrame([{"currency": "USD", "indicator_key": "cpi_yoy",
+                  "release_dt": pd.Timestamp("2026-07-10 12:30"), "actual": 3.8,
+                  "consensus": 3.7, "previous": 3.6, "source": "mt5"}]).to_parquet(mt5p, index=False)
+    f = _freshness(as_of=as_of)
+    assert f["calendar"] == {"last_update": "2026-07-10T12:30:00", "age_days": 2, "stale": False}
+
 
 def test_actuals_pull_badge_after_two_missed_days(tmp_path, monkeypatch):
     """A4: simulate the pull failing for 2 days → the DISTINCT actuals_pull badge

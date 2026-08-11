@@ -12,6 +12,16 @@ from src.ff_fred_crosscheck import _fred_value, crosscheck_us
 NOW = pd.Timestamp("2026-07-05")
 
 
+@pytest.fixture(autouse=True)
+def _hermetic_state_json(tmp_path, monkeypatch):
+    """Every pre-existing test in this file calls R.refresh(...) without a
+    state_path kwarg (it didn't exist before fix/calendar-freshness-measures-
+    source) — left alone, any of them that reach "ok" would write to the
+    REAL data/ff_last_refresh.json on disk. Autouse + module-level patch
+    means no individual test body needs touching to stay hermetic."""
+    monkeypatch.setattr(R, "STATE_JSON", tmp_path / "ff_last_refresh.json")
+
+
 def _canon_row(cid, ccy, dt, actual, released=True):
     return {"canonical_id": cid, "currency": ccy, "name_raw": "raw", "name_canonical": "CPI y/y",
             "datetime_utc": pd.Timestamp(dt), "actual": actual, "forecast": actual - 0.1,
@@ -354,3 +364,92 @@ def test_archive_hook_failure_never_breaks_refresh(tmp_path, monkeypatch):
                                       "archive_ff_weekly": True}, parquet_path=p)
     assert rep["status"] == "ok"
     assert len(pd.read_parquet(p)) == 6
+
+
+# --- state file (fix/calendar-freshness-measures-source) ---------------------
+# data/ff_last_refresh.json: same contract as jb_actuals.STATE_JSON — only a
+# successful merge ("ok") advances it, duplicated here (not imported from
+# jb_actuals) to keep the calendar and actuals modules uncoupled.
+
+_NO_GUARDS = {"ff_min_currencies": 4, "run_fred_crosscheck": False,
+             "run_pmi_ingest_guard": False, "archive_ff_weekly": False}
+
+
+def test_load_state_missing_file_returns_empty(tmp_path):
+    assert R.load_state(tmp_path / "nope.json") == {}
+
+
+def test_load_state_corrupt_file_returns_empty(tmp_path):
+    p = tmp_path / "bad.json"
+    p.write_text("{not json")
+    assert R.load_state(p) == {}
+
+
+def test_state_written_on_success(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    sp = tmp_path / "state.json"
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
+    rep = R.refresh(now_utc=NOW, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep["status"] == "ok"
+    st = R.load_state(sp)
+    assert st["last_success_at"] == NOW.isoformat()
+    assert st["last_success_utc_date"] == str(NOW.date())
+    assert st["rows_after"] == 6
+
+
+def test_state_not_written_on_fetch_failed(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    sp = tmp_path / "state.json"
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("HTTP 500")))
+    rep = R.refresh(now_utc=NOW, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep["status"] == "fetch_failed"
+    assert not sp.exists()
+
+
+def test_state_not_written_on_empty(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    sp = tmp_path / "state.json"
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _frame([]))
+    rep = R.refresh(now_utc=NOW, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep["status"] == "empty"
+    assert not sp.exists()
+
+
+def test_state_not_written_on_thin(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    sp = tmp_path / "state.json"
+    thin = _frame([_canon_row("usd_cpi", "USD", "2026-07-06", 1.0),
+                   _canon_row("eur_cpi", "EUR", "2026-07-06", 1.0)])
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: thin)
+    rep = R.refresh(now_utc=NOW, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep["status"] == "thin"
+    assert not sp.exists()
+
+
+def test_state_not_written_on_degraded(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    sp = tmp_path / "state.json"
+    weekly = _good_weekly()
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: weekly)
+    import src.econ_calendar_ff as E
+    monkeypatch.setattr(E, "ff_row_failures", lambda: {"USD/x": 10})   # 10 > 5 mapped
+    rep = R.refresh(now_utc=NOW, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep["status"] == "degraded"
+    assert not sp.exists()
+
+
+def test_state_untouched_by_a_later_failure_after_an_earlier_success(tmp_path, monkeypatch):
+    """The core contract: a failure must leave the PREVIOUS successful
+    state exactly as it was — never cleared, never silently advanced."""
+    p = _write_existing(tmp_path)
+    sp = tmp_path / "state.json"
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
+    rep1 = R.refresh(now_utc=NOW, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep1["status"] == "ok"
+    before = R.load_state(sp)
+
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("HTTP 500")))
+    later = NOW + pd.Timedelta(days=5)
+    rep2 = R.refresh(now_utc=later, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
+    assert rep2["status"] == "fetch_failed"
+    assert R.load_state(sp) == before   # unchanged, still the earlier success

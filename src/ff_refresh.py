@@ -7,6 +7,7 @@ never degrades the parquet — the last-good file is kept and the run logs + qua
 """
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Optional
@@ -22,6 +23,32 @@ ROOT = Path(__file__).resolve().parents[1]
 FF_PARQUET = ROOT / "data" / "economic_calendar_ff.parquet"
 QUARANTINE_PARQUET = ROOT / "data" / "ff_quarantine.parquet"
 PIPELINE_YAML = ROOT / "config" / "pipeline.yaml"
+
+# fix/calendar-freshness-measures-source: last-SUCCESSFUL-refresh state, same
+# contract as jb_actuals.STATE_JSON (data/jb_last_pull.json) — only a
+# successful merge (refresh()'s "ok" status) advances this file; every
+# failure path (fetch_failed/empty/thin/degraded) leaves it untouched, so a
+# stale state file is fail-visible rather than silently reset. Deliberately
+# duplicated here rather than imported from jb_actuals — the calendar
+# (schedule/forecast) and actuals (JBlanked daily pull) modules stay
+# uncoupled; they happen to share a tiny load/save-JSON shape, not a
+# dependency.
+STATE_JSON = ROOT / "data" / "ff_last_refresh.json"
+
+
+def load_state(path: Path = STATE_JSON) -> dict:
+    """Read the last-successful-refresh state; missing/corrupt file → {}
+    (fail-open — the caller decides what an absent state means)."""
+    try:
+        return json.loads(Path(path).read_text())
+    except Exception:  # noqa: BLE001 — no state yet, or unreadable
+        return {}
+
+
+def save_state(state: dict, path: Path = STATE_JSON) -> None:
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(state, indent=1) + "\n")
 
 
 def load_pipeline_config(path: Path = PIPELINE_YAML) -> dict:
@@ -70,9 +97,22 @@ def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.D
 
 
 def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = None,
-            parquet_path: Path = FF_PARQUET) -> dict:
+            parquet_path: Path = FF_PARQUET, state_path: Optional[Path] = None) -> dict:
     """Fetch the weekly feed, merge, write. Returns a report dict. Never raises on a
-    fetch/parse failure — anti-degradation keeps the last-good parquet."""
+    fetch/parse failure — anti-degradation keeps the last-good parquet.
+
+    `state_path` (fix/calendar-freshness-measures-source) only ever advances
+    on the "ok" return below — every early-return status (fetch_failed/empty/
+    thin/degraded) leaves it exactly as it was, so freshness.calendar
+    (economic_render._freshness) can tell "the source stalled" from "nothing
+    new was published" instead of conflating the two. Defaults to `None` and
+    resolves to the module-level STATE_JSON INSIDE the function body (not as
+    the parameter's bound default) so a test monkeypatching `STATE_JSON`
+    still redirects callers that never pass `state_path` at all — a bound
+    default is captured once at import time and would silently ignore that
+    patch, letting an unrelated test's `refresh()` call write to the real
+    data/ff_last_refresh.json."""
+    resolved_state_path = state_path if state_path is not None else STATE_JSON
     cfg = cfg or load_pipeline_config()
     url = cfg.get("ff_weekly_url", "https://nfs.faireconomy.media/ff_calendar_thisweek.json")
     min_ccy = int(cfg.get("ff_min_currencies", 4))
@@ -228,6 +268,11 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
         top = "(unavailable)"
     log.info("FF refresh: weekly=%d rows, %d ccy; parquet %d -> %d rows. Top unmapped: %s",
              len(weekly), weekly["currency"].nunique(), n_before, len(merged), top or "none")
+
+    now = pd.Timestamp(now_utc) if now_utc is not None else pd.Timestamp.utcnow().tz_localize(None)
+    save_state({"last_success_at": now.isoformat(), "last_success_utc_date": str(now.date()),
+               "rows_before": n_before, "rows_after": len(merged)}, resolved_state_path)
+
     return {"status": "ok", "rows_before": n_before, "rows_after": len(merged),
             "merged": len(merged) - n_before, "weekly_rows": len(weekly)}
 

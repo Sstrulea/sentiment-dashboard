@@ -538,26 +538,53 @@ def _freshness(as_of: pd.Timestamp | None = None) -> dict:
     # calendar_source=ff, the MT5 parquet is frozen — watching it would pin the
     # badge permanently red/green regardless of what the dashboard scores from.
     try:
-        from src.ff_refresh import FF_PARQUET, calendar_source
+        from src.ff_refresh import calendar_source
         cal_src = calendar_source()
     except Exception as e:  # noqa: BLE001 — config unreadable → mt5 (mirrors _load_calendar_frame)
         log.warning("freshness: calendar_source unresolved (%s); assuming mt5.", e)
-        cal_src, FF_PARQUET = "mt5", None
-    try:
-        cal_path, dt_col = (FF_PARQUET, "datetime_utc") if cal_src == "ff" \
-            else (PARQUET, "release_dt")
-        if cal_path is not None and cal_path.exists():
-            c = pd.read_parquet(cal_path)
-            c[dt_col] = pd.to_datetime(c[dt_col], errors="coerce")
-            c["actual"] = pd.to_numeric(c["actual"], errors="coerce")
-            pub = c[c["actual"].notna()]
-            if len(pub):
-                last = pub[dt_col].max()
+        cal_src = "mt5"
+
+    if cal_src == "ff":
+        # fix/calendar-freshness-measures-source: measures whether
+        # ff_refresh.refresh() itself last SUCCEEDED (its own state file,
+        # advanced only on "ok" — see ff_refresh.STATE_JSON), not the most
+        # recent PUBLISHED actual. A quiet window with no new prints
+        # (weekend, no scheduled releases) is not the same as the refresh
+        # pipeline being stuck, and the old content-based reading conflated
+        # the two — every gap over FRESHNESS_STALE_DAYS["calendar"] days
+        # turned the badge red regardless of whether ff_refresh ran fine.
+        # Symmetric with the actuals_pull block below, which already reads
+        # jb_actuals' own state file the same way — including "absent state
+        # -> stale=True, never a silent False" (no state ever written, or
+        # never a successful run, must stay fail-visible).
+        try:
+            from src.ff_refresh import STATE_JSON as FF_STATE_JSON
+            from src.ff_refresh import load_state as ff_load_state
+            st = ff_load_state(FF_STATE_JSON)
+            last_at = st.get("last_success_at") or st.get("last_success_utc_date")
+            if last_at:
+                last = pd.Timestamp(last_at)
                 age = _age(last)
                 out["calendar"] = {"last_update": last.isoformat(), "age_days": age,
                                    "stale": age > FRESHNESS_STALE_DAYS["calendar"]}
-    except Exception as e:  # noqa: BLE001
-        log.warning("freshness(calendar) unavailable: %s", e)
+            else:
+                out["calendar"] = {"last_update": None, "age_days": None, "stale": True}
+        except Exception as e:  # noqa: BLE001
+            log.warning("freshness(calendar) unavailable: %s", e)
+    else:
+        try:
+            if PARQUET.exists():
+                c = pd.read_parquet(PARQUET)
+                c["release_dt"] = pd.to_datetime(c["release_dt"], errors="coerce")
+                c["actual"] = pd.to_numeric(c["actual"], errors="coerce")
+                pub = c[c["actual"].notna()]
+                if len(pub):
+                    last = pub["release_dt"].max()
+                    age = _age(last)
+                    out["calendar"] = {"last_update": last.isoformat(), "age_days": age,
+                                       "stale": age > FRESHNESS_STALE_DAYS["calendar"]}
+        except Exception as e:  # noqa: BLE001
+            log.warning("freshness(calendar) unavailable: %s", e)
 
     # Daily JBlanked actuals pull (ff source only) — a DISTINCT badge, separate
     # from calendar-stale: the 2026-07-03..12 actuals freeze was invisible in the
