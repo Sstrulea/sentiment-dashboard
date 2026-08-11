@@ -41,6 +41,8 @@ from src.liquidity_compute import compute_liquidity_score
 from src.crossasset_compute import compute_crossasset_scores
 from src.trend_score import score_all as trend_score_all
 from src.static_assets import copy_static_assets
+from src.price_fetch import SYMBOLS_YAML as PRICE_SYMBOLS_YAML, load_symbol_map as _load_price_symbol_map
+from src.price_freshness_guard import per_instrument_freshness, freshness_report
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +62,10 @@ PRICE_HISTORY_PARQUET = ROOT / "data" / "price_history.parquet"
 # calendar feed is structurally actual-less): no successful pull for >2 days →
 # its own distinct badge, separate from calendar-stale (compared with >=, see
 # _freshness — the 2026-07-03..12 actuals freeze was invisible in logs).
-FRESHNESS_STALE_DAYS = {"calendar": 3, "price": 4, "actuals_pull": 2}
+# `price` has no fixed threshold here: it's derived per instrument in
+# src.price_freshness_guard (each instrument's own trailing gap history), not
+# a single flat day count — see the "price" block in _freshness() below.
+FRESHNESS_STALE_DAYS = {"calendar": 3, "actuals_pull": 2}
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
@@ -576,13 +581,29 @@ def _freshness(as_of: pd.Timestamp | None = None) -> dict:
         except Exception as e:  # noqa: BLE001
             log.warning("freshness(actuals_pull) unavailable: %s", e)
 
+    # Per-instrument, not a blind aggregate: p["date"].max() over ALL board
+    # instruments combined would hide a single frozen instrument (e.g.
+    # FTSE100) for as long as any other instrument keeps updating. Each
+    # instrument is judged against its own derived cadence threshold
+    # (src.price_freshness_guard); `stale_instruments` names the culprits so
+    # the badge can say who, not just report a generic age.
     try:
         if PRICE_HISTORY_PARQUET.exists():
             p = pd.read_parquet(PRICE_HISTORY_PARQUET)
-            last = pd.to_datetime(p["date"]).max()
-            age = _age(last)
-            out["price"] = {"last_update": last.isoformat(), "age_days": age,
-                            "stale": age > FRESHNESS_STALE_DAYS["price"]}
+            _, board_symbols = _load_price_symbol_map(PRICE_SYMBOLS_YAML)
+            per_instrument = per_instrument_freshness(p, board_symbols, as_of)
+            report = freshness_report(per_instrument)
+            last = pd.to_datetime(p["date"]).max() if len(p) else None
+            out["price"] = {
+                "last_update": last.isoformat() if last is not None else None,
+                "age_days": _age(last) if last is not None else None,
+                "stale": report["any_stale"],
+                "stale_count": report["stale_count"],
+                "fresh_count": report["fresh_count"],
+                "total_count": report["total_count"],
+                "stale_instruments": report["stale"],
+                "no_data": report["no_data"],
+            }
     except Exception as e:  # noqa: BLE001
         log.warning("freshness(price) unavailable: %s", e)
 
