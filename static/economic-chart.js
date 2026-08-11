@@ -134,7 +134,7 @@
   function freshnessBadges(f) {
     if (!f) return "";
     let out = "";
-    [["calendar", "Calendar"], ["actuals_pull", "Actuals pull"], ["price", "Price"]].forEach(function (pair) {
+    [["calendar", "Calendar"], ["actuals_pull", "Actuals pull"]].forEach(function (pair) {
       const v = f[pair[0]];
       if (!v) return;
       const age = (v.age_days === null || v.age_days === undefined) ? "never"
@@ -144,7 +144,36 @@
       out += ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "never") +
         '">' + txt + "</span>";
     });
+    out += priceBadge(f.price);
     return out;
+  }
+
+  // Price is per-instrument (economic_render._freshness()'s "price" entry —
+  // src.price_freshness_guard), not one aggregate age: a single frozen
+  // instrument must be nameable, not hidden behind 35 healthy ones. "no_data"
+  // instruments (e.g. DXY — no broker mapping) never appear here, at any
+  // collapse level — freshness_report() already excludes them from `stale`.
+  //   0 stale         -> green, no names
+  //   1..3 stale       -> names inline: "FTSE100 88d"
+  //   >3 stale         -> "N/M instruments", full names in the title attribute
+  function priceBadge(v) {
+    if (!v) return "";
+    const stale = v.stale_instruments || [];
+    const cls = v.stale ? "fresh-badge stale" : "fresh-badge ok";
+    if (!v.stale) {
+      const age = (v.age_days === null || v.age_days === undefined) ? "never"
+        : (v.age_days <= 0 ? "today" : v.age_days + "d ago");
+      return ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "never") +
+        '">Price ' + age + "</span>";
+    }
+    const named = stale.map(function (r) {
+      return r.symbol + " " + (r.age_days === null || r.age_days === undefined ? "?" : r.age_days) + "d";
+    });
+    const total = v.total_count - (v.no_data ? v.no_data.length : 0);
+    const label = stale.length <= 3 ? named.join(", ") : stale.length + "/" + total + " instruments";
+    const title = named.join(", ") || "last update " + escAttr(v.last_update || "never");
+    return ' <span class="' + cls + '" title="' + escAttr(title) +
+      '">⚠ STALE Price: ' + label + "</span>";
   }
   function fmtAsOf(iso) {
     if (!iso) return "—";
