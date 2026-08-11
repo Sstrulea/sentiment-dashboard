@@ -134,7 +134,7 @@
   function freshnessBadges(f) {
     if (!f) return "";
     let out = "";
-    [["calendar", "Calendar"], ["actuals_pull", "Actuals pull"], ["price", "Price"]].forEach(function (pair) {
+    [["calendar", "Calendar"], ["actuals_pull", "Actuals pull"]].forEach(function (pair) {
       const v = f[pair[0]];
       if (!v) return;
       const age = (v.age_days === null || v.age_days === undefined) ? "never"
@@ -144,13 +144,232 @@
       out += ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "never") +
         '">' + txt + "</span>";
     });
+    out += priceBadge(f.price);
     return out;
+  }
+
+  // Price is per-instrument (economic_render._freshness()'s "price" entry —
+  // src.price_freshness_guard), not one aggregate age: a single frozen
+  // instrument must be nameable, not hidden behind 35 healthy ones. "no_data"
+  // instruments (e.g. DXY — no broker mapping) never appear here, at any
+  // collapse level — freshness_report() already excludes them from `stale`.
+  //   0 stale         -> green, no names
+  //   1..3 stale       -> names inline: "FTSE100 88d"
+  //   >3 stale         -> "N/M instruments", full names in the title attribute
+  function priceBadge(v) {
+    if (!v) return "";
+    const stale = v.stale_instruments || [];
+    const cls = v.stale ? "fresh-badge stale" : "fresh-badge ok";
+    if (!v.stale) {
+      const age = (v.age_days === null || v.age_days === undefined) ? "never"
+        : (v.age_days <= 0 ? "today" : v.age_days + "d ago");
+      return ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "never") +
+        '">Price ' + age + "</span>";
+    }
+    const named = stale.map(function (r) {
+      return r.symbol + " " + (r.age_days === null || r.age_days === undefined ? "?" : r.age_days) + "d";
+    });
+    const total = v.total_count - (v.no_data ? v.no_data.length : 0);
+    const label = stale.length <= 3 ? named.join(", ") : stale.length + "/" + total + " instruments";
+    const title = named.join(", ") || "last update " + escAttr(v.last_update || "never");
+    return ' <span class="' + cls + '" title="' + escAttr(title) +
+      '">⚠ STALE Price: ' + label + "</span>";
   }
   function fmtAsOf(iso) {
     if (!iso) return "—";
     const d = new Date(iso);
     if (isNaN(d.getTime())) return iso;
     return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
+  }
+
+  // ---- Manual Actuals Panel (feat/manual-actuals-panel) -----------------------
+  // Rows the pipeline cannot use without a human: MISSING (scheduled, time
+  // passed, nothing landed) or ZERO_CONFIRM (a 0.0 print that scoring would
+  // quarantine — real flat print or unreleased placeholder, ambiguous). Both
+  // states render identically (red/actionable) per spec; only the label differs.
+  // One row, one decision — no bulk actions; each row submits independently to
+  // POST /api/manual-actual (api/manual-actual.py), which commits an updated
+  // data/manual_actuals_overrides.json via the GitHub API. That means a
+  // successful submit does NOT retroactively change this payload — it takes
+  // effect on the NEXT dashboard render, so the row is marked "saved" locally
+  // and the button count is decremented optimistically, not truly refetched.
+  function renderManualActualsButton() {
+    const btn = document.getElementById("manualActualsBtn");
+    if (!btn) return;
+    const ma = state.payload.manual_actuals;
+    if (!ma) { btn.hidden = true; return; }
+    btn.hidden = false;
+    const n = ma.count || 0;
+    const older = ma.older_count || 0;
+    // `older` is a count only (manual_actuals.RELEVANCE_WINDOW, 45d default) —
+    // those rows are still fully actionable/overridable, just not listed here.
+    const olderSuffix = older > 0 ? " (+" + older + " older)" : "";
+    btn.textContent = (n === 0 ? "Needs review: 0" : "⚠ Needs review: " + n) + olderSuffix;
+    btn.classList.toggle("has-items", n > 0);
+    btn.onclick = openManualActualsModal;
+  }
+
+  function indicatorLabel(row) {
+    const meta = (state.payload.meta && state.payload.meta.indicators) || {};
+    return (meta[row.indicator_key] && meta[row.indicator_key].label) || row.name_canonical || row.indicator_key;
+  }
+
+  // `datetime_utc` is a tz-naive UTC string ("2026-07-31T09:00:00", no "Z")
+  // straight from the parquet — new Date(iso) would parse it as LOCAL time
+  // and silently shift it by the viewer's offset. Plain string slicing keeps
+  // it exact regardless of where this runs.
+  function fmtUtcNaive(iso) {
+    if (!iso) return "—";
+    return String(iso).replace("T", " ").slice(0, 16) + " UTC";
+  }
+
+  function manualActualsFormHtml(row) {
+    if (row.state === "MISSING") {
+      return '<div class="ma-form">' +
+        '<input type="number" step="any" class="ma-input" placeholder="actual" aria-label="actual value">' +
+        '<button type="button" class="ma-btn ma-submit">Submit</button>' +
+        '</div>';
+    }
+    return '<div class="ma-form">' +
+      '<button type="button" class="ma-btn ma-confirm">Confirm 0.0</button>' +
+      '<span class="muted">or</span>' +
+      '<input type="number" step="any" class="ma-input ma-correct" placeholder="correct to" aria-label="corrected value">' +
+      '<button type="button" class="ma-btn ma-submit">Submit</button>' +
+      '</div>';
+  }
+
+  function manualActualsRowHtml(row) {
+    const stateLabel = row.state === "MISSING" ? "Missing" : "Zero — confirm";
+    return '<tr data-canonical-id="' + escAttr(row.canonical_id) + '" data-currency="' + escAttr(row.currency) +
+      '" data-indicator-key="' + escAttr(row.indicator_key) + '" data-datetime-utc="' + escAttr(row.datetime_utc) +
+      '" data-state="' + escAttr(row.state) + '">' +
+      '<td class="ei-name">' + row.currency + '</td>' +
+      '<td class="ei-name">' + indicatorLabel(row) + '</td>' +
+      '<td class="ei-date">' + fmtUtcNaive(row.datetime_utc) + '</td>' +
+      '<td class="ei-num">' + fmtNum(row.forecast) + '</td>' +
+      '<td class="ei-score ma-cell">' +
+      '<span class="pill pill-bearish ma-state">' + stateLabel + '</span>' +
+      manualActualsFormHtml(row) +
+      '<input type="text" class="ma-input ma-note" placeholder="note (optional — source link)" aria-label="note">' +
+      '</td></tr>';
+  }
+
+  function openManualActualsModal() {
+    const ma = state.payload.manual_actuals || { count: 0, rows: [] };
+    const modal = document.getElementById("econDetailModal");
+    const body = document.getElementById("econDetailContent");
+
+    const rowsHtml = ma.rows.length
+      ? ma.rows.map(manualActualsRowHtml).join("")
+      : '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px;">Nothing needs review.</td></tr>';
+
+    const olderNote = ma.older_count
+      ? ' <span title="Older than the 45-day panel window — still actionable and overridable, just not listed here.">+' +
+        ma.older_count + ' older, not shown</span>'
+      : "";
+    body.innerHTML =
+      '<header class="modal-header">' +
+      '<h2>Manual Actuals <small class="muted">(' + ma.count + ' needing review' + olderNote + ')</small></h2>' +
+      '<div class="muted modal-subhead">MISSING: scheduled, past due, no print yet — enter the actual. ' +
+      'ZERO_CONFIRM: a 0.0 print scoring would quarantine — confirm it as a real flat print, or correct it. ' +
+      'One row, one decision; a submit takes effect on the next dashboard refresh, not immediately.</div>' +
+      '</header>' +
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
+      '<thead><tr><th>Currency</th><th style="text-align:left">Indicator</th><th>UTC</th><th>Forecast</th><th style="text-align:left">Action</th></tr></thead>' +
+      '<tbody>' + rowsHtml + '</tbody></table></div>';
+
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+  }
+
+  // ---- Manual Actuals Panel: submit -------------------------------------------
+  function manualToken() {
+    let t = null;
+    try { t = localStorage.getItem("manualActualsToken"); } catch (_) {}
+    if (!t) {
+      t = window.prompt("Manual Actuals token (set once, stored in this browser):");
+      if (t) { try { localStorage.setItem("manualActualsToken", t); } catch (_) {} }
+    }
+    return t;
+  }
+
+  function manualUser() {
+    let u = null;
+    try { u = localStorage.getItem("manualActualsUser"); } catch (_) {}
+    if (!u) {
+      u = window.prompt("Your name (kept with each entry for the audit trail):");
+      if (u) { try { localStorage.setItem("manualActualsUser", u); } catch (_) {} }
+    }
+    return u || "unknown";
+  }
+
+  function manualActualsDecrementCount() {
+    const ma = state.payload.manual_actuals;
+    if (ma && ma.count > 0) ma.count -= 1;
+    renderManualActualsButton();
+    const small = document.querySelector("#econDetailContent .modal-header h2 small");
+    if (small && ma) {
+      const olderNote = ma.older_count ? " +" + ma.older_count + " older, not shown" : "";
+      small.textContent = "(" + ma.count + " needing review" + olderNote + ")";
+    }
+  }
+
+  function submitManualActual(tr, actual) {
+    const token = manualToken();
+    if (!token) return;
+    const form = tr.querySelector(".ma-form");
+    const noteEl = tr.querySelector(".ma-note");
+    const btns = tr.querySelectorAll(".ma-btn");
+    btns.forEach(function (b) { b.disabled = true; });
+
+    const body = {
+      canonical_id: tr.dataset.canonicalId, currency: tr.dataset.currency,
+      indicator_key: tr.dataset.indicatorKey, datetime_utc: tr.dataset.datetimeUtc,
+      actual: actual, state_resolved: tr.dataset.state,
+      entered_by: manualUser(), note: noteEl ? noteEl.value : "",
+    };
+
+    fetch("/api/manual-actual", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Manual-Token": token },
+      body: JSON.stringify(body),
+    })
+      .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, status: r.status, data: data }; }); })
+      .then(function (res) {
+        if (!res.ok) {
+          if (res.status === 401) { try { localStorage.removeItem("manualActualsToken"); } catch (_) {} }
+          form.insertAdjacentHTML("beforeend", '<div class="ma-error">' + escAttr(res.data.error || ("HTTP " + res.status)) + "</div>");
+          btns.forEach(function (b) { b.disabled = false; });
+          return;
+        }
+        tr.classList.add("ma-done");
+        form.outerHTML = '<span class="ma-saved">✓ Saved — takes effect on next dashboard refresh</span>';
+        if (noteEl) noteEl.remove();
+        manualActualsDecrementCount();
+      })
+      .catch(function () {
+        form.insertAdjacentHTML("beforeend", '<div class="ma-error">Network error — try again.</div>');
+        btns.forEach(function (b) { b.disabled = false; });
+      });
+  }
+
+  function wireManualActualsForms() {
+    const body = document.getElementById("econDetailContent");
+    body.addEventListener("click", function (e) {
+      const tr = e.target.closest("tr[data-canonical-id]");
+      if (!tr) return;
+      if (e.target.classList.contains("ma-confirm")) {
+        submitManualActual(tr, 0.0);
+      } else if (e.target.classList.contains("ma-submit")) {
+        const input = tr.querySelector(tr.dataset.state === "MISSING" ? ".ma-input:not(.ma-note)" : ".ma-correct");
+        const val = input ? parseFloat(input.value) : NaN;
+        if (!input || Number.isNaN(val)) {
+          if (input) input.focus();
+          return;
+        }
+        submitManualActual(tr, val);
+      }
+    });
   }
 
   // ---- Filters ------------------------------------------------------------
@@ -1077,8 +1296,10 @@
   function init(payload) {
     state.payload = payload;
     renderMeta();
+    renderManualActualsButton();
     renderFilters();
     wireModalClose();
+    wireManualActualsForms();
     renderTable();
     renderCrossAsset();
   }

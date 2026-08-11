@@ -1117,7 +1117,42 @@ body.modal-open { overflow: hidden; }
   margin-bottom: 6px;
 }
 .econ-header h1 { margin: 0; font-size: 24px; }
+.econ-header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .econ-meta-bar { color: var(--muted); font-size: 13px; text-align: right; }
+
+/* Manual Actuals Panel button (feat/manual-actuals-panel): discreet pill when
+   nothing needs review, red/alert pill with a count once something does — the
+   same "STALE = red" convention as .fresh-badge, but clickable. */
+.manual-actuals-btn {
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 12px; padding: 3px 10px;
+  background: var(--surface-alt); color: var(--muted);
+}
+.manual-actuals-btn:hover { background: var(--row-alt); }
+.manual-actuals-btn.has-items {
+  background: var(--warning-bg); color: var(--warning-fg); border-color: transparent;
+}
+body.dark .manual-actuals-btn.has-items { color: #ef9a9a; }
+
+/* Manual Actuals Panel: per-row inline forms (one row, one decision — no
+   bulk actions, so no shared toolbar to style, just per-row controls). */
+table.econ-ind-table td.ei-score.ma-cell { text-align: left; min-width: 220px; }
+.ma-state { display: inline-block; margin-bottom: 4px; }
+.ma-form { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 3px; }
+.ma-input {
+  font: inherit; font-size: 11px; width: 84px; padding: 2px 5px;
+  border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--fg);
+}
+.ma-input.ma-note { width: 150px; }
+.ma-btn {
+  font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; padding: 2px 8px;
+  border: 1px solid var(--border); border-radius: 4px; background: var(--surface-alt); color: var(--fg);
+}
+.ma-btn:hover:not(:disabled) { background: var(--row-alt); border-color: var(--accent); }
+.ma-btn:disabled { opacity: 0.5; cursor: default; }
+.ma-saved { color: var(--success-fg); font-size: 11px; font-weight: 600; }
+.ma-error { color: var(--warning-fg); font-size: 10px; margin-top: 2px; }
+tr.ma-done { opacity: 0.6; }
 /* Per-source freshness badges in the meta bar (STALE = red, fresh = subtle). */
 .fresh-badge { display: inline-block; padding: 1px 7px; margin-left: 6px; border-radius: 10px;
   font-size: 11px; font-weight: 600; vertical-align: middle; }

@@ -2,5 +2,10 @@
   "buildCommand": null,
   "outputDirectory": "public",
   "framework": null,
-  "cleanUrls": true
+  "cleanUrls": true,
+  "functions": {
+    "api/manual-actual.py": {
+      "excludeFiles": "{tests/**,docs/**,scripts/**,static/**,public/**,.github/**,data/jb_raw/**,data/archive/**,data/*.csv,data/*.xlsx}"
+    }
+  }
 }
