@@ -1,0 +1,249 @@
+"""Manual Actuals Panel — Phase A: pure detection of parquet rows that need
+human intervention (feat/manual-actuals-panel). Read-only: no persistence, no
+rendering. Reuses the existing zero-quarantine decision code instead of
+reimplementing it — see `_zero_passes_widening`.
+
+Two states, no others:
+  MISSING      — datetime_utc < now - missing_after AND actual is NaN. The
+                 event was scheduled, the time has passed, we have nothing.
+  ZERO_CONFIRM — actual == 0.0 that does NOT pass the widening check
+                 `ff_scoring.to_scoring_frame` applies at scoring time (i.e.
+                 it would be quarantined to NaN there). Ambiguous: a genuine
+                 flat print, or the JBlanked "unreleased" placeholder.
+
+Distinct from `stale` (economic_render._freshness): stale means nothing new
+has been released yet — informational. MISSING/ZERO_CONFIRM mean something
+WAS released (or was due) and the pipeline cannot use it without a human.
+
+Scope: only rows that `ff_scoring`'s matcher maps to a modeled indicator_key
+are considered. Unmatched rows are dropped by `to_scoring_frame` before they
+ever reach scoring (see its docstring) and never appear anywhere else on the
+dashboard, so there is no "indicator" to show for them and no downstream
+consumer waiting on a human to fix them — flagging them would just be FF
+calendar noise. This mirrors `to_scoring_frame`'s own scope, not an
+independent judgment call about which events matter.
+
+`find_actionable_rows` and `apply_overrides` return the FULL, unwindowed
+universe — see `apply_relevance_window` for the panel's display-only
+RELEVANCE_WINDOW (default 45d) that keeps years of archive backlog off the
+list without making those rows stop being actionable or overridable.
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Optional
+
+import pandas as pd
+
+from .econ_calendar_ff import extract_period_suffix
+from .economic_fetch import CompiledMatcher
+from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, load_can_be_zero
+
+MISSING = "MISSING"
+ZERO_CONFIRM = "ZERO_CONFIRM"
+
+DEFAULT_MISSING_AFTER = pd.Timedelta(hours=6)
+
+# Panel display window (2026-08 feedback): with both fix/cbz-flagged-bad-guard
+# and fix/ingest-preserve-zeros in main, ZERO_CONFIRM went from 133 to 168
+# rows on real data — almost all historical archive prints (2024-2025) nobody
+# will ever manually confirm and that are not even the latest release of their
+# series. This is a PANEL concern only — see `apply_relevance_window` below,
+# never `find_actionable_rows` itself, whose full-universe output is still
+# what `apply_overrides` reconciles eligibility against (an override for a
+# 46-day-old row must keep working; the row isn't gone, just off the list).
+RELEVANCE_WINDOW = pd.Timedelta(days=45)
+
+RESULT_COLUMNS = [
+    "canonical_id", "currency", "indicator_key", "name_raw", "name_canonical",
+    "datetime_utc", "forecast", "previous", "actual", "state",
+]
+
+# One entry per human-supplied actual (feat/manual-actuals-panel, Phase B).
+# Persisted verbatim in data/manual_actuals_overrides.json — the git-committed
+# source of truth chosen for this panel's writes.
+OVERRIDE_COLUMNS = [
+    "canonical_id", "currency", "indicator_key", "datetime_utc", "actual",
+    "state_resolved", "entered_by", "entered_at", "note",
+]
+
+
+def _zero_passes_widening(currency: str, name_raw: str, release_date, key: str,
+                          cbz: set[str], flagged_bad: Optional[dict]) -> bool:
+    """The SAME predicate `ff_scoring.to_scoring_frame` applies inline to decide
+    whether a 0.0 actual is legitimate (fix/cbz-flagged-bad-guard, 2026-08):
+    config can_be_zero OR a real m/m|q/q transform grants CANDIDATE legitimacy;
+    `flagged_bad`, when provided, then has final say over EITHER route — a cbz
+    indicator is no longer an automatic pass. (Before that fix, `key in cbz`
+    alone was unconditional here and in to_scoring_frame alike; drifting this
+    function out of sync with that fix would silently under-report
+    ZERO_CONFIRM for exactly the case that motivated it — e.g. AUD Cash Rate
+    with Quality/Strength='Data Not Loaded'.) Deliberately does NOT replicate
+    `to_scoring_frame`'s new-duplicate group correction: that step only ever
+    nulls a row whose RAW actual is already non-zero (the divergent sibling of
+    a widened duplicate), which falls outside ZERO_CONFIRM's literal
+    'actual == 0.0' definition — the two states given are not to be extended
+    with a third."""
+    legit = key in cbz
+    if not legit and flagged_bad is not None and extract_period_suffix(name_raw) in ("m/m", "q/q"):
+        legit = True
+    if legit and flagged_bad is not None:
+        legit = not flagged_bad.get((currency, name_raw, release_date), True)
+    return legit
+
+
+def find_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
+                         matcher: Optional[CompiledMatcher] = None,
+                         can_be_zero: Optional[set[str]] = None,
+                         flagged_bad: Optional[dict] = None,
+                         missing_after: pd.Timedelta = DEFAULT_MISSING_AFTER
+                         ) -> pd.DataFrame:
+    """Pure — no I/O, no mutation of `ff`. Returns one row per actionable FF
+    calendar row, oldest first, with columns RESULT_COLUMNS and `state` in
+    {MISSING, ZERO_CONFIRM}.
+
+    `matcher`/`can_be_zero` default to the live indicator config
+    (`ff_scoring.build_matcher` / `load_can_be_zero`) when omitted. Pass
+    `flagged_bad=jb_actuals.build_flagged_bad_lookup()` to enable the m/m|q/q
+    widening path for ZERO_CONFIRM — same as production's only real caller
+    (`economic_render._load_calendar_frame`); `flagged_bad=None` (the
+    default) means no row is ever widened via path (b), matching
+    `to_scoring_frame`'s own default.
+    """
+    if ff is None or ff.empty:
+        return pd.DataFrame(columns=RESULT_COLUMNS)
+
+    matcher = matcher or build_matcher()
+    cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
+    cutoff = pd.Timestamp(now_utc) - missing_after
+
+    rows: list[dict] = []
+    for r in ff.itertuples(index=False):
+        key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
+        if key is None:
+            continue
+        dt = pd.Timestamp(r.datetime_utc)
+        if pd.isna(r.actual):
+            if dt >= cutoff:
+                continue
+            state = MISSING
+        elif r.actual == 0.0:
+            release_date = dt.date()
+            if _zero_passes_widening(r.currency, r.name_raw, release_date, key,
+                                     cbz, flagged_bad):
+                continue
+            state = ZERO_CONFIRM
+        else:
+            continue
+        rows.append({
+            "canonical_id": r.canonical_id, "currency": r.currency,
+            "indicator_key": key, "name_raw": r.name_raw,
+            "name_canonical": r.name_canonical, "datetime_utc": dt,
+            "forecast": r.forecast, "previous": r.previous,
+            "actual": r.actual, "state": state,
+        })
+
+    out = pd.DataFrame(rows, columns=RESULT_COLUMNS)
+    return out.sort_values("datetime_utc").reset_index(drop=True)
+
+
+def apply_relevance_window(rows: pd.DataFrame, *, now_utc: pd.Timestamp,
+                           window: pd.Timedelta = RELEVANCE_WINDOW
+                           ) -> tuple[pd.DataFrame, int]:
+    """Pure — splits an already-computed actionable frame (RESULT_COLUMNS
+    shape, e.g. `find_actionable_rows`'s or `apply_overrides`'s
+    `remaining_actionable` output) into (recent, older_count) by
+    `datetime_utc >= now_utc - window`.
+
+    Display-layer filter ONLY: call this on the way to the panel, never
+    before or inside `find_actionable_rows`/`apply_overrides` — those must
+    keep operating on the full, unwindowed universe so an override for a row
+    older than `window` still resolves correctly (the row didn't stop being
+    actionable, it just stopped being LISTED). `older_count` is for a
+    discreet "+N older" indicator — the rows themselves are dropped from the
+    return value, not zeroed out or otherwise flagged in the data.
+    """
+    if rows.empty:
+        return rows, 0
+    cutoff = pd.Timestamp(now_utc) - window
+    mask = rows["datetime_utc"] >= cutoff
+    return rows[mask].reset_index(drop=True), int((~mask).sum())
+
+
+def load_overrides(path: Path) -> list[dict]:
+    """data/manual_actuals_overrides.json -> list of entries, oldest write order
+    preserved. Missing/corrupt file -> [] (fail-open, matches load_state in
+    jb_actuals.py — never blocks a render)."""
+    try:
+        return json.loads(Path(path).read_text())
+    except Exception:  # noqa: BLE001 — no file yet, or unreadable
+        return []
+
+
+def _key(canonical_id: str, datetime_utc) -> tuple[str, pd.Timestamp]:
+    return (canonical_id, pd.Timestamp(datetime_utc))
+
+
+def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Timestamp,
+                    matcher: Optional[CompiledMatcher] = None,
+                    can_be_zero: Optional[set[str]] = None,
+                    flagged_bad: Optional[dict] = None,
+                    missing_after: pd.Timedelta = DEFAULT_MISSING_AFTER
+                    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Pure — no I/O. Reconciles `overrides` against the CURRENT actionable set
+    (freshly computed here, not trusted from whenever an override was written).
+
+    Returns (manual_rows, remaining_actionable):
+      manual_rows          — one row per override whose (canonical_id,
+                              datetime_utc) is STILL in find_actionable_rows
+                              right now, shaped like ff_scoring.SCORING_COLUMNS
+                              with source='manual' (consensus/previous carried
+                              over from the matching FF row, same as
+                              to_scoring_frame's forecast->consensus rename).
+                              An override whose target a REAL actual has since
+                              resolved is silently dropped — re-deriving
+                              eligibility from find_actionable_rows on every
+                              call, rather than trusting a flag stored at
+                              submit time, IS the 'never overwrite an existing
+                              non-null actual' guarantee: once a row is no
+                              longer actionable it is no longer eligible, full
+                              stop, regardless of what the override says.
+      remaining_actionable  — find_actionable_rows(ff, ...) minus every row
+                              that has a still-valid override — what the panel
+                              should still show as needing a human.
+
+    Never routed through `ff_scoring.to_scoring_frame`: that function hardcodes
+    source='ff' on every row it emits (see its docstring), which would
+    silently relabel a manual entry — manual rows are built directly in
+    SCORING_COLUMNS shape and are meant to be concatenated onto
+    `to_scoring_frame`'s output by the caller, not passed through it.
+    """
+    actionable = find_actionable_rows(ff, now_utc=now_utc, matcher=matcher,
+                                      can_be_zero=can_be_zero, flagged_bad=flagged_bad,
+                                      missing_after=missing_after)
+    if not overrides or actionable.empty:
+        return pd.DataFrame(columns=SCORING_COLUMNS), actionable
+
+    by_key = {_key(r.canonical_id, r.datetime_utc): r
+             for r in actionable.itertuples(index=False)}
+
+    manual_rows: list[dict] = []
+    resolved_keys: set[tuple] = set()
+    for entry in overrides:
+        key = _key(entry["canonical_id"], entry["datetime_utc"])
+        row = by_key.get(key)
+        if row is None:
+            continue   # stale: superseded by a real actual, or never actionable
+        manual_rows.append({
+            "currency": row.currency, "indicator_key": row.indicator_key,
+            "release_dt": row.datetime_utc, "actual": float(entry["actual"]),
+            "consensus": row.forecast, "previous": row.previous, "source": "manual",
+        })
+        resolved_keys.add(key)
+
+    idx = pd.MultiIndex.from_arrays(
+        [actionable["canonical_id"], actionable["datetime_utc"]])
+    remaining = actionable[~idx.isin(resolved_keys)].reset_index(drop=True)
+    manual_df = pd.DataFrame(manual_rows, columns=SCORING_COLUMNS)
+    return manual_df, remaining

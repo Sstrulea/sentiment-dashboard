@@ -50,6 +50,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES_DIR = ROOT / "templates"
 PUBLIC_DIR = ROOT / "public"
 PARQUET = ROOT / "data" / "economic_calendar.parquet"
+MANUAL_ACTUALS_OVERRIDES = ROOT / "data" / "manual_actuals_overrides.json"
 RATES_PARQUET = ROOT / "data" / "rates.parquet"
 REAL_YIELDS_PARQUET = ROOT / "data" / "real_yields.parquet"
 NET_LIQUIDITY_PARQUET = ROOT / "data" / "net_liquidity.parquet"
@@ -777,11 +778,12 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
 _EMPTY_CAL_COLUMNS = ["currency", "indicator_key", "release_dt", "actual", "consensus"]
 
 
-def _load_calendar_frame() -> pd.DataFrame:
+def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
     """Load the scoring calendar per config/pipeline.yaml `calendar_source` (Phase 3).
 
       ff  → the FF parquet (data/economic_calendar_ff.parquet) bridged to the MT5
-            calendar schema, minus any FRED-quarantined prints (data/ff_quarantine.parquet).
+            calendar schema, minus any FRED-quarantined prints (data/ff_quarantine.parquet),
+            plus any still-valid Manual Actuals Panel overrides (source='manual').
       mt5 → the MT5 calendar parquet (pre-Phase-3 behavior) — the rollback path.
 
     Anti-degradation: a missing/empty FF parquet returns an empty frame (empty page),
@@ -817,6 +819,21 @@ def _load_calendar_frame() -> pd.DataFrame:
                 cal = cal[cal["_q"].isna()].drop(columns="_q")
                 if len(cal) < before:
                     log.warning("FF calendar: %d print(s) excluded by FRED quarantine.", before - len(cal))
+
+        # Manual Actuals Panel (Phase B): human-supplied actuals, unioned in
+        # AFTER FRED quarantine — a reviewed manual entry is the pipeline's
+        # final say, not subject to an unrelated automated quarantine list.
+        # Never routed through to_scoring_frame (it hardcodes source='ff').
+        from src.manual_actuals import apply_overrides, load_overrides
+        overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
+        if overrides:
+            manual_rows, _ = apply_overrides(ffdf, overrides, now_utc=as_of,
+                                             flagged_bad=flagged_bad)
+            if len(manual_rows):
+                cal = pd.concat([cal, manual_rows], ignore_index=True)
+                log.info("Manual Actuals Panel: %d override(s) applied to scoring.",
+                        len(manual_rows))
+
         log.info("Economic calendar source = FF (%d scored rows).", len(cal))
         return cal
     # --- rollback: MT5 ---
@@ -828,14 +845,76 @@ def _load_calendar_frame() -> pd.DataFrame:
     return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
 
 
+_MANUAL_ACTUALS_COLUMNS = ["canonical_id", "currency", "indicator_key", "name_raw",
+                          "name_canonical", "datetime_utc", "forecast", "previous",
+                          "actual", "state"]
+
+
+def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
+    """Manual Actuals Panel — rows STILL needing human intervention, via the
+    pure `manual_actuals.apply_overrides` (its `remaining_actionable`): a row
+    with a still-valid override (feat/manual-actuals-panel Phase B) has
+    already been handled and drops off this list; a row whose override went
+    stale (a real actual landed since) reappears here as normal, since it is
+    no longer actionable at all — see `apply_overrides`'s docstring.
+
+    Sourced ONLY from the FF parquet (data/economic_calendar_ff.parquet), the
+    single source of truth for this panel, regardless of the active
+    `calendar_source`: the mt5 rollback path predates the FF-only MISSING /
+    ZERO_CONFIRM contract and has no equivalent panel (empty, not an error)."""
+    try:
+        from src.ff_refresh import FF_PARQUET, calendar_source
+        source = calendar_source()
+    except Exception as e:  # noqa: BLE001 — config missing → panel empty (safe)
+        log.warning("calendar_source unresolved (%s); manual actuals panel empty.", e)
+        return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
+    if source != "ff" or not FF_PARQUET.exists():
+        return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
+    from src.jb_actuals import build_flagged_bad_lookup
+    from src.manual_actuals import apply_overrides, load_overrides
+    ffdf = pd.read_parquet(FF_PARQUET)
+    ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
+    flagged_bad = build_flagged_bad_lookup()
+    overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
+    _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of,
+                                              flagged_bad=flagged_bad)
+    return remaining
+
+
+def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
+    """JSON-ready {count, older_count, rows[]} for the Manual Actuals Panel
+    button + list. `rows`/`count` are windowed to
+    manual_actuals.RELEVANCE_WINDOW (default 45d) — display-only, per
+    apply_relevance_window's docstring: an older row is still fully
+    actionable/overridable, just not listed. `older_count` is exactly that
+    many rows, for a discreet "+N older" indicator, never expanded into rows."""
+    from src.manual_actuals import apply_relevance_window
+    rows = _load_actionable_rows(as_of)
+    recent, older_count = apply_relevance_window(rows, now_utc=as_of)
+    return {
+        "count": int(len(recent)),
+        "older_count": older_count,
+        "rows": [
+            {
+                "canonical_id": r.canonical_id, "currency": r.currency,
+                "indicator_key": r.indicator_key, "name_raw": r.name_raw,
+                "name_canonical": r.name_canonical, "datetime_utc": r.datetime_utc,
+                "forecast": r.forecast, "previous": r.previous,
+                "actual": r.actual, "state": r.state,
+            }
+            for r in recent.itertuples(index=False)
+        ],
+    }
+
+
 def build_economic_payload() -> dict:
     """Read parquet + configs, compute, enrich, and return the JSON-ready payload."""
     indicators_cfg = _load_yaml(INDICATORS_YAML)
     instruments_cfg = _load_yaml(INSTRUMENTS_YAML)
 
-    cal = _load_calendar_frame()   # Phase 3: FF (default) or MT5 (rollback) per config
-
     as_of = pd.Timestamp.utcnow().tz_localize(None)
+
+    cal = _load_calendar_frame(as_of)   # Phase 3: FF (default) or MT5 (rollback) per config
 
     # Rate-Expectations engine (C1): optional 4th "monetary" category. Missing
     # parquet → render exactly as before (3 categories), no crash.
@@ -897,6 +976,7 @@ def build_economic_payload() -> dict:
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of)
+    payload["manual_actuals"] = _build_manual_actuals_block(as_of)
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
 
