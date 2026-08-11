@@ -409,3 +409,133 @@ def test_new_duplicate_guard_does_not_touch_pre_existing_duplicates():
     out = to_scoring_frame(ff, build_matcher(), flagged_bad={})
     unemp = out[out["indicator_key"] == "unemployment_rate"]
     assert unemp["actual"].notna().sum() == 2               # both kept, untouched
+
+
+# --- fix/cbz-flagged-bad-guard (2026-08): flagged_bad as a UNIVERSAL gate ----
+# Closes the hole where `if key not in cbz:` gated the ENTIRE zero-quarantine
+# block, so a can_be_zero indicator's 0.0 never reached the flagged_bad check
+# at all -- a JBlanked 'Data Not Loaded'/'Bad Data' placeholder on
+# employment_change/household_spending/interest_rate_decision/retail_sales
+# sailed through unconditionally. Real case: AUD Cash Rate 2026-08-11, raw
+# Quality=Strength='Data Not Loaded', would have shown 0.00% instead of 4.35%.
+
+def _gate_row(ccy, name_canonical, name_raw, actual, dt="2026-06-01 12:00", canonical_id=None):
+    return {"canonical_id": canonical_id or f"{ccy.lower()}_gate_x", "currency": ccy,
+            "name_raw": name_raw, "name_canonical": name_canonical,
+            "datetime_utc": pd.Timestamp(dt), "actual": actual, "forecast": 1.0,
+            "previous": 1.0, "released": True, "source": "ff"}
+
+
+def _frame(rows):
+    return pd.DataFrame(rows, columns=CANON_COLUMNS)
+
+
+def test_gate_cbz_zero_kept_when_flagged_bad_clean():
+    # (1) cbz + flagged_bad curat -> 0.0 PĂSTRAT.
+    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
+    lookup = {("USD", "Federal Funds Rate", pd.Timestamp("2026-06-01").date()): False}  # not bad
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
+    assert row["actual"] == 0.0
+
+
+def test_gate_cbz_zero_nulled_when_flagged_bad_true():
+    # (2) cbz + flagged_bad=True ('Bad Data') -> 0.0 NULIFICAT.
+    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
+    lookup = {("USD", "Federal Funds Rate", pd.Timestamp("2026-06-01").date()): True}   # bad
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
+    assert np.isnan(row["actual"])
+
+
+def test_gate_cbz_zero_nulled_when_flagged_bad_key_absent():
+    # (3) cbz + cheie ABSENTĂ din flagged_bad -> NULIFICAT (default blocat,
+    # niciodată presupus curat).
+    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad={})   # key never seen
+    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
+    assert np.isnan(row["actual"])
+
+
+def test_gate_cbz_zero_kept_when_flagged_bad_none():
+    # (4) cbz + flagged_bad=None -> 0.0 PĂSTRAT (comportament vechi intact —
+    # callerii care nu pasează flagged_bad nu văd nicio diferență).
+    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
+    out = to_scoring_frame(ff, build_matcher())   # flagged_bad=None (default)
+    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
+    assert row["actual"] == 0.0
+
+
+def test_gate_non_cbz_suffix_mm_clean_still_widened_unchanged():
+    # (5) non-cbz cu sufix m/m + flagged curat -> păstrat (neschimbat).
+    ff = _frame([_gate_row("USD", "CPI y/y", "CPI m/m", 0.0)])
+    lookup = {("USD", "CPI m/m", pd.Timestamp("2026-06-01").date()): False}
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
+    assert row["actual"] == 0.0
+
+
+def test_gate_non_cbz_no_short_suffix_nulled_unchanged():
+    # (6) non-cbz fără sufix scurt (name_raw e chiar y/y) -> nulificat
+    # (neschimbat), indiferent de flagged_bad.
+    ff = _frame([_gate_row("USD", "CPI y/y", "CPI y/y", 0.0)])
+    lookup = {("USD", "CPI y/y", pd.Timestamp("2026-06-01").date()): False}
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
+    assert np.isnan(row["actual"])
+
+
+def test_gate_regression_aud_cash_rate_data_not_loaded():
+    # (7) Regresie AUD Cash Rate: interest_rate_decision, actual 0.0,
+    # Quality='Data Not Loaded' -> NULIFICAT. Mirrors the real dry-run row
+    # (2026-08-11 04:30 UTC) that motivated this fix.
+    ff = _frame([_gate_row("AUD", "RBA Interest Rate Decision", "Cash Rate", 0.0,
+                           dt="2026-08-11 04:30")])
+    lookup = {("AUD", "Cash Rate", pd.Timestamp("2026-08-11").date()): True}   # Data Not Loaded -> bad
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
+    assert np.isnan(row["actual"])
+
+
+def test_gate_duplicate_guard_silent_when_new_gate_only_reduces_valid_count(caplog):
+    # (8) New-duplicate guard must NOT fire when the new gate REDUCES a
+    # group's valid count -- it only ever acts on an INCREASE crossing the
+    # <2 -> >=2 threshold (widening recovering a duplicate). Two same-group
+    # cbz rows, both old_valid=True (valid_before=2, since old_valid ignores
+    # cbz zeros entirely). Three sub-cases, all a decrease or flat from
+    # valid_before=2, never an increase -- the guard's `valid_before >= 2`
+    # skip must hold every time.
+    import logging
+    date = "2026-06-01"
+
+    def _pair(flagged):
+        ff = _frame([
+            _gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0,
+                      dt=f"{date} 12:00", canonical_id="usd_fed_funds"),
+            _gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.1,
+                      dt=f"{date} 13:00", canonical_id="usd_fed_funds"),
+        ])
+        lookup = {("USD", "Federal Funds Rate", pd.Timestamp(date).date()): flagged}
+        with caplog.at_level(logging.INFO):
+            out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+        caplog.clear()
+        return out[out["indicator_key"] == "interest_rate_decision"].sort_values("release_dt")
+
+    # flagged bad -> the 0.0 row is blocked (valid_after drops from 2 to 1),
+    # but the 0.1 row (never touched by the gate at all -- it isn't 0.0) must
+    # SURVIVE untouched. If the guard wrongly treated this post-gate 1-valid
+    # state as cause to act, it could sweep the surviving 0.1 row away too.
+    asym = _pair(True)
+    assert list(asym["actual"].isna()) == [True, False]      # 0.0-row blocked, 0.1-row untouched
+    assert asym["actual"].dropna().iloc[0] == pytest.approx(0.1)
+
+    # flagged clean -> both kept, INCLUDING the 0.1 row -- if the guard had
+    # wrongly fired here (treating [0.0, 0.1] as a "new" divergent dup), it
+    # would null the second row too. It must not: this group was already
+    # >=2 valid before any gate logic ran (interest_rate_decision is cbz, so
+    # old_valid=True for both rows regardless of the 0.0/0.1 split) -- a
+    # pre-existing duplicate, out of the guard's scope entirely.
+    both_clean = _pair(False)
+    assert both_clean["actual"].notna().sum() == 2
+    assert list(both_clean["actual"]) == [0.0, 0.1]
+    assert not any("new-duplicate group" in r.message for r in caplog.records)

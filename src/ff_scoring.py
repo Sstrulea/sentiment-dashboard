@@ -81,19 +81,30 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
           canonical slot (config/ff_aliases.yaml `# xf`, e.g. CHF cpi_yoy fed by
           "CPI m/m") where 0.0 IS a legitimate flat print, same reasoning as (a),
           just derived from the feed instead of hand-maintained per indicator_key.
-    (b) is gated by `flagged_bad`: even a real-transform-shaped zero can be a
-    JBlanked-side placeholder or questionable print (Quality/Strength ==
-    'Bad Data' or 'Data Not Loaded' — see jb_actuals.build_flagged_bad_lookup,
-    measured 2026-08: 73/107 suffix-only candidates were one or the other, only
-    34/107 were clean). `flagged_bad.get((currency, name_raw, release_date),
-    True)` — a MISSING key defaults to flagged/blocked, never assumed clean
-    (measured 0/107 missing today; the default protects any future coverage
-    gap). `flagged_bad=None` (the default) disables (b) ENTIRELY — callers that
-    don't pass it get EXACTLY today's config-only behavior, unchanged; only
-    `extract_period_suffix` — fail-loud on an unrecognized slash-shaped suffix,
-    see its docstring — is ever invoked, and only for a 0.0 actual on a
-    non-can_be_zero indicator with flagged_bad provided, since that is the only
-    place an unrecognized suffix could silently change the outcome.
+    `flagged_bad` is now a UNIVERSAL gate on BOTH routes (fix/cbz-flagged-bad-guard,
+    2026-08 — closes a real hole: (a) alone let a Quality/Strength=='Bad Data' or
+    'Data Not Loaded' zero straight through for the 4 can_be_zero indicators —
+    employment_change, household_spending, interest_rate_decision, retail_sales
+    — with the flagged_bad check (Quality/Strength, see
+    jb_actuals.build_flagged_bad_lookup) never even running for them. Measured
+    live against data/economic_calendar_ff.parquet (2026-08): of 45 can_be_zero
+    rows carrying actual==0.0 today, 35 fail this new gate — contamination that
+    predates this fix and entered via data/archive/, which never went through
+    clean_jblanked_actuals's own zero-nulling. Verified zero regressions on the
+    non-can_be_zero side (route (b) alone): 0/2974 non-cbz scored rows changed.
+    Once EITHER (a) or (b) grants
+    candidate legitimacy, `flagged_bad.get((currency, name_raw, release_date),
+    True)` has final say for BOTH — a MISSING key defaults to flagged/blocked,
+    never assumed clean. `flagged_bad=None` (the default) disables the gate
+    ENTIRELY and reproduces EXACTLY today's config-only behavior for callers
+    that don't pass it: (a) alone still passes unconditionally, and (b) alone
+    (suffix match with no flagged_bad to confirm it) is NOT sufficient — a
+    non-can_be_zero zero stays quarantined regardless of its transform, same as
+    before this fix. `extract_period_suffix` — fail-loud on an unrecognized
+    slash-shaped suffix, see its docstring — is invoked ONLY when it could
+    still change the outcome: never for a can_be_zero key (short-circuited —
+    route (a) already grants legitimacy) and never when `flagged_bad` is None
+    (route (b) can't grant anything without it to confirm against).
 
     Consensus quarantine is UNCHANGED — config-only (a), no suffix widening, no
     flagged_bad guard. Out of scope for this fix.
@@ -124,17 +135,33 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
         actual, consensus = r.actual, r.forecast   # FF forecast → MT5 'consensus'
         release_date = pd.Timestamp(r.datetime_utc).date()
         old_valid = pd.notna(r.actual) and not (key not in cbz and r.actual == 0.0)
+
+        if actual == 0.0:
+            # Single legitimacy gate for BOTH routes (fix/cbz-flagged-bad-guard,
+            # 2026-08): route (a) config can_be_zero, route (b) a real m/m|q/q
+            # transform. `suffix_matched` is tracked separately from `legit` so
+            # extract_period_suffix is only ever invoked when it can change the
+            # outcome — never for a cbz key (short-circuited, matches the OLD
+            # contract's short-circuit exactly) and never when flagged_bad is
+            # None (route (b) cannot grant legitimacy without it — see below).
+            legit = key in cbz
+            suffix_matched = False
+            if not legit and flagged_bad is not None and extract_period_suffix(r.name_raw) in ("m/m", "q/q"):
+                legit = True
+                suffix_matched = True
+            if legit and flagged_bad is not None:
+                # Universal gate: applies to a cbz-legit row exactly as it
+                # already applied to a suffix-legit row. A cbz row with
+                # Quality/Strength flagged bad is no longer an automatic pass.
+                legit = not flagged_bad.get((r.currency, r.name_raw, release_date), True)
+            if legit:
+                if suffix_matched:
+                    q_widened += 1   # recovered via suffix — same counter/meaning as before
+            else:
+                actual = nan
+                q_actual += 1
+
         if key not in cbz:
-            if actual == 0.0:
-                widened = False
-                if flagged_bad is not None and extract_period_suffix(r.name_raw) in ("m/m", "q/q"):
-                    is_bad = flagged_bad.get((r.currency, r.name_raw, release_date), True)
-                    widened = not is_bad
-                if widened:
-                    q_widened += 1
-                else:
-                    actual = nan
-                    q_actual += 1
             if consensus == 0.0:
                 consensus = nan
                 q_cons += 1
