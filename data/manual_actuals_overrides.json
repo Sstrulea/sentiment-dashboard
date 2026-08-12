@@ -108,5 +108,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-12T09:55:43+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_import_prices",
+  "currency": "AUD",
+  "indicator_key": "import_prices",
+  "datetime_utc": "2026-07-30 01:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-12T11:21:10+00:00",
+  "note": ""
  }
 ]
