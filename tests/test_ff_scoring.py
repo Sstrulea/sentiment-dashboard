@@ -539,3 +539,93 @@ def test_gate_duplicate_guard_silent_when_new_gate_only_reduces_valid_count(capl
     assert both_clean["actual"].notna().sum() == 2
     assert list(both_clean["actual"]) == [0.0, 0.1]
     assert not any("new-duplicate group" in r.message for r in caplog.records)
+
+
+# --- feat/manual-forecast-review (2026-08): consensus widening -------------
+# Symmetric to the actual-side gate above, but route (b) ONLY (m/m|q/q
+# suffix + flagged_bad) -- deliberately NO can_be_zero route: can_be_zero
+# describes the actual's level/net-change semantics, not the consensus's.
+
+def _cons_row(ccy, name_canonical, name_raw, forecast, actual=1.0,
+             dt="2026-06-01 12:00", canonical_id=None):
+    return {"canonical_id": canonical_id or f"{ccy.lower()}_cons_x", "currency": ccy,
+            "name_raw": name_raw, "name_canonical": name_canonical,
+            "datetime_utc": pd.Timestamp(dt), "actual": actual, "forecast": forecast,
+            "previous": 1.0, "released": True, "source": "ff"}
+
+
+def test_consensus_zero_suffix_mm_flagged_clean_kept():
+    # consens 0.0 + sufix m/m + flagged curat -> PĂSTRAT.
+    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
+    lookup = {("USD", "CPI m/m", pd.Timestamp("2026-06-01").date()): False}   # not bad
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
+    assert row["consensus"] == 0.0
+
+
+def test_consensus_zero_suffix_mm_flagged_bad_quarantined():
+    # consens 0.0 + sufix m/m + flagged bad -> CARANTINAT.
+    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
+    lookup = {("USD", "CPI m/m", pd.Timestamp("2026-06-01").date()): True}   # bad
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
+    assert np.isnan(row["consensus"])
+
+
+def test_consensus_zero_suffix_mm_flagged_bad_key_absent_quarantined():
+    # consens 0.0 + sufix m/m + cheie ABSENTĂ din flagged_bad -> CARANTINAT
+    # (default blocat, niciodată presupus curat).
+    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad={})   # key never seen
+    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
+    assert np.isnan(row["consensus"])
+
+
+def test_consensus_zero_no_suffix_pmi_quarantined_unchanged():
+    # consens 0.0 fără sufix (PMI/indice) -> CARANTINAT, neschimbat, chiar cu
+    # flagged_bad curat -- widening-ul nu se aplică deloc fără sufix m/m|q/q.
+    # name_canonical e forma aliniată post-aliasing (config/ff_aliases.yaml:
+    # "Flash Manufacturing PMI" -> "S&P Global Manufacturing PMI" pentru AUD).
+    ff = _frame([_cons_row("AUD", "S&P Global Manufacturing PMI", "Flash Manufacturing PMI", 0.0)])
+    lookup = {("AUD", "Flash Manufacturing PMI", pd.Timestamp("2026-06-01").date()): False}
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "manufacturing_pmi"].iloc[0]
+    assert np.isnan(row["consensus"])
+
+
+def test_consensus_zero_flagged_bad_none_matches_old_contract():
+    # flagged_bad=None (default) -> comportament vechi INTACT: consensul
+    # rămâne carantinat indiferent de sufix -- widening-ul nu poate acorda
+    # legitimitate fără flagged_bad de confirmat.
+    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
+    out = to_scoring_frame(ff, build_matcher())   # flagged_bad=None
+    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
+    assert np.isnan(row["consensus"])
+
+
+def test_consensus_widening_never_uses_can_be_zero_route():
+    # can_be_zero=True (employment_change) + consens 0.0 FĂRĂ sufix m/m|q/q
+    # ("Nonfarm Payrolls" -> suffix "none") -> consensul rămâne 0.0 (PĂSTRAT),
+    # dar NU prin widening: `if key not in cbz` era deja gate-ul existent
+    # dinainte de acest task -- pentru un indicator cbz, blocul de carantină/
+    # widening pe consensus nu rulează niciodată, indiferent de sufix sau
+    # flagged_bad. Regresie: noul cod de widening nu trebuie să introducă
+    # vreo cale prin care cbz să ajungă totuși relevant pentru consensus.
+    ff = _frame([_cons_row("USD", "Nonfarm Payrolls", "Nonfarm Payrolls", 0.0)])
+    lookup = {("USD", "Nonfarm Payrolls", pd.Timestamp("2026-06-01").date()): True}   # even flagged bad
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "employment_change"].iloc[0]
+    assert row["actual"] == 1.0                  # actual untouched (not under test)
+    assert row["consensus"] == 0.0                # kept -- pre-existing cbz exemption, not widening
+
+
+def test_consensus_widening_actual_side_untouched():
+    # Regresie explicită: widening-ul pe consensus nu schimbă NIMIC pe partea
+    # de actual pentru același rând -- actual==0.0, non-cbz, fără sufix ->
+    # tot carantinat pe actual, indiferent de ce se întâmplă cu consensul.
+    ff = _frame([_cons_row("USD", "Unemployment Rate", "Unemployment Rate", 4.0, actual=0.0)])
+    lookup = {("USD", "Unemployment Rate", pd.Timestamp("2026-06-01").date()): False}
+    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
+    row = out[out["indicator_key"] == "unemployment_rate"].iloc[0]
+    assert np.isnan(row["actual"])                # actual-side quarantine unchanged
+    assert row["consensus"] == 4.0                # consensus (non-zero) untouched by any of this
