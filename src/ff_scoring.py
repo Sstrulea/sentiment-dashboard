@@ -106,8 +106,41 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
     route (a) already grants legitimacy) and never when `flagged_bad` is None
     (route (b) can't grant anything without it to confirm against).
 
-    Consensus quarantine is UNCHANGED — config-only (a), no suffix widening, no
-    flagged_bad guard. Out of scope for this fix.
+    CONSENSUS WIDENING (feat/manual-forecast-review, 2026-08): a `consensus`
+    (FF `forecast`) of 0.0 is quarantined to NaN by default — same reasoning
+    as the actual side, a 0.0 forecast is usually FF's "no consensus"
+    placeholder, not a real market estimate of zero. Recoverable via ONLY
+    ONE of the two actual-side routes: route (b), the row's real transform
+    (`extract_period_suffix(r.name_raw)`) being m/m or q/q, gated by the
+    SAME `flagged_bad` guard (missing key defaults to blocked, exactly like
+    the actual side). Deliberately NOT route (a) — `can_be_zero` membership
+    is never consulted for consensus: `can_be_zero` encodes whether an
+    indicator's LEVEL/NET-CHANGE reading can legitimately be zero (e.g.
+    employment_change), which says nothing about whether the FORECAST for
+    an m/m|q/q-suffixed series was legitimately 0 — a config flag about the
+    actual's semantics has no bearing on the consensus's. (Measured
+    2026-08 against data/economic_calendar_ff.parquet: of 67 consensus==0.0
+    rows with an m/m|q/q suffix, 19 pass the flagged_bad guard; the other
+    48 stay quarantined — see docs/manual-forecast-review-consensus-
+    widening.md for the full breakdown and the non-suffixed rows, e.g. PMI
+    indices, that this never touches.)
+
+    IMPORTANT for anyone debugging a shifted z-score months from now: this
+    widening recovers consensus on OLD prints (whatever the FF backlog
+    contains), not just today's. Because `compute_indicator_score`'s
+    trailing-K sigma is built from ALL (actual, consensus) pairs in a
+    series' history — not just the print being scored — recovering an old
+    row's consensus changes the sigma used for a COMPLETELY DIFFERENT,
+    unrelated, more recent print in the SAME series, which can move or even
+    flip that print's score. This is NOT a bug: today's sigma is computed
+    on an artificially incomplete distribution (missing pairs that were
+    always real, just quarantined); recovering them completes it. Measured
+    live example (2026-08, see the doc above): recovering USD
+    `personal_spending_mm`'s 2026-02-08 consensus — itself long superseded
+    and never the "latest" print for anything — moved the LATEST print's
+    (2026-07-30) z-score from -1.004 (score -1) to -0.567 (score 0), purely
+    via the trailing-K sigma recalculation. If you're staring at a score
+    that changed with no corresponding new release, check here first.
 
     NEW-DUPLICATE GUARD (fix/can-be-zero-transform, 2026-08 audit): a
     (canonical_id, calendar date) group that goes from <2 valid `actual` rows
@@ -127,7 +160,7 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
     nan = float("nan")
     recs: list[dict] = []
     meta: list[tuple[str, "date", bool]] = []  # (canonical_id, date, valid under OLD contract)
-    q_actual = q_cons = q_widened = 0
+    q_actual = q_cons = q_widened = q_cons_widened = 0
     for r in ff_df.itertuples(index=False):
         key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
         if key is None:
@@ -163,8 +196,21 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
 
         if key not in cbz:
             if consensus == 0.0:
-                consensus = nan
-                q_cons += 1
+                # Route (b) ONLY (see docstring) — no can_be_zero route for
+                # consensus. Same short-circuit discipline as the actual
+                # side: extract_period_suffix is invoked only when it could
+                # still change the outcome (never when flagged_bad is None,
+                # since route (b) cannot grant legitimacy without it).
+                cons_legit = False
+                if flagged_bad is not None and extract_period_suffix(r.name_raw) in ("m/m", "q/q"):
+                    cons_legit = True
+                if cons_legit:
+                    cons_legit = not flagged_bad.get((r.currency, r.name_raw, release_date), True)
+                if cons_legit:
+                    q_cons_widened += 1
+                else:
+                    consensus = nan
+                    q_cons += 1
         recs.append({
             "currency": r.currency, "indicator_key": key, "release_dt": r.datetime_utc,
             "actual": actual, "consensus": consensus, "previous": r.previous, "source": "ff",
@@ -197,10 +243,12 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
                         "actuals=%s DIVERGENT, no tiebreak → excluded all %d rows (fail-safe).",
                         cid, currency, d, actuals, len(valid_idxs))
 
-    if q_actual or q_cons or q_widened:
+    if q_actual or q_cons or q_widened or q_cons_widened:
         log.info("Zero-placeholder quarantine: %d actual==0.0 + %d consensus==0.0 → NaN, "
                  "%d actual==0.0 recovered via real-transform suffix (indicators where "
-                 "can_be_zero is False by config).", q_actual, q_cons, q_widened)
+                 "can_be_zero is False by config), %d consensus==0.0 recovered via "
+                 "real-transform suffix + flagged_bad guard.",
+                 q_actual, q_cons, q_widened, q_cons_widened)
     return pd.DataFrame(recs, columns=SCORING_COLUMNS)
 
 
