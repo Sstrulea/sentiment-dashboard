@@ -97,5 +97,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-12T09:18:17+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "cad_gdp",
+  "currency": "CAD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-07-31 12:30:00",
+  "actual": 0.3,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-12T09:18:26+00:00",
+  "note": ""
  }
 ]
