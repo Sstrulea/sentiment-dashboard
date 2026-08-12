@@ -22,13 +22,30 @@ NOW = pd.Timestamp("2026-08-11 12:00:00")
 
 MATCHER = CompiledMatcher({
     "United States": [{"pattern": "^CPI y/y$", "indicator": "cpi_yoy"},
-                      {"pattern": "^Retail Sales m/m$", "indicator": "retail_sales"}],
+                      {"pattern": "^Retail Sales m/m$", "indicator": "retail_sales"},
+                      {"pattern": "^Fed Funds Rate$", "indicator": "interest_rate_decision"}],
 })
 CBZ = {"retail_sales"}   # cpi_yoy is NOT can_be_zero, retail_sales IS
 
+# feat/manual-actuals-dedupe: synthetic config for rule (c)'s
+# effective_frequency/dedup_gap_days lookup — mirrors the shape of
+# data/economic_indicators.yaml's `indicators`/`defaults` keys.
+INDICATORS_CFG = {
+    "indicators": {
+        "cpi_yoy": {"frequency": "monthly"},
+        "retail_sales": {"frequency": "monthly"},
+        "interest_rate_decision": {"frequency": "monthly"},
+    },
+    "defaults": {
+        "default_frequency": "monthly",
+        "dedup_gap_days": {"weekly": 3, "monthly": 18, "quarterly": 45},
+    },
+}
 
-def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None):
-    return {"canonical_id": f"{ccy.lower()}_x", "currency": ccy, "name_raw": name_raw or canon,
+
+def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None):
+    return {"canonical_id": canonical_id or f"{ccy.lower()}_x", "currency": ccy,
+            "name_raw": name_raw or canon,
             "name_canonical": canon, "datetime_utc": pd.Timestamp(dt),
             "actual": actual, "forecast": forecast, "previous": 0.5,
             "released": True, "source": "ff"}
@@ -42,6 +59,7 @@ def _find(rows, **kw):
     kw.setdefault("matcher", MATCHER)
     kw.setdefault("can_be_zero", CBZ)
     kw.setdefault("now_utc", NOW)
+    kw.setdefault("indicators_cfg", INDICATORS_CFG)
     return find_actionable_rows(_frame(rows), **kw)
 
 
@@ -163,9 +181,12 @@ def test_empty_frame_returns_empty_with_columns():
 # --- shape / ordering ----------------------------------------------------
 
 def test_sorted_oldest_first_and_columns():
+    # >18d apart -- two UNRELATED rows for this test, not a duplicate pair
+    # (feat/manual-actuals-dedupe would otherwise collapse a closer same-
+    # canonical_id pair via rule (b)/(c), same default canonical_id).
     rows = [
         _row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0),
-        _row("USD", "CPI y/y", NOW - pd.Timedelta(hours=9), float("nan")),
+        _row("USD", "CPI y/y", NOW - pd.Timedelta(days=30, hours=9), float("nan")),
     ]
     out = _find(rows)
     assert list(out.columns) == RESULT_COLUMNS
@@ -197,6 +218,147 @@ def test_real_can_be_zero_config_widens_retail_sales():
     dt = NOW - pd.Timedelta(hours=1)
     rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]   # can_be_zero: true
     assert find_actionable_rows(_frame(rows), now_utc=NOW).empty
+
+
+# --- duplicate suppression (feat/manual-actuals-dedupe) ----------------------
+
+def test_rule_a_same_day_valid_sibling_suppresses_ambiguous_row():
+    """Pattern 2: a same-calendar-day sibling with a real actual makes the
+    ambiguous row redundant -> suppressed entirely, not merely deduped to 1."""
+    dt_zero = NOW - pd.Timedelta(days=1, hours=1)
+    dt_valid = dt_zero + pd.Timedelta(hours=1)   # same day, real print
+    rows = [
+        _row("USD", "CPI y/y", dt_zero, 0.0, canonical_id="usd_x"),
+        _row("USD", "CPI y/y", dt_valid, 1.9, canonical_id="usd_x"),
+    ]
+    out = _find(rows)
+    assert out.empty
+
+
+def test_rule_a_scans_the_full_ff_frame_not_just_actionable_rows():
+    """The valid sibling is never itself actionable (real actual != NaN/0.0)
+    -- rule (a) must still see it by scanning `ff` directly, not `raw`."""
+    dt_missing = NOW - pd.Timedelta(days=1, hours=7)
+    dt_valid = dt_missing + pd.Timedelta(hours=1)
+    rows = [
+        _row("USD", "CPI y/y", dt_missing, float("nan"), canonical_id="usd_x"),
+        _row("USD", "CPI y/y", dt_valid, 3.4, canonical_id="usd_x"),
+    ]
+    out = _find(rows)
+    assert out.empty
+
+
+def test_rule_a_scope_is_same_day_only_not_wider():
+    """A valid sibling on a DIFFERENT calendar day must not suppress (that is
+    rule (c)'s narrower, content-guarded job, not rule (a)'s)."""
+    dt_zero = NOW - pd.Timedelta(days=2)
+    dt_valid = NOW - pd.Timedelta(days=1)   # next day, not same calendar day
+    rows = [
+        _row("USD", "CPI y/y", dt_zero, 0.0, canonical_id="usd_x"),
+        _row("USD", "CPI y/y", dt_valid, 1.9, canonical_id="usd_x"),
+    ]
+    out = _find(rows)
+    assert len(out) == 1 and out.iloc[0]["datetime_utc"] == dt_zero
+
+
+def test_rule_b_same_day_no_valid_actual_keeps_latest():
+    """Pattern 1 (DST +-1h): two same-day duplicates, neither resolved ->
+    keep the latest datetime_utc, per the confirmed tie-break."""
+    dt1 = NOW - pd.Timedelta(days=1, hours=2)
+    dt2 = dt1 + pd.Timedelta(hours=1)
+    rows = [
+        _row("USD", "CPI y/y", dt1, 0.0, canonical_id="usd_x"),
+        _row("USD", "CPI y/y", dt2, 0.0, canonical_id="usd_x"),
+    ]
+    out = _find(rows)
+    assert len(out) == 1 and out.iloc[0]["datetime_utc"] == dt2
+
+
+def test_rule_c_cross_day_cluster_interest_rate_decision_keeps_latest():
+    """Pattern 3: an FF-revised interest_rate_decision timestamp spanning
+    calendar days collapses to the latest (most-confirmed) revision."""
+    dt1 = NOW - pd.Timedelta(days=3)
+    dt2 = dt1 + pd.Timedelta(days=2)     # within the 7d interest_rate_decision override
+    dt3 = dt2 + pd.Timedelta(hours=5)
+    rows = [_row("USD", "Fed Funds Rate", dt, float("nan"), forecast=1.0,
+                canonical_id="jpy_boj_interest_rate_decision") for dt in (dt1, dt2, dt3)]
+    out = _find(rows)
+    assert len(out) == 1 and out.iloc[0]["datetime_utc"] == dt3
+
+
+def test_rule_c_interest_rate_decision_uses_7d_override_not_18d_monthly_default():
+    """10 days apart: over the 7d interest_rate_decision override, under the
+    18d monthly default that would otherwise apply -- must stay unmerged."""
+    dt1 = NOW - pd.Timedelta(days=20)
+    dt2 = dt1 + pd.Timedelta(days=10)
+    rows = [_row("USD", "Fed Funds Rate", dt, float("nan"), forecast=1.0,
+                canonical_id="jpy_boj_interest_rate_decision") for dt in (dt1, dt2)]
+    out = _find(rows)
+    assert len(out) == 2
+
+
+def test_rule_c_content_guard_blocks_merge_when_forecast_differs():
+    """A differing forecast means a genuinely distinct event, regardless of
+    how close in time -- the AND (not OR) amendment to rule (c)."""
+    dt1 = NOW - pd.Timedelta(days=3)
+    dt2 = dt1 + pd.Timedelta(days=2)   # well within the 7d window
+    rows = [
+        _row("USD", "Fed Funds Rate", dt1, float("nan"), forecast=1.0,
+             canonical_id="jpy_boj_interest_rate_decision"),
+        _row("USD", "Fed Funds Rate", dt2, float("nan"), forecast=2.0,
+             canonical_id="jpy_boj_interest_rate_decision"),
+    ]
+    out = _find(rows)
+    assert len(out) == 2
+
+
+def test_rule_c_content_guard_does_not_change_current_data_confirmed_cases():
+    """The measurement showed all confirmed real clusters (BoJ, CHF cases)
+    carry identical forecast -- the guard is a no-op for them, only a net
+    going forward. Reproduced here with identical forecast -> still merges."""
+    dt1 = NOW - pd.Timedelta(days=3)
+    dt2 = dt1 + pd.Timedelta(hours=6)
+    rows = [
+        _row("USD", "Fed Funds Rate", dt1, float("nan"), forecast=1.0,
+             canonical_id="jpy_boj_interest_rate_decision"),
+        _row("USD", "Fed Funds Rate", dt2, float("nan"), forecast=1.0,
+             canonical_id="jpy_boj_interest_rate_decision"),
+    ]
+    out = _find(rows)
+    assert len(out) == 1 and out.iloc[0]["datetime_utc"] == dt2
+
+
+def test_rule_c_never_clusters_through_years_of_valid_prints():
+    """Regression for the REJECTED wider-window design: clustering must stay
+    scoped to the already-ambiguous subset. A canonical_id with many valid
+    prints spaced <18d apart (which chained gbp_gdp's entire multi-year
+    history together when valid rows were included in the search) must not
+    let two genuinely unrelated, widely-separated ambiguous rows merge."""
+    rows = []
+    base = NOW - pd.Timedelta(days=730)
+    for i in range(48):
+        rows.append(_row("USD", "CPI y/y", base + pd.Timedelta(days=15 * i), 2.0,
+                         canonical_id="usd_x"))
+    amb1 = NOW - pd.Timedelta(days=400)
+    amb2 = NOW - pd.Timedelta(days=200)
+    rows.append(_row("USD", "CPI y/y", amb1, 0.0, canonical_id="usd_x"))
+    rows.append(_row("USD", "CPI y/y", amb2, 0.0, canonical_id="usd_x"))
+    out = _find(rows)
+    assert len(out) == 2
+
+
+def test_suppression_pure_no_mutation_of_input():
+    dt1 = NOW - pd.Timedelta(days=1, hours=2)
+    dt2 = dt1 + pd.Timedelta(hours=1)
+    rows = [
+        _row("USD", "CPI y/y", dt1, 0.0, canonical_id="usd_x"),
+        _row("USD", "CPI y/y", dt2, 0.0, canonical_id="usd_x"),
+    ]
+    src = _frame(rows)
+    before = src.copy(deep=True)
+    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+                         indicators_cfg=INDICATORS_CFG)
+    pd.testing.assert_frame_equal(src, before)
 
 
 # --- overrides (feat/manual-actuals-panel, Phase B) ---------------------------
@@ -277,8 +439,11 @@ def test_apply_overrides_stale_when_real_actual_has_landed():
 
 
 def test_apply_overrides_never_touches_unrelated_actionable_rows():
+    # >18d apart -- these represent two UNRELATED actionable rows for this
+    # test, not a duplicate pair (feat/manual-actuals-dedupe would otherwise
+    # collapse a closer same-canonical_id pair via rule (b)/(c)).
     dt1 = NOW - pd.Timedelta(hours=7)
-    dt2 = NOW - pd.Timedelta(hours=8)
+    dt2 = NOW - pd.Timedelta(days=30, hours=8)
     rows = [_row("USD", "CPI y/y", dt1, float("nan")),
             _row("USD", "CPI y/y", dt2, float("nan"))]
     ff = _frame(rows)
@@ -295,6 +460,54 @@ def test_apply_overrides_empty_overrides_is_noop():
     manual, remaining = apply_overrides(ff, [], now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
     assert manual.empty and list(manual.columns) == SCORING_COLUMNS
     assert len(remaining) == 1
+
+
+def test_apply_overrides_grandfathered_across_rule_a_same_day_suppression():
+    """Regression: an override written on a row rule (a) now suppresses (a
+    valid actual landed same-day on a sibling) must keep resolving and keep
+    contributing to scoring. Mirrors production: usd_durable_goods_orders
+    @ 2026-07-27 12:30 already has a committed override; its same-day sibling
+    (11:30, actual=0.3) makes it a rule-(a) suppression target."""
+    dt_override_target = NOW - pd.Timedelta(days=1, hours=1)
+    dt_valid_sibling = dt_override_target + pd.Timedelta(hours=1)
+    rows = [
+        _row("USD", "CPI y/y", dt_override_target, 0.0, canonical_id="usd_x"),
+        _row("USD", "CPI y/y", dt_valid_sibling, 0.3, canonical_id="usd_x"),
+    ]
+    ff = _frame(rows)
+    overrides = [_override("usd_x", dt_override_target, 0.3, state_resolved=ZERO_CONFIRM)]
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER,
+                                        can_be_zero=CBZ, indicators_cfg=INDICATORS_CFG)
+    assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.3)
+    assert remaining.empty   # suppressed from the panel, but the override still resolved
+
+
+def test_apply_overrides_grandfathered_across_rule_c_cross_day_suppression():
+    """Regression: an override written on a row rule (c) now suppresses (its
+    cluster's later revision was kept instead) must keep resolving. Mirrors
+    production: jpy_boj_interest_rate_decision @ 2026-07-29 21:00 already has
+    a committed override; the FF-revised 2026-07-31 timestamps put it in a
+    rule-(c) cluster whose kept representative is the later revision.
+
+    Known, accepted consequence (not a bug -- see the final report/docs):
+    the cluster's kept representative (dt_kept) still shows in `remaining`
+    even though the cluster is effectively already resolved via the
+    grandfathered override on its sibling -- rule (c) does not propagate
+    resolution across a cluster, only exact-key matches do."""
+    dt_override_target = NOW - pd.Timedelta(days=3)
+    dt_kept = dt_override_target + pd.Timedelta(days=2)
+    rows = [
+        _row("USD", "Fed Funds Rate", dt_override_target, float("nan"), forecast=1.0,
+             canonical_id="jpy_boj_interest_rate_decision"),
+        _row("USD", "Fed Funds Rate", dt_kept, float("nan"), forecast=1.0,
+             canonical_id="jpy_boj_interest_rate_decision"),
+    ]
+    ff = _frame(rows)
+    overrides = [_override("jpy_boj_interest_rate_decision", dt_override_target, 1.0)]
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER,
+                                        can_be_zero=CBZ, indicators_cfg=INDICATORS_CFG)
+    assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(1.0)
+    assert len(remaining) == 1 and remaining.iloc[0]["datetime_utc"] == dt_kept
 
 
 def test_apply_overrides_empty_ff_frame():
