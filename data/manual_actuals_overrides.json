@@ -75,5 +75,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-12T09:17:57+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "eur_cpi",
+  "currency": "EUR",
+  "indicator_key": "cpi_yoy",
+  "datetime_utc": "2026-07-31 09:00:00",
+  "actual": 2.9,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-12T09:18:12+00:00",
+  "note": ""
  }
 ]
