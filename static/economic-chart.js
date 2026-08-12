@@ -189,10 +189,13 @@
   // states render identically (red/actionable) per spec; only the label differs.
   // One row, one decision — no bulk actions; each row submits independently to
   // POST /api/manual-actual (api/manual-actual.py), which commits an updated
-  // data/manual_actuals_overrides.json via the GitHub API. That means a
-  // successful submit does NOT retroactively change this payload — it takes
-  // effect on the NEXT dashboard render, so the row is marked "saved" locally
-  // and the button count is decremented optimistically, not truly refetched.
+  // data/manual_actuals_overrides.json via the GitHub API and then best-effort
+  // triggers econ-refresh.yml. That means a successful submit does NOT
+  // retroactively change THIS already-loaded payload — the row is marked
+  // "applying" (never "saved"/hidden optimistically) and stays that way until
+  // the operator reloads the page and the row is genuinely gone from the next
+  // payload. The button count is still decremented optimistically since it's
+  // just a UI counter, not a claim about what's live.
   function renderManualActualsButton() {
     const btn = document.getElementById("manualActualsBtn");
     if (!btn) return;
@@ -272,7 +275,7 @@
       '<h2>Manual Actuals <small class="muted">(' + ma.count + ' needing review' + olderNote + ')</small></h2>' +
       '<div class="muted modal-subhead">MISSING: scheduled, past due, no print yet — enter the actual. ' +
       'ZERO_CONFIRM: a 0.0 print scoring would quarantine — confirm it as a real flat print, or correct it. ' +
-      'One row, one decision; a submit takes effect on the next dashboard refresh, not immediately.</div>' +
+      'One row, one decision; a submit starts a refresh (~3 min) but only reload of this page will confirm it landed.</div>' +
       '</header>' +
       '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
       '<thead><tr><th>Currency</th><th style="text-align:left">Indicator</th><th>UTC</th><th>Forecast</th><th style="text-align:left">Action</th></tr></thead>' +
@@ -343,7 +346,14 @@
           return;
         }
         tr.classList.add("ma-done");
-        form.outerHTML = '<span class="ma-saved">✓ Saved — takes effect on next dashboard refresh</span>';
+        // Never show "Saved" here: the commit landed, but THIS payload is
+        // unchanged until a refresh render actually happens. Reflect the
+        // best-effort dispatch outcome (res.data.refresh_triggered) instead
+        // of assuming success — the row stays marked until a page reload
+        // pulls a payload that genuinely no longer contains it.
+        form.outerHTML = res.data.refresh_triggered
+          ? '<span class="ma-applying">⏳ Applying — refresh running, ~3 min. Reload the page after that to confirm.</span>'
+          : '<span class="ma-applying ma-applying-manual">✓ Committed — auto-refresh didn\'t start; applies on the next hourly run. Reload later to confirm.</span>';
         if (noteEl) noteEl.remove();
         manualActualsDecrementCount();
       })

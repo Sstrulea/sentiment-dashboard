@@ -1150,7 +1150,8 @@ table.econ-ind-table td.ei-score.ma-cell { text-align: left; min-width: 220px; }
 }
 .ma-btn:hover:not(:disabled) { background: var(--row-alt); border-color: var(--accent); }
 .ma-btn:disabled { opacity: 0.5; cursor: default; }
-.ma-saved { color: var(--success-fg); font-size: 11px; font-weight: 600; }
+.ma-applying { color: var(--info-fg); font-size: 11px; font-weight: 600; }
+.ma-applying.ma-applying-manual { color: var(--warning-fg); }
 .ma-error { color: var(--warning-fg); font-size: 10px; margin-top: 2px; }
 tr.ma-done { opacity: 0.6; }
 /* Per-source freshness badges in the meta bar (STALE = red, fresh = subtle). */

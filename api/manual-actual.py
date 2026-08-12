@@ -24,9 +24,27 @@ token is still bounded by the SAFETY BOUNDARY above, not by this check.
 
 Required environment variables (Vercel project settings):
   MANUAL_ACTUALS_TOKEN         shared secret the dashboard sends back
-  MANUAL_ACTUALS_GITHUB_TOKEN  GitHub token with contents:write on this repo
+  MANUAL_ACTUALS_GITHUB_TOKEN  fine-grained GitHub token with Contents:
+                                Read/write AND Actions: Read/write on this
+                                repo (the latter is for the refresh dispatch
+                                below — contents-only tokens can commit but
+                                get a 403 on workflow_dispatch)
   MANUAL_ACTUALS_GITHUB_REPO   "owner/repo", e.g. "Sstrulea/sentiment-dashboard"
   MANUAL_ACTUALS_GITHUB_BRANCH optional, defaults to "main"
+
+Refresh dispatch: a successful commit here doesn't make it into
+public/data/economic.json until econ-refresh.yml runs — normally only on
+the hourly schedule. To close that gap, _handle triggers econ-refresh.yml
+via workflow_dispatch immediately AFTER _commit_override returns (never
+before/in parallel — dispatching first risks the run checking out the repo
+before the new commit lands, rendering stale data and reproducing the exact
+"submit looked ignored" symptom this exists to fix). The dispatch is
+best-effort: its failure is reported via the `refresh_triggered` response
+flag but never fails the request or implies the commit didn't happen.
+Bursts of submits are deduplicated by econ-refresh.yml's own
+`concurrency: {group: econ-refresh, cancel-in-progress: false}` — GitHub
+auto-cancels a stale queued run when a newer one is queued behind it, so no
+separate debounce is implemented here.
 """
 from __future__ import annotations
 
@@ -49,6 +67,7 @@ REQUIRED_FIELDS = ("canonical_id", "currency", "indicator_key", "datetime_utc",
 VALID_STATES = ("MISSING", "ZERO_CONFIRM")
 NOTE_MAX = 500
 ENTERED_BY_MAX = 80
+REFRESH_WORKFLOW_FILE = "econ-refresh.yml"
 
 
 class _HttpError(Exception):
@@ -104,8 +123,15 @@ class handler(BaseHTTPRequestHandler):
 
         entry = self._validate(payload)
         self._sanity_check_still_actionable(entry["canonical_id"], entry["datetime_utc"])
-        commit_url = self._commit_override(entry)
-        self._send_json(200, {"ok": True, "entry": entry, "commit": commit_url})
+        gh_token, repo, branch = self._github_config()
+        commit_url = self._commit_override(gh_token, repo, branch, entry)
+        refresh_triggered = self._trigger_refresh(gh_token, repo, branch)
+        self._send_json(200, {
+            "ok": True,
+            "entry": entry,
+            "commit": commit_url,
+            "refresh_triggered": refresh_triggered,
+        })
 
     def _validate(self, payload: dict) -> dict:
         for f in REQUIRED_FIELDS:
@@ -152,13 +178,15 @@ class handler(BaseHTTPRequestHandler):
 
     # ---- GitHub Contents API commit ------------------------------------------
 
-    def _commit_override(self, entry: dict) -> str:
+    def _github_config(self) -> tuple[str, str, str]:
         gh_token = os.environ.get("MANUAL_ACTUALS_GITHUB_TOKEN")
         repo = os.environ.get("MANUAL_ACTUALS_GITHUB_REPO")
         branch = os.environ.get("MANUAL_ACTUALS_GITHUB_BRANCH", "main")
         if not gh_token or not repo:
             raise _HttpError(500, "MANUAL_ACTUALS_GITHUB_TOKEN / MANUAL_ACTUALS_GITHUB_REPO not configured")
+        return gh_token, repo, branch
 
+    def _commit_override(self, gh_token: str, repo: str, branch: str, entry: dict) -> str:
         api_url = f"https://api.github.com/repos/{repo}/contents/{OVERRIDES_PATH_IN_REPO}"
         headers = {"Authorization": f"Bearer {gh_token}", "Accept": "application/vnd.github+json"}
 
@@ -195,6 +223,28 @@ class handler(BaseHTTPRequestHandler):
         if pr.status_code not in (200, 201):
             raise _HttpError(502, f"GitHub commit failed: {pr.status_code} {pr.text[:200]}")
         return (pr.json().get("commit") or {}).get("html_url", "")
+
+    # ---- refresh dispatch (best-effort, only after the commit is confirmed) --
+
+    def _trigger_refresh(self, gh_token: str, repo: str, branch: str) -> bool:
+        """Called only after _commit_override has returned — never before,
+        never concurrently — so the workflow run this triggers always checks
+        out a repo that already has the new commit. Swallows every failure:
+        a broken dispatch must not turn an already-successful commit into an
+        error response."""
+        url = (f"https://api.github.com/repos/{repo}/actions/workflows/"
+               f"{REFRESH_WORKFLOW_FILE}/dispatches")
+        headers = {"Authorization": f"Bearer {gh_token}", "Accept": "application/vnd.github+json"}
+        try:
+            r = requests.post(url, headers=headers, json={"ref": branch}, timeout=10)
+        except requests.RequestException as e:
+            self.log_error("manual-actual: refresh dispatch failed: %r", e)
+            return False
+        if r.status_code != 204:
+            self.log_error("manual-actual: refresh dispatch rejected: %s %s",
+                            r.status_code, r.text[:200])
+            return False
+        return True
 
     # ---- response -------------------------------------------------------------
 

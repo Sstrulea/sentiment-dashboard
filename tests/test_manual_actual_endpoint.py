@@ -12,6 +12,8 @@ import base64
 import importlib.util
 import json
 import threading
+import urllib.error
+import urllib.request
 from http.server import HTTPServer
 from pathlib import Path
 from unittest.mock import patch
@@ -60,11 +62,33 @@ def _payload(**over):
     return base
 
 
+class _TestResponse:
+    """Minimal requests.Response lookalike (.status_code / .json()) for the
+    urllib-based test client below."""
+    def __init__(self, status_code: int, body: bytes):
+        self.status_code = status_code
+        self._body = body
+
+    def json(self):
+        return json.loads(self._body)
+
+
 def _post(server, payload, token=TOKEN):
+    # Deliberately urllib, not `requests`: the endpoint under test and this
+    # test file both `import requests`, which is the SAME cached module
+    # object — patching endpoint.requests.post (for the refresh-dispatch
+    # tests) would silently also mock this call to the local test server if
+    # it went through requests.post too.
     headers = {"Content-Type": "application/json"}
     if token is not None:
         headers["X-Manual-Token"] = token
-    return requests.post(server + "/api/manual-actual", json=payload, headers=headers, timeout=5)
+    req = urllib.request.Request(server + "/api/manual-actual", data=json.dumps(payload).encode(),
+                                 headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return _TestResponse(resp.status, resp.read())
+    except urllib.error.HTTPError as e:
+        return _TestResponse(e.code, e.read())
 
 
 def test_missing_token_rejected(server):
@@ -109,10 +133,12 @@ def test_row_with_real_actual_rejected(server):
 def test_zero_confirm_row_accepted_for_sanity_check(server):
     """actual==0.0 on the target row is exactly the ZERO_CONFIRM case — must
     NOT be rejected by the 'already has a real actual' guard."""
-    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput:
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
         mget.return_value.status_code = 404
         mput.return_value.status_code = 201
         mput.return_value.json.return_value = {"commit": {"html_url": "https://github.com/x/y/commit/z"}}
+        mpost.return_value.status_code = 204
         r = _post(server, _payload(canonical_id="usd_gdp", datetime_utc="2026-07-03T12:30:00",
                                    indicator_key="gdp_qoq", state_resolved="ZERO_CONFIRM", actual=0.0))
     assert r.status_code == 200
@@ -127,10 +153,12 @@ def test_missing_github_config_returns_500(server, monkeypatch):
 def test_happy_path_creates_new_overrides_file(server):
     """No overrides file exists yet in the repo (GitHub 404) -> commit creates
     one with a single entry, via a PUT with no `sha` (create, not update)."""
-    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput:
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
         mget.return_value.status_code = 404
         mput.return_value.status_code = 201
         mput.return_value.json.return_value = {"commit": {"html_url": "https://github.com/x/y/commit/abc"}}
+        mpost.return_value.status_code = 204
 
         r = _post(server, _payload())
 
@@ -141,6 +169,7 @@ def test_happy_path_creates_new_overrides_file(server):
     assert body["entry"]["actual"] == pytest.approx(3.1)
     assert body["entry"]["entered_by"] == "tester"
     assert body["commit"] == "https://github.com/x/y/commit/abc"
+    assert body["refresh_triggered"] is True
 
     put_kwargs = mput.call_args.kwargs
     assert "sha" not in put_kwargs["json"]
@@ -156,11 +185,13 @@ def test_resubmission_replaces_prior_entry_for_same_key(server):
                 "entered_at": "2026-01-01T00:00:00", "note": "old"}]
     existing_content = base64.b64encode(json.dumps(existing).encode()).decode()
 
-    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput:
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
         mget.return_value.status_code = 200
         mget.return_value.json.return_value = {"sha": "abc123", "content": existing_content}
         mput.return_value.status_code = 200
         mput.return_value.json.return_value = {"commit": {"html_url": "https://github.com/x/y/commit/def"}}
+        mpost.return_value.status_code = 204
 
         r = _post(server, _payload(actual=9.9))
 
@@ -174,10 +205,12 @@ def test_resubmission_replaces_prior_entry_for_same_key(server):
 
 
 def test_commit_message_includes_identifying_fields(server):
-    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput:
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
         mget.return_value.status_code = 404
         mput.return_value.status_code = 201
         mput.return_value.json.return_value = {"commit": {"html_url": "https://x"}}
+        mpost.return_value.status_code = 204
         _post(server, _payload())
     msg = mput.call_args.kwargs["json"]["message"]
     assert "usd_cpi" in msg and "MISSING" in msg and "tester" in msg
@@ -192,9 +225,84 @@ def test_github_read_failure_surfaces_as_502(server):
 
 
 def test_github_write_failure_surfaces_as_502(server):
-    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput:
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
         mget.return_value.status_code = 404
         mput.return_value.status_code = 403
         mput.return_value.text = "forbidden"
         r = _post(server, _payload())
     assert r.status_code == 502
+    mpost.assert_not_called()  # a failed commit must never trigger a refresh dispatch
+
+
+def test_refresh_dispatch_happens_after_commit_is_confirmed(server):
+    """The dispatch call must be observably sequenced AFTER the commit PUT
+    returns — never fired in parallel with it — since a dispatch that races
+    ahead of the commit can start a run that checks out the repo before the
+    new commit lands, reproducing the exact stale-render bug this fixes."""
+    order = []
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
+        mget.return_value.status_code = 404
+        mput.return_value.status_code = 201
+        mput.return_value.json.return_value = {"commit": {"html_url": "https://x"}}
+        mput.side_effect = lambda *a, **k: order.append("commit") or mput.return_value
+        mpost.return_value.status_code = 204
+        mpost.side_effect = lambda *a, **k: order.append("dispatch") or mpost.return_value
+
+        r = _post(server, _payload())
+
+    assert order == ["commit", "dispatch"]
+    assert r.json()["refresh_triggered"] is True
+
+
+def test_refresh_dispatch_targets_econ_refresh_workflow_on_configured_branch(server):
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
+        mget.return_value.status_code = 404
+        mput.return_value.status_code = 201
+        mput.return_value.json.return_value = {"commit": {"html_url": "https://x"}}
+        mpost.return_value.status_code = 204
+
+        _post(server, _payload())
+
+    assert mpost.call_args.args[0] == (
+        "https://api.github.com/repos/someone/repo/actions/workflows/econ-refresh.yml/dispatches"
+    )
+    assert mpost.call_args.kwargs["json"] == {"ref": "main"}
+    assert mpost.call_args.kwargs["headers"]["Authorization"] == "Bearer gh-fake"
+
+
+def test_refresh_dispatch_failure_is_best_effort_and_does_not_fail_the_request(server):
+    """A commit that already succeeded must still return 200 even if the
+    dispatch call raises outright (network error, timeout, etc.) — only the
+    `refresh_triggered` flag reflects the failure."""
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
+        mget.return_value.status_code = 404
+        mput.return_value.status_code = 201
+        mput.return_value.json.return_value = {"commit": {"html_url": "https://x"}}
+        mpost.side_effect = requests.ConnectionError("boom")
+
+        r = _post(server, _payload())
+
+    assert r.status_code == 200
+    body = r.json()
+    assert body["ok"] is True
+    assert body["commit"] == "https://x"
+    assert body["refresh_triggered"] is False
+
+
+def test_refresh_dispatch_non_204_is_reported_as_not_triggered(server):
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
+        mget.return_value.status_code = 404
+        mput.return_value.status_code = 201
+        mput.return_value.json.return_value = {"commit": {"html_url": "https://x"}}
+        mpost.return_value.status_code = 403
+        mpost.return_value.text = "forbidden: missing actions:write"
+
+        r = _post(server, _payload())
+
+    assert r.status_code == 200
+    assert r.json()["refresh_triggered"] is False
