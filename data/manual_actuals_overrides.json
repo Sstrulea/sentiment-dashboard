@@ -1,16 +1,5 @@
 [
  {
-  "canonical_id": "usd_core_cpi",
-  "currency": "USD",
-  "indicator_key": "core_cpi",
-  "datetime_utc": "2026-07-14 12:30:00",
-  "actual": 0.0,
-  "state_resolved": "MISSING",
-  "entered_by": "dolce",
-  "entered_at": "2026-08-12T09:14:27+00:00",
-  "note": ""
- },
- {
   "canonical_id": "gbp_ppi_output",
   "currency": "GBP",
   "indicator_key": "ppi_yoy",
@@ -107,6 +96,17 @@
   "state_resolved": "MISSING",
   "entered_by": "dolce",
   "entered_at": "2026-08-12T09:18:26+00:00",
+  "note": ""
+ },
+ {
+  "canonical_id": "usd_core_cpi",
+  "currency": "USD",
+  "indicator_key": "core_cpi",
+  "datetime_utc": "2026-07-14 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-12T09:55:43+00:00",
   "note": ""
  }
 ]
