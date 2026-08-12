@@ -31,5 +31,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-12T09:15:18+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_cpi",
+  "currency": "AUD",
+  "indicator_key": "cpi_yoy",
+  "datetime_utc": "2026-07-29 01:30:00",
+  "actual": 3.8,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-12T09:15:34+00:00",
+  "note": ""
  }
 ]
