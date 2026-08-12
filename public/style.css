@@ -1354,6 +1354,12 @@ table.econ-ind-table tr.ei-stale td { color: var(--muted); font-style: italic; o
 table.econ-ind-table tr.ei-stale td.ei-score { background: var(--surface-alt); color: var(--muted); }
 .flag-stale { background: var(--surface-alt); color: var(--muted); cursor: help; }
 
+/* no_consensus row in the modal breakdown — same "excluded from the average"
+   treatment as stale (a forced-0 score with no consensus is not a real
+   surprise either), kept as a distinct class so the reason stays inspectable. */
+table.econ-ind-table tr.ei-no-consensus td { color: var(--muted); font-style: italic; opacity: 0.75; }
+table.econ-ind-table tr.ei-no-consensus td.ei-score { background: var(--surface-alt); color: var(--muted); }
+
 /* === Cross-Asset section (indices + metals) — reuses econ-table styling === */
 .crossasset-section { margin-top: 36px; }
 .crossasset-section[hidden] { display: none; }

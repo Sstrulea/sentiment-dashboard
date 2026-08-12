@@ -1170,8 +1170,15 @@
     const signed = (e.score === null || e.score === undefined) ? null : sign * e.score;
     const scoreTxt = (signed === null) ? "—" : fmtScoreCell(signed);
     const scoreCls = (signed === null) ? "" : cellClass(signed);
+    // Row is excluded from the category average for exactly two reasons
+    // (compute_currency_scorecard): stale, or no_consensus. Both get the
+    // same dimmed-row treatment so exclusion is visible at a glance, not
+    // just via the small inline flag badge — distinct classes so the
+    // reason is still inspectable (title text differs per badge above).
+    const rowCls = e.stale ? ' class="ei-stale"'
+      : (e.flag === "no_consensus" ? ' class="ei-no-consensus"' : '');
     return (
-      '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
+      '<tr' + rowCls + '>' +
       '<td class="ei-name">' + (meta.label || key) + '</td>' +
       '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
       '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
@@ -1196,9 +1203,19 @@
     const sign = (f && f.sign !== undefined && f.sign !== null) ? f.sign : 1;
     const signTxt = (f && f.sign !== undefined && f.sign !== null)
       ? ' <span class="muted">· sign ' + fmtSigned(f.sign, 0) + "</span>" : "";
+    // N = how many of this category's indicators actually entered the mean
+    // (compute_currency_scorecard's per-cat coverage — same number already
+    // used for the row-hover tooltip via caCategoriesNTooltip). Shown next
+    // to contrib so the average is checkable by eye against the rows below;
+    // "rates" has no equivalent per-indicator coverage concept (it's a
+    // sub-component composite, not a category average) so it's omitted there.
+    const catMeta = ((state.payload.currencies || {})[home] || {}).categories || {};
+    const n = (catMeta[group.key] && catMeta[group.key].coverage != null)
+      ? catMeta[group.key].coverage : null;
+    const nTxt = (group.key === "rates" || n === null) ? "" : ' <span class="muted">· N ' + n + '</span>';
     const head =
       '<div class="econ-cat-head">' + group.label +
-      ' <span class="econ-cat-sub ' + cls + '">contrib ' + contrib + "</span>" + signTxt + "</div>";
+      ' <span class="econ-cat-sub ' + cls + '">contrib ' + contrib + "</span>" + nTxt + signTxt + "</div>";
 
     let table, note = "";
     if (group.key === "rates") {
@@ -1215,8 +1232,18 @@
       }
       note = '<div class="muted" style="font-size:11px;margin-top:4px;">' + bits.join(" · ") + "</div>";
     } else {
+      // Dynamic: EVERY indicator this currency has in `breakdown` for this
+      // category, not just CROSSASSET_TABLE_LAYOUT's curated sub-columns
+      // (those stay fixed — this only widens the modal, never the table).
+      // Curated columns keep their existing order first (no visual churn for
+      // the common case); anything else the category has is appended,
+      // alphabetically by label, so it's still deterministic.
       const brk = ((state.payload.currencies || {})[home] || {}).breakdown || {};
-      const keys = group.columns.map(c => c.key).filter(k => brk[k]);
+      const layoutKeys = group.columns.map(c => c.key);
+      const extraKeys = Object.keys(brk)
+        .filter(k => brk[k] && brk[k].category === group.key && layoutKeys.indexOf(k) === -1)
+        .sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
+      const keys = layoutKeys.filter(k => brk[k]).concat(extraKeys);
       const rowsHtml = keys.length
         ? keys.map(k => caIndicatorRow(k, brk[k], sign)).join("")
         : '<tr><td class="ei-name muted" colspan="8">no home-currency data</td></tr>';
