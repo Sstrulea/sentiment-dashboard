@@ -38,7 +38,7 @@ from src.sentiment_compute import compute_pc_metrics, pc_index_score
 from src.rate_compute import compute_rate_scores
 from src.realyield_compute import compute_realyield_score
 from src.liquidity_compute import compute_liquidity_score
-from src.crossasset_compute import compute_crossasset_scores
+from src.crossasset_compute import compute_crossasset_scores, LIQUIDITY_SERIES_LABELS
 from src.trend_score import score_all as trend_score_all
 from src.static_assets import copy_static_assets
 from src.price_fetch import SYMBOLS_YAML as PRICE_SYMBOLS_YAML, load_symbol_map as _load_price_symbol_map
@@ -101,7 +101,7 @@ CROSSASSET_TABLE_LAYOUT = [
         ("jobless_claims", "Claims")]},
     {"key": "rates", "label": "Rates & Liquidity", "columns": [
         ("rate_exp_2y", "Rate Exp 2Y"), ("real_yield_10y", "10Y Real Yield"),
-        ("balance_sheet", "Net Liquidity")]},
+        ("balance_sheet", "Reserves (WRBWFRBL)")]},
 ]
 # Home-ccy indicator keys to read from the FX breakdown for the sub-columns.
 CROSSASSET_CATEGORY_KEYS = [
@@ -694,10 +694,12 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         except Exception as e:
             log.warning("real_yields.parquet present but unreadable (%s); real_yield excluded.", e)
 
-    # Fed net liquidity (WALCL−TGA−RRP) → balance_sheet sub-component. Missing
-    # parquet → excluded gracefully (mirrors real_yield).
+    # Bank reserves (WRBWFRBL) → balance_sheet sub-component, falling back to
+    # net_liquidity (WALCL−TGA−RRP, the rollback path) when reserves is
+    # unresolved — see compute_liquidity_score. Missing parquet → excluded
+    # gracefully (mirrors real_yield).
     liquidity_score = None
-    liquidity_meta = {"present": False, "series": "NET_LIQUIDITY"}
+    liquidity_meta = {"present": False, "series": "WRBWFRBL"}
     if NET_LIQUIDITY_PARQUET.exists():
         try:
             ndf = pd.read_parquet(NET_LIQUIDITY_PARQUET)
@@ -706,7 +708,9 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
                 if ls is not None:
                     liquidity_score = ls
                     liquidity_meta = {
-                        "present": True, "series": "NET_LIQUIDITY", "score": ls.score,
+                        "present": True,
+                        "series": LIQUIDITY_SERIES_LABELS.get(ls.series, "WRBWFRBL"),
+                        "score": ls.score,
                         "roc": ls.roc, "latest": ls.latest, "method": ls.method,
                         "as_of": ls.as_of.isoformat() if ls.as_of is not None else None,
                         "stale": ls.stale,

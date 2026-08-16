@@ -1141,7 +1141,7 @@
     const contrib = hasVal ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
     const cls = hasVal ? cellClass(Math.round(c.contribution)) : "";
     const label = ({rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield",
-                    balance_sheet: "Net Liquidity"})[c.name] || c.name;
+                    balance_sheet: "Reserves (WRBWFRBL)"})[c.name] || c.name;
     const flag = c.stale
       ? '<span class="econ-flag flag-stale" title="stale — shown for visibility, excluded from the rates mean">stale</span>'
       : (hasVal ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>');
@@ -1224,7 +1224,12 @@
         '<thead><tr><th>Sub-component</th><th>Raw</th><th>Sign</th><th>Weight</th><th>Contribution</th><th></th><th>Source</th></tr></thead>' +
         '<tbody>' + comps.map(caRateRow).join("") + "</tbody>";
       const nl = (state.payload.crossasset || {}).net_liquidity || {};
-      const bits = ["Net Liquidity = WALCL − TGA − RRP"];
+      // series reflects what's ACTUALLY scored: reserves (WRBWFRBL) by default,
+      // or the net_liquidity (WALCL − TGA − RRP) fallback when reserves is
+      // unresolved — never label one while showing the other's numbers.
+      const bits = [nl.series === "NET_LIQUIDITY"
+        ? "Net Liquidity (fallback) = WALCL − TGA − RRP"
+        : "Bank Reserves (" + (nl.series || "WRBWFRBL") + ")"];
       if (nl.present) {
         bits.push("21d roc " + (nl.roc == null ? "—" : fmtSigned(nl.roc * 100, 2) + "%/mo"));
         if (nl.latest != null) bits.push("level " + Number(nl.latest).toFixed(0));
