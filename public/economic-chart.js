@@ -1141,7 +1141,7 @@
     const contrib = hasVal ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
     const cls = hasVal ? cellClass(Math.round(c.contribution)) : "";
     const label = ({rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield",
-                    balance_sheet: "Reserves (WRBWFRBL)"})[c.name] || c.name;
+                    balance_sheet: "Bank Reserves"})[c.name] || c.name;
     const flag = c.stale
       ? '<span class="econ-flag flag-stale" title="stale — shown for visibility, excluded from the rates mean">stale</span>'
       : (hasVal ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>');
@@ -1226,11 +1226,14 @@
       const nl = (state.payload.crossasset || {}).net_liquidity || {};
       // series reflects what's ACTUALLY scored: reserves (WRBWFRBL) by default,
       // or the net_liquidity (WALCL − TGA − RRP) fallback when reserves is
-      // unresolved — never label one while showing the other's numbers.
+      // unresolved — never label one while showing the other's numbers. The
+      // visible label is plain "Bank Reserves"; the FRED series id is a
+      // tooltip-only detail, shown alongside the roc/level line below.
       const bits = [nl.series === "NET_LIQUIDITY"
         ? "Net Liquidity (fallback) = WALCL − TGA − RRP"
-        : "Bank Reserves (" + (nl.series || "WRBWFRBL") + ")"];
+        : "Bank Reserves"];
       if (nl.present) {
+        if (nl.series && nl.series !== "NET_LIQUIDITY") bits.push("series " + nl.series);
         bits.push("21d roc " + (nl.roc == null ? "—" : fmtSigned(nl.roc * 100, 2) + "%/mo"));
         if (nl.latest != null) bits.push("level " + Number(nl.latest).toFixed(0));
         if (nl.as_of) bits.push("@ " + fmtDate(nl.as_of) + (nl.stale ? " (stale)" : ""));

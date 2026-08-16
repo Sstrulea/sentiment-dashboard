@@ -101,7 +101,7 @@ CROSSASSET_TABLE_LAYOUT = [
         ("jobless_claims", "Claims")]},
     {"key": "rates", "label": "Rates & Liquidity", "columns": [
         ("rate_exp_2y", "Rate Exp 2Y"), ("real_yield_10y", "10Y Real Yield"),
-        ("balance_sheet", "Reserves (WRBWFRBL)")]},
+        ("balance_sheet", "Bank Reserves")]},
 ]
 # Home-ccy indicator keys to read from the FX breakdown for the sub-columns.
 CROSSASSET_CATEGORY_KEYS = [
