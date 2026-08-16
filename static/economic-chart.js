@@ -1017,6 +1017,11 @@
     if (v === null || v === undefined) {
       return '<td class="econ-cell cell-na" title="not available">—</td>';
     }
+    if (c.excluded) {
+      const tip = "Weight set to 0 — excluded from the composite (accepted degradation, see docs/accepted-degradations.md). Value shown is still live.";
+      return '<td class="econ-cell ec-excluded" title="' + escAttr(tip) + '">' +
+        fmtScoreCell(v) + ' <span class="econ-flag flag-excluded">excluded from composite</span></td>';
+    }
     if (c.stale) {
       return '<td class="econ-cell ec-stale" title="stale — outside the lookback window; excluded from scoring">' +
         fmtScoreCell(v) + "</td>";
@@ -1135,18 +1140,22 @@
 
   // Modal: a rate sub-component row (raw / sign / weight / contribution). A stale
   // component shows its value greyed with a "stale" badge (excluded from the
-  // mean); a genuinely-missing one shows "absent".
+  // mean); a genuinely-missing one shows "absent"; a weight-0 accepted
+  // degradation shows "excluded from composite" — the raw value is real and
+  // live, only its weight was zeroed (see docs/accepted-degradations.md).
   function caRateRow(c) {
     const hasVal = c.raw !== null && c.raw !== undefined;
     const contrib = hasVal ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
     const cls = hasVal ? cellClass(Math.round(c.contribution)) : "";
     const label = ({rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield",
                     balance_sheet: "Bank Reserves"})[c.name] || c.name;
-    const flag = c.stale
+    const flag = c.excluded
+      ? '<span class="econ-flag flag-excluded" title="weight set to 0 — accepted degradation, see docs/accepted-degradations.md">excluded from composite</span>'
+      : c.stale
       ? '<span class="econ-flag flag-stale" title="stale — shown for visibility, excluded from the rates mean">stale</span>'
       : (hasVal ? "" : '<span class="econ-flag flag-stale" title="not available">absent</span>');
     return (
-      "<tr" + (c.present ? "" : ' class="ei-stale"') + ">" +
+      "<tr" + ((c.present && !c.excluded) ? "" : ' class="ei-stale"') + ">" +
       '<td class="ei-name">' + label + '</td>' +
       '<td class="ei-num">' + (hasVal ? fmtSigned(c.raw, 0) : "—") + '</td>' +
       '<td class="ei-num">' + fmtSigned(c.sign, 0) + '</td>' +

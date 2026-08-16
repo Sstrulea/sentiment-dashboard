@@ -52,7 +52,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — has US30 price series
   SP500:
@@ -67,7 +67,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — has US500 price series
   NASDAQ:
@@ -82,7 +82,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (P/C equity, US index); weight 0.5 in the score
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — USTEC series (EA v1.3)
   DAX:
@@ -98,7 +98,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # US equity P/C proxy cell; weight 0.5 (same as US indices)
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — DE40 series (EA v1.2)
   NIKKEI:
@@ -114,7 +114,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # US equity P/C proxy cell; weight 0.5 (same as US indices)
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — JP225 series (EA v1.2)
   FTSE100:
@@ -130,7 +130,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # US equity P/C proxy cell; weight 0.5 (same as US indices)
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — UK100 series (EA v1.2)
 
@@ -147,7 +147,7 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (COT metal); weight 0.5 in the score
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — has XAUUSD price series
   SILVER:
@@ -162,6 +162,6 @@ instruments:
         components:
           rate_exp_2y:    { sign: -1, weight: 1.0 }
           real_yield_10y: { sign: -1, weight: 1.0 }
-          balance_sheet:  { sign: -1, weight: 1.0 }   # Fed net liquidity; rising = easing = bullish
+          balance_sheet:  { sign: -1, weight: 0.0 }   # weight 0 2026-08-16: see docs/accepted-degradations.md
       sentiment: { sign: 1, weight: 0.5 }   # SENTIMENT cell (COT metal); weight 0.5 in the score
       trend:     { sign: 1, weight: 0.5 }   # TREND cell (price MA×ADX, ±3); weight 0.5 — has XAGUSD price series
