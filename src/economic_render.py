@@ -770,7 +770,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         for c in (rates_factor.get("components", []) if rates_factor else []):
             raw = c.get("raw")
             signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
-            cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale"))}
+            cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale")),
+                               "excluded": bool(c.get("excluded"))}
         r["cells"] = cells
 
         # TREND decomposition for the pop-up (column shows the final cell only).

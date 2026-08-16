@@ -1349,6 +1349,14 @@ table.econ-table td.sym { text-align: left; }
 }
 .econ-cell.ec-stale::after { content: " ·"; }
 
+/* Weight-0 accepted-degradation cell — de-emphasized like stale, but the value
+   is live (not out-of-window), so it gets its own badge, not the "stale" one. */
+.econ-cell.ec-excluded {
+  background: repeating-linear-gradient(45deg, var(--surface-alt), var(--surface-alt) 4px, transparent 4px, transparent 8px);
+  color: var(--muted); font-style: italic; opacity: 0.7;
+}
+.econ-cell.ec-excluded .flag-excluded { margin-left: 4px; font-style: normal; }
+
 /* Stale row in the modal breakdown — greyed but present. */
 table.econ-ind-table tr.ei-stale td { color: var(--muted); font-style: italic; opacity: 0.75; }
 table.econ-ind-table tr.ei-stale td.ei-score { background: var(--surface-alt); color: var(--muted); }

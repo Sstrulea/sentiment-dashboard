@@ -137,11 +137,16 @@ def _subcell_display(v: Any) -> tuple[Optional[int], bool, bool]:
 
 def _rates_factor(rates_cfg: dict, cats: dict, home: str,
                   globals_by_kind: dict) -> tuple[Optional[float], list[dict]]:
-    """Composite rates value = weighted mean of PRESENT (non-stale) sub-components
-    (signed), bounded at ±2 regardless of how many components there are. Stale
-    sub-components are kept in the rows for display (raw + stale flag) but excluded
-    from the mean. `globals_by_kind` maps a non-category kind ("realyield",
-    "liquidity") -> (raw|None, stale, source_label). Returns (value|None, rows)."""
+    """Composite rates value = weighted mean of PRESENT (non-stale), non-zero-
+    weight sub-components (signed), bounded at ±2 regardless of how many
+    components there are. Stale sub-components are kept in the rows for display
+    (raw + stale flag) but excluded from the mean. A sub-component configured at
+    weight 0 (an accepted degradation — see docs/accepted-degradations.md) is
+    likewise kept in the rows (raw + `excluded` flag) but contributes nothing to
+    the mean: this is mathematically identical to the sub-component being absent
+    from `comps_cfg` entirely, just still inspectable. `globals_by_kind` maps a
+    non-category kind ("realyield", "liquidity") -> (raw|None, stale,
+    source_label). Returns (value|None, rows)."""
     comps_cfg = rates_cfg.get("components", {}) or {}
     sub_rows: list[dict] = []
     num = 0.0
@@ -158,13 +163,14 @@ def _rates_factor(rates_cfg: dict, cats: dict, home: str,
             source = f"{home} {key}"
         # Display contribution whenever a value exists (even if stale/excluded).
         contribution = (sign * weight * raw) if (raw is not None) else None
-        if present:
+        if present and weight > 0:
             num += sign * weight * raw
             wsum += weight
         sub_rows.append({
             "name": name, "raw": raw, "sign": sign, "weight": weight,
             "contribution": None if contribution is None else float(contribution),
             "present": present, "stale": stale, "source": source,
+            "excluded": weight <= 0,
         })
     rates_value = (num / wsum) if wsum > 0 else None
     return rates_value, sub_rows

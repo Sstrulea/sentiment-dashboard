@@ -306,6 +306,93 @@ def test_missing_balance_sheet_backward_compatible():
 
 
 # ---------------------------------------------------------------------------
+# Accepted degradation 2026-08-16 — balance_sheet weight 0 (docs/accepted-
+# degradations.md). Weight 0 keeps the cell visible/inspectable (raw, sign,
+# contribution=0, `excluded` flag) but must be a mathematical no-op on every
+# composite — identical to the sub-component being absent from config.
+# ---------------------------------------------------------------------------
+
+def _rates_block_weight0():
+    return {"weight": 1.0, "components": {
+        "rate_exp_2y": {"sign": -1, "weight": 1.0},
+        "real_yield_10y": {"sign": -1, "weight": 1.0},
+        "balance_sheet": {"sign": -1, "weight": 0.0},
+    }}
+
+
+def _rates_block_no_balance_sheet():
+    return {"weight": 1.0, "components": {
+        "rate_exp_2y": {"sign": -1, "weight": 1.0},
+        "real_yield_10y": {"sign": -1, "weight": 1.0},
+    }}
+
+
+def _cfg_with_rates(rates_block):
+    return {
+        "scale": 5,
+        "bias_thresholds": {"mild": 2.0, "very": 4.4},
+        "instruments": {
+            sym: {"type": t, "home_ccy": "USD", "factors": {
+                "growth": {"sign": g, "weight": w},
+                "inflation": {"sign": -1, "weight": 1.0},
+                "labour": {"sign": -1, "weight": 1.0},
+                "rates": rates_block(),
+            }}
+            for sym, t, g, w in [("SP500", "index", 1, 1.0), ("GOLD", "metal", -1, 0.5)]
+        },
+    }
+
+
+def test_weight_zero_sets_excluded_flag_and_zero_contribution():
+    cfg = _cfg_with_rates(_rates_block_weight0)
+    res = compute_crossasset_scores(_cats(monetary=2), realyield_score=2,
+                                    config=cfg, liquidity_score=_Liq(2))
+    bs = _sub(res["SP500"], "balance_sheet")
+    assert bs["excluded"] is True
+    assert bs["raw"] == 2                        # value still live/inspectable
+    assert bs["contribution"] == pytest.approx(0.0)   # sign(-1) * weight(0) * raw(2)
+    assert bs["present"] is True                  # not stale, not missing — just excluded
+
+    present_cfg = _cfg_with_rates(_rates_block)
+    present_res = compute_crossasset_scores(_cats(monetary=2), realyield_score=2,
+                                             config=present_cfg, liquidity_score=_Liq(2))
+    assert _sub(present_res["SP500"], "balance_sheet")["excluded"] is False
+
+
+def test_weight_zero_matches_pillar_absent_byte_identical():
+    """Weight 0 (component present, excluded from the mean) must be
+    mathematically identical to the component being entirely absent from
+    config — every instrument's composite, byte-identical.
+
+    NOTE on a bound that was considered and rejected: "no instrument's
+    composite changes by more than the pillar's prior (weight=1.0)
+    contribution" is NOT a property this code guarantees. This is a
+    two-level weighted mean (sub-components -> rates factor -> outer
+    instrument composite); dropping a term renormalizes the denominator at
+    BOTH levels, which can move the result by more than that term's own
+    contribution. Counterexample: cats={growth:1, inflation:-1, labour:0,
+    monetary:2}, realyield_score=2, liquidity_score=-1 -> SP500 composite
+    moves by 1.25 against a prior contribution of 1.0. It happened to hold
+    for the real 2026-08-16 production data (all 8 cross-asset instruments,
+    checked before shipping this change) but that is a fact about today's
+    specific scored values, not an invariant to test against arbitrary
+    inputs — so it is not asserted here."""
+    weight0_cfg = _cfg_with_rates(_rates_block_weight0)
+    absent_cfg = _cfg_with_rates(_rates_block_no_balance_sheet)
+    cats = _cats(monetary=2)
+    weight0 = compute_crossasset_scores(cats, realyield_score=2, config=weight0_cfg,
+                                        liquidity_score=_Liq(2))
+    absent = compute_crossasset_scores(cats, realyield_score=2, config=absent_cfg,
+                                       liquidity_score=_Liq(2))
+    for sym in ("SP500", "GOLD"):
+        assert weight0[sym]["score_precise"] == absent[sym]["score_precise"]
+        assert weight0[sym]["score"] == absent[sym]["score"]
+        assert _factor(weight0[sym], "rates")["value"] == _factor(absent[sym], "rates")["value"]
+
+
+
+
+# ---------------------------------------------------------------------------
 # SENTIMENT factor (Step 5) — weight-0.5 member of the weighted mean
 # ---------------------------------------------------------------------------
 
