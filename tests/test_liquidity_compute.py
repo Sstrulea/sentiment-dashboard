@@ -33,6 +33,12 @@ def _ramp(base, roc, n=40):
     return head + tail
 
 
+def _res(vals, end=AS_OF):
+    """reserves frame on business days ending at `end`."""
+    return pd.DataFrame({"date": pd.to_datetime(pd.Series(_bdays(len(vals), end))),
+                         "reserves": vals})
+
+
 # ---------------------------------------------------------------------------
 # Pure NL assembly: WALCL − TGA − RRP, weekly ffill, RRP-missing → 0
 # ---------------------------------------------------------------------------
@@ -98,6 +104,43 @@ def test_assemble_allows_missing_rrp_pre_facility():
 
 
 # ---------------------------------------------------------------------------
+# reserves leg: carried alongside walcl/tga/rrp/net_liquidity; a failed RRP
+# fetch blocks only net_liquidity, not reserves (reserves has no RRP dependency)
+# ---------------------------------------------------------------------------
+
+def test_assemble_carries_reserves_column():
+    walcl = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-09"]),
+                          "WALCL": [7000.0, 6900.0]})
+    tga = pd.DataFrame({"date": pd.to_datetime(["2026-01-02"]), "WTREGEN": [800.0]})
+    rrp = pd.DataFrame({"date": pd.to_datetime(["2026-01-02"]), "RRPONTSYD": [0.1]})
+    reserves = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-09"]),
+                             "WRBWFRBL": [3000.0, 2950.0]})
+    out = assemble_net_liquidity(walcl, tga, rrp, reserves=reserves)
+    assert out is not None
+    assert "reserves" in out.columns
+    assert list(out.columns) == ["date", "net_liquidity", "walcl", "tga", "rrp", "reserves", "source"]
+    out_idx = out.set_index(out["date"].dt.strftime("%Y-%m-%d"))
+    assert out_idx.loc["2026-01-05", "reserves"] == pytest.approx(3000.0)   # ffill
+    assert out_idx.loc["2026-01-09", "reserves"] == pytest.approx(2950.0)
+
+
+def test_rrp_fetch_failure_does_not_block_reserves():
+    # WALCL/TGA/reserves all resolve fine; RRP fetch FAILED (None) and WALCL span
+    # reaches the RRP era, so the degraded-build guard still blocks net_liquidity.
+    # It must NOT also blank out reserves — reserves has no RRP dependency.
+    walcl = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-09"]),
+                          "WALCL": [7000.0, 6900.0]})
+    tga = pd.DataFrame({"date": pd.to_datetime(["2026-01-02"]), "WTREGEN": [800.0]})
+    reserves = pd.DataFrame({"date": pd.to_datetime(["2026-01-02", "2026-01-09"]),
+                             "WRBWFRBL": [3000.0, 2950.0]})
+    out = assemble_net_liquidity(walcl, tga, None, reserves=reserves)
+    assert out is not None                      # old behaviour: whole build was None
+    assert "reserves" in out.columns
+    assert out["reserves"].notna().all()
+    assert out["net_liquidity"].isna().all()     # NL still correctly blocked
+
+
+# ---------------------------------------------------------------------------
 # Band scorer (raw: NL falling = + tightening; rising = − easing)
 # ---------------------------------------------------------------------------
 
@@ -158,21 +201,73 @@ def test_stale_flag_when_old():
 
 
 # ---------------------------------------------------------------------------
+# Reserves scoring: value_col routing (reserves preferred, net_liquidity is
+# the fallback when reserves is absent/unresolved).
+# ---------------------------------------------------------------------------
+
+def test_reserves_scored_not_net_liquidity():
+    # Same frame carries BOTH columns with OPPOSITE trends: net_liquidity rising
+    # fast (would score -2 if read), reserves falling fast (should score +2).
+    # Default routing must score reserves, not net_liquidity.
+    dates = pd.to_datetime(pd.Series(_bdays(40)))
+    df = pd.DataFrame({
+        "date": dates,
+        "net_liquidity": _ramp(5000, 0.03),
+        "reserves": _ramp(3000, -0.03),
+    })
+    s = compute_liquidity_score(df, as_of=AS_OF, **BANDS)
+    assert s.roc == pytest.approx(-0.03, abs=1e-9)
+    assert s.score == 2                          # reserves falling -> tightening -> +2
+    # Explicit override still routes to net_liquidity on request.
+    s_nl = compute_liquidity_score(df, as_of=AS_OF, value_col="net_liquidity", **BANDS)
+    assert s_nl.roc == pytest.approx(0.03, abs=1e-9)
+    assert s_nl.score == -2                      # net_liquidity rising -> easing -> -2
+
+
+def test_reserves_falling_is_tightening_positive():
+    s = compute_liquidity_score(_res(_ramp(3000, -0.03)), as_of=AS_OF, **BANDS)
+    assert s.roc == pytest.approx(-0.03, abs=1e-9)
+    assert s.score == 2
+
+
+def test_reserves_rising_is_easing_negative():
+    s = compute_liquidity_score(_res(_ramp(3000, 0.03)), as_of=AS_OF, **BANDS)
+    assert s.roc == pytest.approx(0.03, abs=1e-9)
+    assert s.score == -2
+
+
+def test_reserves_stagnant_scores_zero():
+    s = compute_liquidity_score(_res([3000.0] * 40), as_of=AS_OF, **BANDS)
+    assert s.method == "band" and s.score == 0 and s.roc == pytest.approx(0.0)
+
+
+def test_missing_reserves_falls_back_to_net_liquidity():
+    # Old-style frame: no 'reserves' column at all (e.g. WRBWFRBL unresolved
+    # upstream). The pillar must fall back to net_liquidity, not emit 0.
+    s = compute_liquidity_score(_nl(_ramp(5000, -0.03)), as_of=AS_OF, **BANDS)
+    assert s.method == "band"
+    assert s.roc == pytest.approx(-0.03, abs=1e-9)
+    assert s.score == 2
+
+
+# ---------------------------------------------------------------------------
 # Calibrated band constants (lock the Step-6 calibration into the module)
 # ---------------------------------------------------------------------------
 
 def test_module_bands_are_calibrated():
+    # PHASE 1d (reserves, p68/p40 over 2013-09-23 -> 2026-08-12; see
+    # docs/prereg/2026-08-15-liquidity-pillar-wresbal-prereg.md).
     from src.liquidity_compute import BAND_HI, BAND_LO
-    assert BAND_HI == pytest.approx(0.0201)
-    assert BAND_LO == pytest.approx(0.0098)
+    assert BAND_HI == pytest.approx(0.0428)
+    assert BAND_LO == pytest.approx(0.0221)
 
 
 def test_default_bands_buckets_at_boundaries():
     # Using the MODULE defaults (no explicit bands): roc just under band_lo → 0,
-    # between → ±1, at/above band_hi → ±2. NL rising → negative score.
-    sub = compute_liquidity_score(_nl(_ramp(5000, 0.007)), as_of=AS_OF, smooth=1)   # < 0.0098
-    mid = compute_liquidity_score(_nl(_ramp(5000, 0.015)), as_of=AS_OF, smooth=1)   # [lo,hi)
-    big = compute_liquidity_score(_nl(_ramp(5000, 0.03)), as_of=AS_OF, smooth=1)    # ≥ hi
+    # between → ±1, at/above band_hi → ±2. Rising level → negative score.
+    sub = compute_liquidity_score(_nl(_ramp(5000, 0.010)), as_of=AS_OF, smooth=1)   # < 0.0221
+    mid = compute_liquidity_score(_nl(_ramp(5000, 0.030)), as_of=AS_OF, smooth=1)   # [lo,hi)
+    big = compute_liquidity_score(_nl(_ramp(5000, 0.050)), as_of=AS_OF, smooth=1)   # ≥ hi
     assert sub.score == 0
     assert mid.score == -1
     assert big.score == -2

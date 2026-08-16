@@ -42,7 +42,7 @@ TREND_FACTOR = "trend"
 RATE_SUBCOMPONENTS = {
     "rate_exp_2y": ("category", "monetary"),   # home-ccy 2y rate expectations
     "real_yield_10y": ("realyield", None),     # global US 10y real yield
-    "balance_sheet": ("liquidity", None),      # global Fed net liquidity (WALCL−TGA−RRP)
+    "balance_sheet": ("liquidity", None),      # global bank reserves (WRBWFRBL), net_liquidity fallback
 }
 
 
@@ -81,6 +81,17 @@ def _realyield_series(ry: Any) -> str:
     """Label for the real-yield sub-component's source (the series actually used)."""
     s = getattr(ry, "series", None)
     return str(s) if s else "DFII10"
+
+
+LIQUIDITY_SERIES_LABELS = {"reserves": "WRBWFRBL", "net_liquidity": "NET_LIQUIDITY"}
+
+
+def _liquidity_series(liq: Any) -> str:
+    """Label for the liquidity sub-component's source (the series actually
+    scored — "reserves" (WRBWFRBL) by default, or the net_liquidity fallback
+    when reserves is unresolved). Mirrors _realyield_series."""
+    s = getattr(liq, "series", None)
+    return LIQUIDITY_SERIES_LABELS.get(s, "WRBWFRBL")
 
 
 def _realyield_stale(ry: Any) -> bool:
@@ -169,7 +180,7 @@ def compute_instrument_score(
     realyield_label: str = "DFII10",
     realyield_stale: bool = False,
     liquidity_raw: Optional[int] = None,
-    liquidity_label: str = "NET_LIQUIDITY",
+    liquidity_label: str = "WRBWFRBL",
     liquidity_stale: bool = False,
     sentiment_value: Optional[int] = None,
     trend_value: Optional[int] = None,
@@ -320,6 +331,7 @@ def compute_crossasset_scores(
     ry_label = _realyield_series(realyield_score)
     ry_stale = _realyield_stale(realyield_score)
     liq_raw = _global_raw(liquidity_score)
+    liq_label = _liquidity_series(liquidity_score)
     liq_stale = bool(getattr(liquidity_score, "stale", False))
     sentiment_by_symbol = sentiment_by_symbol or {}
     trend_by_symbol = trend_by_symbol or {}
@@ -328,7 +340,8 @@ def compute_crossasset_scores(
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,
                                       scale, thresholds, realyield_label=ry_label,
                                       realyield_stale=ry_stale,
-                                      liquidity_raw=liq_raw, liquidity_stale=liq_stale,
+                                      liquidity_raw=liq_raw, liquidity_label=liq_label,
+                                      liquidity_stale=liq_stale,
                                       sentiment_value=sentiment_by_symbol.get(sym),
                                       trend_value=trend_by_symbol.get(sym))
         for sym, cfg in instruments.items()
