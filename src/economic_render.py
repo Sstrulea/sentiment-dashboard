@@ -26,7 +26,7 @@ import pandas as pd
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.economic_compute import build_payload
+from src.economic_compute import build_payload, bias_label
 from src.cot_score import (
     load_currencies_history,
     load_metals_history,
@@ -154,6 +154,67 @@ INDICATOR_LABELS = {
     "unit_labor_costs_qoq": "Unit Labor Costs (QoQ)",
 }
 
+# Display-only unit hints for the breakdown table (Actual/Forecast/Previous
+# columns) — presentation only, never scales the underlying value. Checked
+# against data/economic_calendar_ff.parquet raw `actual` magnitudes (2026-08-17):
+# employment_change/adp/jobless_claims already arrive in thousands (e.g. NFP
+# prints as -23.0, not -23000) so "K" is a label, not a divisor; jolts arrives
+# in millions (6.5..11.0) so "M"; everything else in the taxonomy is a
+# percent or an index level (PMI). A key absent here (should not happen —
+# every INDICATOR_LABELS key is covered) falls back to no suffix via
+# DEFAULT_INDICATOR_UNIT, never raises.
+DEFAULT_INDICATOR_UNIT = {"suffix": "", "decimals": 1}
+
+INDICATOR_UNITS: dict[str, dict] = {
+    "cpi_yoy": {"suffix": "%", "decimals": 1},
+    "core_cpi": {"suffix": "%", "decimals": 1},
+    "ppi_yoy": {"suffix": "%", "decimals": 1},
+    "core_pce": {"suffix": "%", "decimals": 1},
+    "gdp_qoq": {"suffix": "%", "decimals": 1},
+    "manufacturing_pmi": {"suffix": "", "decimals": 1},
+    "services_pmi": {"suffix": "", "decimals": 1},
+    "retail_sales": {"suffix": "%", "decimals": 1},
+    "employment_change": {"suffix": "K", "decimals": 0},
+    "unemployment_rate": {"suffix": "%", "decimals": 1},
+    "wage_growth": {"suffix": "%", "decimals": 1},
+    "adp": {"suffix": "K", "decimals": 0},
+    "jolts": {"suffix": "M", "decimals": 2},
+    "jobless_claims": {"suffix": "K", "decimals": 0},
+    "interest_rate_decision": {"suffix": "%", "decimals": 2},
+    # rate_expectations has no calendar actual/consensus — its closest analog
+    # is `latest_yield` (a 2y yield %), read that way by the /strength drilldown.
+    "rate_expectations": {"suffix": "%", "decimals": 2},
+    "cpi_monthly": {"suffix": "%", "decimals": 1},
+    "trimmed_mean_cpi_monthly": {"suffix": "%", "decimals": 1},
+    "common_cpi_yoy": {"suffix": "%", "decimals": 1},
+    "median_cpi_yoy": {"suffix": "%", "decimals": 1},
+    "trimmed_cpi_yoy": {"suffix": "%", "decimals": 1},
+    "household_spending": {"suffix": "%", "decimals": 1},
+    "tokyo_core_cpi_yoy": {"suffix": "%", "decimals": 1},
+    "industrial_production_mm": {"suffix": "%", "decimals": 1},
+    "durable_goods_orders_mm": {"suffix": "%", "decimals": 1},
+    "core_machinery_orders_mm": {"suffix": "%", "decimals": 1},
+    "personal_spending_mm": {"suffix": "%", "decimals": 1},
+    "personal_income_mm": {"suffix": "%", "decimals": 1},
+    "import_prices": {"suffix": "%", "decimals": 1},
+    "capital_expenditure": {"suffix": "%", "decimals": 1},
+    "company_operating_profits_qoq": {"suffix": "%", "decimals": 1},
+    "sppi_yoy": {"suffix": "%", "decimals": 1},
+    "gdp_price_index": {"suffix": "%", "decimals": 1},
+    "unit_labor_costs_qoq": {"suffix": "%", "decimals": 1},
+}
+
+# Currency-Strength (/strength.html) display constant — pct = clamp(50 +
+# index * K, 0, 100). Measured in scripts/measure/strength_index_distribution.py
+# on 2026-08-17: point-in-time `index` (WITH rate_entry/monetary included)
+# reconstructed weekly for all 8 board currencies, 2025-08-18 .. 2026-08-17
+# (53 weekly points, 424 (currency, week) observations). Global
+# p95(|index|) = 3.750 -> K_raw = 40 / 3.750 = 10.667 -> K = 10.5 (nearest
+# 0.5, pre-registered rounding rule). Saturation point |index| >= 4.762
+# (50 + 4.762*10.5 = 100). Confirmed by the user 2026-08-17; changing it
+# requires re-running that script, not an ad-hoc edit here.
+STRENGTH_PCT_K = 10.5
+
 CATEGORY_LABEL_FALLBACK = {
     "growth": "Growth",
     "inflation": "Inflation",
@@ -255,6 +316,7 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
             "direction": int(cfg.get("direction", 1)),
             "weight": float(cfg.get("weight", 1.0)),
             "max_age_days": int(cfg.get("max_age_days", defaults.get("max_age_days", 120))),
+            "unit": INDICATOR_UNITS.get(key, DEFAULT_INDICATOR_UNIT),
         }
     # Synthetic meta for the standing rate sub-indicator (not in the YAML taxonomy).
     ind_meta["rate_expectations"] = {
@@ -264,6 +326,7 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
         "direction": 1,
         "weight": 1.0,
         "max_age_days": 7,
+        "unit": INDICATOR_UNITS.get("rate_expectations", DEFAULT_INDICATOR_UNIT),
     }
 
     cat_meta: dict[str, dict] = {}
@@ -341,15 +404,37 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
         inst["indicator_cells"] = cells
 
 
-def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> None:
-    """Add recency (release_dt iso, age_days) to every per-indicator entry.
+def _previous_lookup(cal: pd.DataFrame) -> dict[tuple[str, str, pd.Timestamp], Any]:
+    """{(currency, indicator_key, release_dt): previous} straight off the scoring
+    calendar frame `cal` (SCORING_COLUMNS already carries `previous` from the
+    parquet row that produced it, FF and MT5 alike — see ff_scoring.SCORING_COLUMNS
+    and manual_actuals.apply_overrides). No fallback: a row whose source never
+    had a `previous` value stays absent from this map (looked up as None)."""
+    if cal is None or cal.empty or "previous" not in cal.columns:
+        return {}
+    return {
+        (row.currency, row.indicator_key, pd.Timestamp(row.release_dt)): row.previous
+        for row in cal.itertuples(index=False)
+    }
+
+
+def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp,
+                       previous_lookup: dict | None = None) -> None:
+    """Add recency (release_dt iso, age_days) and `previous` to every
+    per-indicator entry.
 
     Mutates in place. `stale` is set authoritatively by compute (an indicator is
     stale iff its latest actual is older than max_age_days — it's then shown but
     excluded from every average/index); here we only add the age in days and a
-    defensive fallback if compute didn't set the flag.
+    defensive fallback if compute didn't set the flag. `previous` (the print
+    BEFORE the one that produced this score) is looked up from `previous_lookup`
+    (built off the same calendar frame that was scored) by the exact
+    (currency, indicator_key, release_dt) that produced this entry — None if the
+    entry has no release_dt (e.g. the synthetic rate_expectations entry) or the
+    source never carried a `previous` for that row.
     """
-    for card in payload.get("currencies", {}).values():
+    previous_lookup = previous_lookup or {}
+    for ccy, card in payload.get("currencies", {}).items():
         for key, entry in (card.get("breakdown") or {}).items():
             rdt = entry.get("release_dt")
             ts = pd.Timestamp(rdt) if rdt is not None else None
@@ -361,6 +446,30 @@ def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp) -> No
             else:
                 entry["age_days"] = None
                 entry.setdefault("stale", False)
+            prev = previous_lookup.get((ccy, key, ts)) if ts is not None else None
+            entry["previous"] = None if prev is None or (
+                isinstance(prev, float) and math.isnan(prev)
+            ) else float(prev)
+
+
+def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: dict) -> None:
+    """Attach /strength.html display fields to each payload["currencies"][CCY].
+
+    Pure REPRESENTATION of the existing `index` — reuses bias_label (the same
+    function /economic reads, imported from economic_compute) so the two pages
+    can never disagree on direction. `monetary_available` reflects whether the
+    rate engine actually scored this currency (real data in rates.parquet),
+    NOT a hardcoded currency list — see STRENGTH_PCT_K's docstring for how K
+    was measured.
+    """
+    thresholds = instruments_cfg.get("bias_thresholds", {})
+    for ccy, card in payload.get("currencies", {}).items():
+        index = float(card.get("index", 0.0))
+        raw_pct = 50.0 + index * STRENGTH_PCT_K
+        card["pct_clamped"] = raw_pct < 0.0 or raw_pct > 100.0
+        card["pct"] = round(max(0.0, min(100.0, raw_pct)), 1)
+        card["bias_label"] = bias_label(index, thresholds)
+        card["monetary_available"] = ccy in rate_scores
 
 
 def _metals_cot_map() -> dict[str, dict]:
@@ -1025,7 +1134,8 @@ def build_economic_payload() -> dict:
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     meta["trend_enabled"] = trend_on
-    _enrich_breakdowns(payload, meta["indicators"], as_of)
+    _enrich_breakdowns(payload, meta["indicators"], as_of, _previous_lookup(cal))
+    _attach_strength_fields(payload, instruments_cfg, rate_scores)
     # Attach the chosen source to each rate_expectations breakdown entry.
     for ccy, card in payload.get("currencies", {}).items():
         entry = (card.get("breakdown") or {}).get("rate_expectations")
@@ -1089,6 +1199,29 @@ def render_economic_page() -> Path:
     return out_path
 
 
+def render_strength_page() -> Path:
+    """Render /strength.html — a pure REPRESENTATION of the same
+    data/economic.json build_economic_payload already writes (PASUL 1:
+    every currency card carries `pct`/`bias_label`/`monetary_available`/
+    `pct_clamped` next to its `index`). No new JSON, no recomputation —
+    strength.js reads the exact same /data/economic.json url as
+    economic.html.j2, so the two pages can never drift apart. Callers must
+    run render_economic_page() first (or at least once) so that file exists;
+    this function does not build it."""
+    copy_static_assets()
+
+    env = _env()
+    template = env.get_template("strength.html.j2")
+    html = template.render(
+        active_page="strength",
+        data_url="/data/economic.json",
+    )
+    out_path = PUBLIC_DIR / "strength.html"
+    out_path.write_text(html, encoding="utf-8")
+    log.info("Currency Strength page rendered → %s", out_path)
+    return out_path
+
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO,
@@ -1096,3 +1229,5 @@ if __name__ == "__main__":
     )
     out = render_economic_page()
     print(f"Rendered: {out}")
+    strength_out = render_strength_page()
+    print(f"Rendered: {strength_out}")
