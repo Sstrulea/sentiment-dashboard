@@ -179,6 +179,14 @@ def _economic() -> int:
         log.error("Economic render failed: %s", e)
         return 2
 
+    try:
+        from .economic_render import render_strength_page
+        strength_out = render_strength_page()
+        log.info("Currency Strength page rendered → %s", strength_out)
+    except Exception as e:
+        log.error("Currency Strength render failed: %s", e)
+        return 2
+
     return 0
 
 
