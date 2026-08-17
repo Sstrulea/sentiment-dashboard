@@ -207,5 +207,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-14T07:35:42+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_gdp",
+  "currency": "JPY",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-08-16 23:50:00",
+  "actual": 0.3,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-17T07:37:43+00:00",
+  "note": ""
  }
 ]
