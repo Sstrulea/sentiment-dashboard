@@ -1398,14 +1398,24 @@ table.econ-table td.econ-cell.cell-empty { background: transparent; }
    file) unchanged, never a new color band derived from the percent. */
 .strength-page { max-width: 1200px; }
 .strength-header { margin-bottom: 4px; }
-.strength-header h1 { margin: 0; font-size: 24px; }
+.strength-header h1 { margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
+.strength-help-btn {
+  width: 22px; height: 22px; border-radius: 50%; flex: none;
+  border: 1px solid var(--border); background: var(--surface-alt); color: var(--muted);
+  font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.strength-help-btn:hover { color: var(--fg); border-color: var(--accent); }
+.strength-help p { font-size: 13px; line-height: 1.6; margin: 0 0 14px; }
+.strength-help p:last-child { margin-bottom: 0; }
+.strength-help strong { color: var(--fg); }
 .strength-divergence { font-size: 14px; margin: 14px 0 2px; }
 .strength-divergence b { font-variant-numeric: tabular-nums; }
 .strength-context { font-size: 12px; color: var(--muted); margin: 0 0 20px; max-width: 900px; line-height: 1.5; }
 
 .strength-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   margin-bottom: 26px;
 }
@@ -1482,6 +1492,52 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 .strength-dd-head .bias-pill { padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: 600; }
 .strength-dd-meta { color: var(--muted); font-size: 13px; }
 
-@media (max-width: 768px) {
-  .strength-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+/* Drilldown indicator tables (Growth/Inflation/Labour/Monetary/…): each
+   category renders its own <table>, so table-layout:auto sized every one
+   independently — the actual cause of columns not lining up between
+   categories. Fixed layout + an identical <colgroup> on every table (see
+   DRILLDOWN_COLGROUP in strength.js) pins every column to the same width
+   everywhere. Scoped to .strength-drilldown so /economic's own
+   econ-ind-table modal (different columns, e.g. Act/Cons/Surp/z/Score/
+   Method/Release) is completely untouched. */
+.strength-drilldown table.econ-ind-table { table-layout: fixed; width: 100%; }
+.strength-drilldown table.econ-ind-table col.col-indicator { width: auto; }
+.strength-drilldown table.econ-ind-table col.col-date { width: 110px; }
+.strength-drilldown table.econ-ind-table col.col-actual,
+.strength-drilldown table.econ-ind-table col.col-forecast,
+.strength-drilldown table.econ-ind-table col.col-surprise,
+.strength-drilldown table.econ-ind-table col.col-previous { width: 90px; }
+.strength-drilldown table.econ-ind-table col.col-impact { width: 130px; }
+
+.strength-drilldown table.econ-ind-table td.ei-name,
+.strength-drilldown table.econ-ind-table th:first-child { text-align: left; }
+.strength-drilldown table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); }
+.strength-drilldown table.econ-ind-table td.ei-num {
+  text-align: right; font-variant-numeric: tabular-nums;
+}
+
+/* Impact column reads as ITS OWN block, not another data column: left
+   border + a faint tint separate it from the raw actual/forecast/surprise
+   numbers to its left — "left = what the market reported, right = what it
+   means for the currency" (see the drilldown legend). */
+.strength-drilldown table.econ-ind-table th.impact-head,
+.strength-drilldown table.econ-ind-table td.ei-impact {
+  text-align: center;
+  border-left: 2px solid var(--border);
+  background: var(--surface-alt);
+}
+.strength-drilldown table.econ-ind-table tr.ei-stale td.ei-impact,
+.strength-drilldown table.econ-ind-table tr.ei-no-consensus td.ei-impact {
+  background: var(--surface-alt);
+}
+.strength-drilldown table.econ-ind-table td.ei-impact > .econ-flag,
+.strength-drilldown table.econ-ind-table td.ei-impact > span:not(.econ-flag) {
+  display: inline-block; min-width: 76px;
+}
+
+@media (max-width: 900px) {
+  .strength-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .strength-grid { grid-template-columns: 1fr; }
 }
