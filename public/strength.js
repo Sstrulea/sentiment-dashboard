@@ -373,10 +373,21 @@
       '<td class="ei-num">' + fmtUnit(forecastRaw, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(surpriseRaw, unit, true) + '</td>' +
       '<td class="ei-num">' + fmtUnit(e.previous, unit) + '</td>' +
-      '<td class="ei-score">' + impactHtml + '</td>' +
+      '<td class="ei-score ei-impact">' + impactHtml + '</td>' +
       '</tr>'
     );
   }
+
+  // Same 7 columns, same widths, in every category table (Growth/Inflation/
+  // Labour/Monetary/…) — a <colgroup> pinned once per table so table-layout:
+  // fixed sizes every table identically, instead of each table auto-sizing
+  // to its own longest cell (the actual cause of the Growth/Inflation/Labour
+  // column misalignment). See .strength-drilldown table.econ-ind-table in
+  // style.css for the widths themselves.
+  const DRILLDOWN_COLGROUP =
+    '<colgroup><col class="col-indicator"><col class="col-date">' +
+    '<col class="col-actual"><col class="col-forecast"><col class="col-surprise">' +
+    '<col class="col-previous"><col class="col-impact"></colgroup>';
 
   // Category groups in TABLE_LAYOUT order (growth/inflation/labour/monetary —
   // meta.table_layout), then any OTHER category actually present in this
@@ -386,7 +397,7 @@
   // score_cell + N; anything else is display-only ("nescorat") and never
   // promoted into a real category's N (mirrors the economic_compute.py
   // regression test that guards this at the scoring layer).
-  function drilldownGroupsHtml(card) {
+  function drilldownGroupsHtml(card, ccy) {
     const breakdown = card.breakdown || {};
     const cats = tableLayout().map(g => g.category);
     Object.keys(breakdown).forEach(k => {
@@ -414,8 +425,9 @@
         '<div class="econ-cat-group">' +
         '<div class="econ-cat-head">' + catLabel(catKey) + ' ' + subHtml + '</div>' +
         '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
+        DRILLDOWN_COLGROUP +
         '<thead><tr><th>Indicator</th><th>Date</th><th>Actual</th><th>Forecast</th>' +
-        '<th>Surprise</th><th>Previous</th><th>Impact</th></tr></thead>' +
+        '<th>Surprise</th><th>Previous</th><th class="impact-head">Impact ' + ccy + '</th></tr></thead>' +
         '<tbody>' + keys.map(k => indicatorRowHtml(k, breakdown[k])).join("") + '</tbody>' +
         '</table></div></div>';
     });
@@ -445,7 +457,7 @@
           '<span class="bias-pill ' + biasClass(bias) + '">' + bias + '</span>' + note
         : '<span class="strength-dd-meta">no data</span>') +
       '</div>' +
-      drilldownGroupsHtml(card);
+      drilldownGroupsHtml(card, ccy);
   }
 
   // ---- Routing (query-string, deep-linkable, back-button friendly) ----------
@@ -478,6 +490,19 @@
     window.scrollTo(0, 0);
   }
 
+  // "Cum se calculează" — static content, same open/close pattern as
+  // /economic's #econDetailModal (backdrop click, close button, Escape).
+  function openHelpModal() {
+    const modal = document.getElementById("strengthHelpModal");
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+  }
+  function closeHelpModal() {
+    const modal = document.getElementById("strengthHelpModal");
+    modal.hidden = true;
+    document.body.classList.remove("modal-open");
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("strengthBack").addEventListener("click", () => {
       const url = new URL(window.location.href);
@@ -486,6 +511,14 @@
       render();
     });
     window.addEventListener("popstate", render);
+
+    document.getElementById("strengthHelpBtn").addEventListener("click", openHelpModal);
+    const helpModal = document.getElementById("strengthHelpModal");
+    helpModal.querySelector(".modal-close").addEventListener("click", closeHelpModal);
+    helpModal.querySelector(".modal-backdrop").addEventListener("click", closeHelpModal);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !helpModal.hidden) closeHelpModal();
+    });
 
     fetch(DATA_URL)
       .then(r => r.json())

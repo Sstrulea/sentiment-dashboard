@@ -46,14 +46,17 @@
 
   <main class="page-content strength-page">
     <header class="strength-header">
-      <h1>Currency Strength</h1>
+      <h1>Currency Strength
+        <button type="button" id="strengthHelpBtn" class="strength-help-btn" aria-haspopup="dialog"
+                title="Cum se calculează">?</button>
+      </h1>
     </header>
 
     <div class="econ-legend">
-      <span class="muted">A REPRESENTATION of the same macro-surprise index shown on
-      <a href="/economic">Economic</a> — position (the arc + %) comes from the index, color comes from
-      the same bias thresholds. It cannot show a different bias than the Economic dashboard for the
-      same currency. Click a card or table row for the per-indicator drilldown.</span>
+      <span class="muted">Aceeași surpriză macro ca pe Economic, cu monetary inclus. Poziția (arcul + %)
+      vine din index, culoarea din aceleași praguri de bias. Instrumentele de pe
+      <a href="/economic">Economic</a> includ în plus sentiment (COT), deci biasul unui instrument ca DXY
+      poate diferi de cel al valutei. Click a card or table row for the per-indicator drilldown.</span>
     </div>
 
     <div id="strengthMain">
@@ -94,6 +97,39 @@
       <button type="button" class="strength-back" id="strengthBack">&larr; All currencies</button>
       <div id="strengthDrilldownContent"></div>
     </section>
+
+    <div id="strengthHelpModal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content strength-help">
+        <button class="modal-close" type="button" aria-label="Close">&times;</button>
+        <h2>Cum se calculează</h2>
+
+        <p><strong>1. Fiecare indicator se compară cu ce aștepta piața.</strong><br>
+        Actual minus Forecast. Atât.</p>
+
+        <p><strong>2. Surpriza se normalizează.</strong><br>
+        O ratare de 0.1% la CPI nu înseamnă același lucru ca 0.1% la NFP. Împărțim surpriza la cât de
+        mult variază de obicei acel indicator. Așa devin comparabile între ele.</p>
+
+        <p><strong>3. Se transformă în scor.</strong><br>
+        Surpriză mare &rarr; &plusmn;2. Medie &rarr; &plusmn;1. Mică &rarr; 0. Zero înseamnă "a ieșit pe
+        așteptări", nu "lipsesc date". Unde chiar lipsesc date, scrie "No forecast" sau "Stale" și acele
+        rânduri nu intră în medie.</p>
+
+        <p><strong>4. Se face media pe categorie.</strong><br>
+        Growth, Inflation, Labour Market, Monetary Policy — fiecare își face media proprie. Așa, o
+        categorie cu 6 indicatori nu cântărește de șase ori mai mult decât una cu 1.</p>
+
+        <p><strong>5. Media categoriilor devine index-ul.</strong><br>
+        Iar procentul e doar index-ul afișat pe o scală 0&ndash;100, unde 50% = neutru.</p>
+
+        <p><strong>Ce NU intră aici:</strong> poziționare COT, trend de preț, nimic din analiza tehnică.
+        Doar date economice.</p>
+
+        <p><strong>Citește N înainte de procent.</strong> N = câți indicatori stau în spate. N=22 (USD) e
+        mult mai solid decât N=6 (CHF).</p>
+      </div>
+    </div>
   </main>
 
   <script>window.ECON_DATA_URL = "/data/economic.json";</script>
