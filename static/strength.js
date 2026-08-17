@@ -116,8 +116,32 @@
     return sortedCurrencies(currencies).filter(ccy => hasCoverage(currencies[ccy]));
   }
 
+  // Single source of truth for K: read off the payload (see
+  // economic_render.py STRENGTH_PCT_K / meta["strength_pct_k"]) — never
+  // hardcoded here, so this file can't drift from the Python constant.
+  // The literal fallback only fires if an old cached payload predates the
+  // meta key; it mirrors STRENGTH_PCT_K's last-measured value.
+  function strengthK() {
+    const k = state.payload.meta && state.payload.meta.strength_pct_k;
+    return typeof k === "number" ? k : 10.5;
+  }
+
+  // The UNCLAMPED pct-space differential between two cards: (a.index -
+  // b.index) * K. NOT a.pct - b.pct — pct is clamp(50 + index*K, 0, 100),
+  // so a plain pct differential silently truncates whenever either side is
+  // clamped (the "clamp leak" this function exists to avoid). A differential
+  // is not itself bounded to [0,100] — two saturated opposite extremes can
+  // legitimately read over 100pp apart.
+  function unclampedDiffPct(a, b) {
+    return (a.index - b.index) * strengthK();
+  }
+
   // {spread, strongest, weakest} over coverage>0 currencies only, or null if
   // fewer than 2 qualify (a "spread" needs at least two points to compare).
+  // `strongest`/`weakest` are picked by pct (matches the cadrane's own
+  // sort — the visible "top card"/"bottom card"); `spread` is the
+  // UNCLAMPED index differential (see unclampedDiffPct), not pct_top -
+  // pct_bottom, so it stays correct even when one or both ends are capped.
   function divergence(currencies) {
     const withData = Object.keys(currencies)
       .map(ccy => [ccy, currencies[ccy]])
@@ -125,7 +149,10 @@
     if (withData.length < 2) return null;
     withData.sort((a, b) => b[1].pct - a[1].pct);
     const top = withData[0], bottom = withData[withData.length - 1];
-    return { spread: top[1].pct - bottom[1].pct, strongest: top[0], weakest: bottom[0] };
+    return {
+      spread: unclampedDiffPct(top[1], bottom[1]),
+      strongest: top[0], weakest: bottom[0],
+    };
   }
 
   // Impact state for one breakdown entry — score==0 has THREE distinct causes
@@ -244,9 +271,24 @@
     });
   }
 
+  // One card's tooltip fragment: "EUR 100% (clamped, index +6.56)" when
+  // pct_clamped, else the plain "EUR 54.4%" — so the hover always makes the
+  // unclamped diff traceable back to the two real index values behind it.
+  function matrixTipFragment(ccy, card) {
+    if (card.pct_clamped) {
+      return ccy + " " + card.pct.toFixed(0) + "% (clamped, index " + fmtSigned(card.index, 2) + ")";
+    }
+    return ccy + " " + card.pct.toFixed(1) + "%";
+  }
+
   // 8x8 (or fewer, once coverage==0 currencies are dropped) divergence
-  // matrix — pure recombination of `pct`, already in the payload. No new
-  // math, no new data, no scoring call: cell = row.pct - column.pct.
+  // matrix — pure recombination of `index` already in the payload (× the
+  // same K /strength uses everywhere else). No new math beyond that
+  // multiplication, no new data, no scoring call. Cell = (row.index -
+  // column.index) * K, NOT row.pct - column.pct — pct is clamped to
+  // [0,100] for cadran display, so a pct-only differential silently
+  // truncates once either side saturates (see unclampedDiffPct). A
+  // differential is not itself bounded to [0,100].
   function renderMatrix() {
     const table = document.getElementById("strengthMatrix");
     const currencies = state.payload.currencies || {};
@@ -264,7 +306,7 @@
     let maxAbs = 0;
     order.forEach(base => order.forEach(quote => {
       if (base === quote) return;
-      const d = Math.abs(currencies[base].pct - currencies[quote].pct);
+      const d = Math.abs(unclampedDiffPct(currencies[base], currencies[quote]));
       if (d > maxAbs) maxAbs = d;
     }));
 
@@ -274,10 +316,10 @@
     const bodyRows = order.map(base => {
       const cells = order.map(quote => {
         if (base === quote) return '<td class="matrix-diag"></td>';
-        const diff = currencies[base].pct - currencies[quote].pct;
+        const diff = unclampedDiffPct(currencies[base], currencies[quote]);
         const style = matrixCellStyle(diff, maxAbs);
-        const tip = base + " " + currencies[base].pct.toFixed(1) + "% − " +
-          quote + " " + currencies[quote].pct.toFixed(1) + "% = " + fmtSigned(diff, 1) + "pp";
+        const tip = matrixTipFragment(base, currencies[base]) + " − " +
+          matrixTipFragment(quote, currencies[quote]) + " = " + fmtSigned(diff, 1) + "pp";
         return '<td class="matrix-cell"' + (style ? ' style="' + style + '"' : "") +
           ' title="' + escAttr(tip) + '">' + fmtSigned(diff, 1) + '</td>';
       }).join("");
@@ -463,7 +505,7 @@
     module.exports = {
       sortedCurrencies, divergence, impactState, hasCoverage,
       drilldownGroupsHtml, indicatorRowHtml, cadranHtml, tableRowHtml,
-      matrixOrder, matrixCellStyle,
+      matrixOrder, matrixCellStyle, unclampedDiffPct, strengthK,
       _setPayloadForTest: (p) => { state.payload = p; },
     };
   }

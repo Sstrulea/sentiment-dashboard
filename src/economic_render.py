@@ -354,6 +354,10 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
         "bias_thresholds": instruments_cfg.get("bias_thresholds", {}),
         "scale": instruments_cfg.get("scale"),
         "pair_divisor": instruments_cfg.get("pair_divisor"),
+        # /strength.html: single source of truth for the pct<->index relationship
+        # (pct = clamp(50 + index*K, 0, 100)), so strength.js never hardcodes K —
+        # see STRENGTH_PCT_K's docstring above for how it was measured.
+        "strength_pct_k": STRENGTH_PCT_K,
     }
 
 
