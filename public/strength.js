@@ -378,16 +378,34 @@
     );
   }
 
-  // Same 7 columns, same widths, in every category table (Growth/Inflation/
-  // Labour/Monetary/…) — a <colgroup> pinned once per table so table-layout:
-  // fixed sizes every table identically, instead of each table auto-sizing
-  // to its own longest cell (the actual cause of the Growth/Inflation/Labour
-  // column misalignment). See .strength-drilldown table.econ-ind-table in
-  // style.css for the widths themselves.
+  // The 7 columns, fixed widths — a single <colgroup> for the single
+  // drilldown table (see .strength-drilldown table.econ-ind-table in
+  // style.css for the widths). One table, one <thead> → alignment across
+  // categories is now a structural guarantee (same table, same columns),
+  // not something colgroups have to keep in sync across five separate
+  // <table> elements the way the previous pass did it.
   const DRILLDOWN_COLGROUP =
     '<colgroup><col class="col-indicator"><col class="col-date">' +
     '<col class="col-actual"><col class="col-forecast"><col class="col-surprise">' +
     '<col class="col-previous"><col class="col-impact"></colgroup>';
+
+  // One <tr class="strength-cat-header"> spanning all 7 columns per
+  // category, in place of the previous pass's separate <div class="econ-
+  // cat-head">+<table> per category. Keeps the same content (label,
+  // score_cell, N) — see style.css for the row's look.
+  function categoryHeaderRowHtml(catKey, card) {
+    const sub = (card.categories || {})[catKey];
+    let subHtml;
+    if (sub) {
+      subHtml = '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' +
+        fmtScoreCell(sub.score_cell) + '</span>' +
+        '<span class="muted"> &middot; N' + (sub.coverage || 0) + '</span>';
+    } else {
+      subHtml = '<span class="econ-flag flag-fb" title="Category not scored — shown for visibility, never counted toward N">nescorat</span>';
+    }
+    return '<tr class="strength-cat-header"><td colspan="7">' + catLabel(catKey).toUpperCase() +
+      ' ' + subHtml + '</td></tr>';
+  }
 
   // Category groups in TABLE_LAYOUT order (growth/inflation/labour/monetary —
   // meta.table_layout), then any OTHER category actually present in this
@@ -405,34 +423,26 @@
       if (c && cats.indexOf(c) === -1) cats.push(c);
     });
 
-    let html = "";
+    let rows = "";
     cats.forEach(catKey => {
       const keys = Object.keys(breakdown).filter(k => indMeta(k).category === catKey);
       if (!keys.length) return;
       keys.sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
 
-      const sub = (card.categories || {})[catKey];
-      let subHtml;
-      if (sub) {
-        subHtml = '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' +
-          fmtScoreCell(sub.score_cell) + '</span>' +
-          '<span class="muted"> &middot; n' + (sub.coverage || 0) + '</span>';
-      } else {
-        subHtml = '<span class="econ-flag flag-fb" title="Category not scored — shown for visibility, never counted toward N">nescorat</span>';
-      }
-
-      html +=
-        '<div class="econ-cat-group">' +
-        '<div class="econ-cat-head">' + catLabel(catKey) + ' ' + subHtml + '</div>' +
-        '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
-        DRILLDOWN_COLGROUP +
-        '<thead><tr><th>Indicator</th><th>Date</th><th>Actual</th><th>Forecast</th>' +
-        '<th>Surprise</th><th>Previous</th><th class="impact-head">Impact ' + ccy + '</th></tr></thead>' +
-        '<tbody>' + keys.map(k => indicatorRowHtml(k, breakdown[k])).join("") + '</tbody>' +
-        '</table></div></div>';
+      rows += categoryHeaderRowHtml(catKey, card);
+      rows += keys.map(k => indicatorRowHtml(k, breakdown[k])).join("");
     });
 
-    return html || '<p class="muted">No indicators within the lookback window.</p>';
+    if (!rows) return '<p class="muted">No indicators within the lookback window.</p>';
+
+    return (
+      '<div class="econ-ind-scroll strength-dd-scroll"><table class="econ-ind-table">' +
+      DRILLDOWN_COLGROUP +
+      '<thead><tr><th>Indicator</th><th>Date</th><th>Actual</th><th>Forecast</th>' +
+      '<th>Surprise</th><th>Previous</th><th class="impact-head">Impact ' + ccy + '</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+      '</table></div>'
+    );
   }
 
   function renderDrilldown(ccy) {
@@ -490,19 +500,9 @@
     window.scrollTo(0, 0);
   }
 
-  // "Cum se calculează" — static content, same open/close pattern as
-  // /economic's #econDetailModal (backdrop click, close button, Escape).
-  function openHelpModal() {
-    const modal = document.getElementById("strengthHelpModal");
-    modal.hidden = false;
-    document.body.classList.add("modal-open");
-  }
-  function closeHelpModal() {
-    const modal = document.getElementById("strengthHelpModal");
-    modal.hidden = true;
-    document.body.classList.remove("modal-open");
-  }
-
+  // Help modal wiring lives in the shared static/help-scoring.js (one
+  // source for both /economic and /strength — see
+  // templates/_help_scoring_modal.html.j2), not here.
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("strengthBack").addEventListener("click", () => {
       const url = new URL(window.location.href);
@@ -511,14 +511,6 @@
       render();
     });
     window.addEventListener("popstate", render);
-
-    document.getElementById("strengthHelpBtn").addEventListener("click", openHelpModal);
-    const helpModal = document.getElementById("strengthHelpModal");
-    helpModal.querySelector(".modal-close").addEventListener("click", closeHelpModal);
-    helpModal.querySelector(".modal-backdrop").addEventListener("click", closeHelpModal);
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !helpModal.hidden) closeHelpModal();
-    });
 
     fetch(DATA_URL)
       .then(r => r.json())
