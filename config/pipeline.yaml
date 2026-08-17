@@ -22,3 +22,13 @@ fred_crosscheck_tol_pp: 0.15
 # state in data/jb_last_pull.json; raw payloads kept in data/jb_raw/). Auth:
 # JBLANKED_API_KEY in .env (free tier ~1 call/day — never call during dev/tests).
 jb_range_url: "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
+
+# TREND kill switch (Faza B, docs/accepted-degradations.md). Rollback = set this
+# back to true, mirroring calendar_source's ff/mt5 switch above. Default false:
+# TREND is disabled — src.economic_render never calls trend_score_all(), no
+# instrument (FX or cross-asset) carries a trend/trend_detail key, no TREND
+# column/group/modal-row anywhere in the UI, and the "price" freshness watch
+# (MT5 price_history.parquet — TREND's only consumer) is skipped. Scores
+# renormalize to FUND + SENTIMENT only. Reason: the MT5 price feed dependency
+# (Wine-only, Mac-only, no cloud path) — see docs/accepted-degradations.md.
+trend_enabled: false

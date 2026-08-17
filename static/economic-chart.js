@@ -466,6 +466,14 @@
   }
 
   // ---- Layout helpers -----------------------------------------------------
+  // TREND kill switch (config/pipeline.yaml, mirrored into payload.meta by
+  // src.economic_render). False → zero TREND traces in the DOM: no group
+  // header, no REGIME+MOM sub-header, no data-sort="trend", no cell (FX or
+  // cross-asset), no modal section, no "+ TREND" in the Σ tooltip. See
+  // docs/accepted-degradations.md.
+  function trendEnabled() {
+    return !!(state.payload.meta && state.payload.meta.trend_enabled);
+  }
   function tableLayout() {
     return (state.payload.meta && state.payload.meta.table_layout) || [];
   }
@@ -590,10 +598,11 @@
     }
     const mismatch = Math.abs(sum - inst.score) > CONTRIB_SUM_TOLERANCE;
     const cls = "contrib-sum-cell" + (mismatch ? " contrib-mismatch" : "");
+    const parts = trendEnabled() ? "FUND + SENTIMENT + TREND" : "FUND + SENTIMENT";
     const tip = mismatch
       ? "Σ (" + fmtSigned(sum, 2) + ") differs from Score (" + fmtSigned(inst.score, 2) + ") by more than " +
         CONTRIB_SUM_TOLERANCE + " — a displayed contribution is missing or wrong"
-      : "Σ of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score";
+      : "Σ of every displayed contribution (" + parts + ") — reconstructs Score";
     return '<td class="' + cls + '" title="' + escAttr(tip) + '">' + fmtSigned(sum, 2) +
       (mismatch ? ' <span class="econ-flag flag-stale" title="' + escAttr(tip) + '">⚠</span>' : "") + "</td>";
   }
@@ -660,7 +669,7 @@
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
       contribSumCellHtml(inst) +
-      trendCellHtml(inst) +
+      (trendEnabled() ? trendCellHtml(inst) : "") +
       fxCotCellHtml(inst) +
       cells +
       "</tr>"
@@ -684,10 +693,13 @@
 
     // TREND: top-level group placed FIRST (before SENTIMENT). Price MA structure
     // × ADX strength, direct on the pair. Contributes to Score with weight 0.5.
-    const trendGroupHeader =
-      '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the pair. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>';
-    const trendSubHeader =
-      '<th data-sort="trend" class="ind-head grp-trend" title="Price trend, −3…+3 (weight 0.5 in score) = Regime (SMA50/200 structure, −2…+2) + Momentum (ATR-normalized SMA50 slope, −1…+1). ADX is display-only trend quality, not in the score.">REGIME+MOM</th>';
+    // Absent entirely (headers + cells) when trend_enabled is false.
+    const trendGroupHeader = trendEnabled()
+      ? '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the pair. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>'
+      : "";
+    const trendSubHeader = trendEnabled()
+      ? '<th data-sort="trend" class="ind-head grp-trend" title="Price trend, −3…+3 (weight 0.5 in score) = Regime (SMA50/200 structure, −2…+2) + Momentum (ATR-normalized SMA50 slope, −1…+1). ADX is display-only trend quality, not in the score.">REGIME+MOM</th>'
+      : "";
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
@@ -702,6 +714,10 @@
         '" title="' + escAttr(indMeta(c.key).label || c.key) + '">' + c.label + '</th>';
     }));
 
+    const sumTip = trendEnabled()
+      ? "Sum of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent"
+      : "Sum of every displayed contribution (FUND + SENTIMENT) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent";
+
     wrap.innerHTML =
       '<div class="retail-table-scroll econ-scroll">' +
       '<table class="retail-table econ-table">' +
@@ -710,7 +726,7 @@
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
       '<th rowspan="2" data-sort="score">Score</th>' +
-      '<th rowspan="2" data-sort="contrib_sum" title="Sum of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent">Σ</th>' +
+      '<th rowspan="2" data-sort="contrib_sum" title="' + escAttr(sumTip) + '">Σ</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaderCells + '</tr>' +
@@ -961,7 +977,7 @@
       '<span class="modal-formula">' + sub + '</span></div>' +
       '</header>' +
       // TREND first (matches column order), then Sentiment (COT), then the macro legs.
-      trendSectionHtml(inst.trend_detail) +
+      (trendEnabled() ? trendSectionHtml(inst.trend_detail) : "") +
       fxCotSectionHtml(inst.cot) +
       '<div class="' + gridClass + '">' + legs + '</div>';
 
@@ -1094,9 +1110,13 @@
 
     // TREND: top-level group placed FIRST (before SENTIMENT). Price MA structure
     // × ADX strength, direct on the asset. Contributes to Score with weight 0.5.
-    const trendGroupHeader =
-      '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the asset. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>';
-    const trendSubHeader = '<th class="ind-head grp-trend" title="Price trend, −3…+3 = Regime (SMA50/200) + Momentum (ATR-normalized SMA50 slope). ADX display-only.">REGIME+MOM</th>';
+    // Absent entirely (headers + cells) when trend_enabled is false.
+    const trendGroupHeader = trendEnabled()
+      ? '<th colspan="1" class="grp-head grp-trend" title="Price TREND: SMA20/50/200 structure × ADX(14) strength, ±3, direct on the asset. Blue = bullish, red = bearish. Weighted 0.5 in the Score.">TREND</th>'
+      : "";
+    const trendSubHeader = trendEnabled()
+      ? '<th class="ind-head grp-trend" title="Price trend, −3…+3 = Regime (SMA50/200) + Momentum (ATR-normalized SMA50 slope). ADX display-only.">REGIME+MOM</th>'
+      : "";
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
@@ -1119,7 +1139,7 @@
         (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
         '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
-        caTrendCellHtml(inst) + caCotCellHtml(inst) + cells + '</tr>'
+        (trendEnabled() ? caTrendCellHtml(inst) : "") + caCotCellHtml(inst) + cells + '</tr>'
       );
     }).join("");
 
@@ -1318,7 +1338,8 @@
 
     // SENTIMENT first (matches the table column order), then the macro factors.
     // TREND first (matches the column order), then SENTIMENT, then macro factors.
-    const sections = trendSectionHtml(inst.trend_detail) + caSentimentSection(inst) +
+    const sections = (trendEnabled() ? trendSectionHtml(inst.trend_detail) : "") +
+      caSentimentSection(inst) +
       caLayout().map(g => caCatSection(inst, g)).join("");
     body.innerHTML =
       '<header class="modal-header">' +

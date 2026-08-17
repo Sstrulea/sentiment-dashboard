@@ -67,6 +67,7 @@ PRICE_HISTORY_PARQUET = ROOT / "data" / "price_history.parquet"
 # src.price_freshness_guard (each instrument's own trailing gap history), not
 # a single flat day count — see the "price" block in _freshness() below.
 FRESHNESS_STALE_DAYS = {"calendar": 3, "actuals_pull": 2}
+PIPELINE_YAML = ROOT / "config" / "pipeline.yaml"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
 INSTRUMENTS_YAML = ROOT / "data" / "economic_instruments.yaml"
 CROSSASSET_YAML = ROOT / "data" / "crossasset_instruments.yaml"
@@ -521,14 +522,23 @@ def _attach_fx_cot_cells(payload: dict, cells: dict[str, int],
         }
 
 
-def _freshness(as_of: pd.Timestamp | None = None) -> dict:
+def _freshness(as_of: pd.Timestamp | None = None,
+                trend_enabled: bool | None = None) -> dict:
     """Per-source data freshness — GENERAL watchdog over every feed (not a single
     indicator). Reports {source: {last_update, age_days, stale}} for the calendar
     (most recent PUBLISHED actual, any currency) and the price feed (most recent
     bar). `any_stale` rolls them up. Graceful: a missing/unreadable source is
-    simply omitted. Used by the payload (dashboard badge) and the cron watchdog."""
+    simply omitted. Used by the payload (dashboard badge) and the cron watchdog.
+
+    `trend_enabled` (optional): when False, the "price" entry is skipped
+    entirely — price_history.parquet is TREND's only consumer, so watching it
+    is pointless while the feature is off. None (default) reads the live
+    config/pipeline.yaml flag; pass explicitly to test the price-freshness
+    mechanics in isolation regardless of the flag's current value."""
     if as_of is None:
         as_of = pd.Timestamp.utcnow().tz_localize(None)
+    if trend_enabled is None:
+        trend_enabled = _trend_enabled()
     out: dict = {}
 
     def _age(last: pd.Timestamp) -> int:
@@ -615,8 +625,11 @@ def _freshness(as_of: pd.Timestamp | None = None) -> dict:
     # instrument is judged against its own derived cadence threshold
     # (src.price_freshness_guard); `stale_instruments` names the culprits so
     # the badge can say who, not just report a generic age.
+    # Skipped entirely while TREND is disabled: price_history.parquet (MT5
+    # OHLC export) has no other consumer, so watching its freshness is
+    # pointless — see docs/accepted-degradations.md.
     try:
-        if PRICE_HISTORY_PARQUET.exists():
+        if trend_enabled and PRICE_HISTORY_PARQUET.exists():
             p = pd.read_parquet(PRICE_HISTORY_PARQUET)
             _, board_symbols = _load_price_symbol_map(PRICE_SYMBOLS_YAML)
             per_instrument = per_instrument_freshness(p, board_symbols, as_of)
@@ -639,6 +652,17 @@ def _freshness(as_of: pd.Timestamp | None = None) -> dict:
     return out
 
 
+def _trend_enabled(cfg: dict | None = None) -> bool:
+    """False (default) — TREND kill switch (config/pipeline.yaml). Disables the
+    feature entirely: no trend_score_all() call, no trend/trend_detail key on
+    any instrument (FX or cross-asset), no "price" freshness watch (TREND is
+    price_history.parquet's only consumer). True is the rollback path,
+    mirroring calendar_source's ff/mt5 switch — restores pre-flag behavior
+    bit-for-bit. See docs/accepted-degradations.md (MT5 dependency)."""
+    cfg = cfg if cfg is not None else _load_yaml(PIPELINE_YAML)
+    return bool(cfg.get("trend_enabled", False))
+
+
 def _trend_full() -> dict[str, dict]:
     """{board_key: {bull_points,regime,slope_atr,momentum,adx,trend_cell}} (TREND v2,
     read-only). Computed ONCE; the cells feed the FX/cross-asset scores
@@ -659,11 +683,18 @@ def _trend_cells(full: dict) -> dict[str, int]:
 
 
 def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
-                            trend_full: dict[str, dict] | None = None) -> dict:
+                            trend_full: dict[str, dict] | None = None,
+                            trend_enabled: bool = True) -> dict:
     """Compute the cross-asset section (indices + metals) from the FX payload's
     per-currency category scores + the US real-yield momentum. Read-only over
     local parquets; real_yields.parquet missing/empty → real_yield excluded
     gracefully. Returns a JSON-ready dict (instruments sorted most-bullish first).
+
+    `trend_enabled` (default True — the pre-flag behavior): when False,
+    `compute_crossasset_scores` is called with `trend_by_symbol=None` (TREND
+    excluded from every score), no `trend_detail` key is set on any
+    instrument, and the `trend` key `compute_instrument_score` always sets is
+    stripped afterward — no scoring file is touched to get there.
     """
     try:
         cfg = _load_yaml(CROSSASSET_YAML)
@@ -731,11 +762,11 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
             sentiment_by_symbol[sym] = pc_cell   # SAME cell for native + proxy (identical scoring)
 
     trend_full = trend_full or {}
-    trend_by_symbol = _trend_cells(trend_full)
+    trend_by_symbol = _trend_cells(trend_full) if trend_enabled else None
     scores = compute_crossasset_scores(categories_by_ccy, real_yield_score, cfg,
                                        liquidity_score=liquidity_score,
                                        sentiment_by_symbol=sentiment_by_symbol,
-                                       trend_by_symbol=trend_by_symbol or {})
+                                       trend_by_symbol=trend_by_symbol)
 
     currencies = payload.get("currencies", {}) or {}
 
@@ -775,7 +806,12 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         r["cells"] = cells
 
         # TREND decomposition for the pop-up (column shows the final cell only).
-        r["trend_detail"] = trend_full.get(sym)
+        # Disabled → no trend_detail key at all, and strip the `trend` key
+        # compute_instrument_score always sets (crossasset_compute.py untouched).
+        if trend_enabled:
+            r["trend_detail"] = trend_full.get(sym)
+        else:
+            r.pop("trend", None)
 
         # SENTIMENT display sub-cell, reusing the SAME cells folded into the score
         # above: COT for metals, P/C for US indices. Foreign indices get neither.
@@ -969,11 +1005,18 @@ def build_economic_payload() -> dict:
     # weight-0.5 factor AND reused for the display sub-cell below.
     fx_cells, fx_details = _fx_currency_cells()
 
-    # TREND per board key, computed ONCE: cells fold into the FX score (per-pair)
-    # and the cross-asset score (per-instrument) AND drive the TREND column; the
-    # full decomposition feeds the pop-up.
-    trend_full = _trend_full()
-    trend_by_symbol = _trend_cells(trend_full)
+    # TREND kill switch (config/pipeline.yaml, default false — see
+    # docs/accepted-degradations.md). Disabled → trend_score_all() is never
+    # called; trend_full/trend_by_symbol stay empty, so build_payload folds no
+    # trend into any FX score (bit-identical to the existing "trend absent"
+    # path already covered by test_fx_trend_off_is_bit_identical).
+    trend_on = _trend_enabled()
+
+    # TREND per board key, computed ONCE (when enabled): cells fold into the FX
+    # score (per-pair) and the cross-asset score (per-instrument) AND drive the
+    # TREND column; the full decomposition feeds the pop-up.
+    trend_full = _trend_full() if trend_on else {}
+    trend_by_symbol = _trend_cells(trend_full) if trend_on else {}
 
     payload = build_payload(cal, indicators_cfg, instruments_cfg,
                             as_of=as_of, rate_scores=rate_scores or None,
@@ -981,6 +1024,7 @@ def build_economic_payload() -> dict:
                             trend_cells=trend_by_symbol or None)
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
+    meta["trend_enabled"] = trend_on
     _enrich_breakdowns(payload, meta["indicators"], as_of)
     # Attach the chosen source to each rate_expectations breakdown entry.
     for ccy, card in payload.get("currencies", {}).items():
@@ -999,15 +1043,23 @@ def build_economic_payload() -> dict:
     _attach_fx_cot_cells(payload, fx_cells, fx_details)
 
     # TREND decomposition for the FX pop-up (the column already shows the final
-    # cell; the modal shows short/long/slope/raw/adx/factor). None entry → "no data".
-    for inst in payload.get("instruments", []):
-        inst["trend_detail"] = trend_full.get(inst["symbol"])
+    # cell; the modal shows short/long/slope/raw/adx/factor). None entry → "no
+    # data". Disabled → no trend_detail key at all, and strip the `trend` key
+    # economic_compute.compute_instrument always sets (that file is untouched —
+    # this is a post-hoc pop, not a scoring change).
+    if trend_on:
+        for inst in payload.get("instruments", []):
+            inst["trend_detail"] = trend_full.get(inst["symbol"])
+    else:
+        for inst in payload.get("instruments", []):
+            inst.pop("trend", None)
 
     # Cross-Asset block (indices + metals) — separate key, FX payload untouched.
-    payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_full)
+    payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_full,
+                                                     trend_enabled=trend_on)
 
     payload["meta"] = meta
-    payload["freshness"] = _freshness(as_of)
+    payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)
     payload["manual_actuals"] = _build_manual_actuals_block(as_of)
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
