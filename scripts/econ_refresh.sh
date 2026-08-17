@@ -2,6 +2,14 @@
 # SPLIT 2026-07-29: GitHub Actions face calendar (FF+JB), FRED si render.
 # Mac-ul ramane DOAR sursa de pret — MT5 ruleaza prin Wine, imposibil in cloud.
 # Fisiere disjuncte intre cele doua = zero conflicte pe parquet (binar, ne-merge-uibil).
+#
+# TREND DEZACTIVAT (Faza B, config/pipeline.yaml trend_enabled: false — vezi
+# docs/accepted-degradations.md, dependenta MT5). data/price_history.parquet
+# nu mai are niciun consumator cat timp flag-ul e false, asa ca pasul de MT5
+# export de mai jos e scos (nu sters — vezi git history pentru varianta
+# anterioara). Reactivare: cand trend_enabled trece pe true, readauga
+# `./.venv/bin/python -m src.price_fetch` si blocul `git add
+# data/price_history.parquet` de mai jos, mirroring calendar_source.
 set -u
 export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 export MT5_FILES_DIR="/Users/sebastian/Library/Application Support/net.metaquotes.wine.metatrader5/drive_c/Program Files/MetaTrader 5/MQL5/Files"
@@ -72,15 +80,17 @@ else
   } >> /tmp/econ.log 2>&1
 fi
 
-./.venv/bin/python -m src.price_fetch >> /tmp/econ.log 2>&1
-
-if [[ "$GIT_STATE" == "MAIN" ]]; then
-  if ! git diff --quiet data/price_history.parquet; then
-    git add data/price_history.parquet
-    git commit -m "price: MT5 export $(date -u +%FT%TZ)" >/dev/null 2>&1
-    for i in 1 2 3; do
-      git pull --rebase --autostash >/dev/null 2>&1 && git push >/dev/null 2>&1 && break
-      sleep 5
-    done
-  fi
-fi
+# MT5 price export + commit — OFF while trend_enabled is false (nothing reads
+# data/price_history.parquet). Re-enable together with the flag:
+#   ./.venv/bin/python -m src.price_fetch >> /tmp/econ.log 2>&1
+#
+#   if [[ "$GIT_STATE" == "MAIN" ]]; then
+#     if ! git diff --quiet data/price_history.parquet; then
+#       git add data/price_history.parquet
+#       git commit -m "price: MT5 export $(date -u +%FT%TZ)" >/dev/null 2>&1
+#       for i in 1 2 3; do
+#         git pull --rebase --autostash >/dev/null 2>&1 && git push >/dev/null 2>&1 && break
+#         sleep 5
+#       done
+#     fi
+#   fi

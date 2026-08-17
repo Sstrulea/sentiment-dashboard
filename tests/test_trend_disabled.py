@@ -1,0 +1,168 @@
+"""Faza B — TREND kill switch (config/pipeline.yaml `trend_enabled`, default
+false; see docs/accepted-degradations.md, MT5 dependency).
+
+Written BEFORE the implementation and confirmed to fail against the
+pre-flag `src/economic_render.py` (TREND was unconditional there — no flag,
+no gate, "trend"/"trend_detail" always present, `_freshness()` always
+watched "price"). Deliberately integration-style, over the REAL repo data
+(data/economic_calendar_ff.parquet, data/rates.parquet, ... — same files
+`build_economic_payload()` always reads, same technique as
+scripts/diag/trend_off_diff.py), because the flag's whole contract is about
+what the real, full payload does and does not contain — a synthetic
+fixture would only prove the plumbing, not the actual DOM/JSON contract.
+
+The two score-reproduction tests below (`*_matches_phase_a_csv_after`,
+`*_matches_phase_a_csv_before`) compare a freshly-built payload against the
+frozen `docs/trend-off-before-after.csv` snapshot from the Faza A
+diagnostic. That snapshot is a point-in-time capture; if the underlying
+calendar/rates/price data changes between generating it and running these
+tests (the hourly econ-refresh cron), a mismatch here reflects live-data
+drift, not a logic regression — re-running scripts/diag/trend_off_diff.py
+refreshes the snapshot.
+"""
+from __future__ import annotations
+
+import csv
+from pathlib import Path
+
+import pytest
+
+from src import economic_render
+
+ROOT = Path(__file__).resolve().parents[1]
+CSV_PATH = ROOT / "docs" / "trend-off-before-after.csv"
+
+
+def _csv_rows() -> dict[str, dict]:
+    with open(CSV_PATH, newline="") as f:
+        return {r["symbol"]: r for r in csv.DictReader(f)}
+
+
+def _all_instruments(payload: dict) -> list[dict]:
+    return list(payload.get("instruments", [])) + \
+        list((payload.get("crossasset", {}) or {}).get("instruments", []))
+
+
+# --- _trend_enabled() itself -------------------------------------------------
+
+def test_trend_enabled_defaults_false_when_key_absent():
+    assert economic_render._trend_enabled({}) is False
+
+
+def test_trend_enabled_reads_explicit_true_and_false():
+    assert economic_render._trend_enabled({"trend_enabled": True}) is True
+    assert economic_render._trend_enabled({"trend_enabled": False}) is False
+
+
+def test_live_config_default_is_false():
+    """config/pipeline.yaml ships with trend_enabled: false — the new default,
+    mirroring calendar_source's ff/mt5 pattern (true = rollback)."""
+    assert economic_render._trend_enabled() is False
+
+
+# --- trend_score_all() must never be called while disabled -------------------
+
+def test_trend_score_all_not_called_when_disabled(monkeypatch):
+    def _boom(*a, **kw):
+        raise AssertionError("trend_score_all() was called with trend_enabled=false")
+    monkeypatch.setattr(economic_render, "trend_score_all", _boom)
+    payload = economic_render.build_economic_payload()   # live default: false
+    assert payload["meta"]["trend_enabled"] is False
+
+
+# --- no trend/trend_detail key anywhere when disabled -------------------------
+
+def test_trend_disabled_no_instrument_carries_trend_keys():
+    payload = economic_render.build_economic_payload()
+    assert payload["meta"]["trend_enabled"] is False
+
+    fx = payload["instruments"]
+    ca = payload["crossasset"]["instruments"]
+    assert fx, "expected FX instruments in the live payload"
+    assert ca, "expected cross-asset instruments in the live payload"
+
+    for inst in fx + ca:
+        assert "trend" not in inst, f"{inst['symbol']}: trend key present while disabled"
+        assert "trend_detail" not in inst, f"{inst['symbol']}: trend_detail key present while disabled"
+
+
+# --- scores reproduce the Faza A "after" (trend-off) snapshot ---------------
+
+def test_trend_disabled_scores_match_phase_a_csv_after():
+    rows = _csv_rows()
+    payload = economic_render.build_economic_payload()
+
+    checked = 0
+    for inst in _all_instruments(payload):
+        row = rows.get(inst["symbol"])
+        if row is None:
+            continue
+        precise = inst["score"] if "score_precise" not in inst else inst["score_precise"]
+        rounded = round(precise) if "score_precise" not in inst else inst["score"]
+        bias = inst["bias"] if "bias" in inst else inst["bias_label"]
+
+        assert precise == pytest.approx(float(row["score_precise_after"]), abs=1e-6), inst["symbol"]
+        assert rounded == int(row["score_rounded_after"]), inst["symbol"]
+        assert bias == row["bias_after"], inst["symbol"]
+        checked += 1
+    assert checked == len(rows), "not every Faza A instrument was found in the live payload"
+
+
+# --- rollback (trend_enabled=true) reproduces main today, bit-identical -----
+
+def test_trend_enabled_true_is_bit_identical_to_phase_a_csv_before(monkeypatch):
+    """Rollback proof: flipping the flag back to true must reproduce EXACTLY
+    what the unmodified (pre-flag) pipeline produced — captured in Faza A's
+    CSV `*_before` columns, generated by calling this same
+    build_economic_payload() before any Faza B code existed. No scoring file
+    (economic_compute.py / crossasset_compute.py / trend_score.py) was
+    touched by Faza B, so this is a property of economic_render's gating
+    being a true no-op on the enabled path, not a re-derivation."""
+    monkeypatch.setattr(economic_render, "_trend_enabled", lambda cfg=None: True)
+    rows = _csv_rows()
+    payload = economic_render.build_economic_payload()
+
+    assert payload["meta"]["trend_enabled"] is True
+
+    fx = payload["instruments"]
+    ca = payload["crossasset"]["instruments"]
+    for inst in fx + ca:
+        assert "trend" in inst, f"{inst['symbol']}: trend key missing while enabled"
+        assert "trend_detail" in inst, f"{inst['symbol']}: trend_detail key missing while enabled"
+
+    checked = 0
+    for inst in fx + ca:
+        row = rows.get(inst["symbol"])
+        if row is None:
+            continue
+        precise = inst["score"] if "score_precise" not in inst else inst["score_precise"]
+        rounded = round(precise) if "score_precise" not in inst else inst["score"]
+        bias = inst["bias"] if "bias" in inst else inst["bias_label"]
+
+        assert precise == pytest.approx(float(row["score_precise_before"]), abs=1e-6), inst["symbol"]
+        assert rounded == int(row["score_rounded_before"]), inst["symbol"]
+        assert bias == row["bias_before"], inst["symbol"]
+        checked += 1
+    assert checked == len(rows)
+
+
+# --- _freshness()'s "price" entry ---------------------------------------------
+
+def test_freshness_omits_price_when_trend_disabled():
+    f = economic_render._freshness(trend_enabled=False)
+    assert "price" not in f
+
+
+def test_freshness_includes_price_when_trend_enabled():
+    # This repo's data/price_history.parquet exists (see docs/trend-off-before-after.csv,
+    # generated against it) — the "price" entry is only skipped for the flag,
+    # never silently dropped for another reason.
+    assert economic_render.PRICE_HISTORY_PARQUET.exists()
+    f = economic_render._freshness(trend_enabled=True)
+    assert "price" in f
+
+
+def test_build_economic_payload_freshness_matches_the_live_flag():
+    payload = economic_render.build_economic_payload()
+    assert payload["meta"]["trend_enabled"] is False
+    assert "price" not in payload["freshness"]

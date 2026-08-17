@@ -63,7 +63,11 @@ def synthetic_price_payload(tmp_path, monkeypatch):
     # Pre-fix, economic_render has no symbol-map source at all; raising=False
     # lets this test run (and fail on its real assertions) on main too.
     monkeypatch.setattr(economic_render, "PRICE_SYMBOLS_YAML", yaml_path, raising=False)
-    return economic_render._freshness(AS_OF)
+    # Faza B: the "price" entry is gated behind trend_enabled (default false —
+    # see docs/accepted-degradations.md), since price_history.parquet has no
+    # other consumer. This test is about the per-instrument freshness mechanics
+    # themselves, independent of the flag's live value, so pass it explicitly.
+    return economic_render._freshness(AS_OF, trend_enabled=True)
 
 
 def test_single_frozen_instrument_is_surfaced_as_stale(synthetic_price_payload):

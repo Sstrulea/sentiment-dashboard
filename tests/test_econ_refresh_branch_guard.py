@@ -184,25 +184,28 @@ def test_script_syntax_is_valid():
     assert result.returncode == 0, result.stderr
 
 
-def test_price_fetch_call_is_unconditional_in_source():
-    """The data pull must run on every branch, not just main — confirm the
-    `price_fetch` invocation sits outside any `if [[ "$GIT_STATE" == "MAIN" ]]`
-    block by checking it's not indented under one in the source text (the
-    real script's only conditional git-state branches are indented; the
-    price_fetch line is not)."""
+def test_price_fetch_call_is_commented_out_pending_trend_flag():
+    """Faza B (config/pipeline.yaml trend_enabled: false, default — see
+    docs/accepted-degradations.md): TREND is disabled, so
+    data/price_history.parquet has no consumer left, and the MT5 export step
+    must not actually run — every source line mentioning `price_fetch` is a
+    comment (kept, not deleted, for the documented reactivation-with-the-flag
+    path), never live shell code."""
     text = SCRIPT.read_text()
-    line = next(l for l in text.splitlines() if "price_fetch" in l)
-    assert not line.startswith(" ") and not line.startswith("\t"), (
-        f"price_fetch call appears indented (possibly inside a conditional): {line!r}"
-    )
+    live_lines = [l for l in text.splitlines() if "price_fetch" in l and not l.strip().startswith("#")]
+    assert live_lines == [], f"price_fetch call is live (not commented out): {live_lines!r}"
 
 
 def test_pull_commit_push_each_appear_exactly_once_and_only_under_main_guard():
-    """`git pull --rebase --autostash`, `git commit`, and `git push` must
-    each occur exactly where expected: the two `--rebase --autostash` pulls
-    (top-of-script sync, and the pre-push retry) plus one commit and one
-    push, and every one of those lines must sit inside a block whose `if`
-    tests `"$GIT_STATE" == "MAIN"` — i.e. is indented under it, not at the
+    """`git pull --rebase --autostash`, `git commit`, and `git push` must each
+    occur exactly where expected. Faza B (TREND disabled by default — see
+    docs/accepted-degradations.md) commented out the price-export commit/push
+    block (data/price_history.parquet has no consumer left), so only the
+    top-of-script sync pull remains live; the commit/pre-push-retry-pull/push
+    trio now live exclusively inside that comment (kept for the documented
+    reactivation-with-the-flag path, never executed). Every live occurrence
+    that remains must still sit inside a block whose `if` tests
+    `"$GIT_STATE" == "MAIN"` — i.e. is indented under it, not at the
     function/top level."""
     lines = SCRIPT.read_text().splitlines()
     guard_re = re.compile(r'if \[\[ "\$GIT_STATE" == "MAIN" \]\]; then')
@@ -228,6 +231,6 @@ def test_pull_commit_push_each_appear_exactly_once_and_only_under_main_guard():
                 counts[needle] += 1
                 assert inside_main_guard(i), f"{needle!r} on line {i + 1} is not inside a MAIN-gated block: {line!r}"
 
-    assert counts["git pull --rebase --autostash"] == 2
-    assert counts["git commit -m"] == 1
-    assert counts["git push"] == 1
+    assert counts["git pull --rebase --autostash"] == 1   # commit/push block commented out (Faza B)
+    assert counts["git commit -m"] == 0
+    assert counts["git push"] == 0
