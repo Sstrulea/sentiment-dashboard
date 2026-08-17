@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Strength | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  {% include '_navbar.html.j2' %}
+
+  <main class="page-content strength-page">
+    <header class="strength-header">
+      <h1>Currency Strength</h1>
+    </header>
+
+    <div class="econ-legend">
+      <span class="muted">A REPRESENTATION of the same macro-surprise index shown on
+      <a href="/economic">Economic</a> — position (the arc + %) comes from the index, color comes from
+      the same bias thresholds. It cannot show a different bias than the Economic dashboard for the
+      same currency. Click a card or table row for the per-indicator drilldown.</span>
+    </div>
+
+    <div id="strengthMain">
+      <p class="strength-divergence" id="strengthDivergence"></p>
+      <p class="strength-context">Spread mic = fără divergență macro exploatabilă. Valutele cu N mare se
+      strâng natural spre 50% (mai mulți indicatori mediați); cele cu N mic oscilează mai larg pe mai
+      puține date. Citește N înainte de poziție.</p>
+
+      <div class="strength-grid" id="strengthGrid">
+        <p class="muted" style="grid-column: 1/-1; text-align:center; padding: 30px;">Loading…</p>
+      </div>
+
+      <section class="strength-table-wrap">
+        <h2>Sorted</h2>
+        <div class="retail-table-scroll">
+          <table class="retail-table strength-table" id="strengthTable">
+            <thead>
+              <tr>
+                <th>Currency</th><th>%</th><th>Index</th><th>Bias</th><th>N</th><th>Monetary</th>
+              </tr>
+            </thead>
+            <tbody id="strengthTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="strength-matrix-wrap">
+        <h2>Divergence matrix</h2>
+        <p class="strength-context" style="margin-bottom:10px;">Rows = base currency, columns = quoted currency.
+        Cell = row's % − column's %. Currencies with no coverage are excluded from the matrix entirely.</p>
+        <div class="strength-matrix-scroll">
+          <table class="strength-matrix" id="strengthMatrix"></table>
+        </div>
+      </section>
+    </div>
+
+    <section class="strength-drilldown" id="strengthDrilldown" hidden>
+      <button type="button" class="strength-back" id="strengthBack">&larr; All currencies</button>
+      <div id="strengthDrilldownContent"></div>
+    </section>
+  </main>
+
+  <script>window.ECON_DATA_URL = "{{ data_url }}";</script>
+  <script src="/strength.js"></script>
+</body>
+</html>
