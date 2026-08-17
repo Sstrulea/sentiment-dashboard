@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Strength | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav class="main-nav">
+  <div class="nav-container">
+    <div class="nav-brand">Dashboard</div>
+    <ul class="nav-links">
+      <li class="">
+        <a href="/economic">Economic</a>
+      </li>
+      <li class="active">
+        <a href="/strength">Currency Strength</a>
+      </li>
+      <li class="">
+        <a href="/">COT</a>
+      </li>
+      <li class="">
+        <a href="/pc-ratio">P/C Ratio</a>
+      </li>
+      <li class="">
+        <a href="/vix-ratio">VIX/VIX3M</a>
+      </li>
+    </ul>
+    <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle theme">
+      <svg class="theme-icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+      </svg>
+      <svg class="theme-icon moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+</nav>
+<script src="/theme-toggle.js"></script>
+
+  <main class="page-content strength-page">
+    <header class="strength-header">
+      <h1>Currency Strength</h1>
+    </header>
+
+    <div class="econ-legend">
+      <span class="muted">A REPRESENTATION of the same macro-surprise index shown on
+      <a href="/economic">Economic</a> — position (the arc + %) comes from the index, color comes from
+      the same bias thresholds. It cannot show a different bias than the Economic dashboard for the
+      same currency. Click a card or table row for the per-indicator drilldown.</span>
+    </div>
+
+    <div id="strengthMain">
+      <p class="strength-divergence" id="strengthDivergence"></p>
+      <p class="strength-context">Spread mic = fără divergență macro exploatabilă. Valutele cu N mare se
+      strâng natural spre 50% (mai mulți indicatori mediați); cele cu N mic oscilează mai larg pe mai
+      puține date. Citește N înainte de poziție.</p>
+
+      <div class="strength-grid" id="strengthGrid">
+        <p class="muted" style="grid-column: 1/-1; text-align:center; padding: 30px;">Loading…</p>
+      </div>
+
+      <section class="strength-table-wrap">
+        <h2>Sorted</h2>
+        <div class="retail-table-scroll">
+          <table class="retail-table strength-table" id="strengthTable">
+            <thead>
+              <tr>
+                <th>Currency</th><th>%</th><th>Index</th><th>Bias</th><th>N</th><th>Monetary</th>
+              </tr>
+            </thead>
+            <tbody id="strengthTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="strength-matrix-wrap">
+        <h2>Divergence matrix</h2>
+        <p class="strength-context" style="margin-bottom:10px;">Rows = base currency, columns = quoted currency.
+        Cell = row's % − column's %. Currencies with no coverage are excluded from the matrix entirely.</p>
+        <div class="strength-matrix-scroll">
+          <table class="strength-matrix" id="strengthMatrix"></table>
+        </div>
+      </section>
+    </div>
+
+    <section class="strength-drilldown" id="strengthDrilldown" hidden>
+      <button type="button" class="strength-back" id="strengthBack">&larr; All currencies</button>
+      <div id="strengthDrilldownContent"></div>
+    </section>
+  </main>
+
+  <script>window.ECON_DATA_URL = "/data/economic.json";</script>
+  <script src="/strength.js"></script>
+</body>
+</html>
