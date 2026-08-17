@@ -1390,3 +1390,98 @@ td.econ-cell.pc-proxy-cell { font-style: italic; }
 body.dark .grp-head.grp-trend, body.dark .ind-head.grp-trend { background: rgba(38,166,154,0.18); }
 /* Unpopulated SENTIMENT cell (indices, or metals without COT data) — blank */
 table.econ-table td.econ-cell.cell-empty { background: transparent; }
+
+/* === Currency Strength page (/strength) ===
+   Pure REPRESENTATION of the /economic `index` (see economic_render.py
+   STRENGTH_PCT_K): position (the arc fill + pct text) comes from `pct`,
+   color comes from `bias_label` — reusing .bias-* (defined above in this
+   file) unchanged, never a new color band derived from the percent. */
+.strength-page { max-width: 1200px; }
+.strength-header { margin-bottom: 4px; }
+.strength-header h1 { margin: 0; font-size: 24px; }
+.strength-divergence { font-size: 14px; margin: 14px 0 2px; }
+.strength-divergence b { font-variant-numeric: tabular-nums; }
+.strength-context { font-size: 12px; color: var(--muted); margin: 0 0 20px; max-width: 900px; line-height: 1.5; }
+
+.strength-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+.cadran {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 10px 12px;
+  text-align: center;
+  cursor: pointer;
+}
+.cadran:hover { border-color: var(--accent); }
+.cadran.cadran-nodata { cursor: default; }
+.cadran-ccy {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--muted);
+}
+.cadran-arc-wrap { position: relative; width: 100%; max-width: 128px; margin: 4px auto 0; }
+.cadran-arc-wrap svg { display: block; width: 100%; height: auto; }
+.cadran-arc-track { fill: none; stroke: var(--surface-alt); stroke-width: 10; stroke-linecap: round; }
+.cadran-arc-fill { fill: none; stroke-width: 10; stroke-linecap: round; }
+/* Mirrors the .bias-* hex values above 1:1 (background→stroke; SVG strokes
+   can't read `background`) — keep in sync with that block if it changes. */
+.cadran-arc-fill.bias-very-bull { stroke: #1565c0; }
+.cadran-arc-fill.bias-bull      { stroke: #90caf9; }
+.cadran-arc-fill.bias-neut      { stroke: var(--muted); }
+.cadran-arc-fill.bias-bear      { stroke: #ef9a9a; }
+.cadran-arc-fill.bias-very-bear { stroke: #d32f2f; }
+.cadran-arc-value {
+  position: absolute; left: 0; right: 0; bottom: 2px; text-align: center;
+}
+.cadran-pct { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cadran-pct .unit { font-size: 13px; font-weight: 600; color: var(--muted); }
+.cadran-index { font-size: 11px; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.cadran-n { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.cadran-n.cadran-n-low { color: var(--caution-fg); font-weight: 600; }
+.cadran-badges { display: flex; gap: 4px; justify-content: center; margin-top: 5px; flex-wrap: wrap; min-height: 15px; }
+.cadran-badge {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
+  padding: 1px 5px; border-radius: 3px; cursor: help;
+}
+.cadran-badge.badge-no-rate { background: var(--surface-alt); color: var(--muted); }
+.cadran-badge.badge-clamped { background: var(--info-bg); color: var(--info-fg); }
+.cadran-nodata-label { font-size: 13px; color: var(--muted); font-style: italic; margin-top: 8px; }
+
+.strength-table-wrap { margin-bottom: 30px; }
+.strength-table-wrap h2 { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; }
+table.strength-table td.strength-ccy { font-weight: 600; }
+table.strength-table td.strength-num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.strength-row-nodata td { color: var(--muted); font-style: italic; }
+tr.strength-row-nodata td.strength-num { font-style: normal; }
+
+.strength-matrix-wrap { margin-bottom: 30px; }
+.strength-matrix-wrap h2 { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px; }
+.strength-matrix-scroll { overflow-x: auto; }
+table.strength-matrix { border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+table.strength-matrix th, table.strength-matrix td {
+  border: 1px solid var(--border); padding: 6px 10px; text-align: center; min-width: 58px;
+}
+table.strength-matrix th { background: var(--header-bg); font-weight: 600; font-size: 11px; white-space: nowrap; }
+table.strength-matrix th.matrix-corner { background: transparent; border: none; }
+table.strength-matrix th.matrix-row-label { text-align: left; background: var(--header-bg); }
+table.strength-matrix td.matrix-diag { background: var(--surface-alt); }
+table.strength-matrix td.matrix-cell { cursor: default; }
+
+.strength-drilldown[hidden] { display: none; }
+.strength-back {
+  display: inline-block; margin-bottom: 14px; font-size: 13px; color: var(--accent);
+  cursor: pointer; background: none; border: none; padding: 0; font: inherit;
+}
+.strength-back:hover { text-decoration: underline; }
+.strength-dd-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.strength-dd-head h2 { margin: 0; font-size: 22px; }
+.strength-dd-head .bias-pill { padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+.strength-dd-meta { color: var(--muted); font-size: 13px; }
+
+@media (max-width: 768px) {
+  .strength-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
