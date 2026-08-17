@@ -467,12 +467,15 @@
 
   // ---- Layout helpers -----------------------------------------------------
   // TREND kill switch (config/pipeline.yaml, mirrored into payload.meta by
-  // src.economic_render). False → zero TREND traces in the DOM: no group
-  // header, no REGIME+MOM sub-header, no data-sort="trend", no cell (FX or
-  // cross-asset), no modal section, no "+ TREND" in the Σ tooltip. See
-  // docs/accepted-degradations.md.
+  // src.economic_render). FAIL-CLOSED by design: only an explicit `true`
+  // renders TREND — a missing key, undefined, null, or any other value all
+  // mean "no TREND" (matches a stale/older payload that predates this key
+  // existing at all, not just a live `false`). False → zero TREND traces in
+  // the DOM: no group header, no REGIME+MOM sub-header, no data-sort="trend",
+  // no cell (FX or cross-asset), no modal section (including its "no data"
+  // branch), no "+ TREND" in the Σ tooltip. See docs/accepted-degradations.md.
   function trendEnabled() {
-    return !!(state.payload.meta && state.payload.meta.trend_enabled);
+    return !!(state.payload.meta) && state.payload.meta.trend_enabled === true;
   }
   function tableLayout() {
     return (state.payload.meta && state.payload.meta.table_layout) || [];
