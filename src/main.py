@@ -7,6 +7,7 @@ Modes:
     economic    — MT5 economic-calendar ingest + Economic Dashboard re-render
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
+    render-all  — re-render all 6 pages from existing parquet; no fetch, no writes
 """
 from __future__ import annotations
 
@@ -190,6 +191,63 @@ def _economic() -> int:
     return 0
 
 
+def _render_all() -> int:
+    """Re-render all 6 pages from existing on-disk parquet — no network fetch,
+    no parquet writes. Used to keep shared assets (e.g. navbar) in sync across
+    every page in one shot instead of relying on each pipeline's own re-render.
+
+    Any page whose backing parquet is missing or empty is logged and skipped;
+    the run continues with the remaining pages so a single stale/absent
+    dataset can't block the rest.
+
+    render_economic_page() MUST run before render_strength_page(): strength
+    reads public/data/economic.json, which economic's render writes.
+    """
+    import pandas as pd
+
+    from .compute import build_latest_snapshot
+    from .cot_score import HISTORY_FILE
+    from .economic_render import render_economic_page, render_strength_page
+    from .render import render_dashboard
+    from .retail_render import render_retail_sentiment_page
+    from .sentiment_render import render_pc_ratio_page, render_vix_ratio_page
+    from .static_assets import copy_static_assets
+
+    log = logging.getLogger("render-all")
+    log.info("Render-all starting (no fetch, no parquet writes)")
+
+    if not HISTORY_FILE.exists():
+        log.warning("COT history parquet missing (%s) — skipping COT dashboard.", HISTORY_FILE)
+    else:
+        df = pd.read_parquet(HISTORY_FILE)
+        if df.empty:
+            log.warning("COT history parquet is empty — skipping COT dashboard.")
+        else:
+            snapshot = build_latest_snapshot(df)
+            if snapshot.empty:
+                log.warning("COT snapshot is empty — skipping COT dashboard.")
+            else:
+                out = render_dashboard(snapshot, df)
+                log.info("COT dashboard rendered → %s", out)
+
+    for label, render_fn in (
+        ("P/C ratio", render_pc_ratio_page),
+        ("VIX ratio", render_vix_ratio_page),
+        ("Retail sentiment", render_retail_sentiment_page),
+        ("Economic", render_economic_page),
+        ("Currency Strength", render_strength_page),
+    ):
+        try:
+            out = render_fn()
+            log.info("%s page rendered → %s", label, out)
+        except Exception as e:
+            log.warning("%s render skipped: %s", label, e)
+
+    copy_static_assets()
+    log.info("Render-all complete")
+    return 0
+
+
 def _backfill_pc() -> int:
     """Full P/C backfill from 2019-10-07 through today."""
     from .sentiment_backfill import _cmd_pc_range  # noqa: PLC2701 (internal but intentional)
@@ -214,7 +272,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Dashboard orchestrator")
     parser.add_argument(
         "--mode",
-        choices=["weekly", "daily", "retail", "economic", "all", "backfill-pc"],
+        choices=["weekly", "daily", "retail", "economic", "all", "backfill-pc", "render-all"],
         default="weekly",
         help="which pipeline to run (default: weekly)",
     )
@@ -240,6 +298,8 @@ def main(argv: list[str] | None = None) -> int:
         return _daily()
     if args.mode == "backfill-pc":
         return _backfill_pc()
+    if args.mode == "render-all":
+        return _render_all()
 
     parser.error(f"Unknown mode: {args.mode}")
     return 2
