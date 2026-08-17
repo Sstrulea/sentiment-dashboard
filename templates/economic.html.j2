@@ -26,6 +26,7 @@
       blue (bullish) ↔ red (bearish) scale; for a pair each indicator cell is the base − quote
       differential. Click a row for the per-indicator breakdown.</span>
     </div>
+    {% include '_help_scoring_modal.html.j2' %}
 
     <div class="econ-controls">
       <div id="econCcyFilter" class="cat-filter" role="group" aria-label="Filter by currency">
@@ -74,5 +75,6 @@
 
   <script>window.ECON_DATA_URL = "{{ data_url }}";</script>
   <script src="/economic-chart.js"></script>
+  <script src="/help-scoring.js"></script>
 </body>
 </html>
