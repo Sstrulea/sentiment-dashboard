@@ -1164,6 +1164,19 @@ body.dark .fresh-badge.stale { color: #ef9a9a; }
 .econ-legend { font-size: 12px; line-height: 1.5; margin: 0 0 16px 0; max-width: 900px; }
 .econ-legend b { color: var(--fg); }
 
+/* Shared "Cum se calculează scorul" help trigger — sits right under the
+   legend paragraph on both /economic and /strength (markup + text come
+   from templates/_help_scoring_modal.html.j2, one place, included on both
+   pages). A plain text-link button, not another heading-level control. */
+.help-scoring-trigger { margin: -10px 0 16px; }
+.help-scoring-link {
+  font: inherit; font-size: 12px; color: var(--accent); background: none; border: none;
+  padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+}
+.help-scoring-link:hover { opacity: 0.8; }
+.help-scoring-content p { font-size: 13px; line-height: 1.6; margin: 0 0 14px; }
+.help-scoring-content p:last-child { margin-bottom: 0; }
+
 /* Bias colors (5 levels) — COT palette: blue = bullish/buy, red = bearish.
    Used as the modal pill AND (via .biasfill on a td) as a full-cell fill. */
 .bias-very-bull { color: #fff;     background: #1565c0; }
@@ -1398,17 +1411,7 @@ table.econ-table td.econ-cell.cell-empty { background: transparent; }
    file) unchanged, never a new color band derived from the percent. */
 .strength-page { max-width: 1200px; }
 .strength-header { margin-bottom: 4px; }
-.strength-header h1 { margin: 0; font-size: 24px; display: flex; align-items: center; gap: 10px; }
-.strength-help-btn {
-  width: 22px; height: 22px; border-radius: 50%; flex: none;
-  border: 1px solid var(--border); background: var(--surface-alt); color: var(--muted);
-  font-size: 13px; font-weight: 700; line-height: 1; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.strength-help-btn:hover { color: var(--fg); border-color: var(--accent); }
-.strength-help p { font-size: 13px; line-height: 1.6; margin: 0 0 14px; }
-.strength-help p:last-child { margin-bottom: 0; }
-.strength-help strong { color: var(--fg); }
+.strength-header h1 { margin: 0; font-size: 24px; }
 .strength-divergence { font-size: 14px; margin: 14px 0 2px; }
 .strength-divergence b { font-variant-numeric: tabular-nums; }
 .strength-context { font-size: 12px; color: var(--muted); margin: 0 0 20px; max-width: 900px; line-height: 1.5; }
@@ -1492,15 +1495,33 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 .strength-dd-head .bias-pill { padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: 600; }
 .strength-dd-meta { color: var(--muted); font-size: 13px; }
 
-/* Drilldown indicator tables (Growth/Inflation/Labour/Monetary/…): each
-   category renders its own <table>, so table-layout:auto sized every one
-   independently — the actual cause of columns not lining up between
-   categories. Fixed layout + an identical <colgroup> on every table (see
-   DRILLDOWN_COLGROUP in strength.js) pins every column to the same width
-   everywhere. Scoped to .strength-drilldown so /economic's own
-   econ-ind-table modal (different columns, e.g. Act/Cons/Surp/z/Score/
-   Method/Release) is completely untouched. */
+/* Drilldown: ONE table for the whole currency (categories are header ROWS
+   inside it, not separate tables — see drilldownGroupsHtml/
+   categoryHeaderRowHtml in strength.js), so column alignment across
+   Growth/Inflation/Labour/Monetary is a structural guarantee, not
+   something a colgroup has to keep in sync across five <table>s. Fixed
+   layout + the colgroup (DRILLDOWN_COLGROUP) just pins the actual widths.
+   Scoped to .strength-drilldown so /economic's own econ-ind-table modal
+   (different columns, e.g. Act/Cons/Surp/z/Score/Method/Release) is
+   completely untouched. */
 .strength-drilldown table.econ-ind-table { table-layout: fixed; width: 100%; }
+/* Sticky column header — trivial with one table + no vertical-overflow
+   ancestor (.econ-ind-scroll only clips horizontally), so it sticks
+   against the page's own scroll, no JS needed. */
+.strength-drilldown table.econ-ind-table thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--bg);
+}
+/* Category header row (GROWTH / INFLATION / …), spanning all 7 columns —
+   same content as the old .econ-cat-head (label, score_cell, N), now a
+   row inside the single table instead of a div above a separate table. */
+.strength-drilldown table.econ-ind-table tr.strength-cat-header td {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted); background: var(--header-bg);
+  border-bottom: 1px solid var(--border); padding: 6px 5px;
+}
+.strength-drilldown table.econ-ind-table tr.strength-cat-header:not(:first-child) td {
+  padding-top: 14px;
+}
 .strength-drilldown table.econ-ind-table col.col-indicator { width: auto; }
 .strength-drilldown table.econ-ind-table col.col-date { width: 110px; }
 .strength-drilldown table.econ-ind-table col.col-actual,
