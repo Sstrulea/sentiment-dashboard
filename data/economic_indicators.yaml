@@ -359,6 +359,10 @@ indicators:
   # regardless. Displaying the identical number twice (once scored as
   # core_cpi, once again here as inert display-only) would be redundant, not
   # useful — see docs/measurement-no-consensus-slots.md §6 backfill notes.
+  # Reconfirmed 2026-08-18 (CAD inflation label-fix investigation): 0 rows
+  # in the live scoring frame carry indicator_key=median_cpi_yoy — the
+  # pattern that would feed it (`^Median CPI y/y$`) is at core_cpi instead
+  # (see the Canada matcher block below).
   median_cpi_yoy:
     pillar: inflation
     category: inflation_display
@@ -615,7 +619,12 @@ matcher:
     # UNMAPPED from here on: it must never again feed any indicator_key, or
     # a future ingest would silently mix wrong-unit m/m prints back into
     # whatever bucket picks it up. Old rows already in the parquet under
-    # that canonical name are untouched (harmless, orphaned history).
+    # that canonical name are untouched (harmless, orphaned history) —
+    # canonical_id `cad_core_cpi` (name_raw "Core CPI m/m"), 55 rows as of
+    # 2026-08-18, read by no matcher rule anywhere in this file. Left in
+    # data/economic_calendar_ff.parquet deliberately (never deleted from
+    # parquet — see the label-fix investigation this comment documents),
+    # it is simply inert going forward.
     - { pattern: '^Median CPI y/y$',                indicator: core_cpi }
     - { pattern: '^CPI y/y$',                       indicator: cpi_yoy }
     - { pattern: '^IPPI y/y$',                      indicator: ppi_yoy }
