@@ -88,6 +88,17 @@
   function indMeta(key) {
     return (state.payload.meta && state.payload.meta.indicators && state.payload.meta.indicators[key]) || {};
   }
+  // Per-currency label override — some indicator_keys are fed by a print
+  // whose real unit/series differs from the generic key name (e.g. CAD's
+  // cpi_yoy is actually "CPI m/m"). Mirrors economic-chart.js's
+  // indLabelForCcy — see src/economic_render.py INDICATOR_LABEL_OVERRIDES
+  // for how each override was verified against the raw calendar data.
+  function indLabelForCcy(key, ccy) {
+    const overrides = (state.payload.meta && state.payload.meta.indicator_label_overrides) || {};
+    const forCcy = overrides[ccy];
+    if (forCcy && forCcy[key]) return forCcy[key];
+    return indMeta(key).label || key;
+  }
   function catLabel(key) {
     const c = state.payload.meta && state.payload.meta.categories && state.payload.meta.categories[key];
     return (c && c.label) || key;
@@ -343,8 +354,9 @@
     return "";
   }
 
-  function indicatorRowHtml(key, e) {
+  function indicatorRowHtml(key, e, ccy) {
     const meta = indMeta(key);
+    const label = ccy ? indLabelForCcy(key, ccy) : (meta.label || key);
     const unit = meta.unit || { suffix: "", decimals: 1 };
     // rate_expectations has no calendar actual/consensus — latest_yield is its
     // closest analog (see INDICATOR_UNITS["rate_expectations"] in economic_render.py).
@@ -367,7 +379,7 @@
 
     return (
       '<tr' + rowCls + '>' +
-      '<td class="ei-name">' + (meta.label || key) + '</td>' +
+      '<td class="ei-name">' + label + '</td>' +
       '<td class="ei-date">' + fmtDate(dateVal) + '</td>' +
       '<td class="ei-num">' + fmtUnit(actualRaw, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(forecastRaw, unit) + '</td>' +
@@ -430,7 +442,7 @@
       keys.sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
 
       rows += categoryHeaderRowHtml(catKey, card);
-      rows += keys.map(k => indicatorRowHtml(k, breakdown[k])).join("");
+      rows += keys.map(k => indicatorRowHtml(k, breakdown[k], ccy)).join("");
     });
 
     if (!rows) return '<p class="muted">No indicators within the lookback window.</p>';

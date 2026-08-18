@@ -492,6 +492,19 @@
   function indMeta(key) {
     return (state.payload.meta.indicators || {})[key] || {};
   }
+  // Per-currency label — some indicator_keys are fed by a print whose real
+  // unit/series differs from the generic key name (e.g. CAD's cpi_yoy is
+  // actually "CPI m/m"; CAD's core_cpi is actually BoC's "Median CPI y/y",
+  // a different series entirely — see src/economic_render.py
+  // INDICATOR_LABEL_OVERRIDES for how each override was verified against
+  // the raw calendar data). Falls back to the global label when a
+  // currency has no override, which is the common case.
+  function indLabelForCcy(key, ccy) {
+    const overrides = state.payload.meta.indicator_label_overrides || {};
+    const forCcy = overrides[ccy];
+    if (forCcy && forCcy[key]) return forCcy[key];
+    return indMeta(key).label || key;
+  }
 
   // ---- Sorting ------------------------------------------------------------
   function rowSortValue(inst, key) {
@@ -531,6 +544,19 @@
   // main — box size, padding, line count all unchanged. The backend-computed
   // contribution to Score is surfaced EXCLUSIVELY via `title` (hover) so row
   // height stays pixel-identical; see findContribution()/contribTip().
+  // Discreet marker for a pair cell subtracting two legs whose underlying
+  // print uses a different transform (e.g. CAD's CPI m/m minus USD's CPI
+  // y/y) — c.transform_mismatch/c.transform_tip come straight from the
+  // backend (src.economic_render._build_indicator_cells), derived from the
+  // same verified per-currency data behind INDICATOR_LABEL_OVERRIDES, never
+  // guessed here. Both scores are still real z-scores (comparable as
+  // dimensionless surprise), so this is a caveat, not an error state — no
+  // color/background change, just the asterisk + tooltip.
+  function transformMismatchMark(c) {
+    if (!c.transform_mismatch) return "";
+    return ' <span class="econ-xf-mismatch" title="' + escAttr(c.transform_tip || "") + '">*</span>';
+  }
+
   function indicatorCellHtml(inst, key) {
     const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
     const v = c.v;
@@ -538,14 +564,15 @@
       return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
     }
     const tip = contribTip(findContribution(inst, key));
+    const mark = transformMismatchMark(c);
     if (c.stale) {
       const staleTip = "stale — latest release is outside the lookback window; excluded from scoring" +
         (tip ? " " + tip : "");
-      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + fmtScoreCell(v) + '</td>';
+      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + fmtScoreCell(v) + mark + '</td>';
     }
     // Continuous gradient on the per-indicator differential (saturates at ±4).
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
-      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + fmtScoreCell(v) + "</td>";
+      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + fmtScoreCell(v) + mark + "</td>";
   }
 
   // TREND sub-cell for an FX row (display-only). Same divergent color engine as
@@ -772,8 +799,9 @@
     return '<span class="econ-flag">' + flag + '</span>';
   }
 
-  function indicatorRow(key, e) {
+  function indicatorRow(key, e, ccy) {
     const meta = indMeta(key);
+    const label = ccy ? indLabelForCcy(key, ccy) : (meta.label || key);
     const inverted = meta.direction === -1
       ? ' <span class="econ-inv" title="Inverted: a higher actual is bearish for this currency">⤵</span>'
       : '';
@@ -783,7 +811,7 @@
     const staleBadge = e.stale ? ' <span class="econ-flag flag-stale" title="Latest release is older than max_age_days — shown for visibility but excluded from the category average / index">stale</span>' : '';
     return (
       '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
-      '<td class="ei-name">' + (meta.label || key) + inverted + '</td>' +
+      '<td class="ei-name">' + label + inverted + '</td>' +
       '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
       '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
       '<td class="ei-num">' + fmtSigned(e.surprise, 2) + '</td>' +
@@ -864,7 +892,7 @@
       } else {
         table =
           '<thead><tr><th>Indicator</th><th>Act</th><th>Cons</th><th>Surp</th><th>z</th><th>Score</th><th>Method</th><th>Release</th></tr></thead>' +
-          '<tbody>' + keys.map(k => indicatorRow(k, breakdown[k])).join("") + '</tbody>';
+          '<tbody>' + keys.map(k => indicatorRow(k, breakdown[k], currency)).join("") + '</tbody>';
       }
       groups +=
         '<div class="econ-cat-group">' +
