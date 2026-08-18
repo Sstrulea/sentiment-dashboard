@@ -1231,6 +1231,10 @@ table.econ-ind-table td.ei-num { text-align: right; }
 table.econ-ind-table td.ei-score { text-align: center; font-weight: 700; border-radius: 3px; }
 table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-space: nowrap; font-size: 11px; }
 .econ-inv { color: var(--warning-fg); cursor: help; }
+/* Discreet marker on a pair cell whose two legs use a different transform
+   (e.g. CAD CPI m/m minus USD CPI y/y) — a caveat, not an error, so it's
+   just an asterisk + tooltip, no color change. */
+.econ-xf-mismatch { cursor: help; opacity: 0.75; font-weight: 700; }
 .econ-flag {
   display: inline-block; padding: 1px 6px; border-radius: 3px;
   font-size: 10px; font-weight: 600; white-space: nowrap;

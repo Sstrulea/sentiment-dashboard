@@ -215,6 +215,77 @@ INDICATOR_UNITS: dict[str, dict] = {
 # requires re-running that script, not an ad-hoc edit here.
 STRENGTH_PCT_K = 10.5
 
+# Per-currency label overrides for cpi_yoy / core_cpi / ppi_yoy — the global
+# INDICATOR_LABELS text ("CPI (YoY)", "Core CPI", "PPI") is accurate for SOME
+# currencies but not others, because these 3 indicator_keys are fed by
+# whatever inflation print each central bank actually publishes on the FF
+# calendar (config/ff_aliases.yaml aliases a currency's real release onto a
+# shared canonical name so the SAME matcher rule in
+# data/economic_indicators.yaml can route it — see e.g. CAD's "CPI m/m" ->
+# "CPI y/y" `# xf` alias). The z-score itself is unaffected (name_raw is
+# 100% homogeneous per (currency, indicator_key) pair — verified against
+# data/economic_calendar_ff.parquet 2026-08-18, see the investigation this
+# fixes), but the DISPLAYED unit was wrong: "CAD CPI (YoY) = -0.4%" reads as
+# deflation when the underlying print is a single month's m/m change.
+#
+# Built from an exhaustive enumeration of every (currency, indicator_key)
+# pair's dominant name_raw for these 3 keys (script run 2026-08-18, no
+# currency assumed clean without checking): entries below are exactly the
+# pairs whose actual transform/series differs from what the generic label
+# implies. (AUD, core_cpi) has a matcher rule (Australia: '^RBA Trimmed Mean
+# CPI y/y$' -> core_cpi) but core_cpi's own `currencies:` whitelist
+# (data/economic_indicators.yaml) excludes AUD, so that rule is permanently
+# dead — confirmed absent from every AUD breakdown; deliberately NOT listed
+# here (would be an override for a key that can never render).
+#
+# {"label": display text, "transform": normalized period tag for the
+#  pasul-3 pair-cell mismatch check below}.
+INDICATOR_LABEL_OVERRIDES: dict[tuple[str, str], dict] = {
+    ("CAD", "cpi_yoy"):  {"label": "CPI (MoM)",              "transform": "MoM"},  # fed by "CPI m/m"
+    ("CAD", "ppi_yoy"):  {"label": "IPPI (MoM)",              "transform": "MoM"},  # fed by "IPPI m/m" (Industrial Product Price Index, not PPI)
+    ("CAD", "core_cpi"): {"label": "Median CPI (YoY)",        "transform": "YoY"},  # fed by "Median CPI y/y" — a DIFFERENT BoC series, not a core-CPI variant
+    ("CHF", "cpi_yoy"):  {"label": "CPI (MoM)",                "transform": "MoM"},  # fed by "CPI m/m"
+    ("CHF", "ppi_yoy"):  {"label": "PPI (MoM)",                "transform": "MoM"},  # fed by "PPI m/m"
+    ("NZD", "cpi_yoy"):  {"label": "CPI (QoQ)",                "transform": "QoQ"},  # NZ CPI is quarterly, fed by "CPI q/q"
+    ("NZD", "ppi_yoy"):  {"label": "PPI Output (QoQ)",         "transform": "QoQ"},  # fed by "PPI Output q/q"
+    ("USD", "core_cpi"): {"label": "Core CPI (MoM)",           "transform": "MoM"},  # fed by "Core CPI m/m"
+    ("USD", "ppi_yoy"):  {"label": "PPI (MoM)",                "transform": "MoM"},  # fed by "PPI m/m"
+    ("EUR", "ppi_yoy"):  {"label": "PPI (MoM)",                "transform": "MoM"},  # fed by "PPI m/m"
+    ("GBP", "ppi_yoy"):  {"label": "PPI Output (MoM)",         "transform": "MoM"},  # fed by "PPI Output m/m"
+    ("JPY", "cpi_yoy"):  {"label": "National Core CPI (YoY)",  "transform": "YoY"},  # fed by "National Core CPI y/y" — Japan's own ex-fresh-food core measure, not a headline CPI
+    ("AUD", "ppi_yoy"):  {"label": "PPI (QoQ)",                "transform": "QoQ"},  # AUD PPI is quarterly, fed by "PPI q/q"
+}
+
+# Default transform for a currency/indicator pair with NO entry above — i.e.
+# the generic INDICATOR_LABELS text is already correct for that currency
+# (verified in the same enumeration). Scoped to exactly the 3 keys audited
+# above; a key absent here has no determinable transform and is never
+# compared (pasul 3's mismatch check simply skips it) rather than guessing.
+INDICATOR_DEFAULT_TRANSFORM: dict[str, str] = {
+    "cpi_yoy": "YoY",
+    "core_cpi": "YoY",
+    "ppi_yoy": "YoY",
+}
+
+
+def _indicator_transform(currency: str, key: str) -> str | None:
+    """The verified transform tag ("MoM"/"QoQ"/"YoY") for (currency, key), or
+    None if not determinable (key outside the audited set)."""
+    override = INDICATOR_LABEL_OVERRIDES.get((currency, key))
+    if override is not None:
+        return override.get("transform")
+    return INDICATOR_DEFAULT_TRANSFORM.get(key)
+
+
+def _indicator_label_for(currency: str, key: str) -> str:
+    """Per-currency display label: override when the data disagrees with the
+    generic name, else the global INDICATOR_LABELS text."""
+    override = INDICATOR_LABEL_OVERRIDES.get((currency, key))
+    if override is not None:
+        return override["label"]
+    return INDICATOR_LABELS.get(key, key)
+
+
 CATEGORY_LABEL_FALLBACK = {
     "growth": "Growth",
     "inflation": "Inflation",
@@ -346,9 +417,21 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
         for g in TABLE_LAYOUT
     ]
 
+    # Per-currency label overrides — {currency: {indicator_key: label}} — for
+    # the drilldown/modal contexts (/economic's per-leg breakdown, /strength's
+    # drilldown), which know both currency and indicator_key. The dense
+    # table's own column headers stay global (table_layout above, untouched):
+    # a column is shared across every row, so it can't carry a per-currency
+    # label. See INDICATOR_LABEL_OVERRIDES's docstring for how each entry
+    # was verified.
+    label_overrides: dict[str, dict[str, str]] = {}
+    for (ccy, key), entry in INDICATOR_LABEL_OVERRIDES.items():
+        label_overrides.setdefault(ccy, {})[key] = entry["label"]
+
     return {
         "categories": cat_meta,
         "indicators": ind_meta,
+        "indicator_label_overrides": label_overrides,
         "categories_display": instruments_cfg.get("categories_display", []),
         "table_layout": table_layout,
         "bias_thresholds": instruments_cfg.get("bias_thresholds", {}),
@@ -371,6 +454,15 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
                    non-USD cross — the cell is None and renders as “—”).
     Each cell is {"v": int|None, "stale": bool}; `stale` is true when any
     contributing leg's indicator is stale (shown greyed, not folded into scoring).
+
+    `transform_mismatch` (fx pairs only): True when BOTH legs have a
+    determinable transform (INDICATOR_DEFAULT_TRANSFORM / the "transform" tag
+    in INDICATOR_LABEL_OVERRIDES — the same verified data behind the label
+    overrides, never a fresh guess) and they differ — e.g. CAD's cpi_yoy is
+    MoM, USD's is YoY, so a CAD/USD cell is subtracting two different kinds
+    of surprise. Absent (not just False) when either leg's transform isn't
+    determinable, so the UI can tell "checked, no mismatch" from "not
+    checked" if it ever needs to.
     """
     currencies = payload.get("currencies", {}) or {}
     inst_cfg = instruments_cfg.get("instruments", {}) or {}
@@ -404,7 +496,18 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
                 else:
                     v = (eb["score"] if eb else 0) - (eq["score"] if eq else 0)
                     stale = bool((eb and eb.get("stale")) or (eq and eq.get("stale")))
-                    cells[k] = {"v": int(v), "stale": stale}
+                    cell = {"v": int(v), "stale": stale}
+                    if eb is not None and eq is not None and base_ccy and quote_ccy:
+                        bt = _indicator_transform(base_ccy, k)
+                        qt = _indicator_transform(quote_ccy, k)
+                        if bt is not None and qt is not None and bt != qt:
+                            cell["transform_mismatch"] = True
+                            cell["transform_tip"] = (
+                                f"{base_ccy}: {_indicator_label_for(base_ccy, k)} · "
+                                f"{quote_ccy}: {_indicator_label_for(quote_ccy, k)} — "
+                                "transformări diferite"
+                            )
+                    cells[k] = cell
         inst["indicator_cells"] = cells
 
 
