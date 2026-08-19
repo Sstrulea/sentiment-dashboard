@@ -242,17 +242,6 @@
   "note": ""
  },
  {
-  "canonical_id": "gbp_core_cpi",
-  "currency": "GBP",
-  "indicator_key": "core_cpi",
-  "datetime_utc": "2026-08-19 06:00:00",
-  "actual": 2.6,
-  "state_resolved": "MISSING",
-  "entered_by": "dolce",
-  "entered_at": "2026-08-19T13:49:47+00:00",
-  "note": ""
- },
- {
   "canonical_id": "gbp_cpi",
   "currency": "GBP",
   "indicator_key": "cpi_yoy",
@@ -261,6 +250,17 @@
   "state_resolved": "MISSING",
   "entered_by": "dolce",
   "entered_at": "2026-08-19T13:49:55+00:00",
+  "note": ""
+ },
+ {
+  "canonical_id": "gbp_core_cpi",
+  "currency": "GBP",
+  "indicator_key": "core_cpi",
+  "datetime_utc": "2026-08-19 06:00:00",
+  "actual": 2.6,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-19T14:02:07+00:00",
   "note": ""
  }
 ]
