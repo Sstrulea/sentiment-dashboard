@@ -300,6 +300,14 @@ def compute_indicator_score(
     consensus = latest["consensus"]
     release_dt = pd.Timestamp(latest["release_dt"])
 
+    # Revision-badge input (fix/previous-revisions): the ACTUAL of the print
+    # strictly before this one in our own series — display-only, compared
+    # against `previous` on the frontend to flag "revised since we first saw
+    # it". None (not 0.0/NaN-coerced) when unknown, so the frontend guard
+    # ("unknown != revised") has an unambiguous signal to skip.
+    prior_rows = df[(df["release_dt"] < release_dt) & df["actual"].notna()]
+    prior_actual = float(prior_rows["actual"].iloc[-1]) if not prior_rows.empty else None
+
     if not _is_num(consensus):
         return {
             "actual": actual,
@@ -311,6 +319,7 @@ def compute_indicator_score(
             "release_dt": release_dt,
             "stale": stale,
             "superseded_missing": superseded,
+            "prior_actual": prior_actual,
         }
 
     consensus = float(consensus)
@@ -340,6 +349,7 @@ def compute_indicator_score(
                 "release_dt": release_dt,
                 "stale": stale,
                 "superseded_missing": superseded,
+                "prior_actual": prior_actual,
             }
 
     # Trailing K prints with BOTH values present, up to and including latest.
@@ -368,6 +378,7 @@ def compute_indicator_score(
                 "release_dt": release_dt,
                 "stale": stale,
                 "superseded_missing": superseded,
+                "prior_actual": prior_actual,
             }
         pct = direction * surprise / abs(consensus)
         return {
@@ -380,6 +391,7 @@ def compute_indicator_score(
             "release_dt": release_dt,
             "stale": stale,
             "superseded_missing": superseded,
+            "prior_actual": prior_actual,
         }
 
     z = direction * surprise / sigma
@@ -393,6 +405,7 @@ def compute_indicator_score(
         "release_dt": release_dt,
         "stale": stale,
         "superseded_missing": superseded,
+        "prior_actual": prior_actual,
     }
 
 
