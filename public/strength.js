@@ -373,14 +373,15 @@
     const forecastRaw = isRate ? null : e.consensus;
     const surpriseRaw = isRate ? null : e.surprise;
     const dateVal = e.release_dt || e.as_of;
-    // Revision marker (fix/previous-revisions): `previous` differs from the
-    // prior print's own actual — only when both are known (unknown != revised).
-    const revised = e.prior_actual !== null && e.prior_actual !== undefined
-      && e.previous !== null && e.previous !== undefined
-      && Math.abs(e.previous - e.prior_actual) > 1e-6;
-    const previousHtml = revised
-      ? '<span class="econ-inv" title="Revizuit de la ' + fmtUnit(e.prior_actual, unit) +
-        ' la ' + fmtUnit(e.previous, unit) + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
+    // Revision marker (fix/previous-revisions, sense fix/revision-semantic-color):
+    // `revision_sense` is computed server-side (compute_indicator_score) — null
+    // means unknown/below-epsilon (unknown != revised), never re-derived here.
+    const revClass = e.revision_sense > 0 ? "econ-rev-favorable"
+      : e.revision_sense < 0 ? "econ-rev-unfavorable" : null;
+    const senseTxt = e.revision_sense > 0 ? ", favorabil" : e.revision_sense < 0 ? ", nefavorabil" : "";
+    const previousHtml = revClass
+      ? '<span class="' + revClass + '" title="Revizuit de la ' + fmtUnit(e.prior_actual, unit) +
+        ' la ' + fmtUnit(e.previous, unit) + senseTxt + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
       : fmtUnit(e.previous, unit);
     const impact = impactState(e);
     const rowCls = impact === "stale" ? ' class="ei-stale"'
