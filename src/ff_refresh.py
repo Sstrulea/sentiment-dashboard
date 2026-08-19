@@ -71,12 +71,22 @@ def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.D
     """History-preserving, FIELD-AWARE merge: append new prints, update revised ones.
 
     Dedup key = (canonical_id, datetime_utc), last-write-wins per row for the
-    schedule fields (forecast/previous/names) — BUT an existing non-null `actual`
+    schedule fields (forecast/names) — BUT an existing non-null `actual`
     is NEVER overwritten by a null/NaN re-delivery. The hybrid flow requires
     this: the daily JBlanked pull writes actuals in the evening; next-day hourly
     faireconomy ticks re-deliver the same events actual-less (the weekly feed is
     structurally actual-less), and whole-row keep="last" would null the actual
-    right back out. A non-null incoming actual (revision) still wins."""
+    right back out. A non-null incoming actual (revision) still wins.
+
+    `previous` is field-aware too (fix/previous-revisions): the faireconomy
+    weekly JSON caches `previous` once per event and never updates it even
+    after the underlying period is revised (confirmed empirically: 0/93
+    tracked events changed `previous` across 19 daily archive captures) — so
+    once a row is released, an actual-less re-delivery (which can only be a
+    stale faireconomy echo, never the row that actually released it) must not
+    regress `previous` back to that frozen snapshot. A row that brings its
+    own `actual` is trusted with its `previous` unconditionally — that is
+    exactly how a genuine revision (e.g. from the JBlanked leg) still lands."""
     if existing is None or existing.empty:
         combined = weekly.copy()
     else:
@@ -84,11 +94,15 @@ def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.D
         existing["datetime_utc"] = pd.to_datetime(existing["datetime_utc"])
         combined = pd.concat([existing, weekly], ignore_index=True)
     combined["datetime_utc"] = pd.to_datetime(combined["datetime_utc"])
+    grp = combined.groupby(["canonical_id", "datetime_utc"], sort=False)
+    released_before = grp["actual"].transform(lambda s: s.notna().cumsum().shift(fill_value=0) > 0)
+    stale_echo = released_before & combined["actual"].isna()
+    combined.loc[stale_echo, "previous"] = float("nan")
     # Field-aware actual: within a key group (concat order = existing first,
     # incoming last) carry the last non-null actual forward, so the kept (last)
     # row inherits it unless the incoming row brings its own non-null actual.
-    combined["actual"] = combined.groupby(["canonical_id", "datetime_utc"],
-                                          sort=False)["actual"].ffill()
+    combined["previous"] = grp["previous"].ffill()
+    combined["actual"] = grp["actual"].ffill()
     combined = (combined.sort_values(["canonical_id", "datetime_utc"])
                 .drop_duplicates(["canonical_id", "datetime_utc"], keep="last")
                 .sort_values(["currency", "canonical_id", "datetime_utc"])

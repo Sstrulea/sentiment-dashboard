@@ -373,6 +373,15 @@
     const forecastRaw = isRate ? null : e.consensus;
     const surpriseRaw = isRate ? null : e.surprise;
     const dateVal = e.release_dt || e.as_of;
+    // Revision marker (fix/previous-revisions): `previous` differs from the
+    // prior print's own actual — only when both are known (unknown != revised).
+    const revised = e.prior_actual !== null && e.prior_actual !== undefined
+      && e.previous !== null && e.previous !== undefined
+      && Math.abs(e.previous - e.prior_actual) > 1e-6;
+    const previousHtml = revised
+      ? '<span class="econ-inv" title="Revizuit de la ' + fmtUnit(e.prior_actual, unit) +
+        ' la ' + fmtUnit(e.previous, unit) + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
+      : fmtUnit(e.previous, unit);
     const impact = impactState(e);
     const rowCls = impact === "stale" ? ' class="ei-stale"'
       : ((impact === "no_forecast" || impact === "direction_guard") ? ' class="ei-no-consensus"' : "");
@@ -393,7 +402,7 @@
       '<td class="ei-num">' + fmtUnit(actualRaw, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(forecastRaw, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(surpriseRaw, unit, true) + '</td>' +
-      '<td class="ei-num">' + fmtUnit(e.previous, unit) + '</td>' +
+      '<td class="ei-num">' + previousHtml + '</td>' +
       '<td class="ei-score ei-impact">' + impactHtml + '</td>' +
       '</tr>'
     );
