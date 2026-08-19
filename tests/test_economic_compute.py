@@ -952,3 +952,141 @@ def test_fx_trend_does_not_touch_index_or_categories():
     for ccy in ("EUR", "USD"):
         assert off["currencies"][ccy]["index"] == on["currencies"][ccy]["index"]
         assert off["currencies"][ccy]["categories"] == on["currencies"][ccy]["categories"]
+
+
+# ---------------------------------------------------------------------------
+# fix/claimant-count-polarity — per-currency direction override + guard
+#
+# GBP's employment_change is fed by "Claimant Count Change" (matcher rule in
+# data/economic_indicators.yaml, United Kingdom block) — fewer claimants is
+# BULLISH GBP, the opposite polarity of every other currency mapped to this
+# same indicator_key (NFP/Employment Change all count jobs GAINED). Flipping
+# `direction` globally on employment_change would silently invert
+# USD/AUD/CAD/NZD/EUR, so the fix is a per-currency `direction_overrides`
+# (mirrors the existing `frequency_overrides` mechanism exactly — see
+# `effective_direction`), guarded by `direction_override_expect`: the
+# override is only trusted when every observed `name_raw` for that
+# (currency, indicator_key) matches the expected string. A mismatch (or a
+# calendar frame with no `name_raw` column at all, e.g. the mt5 rollback
+# path) quarantines the indicator (`flag="direction_mismatch"`) instead of
+# either applying the wrong polarity or silently falling back to the
+# unmodified default direction.
+# ---------------------------------------------------------------------------
+from src.economic_compute import effective_direction
+
+
+def _rows_named(currency, indicator_key, actuals, consensuses, name_raw, weeks_back_end=0):
+    """Like `_make_rows`, but also carries `name_raw` — required by the
+    `direction_override_expect` guard in `compute_indicator_score`."""
+    n = len(actuals)
+    rows = []
+    for i in range(n):
+        weeks_before = (n - 1 - i) + weeks_back_end
+        rows.append({
+            "currency": currency,
+            "indicator_key": indicator_key,
+            "release_dt": AS_OF - pd.Timedelta(weeks=weeks_before),
+            "actual": actuals[i],
+            "consensus": consensuses[i],
+            "name_raw": name_raw,
+        })
+    return pd.DataFrame(rows)
+
+
+EMPLOYMENT_CHANGE_CFG = {
+    "pillar": "labour", "category": "labour", "direction": 1, "weight": 1.0,
+    "direction_overrides": {"GBP": -1},
+    "direction_override_expect": {"GBP": "Claimant Count Change"},
+}
+
+
+def test_effective_direction_currency_override():
+    cfg = {"direction": 1, "direction_overrides": {"GBP": -1}}
+    assert effective_direction(cfg, DEFAULTS, "GBP") == -1.0
+    assert effective_direction(cfg, DEFAULTS, "USD") == 1.0          # no override for USD
+    assert effective_direction({}, DEFAULTS, "USD") == 1.0           # bare default
+    assert effective_direction({"direction": -1}, DEFAULTS, None) == -1.0  # no currency at all
+
+
+def test_gbp_claimant_count_scores_positive_on_fewer_claimants():
+    """Regression for the reported bug (2026-08-18 real print: actual=-11.0
+    vs consensus=16.5, surprise=-27.5, was scoring -2 — should be +2)."""
+    actuals = [20.0] * 11 + [-11.0]
+    consensus = [20.0] * 11 + [16.5]
+    sub = _rows_named("GBP", "employment_change", actuals, consensus, "Claimant Count Change")
+    res = compute_indicator_score(sub, EMPLOYMENT_CHANGE_CFG, DEFAULTS, AS_OF, currency="GBP")
+    assert res["surprise"] == pytest.approx(-27.5)   # raw surprise stays negative — untouched by direction
+    assert res["z"] is not None and res["z"] > 0       # inverted: fewer claimants → positive z
+    assert res["score"] == 2
+    assert res["flag"] is None
+
+
+@pytest.mark.parametrize("currency,name_raw", [
+    ("USD", "Non-Farm Employment Change"),
+    ("AUD", "Employment Change"),
+])
+def test_other_currencies_employment_change_direction_unchanged(currency, name_raw):
+    """USD/AUD employment_change must NOT be affected by GBP's override —
+    a beat still scores bullish (direction stays +1), exactly as before this fix."""
+    actuals = [200.0] * 11 + [250.0]
+    consensus = [200.0] * 12
+    sub = _rows_named(currency, "employment_change", actuals, consensus, name_raw)
+    res = compute_indicator_score(sub, EMPLOYMENT_CHANGE_CFG, DEFAULTS, AS_OF, currency=currency)
+    assert res["z"] is not None and res["z"] > 0
+    assert res["score"] == 2
+    assert res["flag"] is None
+
+
+def test_direction_guard_trips_on_name_raw_mismatch():
+    """If FF ever remapped GBP's employment_change matcher rule to a
+    different raw event name, the override must NOT be silently applied to
+    whatever now feeds the key — the indicator is quarantined instead."""
+    actuals = [20.0] * 11 + [-11.0]
+    consensus = [20.0] * 11 + [16.5]
+    sub = _rows_named("GBP", "employment_change", actuals, consensus, "Some Other Event")
+    res = compute_indicator_score(sub, EMPLOYMENT_CHANGE_CFG, DEFAULTS, AS_OF, currency="GBP")
+    assert res["flag"] == "direction_mismatch"
+    assert res["score"] == 0
+    assert res["z"] is None
+    assert res["surprise"] == pytest.approx(-27.5)   # still shown, raw, for drill-down
+
+
+def test_direction_guard_trips_when_name_raw_column_absent():
+    """The mt5-rollback calendar schema has no `name_raw` column at all — the
+    guard must fail SAFE (quarantine), never silently trust the override."""
+    sub = _make_rows("GBP", "employment_change", [20.0] * 11 + [-11.0], [20.0] * 11 + [16.5])
+    assert "name_raw" not in sub.columns
+    res = compute_indicator_score(sub, EMPLOYMENT_CHANGE_CFG, DEFAULTS, AS_OF, currency="GBP")
+    assert res["flag"] == "direction_mismatch"
+    assert res["score"] == 0
+
+
+def test_direction_guard_skipped_when_no_expect_configured():
+    """An override with no `direction_override_expect` entry for that
+    currency is unguarded (opt-in check, not mandatory on every override)."""
+    cfg = {"direction": 1, "direction_overrides": {"GBP": -1}}   # no expect map at all
+    actuals = [20.0] * 11 + [-11.0]
+    consensus = [20.0] * 11 + [16.5]
+    sub = _rows_named("GBP", "employment_change", actuals, consensus, "Claimant Count Change")
+    res = compute_indicator_score(sub, cfg, DEFAULTS, AS_OF, currency="GBP")
+    assert res["flag"] is None
+    assert res["z"] is not None and res["z"] > 0
+    assert res["score"] == 2
+
+
+def test_direction_mismatch_excluded_from_coverage_but_shown_in_breakdown():
+    """Mirrors test_no_consensus_indicator_excluded_from_coverage_but_shown_in_breakdown:
+    a direction_mismatch print dilutes nothing — same isolation as no_consensus/stale."""
+    ind_cfg = _indicators_cfg()
+    ind_cfg["indicators"]["employment_change"] = EMPLOYMENT_CHANGE_CFG
+    cal = _rows_named("GBP", "employment_change", [31.2, 6.7, -11.0], [25.8, 29.4, 16.5],
+                      "Some Other Event")
+    card = compute_currency_scorecard(cal, "GBP", ind_cfg, _instruments_cfg(), AS_OF)
+    assert "employment_change" in card["breakdown"]
+    assert card["breakdown"]["employment_change"]["flag"] == "direction_mismatch"
+    assert card["categories"]["labour"]["coverage"] == 0
+
+    cal_without = cal[cal["indicator_key"] != "employment_change"]
+    card_without = compute_currency_scorecard(cal_without, "GBP", ind_cfg, _instruments_cfg(), AS_OF)
+    assert card["categories"]["labour"] == card_without["categories"]["labour"]
+    assert card["index"] == card_without["index"]

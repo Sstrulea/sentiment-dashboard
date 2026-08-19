@@ -254,6 +254,12 @@ INDICATOR_LABEL_OVERRIDES: dict[tuple[str, str], dict] = {
     ("GBP", "ppi_yoy"):  {"label": "PPI Output (MoM)",         "transform": "MoM"},  # fed by "PPI Output m/m"
     ("JPY", "cpi_yoy"):  {"label": "National Core CPI (YoY)",  "transform": "YoY"},  # fed by "National Core CPI y/y" — Japan's own ex-fresh-food core measure, not a headline CPI
     ("AUD", "ppi_yoy"):  {"label": "PPI (QoQ)",                "transform": "QoQ"},  # AUD PPI is quarterly, fed by "PPI q/q"
+    # GBP employment_change is fed by "Claimant Count Change" (UK matcher
+    # rule), not a jobs-created series like the rest of this indicator_key —
+    # display label only; the polarity fix itself is
+    # data/economic_indicators.yaml's direction_overrides (fix/claimant-
+    # count-polarity, 2026-08), a separate mechanism from this one.
+    ("GBP", "employment_change"): {"label": "Claimant Count Change"},
 }
 
 # Default transform for a currency/indicator pair with NO entry above — i.e.
@@ -428,10 +434,23 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
     for (ccy, key), entry in INDICATOR_LABEL_OVERRIDES.items():
         label_overrides.setdefault(ccy, {})[key] = entry["label"]
 
+    # Per-currency direction overrides — {currency: {indicator_key: direction}},
+    # sparse, only where it differs from the global direction (mirrors
+    # data/economic_indicators.yaml's own direction_overrides, e.g. GBP
+    # employment_change/"Claimant Count Change" — see effective_direction in
+    # economic_compute.py). The "⤵ Inverted" badge checks this first, falls
+    # back to indicators[key].direction (global) when absent.
+    direction_overrides: dict[str, dict[str, int]] = {}
+    for key, cfg in indicators.items():
+        for ccy, d in (cfg.get("direction_overrides") or {}).items():
+            if int(d) != int(cfg.get("direction", 1)):
+                direction_overrides.setdefault(ccy, {})[key] = int(d)
+
     return {
         "categories": cat_meta,
         "indicators": ind_meta,
         "indicator_label_overrides": label_overrides,
+        "indicator_direction_overrides": direction_overrides,
         "categories_display": instruments_cfg.get("categories_display", []),
         "table_layout": table_layout,
         "bias_thresholds": instruments_cfg.get("bias_thresholds", {}),

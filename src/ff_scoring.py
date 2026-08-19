@@ -52,7 +52,7 @@ CCY2COUNTRY = {
 }
 
 SCORING_COLUMNS = ["currency", "indicator_key", "release_dt", "actual",
-                   "consensus", "previous", "source"]
+                   "consensus", "previous", "source", "name_raw"]
 
 
 def build_matcher() -> CompiledMatcher:
@@ -214,6 +214,7 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
         recs.append({
             "currency": r.currency, "indicator_key": key, "release_dt": r.datetime_utc,
             "actual": actual, "consensus": consensus, "previous": r.previous, "source": "ff",
+            "name_raw": r.name_raw,
         })
         meta.append((r.canonical_id, release_date, old_valid))
 

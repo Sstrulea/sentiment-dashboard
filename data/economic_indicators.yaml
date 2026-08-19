@@ -215,6 +215,23 @@ indicators:
     # only Unemployment Rate, no separate "change in employment" release).
     # No-op on scoring; makes configured coverage honest.
     currencies: [USD, EUR, GBP, AUD, NZD, CAD]
+    # GBP polarity fix (fix/claimant-count-polarity, 2026-08): GBP's
+    # employment_change is fed by "Claimant Count Change" (UK matcher rule
+    # below), NOT a jobs-created series like every other currency mapped to
+    # this key — it counts people newly CLAIMING unemployment benefits, so
+    # fewer claimants = a stronger labour market = bullish GBP. Inverted vs.
+    # NFP (USD)/Employment Change (AUD/CAD/NZD)/Flash Employment Change (EUR),
+    # which all count jobs gained and are correctly direction:1 above.
+    # `direction_overrides` is per-currency (mirrors frequency_overrides just
+    # above), NOT a flip of the global `direction:` — that would silently
+    # invert USD/AUD/CAD/NZD/EUR too. `direction_override_expect` is the
+    # guard: if FF ever remaps the GBP employment_change matcher rule to a
+    # different raw event name, compute_indicator_score refuses to apply this
+    # override (quarantines the indicator instead of silently inverting
+    # whatever now feeds this key) — see effective_direction/
+    # direction_override_expect in src/economic_compute.py.
+    direction_overrides: { GBP: -1 }
+    direction_override_expect: { GBP: "Claimant Count Change" }
   unemployment_rate:
     pillar: labour
     category: labour

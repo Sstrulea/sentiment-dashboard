@@ -12,10 +12,13 @@ Pipeline (see DESIGN spec):
 """
 from __future__ import annotations
 
+import logging
 import math
 from typing import Any
 
 import pandas as pd
+
+log = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -66,6 +69,18 @@ def effective_frequency(indicator_cfg: dict, defaults: dict, currency: str | Non
     if currency and currency in overrides:
         return overrides[currency]
     return indicator_cfg.get("frequency") or defaults.get("default_frequency")
+
+
+def effective_direction(indicator_cfg: dict, defaults: dict, currency: str | None) -> float:
+    """Resolve an indicator's polarity direction for a currency (per-currency
+    override wins). Mirrors `effective_frequency` exactly: config resolution
+    only, no data validation — see `compute_indicator_score`'s
+    `direction_override_expect` guard for the data-side check that decides
+    whether an active override is actually trustworthy before it is used."""
+    overrides = indicator_cfg.get("direction_overrides", {}) or {}
+    if currency and currency in overrides:
+        return float(overrides[currency])
+    return float(indicator_cfg.get("direction", 1))
 
 
 def _max_age_for(indicator_cfg: dict, defaults: dict, freq: str | None) -> int:
@@ -210,6 +225,7 @@ def compute_indicator_score(
     as_of: pd.Timestamp,
     allow_stale: bool = False,
     currency: str | None = None,
+    indicator_key: str | None = None,
 ) -> dict | None:
     """Score the latest release of one (currency, indicator).
 
@@ -219,11 +235,27 @@ def compute_indicator_score(
     not dropped while still current. Flash/final double prints are collapsed to
     the final before scoring so the rolling sigma isn't polluted.
 
+    `indicator_key` is used only for the `direction_override_expect` guard's
+    log message (identifying which config entry tripped) — optional, callers
+    that don't need the guard's diagnostics may omit it.
+
     Returns None if there is no release with a non-NaN `actual` at all (truly
     absent). If the latest actual is OUTSIDE the window:
       - allow_stale=False (default): returns None (stale never enters aggregation).
       - allow_stale=True: scores it but marks `stale: True` for greyed display.
     Returns: {actual, consensus, surprise, z, score, flag, release_dt, stale}.
+
+    POLARITY GUARD: when `indicator_cfg.direction_overrides` carries an entry
+    for `currency` AND `indicator_cfg.direction_override_expect` also carries
+    one, the override is only trusted if every non-null `name_raw` observed in
+    `sub_df` (after flash/final dedup) equals that expected string exactly. A
+    mismatch (FF silently remapped the event under this indicator_key, or
+    `name_raw` isn't even present in this calendar frame — e.g. the MT5
+    rollback path) does NOT fall back to the unmodified `direction` — that
+    would apply the WRONG polarity just as silently. Instead the indicator is
+    quarantined: `flag="direction_mismatch"`, `score=0`, logged at ERROR,
+    still returned (never raises) so one bad indicator degrades gracefully
+    rather than killing the whole scorecard/cron run.
     """
     if sub_df is None or sub_df.empty:
         return None
@@ -235,7 +267,7 @@ def compute_indicator_score(
     freq = effective_frequency(indicator_cfg, defaults, currency)
     max_age_days = _max_age_for(indicator_cfg, defaults, freq)
     dedup_gap = (defaults.get("dedup_gap_days", {}) or {}).get(freq)
-    direction = float(indicator_cfg.get("direction", 1))
+    direction = effective_direction(indicator_cfg, defaults, currency)
 
     df = sub_df.sort_values("release_dt").reset_index(drop=True)
     df = df.copy()
@@ -283,6 +315,32 @@ def compute_indicator_score(
 
     consensus = float(consensus)
     surprise = actual - consensus
+
+    direction_overrides = indicator_cfg.get("direction_overrides", {}) or {}
+    direction_expect = indicator_cfg.get("direction_override_expect", {}) or {}
+    if currency and currency in direction_overrides and currency in direction_expect:
+        expected_name = direction_expect[currency]
+        if "name_raw" in df.columns:
+            observed_names = set(df["name_raw"].dropna().unique())
+        else:
+            observed_names = None
+        if observed_names != {expected_name}:
+            log.error(
+                "direction guard failed for (%s, %s): expected name_raw=%r, observed=%r "
+                "— override NOT applied, indicator quarantined (not scored).",
+                currency, indicator_key, expected_name, observed_names,
+            )
+            return {
+                "actual": actual,
+                "consensus": consensus,
+                "surprise": surprise,
+                "z": None,
+                "score": 0,
+                "flag": "direction_mismatch",
+                "release_dt": release_dt,
+                "stale": stale,
+                "superseded_missing": superseded,
+            }
 
     # Trailing K prints with BOTH values present, up to and including latest.
     pairs = df[
@@ -401,7 +459,8 @@ def compute_currency_scorecard(
         # allow_stale=True so stale indicators appear in the breakdown (for
         # display), but they are EXCLUDED from the category average/index below.
         scored = compute_indicator_score(sub, ind_cfg, defaults, as_of,
-                                          allow_stale=True, currency=currency)
+                                          allow_stale=True, currency=currency,
+                                          indicator_key=key)
         if scored is None:
             continue
         # `category` is stamped onto the breakdown entry (not just used locally)
@@ -418,7 +477,12 @@ def compute_currency_scorecard(
         # from N exactly like `stale`: displayed in the breakdown for drill-down
         # (with its own badge), never diluting the category average with a
         # forced 0 that means "no surprise computable", not "no surprise".
-        if cat in per_cat and not scored.get("stale") and scored.get("flag") != "no_consensus":
+        # `direction_mismatch` (the direction_override_expect guard tripped —
+        # see compute_indicator_score) gets the identical treatment: a forced
+        # 0 with no trustworthy polarity behind it is exactly as diluting as a
+        # no-consensus 0.
+        if (cat in per_cat and not scored.get("stale")
+                and scored.get("flag") not in ("no_consensus", "direction_mismatch")):
             per_cat[cat].append((scored["score"], float(ind_cfg.get("weight", 1.0))))
 
     categories_out: dict[str, dict] = {}
