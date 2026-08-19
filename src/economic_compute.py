@@ -308,6 +308,17 @@ def compute_indicator_score(
     prior_rows = df[(df["release_dt"] < release_dt) & df["actual"].notna()]
     prior_actual = float(prior_rows["actual"].iloc[-1]) if not prior_rows.empty else None
 
+    # Revision sense (fix/revision-semantic-color): sign(previous - prior_actual)
+    # * effective_direction — >0 favorable to the currency, <0 unfavorable, None
+    # when unknown (no prior_actual/previous) or below epsilon (nothing to judge).
+    # Reuses `direction` already resolved above — no second polarity mechanism.
+    previous_val = latest["previous"] if "previous" in df.columns else None
+    revision_sense = None
+    if prior_actual is not None and previous_val is not None and pd.notna(previous_val):
+        rev_diff = float(previous_val) - prior_actual
+        if abs(rev_diff) > 1e-6:
+            revision_sense = 1 if rev_diff * direction > 0 else -1
+
     if not _is_num(consensus):
         return {
             "actual": actual,
@@ -320,6 +331,7 @@ def compute_indicator_score(
             "stale": stale,
             "superseded_missing": superseded,
             "prior_actual": prior_actual,
+            "revision_sense": revision_sense,
         }
 
     consensus = float(consensus)
@@ -350,6 +362,7 @@ def compute_indicator_score(
                 "stale": stale,
                 "superseded_missing": superseded,
                 "prior_actual": prior_actual,
+                "revision_sense": revision_sense,
             }
 
     # Trailing K prints with BOTH values present, up to and including latest.
@@ -379,6 +392,7 @@ def compute_indicator_score(
                 "stale": stale,
                 "superseded_missing": superseded,
                 "prior_actual": prior_actual,
+                "revision_sense": revision_sense,
             }
         pct = direction * surprise / abs(consensus)
         return {
@@ -392,6 +406,7 @@ def compute_indicator_score(
             "stale": stale,
             "superseded_missing": superseded,
             "prior_actual": prior_actual,
+            "revision_sense": revision_sense,
         }
 
     z = direction * surprise / sigma
@@ -406,6 +421,7 @@ def compute_indicator_score(
         "stale": stale,
         "superseded_missing": superseded,
         "prior_actual": prior_actual,
+        "revision_sense": revision_sense,
     }
 
 

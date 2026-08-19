@@ -1231,6 +1231,11 @@ table.econ-ind-table td.ei-num { text-align: right; }
 table.econ-ind-table td.ei-score { text-align: center; font-weight: 700; border-radius: 3px; }
 table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-space: nowrap; font-size: 11px; }
 .econ-inv { color: var(--warning-fg); cursor: help; }
+/* Revision sense (fix/revision-semantic-color) — text-only, no background,
+   deliberately distinct from Impact's saturated .ec-p2/.ec-n2 fills so a
+   revision is never misread as a score move. */
+.econ-rev-favorable { color: var(--success-fg); cursor: help; }
+.econ-rev-unfavorable { color: var(--warning-fg); cursor: help; }
 /* Discreet marker on a pair cell whose two legs use a different transform
    (e.g. CAD CPI m/m minus USD CPI y/y) — a caveat, not an error, so it's
    just an asterisk + tooltip, no color change. */
