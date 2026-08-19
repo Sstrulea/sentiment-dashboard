@@ -796,13 +796,18 @@
     if (!flag || flag === "ok") return '<span class="econ-flag flag-z">z-score</span>';
     if (flag === "fallback") return '<span class="econ-flag flag-fb" title="Too few prints for a stable sigma — scored on % surprise vs consensus">fallback</span>';
     if (flag === "no_consensus") return '<span class="econ-flag flag-nc" title="No consensus available — scored 0">no consensus</span>';
+    if (flag === "direction_mismatch") return '<span class="econ-flag flag-nc" title="Polarity guard failed — observed raw event name doesn\'t match what direction_override_expect requires; excluded from scoring pending review">direction guard</span>';
     return '<span class="econ-flag">' + flag + '</span>';
   }
 
   function indicatorRow(key, e, ccy) {
     const meta = indMeta(key);
     const label = ccy ? indLabelForCcy(key, ccy) : (meta.label || key);
-    const inverted = meta.direction === -1
+    // Effective direction: per-currency override (state.payload.meta.
+    // indicator_direction_overrides, sparse) wins, else the global indMeta one.
+    const dirOverrides = ccy && (state.payload.meta.indicator_direction_overrides || {})[ccy];
+    const effDirection = (dirOverrides && key in dirOverrides) ? dirOverrides[key] : meta.direction;
+    const inverted = effDirection === -1
       ? ' <span class="econ-inv" title="Inverted: a higher actual is bearish for this currency">⤵</span>'
       : '';
     const zTxt = (e.z === null || e.z === undefined) ? "—" : fmtSigned(e.z, 2);
@@ -1230,13 +1235,14 @@
     const signed = (e.score === null || e.score === undefined) ? null : sign * e.score;
     const scoreTxt = (signed === null) ? "—" : fmtScoreCell(signed);
     const scoreCls = (signed === null) ? "" : cellClass(signed);
-    // Row is excluded from the category average for exactly two reasons
-    // (compute_currency_scorecard): stale, or no_consensus. Both get the
-    // same dimmed-row treatment so exclusion is visible at a glance, not
+    // Row is excluded from the category average for three reasons
+    // (compute_currency_scorecard): stale, no_consensus, or direction_mismatch
+    // (the direction_override_expect polarity guard tripped). All three get
+    // the same dimmed-row treatment so exclusion is visible at a glance, not
     // just via the small inline flag badge — distinct classes so the
     // reason is still inspectable (title text differs per badge above).
     const rowCls = e.stale ? ' class="ei-stale"'
-      : (e.flag === "no_consensus" ? ' class="ei-no-consensus"' : '');
+      : ((e.flag === "no_consensus" || e.flag === "direction_mismatch") ? ' class="ei-no-consensus"' : '');
     return (
       '<tr' + rowCls + '>' +
       '<td class="ei-name">' + (meta.label || key) + '</td>' +

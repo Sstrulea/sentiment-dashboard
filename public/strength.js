@@ -166,14 +166,17 @@
     };
   }
 
-  // Impact state for one breakdown entry — score==0 has THREE distinct causes
+  // Impact state for one breakdown entry — score==0 has FOUR distinct causes
   // that must never render the same (see module docstring / PASUL 2 spec):
   // a real dead-zone ("neutral"), no_consensus ("no_forecast", excluded from
-  // N), or stale (excluded from N). Non-zero scores are directional as-is
+  // N), stale (excluded from N), or direction_mismatch ("direction_guard",
+  // excluded from N — the direction_override_expect polarity guard tripped
+  // in compute_indicator_score). Non-zero scores are directional as-is
   // (direction is already baked into `score` by compute_indicator_score).
   function impactState(e) {
     if (!e) return "neutral";
     if (e.flag === "no_consensus") return "no_forecast";
+    if (e.flag === "direction_mismatch") return "direction_guard";
     if (e.stale) return "stale";
     if (!e.score) return "neutral";
     return e.score > 0 ? "bullish" : "bearish";
@@ -351,12 +354,17 @@
   function flagBadge(state_) {
     if (state_ === "no_forecast") return '<span class="econ-flag flag-nc" title="No consensus available — scored 0, excluded from N">No forecast</span>';
     if (state_ === "stale") return '<span class="econ-flag flag-stale" title="Latest release is older than max_age_days — excluded from N">Stale</span>';
+    if (state_ === "direction_guard") return '<span class="econ-flag flag-nc" title="Polarity guard failed — observed raw event name doesn\'t match what direction_override_expect requires; excluded from scoring pending review">Direction guard</span>';
     return "";
   }
 
   function indicatorRowHtml(key, e, ccy) {
     const meta = indMeta(key);
     const label = ccy ? indLabelForCcy(key, ccy) : (meta.label || key);
+    const dirOverrides = ccy && (state.payload.meta.indicator_direction_overrides || {})[ccy];
+    const effDirection = (dirOverrides && key in dirOverrides) ? dirOverrides[key] : meta.direction;
+    const inverted = effDirection === -1
+      ? ' <span class="econ-inv" title="Inverted: a higher actual is bearish for this currency">⤵</span>' : '';
     const unit = meta.unit || { suffix: "", decimals: 1 };
     // rate_expectations has no calendar actual/consensus — latest_yield is its
     // closest analog (see INDICATOR_UNITS["rate_expectations"] in economic_render.py).
@@ -366,10 +374,11 @@
     const surpriseRaw = isRate ? null : e.surprise;
     const dateVal = e.release_dt || e.as_of;
     const impact = impactState(e);
-    const rowCls = impact === "stale" ? ' class="ei-stale"' : (impact === "no_forecast" ? ' class="ei-no-consensus"' : "");
+    const rowCls = impact === "stale" ? ' class="ei-stale"'
+      : ((impact === "no_forecast" || impact === "direction_guard") ? ' class="ei-no-consensus"' : "");
 
     let impactHtml;
-    if (impact === "no_forecast" || impact === "stale") {
+    if (impact === "no_forecast" || impact === "stale" || impact === "direction_guard") {
       impactHtml = flagBadge(impact);
     } else if (impact === "neutral") {
       impactHtml = '<span class="' + cellClass(0) + '">Neutral</span>';
@@ -379,7 +388,7 @@
 
     return (
       '<tr' + rowCls + '>' +
-      '<td class="ei-name">' + label + '</td>' +
+      '<td class="ei-name">' + label + inverted + '</td>' +
       '<td class="ei-date">' + fmtDate(dateVal) + '</td>' +
       '<td class="ei-num">' + fmtUnit(actualRaw, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(forecastRaw, unit) + '</td>' +
