@@ -321,6 +321,7 @@ def annex_display_thresholds(ff_after: pd.DataFrame, matcher, ind_cfg: dict,
                 note.append(f"STALE (last={last.date()}, cadence={cadence})")
             elif nmax < 8:
                 verdict = "BLOCKED"
+                note.append(f"n_max={nmax} < 8, even on Max window")
             else:
                 verdict = "FULL"
                 if n1y < 8:
