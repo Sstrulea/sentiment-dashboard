@@ -186,6 +186,25 @@ def test_payload_window_min_points_and_quarantine_visibility(ind_cfg):
     assert entry["window_options"] == {}
 
 
+def test_payload_json_has_no_bare_nan(ind_cfg):
+    """A row whose actual is NaN (e.g. nulled by to_scoring_frame's own
+    zero-widening gate, unrelated to quarantine) must serialize as JSON
+    `null`, never the bare `NaN` token — json.dumps(allow_nan=False) must not
+    raise on the real payload."""
+    catalog = {"categories": {"inflation": {"USD": [
+        {"indicator_key": "cpi_yoy", "role": "market", "rank": 1,
+        "display_label": "CPI (YoY)", "unit": "pct", "transform_real": "YoY"},
+    ]}}}
+    as_of = pd.Timestamp("2023-08-01")
+    rows = [_scoring_row("USD", "cpi_yoy", f"2023-{m:02d}-01", 3.0, 2.9, 2.9) for m in range(1, 5)]
+    rows[2]["actual"] = float("nan")
+    df = hc.compute_series_history(pd.DataFrame(rows), "USD", "cpi_yoy", ind_cfg, set())
+    payload = hc.build_payload(catalog, {("USD", "cpi_yoy"): df}, "v1", as_of=as_of)
+    hc.payload_size_bytes(payload)   # raises on a bare NaN (allow_nan=False) if any leaked
+    raw = json.dumps(payload, default=str, allow_nan=False)
+    assert "NaN" not in raw
+
+
 def test_payload_quarantined_row_never_visible_without_override(ind_cfg):
     catalog = {"categories": {"inflation": {"USD": [
         {"indicator_key": "cpi_yoy", "role": "market", "rank": 1,

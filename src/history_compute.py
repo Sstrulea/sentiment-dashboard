@@ -178,6 +178,20 @@ def compute_catalog(ff: pd.DataFrame, ind_cfg: dict, catalog: dict,
 # Payload
 # ---------------------------------------------------------------------------
 
+def _json_num(v):
+    """NaN/pd.NA -> None — plain float('nan') serializes as the bare `NaN`
+    token in Python's json.dumps, which is not valid JSON (most parsers
+    reject it); every numeric field in the payload must go through this."""
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return v
+
+
 def _window_points(df: pd.DataFrame, as_of: pd.Timestamp, days: Optional[int]) -> pd.DataFrame:
     visible = df[~df["quarantined"] | df["has_override"]]
     if days is not None:
@@ -213,9 +227,11 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                         window_options[wname] = {
                             "n": len(sub),
                             "points": [
-                                {"release_dt": r["release_dt"].isoformat(), "actual": r["actual"],
-                                "forecast": r["forecast"], "previous": r["previous"],
-                                "z": r["z"], "bucket": r["bucket"], "revised_from": r["revised_from"]}
+                                {"release_dt": r["release_dt"].isoformat(),
+                                "actual": _json_num(r["actual"]), "forecast": _json_num(r["forecast"]),
+                                "previous": _json_num(r["previous"]), "z": _json_num(r["z"]),
+                                "bucket": _json_num(r["bucket"]),
+                                "revised_from": _json_num(r["revised_from"])}
                                 for _, r in sub.iterrows()
                             ],
                         }
@@ -240,5 +256,7 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
 
 
 def payload_size_bytes(payload: dict) -> tuple[int, int]:
-    raw = json.dumps(payload, default=str).encode("utf-8")
+    """`allow_nan=False`: a bare NaN/Infinity is not valid JSON (most parsers
+    reject it) — fail loudly here rather than silently emit an invalid payload."""
+    raw = json.dumps(payload, default=str, allow_nan=False).encode("utf-8")
     return len(raw), len(gzip.compress(raw))
