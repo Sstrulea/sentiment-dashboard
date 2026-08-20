@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Economic History | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/chart.umd.min.js"></script>
+  <script src="/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+  {% include '_navbar.html.j2' %}
+
+  <main class="page-content history-page">
+    <header class="history-header">
+      <h1>Economic History</h1>
+      <p class="subtitle">Pilot: Inflation only. Print-by-print history behind <a href="/economic">Economic</a>'s
+      surprise score — actual bars colored by bucket, forecast tick per print, policy target where a matching
+      series exists.</p>
+    </header>
+
+    <div class="history-controls">
+      <div class="hc-group">
+        <label for="historyCcySelect" class="cat-filter-label">Currency:</label>
+        <select id="historyCcySelect" class="history-ccy-select"></select>
+      </div>
+      <div class="hc-group">
+        <span class="cat-filter-label">Series:</span>
+        <div class="history-series-chips" id="historySeriesChips"></div>
+      </div>
+    </div>
+
+    <section class="chart-section">
+      <div class="history-strip" id="historyStrip"></div>
+      <div class="chart-controls">
+        <div class="window-selector" id="historyWindowSelector" role="tablist" aria-label="Time window"></div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="historyChart"></canvas>
+      </div>
+      <p class="history-target-note" id="historyTargetNote" hidden></p>
+    </section>
+  </main>
+
+  <script>
+    window.HISTORY_PAYLOAD = {{ payload_json | safe }};
+  </script>
+  <script src="/history.js"></script>
+</body>
+</html>

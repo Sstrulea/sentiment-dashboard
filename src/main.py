@@ -7,7 +7,7 @@ Modes:
     economic    — MT5 economic-calendar ingest + Economic Dashboard re-render
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
-    render-all  — re-render all 6 pages from existing parquet; no fetch, no writes
+    render-all  — re-render all 7 pages from existing parquet; no fetch, no writes
 """
 from __future__ import annotations
 
@@ -192,7 +192,7 @@ def _economic() -> int:
 
 
 def _render_all() -> int:
-    """Re-render all 6 pages from existing on-disk parquet — no network fetch,
+    """Re-render all 7 pages from existing on-disk parquet — no network fetch,
     no parquet writes. Used to keep shared assets (e.g. navbar) in sync across
     every page in one shot instead of relying on each pipeline's own re-render.
 
@@ -208,6 +208,7 @@ def _render_all() -> int:
     from .compute import build_latest_snapshot
     from .cot_score import HISTORY_FILE
     from .economic_render import render_economic_page, render_strength_page
+    from .history_render import render_history_page
     from .render import render_dashboard
     from .retail_render import render_retail_sentiment_page
     from .sentiment_render import render_pc_ratio_page, render_vix_ratio_page
@@ -236,6 +237,7 @@ def _render_all() -> int:
         ("Retail sentiment", render_retail_sentiment_page),
         ("Economic", render_economic_page),
         ("Currency Strength", render_strength_page),
+        ("History (inflation pilot)", render_history_page),
     ):
         try:
             out = render_fn()
