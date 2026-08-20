@@ -18,3 +18,5 @@ scripts/spike_jblanked/
 
 # manual FF calendar recovery backup (bc4fa96, 2026-07-29) — local-only, not part of the hotfix
 data/economic_calendar_ff.parquet.bak
+
+reports/
