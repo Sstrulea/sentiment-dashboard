@@ -141,7 +141,23 @@ indicators:
     # The same data z-scores to sigma=0.109, z=0.923, score +1. This
     # override tells the engine CAD's true cadence; every other currency's
     # gdp_qoq (genuinely quarterly) is untouched.
-    frequency_overrides: { CAD: monthly }
+    #
+    # GBP override ADDED 2026-08 (FAZA 1E, docs/faza1e-report.md): same
+    # mechanism, different matcher route. GBP's `gdp_qoq` is fed via this
+    # file's own matcher (United Kingdom: '^GDP m/m$' -> gdp_qoq, added
+    # 2026-06-11 — ONS discontinued "GDP q/q" in 2025-05, so the live scored
+    # release is the monthly "GDP m/m" print) rather than config/ff_aliases.yaml,
+    # but the downstream effect is identical: genuinely monthly data (median
+    # gap 29d) has no usable MT5 `period` in this feed, so
+    # `_dedup_flash_final` falls back to release-date proximity clustering —
+    # and the static `quarterly` frequency's 45d dedup_gap never sees a gap
+    # in GBP's real cadence, collapsing the ENTIRE history (44 rows) into a
+    # single cluster -> 2 kept -> forced pct fallback, saturating an ordinary
+    # -0.4pp miss on a -0.1 consensus (400%) to score -2. The same data
+    # z-scores to z=-1.474, score -1. This override tells the engine GBP's
+    # true cadence; every other currency's gdp_qoq (genuinely quarterly, or
+    # CAD's already-declared monthly above) is untouched.
+    frequency_overrides: { CAD: monthly, GBP: monthly }
   manufacturing_pmi:
     pillar: growth
     category: growth
