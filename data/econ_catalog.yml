@@ -1,0 +1,504 @@
+# Historical economic catalog — FAZA 1B.
+#
+# Populated EXCLUSIVELY from confirmed resolutions: FAZA 0 (candidate resolution
+# against real data), FAZA 0.5 (POLICY-role band verification across all raw
+# layers), FAZA 0.6 (label-mismatch inventory + live-replacement discovery),
+# FAZA 1A (BLOCKED/STALE display thresholds, at the 4-point minimum — see
+# "DECIZII LUATE" below, not the original 8-point FAZA 1A threshold). Nothing
+# here is guessed or re-derived by fuzzy matching; every indicator_key was
+# re-confirmed directly against data/economic_calendar_ff.parquet on 2026-08-20
+# before this file was written. A slot with no confirmed resolution is OMITTED,
+# never filled with a best-guess — see "OMITTED SERIES" at the bottom for the
+# full list with reasons.
+#
+# Decisions carried forward, not renegotiated here (FAZA 1B brief):
+#   - data_integrity.py is a DISPLAY-time filter only (build_quarantine_proposal),
+#     never wired into to_scoring_frame / compute_indicator_score. Confirmed
+#     zero measurable impact on today's scores (FAZA 1A) — the value is catalog
+#     hygiene (depth/staleness/graph correctness), not score correction.
+#   - Display windows: 1y / 2y / Max. Minimum 4 points (not FAZA 1A's original 8)
+#     for a window to render; STALE (last print older than 2x empirical cadence)
+#     blocks the whole series regardless of point count.
+#   - LABEL_PENDING never blocks display — the corrected display_label below
+#     (derived from the REAL name_raw, confirmed against the parquet) is used
+#     directly; there is no "pending" state left at this layer.
+#
+# Schema per series entry:
+#   indicator_key   — src/economic_compute.py / data/economic_indicators.yaml key.
+#                     null only for a `policy` entry with no matching series
+#                     (BAND_TEXT_ONLY, FAZA 0.5) — carries target_note instead.
+#   role            — market | secondary | policy
+#   rank            — display order within (category, currency)
+#   display_label   — derived from the REAL name_raw feeding this key (FAZA 0.6
+#                     Bloc D), NOT the canonical label where the two differ.
+#   unit            — pct | level
+#   transform_real  — MoM | QoQ | YoY | none — the series' ACTUAL transform,
+#                     confirmed against name_raw (may differ from what the
+#                     indicator_key's own name implies).
+#   mismatch_note   — present only where display_label required a correction —
+#                     what the canonical label said vs what the feed really is.
+#   target_note     — (policy, BAND_TEXT_ONLY only) free-text target description;
+#                     no series exists to plot a band, header text only.
+#   target_bands    — (policy, BAND_OK only) list of {low, high, effective_from,
+#                     effective_to} — NUMERIC VALUES ARE TODO, see bottom of file.
+
+categories:
+
+  inflation:
+    USD:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: core_cpi
+        role: secondary
+        rank: 2
+        display_label: "Core CPI (MoM)"
+        unit: pct
+        transform_real: MoM
+        mismatch_note: "canonical label 'Core CPI y/y'; real feed (name_raw 'Core CPI m/m') is MoM"
+      - indicator_key: null
+        role: policy
+        rank: 3
+        target_note: >-
+          Fed: 2% headline PCE y/y. No matching series in the feed — FAZA 0.5
+          Bloc B confirmed headline PCE never appears in any local layer
+          (parquet, archive, jb_raw, ff_raw), only Core PCE m/m. Header text only.
+
+    EUR:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "CPI Flash Estimate (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: core_cpi
+        role: secondary
+        rank: 2
+        display_label: "Core CPI Flash Estimate (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: cpi_yoy
+        role: policy
+        rank: 3
+        target_bands:
+          - low: TODO
+            high: TODO
+            effective_from: TODO
+            effective_to: null
+
+    GBP:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: core_cpi
+        role: secondary
+        rank: 2
+        display_label: "Core CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: cpi_yoy
+        role: policy
+        rank: 3
+        target_bands:
+          - low: TODO
+            high: TODO
+            effective_from: TODO
+            effective_to: null
+
+    JPY:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "National Core CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+        mismatch_note: >-
+          canonical label 'CPI y/y' reads as headline; real feed (name_raw
+          'National Core CPI y/y') is BOJ's ex-fresh-food core, not headline
+          all-items — no headline CPI series exists in any local layer (FAZA 0.5/0.6).
+      - indicator_key: tokyo_core_cpi_yoy
+        role: secondary
+        rank: 2
+        display_label: "Tokyo Core CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: null
+        role: policy
+        rank: 3
+        target_note: >-
+          BOJ: 2% CPI y/y (headline, all-items). No matching series — feed only
+          provides the ex-fresh-food core measure, used above as market/PRIM.
+          Header text only.
+
+    CAD:
+      - indicator_key: core_cpi
+        role: market
+        rank: 1
+        display_label: "Median CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: trimmed_cpi_yoy
+        role: secondary
+        rank: 2
+        display_label: "Trimmed CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: cpi_yoy
+        role: secondary
+        rank: 3
+        display_label: "CPI (MoM)"
+        unit: pct
+        transform_real: MoM
+        mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI m/m') is MoM"
+      - indicator_key: null
+        role: policy
+        rank: 4
+        target_note: >-
+          BoC: 2% CPI y/y (midpoint of a 1-3% control range). No clean matching
+          series — this currency's cpi_yoy slot is MoM data (see mismatch note
+          above), and core_cpi/trimmed_cpi_yoy are Median/Trimmed core measures,
+          not headline y/y. Header text only.
+
+    AUD:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+      - indicator_key: trimmed_mean_cpi_monthly
+        role: secondary
+        rank: 2
+        display_label: "Trimmed Mean CPI (MoM)"
+        unit: pct
+        transform_real: MoM
+        # REPLACES the FAZA 0 candidate `core_cpi` (RBA Trimmed Mean CPI y/y,
+        # quarterly): confirmed STALE (last print 2025-10-29, cadence quarterly,
+        # >2x cadence old as of 2026-08-20) — ABS moved AUD's trimmed-mean
+        # reporting to this monthly indicator (FAZA 0.6 C2/C3). n=6, real live
+        # replacement, not a guess.
+      - indicator_key: cpi_yoy
+        role: policy
+        rank: 3
+        target_bands:
+          - low: TODO
+            high: TODO
+            effective_from: TODO
+            effective_to: null
+
+    NZD:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "CPI (QoQ)"
+        unit: pct
+        transform_real: QoQ
+        mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI q/q') is QoQ — no y/y series exists in any local layer"
+      - indicator_key: null
+        role: policy
+        rank: 2
+        target_note: >-
+          RBNZ: 1-3% CPI y/y (midpoint 2%). No matching series — feed only
+          provides QoQ (see market slot above), no y/y variant found anywhere
+          locally. Header text only.
+
+    CHF:
+      - indicator_key: cpi_yoy
+        role: market
+        rank: 1
+        display_label: "CPI (MoM)"
+        unit: pct
+        transform_real: MoM
+        mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI m/m') is MoM — no y/y series exists in any local layer"
+      - indicator_key: null
+        role: policy
+        rank: 2
+        target_note: >-
+          SNB: price stability, informally <2% CPI y/y (not a point target).
+          No matching series — feed only provides MoM (see market slot above).
+          Header text only.
+
+  labor:
+    USD:
+      - indicator_key: employment_change
+        role: market
+        rank: 1
+        display_label: "Non-Farm Payrolls"
+        unit: level
+        transform_real: none
+      - indicator_key: unemployment_rate
+        role: secondary
+        rank: 2
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+      - indicator_key: wage_growth
+        role: secondary
+        rank: 3
+        display_label: "Average Hourly Earnings (MoM)"
+        unit: pct
+        transform_real: MoM
+        mismatch_note: "canonical label 'Average Hourly Earnings y/y'; real feed (name_raw 'Average Hourly Earnings m/m') is MoM"
+    CAD:
+      - indicator_key: employment_change
+        role: market
+        rank: 1
+        display_label: "Employment Change"
+        unit: level
+        transform_real: none
+      - indicator_key: unemployment_rate
+        role: secondary
+        rank: 2
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+    AUD:
+      - indicator_key: employment_change
+        role: market
+        rank: 1
+        display_label: "Employment Change"
+        unit: level
+        transform_real: none
+      - indicator_key: unemployment_rate
+        role: secondary
+        rank: 2
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+    NZD:
+      - indicator_key: employment_change
+        role: market
+        rank: 1
+        display_label: "Employment Change (QoQ)"
+        unit: pct
+        transform_real: QoQ
+      - indicator_key: unemployment_rate
+        role: secondary
+        rank: 2
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+    GBP:
+      - indicator_key: wage_growth
+        role: market
+        rank: 1
+        display_label: "Average Earnings Index (3M/Y)"
+        unit: pct
+        transform_real: "3M/Y"
+        mismatch_note: "canonical label 'Average Weekly Earnings, Total Pay y/y'; real feed (name_raw 'Average Earnings Index 3m/y') is a rolling 3-month/year measure, not plain y/y"
+      - indicator_key: unemployment_rate
+        role: secondary
+        rank: 2
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+      - indicator_key: employment_change
+        role: secondary
+        rank: 3
+        display_label: "Claimant Count Change"
+        unit: level
+        transform_real: none
+    EUR:
+      - indicator_key: unemployment_rate
+        role: market
+        rank: 1
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+    JPY:
+      - indicator_key: unemployment_rate
+        role: market
+        rank: 1
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+    CHF:
+      - indicator_key: unemployment_rate
+        role: market
+        rank: 1
+        display_label: "Unemployment Rate"
+        unit: pct
+        transform_real: none
+
+  growth:
+    USD:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP Advance (QoQ)"
+        unit: pct
+        transform_real: QoQ
+      - indicator_key: retail_sales
+        role: secondary
+        rank: 2
+        display_label: "Retail Sales (MoM)"
+        unit: pct
+        transform_real: MoM
+    GBP:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP (MoM)"
+        unit: pct
+        transform_real: MoM
+        mismatch_note: >-
+          key name "gdp_qoq" implies QoQ; canonical label is ALREADY correctly
+          "GDP m/m" (GBP discontinued its GDP q/q release) — the mismatch is at
+          the shared indicator_key's own name, not the label (FAZA 0.6 Bloc D
+          KEY_NAME_MISMATCH). display_label above is unaffected either way.
+        # FAZA 0 candidate "GDP q/q Prelim" (SEC) resolved to the SAME series
+        # (score 57.1, low confidence, no distinct secondary GDP series exists —
+        # confirmed in FAZA 0.6 C3: no "GDP 3m/3m" anywhere, "Prelim GDP q/q" and
+        # "Final GDP q/q" exist but unaliased). Not duplicated as a second entry.
+    CAD:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP (MoM)"
+        unit: pct
+        transform_real: MoM
+        mismatch_note: "canonical label 'GDP q/q'; real feed (name_raw 'GDP m/m') is MoM"
+    EUR:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP Flash (QoQ)"
+        unit: pct
+        transform_real: QoQ
+      - indicator_key: retail_sales
+        role: secondary
+        rank: 2
+        display_label: "Retail Sales (MoM)"
+        unit: pct
+        transform_real: MoM
+    AUD:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP (QoQ)"
+        unit: pct
+        transform_real: QoQ
+      - indicator_key: retail_sales
+        role: secondary
+        rank: 2
+        display_label: "Retail Sales / Household Spending (MoM)"
+        unit: pct
+        transform_real: MoM
+        # name_raw regime change mid-series (FAZA 0.6 C1): "Retail Sales m/m"
+        # (n=33, 2023-01-09..2025-07-31) -> "Household Spending m/m" (n=10,
+        # 2025-10-02..today), same indicator_key, clean handoff, no overlap.
+    NZD:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP (QoQ)"
+        unit: pct
+        transform_real: QoQ
+    CHF:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP (QoQ)"
+        unit: pct
+        transform_real: QoQ
+    # JPY growth: OMITTED entirely — see "OMITTED SERIES" at the bottom
+    # (gdp_qoq n=3, below the 4-point minimum even on Max).
+
+  rates:
+    USD:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "Federal Funds Rate"
+        unit: pct
+        transform_real: none
+    EUR:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "ECB Main Refinancing Rate"
+        unit: pct
+        transform_real: none
+    GBP:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "BoE Official Bank Rate"
+        unit: pct
+        transform_real: none
+    JPY:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "BOJ Policy Rate"
+        unit: pct
+        transform_real: none
+    CAD:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "BoC Overnight Rate"
+        unit: pct
+        transform_real: none
+    AUD:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "RBA Cash Rate"
+        unit: pct
+        transform_real: none
+    NZD:
+      - indicator_key: interest_rate_decision
+        role: policy
+        rank: 1
+        display_label: "RBNZ Official Cash Rate"
+        unit: pct
+        transform_real: none
+    # CHF rates: OMITTED — see "OMITTED SERIES" at the bottom (SNB Policy Rate
+    # STALE, last print 2025-06-19, no further value under any name since).
+
+# -----------------------------------------------------------------------------
+# OMITTED SERIES (confirmed candidates that did NOT make it into the catalog)
+# -----------------------------------------------------------------------------
+# growth/JPY market (gdp_qoq, name_raw "Prelim GDP q/q"): n=3, spanning
+#   2026-02-15..2026-08-16 only — below the 4-point minimum even on the Max
+#   window. No substitute GDP series confirmed for JPY.
+#
+# rates/CHF policy (interest_rate_decision, "SNB Policy Rate"): STALE — last
+#   print 2025-06-19, cadence quarterly, >2x cadence old as of 2026-08-20 (FAZA
+#   0.6 C1 / FAZA 1A Annex). SNB continues deciding rates (confirmed via
+#   "SNB Monetary Policy Assessment"/"SNB Press Conference" markers, quarterly,
+#   through 2026-06-18) but the feed has not emitted a numeric value under any
+#   name since 2025-06-19 — not a config/alias gap, a feed gap.
+#
+# inflation/AUD secondary — core_cpi (RBA Trimmed Mean CPI y/y, the ORIGINAL
+#   FAZA 0 candidate): STALE (last print 2025-10-29), replaced above by
+#   trimmed_mean_cpi_monthly. The dead slot itself is not listed.
+#
+# labor/EUR secondary — "German Unemployment Change": UNRESOLVED in FAZA 0 (only
+#   ever found in the raw JBlanked feed, never aliased — EUR is scored
+#   exclusively from "European Union" aggregate releases by design, member-state
+#   events are intentionally excluded). No indicator_key exists to list.
+#
+# growth/GBP secondary — "GDP q/q Prelim": no distinct series exists (see
+#   mismatch_note under growth/GBP above); not duplicated as a second entry.
+#
+# inflation/CHF secondary — the FAZA 0 SEC candidate "CPI y/y" resolved to the
+#   SAME indicator_key (cpi_yoy) as market, fed by the same "CPI m/m" data —
+#   not a distinct series, not duplicated.
+#
+# -----------------------------------------------------------------------------
+# TODO — target_bands needing real numeric values (left blank deliberately,
+# per FAZA 1B instruction — review and fill in, with a source/date):
+#   inflation.EUR.policy   — ECB symmetric target (commonly cited as 2%, HICP y/y)
+#   inflation.GBP.policy   — BoE target (commonly cited as 2%, CPI y/y)
+#   inflation.AUD.policy   — RBA target band (commonly cited as 2-3%, CPI y/y)
+# Each needs: low, high, effective_from (date the current mandate/framework took
+# effect), effective_to (null if still current). Framework changes over time —
+# that is why effective_from/effective_to exist even for a single entry today.
