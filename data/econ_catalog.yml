@@ -83,6 +83,12 @@ categories:
       - indicator_key: cpi_yoy
         role: policy
         rank: 3
+        display_label: "CPI Flash Estimate (YoY)"
+        unit: pct
+        transform_real: YoY
+        # same series as the market entry above (BAND_OK, FAZA 0.5 Bloc B) —
+        # label repeated here so a policy-band renderer doesn't need to cross-
+        # reference the market entry just to know what it's plotting.
         target_bands:
           - low: TODO
             high: TODO
@@ -105,6 +111,9 @@ categories:
       - indicator_key: cpi_yoy
         role: policy
         rank: 3
+        display_label: "CPI (YoY)"
+        unit: pct
+        transform_real: YoY
         target_bands:
           - low: TODO
             high: TODO
@@ -186,6 +195,9 @@ categories:
       - indicator_key: cpi_yoy
         role: policy
         rank: 3
+        display_label: "CPI (YoY)"
+        unit: pct
+        transform_real: YoY
         target_bands:
           - low: TODO
             high: TODO
