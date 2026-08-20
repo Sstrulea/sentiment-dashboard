@@ -14,12 +14,16 @@
   <main class="page-content history-page">
     <header class="history-header">
       <h1>Economic History</h1>
-      <p class="subtitle">Pilot: Inflation only. Print-by-print history behind <a href="/economic">Economic</a>'s
-      surprise score — actual bars colored by bucket, forecast tick per print, policy target where a matching
-      series exists.</p>
+      <p class="subtitle">Print-by-print history behind <a href="/economic">Economic</a>'s
+      surprise score — actual bars (step line for policy rates) colored by bucket, forecast tick per print,
+      policy target where a matching series exists.</p>
     </header>
 
     <div class="history-controls">
+      <div class="hc-group">
+        <span class="cat-filter-label">Category:</span>
+        <div class="history-cat-tabs" id="historyCatTabs" role="tablist" aria-label="Category"></div>
+      </div>
       <div class="hc-group">
         <label for="historyCcySelect" class="cat-filter-label">Currency:</label>
         <select id="historyCcySelect" class="history-ccy-select"></select>

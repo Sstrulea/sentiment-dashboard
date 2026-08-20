@@ -237,7 +237,7 @@ def _render_all() -> int:
         ("Retail sentiment", render_retail_sentiment_page),
         ("Economic", render_economic_page),
         ("Currency Strength", render_strength_page),
-        ("History (inflation pilot)", render_history_page),
+        ("History (inflation/growth/labor/rates)", render_history_page),
     ):
         try:
             out = render_fn()

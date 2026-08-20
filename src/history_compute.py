@@ -26,7 +26,7 @@ import pandas as pd
 import yaml
 
 from .economic_compute import compute_indicator_score
-from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, load_can_be_zero, to_scoring_frame
+from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, detect_cadence, load_can_be_zero, to_scoring_frame
 from .jb_actuals import build_flagged_bad_lookup
 from .manual_actuals import apply_overrides, load_overrides
 
@@ -263,7 +263,19 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                     "indicator_key": key, "display_label": entry.get("display_label"),
                     "unit": entry.get("unit"), "transform_real": entry.get("transform_real"),
                     "label_source": label_source, "target": entry.get("target"),
+                    # Rendering hints (Part 3): rates is a policy LEVEL series —
+                    # a bar chart implies discrete period-over-period surprise,
+                    # which is misleading for "the rate that's been in effect
+                    # since the last change"; the UI renders it as a step line
+                    # instead. `cadence_empirical` lets the UI badge a
+                    # quarterly/irregular series so its evenly-spaced x-axis
+                    # positions are never mistaken for evenly-spaced TIME.
+                    "chart_type": "step" if cat == "rates" else "bar",
                 }
+                printed_dates = series_cache[(ccy, key)]
+                printed_dates = printed_dates[printed_dates["actual"].notna()]["release_dt"]
+                base["cadence_empirical"] = (detect_cadence(printed_dates)
+                                             if len(printed_dates) >= 2 else "unknown")
                 if key in first_role_for_key:
                     # Same series already materialized under an earlier role in
                     # THIS (category, currency) — e.g. EUR/GBP/AUD's `policy`

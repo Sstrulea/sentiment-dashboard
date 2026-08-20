@@ -1572,11 +1572,27 @@ table.strength-matrix td.matrix-cell { cursor: default; }
   .strength-grid { grid-template-columns: 1fr; }
 }
 
-/* ---- History page (FAZA 1C, inflation pilot) --------------------------- */
+/* ---- History page (FAZA 1C pilot, FAZA 1D all categories) -------------- */
 .history-header .subtitle { color: var(--muted); font-size: 14px; max-width: 760px; }
 .history-controls {
   display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin: 16px 0;
 }
+.history-cat-tabs {
+  display: inline-flex; gap: 2px; background: var(--surface-alt); padding: 3px; border-radius: 8px;
+}
+.history-cat-tab {
+  background: transparent; color: var(--muted); border: none; padding: 6px 14px;
+  border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.15s ease;
+}
+.history-cat-tab:hover { color: var(--fg); }
+.history-cat-tab.active { background: var(--accent); color: #fff; }
+.history-cadence-badge {
+  display: inline-block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--muted); border: 1px solid var(--border); border-radius: 4px;
+  padding: 0 4px; margin-left: 5px; vertical-align: middle; opacity: 0.8;
+}
+.history-series-chip.active .history-cadence-badge { color: #fff; border-color: rgba(255,255,255,0.6); }
+.history-empty-category { color: var(--muted); text-align: center; padding: 40px; }
 .history-ccy-select {
   background: var(--surface); color: var(--fg); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 10px; font-size: 14px;

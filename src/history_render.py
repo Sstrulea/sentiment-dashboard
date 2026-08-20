@@ -1,11 +1,13 @@
-"""Renders /history.html (FAZA 1C — inflation-only UI pilot).
+"""Renders /history.html (FAZA 1D — all 4 categories: inflation/growth/labor/
+rates; FAZA 1C shipped inflation only as a pilot).
 
 Mirrors economic_render.py / sentiment_render.py's render-function pattern,
 but the payload is EMBEDDED in the page (a `window.HISTORY_PAYLOAD = {...}`
 script block), not fetched at runtime — a deliberate deviation from every
-other page on this site, per the FAZA 1C brief ("site static, fără fetch
-runtime"). Read-only over history_compute/data_integrity; does not touch
-to_scoring_frame, compute_indicator_score, or manual_actuals.py.
+other page on this site, per FAZA 1C's "site static, fără fetch runtime"
+requirement (unchanged in this phase). Read-only over history_compute/
+data_integrity; does not touch to_scoring_frame, compute_indicator_score, or
+manual_actuals.py.
 """
 from __future__ import annotations
 
@@ -42,15 +44,6 @@ def _build_quarantine_df(ff: pd.DataFrame, matcher: CompiledMatcher) -> pd.DataF
     return build_quarantine_proposal(ghosts, zeros)
 
 
-def build_inflation_only_catalog() -> dict:
-    """The FAZA 1C pilot renders ONLY the `inflation` category — the other 3
-    stay in data/econ_catalog.yml (used for backend testing/future phases)
-    but are NOT included in this page's payload."""
-    full = hc.load_catalog()
-    inflation = full.get("categories", {}).get("inflation", {})
-    return {"categories": {"inflation": inflation}}
-
-
 def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
     as_of = as_of or pd.Timestamp.now()
     if not FF_PARQUET.exists():
@@ -61,11 +54,11 @@ def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
     ind_cfg = hc.load_indicators_cfg()
     matcher = build_matcher()
-    catalog = build_inflation_only_catalog()
+    catalog = hc.load_catalog()   # all 4 categories (FAZA 1D)
 
     quarantine_df = _build_quarantine_df(ff, matcher)
     series_cache = hc.compute_catalog(ff, ind_cfg, catalog, quarantine_df, as_of=as_of)
-    return hc.build_payload(catalog, series_cache, catalog_version="inflation-pilot-2026-08-20", as_of=as_of)
+    return hc.build_payload(catalog, series_cache, catalog_version="2026-08-20-faza1d", as_of=as_of)
 
 
 def render_history_page() -> Path:
