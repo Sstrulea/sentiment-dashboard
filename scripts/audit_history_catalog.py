@@ -420,6 +420,73 @@ def _expected_suffix(desc: str) -> str:
 # Orchestration
 # ---------------------------------------------------------------------------
 
+def resolve_one(cat: str, ccy: str, rol: str, desc: str, ff: pd.DataFrame,
+                raw_uni: pd.DataFrame, pools: dict, matcher: CompiledMatcher,
+                indicators: dict, defaults: dict, flagged_bad: dict) -> dict:
+    """Resolve ONE (cat, ccy, rol, desc) candidate against the currency's pool
+    and compute its full metrics. Pulled out of `run()` (FAZA 0.5, docs/) so a
+    later script can reuse the IDENTICAL resolution path via import instead of
+    re-deriving it — `_subset`/`_is_raw_only` are extra (leading-underscore,
+    stripped before JSON serialization) so a caller that needs the resolved
+    row-level data for further analysis doesn't have to re-run the pool search."""
+    ranked = rank_pool(desc, pools[ccy])
+    top3 = [{"text": p["text"], "kind": p["kind"], "score": round(sc, 1)}
+            for sc, p in ranked[:3]]
+    if not ranked:
+        return {"cat": cat, "ccy": ccy, "rol": rol, "desc": desc,
+                "key": None, "resolved": False, "top3": top3,
+                "metrics": compute_metrics(pd.DataFrame(), ccy, False, {}, "none"),
+                "_subset": pd.DataFrame(), "_is_raw_only": False}
+
+    best_score, best = ranked[0]
+    is_raw_only = best["kind"] == "raw_only"
+    resolved = (best_score >= MATCH_SCORE_RESOLVE) and not is_raw_only
+
+    if best["kind"] in ("canonical", "parquet_raw"):
+        if best["kind"] == "canonical":
+            winning_canonical = best["text"]
+        else:
+            matches = ff[(ff["currency"] == ccy) & (ff["name_raw"] == best["text"])]
+            winning_canonical = matches["name_canonical"].iloc[0]
+        subset = ff[(ff["currency"] == ccy) & (ff["name_canonical"] == winning_canonical)]
+        indicator_key = matcher.match(CCY2COUNTRY.get(ccy, ""), winning_canonical)
+        key = indicator_key or f"canonical:{mk_canonical_id(ccy, winning_canonical)}"
+    else:
+        subset = raw_uni[(raw_uni["currency"] == ccy) & (raw_uni["name_raw"] == best["text"])]
+        indicator_key = None
+        key = f"raw:{mk_canonical_id(ccy, best['text'])}"
+
+    expected_suffix = _expected_suffix(desc)
+    metrics = compute_metrics(subset, ccy, is_raw_only, flagged_bad, expected_suffix)
+
+    freq_decl = "-"
+    if indicator_key and indicator_key in indicators:
+        freq_decl = effective_frequency(indicators[indicator_key], defaults, ccy) or "-"
+
+    flags = []
+    if not resolved:
+        flags.append("UNRESOLVED")
+    else:
+        if metrics["name_ok"] != "OK":
+            flags.append("NAME_HETERO")
+        if freq_decl != "-" and metrics["freq_emp"] not in ("unknown",) and freq_decl != metrics["freq_emp"]:
+            flags.append("FREQ_MISMATCH")
+        if metrics["n"] and metrics["n"] < THIN_N:
+            flags.append("THIN")
+        if metrics["xform_mismatch_pct"]:
+            flags.append("XFORM")
+    if not flags:
+        flags.append("OK")
+
+    return {
+        "cat": cat, "ccy": ccy, "rol": rol, "desc": desc, "key": key,
+        "indicator_key": indicator_key, "resolved": resolved, "score": round(best_score, 1),
+        "match_kind": best["kind"], "matched_text": best["text"], "top3": top3,
+        "freq_decl": freq_decl, "flags": flags, "metrics": metrics,
+        "_subset": subset, "_is_raw_only": is_raw_only,
+    }
+
+
 def run() -> dict:
     ind_cfg = load_indicators_cfg()
     matcher = CompiledMatcher(ind_cfg.get("matcher", {}) or {})
@@ -432,63 +499,9 @@ def run() -> dict:
 
     pools = {ccy: build_pool(ccy, ff, raw_uni) for ccy in CCYS}
 
-    results = []
-    for cat, ccy, rol, desc in CANDIDATES:
-        ranked = rank_pool(desc, pools[ccy])
-        top3 = [{"text": p["text"], "kind": p["kind"], "score": round(sc, 1)}
-                for sc, p in ranked[:3]]
-        if not ranked:
-            results.append({"cat": cat, "ccy": ccy, "rol": rol, "desc": desc,
-                            "key": None, "resolved": False, "top3": top3,
-                            "metrics": compute_metrics(pd.DataFrame(), ccy, False, {}, "none")})
-            continue
-
-        best_score, best = ranked[0]
-        is_raw_only = best["kind"] == "raw_only"
-        resolved = (best_score >= MATCH_SCORE_RESOLVE) and not is_raw_only
-
-        if best["kind"] in ("canonical", "parquet_raw"):
-            if best["kind"] == "canonical":
-                winning_canonical = best["text"]
-            else:
-                matches = ff[(ff["currency"] == ccy) & (ff["name_raw"] == best["text"])]
-                winning_canonical = matches["name_canonical"].iloc[0]
-            subset = ff[(ff["currency"] == ccy) & (ff["name_canonical"] == winning_canonical)]
-            indicator_key = matcher.match(CCY2COUNTRY.get(ccy, ""), winning_canonical)
-            key = indicator_key or f"canonical:{mk_canonical_id(ccy, winning_canonical)}"
-        else:
-            subset = raw_uni[(raw_uni["currency"] == ccy) & (raw_uni["name_raw"] == best["text"])]
-            indicator_key = None
-            key = f"raw:{mk_canonical_id(ccy, best['text'])}"
-
-        expected_suffix = _expected_suffix(desc)
-        metrics = compute_metrics(subset, ccy, is_raw_only, flagged_bad, expected_suffix)
-
-        freq_decl = "-"
-        if indicator_key and indicator_key in indicators:
-            freq_decl = effective_frequency(indicators[indicator_key], defaults, ccy) or "-"
-
-        flags = []
-        if not resolved:
-            flags.append("UNRESOLVED")
-        else:
-            if metrics["name_ok"] != "OK":
-                flags.append("NAME_HETERO")
-            if freq_decl != "-" and metrics["freq_emp"] not in ("unknown",) and freq_decl != metrics["freq_emp"]:
-                flags.append("FREQ_MISMATCH")
-            if metrics["n"] and metrics["n"] < THIN_N:
-                flags.append("THIN")
-            if metrics["xform_mismatch_pct"]:
-                flags.append("XFORM")
-        if not flags:
-            flags.append("OK")
-
-        results.append({
-            "cat": cat, "ccy": ccy, "rol": rol, "desc": desc, "key": key,
-            "indicator_key": indicator_key, "resolved": resolved, "score": round(best_score, 1),
-            "match_kind": best["kind"], "matched_text": best["text"], "top3": top3,
-            "freq_decl": freq_decl, "flags": flags, "metrics": metrics,
-        })
+    results = [resolve_one(cat, ccy, rol, desc, ff, raw_uni, pools, matcher,
+                          indicators, defaults, flagged_bad)
+              for cat, ccy, rol, desc in CANDIDATES]
 
     discovery_key = discovery_by_indicator_key(ff, matcher)
     discovery_raw = discovery_raw_census(ff, raw_uni)
@@ -556,10 +569,12 @@ def write_reports(audit: dict) -> None:
             f.write("reports/\n")
 
     json_path = REPORTS_DIR / "history_catalog_audit.json"
+    clean_results = [{k: v for k, v in r.items() if not k.startswith("_")}
+                     for r in audit["results"]]
     serializable = {
         "ff_parquet_rows": audit["ff_parquet_rows"],
         "raw_universe_rows": audit["raw_universe_rows"],
-        "results": audit["results"],
+        "results": clean_results,
         "discovery_by_indicator_key": audit["discovery_key"].to_dict(orient="records"),
         "discovery_raw_census": {ccy: df.to_dict(orient="records")
                                  for ccy, df in audit["discovery_raw"].items()},
