@@ -107,7 +107,8 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
     sub = sub.sort_values("release_dt").reset_index(drop=True)
     if sub.empty:
         return pd.DataFrame(columns=["release_dt", "actual", "forecast", "previous",
-                                     "z", "bucket", "revised_from", "quarantined", "has_override"])
+                                     "z", "bucket", "score_status", "revised_from",
+                                     "quarantined", "has_override"])
 
     def _is_quarantined(row) -> bool:
         if row["source"] == "manual":
@@ -123,21 +124,57 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
         if row["quarantined"]:
             rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
                         "forecast": row["consensus"], "previous": row["previous"],
-                        "z": None, "bucket": None, "quarantined": True,
-                        "has_override": False})
+                        "z": None, "bucket": None, "score_status": "quarantined",
+                        "quarantined": True, "has_override": False})
             continue
+        if pd.isna(row["actual"]):
+            # No print at all yet (scheduled/nulled) — there is nothing to
+            # score. `compute_indicator_score` would still return a result
+            # here (the LATEST *prior* real print, since its own `fresh`
+            # filter drops actual-null rows) — attaching THAT score to THIS
+            # row would silently mislabel an earlier release's z/bucket as
+            # this row's own (the bug: z=0.0/bucket=0.0 showing up on a
+            # release with no actual, indistinguishable from a genuine
+            # zero-surprise print). Never call it for a null-actual row.
+            rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
+                        "forecast": row["consensus"], "previous": row["previous"],
+                        "z": None, "bucket": None, "score_status": "no_actual",
+                        "quarantined": False, "has_override": bool(row["has_override"])})
+            continue
+
         clean_upto = clean[clean["release_dt"] <= row["release_dt"]]
         res = _score_one_point(clean_upto, cfg, defaults, row["release_dt"], currency, indicator_key)
+        if res is None:
+            z, bucket, status = None, None, "no_actual"
+        elif res["flag"] in ("no_consensus", "direction_mismatch"):
+            # A real print, but no trustworthy score: no forecast to compare
+            # against, or the direction-override guard tripped. compute_
+            # indicator_score forces score=0 for aggregation purposes (a
+            # "can't tell" 0, not a "no surprise" 0) — do not carry that
+            # forced 0 into a history chart as if it were a real bucket.
+            z, bucket, status = None, None, "insufficient_history"
+        elif res["z"] is None:
+            # Fallback path (< fallback_min_prints pairs, or sigma in {0, NaN}):
+            # z is genuinely undefined, but `score` is still a real pct-based
+            # bucket (the same one /economic shows) — keep it.
+            z, bucket, status = None, res["score"], "insufficient_history"
+        else:
+            z, bucket, status = res["z"], res["score"], "scored"
         rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
                     "forecast": row["consensus"], "previous": row["previous"],
-                    "z": res["z"] if res else None, "bucket": res["score"] if res else None,
+                    "z": z, "bucket": bucket, "score_status": status,
                     "quarantined": False, "has_override": bool(row["has_override"])})
 
     out = pd.DataFrame(rows)
     out["revised_from"] = None
-    clean_positions = out.index[~out["quarantined"]].tolist()
-    for pos in range(len(clean_positions) - 1):
-        i, j = clean_positions[pos], clean_positions[pos + 1]
+    # A revision compares two REAL prints only — a row with no actual can be
+    # neither the "before" nor the "after" side of a revision (P1.2: a null-
+    # actual row previously could still inherit a `revised_from` value purely
+    # because its own `previous` field happened to differ from an earlier
+    # print's actual — nonsensical, since THIS row itself never printed).
+    printed_positions = out.index[(~out["quarantined"]) & out["actual"].notna()].tolist()
+    for pos in range(len(printed_positions) - 1):
+        i, j = printed_positions[pos], printed_positions[pos + 1]
         a_n, prev_n1 = out.loc[i, "actual"], out.loc[j, "previous"]
         if pd.isna(a_n) or pd.isna(prev_n1):
             continue
@@ -210,6 +247,7 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
         cat_out: dict = {}
         for ccy, entries in ccys.items():
             series_list = []
+            first_role_for_key: dict[str, str] = {}   # indicator_key -> role that materialized it first
             for entry in entries:
                 key = entry.get("indicator_key")
                 label_source = "derived" if entry.get("mismatch_note") else "canonical"
@@ -219,6 +257,25 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                         "indicator_key": None, "target_note": entry.get("target_note"),
                     })
                     continue
+
+                base = {
+                    "role": entry["role"], "rank": entry["rank"],
+                    "indicator_key": key, "display_label": entry.get("display_label"),
+                    "unit": entry.get("unit"), "transform_real": entry.get("transform_real"),
+                    "label_source": label_source, "target": entry.get("target"),
+                }
+                if key in first_role_for_key:
+                    # Same series already materialized under an earlier role in
+                    # THIS (category, currency) — e.g. EUR/GBP/AUD's `policy`
+                    # entry is the identical series as `market` (BAND_OK, FAZA
+                    # 0.5 Bloc B). Reference it instead of duplicating every
+                    # point a second time (P1.4) — the UI resolves `points_ref`
+                    # against the sibling entry with that role in this same list.
+                    base["points_ref"] = {"role": first_role_for_key[key]}
+                    series_list.append(base)
+                    continue
+
+                first_role_for_key[key] = entry["role"]
                 df = series_cache[(ccy, key)]
                 window_options = {}
                 for wname, wdays in {**WINDOW_DAYS, "max": None}.items():
@@ -230,20 +287,14 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                                 {"release_dt": r["release_dt"].isoformat(),
                                 "actual": _json_num(r["actual"]), "forecast": _json_num(r["forecast"]),
                                 "previous": _json_num(r["previous"]), "z": _json_num(r["z"]),
-                                "bucket": _json_num(r["bucket"]),
+                                "bucket": _json_num(r["bucket"]), "score_status": r["score_status"],
                                 "revised_from": _json_num(r["revised_from"])}
                                 for _, r in sub.iterrows()
                             ],
                         }
-                series_list.append({
-                    "role": entry["role"], "rank": entry["rank"],
-                    "indicator_key": key, "display_label": entry.get("display_label"),
-                    "unit": entry.get("unit"), "transform_real": entry.get("transform_real"),
-                    "label_source": label_source,
-                    "target_bands": entry.get("target_bands"),
-                    "quarantine_count": int(df["quarantined"].sum()),
-                    "window_options": window_options,
-                })
+                base["quarantine_count"] = int(df["quarantined"].sum())
+                base["window_options"] = window_options
+                series_list.append(base)
             series_list.sort(key=lambda s: s["rank"])
             cat_out[ccy] = series_list
         categories_out[cat] = cat_out

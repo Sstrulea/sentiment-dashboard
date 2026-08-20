@@ -161,6 +161,39 @@ def test_z_bucket_matches_compute_indicator_score_for_latest_point(ind_cfg):
     assert last["bucket"] == direct["score"]
 
 
+def test_null_actual_row_never_inherits_a_prior_row_score(ind_cfg):
+    """FAZA 1C P1.1: the exact confirmed bug — a row with actual=NaN (nulled
+    upstream, e.g. by to_scoring_frame's own zero-gate) must get z=None/
+    bucket=None/score_status='no_actual', never the PRIOR real print's score
+    (compute_indicator_score's own `fresh` filter drops actual-null rows, so
+    calling it with as_of=this row's date silently returns an earlier row's
+    result — attaching that to this row mislabels it)."""
+    full_frame = pd.DataFrame([
+        _scoring_row("EUR", "cpi_yoy", "2025-09-02", 2.1, 2.1, 2.0),
+        _scoring_row("EUR", "cpi_yoy", "2025-10-01", None, 2.2, 2.0),   # no actual
+        _scoring_row("EUR", "cpi_yoy", "2025-10-31", 2.1, 2.1, 2.2),
+    ])
+    out = hc.compute_series_history(full_frame, "EUR", "cpi_yoy", ind_cfg, set())
+    null_row = out[out["release_dt"] == pd.Timestamp("2025-10-01")].iloc[0]
+    assert pd.isna(null_row["z"]) and pd.isna(null_row["bucket"])
+    assert null_row["score_status"] == "no_actual"
+    assert pd.isna(null_row["revised_from"])   # P1.2: no actual -> can't be a revision side
+
+
+def test_score_status_scored_for_real_print(ind_cfg):
+    """Rows before fallback_min_prints(6) pairs have accumulated correctly
+    fall to 'insufficient_history' (production's own fallback path, real
+    behavior, not a bug) — only once >=6 pairs exist is a row 'scored'."""
+    full_frame = pd.DataFrame([
+        _scoring_row("EUR", "cpi_yoy", f"2023-{m:02d}-01", 2.0 + 0.1 * m, 2.0, 2.0 + 0.1 * (m - 1))
+        for m in range(1, 8)
+    ])
+    out = hc.compute_series_history(full_frame, "EUR", "cpi_yoy", ind_cfg, set())
+    assert (out["score_status"].iloc[-2:] == "scored").all()
+    assert out["z"].iloc[-2:].notna().all()
+    assert (out["score_status"].iloc[:5] == "insufficient_history").all()
+
+
 def test_no_history_returns_empty_frame(ind_cfg):
     empty = pd.DataFrame(columns=["currency", "indicator_key", "release_dt", "actual",
                                   "consensus", "previous", "source", "name_raw"])
@@ -203,6 +236,28 @@ def test_payload_json_has_no_bare_nan(ind_cfg):
     hc.payload_size_bytes(payload)   # raises on a bare NaN (allow_nan=False) if any leaked
     raw = json.dumps(payload, default=str, allow_nan=False)
     assert "NaN" not in raw
+
+
+def test_payload_policy_dedup_via_reference_not_copy(ind_cfg):
+    """P1.4: a `policy` entry referencing the SAME indicator_key as an earlier
+    `market` entry in the same (category, currency) must carry `points_ref`
+    instead of a second copy of window_options."""
+    catalog = {"categories": {"inflation": {"EUR": [
+        {"indicator_key": "cpi_yoy", "role": "market", "rank": 1,
+        "display_label": "CPI (YoY)", "unit": "pct", "transform_real": "YoY"},
+        {"indicator_key": "cpi_yoy", "role": "policy", "rank": 2,
+        "display_label": "CPI (YoY)", "unit": "pct", "transform_real": "YoY",
+        "target": {"kind": "point", "value": 2.0}},
+    ]}}}
+    as_of = pd.Timestamp("2023-08-01")
+    rows = [_scoring_row("EUR", "cpi_yoy", f"2023-{m:02d}-01", 2.0, 2.0, 2.0) for m in range(1, 6)]
+    df = hc.compute_series_history(pd.DataFrame(rows), "EUR", "cpi_yoy", ind_cfg, set())
+    payload = hc.build_payload(catalog, {("EUR", "cpi_yoy"): df}, "v1", as_of=as_of)
+    market, policy = payload["categories"]["inflation"]["EUR"]
+    assert "window_options" in market and "points_ref" not in market
+    assert "window_options" not in policy
+    assert policy["points_ref"] == {"role": "market"}
+    assert policy["target"]["value"] == 2.0
 
 
 def test_payload_quarantined_row_never_visible_without_override(ind_cfg):

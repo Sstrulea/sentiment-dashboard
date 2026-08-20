@@ -39,8 +39,11 @@
 #                     what the canonical label said vs what the feed really is.
 #   target_note     — (policy, BAND_TEXT_ONLY only) free-text target description;
 #                     no series exists to plot a band, header text only.
-#   target_bands    — (policy, BAND_OK only) list of {low, high, effective_from,
-#                     effective_to} — NUMERIC VALUES ARE TODO, see bottom of file.
+#   target          — (policy, BAND_OK only) {kind: "point"|"band", value (point
+#                     only), low/high (band only), effective_from, effective_to,
+#                     source_note} — a point target (ECB/BoE) has one value; a
+#                     band (RBA) has low/high. See "Policy targets" note at the
+#                     bottom of this file for how each date was verified.
 
 categories:
 
@@ -62,10 +65,10 @@ categories:
       - indicator_key: null
         role: policy
         rank: 3
-        target_note: >-
-          Fed: 2% headline PCE y/y. No matching series in the feed — FAZA 0.5
-          Bloc B confirmed headline PCE never appears in any local layer
-          (parquet, archive, jb_raw, ff_raw), only Core PCE m/m. Header text only.
+        # No matching series in the feed for this target — FAZA 0.5 Bloc B
+        # confirmed headline PCE never appears in any local layer (parquet,
+        # archive, jb_raw, ff_raw), only Core PCE m/m. Header text only, no band.
+        target_note: "Fed: 2% headline PCE"
 
     EUR:
       - indicator_key: cpi_yoy
@@ -89,11 +92,16 @@ categories:
         # same series as the market entry above (BAND_OK, FAZA 0.5 Bloc B) —
         # label repeated here so a policy-band renderer doesn't need to cross-
         # reference the market entry just to know what it's plotting.
-        target_bands:
-          - low: TODO
-            high: TODO
-            effective_from: TODO
-            effective_to: null
+        target:
+          kind: point
+          value: 2.0
+          effective_from: "2021-07-08"
+          effective_to: null
+          source_note: >-
+            ECB Governing Council concluded its monetary policy strategy
+            review adopting "a symmetric 2% inflation target over the medium
+            term" (HICP). Announced 8 July 2021.
+            https://www.ecb.europa.eu/press/pr/date/2021/html/ecb.pr210708~dc78cc4b0d.en.html
 
     GBP:
       - indicator_key: cpi_yoy
@@ -114,11 +122,17 @@ categories:
         display_label: "CPI (YoY)"
         unit: pct
         transform_real: YoY
-        target_bands:
-          - low: TODO
-            high: TODO
-            effective_from: TODO
-            effective_to: null
+        target:
+          kind: point
+          value: 2.0
+          effective_from: "2003-12-10"
+          effective_to: null
+          source_note: >-
+            HM Treasury remit letter to the Bank of England Governor switched
+            the target measure to CPI at 2% (from 2.5% RPIX), dated 10
+            December 2003. Value unchanged since; the remit itself is
+            re-issued (not re-valued) at each Budget.
+            https://www.bankofengland.co.uk/letter/2003/chancellor-letter-101203
 
     JPY:
       - indicator_key: cpi_yoy
@@ -140,10 +154,9 @@ categories:
       - indicator_key: null
         role: policy
         rank: 3
-        target_note: >-
-          BOJ: 2% CPI y/y (headline, all-items). No matching series — feed only
-          provides the ex-fresh-food core measure, used above as market/PRIM.
-          Header text only.
+        # No matching series — feed only provides the ex-fresh-food core
+        # measure, used above as market/PRIM. Header text only, no band.
+        target_note: "BoJ: 2%"
 
     CAD:
       - indicator_key: core_cpi
@@ -168,11 +181,10 @@ categories:
       - indicator_key: null
         role: policy
         rank: 4
-        target_note: >-
-          BoC: 2% CPI y/y (midpoint of a 1-3% control range). No clean matching
-          series — this currency's cpi_yoy slot is MoM data (see mismatch note
-          above), and core_cpi/trimmed_cpi_yoy are Median/Trimmed core measures,
-          not headline y/y. Header text only.
+        # No clean matching series — this currency's cpi_yoy slot is MoM data
+        # (see mismatch note above), core_cpi/trimmed_cpi_yoy are Median/
+        # Trimmed core measures, not headline y/y. Header text only, no band.
+        target_note: "BoC: 2%, band 1-3%"
 
     AUD:
       - indicator_key: cpi_yoy
@@ -198,11 +210,18 @@ categories:
         display_label: "CPI (YoY)"
         unit: pct
         transform_real: YoY
-        target_bands:
-          - low: TODO
-            high: TODO
-            effective_from: TODO
-            effective_to: null
+        target:
+          kind: band
+          low: 2.0
+          high: 3.0
+          effective_from: "1996-08-14"
+          effective_to: null
+          source_note: >-
+            RBA "Statement on the Conduct of Monetary Policy", signed jointly
+            with the incoming Treasurer, 14 August 1996 — adopted keeping
+            underlying inflation between 2-3% on average over the cycle
+            (reaffirmed in later joint Statements, band unchanged since).
+            https://www.rba.gov.au/monetary-policy/framework/stmt-conduct-mp-1-14081996.html
 
     NZD:
       - indicator_key: cpi_yoy
@@ -215,10 +234,9 @@ categories:
       - indicator_key: null
         role: policy
         rank: 2
-        target_note: >-
-          RBNZ: 1-3% CPI y/y (midpoint 2%). No matching series — feed only
-          provides QoQ (see market slot above), no y/y variant found anywhere
-          locally. Header text only.
+        # No matching series — feed only provides QoQ (see market slot above),
+        # no y/y variant found anywhere locally. Header text only, no band.
+        target_note: "RBNZ: 1-3%, focus 2%"
 
     CHF:
       - indicator_key: cpi_yoy
@@ -231,10 +249,9 @@ categories:
       - indicator_key: null
         role: policy
         rank: 2
-        target_note: >-
-          SNB: price stability, informally <2% CPI y/y (not a point target).
-          No matching series — feed only provides MoM (see market slot above).
-          Header text only.
+        # No matching series — feed only provides MoM (see market slot above).
+        # Header text only, no band.
+        target_note: "SNB: 0-2%"
 
   labor:
     USD:
@@ -506,11 +523,10 @@ categories:
 #   not a distinct series, not duplicated.
 #
 # -----------------------------------------------------------------------------
-# TODO — target_bands needing real numeric values (left blank deliberately,
-# per FAZA 1B instruction — review and fill in, with a source/date):
-#   inflation.EUR.policy   — ECB symmetric target (commonly cited as 2%, HICP y/y)
-#   inflation.GBP.policy   — BoE target (commonly cited as 2%, CPI y/y)
-#   inflation.AUD.policy   — RBA target band (commonly cited as 2-3%, CPI y/y)
-# Each needs: low, high, effective_from (date the current mandate/framework took
-# effect), effective_to (null if still current). Framework changes over time —
-# that is why effective_from/effective_to exist even for a single entry today.
+# Policy targets (FAZA 1C, Part 2) — schema is `target: {kind: point|band, value
+# | low/high, effective_from, effective_to, source_note}` on the 3 BAND_OK
+# currencies (EUR/GBP/AUD), `target_note` (free text, no band renderable) on
+# the other 5. All 3 target dates verified against an official primary source
+# (ECB/BoE/RBA press release or remit letter, see each source_note) — not
+# guessed. effective_to is null on all three: no subsequent reframing found for
+# any of them as of 2026-08-20.
