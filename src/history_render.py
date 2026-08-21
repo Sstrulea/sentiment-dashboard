@@ -48,7 +48,8 @@ def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
     as_of = as_of or pd.Timestamp.now()
     if not FF_PARQUET.exists():
         return {"meta": {"generated_at": as_of.isoformat(), "catalog_version": "unavailable",
-                        "as_of": as_of.isoformat()}, "categories": {}}
+                        "as_of": as_of.isoformat()}, "categories": {},
+               "health": {"no_data": [], "stale": []}}
 
     ff = pd.read_parquet(FF_PARQUET)
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
@@ -58,7 +59,8 @@ def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
 
     quarantine_df = _build_quarantine_df(ff, matcher)
     series_cache = hc.compute_catalog(ff, ind_cfg, catalog, quarantine_df, as_of=as_of)
-    return hc.build_payload(catalog, series_cache, catalog_version="2026-08-20-faza1d", as_of=as_of)
+    return hc.build_payload(catalog, series_cache, catalog_version="2026-08-20-faza1d",
+                            ind_cfg=ind_cfg, as_of=as_of)
 
 
 def render_history_page() -> Path:

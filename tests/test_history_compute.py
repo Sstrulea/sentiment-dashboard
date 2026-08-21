@@ -275,3 +275,74 @@ def test_payload_quarantined_row_never_visible_without_override(ind_cfg):
     all_dts = {p["release_dt"] for w in entry["window_options"].values() for p in w["points"]}
     assert "2023-03-01T00:00:00" not in all_dts
     assert entry["quarantine_count"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Catalog health (FAZA 1G 3.1) — stale / no-data, logged + surfaced in payload
+# ---------------------------------------------------------------------------
+
+def test_payload_flags_zero_prints_as_no_data_and_health(ind_cfg):
+    """A catalog entry whose indicator_key/currency has ZERO real prints (a
+    typo, a matcher regression) must be flagged has_data=False on the entry
+    itself AND appear in payload['health']['no_data'] — never just an empty
+    window_options with no signal as to WHY."""
+    catalog = {"categories": {"inflation": {"USD": [
+        {"indicator_key": "totally_made_up_key", "role": "market", "rank": 1,
+        "display_label": "Fake", "unit": "pct"},
+    ]}}}
+    as_of = pd.Timestamp("2023-08-01")
+    empty = pd.DataFrame(columns=["currency", "indicator_key", "release_dt", "actual",
+                                  "consensus", "previous", "source", "name_raw",
+                                  "quarantined", "has_override", "z", "bucket",
+                                  "score_status", "revised_from"])
+    payload = hc.build_payload(catalog, {("USD", "totally_made_up_key"): empty}, "v1",
+                               ind_cfg=ind_cfg, as_of=as_of)
+    entry = payload["categories"]["inflation"]["USD"][0]
+    assert entry["has_data"] is False
+    assert entry["stale"] is False   # can't be stale with no last print at all
+    assert entry["last_print_release_dt"] is None
+    assert len(payload["health"]["no_data"]) == 1
+    assert payload["health"]["no_data"][0]["indicator_key"] == "totally_made_up_key"
+    assert payload["health"]["stale"] == []
+
+
+def test_payload_flags_old_last_print_as_stale_and_health(ind_cfg):
+    """A series WITH real prints, but whose latest one is older than its
+    effective max_age (45d for monthly, per the ind_cfg fixture), must be
+    flagged stale=True with age_days/last_print_release_dt, and appear in
+    payload['health']['stale'] — not silently render like a fresh series."""
+    catalog = {"categories": {"inflation": {"USD": [
+        {"indicator_key": "cpi_yoy", "role": "market", "rank": 1,
+        "display_label": "CPI (YoY)", "unit": "pct", "transform_real": "YoY"},
+    ]}}}
+    as_of = pd.Timestamp("2023-08-01")
+    rows = [_scoring_row("USD", "cpi_yoy", f"2023-{m:02d}-01", 3.0, 2.9, 2.9) for m in range(1, 6)]
+    full_frame = pd.DataFrame(rows)
+    df = hc.compute_series_history(full_frame, "USD", "cpi_yoy", ind_cfg, set())
+    payload = hc.build_payload(catalog, {("USD", "cpi_yoy"): df}, "v1", ind_cfg=ind_cfg, as_of=as_of)
+    entry = payload["categories"]["inflation"]["USD"][0]
+    assert entry["has_data"] is True
+    assert entry["stale"] is True
+    assert entry["last_print_release_dt"] == "2023-05-01T00:00:00"
+    assert entry["age_days"] == (as_of - pd.Timestamp("2023-05-01")).days
+    assert len(payload["health"]["stale"]) == 1
+    assert payload["health"]["stale"][0]["age_days"] == entry["age_days"]
+    assert payload["health"]["no_data"] == []
+
+
+def test_payload_fresh_series_is_neither_stale_nor_no_data(ind_cfg):
+    """A series whose latest real print is within the recency window must
+    NOT be flagged either way, and the health lists must stay empty."""
+    catalog = {"categories": {"inflation": {"USD": [
+        {"indicator_key": "cpi_yoy", "role": "market", "rank": 1,
+        "display_label": "CPI (YoY)", "unit": "pct", "transform_real": "YoY"},
+    ]}}}
+    as_of = pd.Timestamp("2023-05-10")   # 9 days after the last (2023-05-01) print
+    rows = [_scoring_row("USD", "cpi_yoy", f"2023-{m:02d}-01", 3.0, 2.9, 2.9) for m in range(1, 6)]
+    full_frame = pd.DataFrame(rows)
+    df = hc.compute_series_history(full_frame, "USD", "cpi_yoy", ind_cfg, set())
+    payload = hc.build_payload(catalog, {("USD", "cpi_yoy"): df}, "v1", ind_cfg=ind_cfg, as_of=as_of)
+    entry = payload["categories"]["inflation"]["USD"][0]
+    assert entry["has_data"] is True
+    assert entry["stale"] is False
+    assert payload["health"] == {"no_data": [], "stale": []}

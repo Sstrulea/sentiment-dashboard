@@ -10,15 +10,24 @@ Verifies that what the dashboard shows is the latest, correct data from MT5:
 Checks:
   1. FRESHNESS   — is economic.json newer than the MT5 CSV (dashboard not behind)?
   2. VALUES      — last published `actual` identical across CSV ↔ parquet ↔ JSON?
-  3. STALE FLAGS — which indicators are greyed/excluded (silent staleness made visible).
+  3. STALE FLAGS — which indicators are greyed/excluded (silent staleness made visible);
+                   also reads /history's own health report (payload["health"], stamped by
+                   history_compute.build_payload — FAZA 1G 3.1/3.3): a catalog entry with
+                   ZERO real prints (no_data — typo'd indicator_key, matcher regression,
+                   a series that should've been removed from econ_catalog.yml) is a
+                   FAILURE; a catalog entry whose latest real print fell outside its
+                   recency window (stale) is informational, same as /economic's own
+                   stale flags above.
 
-Exit code 0 if all PASS (stale flags are informational), 1 otherwise.
+Exit code 0 if all PASS (stale flags are informational; history no_data entries are NOT
+— see check 3), 1 otherwise.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -35,6 +44,7 @@ from src.economic_fetch import (
 
 ROOT = Path(__file__).resolve().parents[1]
 ECON_JSON = ROOT / "public" / "data" / "economic.json"
+HISTORY_HTML = ROOT / "public" / "history.html"
 
 # (currency, indicator_key) sample for the default value check.
 SAMPLE = [
@@ -51,6 +61,27 @@ def _latest_published(df: pd.DataFrame):
         return None
     row = pub.sort_values("release_dt").iloc[-1]
     return pd.Timestamp(row["release_dt"]).date(), float(row["actual"])
+
+
+_HISTORY_PAYLOAD_RE = re.compile(r"window\.HISTORY_PAYLOAD\s*=\s*(.*?);\s*</script>", re.S)
+
+
+def _load_history_payload() -> dict | None:
+    """Extract window.HISTORY_PAYLOAD from public/history.html — same technique
+    as reading any other embedded payload; there is no separate history.json
+    (the page embeds its data, per FAZA 1C's "no runtime fetch" design).
+    Returns None (not a failure by itself — see check 3) if the page doesn't
+    exist yet or can't be parsed; a missing/broken page is caught by check 1's
+    freshness logic once history.html is wired into it, not duplicated here."""
+    if not HISTORY_HTML.exists():
+        return None
+    m = _HISTORY_PAYLOAD_RE.search(HISTORY_HTML.read_text())
+    if not m:
+        return None
+    try:
+        return json.loads(m.group(1))
+    except json.JSONDecodeError:
+        return None
 
 
 def main(argv=None) -> int:
@@ -133,6 +164,36 @@ def main(argv=None) -> int:
             print(f"  {ccy} {key:22} age={age_str}")
     else:
         print("  none — every scored indicator is within its recency window.")
+
+    # ---- Check 3b: /history catalog health (FAZA 1G 3.3) -----------------
+    print("\n[3b] HISTORY CATALOG HEALTH (public/history.html — payload['health'])")
+    hist_payload = _load_history_payload()
+    if hist_payload is None:
+        print("  n/a — public/history.html not found or unparseable (skipped, not a failure;")
+        print("        this repo state may simply predate the /history page).")
+    else:
+        health = hist_payload.get("health", {})
+        no_data = health.get("no_data", [])
+        hist_stale = health.get("stale", [])
+        if no_data:
+            print(f"  NO-DATA — {len(no_data)} catalog entr(y/ies) with ZERO real prints "
+                 "(typo'd indicator_key, matcher regression, or a slot that should have")
+            print("            been removed from data/econ_catalog.yml):")
+            for e in sorted(no_data, key=lambda e: (e["currency"], e["indicator_key"])):
+                print(f"    {e['currency']} {e['indicator_key']:22} ({e['category']}) — {e['display_label']}")
+            print("  FAIL — a broken catalog entry is not a data-availability question, it's a config bug.")
+            failures += 1
+        else:
+            print("  NO-DATA — none. Every catalog entry resolves to at least one real print.")
+        if hist_stale:
+            print(f"  STALE   — {len(hist_stale)} series informational (real data, but the latest print")
+            print("            fell outside its recency window):")
+            for e in sorted(hist_stale, key=lambda e: (e["currency"], e["indicator_key"])):
+                print(f"    {e['currency']} {e['indicator_key']:22} ({e['category']}) — "
+                     f"last print {e['last_print_release_dt'][:10]}, {e['age_days']}d old "
+                     f"(max_age={e['max_age_days']}d)")
+        else:
+            print("  STALE   — none. Every catalog entry's latest real print is within its recency window.")
 
     print("\n" + "=" * 78)
     print("RESULT:", "✅ ALL PASS" if failures == 0 else f"❌ {failures} CHECK(S) FAILED")

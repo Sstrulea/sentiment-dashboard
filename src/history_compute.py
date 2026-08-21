@@ -19,16 +19,19 @@ from __future__ import annotations
 
 import gzip
 import json
+import logging
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
 import yaml
 
-from .economic_compute import compute_indicator_score
+from .economic_compute import _max_age_for, compute_indicator_score, effective_frequency
 from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, detect_cadence, load_can_be_zero, to_scoring_frame
 from .jb_actuals import build_flagged_bad_lookup
 from .manual_actuals import apply_overrides, load_overrides
+
+log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG_YAML = ROOT / "data" / "econ_catalog.yml"
@@ -237,10 +240,28 @@ def _window_points(df: pd.DataFrame, as_of: pd.Timestamp, days: Optional[int]) -
 
 
 def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFrame],
-                  catalog_version: str, as_of: Optional[pd.Timestamp] = None,
+                  catalog_version: str, ind_cfg: Optional[dict] = None,
+                  as_of: Optional[pd.Timestamp] = None,
                   generated_at: Optional[pd.Timestamp] = None) -> dict:
     as_of = as_of or pd.Timestamp.now()
     generated_at = generated_at or pd.Timestamp.now()
+    ind_cfg = ind_cfg or {}
+    ind_defaults = ind_cfg.get("defaults", {}) or {}
+    ind_indicators = ind_cfg.get("indicators", {}) or {}
+
+    # FAZA 1G 3.1 — a catalog entry that never has any real print (a typo'd
+    # indicator_key, a matcher regression, a currency the data source dropped)
+    # or whose latest real print has fallen outside its recency window (the
+    # exact `stale` concept /economic already has via compute_indicator_score,
+    # here computed once per underlying series since history_compute doesn't
+    # otherwise carry it) must never pass through unnoticed: logged loudly
+    # here (visible in any cron run's output) AND collected into
+    # payload["health"] so both the UI (a visible badge, static/history.js)
+    # and scripts/verify_data.py (an automated check, not just a human
+    # glancing at the page) can act on it without re-deriving anything.
+    health_no_data: list[dict] = []
+    health_stale: list[dict] = []
+    seen_for_health: set[tuple[str, str]] = set()
 
     categories_out: dict = {}
     for cat, ccys in catalog.get("categories", {}).items():
@@ -276,6 +297,44 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                 printed_dates = printed_dates[printed_dates["actual"].notna()]["release_dt"]
                 base["cadence_empirical"] = (detect_cadence(printed_dates)
                                              if len(printed_dates) >= 2 else "unknown")
+
+                # FAZA 1G 3.1 — stale / no-data, computed once per underlying
+                # series (identical for every role sharing this indicator_key
+                # via points_ref) but stamped onto every role's own payload
+                # entry so the UI can badge whichever chip is on screen.
+                has_data = len(printed_dates) > 0
+                last_print_dt = printed_dates.max() if has_data else None
+                age_days = int((as_of - last_print_dt).days) if last_print_dt is not None else None
+                cfg_for_key = ind_indicators.get(key, {})
+                freq = effective_frequency(cfg_for_key, ind_defaults, ccy)
+                max_age = _max_age_for(cfg_for_key, ind_defaults, freq)
+                stale = bool(has_data and age_days is not None and age_days > max_age)
+                base["has_data"] = has_data
+                base["stale"] = stale
+                base["last_print_release_dt"] = last_print_dt.isoformat() if last_print_dt is not None else None
+                base["age_days"] = age_days
+
+                if (ccy, key) not in seen_for_health:
+                    seen_for_health.add((ccy, key))
+                    label = entry.get("display_label") or key
+                    if not has_data:
+                        log.warning(
+                            "history catalog: %s/%s (%s, role=%s) has ZERO real prints — "
+                            "typo'd indicator_key, matcher regression, or a series that "
+                            "should have been removed from data/econ_catalog.yml.",
+                            ccy, key, label, entry["role"])
+                        health_no_data.append({"currency": ccy, "indicator_key": key,
+                                               "display_label": label, "category": cat})
+                    elif stale:
+                        log.warning(
+                            "history catalog: %s/%s (%s) STALE — last real print %s, "
+                            "%dd old, effective_frequency=%s (max_age=%dd).",
+                            ccy, key, label, base["last_print_release_dt"], age_days, freq, max_age)
+                        health_stale.append({"currency": ccy, "indicator_key": key,
+                                             "display_label": label, "category": cat,
+                                             "last_print_release_dt": base["last_print_release_dt"],
+                                             "age_days": age_days, "max_age_days": max_age})
+
                 if key in first_role_for_key:
                     # Same series already materialized under an earlier role in
                     # THIS (category, currency) — e.g. EUR/GBP/AUD's `policy`
@@ -311,10 +370,15 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
             cat_out[ccy] = series_list
         categories_out[cat] = cat_out
 
+    if health_no_data or health_stale:
+        log.warning("history catalog health: %d no-data + %d stale series (see entries above).",
+                   len(health_no_data), len(health_stale))
+
     return {
         "meta": {"generated_at": generated_at.isoformat(), "catalog_version": catalog_version,
                 "as_of": as_of.isoformat()},
         "categories": categories_out,
+        "health": {"no_data": health_no_data, "stale": health_stale},
     }
 
 

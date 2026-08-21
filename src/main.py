@@ -4,7 +4,7 @@ Modes:
     weekly      — COT full refresh (default; preserved behavior)
     daily       — VIX rebuild + P/C append for today + retail snapshot + re-render
     retail      — Retail sentiment snapshot + re-render only (3-hourly cron)
-    economic    — MT5 economic-calendar ingest + Economic Dashboard re-render
+    economic    — MT5 economic-calendar ingest + Economic/Strength/History re-render
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
     render-all  — re-render all 7 pages from existing parquet; no fetch, no writes
@@ -186,6 +186,14 @@ def _economic() -> int:
         log.info("Currency Strength page rendered → %s", strength_out)
     except Exception as e:
         log.error("Currency Strength render failed: %s", e)
+        return 2
+
+    try:
+        from .history_render import render_history_page
+        history_out = render_history_page()
+        log.info("History page rendered → %s", history_out)
+    except Exception as e:
+        log.error("History render failed: %s", e)
         return 2
 
     return 0

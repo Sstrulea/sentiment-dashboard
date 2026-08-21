@@ -14,10 +14,16 @@
   <main class="page-content history-page">
     <header class="history-header">
       <h1>Economic History</h1>
+      <div class="econ-meta-bar" id="historyMeta"><span class="muted">Loading…</span></div>
       <p class="subtitle">Print-by-print history behind <a href="/economic">Economic</a>'s
       surprise score — actual bars (step line for policy rates) colored by bucket, forecast tick per print,
       policy target where a matching series exists.</p>
     </header>
+
+    <noscript>
+      <p class="history-empty-category">This page needs JavaScript to render the chart and controls —
+      please enable it and reload.</p>
+    </noscript>
 
     <div class="history-controls">
       <div class="hc-group">
@@ -35,6 +41,7 @@
     </div>
 
     <section class="chart-section">
+      <p class="history-stale-banner" id="historyStaleBanner" hidden></p>
       <div class="history-strip" id="historyStrip"></div>
       <div class="chart-controls">
         <div class="window-selector" id="historyWindowSelector" role="tablist" aria-label="Time window"></div>

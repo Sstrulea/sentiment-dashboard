@@ -1593,6 +1593,10 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 }
 .history-series-chip.active .history-cadence-badge { color: #fff; border-color: rgba(255,255,255,0.6); }
 .history-empty-category { color: var(--muted); text-align: center; padding: 40px; }
+.history-stale-banner {
+  background: var(--warning-bg); color: var(--warning-fg);
+  border-radius: 8px; padding: 8px 14px; margin: 0 0 10px; font-size: 13px; font-weight: 600;
+}
 .history-ccy-select {
   background: var(--surface); color: var(--fg); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 10px; font-size: 14px;
