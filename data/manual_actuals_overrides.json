@@ -262,5 +262,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-19T14:02:10+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_cpi",
+  "currency": "JPY",
+  "indicator_key": "cpi_yoy",
+  "datetime_utc": "2026-08-20 23:30:00",
+  "actual": 1.8,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-22T09:41:18+00:00",
+  "note": ""
  }
 ]
