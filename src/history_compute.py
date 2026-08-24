@@ -175,6 +175,24 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
     # actual row previously could still inherit a `revised_from` value purely
     # because its own `previous` field happened to differ from an earlier
     # print's actual — nonsensical, since THIS row itself never printed).
+    #
+    # FAZA 1H — the revision belongs to the EARLIER row (N), not the later one
+    # (N+1): row N+1's own `previous` field IS the current, as-of-today true
+    # value of row N's reference period (whatever the market/BLS has since
+    # settled on), so:
+    #   original_actual[N] = actual[N]          (row N's OWN published print)
+    #   revised_value[N]   = previous[N+1]      (row N+1's `previous`, if any)
+    #   effective_value[N] = revised_value[N] if it differs, else original
+    # A published print can never itself carry "revised from" (that would
+    # mean row N+1's print already has a revision before row N+1 prints) —
+    # that was the bug: row N's original actual was showing up as row N+1's
+    # "revised from", implying N+1 was pre-revised.
+    #
+    # The bar renders `actual` (now overwritten to the effective/revised
+    # value below — the CURRENT truth, matching how a reader looks back at
+    # history) but z/bucket/score_status were already computed above from
+    # the ORIGINAL, as-published actual — that's the real-time surprise that
+    # moved the market and feeds /economic; it is never recomputed here.
     printed_positions = out.index[(~out["quarantined"]) & out["actual"].notna()].tolist()
     for pos in range(len(printed_positions) - 1):
         i, j = printed_positions[pos], printed_positions[pos + 1]
@@ -183,7 +201,8 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
             continue
         thresh = max(REVISION_EPS_ABS, REVISION_EPS_REL * abs(float(a_n)))
         if abs(float(prev_n1) - float(a_n)) > thresh:
-            out.loc[j, "revised_from"] = float(a_n)
+            out.loc[i, "revised_from"] = float(a_n)
+            out.loc[i, "actual"] = float(prev_n1)
     return out
 
 

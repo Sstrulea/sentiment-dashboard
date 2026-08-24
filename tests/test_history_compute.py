@@ -134,14 +134,24 @@ def test_override_wins_over_quarantine(ind_cfg):
 
 
 def test_revised_from_epsilon_and_direction(ind_cfg):
+    """FAZA 1H: the revision belongs to the EARLIER row (N), not the later
+    one (N+1) that merely reports the updated `previous`. Row 1
+    (2023-02-01)'s own actual (3.1) differs from row 2's `previous` (3.5) by
+    more than the epsilon -> row 1 carries revised_from=3.1 AND its `actual`
+    is overwritten to the effective/current value (3.5) — never row 2, which
+    is the row that PRINTED (a print can't already be "revised from"
+    something before it exists)."""
     full_frame = pd.DataFrame([
         _scoring_row("USD", "cpi_yoy", "2023-01-01", 3.0, 2.9, 2.8),
         _scoring_row("USD", "cpi_yoy", "2023-02-01", 3.1, 2.9, 3.05),   # 3.05 vs 3.0 -> 1.7% -> no revision
-        _scoring_row("USD", "cpi_yoy", "2023-03-01", 3.2, 3.0, 3.5),    # 3.5 vs 3.1 -> 12.9% -> revised_from=3.1
+        _scoring_row("USD", "cpi_yoy", "2023-03-01", 3.2, 3.0, 3.5),    # 3.5 vs 3.1 -> 12.9% -> row 1 revised
     ])
     out = hc.compute_series_history(full_frame, "USD", "cpi_yoy", ind_cfg, set())
-    assert out.iloc[1]["revised_from"] is None
-    assert out.iloc[2]["revised_from"] == 3.1
+    assert out.iloc[0]["revised_from"] is None
+    assert out.iloc[1]["revised_from"] == 3.1
+    assert out.iloc[1]["actual"] == 3.5          # effective value replaces the original
+    assert out.iloc[2]["revised_from"] is None   # last row: nothing revises it (yet)
+    assert out.iloc[2]["actual"] == 3.2          # unrevised rows are untouched
 
 
 def test_z_bucket_matches_compute_indicator_score_for_latest_point(ind_cfg):

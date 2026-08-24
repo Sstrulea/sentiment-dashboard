@@ -42,11 +42,6 @@
       forecastTick: dark ? "#eee" : "#333",
       targetLine: dark ? "#ffc107" : "#a67600",
       targetBand: dark ? "rgba(255, 193, 7, 0.10)" : "rgba(255, 193, 7, 0.14)",
-      revisionMarker: dark ? "#eee" : "#333",
-      revisionSpot: "#ab47bc",       // fixed (non-theme) color — deliberately
-                                      // high-contrast in both themes so a
-                                      // revision is spottable on a dense
-                                      // (Max, 40+ point) chart without hover.
       quarantineMarker: dark ? "#9aa0a6" : "#757575",
       tooltipBg: dark ? "rgba(10,10,10,0.95)" : "rgba(255,255,255,0.95)",
       tooltipFg: dark ? "#eee" : "#222",
@@ -104,6 +99,15 @@
     const d = new Date(iso);
     if (isNaN(d.getTime())) return iso;
     return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
+  }
+  // FAZA 1H 1 — `actual` on a point is the EFFECTIVE (possibly revised)
+  // value; the as-first-published figure (what the bucket color reflects)
+  // is `revised_from` when a revision exists, else `actual` itself is
+  // already the original. Anywhere "the surprise" needs computing (Delta),
+  // this is the actual to use — never the revised one, or the color and
+  // the number would tell two different stories.
+  function originalActualOf(p) {
+    return (p.revised_from !== null && p.revised_from !== undefined) ? p.revised_from : p.actual;
   }
   const STATUS_LABEL = {
     scored: "Scored", no_actual: "No print yet",
@@ -274,17 +278,18 @@
     if (!last) {
       strip.innerHTML = '<div class="hs-item"><span class="hs-value">No prints in this window</span></div>';
     } else {
-      const delta = (last.actual !== null && last.previous !== null) ? last.actual - last.previous : null;
+      // FAZA 1H 4 — Delta is the surprise (actual-as-published vs forecast),
+      // same reasoning/helper as the tooltip (point 3) — never actual-vs-
+      // previous (that was the old, removed "Delta (Act-Prev)").
+      const originalActual = originalActualOf(last);
+      const delta = (originalActual !== null && last.forecast !== null) ? originalActual - last.forecast : null;
       const deltaCls = delta === null ? "" : delta > 0 ? "hs-delta-pos" : delta < 0 ? "hs-delta-neg" : "";
       const statusNote = last.score_status !== "scored" ? " (" + STATUS_LABEL[last.score_status] + ")" : "";
       strip.innerHTML =
         item("Release", fmtDate(last.release_dt)) +
         item("Actual", fmtNum(last.actual) + unitSuffix + statusNote) +
         item("Forecast", fmtNum(last.forecast) + unitSuffix) +
-        item("Previous", fmtNum(last.previous) + unitSuffix) +
-        item("Delta (Act-Prev)", fmtNum(delta) + unitSuffix, deltaCls) +
-        (last.revised_from !== null && last.revised_from !== undefined
-          ? item("Revised from", fmtNum(last.revised_from) + unitSuffix) : "");
+        item("Delta (Act-Fcst)", fmtNum(delta) + unitSuffix, deltaCls);
     }
 
     const noteEl = document.getElementById("historyTargetNote");
@@ -322,30 +327,6 @@
       };
     }
     return annotations;
-  }
-
-  // FAZA 1D 4.2: a revision needs to be spottable WITHOUT hover, even on a
-  // dense (Max, 40+ point) chart. The original dashed connector line reused
-  // the bucket/neutral palette, which is easy to lose among the bars
-  // themselves at that density. Keep the connector (useful once you DO look
-  // closely / hover), but add a small filled dot in a fixed, theme-independent,
-  // high-contrast color at the top of every revised bar — that's the part
-  // meant to catch the eye at a glance.
-  function buildRevisionAnnotations(points, colors) {
-    const anns = {};
-    points.forEach((p, i) => {
-      if (p.revised_from === null || p.revised_from === undefined) return;
-      anns["revLine" + i] = {
-        type: "line", xMin: i, xMax: i, yMin: p.revised_from, yMax: p.actual,
-        borderColor: colors.revisionMarker, borderWidth: 1.5, borderDash: [2, 2],
-      };
-      anns["revSpot" + i] = {
-        type: "point", xValue: i, yValue: p.actual, radius: 3.5,
-        backgroundColor: colors.revisionSpot, borderColor: "#fff", borderWidth: 1,
-        drawTime: "afterDatasetsDraw",
-      };
-    });
-    return anns;
   }
 
   // ---- Chart: bar path (inflation / growth / labor) -------------------------
@@ -423,25 +404,33 @@
     const quarantineIdx = mainDatasets.findIndex((d) => d._isQuarantineDataset);
 
     const forecastData = points.map((p) => (p.forecast === null || p.forecast === undefined ? null : p.forecast));
-    const revisedPoints = points.map((p) => (p.revised_from === null || p.revised_from === undefined ? null : p.revised_from));
+
+    // FAZA 1H 2 — a horizontal tick at the forecast level, spanning roughly
+    // the width of one category slot (bar or step position), NOT a vertical
+    // line floating above the bar (the previous rotation:90 bug — pointStyle
+    // "line" is horizontal by DEFAULT; rotating it 90° made it vertical,
+    // exactly backwards from "can you see instantly whether the bar cleared
+    // the line"). pointRadius is a scriptable callback so the tick's length
+    // adapts to how many points are on screen (narrow on a dense Max window,
+    // wide on a sparse 1Y one) — Chart.js draws pointStyle "line" as a
+    // segment from -radius to +radius, so radius is HALF the visual length.
+    const tickRadius = (ctx) => {
+      const xScale = ctx.chart.scales.x;
+      if (!xScale || !points.length) return 8;
+      const band = xScale.width / points.length;
+      return Math.max(3, Math.min(band * 0.38, 16));
+    };
 
     const datasets = mainDatasets.concat([
       {
         type: "line", label: "Forecast", data: forecastData, showLine: false,
-        pointStyle: "line", rotation: 90, pointRadius: 9, pointBorderWidth: 2,
+        pointStyle: "line", rotation: 0, pointRadius: tickRadius, pointBorderWidth: 3,
         pointBorderColor: colors.forecastTick, pointBackgroundColor: colors.forecastTick,
         order: 1,
       },
-      {
-        type: "line", label: "Revised from", data: revisedPoints, showLine: false,
-        pointStyle: "circle", pointRadius: 6, pointBorderWidth: 1.5,
-        pointBackgroundColor: "transparent", pointBorderColor: colors.revisionMarker,
-        order: 0,
-      },
     ]);
 
-    const annotations = Object.assign({}, buildAnnotations(meta, colors),
-      buildRevisionAnnotations(points, colors));
+    const annotations = buildAnnotations(meta, colors);
 
     const yTitle = meta.unit ? meta.unit : undefined;
 
@@ -464,17 +453,13 @@
                 }
                 if (ctx.datasetIndex !== 0) return null;
                 const p = points[ctx.dataIndex];
-                const lines = [
-                  "Actual:   " + fmtNum(p.actual),
-                  "Forecast: " + fmtNum(p.forecast),
-                  "Previous: " + fmtNum(p.previous),
-                ];
-                if (p.actual !== null && p.previous !== null) lines.push("Delta:    " + fmtNum(p.actual - p.previous));
-                lines.push("z:        " + fmtNum(p.z, 3));
-                lines.push("Bucket:   " + (p.bucket === null ? "—" : p.bucket));
-                lines.push("Status:   " + STATUS_LABEL[p.score_status]);
+                const originalActual = originalActualOf(p);
+                const lines = ["Actual: " + fmtNum(p.actual), "Forecast: " + fmtNum(p.forecast)];
+                if (originalActual !== null && p.forecast !== null) {
+                  lines.push("Delta: " + fmtNum(originalActual - p.forecast));
+                }
                 if (p.revised_from !== null && p.revised_from !== undefined) {
-                  lines.push("Revised:  " + fmtNum(p.revised_from) + " → " + fmtNum(p.actual));
+                  lines.push("Revised from " + fmtNum(p.revised_from));
                 }
                 return lines;
               },
@@ -520,7 +505,26 @@
     }
   }
 
+  // FAZA 1H 6 — with `status` gone from the tooltip (point 3), the hatch
+  // pattern on a non-scored bar has no other explanation anywhere on the
+  // page. One compact line: what the colors mean, what the hatch means.
+  function renderLegend() {
+    const el = document.getElementById("historyLegend");
+    if (!el) return;
+    const colors = themeColors();
+    function swatch(color, hatch) {
+      const style = hatch ? "" : "background:" + color + ";";
+      return '<span class="hl-swatch' + (hatch ? " hl-hatch" : "") + '" style="' + style + '"></span>';
+    }
+    el.innerHTML =
+      '<span class="hl-item">' + swatch(bucketColor(2, colors)) + "Beat</span>" +
+      '<span class="hl-item">' + swatch(colors.neutral) + "In-line</span>" +
+      '<span class="hl-item">' + swatch(bucketColor(-2, colors)) + "Miss</span>" +
+      '<span class="hl-item">' + swatch(null, true) + "No score (insufficient history)</span>";
+  }
+
   function renderChartAndStrip() {
+    renderLegend();
     const wrapper = document.querySelector(".chart-wrapper");
     const resolved = resolveEntry(state.ccy, state.role);
 
