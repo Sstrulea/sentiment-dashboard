@@ -92,7 +92,7 @@ if [[ "$GIT_STATE" == "MAIN" ]]; then
     [[ -f "$FAIL_COUNT_FILE" ]] && n=$(cat "$FAIL_COUNT_FILE" 2>/dev/null || echo 0)
     n=$((n + 1))
     echo "$n" > "$FAIL_COUNT_FILE"
-    echo "econ_refresh: $(date -u +%FT%TZ) git pull --rebase --autostash FAILED (exit $PULL_EXIT), consecutive failure #$n." >> /tmp/econ.log 2>&1
+    echo "econ_refresh: $(date -u +%FT%TZ) the sync pull FAILED (exit $PULL_EXIT), consecutive failure #$n." >> /tmp/econ.log 2>&1
     if (( n >= FAIL_THRESHOLD )); then
       _econ_refresh_notify "git pull has failed $n times in a row — local checkout is stale. Check $REPO (git status) by hand."
     fi
