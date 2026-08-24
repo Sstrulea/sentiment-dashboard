@@ -42,6 +42,19 @@ _econ_refresh_git_state() {
     echo "MID_MERGE"
     return
   fi
+  # FAZA 1I — a failed `git stash pop` (the autostash step of `pull --rebase
+  # --autostash` conflicting with newly-pulled history — exactly what
+  # happened 2026-08-21..24, 3 days of silent exit-128 failures) leaves
+  # unmerged paths in the index WITHOUT setting MERGE_HEAD or a rebase-merge/
+  # rebase-apply dir (those are `git merge`/`git rebase`-specific; a stash
+  # pop uses its own internal 3-way merge) — so it slipped past every guard
+  # above and this same doomed `git pull --rebase --autostash` got retried
+  # hourly against an already-broken tree, forever, with its output silenced
+  # to /dev/null and no exit-code check. Caught explicitly here now.
+  if [[ -n "$(git ls-files -u 2>/dev/null)" ]]; then
+    echo "DIRTY_UNMERGED"
+    return
+  fi
   branch=$(git symbolic-ref --short -q HEAD)
   if [[ -z "$branch" ]]; then
     echo "DETACHED"
@@ -54,10 +67,36 @@ _econ_refresh_git_state() {
   echo "MAIN"
 }
 
+# FAZA 1I 1.5 — a silent, indefinitely-repeating failure of this script (the
+# exact 2026-08-21 incident: 3 days of exit 128, nothing to see unless you
+# went looking) must surface SOMEWHERE a human will notice. This is a
+# single-user local dev-machine cron with no dashboard of its own (unlike
+# GitHub Actions' econ-refresh.yml, which already has a visible run history
+# and would email on failure) — a macOS notification is the right-sized
+# signal, not a public-page banner for a purely local sync step.
+FAIL_COUNT_FILE="/tmp/econ_refresh_fail_count"
+FAIL_THRESHOLD=3
+
+_econ_refresh_notify() {
+  osascript -e "display notification \"$1\" with title \"econ-refresh (local cron)\" sound name \"Basso\"" >/dev/null 2>&1 || true
+}
+
 GIT_STATE=$(_econ_refresh_git_state)
 
 if [[ "$GIT_STATE" == "MAIN" ]]; then
-  git pull --rebase --autostash >/dev/null 2>&1
+  if git pull --rebase --autostash >/dev/null 2>&1; then
+    rm -f "$FAIL_COUNT_FILE"
+  else
+    PULL_EXIT=$?
+    n=0
+    [[ -f "$FAIL_COUNT_FILE" ]] && n=$(cat "$FAIL_COUNT_FILE" 2>/dev/null || echo 0)
+    n=$((n + 1))
+    echo "$n" > "$FAIL_COUNT_FILE"
+    echo "econ_refresh: $(date -u +%FT%TZ) git pull --rebase --autostash FAILED (exit $PULL_EXIT), consecutive failure #$n." >> /tmp/econ.log 2>&1
+    if (( n >= FAIL_THRESHOLD )); then
+      _econ_refresh_notify "git pull has failed $n times in a row — local checkout is stale. Check $REPO (git status) by hand."
+    fi
+  fi
 else
   {
     case "$GIT_STATE" in
@@ -72,6 +111,10 @@ else
         ;;
       MID_MERGE)
         echo "econ_refresh: $(date -u +%FT%TZ) repo is mid-merge — skipping git pull/commit/push (price data still refreshed)."
+        ;;
+      DIRTY_UNMERGED)
+        echo "econ_refresh: $(date -u +%FT%TZ) unmerged paths in the index (a prior stash-pop/merge conflict was never resolved) — skipping git pull/commit/push (price data still refreshed) until a human resolves it by hand."
+        _econ_refresh_notify "Unresolved git conflict in $REPO — local checkout will not update until you fix it (git status)."
         ;;
       NOT_A_REPO)
         echo "econ_refresh: $(date -u +%FT%TZ) $REPO is not a git repo — skipping git pull/commit/push (price data still refreshed)."
