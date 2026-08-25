@@ -54,12 +54,111 @@ def load_indicators_cfg(path: Path = INDICATORS_YAML) -> dict:
         return yaml.safe_load(f) or {}
 
 
+_DUP_GAP_HOURS = 1.0   # FF-side ±1h DST-style artifact — see docs/known-debt-ff-dst-duplicate.md
+
+
+def _drop_display_duplicate_rows(ff: pd.DataFrame) -> pd.DataFrame:
+    """FAZA 1I 2 — DISPLAY-only collapse of a raw-feed artifact: the same
+    canonical_id sometimes appears twice on the same UTC calendar date, <1h
+    apart (a DST-style duplicate on the FF side, same family as the already-
+    documented JBlanked one in jb_actuals.clean_jblanked_actuals — but on a
+    different pipeline: merge_weekly's own dedup key is (canonical_id, EXACT
+    datetime_utc), so it never merges two rows that differ by an hour; see
+    docs/known-debt-ff-dst-duplicate.md for why that root cause is left
+    alone). This is NOT that fix — it never touches data/economic_calendar_ff
+    .parquet or ff_scoring/economic_compute; it only decides which rows THIS
+    module's own per-row history/payload shows.
+
+    Collapsed ONLY when every one of actual/forecast/previous matches
+    EXACTLY (both NaN counts as a match) between the two rows — that is the
+    single condition under which "the same real print, recorded twice" is
+    actually true. The moment any field differs, this is evidence of a real
+    disagreement between two deliveries of the same nominal event, not a
+    harmless duplicate — both rows are kept, unmodified, and a warning is
+    logged so a genuine conflict is never silently resolved by picking one.
+
+    Returns a NEW DataFrame (copy) with the redundant later row of each
+    confirmed-identical pair removed. `ff` itself is never mutated — this
+    function is called on a private copy inside build_full_frame, and the
+    original parquet-backed frame production reads is untouched.
+    """
+    df = ff.copy()
+    df["datetime_utc"] = pd.to_datetime(df["datetime_utc"])
+    df["cal_date"] = df["datetime_utc"].dt.date
+
+    def _same(a, b) -> bool:
+        if pd.isna(a) and pd.isna(b):
+            return True
+        return a == b
+
+    drop_idx: list = []
+    for _key, g in df.groupby(["canonical_id", "currency", "cal_date"], sort=False):
+        if len(g) < 2:
+            continue
+        g = g.sort_values("datetime_utc")
+        rows = list(g.itertuples())
+        anchor = 0   # index of the last SURVIVING row — never a dropped one, so a
+                     # 3+-row identical chain (e.g. a scheduled event re-delivered
+                     # twice more before it ever prints) collapses to exactly 1,
+                     # not "compare against whatever the loop variable happens to
+                     # point at" (which could be a row already marked for drop).
+        for j in range(1, len(rows)):
+            r0, r1 = rows[anchor], rows[j]
+            gap_h = (r1.datetime_utc - r0.datetime_utc).total_seconds() / 3600
+            if 0 < gap_h <= _DUP_GAP_HOURS:
+                identical = (_same(r0.actual, r1.actual) and _same(r0.forecast, r1.forecast)
+                            and _same(r0.previous, r1.previous))
+                if identical:
+                    log.info("history display dedup: %s %s @ %s — dropping duplicate row at %s "
+                            "(%.0fmin after %s, actual/forecast/previous all identical: "
+                            "actual=%s forecast=%s previous=%s).",
+                            r0.currency, r0.canonical_id, r0.cal_date, r1.datetime_utc,
+                            gap_h * 60, r0.datetime_utc, r0.actual, r0.forecast, r0.previous)
+                    drop_idx.append(r1.Index)
+                    continue   # anchor unchanged — r1 is gone, keep comparing forward from r0
+                else:
+                    log.warning("history display dedup: %s %s @ %s has two prints %.0fmin apart "
+                               "(%s vs %s) with DIFFERING values — actual=%s/%s forecast=%s/%s "
+                               "previous=%s/%s — NOT a duplicate, keeping BOTH rows.",
+                               r0.currency, r0.canonical_id, r0.cal_date, gap_h * 60,
+                               r0.datetime_utc, r1.datetime_utc,
+                               r0.actual, r1.actual, r0.forecast, r1.forecast,
+                               r0.previous, r1.previous)
+            anchor = j   # r1 is either out of gap range or a genuine conflict — it
+                        # survives, and becomes the new anchor for subsequent rows
+
+    if drop_idx:
+        df = df.drop(index=drop_idx)
+    return df.drop(columns="cal_date").reset_index(drop=True)
+
+
 def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
                      overrides: list[dict], as_of: pd.Timestamp) -> pd.DataFrame:
     """scoring frame -> overlay overrides, EXACTLY the economic_render.py:1111,
     1130-1138 sequence — to_scoring_frame and apply_overrides are called with
-    the same arguments production uses, not re-derived."""
-    scored = to_scoring_frame(ff, matcher, can_be_zero=cbz, flagged_bad=flagged_bad)
+    the same arguments production uses, not re-derived. The one deliberate
+    deviation (FAZA 1I 2): a DEDUPED copy of `ff` (via
+    _drop_display_duplicate_rows, a DISPLAY-only collapse of a raw-feed
+    artifact) feeds to_scoring_frame — it operates on a private copy and
+    never touches the parquet-backed frame production itself reads, so this
+    has no effect on /economic or /strength (see
+    test_non_regression_economic_and_strength_output_unchanged).
+
+    `apply_overrides` still receives the ORIGINAL, undeduped `ff` —
+    deliberately, matching that function's own existing contract (see its
+    docstring: overrides match against the RAW, pre-duplicate-suppression
+    universe on purpose, because a suppressed row's sibling might be the
+    exact (canonical_id, datetime_utc) a human override was entered
+    against). Feeding it the deduped frame instead silently orphaned a real
+    override during testing (JPY BOJ 2026-07-31 03:11:00 — the display dedup
+    collapsed that exact raw duplicate down to its 02:30 sibling, and the
+    override, keyed to 03:11, could no longer find a match) — exactly the
+    "silently hide a real conflict" failure this phase's own dedup logic is
+    supposed to avoid, just one step removed. Never repeat that: overrides
+    must always see the untouched `ff`.
+    """
+    deduped_ff = _drop_display_duplicate_rows(ff)
+    scored = to_scoring_frame(deduped_ff, matcher, can_be_zero=cbz, flagged_bad=flagged_bad)
     manual_rows, _ = apply_overrides(ff, overrides, now_utc=as_of, flagged_bad=flagged_bad)
     combined = pd.concat([scored, manual_rows], ignore_index=True) if len(manual_rows) else scored
     combined["release_dt"] = pd.to_datetime(combined["release_dt"])

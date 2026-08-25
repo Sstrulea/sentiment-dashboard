@@ -356,3 +356,95 @@ def test_payload_fresh_series_is_neither_stale_nor_no_data(ind_cfg):
     assert entry["has_data"] is True
     assert entry["stale"] is False
     assert payload["health"] == {"no_data": [], "stale": []}
+
+
+# ---------------------------------------------------------------------------
+# Display-only duplicate collapse (FAZA 1I 2) — a raw-feed ±1h artifact
+# ---------------------------------------------------------------------------
+
+def _raw_row(ccy, cid, dt, actual, forecast, previous, name_raw="X"):
+    return {"currency": ccy, "canonical_id": cid, "name_raw": name_raw,
+            "datetime_utc": pd.Timestamp(dt), "actual": actual,
+            "forecast": forecast, "previous": previous}
+
+
+def test_drop_display_duplicate_rows_collapses_identical_pair():
+    """The exact USD NFP 2026-07-02 pattern: two rows, same canonical_id,
+    38min apart, actual/forecast/previous all identical -> the later one is
+    dropped, the earlier one is untouched."""
+    ff = pd.DataFrame([
+        _raw_row("USD", "usd_nonfarm_payrolls", "2026-07-02 11:30:00", 57.0, 114.0, 129.0),
+        _raw_row("USD", "usd_nonfarm_payrolls", "2026-07-02 12:30:00", 57.0, 114.0, 129.0),
+        _raw_row("USD", "usd_cpi", "2026-07-02 12:30:00", 3.0, 2.9, 2.8),
+    ])
+    out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 2   # the NFP duplicate collapsed; the unrelated CPI row untouched
+    nfp = out[out["canonical_id"] == "usd_nonfarm_payrolls"]
+    assert len(nfp) == 1
+    assert nfp.iloc[0]["datetime_utc"] == pd.Timestamp("2026-07-02 11:30:00")
+
+
+def test_drop_display_duplicate_rows_keeps_both_on_any_divergence():
+    """If actual, forecast, OR previous differs even slightly, this is a real
+    disagreement, not a duplicate -- both rows must survive untouched."""
+    ff = pd.DataFrame([
+        _raw_row("JPY", "jpy_x", "2026-02-19 21:00:00", 0.0, 0.0, 52.3),
+        _raw_row("JPY", "jpy_x", "2026-02-19 22:00:00", 51.5, 0.0, 52.3),   # actual differs
+    ])
+    out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 2
+
+
+def test_drop_display_duplicate_rows_ignores_gap_over_one_hour():
+    """A gap > 1h is out of scope for this artifact (the documented DST-style
+    window) -- both rows are kept even if the values happen to match."""
+    ff = pd.DataFrame([
+        _raw_row("EUR", "eur_x", "2026-01-01 08:00:00", 1.0, 1.0, 1.0),
+        _raw_row("EUR", "eur_x", "2026-01-01 10:00:00", 1.0, 1.0, 1.0),   # 2h apart
+    ])
+    out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 2
+
+
+def test_drop_display_duplicate_rows_collapses_three_way_identical_chain():
+    """A scheduled (not-yet-printed) event re-delivered twice more before it
+    ever prints -- all three identical (NaN actual) -- collapses to exactly
+    the earliest one, not "compare against an already-dropped row" (the
+    JPY BOJ 2026-07-31 case: 02:30/02:50/03:11, all NaN/1.0/1.0)."""
+    ff = pd.DataFrame([
+        _raw_row("JPY", "jpy_boj", "2026-07-31 02:30:00", None, 1.0, 1.0),
+        _raw_row("JPY", "jpy_boj", "2026-07-31 02:50:00", None, 1.0, 1.0),
+        _raw_row("JPY", "jpy_boj", "2026-07-31 03:11:00", None, 1.0, 1.0),
+    ])
+    out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 1
+    assert out.iloc[0]["datetime_utc"] == pd.Timestamp("2026-07-31 02:30:00")
+
+
+def test_build_full_frame_passes_the_undeduped_ff_to_apply_overrides(monkeypatch):
+    """The regression caught during FAZA 1I development: apply_overrides
+    must still see the ORIGINAL (undeduped) ff, or an override keyed to the
+    exact (canonical_id, datetime_utc) of a row the display dedup drops
+    would silently stop resolving (real case: JPY BOJ 2026-07-31 03:11:00 —
+    a raw triplicate collapsed to its 02:30 sibling orphaned an override
+    entered against 03:11 specifically). Spies on apply_overrides rather
+    than exercising the full matcher/override-resolution chain, which is
+    already covered elsewhere (manual_actuals's own test suite) — this test
+    is only about WHICH `ff` build_full_frame hands it."""
+    ff = pd.DataFrame([
+        _raw_row("USD", "usd_x", "2026-07-02 11:30:00", 57.0, 114.0, 129.0),
+        _raw_row("USD", "usd_x", "2026-07-02 12:30:00", 57.0, 114.0, 129.0),   # dropped by the dedup
+    ])
+    seen = {}
+
+    def spy_apply_overrides(ff_arg, overrides, **kwargs):
+        seen["n_rows"] = len(ff_arg)
+        return pd.DataFrame(columns=hc.SCORING_COLUMNS), pd.DataFrame()
+
+    monkeypatch.setattr(hc, "apply_overrides", spy_apply_overrides)
+    monkeypatch.setattr(hc, "to_scoring_frame", lambda *a, **k: pd.DataFrame(columns=hc.SCORING_COLUMNS))
+
+    hc.build_full_frame(ff, matcher=None, cbz=set(), flagged_bad=None,
+                        overrides=[], as_of=pd.Timestamp("2026-08-01"))
+
+    assert seen["n_rows"] == 2, "apply_overrides must see the ORIGINAL row count, not the deduped one"
