@@ -33,6 +33,30 @@ FF_PARQUET = ROOT / "data" / "economic_calendar_ff.parquet"
 CATALOG_MIN_PRINTS = 12
 
 
+def test_no_duplicate_selection_key_within_category_currency():
+    """FAZA 2E-2 — history.js selects a series by indicator_key, unique per
+    (category, currency) by contract. Before this phase it selected by
+    `role` instead (market/secondary/policy) — a display-grouping label, not
+    an identifier: labor/USD (unemployment_rate + wage_growth) and labor/GBP
+    (unemployment_rate + employment_change) each carry TWO entries under
+    role "secondary". Selecting by role meant both chips showed active
+    simultaneously and resolveEntry always returned the first match — the
+    second series was permanently unreachable by click, silently, for
+    months (FAZA 2E). Pure structural check against the catalog file
+    itself — no parquet needed, this is a catalog-authoring invariant, not
+    a data-freshness one.
+    """
+    catalog = hc.load_catalog()
+    failures = []
+    for cat, ccys in catalog.get("categories", {}).items():
+        for ccy, entries in ccys.items():
+            keys = [e.get("indicator_key") for e in entries if e.get("indicator_key") is not None]
+            dupes = {k for k in keys if keys.count(k) > 1}
+            if dupes:
+                failures.append(f"{cat}/{ccy}: indicator_key(s) {sorted(dupes)} appear more than once")
+    assert not failures, "Duplicate selection key(s) found:\n" + "\n".join(failures)
+
+
 def _build_quarantine_df(ff, matcher):
     df = ff.copy()
     df["indicator_key"] = df.apply(

@@ -9,11 +9,17 @@
   const CATEGORY_ORDER = ["inflation", "growth", "labor", "rates"];
   const CATEGORY_LABEL = { inflation: "Inflation", growth: "Growth", labor: "Labor", rates: "Rates" };
 
+  // FAZA 2E-2 — `key` (indicator_key) is the selected-series identifier,
+  // unique per (category, currency) — see the note above resolveEntry for
+  // why `role` (market/secondary/policy) could never be this: labor/USD and
+  // labor/GBP both carry two DIFFERENT series under role "secondary", so a
+  // role-keyed selection could never tell them apart (confirmed live bug,
+  // FAZA 2E: both chips showed active, only the first ever rendered).
   const state = {
     payload: (typeof window !== "undefined" && window.HISTORY_PAYLOAD) || { categories: {} },
     category: null,
     ccy: null,
-    role: null,
+    key: null,
     windowKey: null,
     chart: null,
   };
@@ -134,22 +140,37 @@
   // Returns {meta, windowOptions, quarantineCount} — `meta` is the entry's
   // OWN metadata (label/target/rank), windowOptions is resolved through
   // points_ref if this entry doesn't carry its own window_options (P1.4
-  // dedup). Returns null only if the role itself doesn't exist for this ccy.
+  // dedup). Returns null only if `key` doesn't exist for this ccy.
+  //
+  // FAZA 2E-2 — keyed on indicator_key, NOT role. `role` (market/secondary/
+  // policy) is a display-grouping label, never a unique identifier: labor/
+  // USD and labor/GBP each carry two entries with role "secondary"
+  // (Unemployment Rate + a second series) — selecting by role meant both
+  // chips showed active and only the first ever rendered, silently, for
+  // months (FAZA 2E). indicator_key IS unique per (category, currency) —
+  // enforced by test_history_js's own catalog-wide check now, and by
+  // tests/test_catalog_health.py-adjacent reasoning: two entries sharing a
+  // selection key in the same list is a catalog bug, not a UI one.
+  // `points_ref` itself still names its target by ROLE (that part of the
+  // payload schema is unchanged — it is a payload-size dedup for "this
+  // role's points are identical to that role's", independent of how the UI
+  // picks which entry to show) — so the inner lookup below stays role-based.
+  //
   // FAZA 1D 4.1: if points_ref names a role that isn't actually present
   // (a catalog/payload-building bug), fail LOUDLY — console.error plus a
   // visible fallback — instead of silently returning an empty
   // windowOptions (which previously rendered as a blank chart, indistinguishable
   // from "no data this window").
-  function resolveEntry(ccy, role) {
+  function resolveEntry(ccy, key) {
     const entries = seriesEntries(ccy);
-    const entry = entries.find((e) => e.role === role);
+    const entry = entries.find((e) => e.indicator_key === key);
     if (!entry) return null;
     if (entry.points_ref) {
       const target = entries.find((e) => e.role === entry.points_ref.role);
       if (!target) {
         console.error(
           "history.js: points_ref target role '" + entry.points_ref.role + "' not found for " +
-          ccy + "/" + entry.indicator_key + " (role=" + role + "). Payload/catalog bug — showing fallback.");
+          ccy + "/" + entry.indicator_key + " (key=" + key + "). Payload/catalog bug — showing fallback.");
         return { meta: entry, windowOptions: {}, quarantineCount: 0, refBroken: true };
       }
       return { meta: entry, windowOptions: target.window_options || {}, quarantineCount: target.quarantine_count || 0 };
@@ -173,10 +194,10 @@
         if (cat === state.category) return;
         state.category = cat;
         // Keep the currently selected currency (the dropdown is global);
-        // only re-pick a role — the old one may not exist in the new category.
+        // only re-pick a series — the old key may not exist in the new category.
         const entries = visibleEntries(state.ccy);
-        const stillValid = entries.find((e) => e.role === state.role);
-        state.role = stillValid ? state.role : (entries[0] ? entries[0].role : null);
+        const stillValid = entries.find((e) => e.indicator_key === state.key);
+        state.key = stillValid ? state.key : (entries[0] ? entries[0].indicator_key : null);
         state.windowKey = null;
         syncUrl();
         renderCategoryTabs();
@@ -193,7 +214,7 @@
     sel.addEventListener("change", () => {
       state.ccy = sel.value;
       const entries = visibleEntries(state.ccy);
-      state.role = entries[0] ? entries[0].role : null;
+      state.key = entries[0] ? entries[0].indicator_key : null;
       state.windowKey = null;
       syncUrl();
       renderAll();
@@ -216,7 +237,9 @@
     entries.forEach((e) => {
       const el = document.createElement(single ? "span" : "button");
       if (!single) el.type = "button";
-      el.className = "history-series-chip" + (single ? " history-series-chip-static" : (e.role === state.role ? " active" : ""));
+      // FAZA 2E-2 — active state keyed on indicator_key (unique), not role
+      // (a display-only prefix below — never the identifier).
+      el.className = "history-series-chip" + (single ? " history-series-chip-static" : (e.indicator_key === state.key ? " active" : ""));
       let label = e.role.charAt(0).toUpperCase() + e.role.slice(1);
       if (e.indicator_key) label += ": " + (e.display_label || e.indicator_key);
       if (e.label_source === "derived") label += ' <span class="label-derived-mark" title="Corrected label — the production canonical name did not match the real feed (see catalog mismatch_note)">*</span>';
@@ -228,7 +251,7 @@
       el.innerHTML = label;
       if (!single) {
         el.addEventListener("click", () => {
-          state.role = e.role;
+          state.key = e.indicator_key;
           state.windowKey = null;
           syncUrl();
           renderAll();
@@ -580,7 +603,7 @@
   function renderChartAndStrip() {
     renderLegend();
     const wrapper = document.querySelector(".chart-wrapper");
-    const resolved = resolveEntry(state.ccy, state.role);
+    const resolved = resolveEntry(state.ccy, state.key);
 
     if (!resolved) {
       // No series at all for this (category, currency) — e.g. rates/CHF
@@ -630,8 +653,8 @@
     renderChartAndStrip();
   }
 
-  // ---- Deep-link (?cat=growth&ccy=CAD&range=2y) — same pattern as
-  // /strength's ?ccy=.
+  // ---- Deep-link (?cat=growth&ccy=CAD&range=2y&key=unemployment_rate) —
+  // same pattern as /strength's ?ccy=.
 
   function stateFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -643,19 +666,36 @@
     const ccyParam = (params.get("ccy") || "").toUpperCase();
     state.ccy = ccys.includes(ccyParam) ? ccyParam : ccys[0];
 
-    const roleParam = params.get("role");
     const entries = visibleEntries(state.ccy);
-    state.role = (roleParam && entries.find((e) => e.role === roleParam)) ? roleParam
-      : (entries[0] ? entries[0].role : null);
+    const keyParam = params.get("key");
+    const roleParam = params.get("role");
+    let legacyRoleLink = false;
+    if (keyParam && entries.find((e) => e.indicator_key === keyParam)) {
+      state.key = keyParam;
+    } else if (roleParam) {
+      // FAZA 2E-2 — back-compat for a bookmarked/shared ?role= link (the
+      // OLD, ambiguous identifier — resolve exactly like the pre-fix code
+      // did, first entry with that role, so an old bookmark never lands on
+      // a blank page) — then rewrite the URL below so a reload/re-share
+      // uses the real, unambiguous ?key= form from now on.
+      const match = entries.find((e) => e.role === roleParam);
+      state.key = match ? match.indicator_key : (entries[0] ? entries[0].indicator_key : null);
+      legacyRoleLink = true;
+    } else {
+      state.key = entries[0] ? entries[0].indicator_key : null;
+    }
     const rangeParam = params.get("range");
     state.windowKey = ["1y", "2y", "max"].includes(rangeParam) ? rangeParam : null;
+
+    if (legacyRoleLink) syncUrl();
   }
 
   function syncUrl() {
     const url = new URL(window.location.href);
     url.searchParams.set("cat", state.category);
     url.searchParams.set("ccy", state.ccy);
-    if (state.role) url.searchParams.set("role", state.role); else url.searchParams.delete("role");
+    if (state.key) url.searchParams.set("key", state.key); else url.searchParams.delete("key");
+    url.searchParams.delete("role");   // FAZA 2E-2 — legacy identifier, always rewritten to `key`
     if (state.windowKey) url.searchParams.set("range", state.windowKey);
     window.history.pushState({}, "", url);
   }
