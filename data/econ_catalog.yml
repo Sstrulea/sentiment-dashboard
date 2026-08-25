@@ -55,6 +55,22 @@ categories:
         display_label: "CPI (YoY)"
         unit: pct
         transform_real: YoY
+        # FAZA 2B 3.1 — comparable (y/y), so the target renders as a chart
+        # line. The Fed formally targets headline PCE, not CPI, and CPI runs
+        # structurally above PCE — the label says so on the chart itself, not
+        # just in this note (no headline PCE series exists locally, FAZA 0.5
+        # Bloc B, so PCE can never be the one actually charted here).
+        target:
+          kind: point
+          value: 2.0
+          effective_from: "2012-01-25"
+          effective_to: null
+          source_note: >-
+            FOMC "Statement on Longer-Run Goals and Monetary Policy Strategy"
+            first adopted an explicit 2% longer-run inflation goal on 25
+            January 2012 (defined on the PCE price index); reaffirmed since.
+            https://www.federalreserve.gov/faqs/economy_14400.htm
+          label: "Fed 2% (target on headline PCE)"
       - indicator_key: core_cpi
         role: secondary
         rank: 2
@@ -62,13 +78,9 @@ categories:
         unit: pct
         transform_real: MoM
         mismatch_note: "canonical label 'Core CPI y/y'; real feed (name_raw 'Core CPI m/m') is MoM"
-      - indicator_key: null
-        role: policy
-        rank: 3
-        # No matching series in the feed for this target — FAZA 0.5 Bloc B
-        # confirmed headline PCE never appears in any local layer (parquet,
-        # archive, jb_raw, ff_raw), only Core PCE m/m. Header text only, no band.
-        target_note: "Fed: 2% headline PCE"
+        # FAZA 2B 3.2 — MoM: a y/y target line would be a unit error here.
+        # Text only, same target as the market entry above.
+        target_note: "Fed: 2% (target on headline PCE, annual)"
 
     EUR:
       - indicator_key: cpi_yoy
@@ -145,18 +157,26 @@ categories:
           canonical label 'CPI y/y' reads as headline; real feed (name_raw
           'National Core CPI y/y') is BOJ's ex-fresh-food core, not headline
           all-items — no headline CPI series exists in any local layer (FAZA 0.5/0.6).
+        # FAZA 2B 3.1 — comparable (y/y). BoJ's target is defined on headline
+        # (all-items) CPI, which no local layer carries (see mismatch_note
+        # above) — the ex-fresh-food core measure charted here is the closest
+        # available proxy, and the label says so on the chart.
+        target:
+          kind: point
+          value: 2.0
+          effective_from: "2013-01-22"
+          effective_to: null
+          source_note: >-
+            Bank of Japan "Price Stability Target" of 2% (y/y) introduced 22
+            January 2013 in a joint statement with the Government of Japan.
+            Targets headline (all-items) CPI. https://www.boj.or.jp/en/mopo/outline/
+          label: "BoJ 2% (target on headline CPI)"
       - indicator_key: tokyo_core_cpi_yoy
         role: secondary
         rank: 2
         display_label: "Tokyo Core CPI (YoY)"
         unit: pct
         transform_real: YoY
-      - indicator_key: null
-        role: policy
-        rank: 3
-        # No matching series — feed only provides the ex-fresh-food core
-        # measure, used above as market/PRIM. Header text only, no band.
-        target_note: "BoJ: 2%"
 
     CAD:
       - indicator_key: core_cpi
@@ -165,12 +185,31 @@ categories:
         display_label: "Median CPI (YoY)"
         unit: pct
         transform_real: YoY
+        # FAZA 2B 3.1 — comparable (y/y). BoC formally targets headline CPI,
+        # not this core measure — Median CPI is the Bank's OWN preferred core
+        # gauge for looking through headline noise, on the same y/y transform,
+        # so the band is a valid comparison; the label says which series is
+        # formally targeted.
+        target: &cad_boc_target
+          kind: band
+          low: 1.0
+          high: 3.0
+          effective_from: "1995-12-31"
+          effective_to: null
+          source_note: >-
+            BoC/Government of Canada inflation-control target reached its
+            current 1-3% range (2% midpoint) by end-1995, renewed unchanged
+            every five years since (most recently for 2022-2026). Targets
+            headline CPI, not the Bank's core measures.
+            https://www.bankofcanada.ca/core-functions/monetary-policy/inflation-control-target/
+          label: "BoC 1-3% (target on headline CPI)"
       - indicator_key: trimmed_cpi_yoy
         role: secondary
         rank: 2
         display_label: "Trimmed CPI (YoY)"
         unit: pct
         transform_real: YoY
+        target: *cad_boc_target
       - indicator_key: cpi_yoy
         role: secondary
         rank: 3
@@ -178,13 +217,8 @@ categories:
         unit: pct
         transform_real: MoM
         mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI m/m') is MoM"
-      - indicator_key: null
-        role: policy
-        rank: 4
-        # No clean matching series — this currency's cpi_yoy slot is MoM data
-        # (see mismatch note above), core_cpi/trimmed_cpi_yoy are Median/
-        # Trimmed core measures, not headline y/y. Header text only, no band.
-        target_note: "BoC: 2%, band 1-3%"
+        # FAZA 2B 3.2 — MoM: text only, same target as the y/y entries above.
+        target_note: "BoC: 1-3% (target on headline CPI, annual)"
 
     AUD:
       - indicator_key: cpi_yoy
@@ -204,6 +238,9 @@ categories:
         # >2x cadence old as of 2026-08-20) — ABS moved AUD's trimmed-mean
         # reporting to this monthly indicator (FAZA 0.6 C2/C3). n=6, real live
         # replacement, not a guess.
+        # FAZA 2B 3.2 — MoM: a y/y target line would be a unit error here;
+        # same target as the market (CPI y/y) entry below, text only.
+        target_note: "RBA: 2-3% (target on headline CPI, annual)"
       - indicator_key: cpi_yoy
         role: policy
         rank: 3
@@ -231,12 +268,9 @@ categories:
         unit: pct
         transform_real: QoQ
         mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI q/q') is QoQ — no y/y series exists in any local layer"
-      - indicator_key: null
-        role: policy
-        rank: 2
-        # No matching series — feed only provides QoQ (see market slot above),
-        # no y/y variant found anywhere locally. Header text only, no band.
-        target_note: "RBNZ: 1-3%, focus 2%"
+        # FAZA 2B 3.2 — QoQ: a y/y target line would be a unit error here
+        # (no y/y series exists locally to plot instead). Text only.
+        target_note: "RBNZ: 1-3%, focus 2% (target on headline CPI, annual)"
 
     CHF:
       - indicator_key: cpi_yoy
@@ -246,12 +280,9 @@ categories:
         unit: pct
         transform_real: MoM
         mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI m/m') is MoM — no y/y series exists in any local layer"
-      - indicator_key: null
-        role: policy
-        rank: 2
-        # No matching series — feed only provides MoM (see market slot above).
-        # Header text only, no band.
-        target_note: "SNB: 0-2%"
+        # FAZA 2B 3.2 — MoM: a y/y target line would be a unit error here
+        # (no y/y series exists locally to plot instead). Text only.
+        target_note: "SNB: 0-2% (target on headline CPI, annual)"
 
   labor:
     USD:
@@ -524,9 +555,24 @@ categories:
 #
 # -----------------------------------------------------------------------------
 # Policy targets (FAZA 1C, Part 2) — schema is `target: {kind: point|band, value
-# | low/high, effective_from, effective_to, source_note}` on the 3 BAND_OK
-# currencies (EUR/GBP/AUD), `target_note` (free text, no band renderable) on
-# the other 5. All 3 target dates verified against an official primary source
-# (ECB/BoE/RBA press release or remit letter, see each source_note) — not
-# guessed. effective_to is null on all three: no subsequent reframing found for
-# any of them as of 2026-08-20.
+# | low/high, effective_from, effective_to, source_note, label}` on every
+# currency where the target's own transform (always y/y) matches a series
+# actually charted (EUR/GBP/AUD market entries; USD/CAD/JPY market or
+# secondary entries added in FAZA 2B). `target_note` (free text, no chart
+# overlay) covers every m/m or q/q series instead — a unit mismatch means the
+# target can only ever be described, never drawn as a line/band on that chart
+# (NZD/CHF market, plus the MoM secondary entries on USD/CAD/AUD).
+# `comparable_with_target` (history_compute.build_payload, derived from
+# transform_real=="YoY") is the runtime gate the UI actually checks before
+# drawing anything — this section is the human-readable rationale behind it.
+#
+# `target.label`, where present, overrides the chart line/band's default
+# "X% target" text — used wherever the currency's REAL target sits on a
+# different underlying series than the one charted (Fed targets PCE not CPI;
+# BoC/BoJ target headline CPI, not the core/median measures charted for
+# CAD/JPY) — the chart says so directly rather than leaving that gap implicit.
+#
+# All target dates verified against an official primary source (central-bank
+# press release, remit letter, or FAQ — see each source_note) — not guessed.
+# effective_to is null throughout: no subsequent reframing found for any of
+# them as of 2026-08-25.

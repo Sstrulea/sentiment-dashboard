@@ -55,32 +55,6 @@
     return BUCKET_COLOR[b] || colors.neutral;
   }
 
-  // Diagonal-hatch CanvasPattern for a not-fully-scored bar (score_status !=
-  // "scored") — same visual idea as .ec-stale's repeating-linear-gradient on
-  // /economic, translated to a Chart.js-compatible fill.
-  const hatchCache = {};
-  function hatchPattern(baseColor) {
-    if (hatchCache[baseColor]) return hatchCache[baseColor];
-    const size = 8;
-    const c = document.createElement("canvas");
-    c.width = size; c.height = size;
-    const ctx = c.getContext("2d");
-    ctx.fillStyle = baseColor;
-    ctx.globalAlpha = 0.35;
-    ctx.fillRect(0, 0, size, size);
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = baseColor;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(0, size); ctx.lineTo(size, 0);
-    ctx.moveTo(-size / 2, size / 2); ctx.lineTo(size / 2, -size / 2);
-    ctx.moveTo(size / 2, size + size / 2); ctx.lineTo(size + size / 2, size / 2);
-    ctx.stroke();
-    const pattern = document.createElement("canvas").getContext("2d").createPattern(c, "repeat");
-    hatchCache[baseColor] = pattern;
-    return pattern;
-  }
-
   // ---- Formatting -----------------------------------------------------------
 
   function fmtNum(x, digits) {
@@ -147,6 +121,19 @@
     return seriesEntries(ccy).slice().sort((a, b) => a.rank - b.rank);
   }
 
+  // FAZA 2B 2 — a catalog entry with zero real prints (no indicator_key at
+  // all — a target-note-only placeholder — or a real indicator_key that
+  // never matched a single actual, payload's has_data:false) must not offer
+  // a chip that leads nowhere. `resolveEntry`/`seriesEntries` stay raw (a
+  // points_ref lookup must still be able to find its sibling role
+  // internally); this filter only governs what a user can click into.
+  function isVisibleEntry(e) {
+    return e.indicator_key !== null && e.indicator_key !== undefined && e.has_data !== false;
+  }
+  function visibleEntries(ccy) {
+    return sortedEntries(ccy).filter(isVisibleEntry);
+  }
+
   // Returns {meta, windowOptions, quarantineCount} — `meta` is the entry's
   // OWN metadata (label/target/rank), windowOptions is resolved through
   // points_ref if this entry doesn't carry its own window_options (P1.4
@@ -190,7 +177,7 @@
         state.category = cat;
         // Keep the currently selected currency (the dropdown is global);
         // only re-pick a role — the old one may not exist in the new category.
-        const entries = sortedEntries(state.ccy);
+        const entries = visibleEntries(state.ccy);
         const stillValid = entries.find((e) => e.role === state.role);
         state.role = stillValid ? state.role : (entries[0] ? entries[0].role : null);
         state.windowKey = null;
@@ -208,7 +195,7 @@
     sel.value = state.ccy;
     sel.addEventListener("change", () => {
       state.ccy = sel.value;
-      const entries = sortedEntries(state.ccy);
+      const entries = visibleEntries(state.ccy);
       state.role = entries[0] ? entries[0].role : null;
       state.windowKey = null;
       syncUrl();
@@ -218,7 +205,7 @@
 
   function renderSeriesChips() {
     const wrap = document.getElementById("historySeriesChips");
-    const entries = sortedEntries(state.ccy);
+    const entries = visibleEntries(state.ccy);
     wrap.innerHTML = "";
     entries.forEach((e) => {
       const btn = document.createElement("button");
@@ -307,20 +294,46 @@
 
   // ---- Chart: shared annotations --------------------------------------------
 
+  // FAZA 2B 3.1/3.3 — a target band/line is only drawn on a series that is
+  // actually comparable to it, i.e. y/y (comparable_with_target, derived
+  // server-side from transform_real — see history_compute.build_payload).
+  // A m/m or q/q series never reaches here with a `target` object in the
+  // first place (the catalog only carries `target_note`, plain text, for
+  // those — see renderStrip), but the gate is kept as a second, explicit
+  // guard so a future catalog edit can never silently draw an annual-rate
+  // line across a monthly-change chart.
+  //
+  // `target.label`, when present, overrides the default "X% target" content
+  // — used where the currency's real policy target sits on a DIFFERENT
+  // underlying series than the one on screen (e.g. BoC targets headline
+  // CPI, not the Median/Trimmed core measure charted here) — the reader
+  // must see that distinction on the chart itself, not just infer it.
   function buildAnnotations(meta, colors) {
     const annotations = {};
     const target = meta.target;
-    if (target && target.kind === "band") {
+    if (!target || !meta.comparable_with_target) return annotations;
+    if (target.kind === "band") {
       annotations.targetBand = {
         type: "box", yMin: target.low, yMax: target.high,
         backgroundColor: colors.targetBand, borderWidth: 0,
       };
-    } else if (target && target.kind === "point") {
+      if (target.label) {
+        // Anchored at the band's own top edge (y: "start") rather than
+        // vertically centered — the band's numeric range overlaps the bars'
+        // own value range by design, so centering the label would run it
+        // straight through the tallest bars instead of sitting above them.
+        annotations.targetBand.label = {
+          display: true, content: target.label, position: { x: "end", y: "start" },
+          backgroundColor: colors.targetLine, color: "#fff",
+          font: { size: 10, weight: "600" }, padding: { x: 6, y: 2 },
+        };
+      }
+    } else if (target.kind === "point") {
       annotations.targetLine = {
         type: "line", yMin: target.value, yMax: target.value,
         borderColor: colors.targetLine, borderWidth: 1.5, borderDash: [6, 4],
         label: {
-          display: true, content: target.value + "% target", position: "end",
+          display: true, content: target.label || (target.value + "% target"), position: "end",
           backgroundColor: colors.targetLine, color: "#fff",
           font: { size: 10, weight: "600" }, padding: { x: 6, y: 2 },
         },
@@ -332,10 +345,13 @@
   // ---- Chart: bar path (inflation / growth / labor) -------------------------
 
   function buildBarDatasets(points, colors) {
-    const barColors = points.map((p) => {
-      const base = bucketColor(p.bucket, colors);
-      return p.score_status === "scored" ? base : hatchPattern(base || colors.neutral);
-    });
+    // FAZA 2B 1 — a real, published print always renders as a normal bar.
+    // bucketColor already falls back to colors.neutral when bucket is
+    // null/undefined (no z-score yet) — same neutral as an in-line bucket,
+    // deliberately indistinguishable: "no score" and "nothing notable" both
+    // mean "no signal here," and a hatch pattern implying "missing/degraded
+    // data" was actively misleading for a real, as-published actual.
+    const barColors = points.map((p) => bucketColor(p.bucket, colors));
     const actualData = points.map((p) => (p.actual === null || p.actual === undefined ? null : p.actual));
     return [{
       type: "bar", label: "Actual", data: actualData,
@@ -505,22 +521,21 @@
     }
   }
 
-  // FAZA 1H 6 — with `status` gone from the tooltip (point 3), the hatch
-  // pattern on a non-scored bar has no other explanation anywhere on the
-  // page. One compact line: what the colors mean, what the hatch means.
+  // FAZA 2B 1 — the hatch swatch is gone along with the hatch fill itself:
+  // "in-line" and "no score yet" now share the same neutral color and are
+  // deliberately indistinguishable (both mean "nothing notable"), so there
+  // is nothing left to explain a hatch pattern for.
   function renderLegend() {
     const el = document.getElementById("historyLegend");
     if (!el) return;
     const colors = themeColors();
-    function swatch(color, hatch) {
-      const style = hatch ? "" : "background:" + color + ";";
-      return '<span class="hl-swatch' + (hatch ? " hl-hatch" : "") + '" style="' + style + '"></span>';
+    function swatch(color) {
+      return '<span class="hl-swatch" style="background:' + color + ';"></span>';
     }
     el.innerHTML =
       '<span class="hl-item">' + swatch(bucketColor(2, colors)) + "Beat</span>" +
       '<span class="hl-item">' + swatch(colors.neutral) + "In-line</span>" +
-      '<span class="hl-item">' + swatch(bucketColor(-2, colors)) + "Miss</span>" +
-      '<span class="hl-item">' + swatch(null, true) + "No score (insufficient history)</span>";
+      '<span class="hl-item">' + swatch(bucketColor(-2, colors)) + "Miss</span>";
   }
 
   function renderChartAndStrip() {
@@ -590,7 +605,7 @@
     state.ccy = ccys.includes(ccyParam) ? ccyParam : ccys[0];
 
     const roleParam = params.get("role");
-    const entries = sortedEntries(state.ccy);
+    const entries = visibleEntries(state.ccy);
     state.role = (roleParam && entries.find((e) => e.role === roleParam)) ? roleParam
       : (entries[0] ? entries[0].role : null);
     const rangeParam = params.get("range");

@@ -402,6 +402,16 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                     "indicator_key": key, "display_label": entry.get("display_label"),
                     "unit": entry.get("unit"), "transform_real": entry.get("transform_real"),
                     "label_source": label_source, "target": entry.get("target"),
+                    "target_note": entry.get("target_note"),
+                    # FAZA 2B 3.3 — a target BAND/LINE is only a valid overlay on
+                    # a y/y series (same units as the target itself); on a m/m or
+                    # q/q series it would be a unit error (a monthly-change chart
+                    # with an annual-rate line drawn straight across it). Derived
+                    # from transform_real so it can never drift out of sync with
+                    # a catalog author adding/editing `target` by hand — the UI
+                    # gates the on-chart annotation on this field, not on
+                    # target's mere presence.
+                    "comparable_with_target": entry.get("transform_real") == "YoY",
                     # Rendering hints (Part 3): rates is a policy LEVEL series —
                     # a bar chart implies discrete period-over-period surprise,
                     # which is misleading for "the rate that's been in effect

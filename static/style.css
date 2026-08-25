@@ -1632,7 +1632,3 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 }
 .history-legend .hl-item { display: inline-flex; align-items: center; gap: 5px; }
 .history-legend .hl-swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
-.history-legend .hl-swatch.hl-hatch {
-  background-image: repeating-linear-gradient(45deg, var(--muted), var(--muted) 1.5px, transparent 1.5px, transparent 4px);
-  opacity: 0.7;
-}
