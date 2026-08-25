@@ -1601,14 +1601,25 @@ table.strength-matrix td.matrix-cell { cursor: default; }
   background: var(--surface); color: var(--fg); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 10px; font-size: 14px;
 }
-.history-series-chips { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+/* FAZA 2E-2 (follow-up) — same segmented-control convention as
+   .window-selector/.win-btn and .history-cat-tabs/.history-cat-tab on this
+   same page (one shared pill container, borderless items, only the active
+   one filled) — reused verbatim, not a new pattern. Previously each chip
+   had its own independent border+background, which read as a set of
+   togglable buttons that could all be "on" at once; a user could click two
+   and both would look pressed even though only one series ever rendered
+   (FAZA 2E). This is a single-choice control, and now looks like one. */
+.history-series-chips {
+  display: inline-flex; gap: 2px; flex-wrap: wrap;
+  background: var(--surface-alt); padding: 3px; border-radius: 8px;
+}
 .history-series-chip {
-  background: var(--surface-alt); color: var(--muted); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer;
+  background: transparent; color: var(--muted); border: none;
+  border-radius: 6px; padding: 6px 14px; font-size: 13px; cursor: pointer;
   transition: all 0.15s ease;
 }
 .history-series-chip:hover { color: var(--fg); }
-.history-series-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.history-series-chip.active { background: var(--accent); color: #fff; }
 .history-series-chip .label-derived-mark { opacity: 0.7; font-style: italic; }
 /* FAZA 2C 4 — the only-chip-in-town case (a plain <span>, not <button>):
    no pointer cursor, no hover color shift, no active/selected styling — it
