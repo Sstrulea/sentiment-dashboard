@@ -284,5 +284,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-22T09:47:02+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_core_cpi",
+  "currency": "JPY",
+  "indicator_key": "core_cpi",
+  "datetime_utc": "2026-08-25 05:00:00",
+  "actual": 1.6,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-25T12:26:39+00:00",
+  "note": ""
  }
 ]
