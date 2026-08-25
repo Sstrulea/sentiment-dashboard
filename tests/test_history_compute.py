@@ -406,6 +406,48 @@ def test_drop_display_duplicate_rows_ignores_gap_over_one_hour():
     assert len(out) == 2
 
 
+def test_drop_display_duplicate_rows_collapses_gap_zero_placeholder():
+    """FAZA 2D 2 — a pre-print placeholder (actual still null) at the EXACT
+    same datetime_utc as the real print of the same event (forecast/previous
+    unchanged) used to slip past the old `0 < gap_h` check entirely (neither
+    collapsed nor warned about). gap_h == 0 must now be included, and the
+    null-actual row must be the one dropped -- not a coin flip."""
+    ff = pd.DataFrame([
+        _raw_row("AUD", "aud_cpi_yoy", "2026-07-29 01:30:00", None, 4.0, 4.0),
+        _raw_row("AUD", "aud_cpi_yoy", "2026-07-29 01:30:00", 3.8, 4.0, 4.0),
+    ])
+    out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 1
+    assert out.iloc[0]["actual"] == 3.8
+
+
+def test_drop_display_duplicate_rows_gap_zero_placeholder_order_reversed():
+    """Same as above but with row order swapped (real print sorts first) --
+    the anchor itself is the one dropped; the loop must still end up
+    keeping exactly the real row, not the placeholder."""
+    ff = pd.DataFrame([
+        _raw_row("AUD", "aud_cpi_yoy", "2026-07-29 01:30:00", 3.8, 4.0, 4.0),
+        _raw_row("AUD", "aud_cpi_yoy", "2026-07-29 01:30:00", None, 4.0, 4.0),
+    ])
+    out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 1
+    assert out.iloc[0]["actual"] == 3.8
+
+
+def test_drop_display_duplicate_rows_gap_zero_real_conflict_still_warns(caplog):
+    """gap=0 with TWO real, DIFFERING actual values (not a null-placeholder
+    case) is a genuine conflict, same as any other divergence -- both rows
+    survive and a warning is logged, never silently resolved."""
+    ff = pd.DataFrame([
+        _raw_row("CAD", "cad_core_cpi", "2026-08-17 12:30:00", 0.1, 0.0, 0.1),
+        _raw_row("CAD", "cad_core_cpi", "2026-08-17 12:30:00", 0.2, 0.0, 0.1),
+    ])
+    with caplog.at_level("WARNING"):
+        out = hc._drop_display_duplicate_rows(ff)
+    assert len(out) == 2
+    assert any("NOT a duplicate" in r.message for r in caplog.records)
+
+
 def test_drop_display_duplicate_rows_collapses_three_way_identical_chain():
     """A scheduled (not-yet-printed) event re-delivered twice more before it
     ever prints -- all three identical (NaN actual) -- collapses to exactly
@@ -448,3 +490,38 @@ def test_build_full_frame_passes_the_undeduped_ff_to_apply_overrides(monkeypatch
                         overrides=[], as_of=pd.Timestamp("2026-08-01"))
 
     assert seen["n_rows"] == 2, "apply_overrides must see the ORIGINAL row count, not the deduped one"
+
+
+def test_build_full_frame_drops_placeholder_superseded_by_manual_override(monkeypatch):
+    """FAZA 2D 2 — the real AUD cpi_yoy 2026-07-29 case: the automatic feed
+    never captured an actual (scored's own row for that release is NaN,
+    since apply_overrides is matched against the raw ff, not scored, and
+    never edits that row in place); a manual override supplies the real
+    value at the exact same (currency, indicator_key, release_dt). The null
+    scored row must be dropped -- not kept as a second, phantom point --
+    while an UNRELATED scored row (no override) is untouched, and the
+    override row itself always survives (never the thing removed)."""
+    scored_df = pd.DataFrame([
+        {"currency": "AUD", "indicator_key": "cpi_yoy", "release_dt": pd.Timestamp("2026-07-29 01:30:00"),
+         "actual": None, "consensus": 4.0, "previous": 4.0, "source": "ff", "name_raw": "CPI y/y"},
+        {"currency": "USD", "indicator_key": "cpi_yoy", "release_dt": pd.Timestamp("2026-07-12 12:30:00"),
+         "actual": 3.5, "consensus": 3.8, "previous": 4.2, "source": "ff", "name_raw": "CPI y/y"},
+    ])
+    manual_df = pd.DataFrame([
+        {"currency": "AUD", "indicator_key": "cpi_yoy", "release_dt": pd.Timestamp("2026-07-29 01:30:00"),
+         "actual": 3.8, "consensus": 4.0, "previous": 4.0, "source": "manual", "name_raw": None},
+    ])
+
+    monkeypatch.setattr(hc, "_drop_display_duplicate_rows", lambda ff: ff)
+    monkeypatch.setattr(hc, "to_scoring_frame", lambda *a, **k: scored_df)
+    monkeypatch.setattr(hc, "apply_overrides", lambda *a, **k: (manual_df, pd.DataFrame()))
+
+    out = hc.build_full_frame(pd.DataFrame(), matcher=None, cbz=set(), flagged_bad=None,
+                              overrides=[], as_of=pd.Timestamp("2026-08-01"))
+
+    aud = out[(out["currency"] == "AUD") & (out["indicator_key"] == "cpi_yoy")]
+    assert len(aud) == 1, "the null placeholder must be gone, not coexisting with the override"
+    assert aud.iloc[0]["actual"] == 3.8
+    assert aud.iloc[0]["source"] == "manual"
+    usd = out[(out["currency"] == "USD") & (out["indicator_key"] == "cpi_yoy")]
+    assert len(usd) == 1, "an unrelated scored row (no override) must be untouched"

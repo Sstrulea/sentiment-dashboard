@@ -427,13 +427,9 @@ categories:
         display_label: "GDP (QoQ)"
         unit: pct
         transform_real: QoQ
-    CHF:
-      - indicator_key: gdp_qoq
-        role: market
-        rank: 1
-        display_label: "GDP (QoQ)"
-        unit: pct
-        transform_real: QoQ
+    # CHF growth: OMITTED — see "OMITTED SERIES" at the bottom (gdp_qoq,
+    # n=11, below the 12-print catalog floor, FAZA 2D 1.1).
+    #
     # JPY growth: OMITTED entirely — see "OMITTED SERIES" at the bottom
     # (gdp_qoq n=3, below the 4-point minimum even on Max).
 
@@ -507,6 +503,13 @@ categories:
 # growth/JPY market (gdp_qoq, name_raw "Prelim GDP q/q"): n=3, spanning
 #   2026-02-15..2026-08-16 only — below the 4-point minimum even on the Max
 #   window. No substitute GDP series confirmed for JPY.
+#
+# growth/CHF market (gdp_qoq): REMOVED at FAZA 2D 1.1 — n=11 real prints as
+#   of 2026-08-25, below the 12-print catalog floor (FAZA 2C 5.3), with a
+#   275-day max gap against a ~91-day quarterly median (a real, isolated
+#   reporting gap, not a documented one-off like USD's below — too thin a
+#   series to carry either way). CHF has no growth-category series at all
+#   now. No substitute GDP series confirmed.
 #
 # rates/CHF market (interest_rate_decision, "SNB Policy Rate"): STALE — last
 #   print 2025-06-19, cadence quarterly, >2x cadence old as of 2026-08-20 (FAZA

@@ -43,6 +43,37 @@ REVISION_EPS_ABS = 1e-9
 WINDOW_DAYS = {"1y": 365, "2y": 730}   # "max" has no day cutoff
 WINDOW_MIN_POINTS = 4
 
+# FAZA 2D 1.2 — history's OWN stale threshold, per (currency, indicator_key),
+# derived from that series' empirical print-to-print gap. Deliberately NOT
+# economic_compute._max_age_for (a fixed per-frequency-bucket table: weekly
+# 14d/monthly 45d/quarterly 110d) — that function is production scoring
+# (compute_indicator_score's allow_stale gate feeds /economic's aggregation
+# directly) and must never change here, or /economic's byte-identical
+# non-regression breaks. The bucket table is also just wrong for a bank
+# whose real cadence runs longer than its assumed bucket: RBNZ's empirical
+# median gap is 49 days, bucketed as "monthly" (45d) — meaning the series is
+# structurally "stale" for several days after EVERY meeting, independent of
+# any real problem (FAZA 2D 1.2 finding). 2x the series' own median gap
+# gives a full cycle's slack past its typical release rhythm, uniformly, no
+# NZD special-case.
+EMPIRICAL_STALE_MULTIPLIER = 2
+
+
+def _empirical_max_age_days(printed_dates: pd.Series) -> Optional[int]:
+    """2x this series' own empirical median print-to-print gap (days).
+    `None` when fewer than 2 real prints exist — not enough history to
+    derive a real rhythm; the caller falls back to the production
+    per-frequency-bucket value in that case (still just reading it as a
+    fallback constant, not calling into economic_compute's stale/scoring
+    decision itself)."""
+    dates = pd.to_datetime(pd.Series(printed_dates)).sort_values()
+    if len(dates) < 2:
+        return None
+    median_gap = dates.diff().dt.days.dropna().median()
+    if pd.isna(median_gap) or median_gap <= 0:
+        return None
+    return int(round(EMPIRICAL_STALE_MULTIPLIER * median_gap))
+
 
 def load_catalog(path: Path = CATALOG_YAML) -> dict:
     with open(path) as f:
@@ -77,10 +108,20 @@ def _drop_display_duplicate_rows(ff: pd.DataFrame) -> pd.DataFrame:
     harmless duplicate — both rows are kept, unmodified, and a warning is
     logged so a genuine conflict is never silently resolved by picking one.
 
+    FAZA 2D 2 — one specific non-identical case is ALSO not a conflict: a
+    pre-print placeholder (actual still null — the event was merely
+    scheduled when this row was captured) sitting next to the real print of
+    the SAME event (forecast/previous unchanged between the two). There is
+    nothing ambiguous about which row to keep there, so it collapses too
+    (logged at INFO, not WARNING) — only a genuine divergence (forecast or
+    previous also differing, or two DIFFERING real actual values) still
+    keeps both rows and warns.
+
     Returns a NEW DataFrame (copy) with the redundant later row of each
-    confirmed-identical pair removed. `ff` itself is never mutated — this
-    function is called on a private copy inside build_full_frame, and the
-    original parquet-backed frame production reads is untouched.
+    confirmed-identical (or placeholder-superseded) pair removed. `ff`
+    itself is never mutated — this function is called on a private copy
+    inside build_full_frame, and the original parquet-backed frame
+    production reads is untouched.
     """
     df = ff.copy()
     df["datetime_utc"] = pd.to_datetime(df["datetime_utc"])
@@ -105,7 +146,13 @@ def _drop_display_duplicate_rows(ff: pd.DataFrame) -> pd.DataFrame:
         for j in range(1, len(rows)):
             r0, r1 = rows[anchor], rows[j]
             gap_h = (r1.datetime_utc - r0.datetime_utc).total_seconds() / 3600
-            if 0 < gap_h <= _DUP_GAP_HOURS:
+            # FAZA 2D 2 — 0 <= gap_h (not 0 <): a same-instant pair (a
+            # pre-print placeholder and its eventual real print, both
+            # captured at the identical scheduled datetime_utc) used to slip
+            # past this range check entirely — neither collapsed nor even
+            # warned about, just silently rendered as two adjacent x-axis
+            # slots for one event.
+            if 0 <= gap_h <= _DUP_GAP_HOURS:
                 identical = (_same(r0.actual, r1.actual) and _same(r0.forecast, r1.forecast)
                             and _same(r0.previous, r1.previous))
                 if identical:
@@ -116,6 +163,28 @@ def _drop_display_duplicate_rows(ff: pd.DataFrame) -> pd.DataFrame:
                             gap_h * 60, r0.datetime_utc, r0.actual, r0.forecast, r0.previous)
                     drop_idx.append(r1.Index)
                     continue   # anchor unchanged — r1 is gone, keep comparing forward from r0
+
+                # A pre-print placeholder (actual still null) next to the
+                # real print of the SAME event (forecast/previous unchanged)
+                # is not a conflict — there is nothing ambiguous about which
+                # row to keep. Only a genuine divergence (forecast/previous
+                # also differ, or two DIFFERING real actual values) still
+                # falls through to the warning below.
+                fp_match = _same(r0.forecast, r1.forecast) and _same(r0.previous, r1.previous)
+                r0_is_placeholder = pd.isna(r0.actual) and not pd.isna(r1.actual)
+                r1_is_placeholder = pd.isna(r1.actual) and not pd.isna(r0.actual)
+                if fp_match and (r0_is_placeholder or r1_is_placeholder):
+                    placeholder, real = (r0, r1) if r0_is_placeholder else (r1, r0)
+                    log.info("history display dedup: %s %s @ %s — dropping pre-print "
+                            "placeholder row at %s (actual not yet known), superseded by "
+                            "the real print at %s (actual=%s forecast=%s previous=%s).",
+                            r0.currency, r0.canonical_id, r0.cal_date, placeholder.datetime_utc,
+                            real.datetime_utc, real.actual, real.forecast, real.previous)
+                    drop_idx.append(placeholder.Index)
+                    if placeholder.Index == r1.Index:
+                        continue   # r1 (placeholder) dropped — r0 (real) stays anchor
+                    # r0 (the anchor itself) was the placeholder — r1 (real)
+                    # becomes the new anchor; fall through to `anchor = j`.
                 else:
                     log.warning("history display dedup: %s %s @ %s has two prints %.0fmin apart "
                                "(%s vs %s) with DIFFERING values — actual=%s/%s forecast=%s/%s "
@@ -160,6 +229,32 @@ def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
     deduped_ff = _drop_display_duplicate_rows(ff)
     scored = to_scoring_frame(deduped_ff, matcher, can_be_zero=cbz, flagged_bad=flagged_bad)
     manual_rows, _ = apply_overrides(ff, overrides, now_utc=as_of, flagged_bad=flagged_bad)
+
+    # FAZA 2D 2 — a SEPARATE placeholder-vs-real duplicate from the raw-feed
+    # one _drop_display_duplicate_rows handles: a manual override supplies
+    # the real actual for a release the automatic feed never captured
+    # (`scored`'s own row for that exact (currency, indicator_key,
+    # release_dt) is still NaN — apply_overrides is matched against the RAW
+    # ff, not `scored`, by design, so it never edits that row in place, see
+    # the docstring above). Same non-conflict as the raw-feed case (nothing
+    # ambiguous about which value is real), just discovered one step later
+    # in the pipeline, after overrides are known — so it is resolved here,
+    # not in _drop_display_duplicate_rows, which has already finished by
+    # this point and never sees manual_rows at all.
+    if len(manual_rows):
+        manual_keys = set(zip(manual_rows["currency"], manual_rows["indicator_key"],
+                              pd.to_datetime(manual_rows["release_dt"])))
+        is_superseded_placeholder = scored.apply(
+            lambda r: bool(pd.isna(r["actual"])
+                          and (r["currency"], r["indicator_key"], r["release_dt"]) in manual_keys),
+            axis=1)
+        n_superseded = int(is_superseded_placeholder.sum())
+        if n_superseded:
+            log.info("history display dedup: dropping %d placeholder row(s) (actual still "
+                    "unknown to the automatic feed) superseded by a manual override at the "
+                    "same (currency, indicator_key, release_dt).", n_superseded)
+            scored = scored[~is_superseded_placeholder]
+
     combined = pd.concat([scored, manual_rows], ignore_index=True) if len(manual_rows) else scored
     combined["release_dt"] = pd.to_datetime(combined["release_dt"])
     return combined[SCORING_COLUMNS]
@@ -438,7 +533,12 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                 age_days = int((as_of - last_print_dt).days) if last_print_dt is not None else None
                 cfg_for_key = ind_indicators.get(key, {})
                 freq = effective_frequency(cfg_for_key, ind_defaults, ccy)
-                max_age = _max_age_for(cfg_for_key, ind_defaults, freq)
+                # FAZA 2D 1.2 — empirical (this series' own real cadence)
+                # over the production per-frequency-bucket fallback, used
+                # only when there isn't enough history yet to derive one.
+                max_age = _empirical_max_age_days(printed_dates)
+                if max_age is None:
+                    max_age = _max_age_for(cfg_for_key, ind_defaults, freq)
                 stale = bool(has_data and age_days is not None and age_days > max_age)
                 base["has_data"] = has_data
                 base["stale"] = stale
