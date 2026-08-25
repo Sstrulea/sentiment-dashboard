@@ -24,22 +24,21 @@
     return document.body.classList.contains("dark");
   }
 
-  // Same discrete bias palette as /economic (static/style.css .bias-*, and
-  // economic-chart.js's gradientStyle(v, 2) for an atomic -2..+2 indicator
-  // score) — reused verbatim, not reinvented.
-  const BUCKET_COLOR = {
-    2: "#1565c0", 1: "#90caf9", 0: null /* theme-dependent neutral, see below */,
-    "-1": "#ef9a9a", "-2": "#d32f2f",
-  };
-
+  // FAZA 2C 1 — bucket-based bar coloring (beat/in-line/miss) is gone: the
+  // z-score dead-zone bucket and the bar-vs-forecast-line relationship both
+  // encoded "the surprise," and disagreeing on close calls read as a
+  // contradiction ("bar is below the line but colored green"). The bar/line
+  // relationship alone is unambiguous, so it's the only one left. `accent`
+  // is the site's one existing accent blue (static/style.css --accent),
+  // reused verbatim for every "Actual" series in every category, not a new
+  // color invented for this page.
   function themeColors() {
     const dark = isDarkTheme();
     return {
-      primary: dark ? "#ffffff" : "#1a1a1a",
+      accent: dark ? "#64b5f6" : "#1565c0",
       grid: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
       tick: dark ? "#9aa0a6" : "#666",
-      neutral: dark ? "#3a3f45" : "#e0e0e0",
-      forecastTick: dark ? "#eee" : "#333",
+      forecastLine: dark ? "#ff6b6b" : "#c62828",
       targetLine: dark ? "#ffc107" : "#a67600",
       targetBand: dark ? "rgba(255, 193, 7, 0.10)" : "rgba(255, 193, 7, 0.14)",
       quarantineMarker: dark ? "#9aa0a6" : "#757575",
@@ -47,12 +46,6 @@
       tooltipFg: dark ? "#eee" : "#222",
       tooltipBorder: dark ? "#333" : "#ccc",
     };
-  }
-
-  function bucketColor(bucket, colors) {
-    if (bucket === null || bucket === undefined || Number.isNaN(bucket)) return colors.neutral;
-    const b = Math.max(-2, Math.min(2, Math.round(bucket)));
-    return BUCKET_COLOR[b] || colors.neutral;
   }
 
   // ---- Formatting -----------------------------------------------------------
@@ -110,7 +103,11 @@
     return Array.from(set).sort();
   }
 
-  // ---- Series resolution (P1.4: policy entries reference a sibling) --------
+  // ---- Series resolution (P1.4: a role can reference a sibling's points) ---
+  // No catalog entry sets `points_ref` today (its one user, inflation's
+  // `policy` duplicate-reference role, was removed at FAZA 2C 4) — the
+  // resolution mechanism stays general-purpose for whatever future entry
+  // might need it.
 
   function seriesEntries(ccy) {
     const cat = state.payload.categories[state.category] || {};
@@ -203,14 +200,23 @@
     });
   }
 
+  // FAZA 2C 4 — a currency/category with exactly one visible series (AUD/NZD
+  // /CHF inflation after this phase's cleanup; every `rates` entry now that
+  // `policy` isn't a separate duplicate chip) has nothing to switch TO — a
+  // clickable, "active"-highlighted button implies a choice that doesn't
+  // exist. Render it as a plain, non-interactive label instead: still shows
+  // which series is on screen (visual consistency with every other
+  // category), but no hover/click affordance and no click handler. Two or
+  // more entries still render as the normal clickable chips.
   function renderSeriesChips() {
     const wrap = document.getElementById("historySeriesChips");
     const entries = visibleEntries(state.ccy);
     wrap.innerHTML = "";
+    const single = entries.length === 1;
     entries.forEach((e) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "history-series-chip" + (e.role === state.role ? " active" : "");
+      const el = document.createElement(single ? "span" : "button");
+      if (!single) el.type = "button";
+      el.className = "history-series-chip" + (single ? " history-series-chip-static" : (e.role === state.role ? " active" : ""));
       let label = e.role.charAt(0).toUpperCase() + e.role.slice(1);
       if (e.indicator_key) label += ": " + (e.display_label || e.indicator_key);
       if (e.label_source === "derived") label += ' <span class="label-derived-mark" title="Corrected label — the production canonical name did not match the real feed (see catalog mismatch_note)">*</span>';
@@ -219,14 +225,16 @@
         label += ' <span class="history-cadence-badge" title="Empirical print cadence: ' + e.cadence_empirical +
           ' — adjacent points on this chart are NOT evenly spaced in time">' + abbr + "</span>";
       }
-      btn.innerHTML = label;
-      btn.addEventListener("click", () => {
-        state.role = e.role;
-        state.windowKey = null;
-        syncUrl();
-        renderAll();
-      });
-      wrap.appendChild(btn);
+      el.innerHTML = label;
+      if (!single) {
+        el.addEventListener("click", () => {
+          state.role = e.role;
+          state.windowKey = null;
+          syncUrl();
+          renderAll();
+        });
+      }
+      wrap.appendChild(el);
     });
   }
 
@@ -256,12 +264,24 @@
 
   function renderStrip(meta, points) {
     const strip = document.getElementById("historyStrip");
-    const last = points.length ? points[points.length - 1] : null;
     function item(label, value, cls) {
       return '<div class="hs-item"><span class="hs-label">' + label + '</span>' +
         '<span class="hs-value' + (cls ? " " + cls : "") + '">' + value + "</span></div>";
     }
     const unitSuffix = meta.unit ? " " + meta.unit : "";
+
+    // FAZA 2C 3 — the header strip describes the LAST REAL print (an actual
+    // value exists), never a scheduled/pending release. `points` can end
+    // with a not-yet-printed row (release_dt in the future, most commonly —
+    // that's the bug this fixes: AUD inflation showed "No print yet" as if
+    // it were the latest data) — that row belongs on the forecast line and
+    // in the "Next" note below, never masquerading as "the latest actual."
+    let lastRealIdx = -1;
+    for (let i = points.length - 1; i >= 0; i--) {
+      if (points[i].actual !== null && points[i].actual !== undefined) { lastRealIdx = i; break; }
+    }
+    const last = lastRealIdx !== -1 ? points[lastRealIdx] : null;
+
     if (!last) {
       strip.innerHTML = '<div class="hs-item"><span class="hs-value">No prints in this window</span></div>';
     } else {
@@ -272,11 +292,20 @@
       const delta = (originalActual !== null && last.forecast !== null) ? originalActual - last.forecast : null;
       const deltaCls = delta === null ? "" : delta > 0 ? "hs-delta-pos" : delta < 0 ? "hs-delta-neg" : "";
       const statusNote = last.score_status !== "scored" ? " (" + STATUS_LABEL[last.score_status] + ")" : "";
-      strip.innerHTML =
+      let html =
         item("Release", fmtDate(last.release_dt)) +
         item("Actual", fmtNum(last.actual) + unitSuffix + statusNote) +
         item("Forecast", fmtNum(last.forecast) + unitSuffix) +
         item("Delta (Act-Fcst)", fmtNum(delta) + unitSuffix, deltaCls);
+
+      // A pending release after the last real print (scheduled but not yet
+      // printed) — its own line, so what's expected next is visible without
+      // implying it already happened.
+      const next = points.slice(lastRealIdx + 1).find((p) => p.forecast !== null && p.forecast !== undefined);
+      if (next) {
+        html += item("Next", fmtDate(next.release_dt) + ", forecast " + fmtNum(next.forecast) + unitSuffix);
+      }
+      strip.innerHTML = html;
     }
 
     const noteEl = document.getElementById("historyTargetNote");
@@ -345,17 +374,16 @@
   // ---- Chart: bar path (inflation / growth / labor) -------------------------
 
   function buildBarDatasets(points, colors) {
-    // FAZA 2B 1 — a real, published print always renders as a normal bar.
-    // bucketColor already falls back to colors.neutral when bucket is
-    // null/undefined (no z-score yet) — same neutral as an in-line bucket,
-    // deliberately indistinguishable: "no score" and "nothing notable" both
-    // mean "no signal here," and a hatch pattern implying "missing/degraded
-    // data" was actively misleading for a real, as-published actual.
-    const barColors = points.map((p) => bucketColor(p.bucket, colors));
+    // FAZA 2C 1 — a single accent color for every bar. bucket/z-score
+    // coloring is gone entirely (see themeColors); the bar-vs-forecast-line
+    // relationship is the only surprise signal left, and it's unambiguous.
+    // FAZA 2C 3 — a future/not-yet-printed row (actual null) gets `null`
+    // here, so Chart.js draws no bar for it at all — only a point on the
+    // forecast line (see the forecast dataset below).
     const actualData = points.map((p) => (p.actual === null || p.actual === undefined ? null : p.actual));
     return [{
       type: "bar", label: "Actual", data: actualData,
-      backgroundColor: barColors, borderWidth: 0, order: 2,
+      backgroundColor: colors.accent, borderWidth: 0, order: 2,
     }];
   }
 
@@ -369,9 +397,12 @@
     // visible gap) and rendered instead as a separate, distinct marker
     // pinned at the last known-good level, so the discontinuity is visible
     // rather than either a false drop-to-zero or a silently smoothed-over gap.
+    //
+    // FAZA 2C 1 — one accent color throughout (no more bucket coloring on
+    // the "changed" markers); a level change is still visible via radius
+    // (6 vs 2.5), just not via color.
     let lastGood = null;
     const radii = [];
-    const pointColors = [];
     const actualData = [];
     const quarantineY = [];
     points.forEach((p) => {
@@ -380,13 +411,11 @@
       if (isQuarantined || !hasActual) {
         actualData.push(null);
         radii.push(0);
-        pointColors.push(colors.neutral);
         quarantineY.push(isQuarantined ? lastGood : null);
         return;
       }
       const changed = lastGood !== null && p.actual !== lastGood;
       radii.push(changed ? 6 : 2.5);
-      pointColors.push(bucketColor(p.bucket, colors) || colors.neutral);
       actualData.push(p.actual);
       quarantineY.push(null);
       lastGood = p.actual;
@@ -394,8 +423,8 @@
 
     const datasets = [{
       type: "line", label: "Actual", data: actualData, stepped: "before",
-      spanGaps: false, borderColor: colors.primary, borderWidth: 2,
-      pointRadius: radii, pointBackgroundColor: pointColors, pointBorderColor: pointColors,
+      spanGaps: false, borderColor: colors.accent, borderWidth: 2,
+      pointRadius: radii, pointBackgroundColor: colors.accent, pointBorderColor: colors.accent,
       order: 2,
     }];
     if (quarantineY.some((v) => v !== null)) {
@@ -419,32 +448,26 @@
     const mainDatasets = isStep ? buildStepDatasets(points, colors) : buildBarDatasets(points, colors);
     const quarantineIdx = mainDatasets.findIndex((d) => d._isQuarantineDataset);
 
+    // FAZA 2C 2 — a continuous line joining every forecast point (not a
+    // per-print tick): draws OVER the bars, in a contrasting coral/red so it
+    // stays legible against the accent-blue bars, with a circular marker on
+    // every print (including a future/not-yet-printed one — FAZA 2C 3, that
+    // point has no bar but still lands on this line, showing what's expected
+    // without pretending it already happened). spanGaps:false — a genuinely
+    // unknown forecast (rare, e.g. a manual override row) leaves a visible
+    // gap rather than a fabricated interpolation.
     const forecastData = points.map((p) => (p.forecast === null || p.forecast === undefined ? null : p.forecast));
-
-    // FAZA 1H 2 — a horizontal tick at the forecast level, spanning roughly
-    // the width of one category slot (bar or step position), NOT a vertical
-    // line floating above the bar (the previous rotation:90 bug — pointStyle
-    // "line" is horizontal by DEFAULT; rotating it 90° made it vertical,
-    // exactly backwards from "can you see instantly whether the bar cleared
-    // the line"). pointRadius is a scriptable callback so the tick's length
-    // adapts to how many points are on screen (narrow on a dense Max window,
-    // wide on a sparse 1Y one) — Chart.js draws pointStyle "line" as a
-    // segment from -radius to +radius, so radius is HALF the visual length.
-    const tickRadius = (ctx) => {
-      const xScale = ctx.chart.scales.x;
-      if (!xScale || !points.length) return 8;
-      const band = xScale.width / points.length;
-      return Math.max(3, Math.min(band * 0.38, 16));
-    };
 
     const datasets = mainDatasets.concat([
       {
-        type: "line", label: "Forecast", data: forecastData, showLine: false,
-        pointStyle: "line", rotation: 0, pointRadius: tickRadius, pointBorderWidth: 3,
-        pointBorderColor: colors.forecastTick, pointBackgroundColor: colors.forecastTick,
+        type: "line", label: "Forecast", data: forecastData,
+        borderColor: colors.forecastLine, borderWidth: 2, spanGaps: false, fill: false,
+        pointStyle: "circle", pointRadius: 3, pointHoverRadius: 4,
+        pointBackgroundColor: colors.forecastLine, pointBorderColor: colors.forecastLine,
         order: 1,
       },
     ]);
+    const forecastIdx = datasets.length - 1;
 
     const annotations = buildAnnotations(meta, colors);
 
@@ -461,14 +484,30 @@
           tooltip: {
             backgroundColor: colors.tooltipBg, titleColor: colors.tooltipFg, bodyColor: colors.tooltipFg,
             borderColor: colors.tooltipBorder, borderWidth: 1, padding: 10,
+            // FAZA 2C 3 — a future/not-yet-printed row has a value on the
+            // forecast dataset only (the bar/step dataset is null there); a
+            // real print has a value on BOTH datasets simultaneously
+            // ("index" mode activates both). Filter down to exactly one
+            // active item per point so the label callback below never
+            // emits the same info twice.
+            filter: (item) => {
+              if (quarantineIdx !== -1 && item.datasetIndex === quarantineIdx) return true;
+              const p = points[item.dataIndex];
+              const hasActual = p.actual !== null && p.actual !== undefined;
+              return hasActual ? item.datasetIndex === 0 : item.datasetIndex === forecastIdx;
+            },
             callbacks: {
               title: (items) => points[items[0].dataIndex].release_dt.slice(0, 10),
               label: (ctx) => {
                 if (quarantineIdx !== -1 && ctx.datasetIndex === quarantineIdx) {
                   return "Quarantined print (data-quality flag — excluded from the step line)";
                 }
-                if (ctx.datasetIndex !== 0) return null;
                 const p = points[ctx.dataIndex];
+                const hasActual = p.actual !== null && p.actual !== undefined;
+                if (!hasActual) {
+                  return (p.forecast !== null && p.forecast !== undefined)
+                    ? "Forecast: " + fmtNum(p.forecast) + " (not printed yet)" : null;
+                }
                 const originalActual = originalActualOf(p);
                 const lines = ["Actual: " + fmtNum(p.actual), "Forecast: " + fmtNum(p.forecast)];
                 if (originalActual !== null && p.forecast !== null) {
@@ -525,17 +564,17 @@
   // "in-line" and "no score yet" now share the same neutral color and are
   // deliberately indistinguishable (both mean "nothing notable"), so there
   // is nothing left to explain a hatch pattern for.
+  // FAZA 2C 1/2 — two entries only: the single accent color for every
+  // "Actual" bar/step (no more Beat/In-line/Miss buckets), and the
+  // coral/red forecast line. A distinct swatch shape per kind (filled box
+  // vs. a line) so the legend itself hints at how each is drawn.
   function renderLegend() {
     const el = document.getElementById("historyLegend");
     if (!el) return;
     const colors = themeColors();
-    function swatch(color) {
-      return '<span class="hl-swatch" style="background:' + color + ';"></span>';
-    }
     el.innerHTML =
-      '<span class="hl-item">' + swatch(bucketColor(2, colors)) + "Beat</span>" +
-      '<span class="hl-item">' + swatch(colors.neutral) + "In-line</span>" +
-      '<span class="hl-item">' + swatch(bucketColor(-2, colors)) + "Miss</span>";
+      '<span class="hl-item"><span class="hl-swatch" style="background:' + colors.accent + ';"></span>Actual</span>' +
+      '<span class="hl-item"><span class="hl-swatch hl-line" style="background:' + colors.forecastLine + ';"></span>Forecast</span>';
   }
 
   function renderChartAndStrip() {

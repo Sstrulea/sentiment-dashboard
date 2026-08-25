@@ -1610,6 +1610,11 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 .history-series-chip:hover { color: var(--fg); }
 .history-series-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 .history-series-chip .label-derived-mark { opacity: 0.7; font-style: italic; }
+/* FAZA 2C 4 — the only-chip-in-town case (a plain <span>, not <button>):
+   no pointer cursor, no hover color shift, no active/selected styling — it
+   isn't a control, just a label naming what's already on screen. */
+.history-series-chip-static { cursor: default; }
+.history-series-chip-static:hover { color: var(--muted); }
 
 .history-strip {
   display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap;
@@ -1632,3 +1637,6 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 }
 .history-legend .hl-item { display: inline-flex; align-items: center; gap: 5px; }
 .history-legend .hl-swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+/* FAZA 2C 2 — "Forecast" is a LINE on the chart, not a filled bar; a thin
+   horizontal bar swatch (not a square box) reads as a line at a glance. */
+.history-legend .hl-swatch.hl-line { width: 14px; height: 3px; border-radius: 2px; align-self: center; }

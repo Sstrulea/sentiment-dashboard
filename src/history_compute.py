@@ -309,8 +309,11 @@ def compute_catalog(ff: pd.DataFrame, ind_cfg: dict, catalog: dict,
                     quarantine_df: pd.DataFrame, as_of: Optional[pd.Timestamp] = None,
                     overrides: Optional[list[dict]] = None) -> dict[tuple[str, str], pd.DataFrame]:
     """{(currency, indicator_key): history DataFrame}, one entry per DISTINCT
-    series referenced anywhere in the catalog (a series referenced by both a
-    `market` and a `policy` role — e.g. EUR cpi_yoy — is computed once)."""
+    series referenced anywhere in the catalog (if two roles in the same
+    (category, currency) ever shared an indicator_key, it would be computed
+    once — no catalog entry does this today; the FAZA 2C 4 removal of the
+    inflation-category `policy` duplicate-reference role eliminated the only
+    case that used to)."""
     as_of = as_of or pd.Timestamp.now()
     matcher = build_matcher()
     cbz = load_can_be_zero(ind_cfg)
@@ -465,11 +468,14 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
 
                 if key in first_role_for_key:
                     # Same series already materialized under an earlier role in
-                    # THIS (category, currency) — e.g. EUR/GBP/AUD's `policy`
-                    # entry is the identical series as `market` (BAND_OK, FAZA
-                    # 0.5 Bloc B). Reference it instead of duplicating every
-                    # point a second time (P1.4) — the UI resolves `points_ref`
-                    # against the sibling entry with that role in this same list.
+                    # THIS (category, currency) — general dedup-by-reference
+                    # (P1.4), kept for whatever future entry might need it.
+                    # Its one historical user (EUR/GBP/AUD's inflation `policy`
+                    # role duplicating `market`, BAND_OK, FAZA 0.5 Bloc B) was
+                    # removed at FAZA 2C 4 — no catalog entry triggers this
+                    # branch today, but the UI's points_ref resolution (a
+                    # sibling lookup by role within this same list) still
+                    # works if one ever does.
                     base["points_ref"] = {"role": first_role_for_key[key]}
                     series_list.append(base)
                     continue
