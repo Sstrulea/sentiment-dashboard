@@ -317,5 +317,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-27T06:55:30+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_durable_goods_orders",
+  "currency": "USD",
+  "indicator_key": "durable_goods_orders_mm",
+  "datetime_utc": "2026-08-26 12:30:00",
+  "actual": 1.1,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-27T06:55:39+00:00",
+  "note": ""
  }
 ]
