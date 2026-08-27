@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retail Sentiment | Dashboard</title>
+  <title>Carry | Dashboard</title>
   <link rel="stylesheet" href="/style.css">
-  <script src="/chart.umd.min.js"></script>
-  <script src="/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
   <nav class="main-nav">
@@ -16,7 +14,7 @@
       <li class="">
         <a href="/economic">Economic</a>
       </li>
-      <li class="">
+      <li class="active">
         <a href="/carry">Carry</a>
       </li>
       <li class="">
@@ -52,46 +50,47 @@
 </nav>
 <script src="/theme-toggle.js"></script>
 
-  <main class="page-content retail-page">
-    <header class="retail-header">
-      <h1>Retail Sentiment</h1>
-      <div class="provider-meta-bar" id="providerMeta">
-        <span class="muted">Loading provider info…</span>
+  <main class="page-content carry-page">
+    <header class="econ-header">
+      <h1>Carry</h1>
+      <div class="econ-header-right">
+        <div class="econ-meta-bar" id="carryMeta">
+          <span class="muted">Loading…</span>
+        </div>
       </div>
     </header>
 
-    <div class="retail-controls">
-      <div id="catFilter" class="cat-filter" role="group" aria-label="Filter categories">
-        <span class="cat-filter-label">Show:</span>
-        <div class="cat-chips" id="retailCatChips"><!-- chips injected by retail-chart.js --></div>
+    <div class="econ-legend">
+      <span class="muted">Carry = diferențialul de dobândă overnight între valuta de bază și cea de
+      cotare, exprimat anualizat pentru poziția LONG. Albastru = long-ul încasează, roșu = long-ul
+      plătește. Scala saturează la ±5,00 pp. Rollover-ul de miercuri noaptea se contabilizează ×3,
+      pentru că acoperă decontarea de weekend — excepție USD/CAD, care decontează T+1 și triplează
+      joi. Nu include markup-ul brokerului, care se scade din ambele direcții.</span>
+    </div>
+
+    <div class="econ-controls">
+      <div id="carryDirFilter" class="cat-filter" role="group" aria-label="Direction">
+        <span class="cat-filter-label">Direction:</span>
+        <div class="cat-chips" id="carryDirChips"><!-- chips injected by carry.js --></div>
+      </div>
+      <div id="carryCcyFilter" class="cat-filter" role="group" aria-label="Filter by currency">
+        <span class="cat-filter-label">Currency:</span>
+        <div class="cat-chips" id="carryCcyChips"><!-- chips injected by carry.js --></div>
         <div class="cat-filter-actions">
           <button type="button" class="cat-action" data-action="all">All</button>
-          <button type="button" class="cat-action" data-action="none">None</button>
         </div>
       </div>
-      <label class="toggle cot-overlay-toggle">
-        <input type="checkbox" id="cotOverlayToggle">
-        <span>COT Confluence Overlay</span>
-        <span class="tooltip" title="When ON: rows where retail AND CFTC large speculators are both at multi-month extremes on the same side will show a ⚡ COT badge next to the signal pill. These are high-conviction contrarian setups (both groups are crowded the wrong way at the same time).">&#9432;</span>
-      </label>
     </div>
 
     <section class="retail-table-wrapper">
-      <div id="retailContent">
-        <p class="muted" style="padding: 40px; text-align: center;">Loading retail sentiment…</p>
+      <div id="carryContent">
+        <p class="muted" style="padding: 40px; text-align: center;">Loading carry…</p>
       </div>
     </section>
-
-    <div id="symbolDetailModal" class="modal" hidden>
-      <div class="modal-backdrop"></div>
-      <div class="modal-content">
-        <button class="modal-close" type="button" aria-label="Close">&times;</button>
-        <div id="symbolDetailContent"></div>
-      </div>
-    </div>
   </main>
 
-  <script>window.RETAIL_DATA_URL = "/data/retail-sentiment.json";</script>
-  <script src="/retail-chart.js"></script>
+  <script>window.CARRY_DATA_URL = "/data/carry.json";</script>
+  <script src="/score-palette.js"></script>
+  <script src="/carry.js"></script>
 </body>
 </html>

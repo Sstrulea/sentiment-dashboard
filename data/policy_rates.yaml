@@ -1,0 +1,28 @@
+# Manual policy-rate inputs for the Carry page (/carry). No fetcher, no
+# broker/MT5 feed — a human fills these in and commits the change.
+#
+#   rate_pct    — the central bank's current overnight/policy rate, in percent
+#                 (e.g. 4.25, not 0.0425).
+#   effective   — the date this rate took effect (ISO date, unquoted so YAML
+#                 parses it as a real date).
+#   verified    — the date a human last checked this value against the source
+#                 below. src.carry_compute flags a row `stale` once `verified`
+#                 is older than meta.stale_after_days.
+#   source_name — short label for the source (e.g. "Fed", "ECB Governing
+#                 Council").
+#   source_url  — link to the source page.
+#
+# All values start null on purpose — src.carry_render must render a correct
+# "0/8 configured" page against this file exactly as committed.
+meta:
+  stale_after_days: 45
+
+rates:
+  USD: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  EUR: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  GBP: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  JPY: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  AUD: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  NZD: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  CAD: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
+  CHF: {rate_pct: null, effective: null, verified: null, source_name: "", source_url: ""}
