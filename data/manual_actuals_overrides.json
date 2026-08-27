@@ -328,5 +328,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-27T06:55:39+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_core_pce_price_index",
+  "currency": "USD",
+  "indicator_key": "core_pce",
+  "datetime_utc": "2026-08-26 12:30:00",
+  "actual": 0.2,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-08-27T06:55:46+00:00",
+  "note": ""
  }
 ]
