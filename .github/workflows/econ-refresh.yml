@@ -48,8 +48,7 @@ jobs:
           git add data/economic_calendar_ff.parquet data/jb_last_pull.json data/ff_last_refresh.json \
                   data/jb_raw/ data/ff_raw/ \
                   data/rates.parquet data/real_yields.parquet data/net_liquidity.parquet \
-                  public/economic.html public/data/economic.json public/history.html \
-                  public/carry.html public/data/carry.json
+                  public/
           [ -f data/ff_quarantine.parquet ] && git add data/ff_quarantine.parquet || true
           git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
           git commit -m "econ: refresh $(date -u +%FT%TZ) [ci]"

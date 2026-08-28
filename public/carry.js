@@ -10,6 +10,14 @@
   "use strict";
 
   if (!window.ScorePalette) {
+    // Fail closed, visibly: the boot() fetch/render below never runs after
+    // this throw, so without this the page would sit on its static "Loading
+    // carry…" placeholder forever — indistinguishable from "no data yet".
+    // Same user-facing style as boot()'s own fetch-failure catch below.
+    const wrap = document.getElementById("carryContent");
+    if (wrap) {
+      wrap.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px;">Failed to load carry data (score-palette.js missing).</p>';
+    }
     throw new Error("score-palette.js must be loaded before carry.js");
   }
   const gradientStyle = window.ScorePalette.gradientStyle;

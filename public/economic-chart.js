@@ -99,7 +99,17 @@
   // Divergent gradient + style-attr helpers now live in score-palette.js
   // (shared with /carry) — fail closed if it didn't load, rather than
   // silently falling back to some other color scheme.
+  //
+  // The throw below halts this IIFE before boot() is ever defined/wired to
+  // DOMContentLoaded, so without the explicit message here the page would
+  // sit on its static "Loading economic bias…" placeholder forever —
+  // indistinguishable from "no data yet". Same user-facing style as boot()'s
+  // own fetch-failure catch further down.
   if (!window.ScorePalette) {
+    const wrap = document.getElementById("econContent");
+    if (wrap) {
+      wrap.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px;">Failed to load economic data (score-palette.js missing).</p>';
+    }
     throw new Error("score-palette.js must be loaded before economic-chart.js");
   }
   const gradientStyle = window.ScorePalette.gradientStyle;
