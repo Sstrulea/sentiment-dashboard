@@ -96,23 +96,24 @@
     }
   }
 
-  // Continuous divergent gradient using the COT endpoints (intense blue ↔ intense
-  // red), as a tint over the cell so it adapts to light/dark themes. `score` is
-  // signed; `scale` is the magnitude that saturates to full intensity. Returns
-  // an inline-style string ("" for neutral → no tint).
-  const COT_BLUE = "21,101,192";   // #1565c0  (bullish / positive)
-  const COT_RED = "211,47,47";     // #d32f2f  (bearish / negative)
-  function gradientStyle(score, scale) {
-    if (score === null || score === undefined || Number.isNaN(Number(score))) return "";
-    const t = Math.max(-1, Math.min(1, Number(score) / scale));
-    const mag = Math.pow(Math.abs(t), 0.7);          // ease so low values still read
-    if (mag < 0.001) return "";                       // neutral → transparent
-    const rgb = t > 0 ? COT_BLUE : COT_RED;
-    const a = mag.toFixed(3);
-    const fg = mag >= 0.55 ? "#fff" : "";
-    return "background:rgba(" + rgb + "," + a + ")" + (fg ? ";color:" + fg : "");
+  // Divergent gradient + style-attr helpers now live in score-palette.js
+  // (shared with /carry) — fail closed if it didn't load, rather than
+  // silently falling back to some other color scheme.
+  //
+  // The throw below halts this IIFE before boot() is ever defined/wired to
+  // DOMContentLoaded, so without the explicit message here the page would
+  // sit on its static "Loading economic bias…" placeholder forever —
+  // indistinguishable from "no data yet". Same user-facing style as boot()'s
+  // own fetch-failure catch further down.
+  if (!window.ScorePalette) {
+    const wrap = document.getElementById("econContent");
+    if (wrap) {
+      wrap.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px;">Failed to load economic data (score-palette.js missing).</p>';
+    }
+    throw new Error("score-palette.js must be loaded before economic-chart.js");
   }
-  function styleAttr(s) { return s ? ' style="' + s + '"' : ""; }
+  const gradientStyle = window.ScorePalette.gradientStyle;
+  const styleAttr = window.ScorePalette.styleAttr;
 
   // ---- Meta-bar -----------------------------------------------------------
   function renderMeta() {

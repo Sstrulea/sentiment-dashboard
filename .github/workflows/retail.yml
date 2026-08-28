@@ -43,9 +43,7 @@ jobs:
           git config user.name "sstrulea"
           git config user.email "sebi.strulea@gmail.com"
           git add data/retail_history.parquet data/retail_general.parquet \
-                  public/data/retail-sentiment.json public/retail-sentiment.html \
-                  public/retail-chart.js 2>/dev/null || true
-          git add public/style.css 2>/dev/null || true
+                  public/ 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else

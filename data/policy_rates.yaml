@@ -1,0 +1,28 @@
+# Manual policy-rate inputs for the Carry page (/carry). No fetcher, no
+# broker/MT5 feed — a human fills these in and commits the change.
+#
+#   rate_pct    — the central bank's current overnight/policy rate, in percent
+#                 (e.g. 4.25, not 0.0425).
+#   effective   — the date this rate took effect (ISO date, unquoted so YAML
+#                 parses it as a real date).
+#   verified    — the date a human last checked this value against the source
+#                 below. src.carry_compute flags a row `stale` once `verified`
+#                 is older than meta.stale_after_days.
+#   source_name — short label for the source (e.g. "Fed", "ECB Governing
+#                 Council").
+#   source_url  — link to the source page.
+#
+# All values start null on purpose — src.carry_render must render a correct
+# "0/8 configured" page against this file exactly as committed.
+meta:
+  stale_after_days: 45
+
+rates:
+  USD: {rate_pct: 3.625, effective: 2026-07-30, verified: 2026-08-27, source_name: "Fed funds target range 3.50-3.75% (midpoint)", source_url: "https://www.federalreserve.gov/monetarypolicy/openmarket.htm"}
+  EUR: {rate_pct: 2.25, effective: 2026-06-17, verified: 2026-08-27, source_name: "ECB deposit facility rate", source_url: "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"}
+  GBP: {rate_pct: 3.75, effective: 2026-07-30, verified: 2026-08-27, source_name: "BoE Bank Rate", source_url: "https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate"}
+  JPY: {rate_pct: 1.00, effective: 2026-06-17, verified: 2026-08-27, source_name: "BoJ uncollateralized overnight call rate guideline", source_url: "https://www.boj.or.jp/en/mopo/mpmdeci/state_2026/index.htm"}
+  AUD: {rate_pct: 4.35, effective: 2026-08-12, verified: 2026-08-27, source_name: "RBA cash rate target", source_url: "https://www.rba.gov.au/statistics/cash-rate/"}
+  NZD: {rate_pct: 2.50, effective: 2026-07-08, verified: 2026-08-27, source_name: "RBNZ Official Cash Rate", source_url: "https://www.rbnz.govt.nz/monetary-policy/monetary-policy-decisions"}
+  CAD: {rate_pct: 2.25, effective: 2026-07-15, verified: 2026-08-27, source_name: "BoC target for the overnight rate", source_url: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/"}
+  CHF: {rate_pct: 0.00, effective: 2026-06-18, verified: 2026-08-27, source_name: "SNB policy rate", source_url: "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/decisions"}

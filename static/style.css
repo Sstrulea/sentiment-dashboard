@@ -1651,3 +1651,84 @@ table.strength-matrix td.matrix-cell { cursor: default; }
 /* FAZA 2C 2 — "Forecast" is a LINE on the chart, not a filled bar; a thin
    horizontal bar swatch (not a square box) reads as a line at a glance. */
 .history-legend .hl-swatch.hl-line { width: 14px; height: 3px; border-radius: 2px; align-self: center; }
+
+/* === Carry page (/carry) ===
+   Narrow, centered layout — NOT .econ-page (full-width): this table has
+   only 4 columns and reads better constrained, like a reading-width page.
+   The table is deliberately self-contained (no .retail-table class): that
+   class switches to a stacked-card layout under 768px (see the
+   table.retail-table media rule above), which fights this table's own
+   600px BASE/QUOTE-hiding behavior — so carry-table defines its own
+   (simpler) styling instead of inheriting that cascade. */
+.carry-page { max-width: 860px; }
+
+table.carry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+table.carry-table th, table.carry-table td {
+  padding: 6px 10px;
+  border: 1px solid var(--grid);
+  text-align: left;
+  vertical-align: middle;
+}
+table.carry-table th {
+  background: var(--header-bg);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+table.carry-table tbody tr:nth-child(even) { background: var(--row-alt); }
+table.carry-table td.sym { text-align: left; font-weight: 600; white-space: nowrap; }
+table.carry-table th.carry-leg-th, table.carry-table td.carry-leg-col {
+  text-align: left; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+table.carry-table tr.carry-row-na td { color: var(--muted); }
+table.carry-table tr.carry-row-na td.sym { font-weight: 400; font-style: italic; }
+
+/* Divergent bar cell — a vertical center line at 50%, then a fill growing
+   left (negative/red) or right (positive/blue) from that line, capped at
+   half the cell width (scale saturates at ±scale_pp). Value text sits on
+   top of the fill. */
+td.carry-bar-cell {
+  position: relative;
+  min-width: 170px;
+  height: 30px;
+  padding: 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+td.carry-bar-cell::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--border);
+}
+.carry-bar-fill {
+  position: absolute;
+  top: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0.55;
+}
+.carry-bar-fill.pos { left: 50%; }
+.carry-bar-fill.neg { right: 50%; }
+.carry-bar-value {
+  position: relative;
+  z-index: 1;
+  display: block;
+  text-align: center;
+  font-weight: 600;
+  line-height: 30px;
+}
+.carry-clamp { margin-left: 2px; font-weight: 700; cursor: help; }
+td.carry-cell-na { text-align: center; color: var(--muted); }
+
+@media (max-width: 600px) {
+  .carry-page { max-width: 100%; padding-left: 12px; padding-right: 12px; }
+  table.carry-table th.carry-leg-th, table.carry-table td.carry-leg-col { display: none; }
+}

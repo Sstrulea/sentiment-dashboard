@@ -4,10 +4,10 @@ Modes:
     weekly      — COT full refresh (default; preserved behavior)
     daily       — VIX rebuild + P/C append for today + retail snapshot + re-render
     retail      — Retail sentiment snapshot + re-render only (3-hourly cron)
-    economic    — MT5 economic-calendar ingest + Economic/Strength/History re-render
+    economic    — MT5 economic-calendar ingest + Economic/Carry/Strength/History re-render
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
-    render-all  — re-render all 7 pages from existing parquet; no fetch, no writes
+    render-all  — re-render all 8 pages from existing parquet; no fetch, no writes
 """
 from __future__ import annotations
 
@@ -181,6 +181,14 @@ def _economic() -> int:
         return 2
 
     try:
+        from .carry_render import render_carry_page
+        carry_out = render_carry_page()
+        log.info("Carry page rendered → %s", carry_out)
+    except Exception as e:
+        log.error("Carry render failed: %s", e)
+        return 2
+
+    try:
         from .economic_render import render_strength_page
         strength_out = render_strength_page()
         log.info("Currency Strength page rendered → %s", strength_out)
@@ -200,7 +208,7 @@ def _economic() -> int:
 
 
 def _render_all() -> int:
-    """Re-render all 7 pages from existing on-disk parquet — no network fetch,
+    """Re-render all 8 pages from existing on-disk parquet — no network fetch,
     no parquet writes. Used to keep shared assets (e.g. navbar) in sync across
     every page in one shot instead of relying on each pipeline's own re-render.
 
@@ -213,6 +221,7 @@ def _render_all() -> int:
     """
     import pandas as pd
 
+    from .carry_render import render_carry_page
     from .compute import build_latest_snapshot
     from .cot_score import HISTORY_FILE
     from .economic_render import render_economic_page, render_strength_page
@@ -244,6 +253,7 @@ def _render_all() -> int:
         ("VIX ratio", render_vix_ratio_page),
         ("Retail sentiment", render_retail_sentiment_page),
         ("Economic", render_economic_page),
+        ("Carry", render_carry_page),
         ("Currency Strength", render_strength_page),
         ("History (inflation/growth/labor/rates)", render_history_page),
     ):

@@ -45,15 +45,7 @@ jobs:
           git config user.email "sebi.strulea@gmail.com"
           git add data/sentiment_history.parquet data/pc_history.parquet \
                   data/retail_history.parquet data/retail_general.parquet \
-                  public/data/pc-ratio.json public/data/vix-ratio.json \
-                  public/data/retail-sentiment.json \
-                  public/pc-ratio.html public/vix-ratio.html \
-                  public/retail-sentiment.html \
-                  public/style.css public/chart.umd.min.js \
-                  public/chartjs-plugin-annotation.min.js \
-                  public/pc-chart.js public/vix-chart.js \
-                  public/retail-chart.js \
-                  public/theme-toggle.js 2>/dev/null || true
+                  public/ 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
