@@ -78,6 +78,29 @@ def test_missing_verified_makes_row_unavailable():
     assert row.carry_pct is None
 
 
+# ---------------------------------------------------------------------------
+# Zero is a real rate, not a missing one — guards against an `if rate_pct:`
+# truthiness check anywhere in this module (0.0 is falsy in Python and would
+# wrongly route a real zero-rate leg down the "missing" branch, which is
+# exactly what CHF's policy rate does in practice).
+# ---------------------------------------------------------------------------
+
+def test_zero_rate_pct_is_available_not_missing():
+    rates = _rates(
+        USD=_leg(4.25, verified=AS_OF),
+        CHF=_leg(0.00, verified=AS_OF),
+    )
+    rows = compute_carry(rates, ["USDCHF"], AS_OF)
+    row = rows[0]
+    assert row.available is True
+    assert row.quote_rate == 0.0
+    assert row.carry_pct == 4.25
+
+
+def test_zero_rate_pct_leg_configured_is_true():
+    assert leg_configured(_leg(0.00, verified=AS_OF)) is True
+
+
 def test_unavailable_row_excluded_from_sort_order():
     rates = _rates(
         USD=_leg(4.25, verified=AS_OF),
