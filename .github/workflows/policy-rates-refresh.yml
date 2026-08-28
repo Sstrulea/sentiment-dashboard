@@ -1,0 +1,44 @@
+name: policy-rates-refresh
+on:
+  schedule:
+    # Once a day — central bank policy rates change ~8x/year per bank, so
+    # hourly (like econ-refresh) would be pure churn. src.policy_rate_fetch
+    # only writes data/policy_rates.yaml (and only re-renders /carry) when
+    # a fetched value actually differs from what's on disk.
+    - cron: '11 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: policy-rates-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - name: Fetch BIS policy rates (re-renders /carry only if changed)
+        run: python -m src.main --mode policy-rates
+
+      - name: Commit + push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/policy_rates.yaml public/
+          git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
+          git commit -m "policy-rates: BIS refresh $(date -u +%FT%TZ) [ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push origin main && exit 0
+            sleep 5
+          done
+          exit 1
