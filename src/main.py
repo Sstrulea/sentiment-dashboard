@@ -5,6 +5,8 @@ Modes:
     daily       — VIX rebuild + P/C append for today + retail snapshot + re-render
     retail      — Retail sentiment snapshot + re-render only (3-hourly cron)
     economic    — MT5 economic-calendar ingest + Economic/Carry/Strength/History re-render
+    policy-rates — BIS central bank policy rates -> data/policy_rates.yaml; re-renders
+                   /carry only if the YAML actually changed (daily cron)
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
     render-all  — re-render all 8 pages from existing parquet; no fetch, no writes
@@ -207,6 +209,39 @@ def _economic() -> int:
     return 0
 
 
+def _policy_rates() -> int:
+    """Fetch BIS central bank policy rates (best-effort, anti-degradation —
+    see src.policy_rate_fetch) and re-render /carry ONLY if
+    data/policy_rates.yaml actually changed. Meant for a once-daily cron
+    (rates change ~8x/year per bank); re-rendering /carry unconditionally
+    every run would churn carry.json's generated_at with nothing else to
+    show for it.
+    """
+    log = logging.getLogger("policy-rates")
+    log.info("Policy-rate refresh starting")
+
+    try:
+        from .policy_rate_fetch import update_policy_rates_yaml
+        changed = update_policy_rates_yaml()
+    except Exception as e:
+        log.error("Policy-rate fetch failed: %s", e)
+        return 2
+
+    if not changed:
+        log.info("data/policy_rates.yaml unchanged — skipping /carry re-render.")
+        return 0
+
+    try:
+        from .carry_render import render_carry_page
+        out = render_carry_page()
+        log.info("Carry page re-rendered → %s", out)
+    except Exception as e:
+        log.error("Carry re-render failed: %s", e)
+        return 2
+
+    return 0
+
+
 def _render_all() -> int:
     """Re-render all 8 pages from existing on-disk parquet — no network fetch,
     no parquet writes. Used to keep shared assets (e.g. navbar) in sync across
@@ -292,7 +327,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Dashboard orchestrator")
     parser.add_argument(
         "--mode",
-        choices=["weekly", "daily", "retail", "economic", "all", "backfill-pc", "render-all"],
+        choices=["weekly", "daily", "retail", "economic", "policy-rates", "all", "backfill-pc", "render-all"],
         default="weekly",
         help="which pipeline to run (default: weekly)",
     )
@@ -311,6 +346,8 @@ def main(argv: list[str] | None = None) -> int:
         return _retail()
     if args.mode == "economic":
         return _economic()
+    if args.mode == "policy-rates":
+        return _policy_rates()
     if args.mode == "all":
         rc = _weekly()
         if rc != 0:
