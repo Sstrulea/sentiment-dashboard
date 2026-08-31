@@ -31,6 +31,25 @@ Open `public/index.html` in a browser.
 - Push this repo to GitHub. The `.github/workflows/weekly.yml` workflow runs on Sunday 04:00 UTC (also triggerable manually) and commits the refreshed `data/history.parquet` plus `public/`.
 - Import the repo in Vercel. `vercel.json` points to `public/` as the static output directory. Every push to `main` auto-deploys.
 
+## Access control
+
+The site is gated behind a shared-token login via `middleware.js` (Vercel Routing
+Middleware, runs on every request). Configure it with a `DASH_TOKENS` env var in the
+Vercel project settings (Production/Preview/Development as needed):
+
+```
+DASH_TOKENS=alice:s3cret-1,bob:another-pass
+```
+
+- Format: comma-separated `name:password` pairs.
+- Passwords cannot contain a comma (it's the pair separator).
+- If `DASH_TOKENS` is unset or empty, the whole site fails closed and returns 503 —
+  there is no bypass.
+- Changing the env var requires a redeploy to take effect (Vercel env vars are read
+  at request time by the middleware function, but Vercel only picks up changes on
+  the next deploy — trigger one from the dashboard or push a commit after editing).
+- Never commit tokens to the repo; set them only via the Vercel dashboard/CLI.
+
 ## File layout
 
 ```
