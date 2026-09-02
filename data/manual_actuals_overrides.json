@@ -339,5 +339,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-08-27T06:55:46+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_gdp",
+  "currency": "AUD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-09-02 01:30:00",
+  "actual": 0.4,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-02T06:49:37+00:00",
+  "note": ""
  }
 ]
