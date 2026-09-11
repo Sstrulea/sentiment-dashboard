@@ -493,5 +493,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-11T20:20:32+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_core_cpi",
+  "currency": "USD",
+  "indicator_key": "core_cpi",
+  "datetime_utc": "2026-09-11 12:30:00",
+  "actual": 0.3,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-11T20:20:36+00:00",
+  "note": ""
  }
 ]
