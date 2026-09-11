@@ -449,5 +449,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-11T19:45:23+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_ppi",
+  "currency": "JPY",
+  "indicator_key": "ppi_yoy",
+  "datetime_utc": "2026-09-10 23:50:00",
+  "actual": 7.6,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-11T19:45:34+00:00",
+  "note": ""
  }
 ]
