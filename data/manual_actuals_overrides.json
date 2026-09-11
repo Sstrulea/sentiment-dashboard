@@ -405,5 +405,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-08T12:34:36+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "eur_ecb_interest_rate_decision",
+  "currency": "EUR",
+  "indicator_key": "interest_rate_decision",
+  "datetime_utc": "2026-09-10 12:15:00",
+  "actual": 2.65,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-11T19:44:32+00:00",
+  "note": ""
  }
 ]
