@@ -427,5 +427,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-11T19:44:45+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_ppi",
+  "currency": "USD",
+  "indicator_key": "ppi_yoy",
+  "datetime_utc": "2026-09-10 12:30:00",
+  "actual": 0.4,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-11T19:45:09+00:00",
+  "note": ""
  }
 ]
