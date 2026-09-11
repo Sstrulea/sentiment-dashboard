@@ -416,5 +416,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-11T19:44:32+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_initial_jobless_claims",
+  "currency": "USD",
+  "indicator_key": "jobless_claims",
+  "datetime_utc": "2026-09-10 12:30:00",
+  "actual": 206.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-11T19:44:45+00:00",
+  "note": ""
  }
 ]
