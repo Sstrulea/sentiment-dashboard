@@ -21,7 +21,16 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - run: pip install -r requirements.txt
-      - run: python scripts/check_cot_freshness.py
+      - name: TEMP - build truncated parquet for failure-path test
+        run: |
+          python -c "
+          import pandas as pd
+          df = pd.read_parquet('data/history.parquet')
+          stale = df[df['report_date_as_yyyy_mm_dd'] <= '2026-08-25']
+          stale.to_parquet('/tmp/truncated_history.parquet')
+          "
+          echo "TEMP_TEST_PARQUET=/tmp/truncated_history.parquet" >> "$GITHUB_ENV"
+      - run: python scripts/check_cot_freshness.py "$TEMP_TEST_PARQUET" # TEMP: points at truncated copy, removed in TASK C
       - name: Open issue on stale/failed check
         if: failure()
         uses: actions/github-script@v7
