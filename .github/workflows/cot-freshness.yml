@@ -8,6 +8,7 @@ on:
     branches: [feat/cot-freshness-check]
 
 permissions:
+  contents: read
   issues: write
 
 jobs:
