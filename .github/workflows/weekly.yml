@@ -1,7 +1,7 @@
 name: Weekly COT Update
 on:
   schedule:
-    - cron: '0 4 * * 0'   # Sunday 04:00 UTC = 06:00-07:00 Romania
+    - cron: '23 5 * * 0'   # Sunday 05:23 UTC = 08:23 Romania (off top-of-hour to avoid cron-slot saturation)
   workflow_dispatch:
 
 jobs:
