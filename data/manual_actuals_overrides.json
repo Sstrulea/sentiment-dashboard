@@ -504,5 +504,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-11T20:20:36+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "nzd_businessnz_services_index",
+  "currency": "NZD",
+  "indicator_key": "services_pmi",
+  "datetime_utc": "2026-09-13 22:30:00",
+  "actual": 51.2,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-14T10:28:11+00:00",
+  "note": ""
  }
 ]
