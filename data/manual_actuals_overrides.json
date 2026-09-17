@@ -548,5 +548,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-16T15:43:04+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "nzd_gdp",
+  "currency": "NZD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-09-16 22:45:00",
+  "actual": 0.2,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-17T07:35:56+00:00",
+  "note": ""
  }
 ]
