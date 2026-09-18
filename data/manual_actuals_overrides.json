@@ -559,5 +559,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-17T07:35:56+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_boj_interest_rate_decision",
+  "currency": "JPY",
+  "indicator_key": "interest_rate_decision",
+  "datetime_utc": "2026-09-18 02:54:00",
+  "actual": 1.25,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-18T19:41:09+00:00",
+  "note": ""
  }
 ]
