@@ -570,5 +570,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-18T19:41:09+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "gbp_retail_sales",
+  "currency": "GBP",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2026-09-18 06:00:00",
+  "actual": 0.5,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-18T19:41:23+00:00",
+  "note": ""
  }
 ]
