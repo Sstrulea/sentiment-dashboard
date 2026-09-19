@@ -18,11 +18,18 @@ meta:
   stale_after_days: 45
 
 rates:
-  USD: {rate_pct: 3.625, effective: 2026-07-30, verified: 2026-08-27, source_name: "Fed funds target range 3.50-3.75% (midpoint)", source_url: "https://www.federalreserve.gov/monetarypolicy/openmarket.htm"}
-  EUR: {rate_pct: 2.25, effective: 2026-06-17, verified: 2026-08-27, source_name: "ECB deposit facility rate", source_url: "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"}
-  GBP: {rate_pct: 3.75, effective: 2026-07-30, verified: 2026-08-27, source_name: "BoE Bank Rate", source_url: "https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate"}
-  JPY: {rate_pct: 1.00, effective: 2026-06-17, verified: 2026-08-27, source_name: "BoJ uncollateralized overnight call rate guideline", source_url: "https://www.boj.or.jp/en/mopo/mpmdeci/state_2026/index.htm"}
-  AUD: {rate_pct: 4.35, effective: 2026-08-12, verified: 2026-08-27, source_name: "RBA cash rate target", source_url: "https://www.rba.gov.au/statistics/cash-rate/"}
-  NZD: {rate_pct: 2.50, effective: 2026-07-08, verified: 2026-08-27, source_name: "RBNZ Official Cash Rate", source_url: "https://www.rbnz.govt.nz/monetary-policy/monetary-policy-decisions"}
-  CAD: {rate_pct: 2.25, effective: 2026-07-15, verified: 2026-08-27, source_name: "BoC target for the overnight rate", source_url: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/"}
-  CHF: {rate_pct: 0.00, effective: 2026-06-18, verified: 2026-08-27, source_name: "SNB policy rate", source_url: "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/decisions"}
+  # 2026-09-19 refresh — USD/EUR/NZD/JPY moved after the 2026-08-27 check.
+  # USD: FRED DFEDTARU/DFEDTARL = 4.00/3.75 from 2026-09-17 (Fed implementation note, effective Sept 17).
+  # EUR: ECB Data Portal FM.D.U2.EUR.4F.KR.DFR.LEV = 2.50 from 2026-09-16.
+  # NZD: 2.75 per RBNZ decision of Wed 2026-09-02 (FF + BIS confirm; RBNZ site is bot-walled, so the
+  #      effective date is the decision date, not independently verified).
+  # JPY: 1.25 announced 2026-09-18; the BoJ statement (footnote 1) says the new guideline is effective
+  #      from 2026-09-24 — until then the guideline still in force is 1.00.
+  USD: {rate_pct: 3.875, effective: 2026-09-17, verified: 2026-09-19, source_name: "Fed funds target range 3.75-4.00% (midpoint)", source_url: "https://www.federalreserve.gov/monetarypolicy/openmarket.htm"}
+  EUR: {rate_pct: 2.50, effective: 2026-09-16, verified: 2026-09-19, source_name: "ECB deposit facility rate", source_url: "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html"}
+  GBP: {rate_pct: 3.75, effective: 2026-07-30, verified: 2026-09-19, source_name: "BoE Bank Rate", source_url: "https://www.bankofengland.co.uk/monetary-policy/the-interest-rate-bank-rate"}
+  JPY: {rate_pct: 1.25, effective: 2026-09-24, verified: 2026-09-19, source_name: "BoJ uncollateralized overnight call rate guideline", source_url: "https://www.boj.or.jp/en/mopo/mpmdeci/state_2026/index.htm"}
+  AUD: {rate_pct: 4.35, effective: 2026-08-12, verified: 2026-09-19, source_name: "RBA cash rate target", source_url: "https://www.rba.gov.au/statistics/cash-rate/"}
+  NZD: {rate_pct: 2.75, effective: 2026-09-02, verified: 2026-09-19, source_name: "RBNZ Official Cash Rate", source_url: "https://www.rbnz.govt.nz/monetary-policy/monetary-policy-decisions"}
+  CAD: {rate_pct: 2.25, effective: 2026-07-15, verified: 2026-09-19, source_name: "BoC target for the overnight rate", source_url: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/"}
+  CHF: {rate_pct: 0.00, effective: 2026-06-18, verified: 2026-09-19, source_name: "SNB policy rate", source_url: "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/decisions"}
