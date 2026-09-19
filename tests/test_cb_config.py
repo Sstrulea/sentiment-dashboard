@@ -1,0 +1,223 @@
+"""Central Banks configuration + data files (phase 1A): config/central_banks.yaml, config/cb_sources.yaml,
+data/cb/meetings.yaml and .github/workflows/cb-refresh.yml stay structurally valid and consistent with each
+other and with the adapters."""
+from __future__ import annotations
+
+import re
+from datetime import date
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import pytest
+import yaml
+
+from src.cb_sources import ADAPTERS
+from src.cb_sources.market import MxCorra
+
+ROOT = Path(__file__).resolve().parents[1]
+BANKS = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF"]
+
+
+def load(rel: str):
+    return yaml.safe_load((ROOT / rel).read_text())
+
+
+@pytest.fixture(scope="module")
+def banks():
+    return load("config/central_banks.yaml")["banks"]
+
+
+@pytest.fixture(scope="module")
+def sources():
+    return load("config/cb_sources.yaml")
+
+
+@pytest.fixture(scope="module")
+def meetings():
+    return load("data/cb/meetings.yaml")["meetings"]
+
+
+# ---------------------------------------------------------------------------
+# config/central_banks.yaml
+# ---------------------------------------------------------------------------
+
+def test_eight_banks_with_the_required_fields(banks):
+    assert list(banks) == BANKS
+    need = {"id", "name", "tz", "calendar_url", "decision_time", "conference", "policy_rate", "overnight_benchmark",
+            "effective_rule", "projections", "blackout", "youtube_channel_id", "can_be_zero"}
+    for b, c in banks.items():
+        assert need <= set(c), (b, need - set(c))
+        ZoneInfo(c["tz"])
+        assert re.fullmatch(r"UC[\w-]{22}", c["youtube_channel_id"]), b
+        assert c["conference"]["held"] in {"every_meeting", "mpr_only", "quarterly"}, b
+        assert c["policy_rate"]["definition"] and c["policy_rate"]["unit"], b
+
+
+def test_effective_date_rules_are_sourced_or_flagged(banks):
+    for b, c in banks.items():
+        r = c["effective_rule"]
+        assert r["kind"] in {"calendar_days", "next_business_day"}, b
+        assert isinstance(r["verified"], bool) and r["note"], b
+        if r["verified"]:
+            assert r["source"], f"{b}: verified rule without a source"
+    # the BoJ rule: next Japanese business day (18 Sep 2026 -> 24 Sep 2026, 21-23 Sep are JP holidays)
+    jp = banks["JPY"]["effective_rule"]
+    assert (jp["kind"], jp["calendar"], jp["verified"]) == ("next_business_day", "JP", True) and "24 Sep" in jp["note"]
+    assert {b: banks[b]["effective_rule"].get("days") for b in ("USD", "EUR", "GBP", "CAD", "AUD", "CHF")} == {
+        "USD": 1, "EUR": 6, "GBP": 0, "CAD": 1, "AUD": 1, "CHF": 1}
+    assert banks["NZD"]["effective_rule"]["verified"] is False and banks["NZD"]["effective_rule"]["source"] is None
+
+
+def test_conventions_that_the_spec_fixes(banks):
+    assert banks["EUR"]["policy_rate"]["definition"].startswith("Deposit facility rate")       # ECB = DFR
+    assert banks["USD"]["policy_rate"]["level_for_compute"] == "midpoint"
+    assert banks["NZD"].get("manual") is True and not any(banks[b].get("manual") for b in BANKS if b != "NZD")
+    assert {b for b in BANKS if banks[b]["can_be_zero"]} == {"CHF"}                             # CHF 0.00 is a value
+    assert banks["NZD"]["blackout"] is None and banks["CHF"]["blackout"] is None                # not found -> null
+    for b in BANKS:
+        bl = banks[b]["blackout"]
+        assert bl is None or (bl["text"] and bl["url"].startswith("http")), b
+    assert banks["JPY"]["decision_time"]["variable"] and len(banks["JPY"]["decision_time"]["window_local"]) == 2
+
+
+def test_overnight_benchmark_is_per_bank(banks):
+    names = {b: (banks[b]["overnight_benchmark"] or {}).get("name") for b in BANKS}
+    assert names["NZD"] is None                                     # no overnight benchmark path for NZD
+    assert names["USD"] == "SOFR" and names["GBP"] == "SONIA" and names["CAD"] == "CORRA" and names["CHF"] == "SARON"
+
+
+# ---------------------------------------------------------------------------
+# config/cb_sources.yaml  <->  adapters
+# ---------------------------------------------------------------------------
+
+def test_every_configured_source_has_an_adapter_and_the_required_fields(sources):
+    assert set(sources["sources"]) == set(ADAPTERS)
+    assert sources["meta"]["horizon_months"] == 36
+    for sid, c in sources["sources"].items():
+        cls = ADAPTERS[sid]
+        assert c["adapter"] == cls.__name__ and c["currency"] == cls.currency, sid
+        assert c["history"] in {"official", "snapshot"}, sid
+        assert re.fullmatch(r"\d{2}:\d{2}", c["eod_cutoff"]), sid
+        ZoneInfo(c["exchange_tz"])
+        assert c["instruments"] and c["naming"] and c["license"] and c["download"] is not None, sid
+        assert isinstance(c["proxy"], bool) and c["horizon_months"] <= 36, sid
+        assert "url" in c or "urls" in c, sid
+
+
+def test_history_and_download_policy_match_what_the_spikes_measured(sources):
+    s = sources["sources"]
+    assert {i for i, c in s.items() if c["history"] == "snapshot"} == {"jpx_tona", "mx_corra", "asx_ib", "asx_bb"}
+    cond = {i for i, c in s.items() if c["download"].get("conditional")}
+    assert cond == {"atlantafed_mpt", "boe_ois", "jpx_tona", "rba_bank_bills"}
+    assert "etag" in s["atlantafed_mpt"]["download"]["validators"] and s["atlantafed_mpt"]["download"]["size_mb"] == 6.9
+    assert {i for i, c in s.items() if c["proxy"]} == {"ust_bills", "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"}
+    assert s["mx_corra"]["intraday_utc"] == ["13:00", "22:00"] and s["mx_corra"]["asof_stamp"] == "none"
+    assert date.fromisoformat(str(sources["meta"]["backfill_from"])) == date(2026, 3, 1)
+    assert {i for i, c in s.items() if c["history"] == "official"} == {
+        "atlantafed_mpt", "boe_ois", "ust_bills", "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"}
+
+
+def test_adapter_instruments_and_units_match_the_config(sources):
+    for sid, cls in ADAPTERS.items():
+        cfg_instr = sources["sources"][sid]["instruments"]
+        names = {name for name, _ in MxCorra.INSTR.values()} if cls is MxCorra else {cls.INSTRUMENT}
+        assert names == set(cfg_instr), sid
+        assert {v["unit"] for v in cfg_instr.values()} == {cls.UNIT}, sid
+
+
+# ---------------------------------------------------------------------------
+# data/cb/meetings.yaml
+# ---------------------------------------------------------------------------
+
+def test_meetings_cover_2026_2027_with_the_specified_fields(meetings):
+    assert list(meetings) == BANKS
+    counts = {b: len(m) for b, m in meetings.items()}
+    assert counts == {"USD": 16, "EUR": 16, "GBP": 16, "JPY": 16, "CAD": 16, "AUD": 16, "NZD": 8, "CHF": 8}
+    for b, rows in meetings.items():
+        dates = [r["date"] for r in rows]
+        assert dates == sorted(set(dates)), b
+        assert all(date(2026, 1, 1) <= d <= date(2027, 12, 31) for d in dates), b
+        for r in rows:
+            assert set(r) == {"date", "has_projections", "has_presser", "source", "verified"}, (b, r)
+            assert r["source"] in {"official", "ff", "manual"}
+            assert isinstance(r["has_projections"], bool) and isinstance(r["has_presser"], bool)
+            assert r["verified"] is False or isinstance(r["verified"], date)
+
+
+def test_meeting_sources_and_verification_are_honest(meetings):
+    assert all(r["source"] == "manual" and r["verified"] is False for r in meetings["NZD"])     # RBNZ is manual
+    assert max(r["date"] for r in meetings["NZD"]) == date(2027, 2, 17)                          # until the Feb 2027 release
+    assert {b for b, rows in meetings.items() if any(r["source"] == "ff" for r in rows)} == {"EUR"}
+    assert all(r["date"] < date(2026, 10, 1) and r["verified"] is False for r in meetings["EUR"] if r["source"] == "ff")
+    assert all(r["verified"] is False for r in meetings["GBP"] if r["date"].year == 2027)       # BoE 2027 is provisional
+    for b, rows in meetings.items():
+        for r in rows:
+            if r["source"] == "official" and not (b == "GBP" and r["date"].year == 2027):
+                assert r["verified"] == date(2026, 9, 19), (b, r["date"])
+
+
+def test_meetings_agree_with_the_bank_config(meetings, banks):
+    for b, rows in meetings.items():
+        proj_months = sorted({r["date"].month for r in rows if r["has_projections"]})
+        assert proj_months == sorted(banks[b]["projections"]["months"]), b
+        held = banks[b]["conference"]["held"]
+        if held == "every_meeting":
+            assert all(r["has_presser"] for r in rows), b
+        if held == "mpr_only":                                       # BoE: press conference on MPR days only
+            assert all(r["has_presser"] == r["has_projections"] for r in rows), b
+
+
+def test_known_anchor_dates(meetings):
+    def d(b, y, m, dd):
+        return next(r for r in meetings[b] if r["date"] == date(y, m, dd))
+    assert d("USD", 2026, 9, 16)["has_projections"] and d("JPY", 2026, 9, 18)["has_presser"]
+    assert not d("JPY", 2026, 9, 18)["has_projections"]                # BoJ Outlook Report: Jan/Apr/Jul/Oct
+    assert d("CAD", 2026, 9, 2)["has_presser"] and not d("CAD", 2026, 9, 2)["has_projections"]
+    assert d("GBP", 2026, 9, 17)["has_presser"] is False
+    assert d("CHF", 2026, 9, 24)["has_projections"] and d("EUR", 2026, 9, 10)["source"] == "ff"
+    assert d("NZD", 2026, 9, 2)["has_projections"] and d("AUD", 2026, 9, 29)["has_projections"] is False
+
+
+# ---------------------------------------------------------------------------
+# .github/workflows/cb-refresh.yml
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def workflow():
+    return yaml.safe_load((ROOT / ".github/workflows/cb-refresh.yml").read_text())
+
+
+def test_workflow_triggers_and_guards(workflow):
+    on = workflow.get("on", workflow.get(True))          # PyYAML (YAML 1.1) reads the bare key `on` as True
+    assert set(on) == {"schedule", "workflow_dispatch"}
+    cron = on["schedule"][0]["cron"]
+    assert cron == "37 */2 * * *" and len(cron.split()) == 5
+    assert workflow["concurrency"] == {"group": "cb-refresh", "cancel-in-progress": False}
+    assert workflow["permissions"] == {"contents": "write"}
+    job = workflow["jobs"]["refresh"]
+    assert job["timeout-minutes"] == 10 and job["runs-on"] == "ubuntu-latest"
+
+
+def test_workflow_steps_mirror_econ_refresh_and_touch_only_data_cb(workflow):
+    steps = workflow["jobs"]["refresh"]["steps"]
+    uses = [s.get("uses") for s in steps if "uses" in s]
+    assert uses == ["actions/checkout@v4", "actions/setup-python@v5"]
+    assert steps[1]["with"] == {"python-version": "3.11", "cache": "pip"}
+    runs = [s.get("run", "") for s in steps]
+    assert "pip install -r requirements.txt" in runs and "python -m src.cb_collect" in runs
+    assert "python -m src.cb_collect --status" in runs
+    commit = next(s for s in steps if s.get("name") == "Commit + push")
+    assert commit["if"] == "github.ref == 'refs/heads/main'"          # a dispatch from another ref never pushes
+    adds = re.findall(r"git add (\S+)", commit["run"])
+    assert adds == ["data/cb/"], adds                                  # nothing outside data/cb/ (no public/, no other data/)
+    assert "git diff --cached --quiet" in commit["run"]                # no commit when nothing changed
+    assert "git pull --rebase --autostash origin main && git push origin main" in commit["run"]
+    assert "for i in 1 2 3" in commit["run"]
+
+
+def test_workflow_paths_are_disjoint_from_econ_refresh(workflow):
+    econ = (ROOT / ".github/workflows/econ-refresh.yml").read_text()
+    mine = "\n".join(ln for ln in (ROOT / ".github/workflows/cb-refresh.yml").read_text().splitlines()
+                     if not ln.lstrip().startswith("#"))              # comments may say what it does NOT touch
+    assert "data/cb" not in econ and "public/" not in mine
+    assert workflow["concurrency"]["group"] != "econ-refresh"

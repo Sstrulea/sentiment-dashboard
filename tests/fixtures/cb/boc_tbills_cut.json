@@ -1,0 +1,71 @@
+{
+ "terms": {
+  "url": "https://www.bankofcanada.ca/terms/"
+ },
+ "seriesDetail": {
+  "TB.CDN.180D.MID": {
+   "label": "Treasury bills: 6 month",
+   "description": "The mid-market yield for Government of Canada treasury bills with a 6-month maturity. Treasury bill yields presented are an average of sample secondary market yields taken throughout the business day. (V39066)",
+   "dimension": {
+    "key": "d",
+    "name": "Date"
+   }
+  },
+  "TB.CDN.30D.MID": {
+   "label": "Treasury bills: 1 month",
+   "description": "The mid-market yield for Government of Canada treasury bills with a 1-month maturity. Treasury bill yields presented are an average of sample secondary market yields taken throughout the business day. (V39063)",
+   "dimension": {
+    "key": "d",
+    "name": "Date"
+   }
+  },
+  "TB.CDN.60D.MID": {
+   "label": "Treasury bills: 2 month",
+   "description": "The mid-market yield for Government of Canada treasury bills with a 2-month maturity. Treasury bill yields presented are an average of sample secondary market yields taken throughout the business day. (V39064)",
+   "dimension": {
+    "key": "d",
+    "name": "Date"
+   }
+  },
+  "TB.CDN.90D.MID": {
+   "label": "Treasury bills: 3 month",
+   "description": "The mid-market yield for Government of Canada treasury bills with a 3-month maturity. Treasury bill yields presented are an average of sample secondary market yields taken throughout the business day. (V39065)",
+   "dimension": {
+    "key": "d",
+    "name": "Date"
+   }
+  }
+ },
+ "observations": [
+  {
+   "d": "2026-09-16",
+   "TB.CDN.30D.MID": {
+    "v": "2.27"
+   },
+   "TB.CDN.60D.MID": {
+    "v": "2.31"
+   },
+   "TB.CDN.90D.MID": {
+    "v": "2.34"
+   },
+   "TB.CDN.180D.MID": {
+    "v": "2.57"
+   }
+  },
+  {
+   "d": "2026-09-17",
+   "TB.CDN.30D.MID": {
+    "v": "2.28"
+   },
+   "TB.CDN.60D.MID": {
+    "v": "2.31"
+   },
+   "TB.CDN.90D.MID": {
+    "v": "2.33"
+   },
+   "TB.CDN.180D.MID": {
+    "v": "2.58"
+   }
+  }
+ ]
+}

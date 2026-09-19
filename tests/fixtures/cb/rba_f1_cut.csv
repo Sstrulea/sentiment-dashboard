@@ -1,0 +1,15 @@
+﻿F1 INTEREST RATES AND YIELDS – MONEY MARKET
+Title,Cash Rate Target,Change in the Cash Rate Target,Interbank Overnight Cash Rate,Highest Interbank Overnight Cash Rate,Lowest Interbank Overnight Cash Rate,Volume of Cash Market Transactions,Number of Cash Market Transactions,Total Return Index,EOD 1-month BABs/NCDs,EOD 3-month BABs/NCDs,EOD 6-month BABs/NCDs,1-month OIS,3-month OIS,6-month OIS,1-month Treasury Note,3- month Treasury Note,6- month Treasury Note
+Description,Cash Rate Target on date,Change in the Cash Rate Target (in percentage points),Interbank Overnight Cash Rate on date,Highest Interbank Overnight Cash Rate on date,Lowest Interbank Overnight Cash Rate on date,Volume of Interbank Overnight Cash Market Transactions on date,Number of Interbank Overnight Cash Market Transactions on date,Cash Rate Total Return Index on date,Bank Accepted Bills/Negotiable Certificates of Deposit-1 month,Bank Accepted Bills/Negotiable Certificates of Deposit-3 months,Bank Accepted Bills/Negotiable Certificates of Deposit- 6 months,Overnight Indexed Swaps-1 month,Overnight Indexed Swaps-3 months,Overnight Indexed Swaps-6 months,Treasury Note-1 month,Treasury Note-3 month,Treasury Note-6 month
+Frequency,Daily,as announced,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily,Daily
+Type,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original,Original
+Units,Per cent,Per cent,Per cent,Per cent,Per cent,$m,Number,Index 04-Jan-2011=100,Per cent,Per cent,Per cent,Per cent,Per cent,Per cent,Per cent,Per cent,Per cent
+
+
+Source,RBA,RBA,RBA,RBA,RBA,RBA,RBA,RBA,ASX,ASX,ASX,FENICS,FENICS,FENICS,RBA,RBA,RBA
+Publication date,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026,18-Sep-2026
+Series ID,FIRMMCRTD,FIRMMCCRT,FIRMMCRID,FIRMMCRIH,FIRMMCRIL,FIRMMCRIV,FIRMMCRIN,FIRMMCTRI,FIRMMBAB30D,FIRMMBAB90D,FIRMMBAB180D,FIRMMOIS1D,FIRMMOIS3D,FIRMMOIS6D,FIRMMTN1D,FIRMMTN3D,FIRMMTN6D
+15-Sep-2026,4.35,,4.35,4.35,4.35,1839,11,146.350843,4.42,4.69,5.07
+16-Sep-2026,4.35,,4.35,4.35,4.35,1357,9,146.368285,4.41,4.68,5.06
+17-Sep-2026,4.35,,4.35,4.35,4.35,1151,10,146.385729,4.41,4.68,5.07
+18-Sep-2026,,,,,,,,146.403175

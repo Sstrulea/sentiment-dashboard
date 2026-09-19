@@ -1,0 +1,51 @@
+name: cb-refresh
+# Central Banks market collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md).
+# GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
+# Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ (never public/ or other data/).
+on:
+  schedule:
+    - cron: '37 */2 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: cb-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      # Writes the per-source report to $GITHUB_STEP_SUMMARY. Exit 0 on partial failure,
+      # non-zero only when EVERY source failed.
+      - name: Collect market quotes
+        run: python -m src.cb_collect
+
+      - name: Freshness status
+        if: always()
+        run: python -m src.cb_collect --status
+
+      # Only on main: a dispatch from another ref (e.g. a feature branch) collects and reports but never pushes.
+      - name: Commit + push
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cb/
+          git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
+          git commit -m "cb: market refresh $(date -u +%FT%TZ) [ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push origin main && exit 0
+            sleep 5
+          done
+          exit 1

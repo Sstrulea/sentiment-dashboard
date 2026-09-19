@@ -1,0 +1,193 @@
+# Market sources collected by src/cb_collect.py into data/cb/market_quotes.parquet.
+# Values are stored EXACTLY as published (price or rate) with their unit; price->rate
+# conversion, spread adjustments and meeting extraction belong to phase 1B.
+#
+# Fields
+#   adapter        class in src/cb_sources/market.py
+#   history        official = the publisher serves history (backfillable);
+#                  snapshot = only the latest day is exposed => history exists only from the day
+#                  the collector started (cannot be rebuilt).
+#   naming         how the exchange labels contracts vs the reference window (handled in the adapter).
+#   exchange_tz    timezone of the trading day; `eod_cutoff` (UTC, HH:MM on the same calendar date)
+#                  is the time after which that day's value is final. A quote whose as-of is the
+#                  exchange's current day is only recorded after the cutoff.
+#   intraday_utc   only for sources WITHOUT an as-of stamp (asof_inferred): fetches inside this
+#                  UTC window may show live/delayed prices and are skipped.
+#   download       conditional GET for large files (ETag / If-Modified-Since); at most one download
+#                  per new as-of. Validators are kept in data/cb/state.json.
+#   horizon_months contracts/tenors starting beyond asof + horizon are dropped.
+#   benchmark      the instrument's own reference rate (the overnight-minus-policy spread of phase 1B
+#                  is specific to it); `proxy: true` = not an OIS/futures path, marked PROXY in the UI.
+#   license        attribution/terms note shown in the UI.
+
+meta:
+  version: 1
+  horizon_months: 36
+  backfill_from: 2026-03-01        # 4 decisions of market T-1 for the last 4 meetings
+
+sources:
+  atlantafed_mpt:
+    currency: USD
+    adapter: AtlantaMpt
+    instruments:
+      sofr_3m_ref_quarter_mean: {unit: bp, fields: [mean], benchmark: SOFR}
+    url: https://www.atlantafed.org/-/media/Project/Atlanta/FRBA/Documents/cenfis/market-probability-tracker/mpt_histdata.xlsx
+    history: official
+    naming: "explicit reference_start (3rd Wednesday of the start month of each 3M SOFR quarter); contract label = start month YYYYMM; ref_end = next window start"
+    exchange_tz: America/Chicago
+    eod_cutoff: "20:00"
+    availability: "file for as-of d is published on the next business day ~14:30 UTC (Last-Modified Fri 14:24Z carried Thu data)"
+    download: {conditional: true, validators: [etag, last_modified], max_downloads_per_asof: 1, size_mb: 6.9}
+    horizon_months: 36
+    proxy: false
+    license: "Atlanta Fed Market Probability Tracker (CME 3M SOFR options). Workbook licence: personal and educational purposes only; CME data used under CME permission."
+
+  boe_ois:
+    currency: GBP
+    adapter: BoeOis
+    instruments:
+      sonia_instantaneous_forward: {unit: percent, fields: [fwd], benchmark: SONIA}
+    urls:
+      latest: https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/latest-yield-curve-data.zip
+      history: https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/oisddata.zip
+    history: official
+    naming: "instantaneous forward at monthly maturities (tenor); no contract window"
+    exchange_tz: Europe/London
+    eod_cutoff: "17:00"
+    availability: "curve for d published by noon UK on the next business day (current-month workbook Last-Modified Fri 12:58Z carried Thu); '2025 to present' workbook refreshed monthly"
+    download: {conditional: true, validators: [last_modified], max_downloads_per_asof: 1, size_mb: 0.35, size_mb_history: 11.7}
+    horizon_months: 36
+    proxy: false
+    license: "Bank of England yield-curve data, OGL v3.0; OIS pages cite 'Bloomberg Finance L.P. and Bank calculations' - confirm before public display."
+
+  jpx_tona:
+    currency: JPY
+    adapter: JpxTona
+    instruments:
+      tona_3m_futures: {unit: index_points, fields: [settle], benchmark: TONA}
+    url: https://www.jpx.co.jp/english/markets/derivatives/settlement-price/index.html
+    history: snapshot
+    naming: "contract month = START month of the reference period (3rd Wednesday of the contract month -> Tuesday before the 3rd Wednesday 3 months later); the code in the issue name is the last trading day"
+    exchange_tz: Asia/Tokyo
+    eod_cutoff: "08:00"
+    availability: "rb_e<YYYYMMDD>.csv (cp932) for the latest day only; Last-Modified 07:44Z (16:44 JST) for 18 Sep"
+    download: {conditional: true, validators: [last_modified], max_downloads_per_asof: 1, size_mb: 3.7}
+    horizon_months: 36
+    proxy: false
+    license: "JPX settlement prices; terms not retrieved (403/404) - unverified. Historical data is sold via J-Quants DataCube."
+
+  mx_corra:
+    currency: CAD
+    adapter: MxCorra
+    instruments:
+      corra_3m_futures: {unit: index_points, fields: [settle], benchmark: CORRA}
+      corra_1m_futures: {unit: index_points, fields: [settle], benchmark: CORRA}
+    url: https://www.m-x.ca/en/trading/tools/canadian-interest-rate-expectations
+    history: snapshot
+    naming: "CRA contract = 'Contract Reference Month' = START month of the Reference Quarter (3rd Wednesday of that month to the 3rd Wednesday 3 months later); COA = calendar month"
+    exchange_tz: America/Toronto
+    eod_cutoff: "22:00"
+    intraday_utc: ["13:00", "22:00"]
+    asof_stamp: none                     # the page carries no as-of; inferred from fetch time + cutoff (asof_inferred=true)
+    availability: "HTML tables, no validators (Cache-Control: no-store); update time unknown"
+    download: {conditional: false, size_mb: 0.08}
+    horizon_months: 36
+    proxy: false
+    license: "(c) Bourse de Montreal; 'for general information purposes only'. TMX Datalinx sells MX data 'for a single end user, no redistribution rights'."
+
+  asx_ib:
+    currency: AUD
+    adapter: AsxIb
+    instruments:
+      ib_30d_interbank_futures: {unit: index_points, fields: [settle], benchmark: "RBA interbank overnight cash rate (AONIA-equivalent)"}
+    url: https://asx.api.markitdigital.com/asx-research/1.0/derivatives/interest-rate/IB/futures?days=1&height=179&width=179
+    history: snapshot
+    naming: "contract = calendar month (symbol IB<M><YYYY>); window = that month"
+    exchange_tz: Australia/Sydney
+    eod_cutoff: "08:00"
+    availability: "JSON snapshot; each item carries datePreviousSettlement (settlement date of the price)"
+    download: {conditional: false, size_mb: 0.01}
+    horizon_months: 36
+    proxy: false
+    license: "Undocumented JSON API behind asx.com.au; ASX terms not retrieved - unverified. Community mirror github.com/bpalmer4/ASX has daily captures since 2022-04 (unofficial)."
+
+  asx_bb:
+    currency: NZD
+    adapter: AsxBb
+    instruments:
+      bb_90d_nz_bank_bill_futures: {unit: index_points, fields: [settle],
+                                    benchmark: "BKBM 90-day (3M bank-bill FRA); NOT an overnight rate - spread vs OCR unavailable (RBNZ B2 blocked)"}
+    url: https://asx.api.markitdigital.com/asx-research/1.0/derivatives/interest-rate/BB/futures?days=1&height=179&width=179
+    history: snapshot
+    naming: "contract month = SETTLEMENT month; expiry = first Wednesday after the 9th of that month; underlying = 90-day BKBM forward from expiry (window = expiry .. +91 days); API dateExpiry is 2 days earlier and is not used"
+    exchange_tz: Australia/Sydney
+    eod_cutoff: "08:00"
+    availability: "JSON snapshot; each item carries datePreviousSettlement"
+    download: {conditional: false, size_mb: 0.01}
+    horizon_months: 36
+    proxy: false
+    license: "Undocumented JSON API behind asx.com.au; ASX terms not retrieved - unverified."
+
+  ust_bills:
+    currency: USD
+    adapter: TreasuryBills
+    instruments:
+      ust_par_curve: {unit: percent, fields: [yield], benchmark: "SOFR (bills-OIS basis not removed)"}
+    url: "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{year}/all?type=daily_treasury_yield_curve&field_tdr_date_value={year}&page&_format=csv"
+    history: official
+    naming: "tenors 1, 1.5, 2, 3, 4, 6 months, 1, 2, 3 years (tenor_months)"
+    exchange_tz: America/New_York
+    eod_cutoff: "20:00"
+    availability: "daily par yield curve, no validators; published after the close (~15:30 ET, unverified)"
+    download: {conditional: false, size_mb: 0.015}
+    horizon_months: 36
+    proxy: true
+    license: "US Treasury - US government work, public domain."
+
+  boc_tbills:
+    currency: CAD
+    adapter: BocTbills
+    instruments:
+      gov_tbill_yield: {unit: percent, fields: [yield], benchmark: "CORRA (bills-OIS basis not removed)"}
+    url: https://www.bankofcanada.ca/valet/observations/TB.CDN.30D.MID,TB.CDN.60D.MID,TB.CDN.90D.MID,TB.CDN.180D.MID/json
+    history: official
+    naming: "tenors 1, 2, 3, 6 months (series TB.CDN.30D/60D/90D/180D.MID)"
+    exchange_tz: America/Toronto
+    eod_cutoff: "21:00"
+    availability: "observation for d is published on the next business day (Friday's value absent on Saturday)"
+    download: {conditional: false, size_mb: 0.02}
+    horizon_months: 36
+    proxy: true
+    license: "Bank of Canada Terms of Use s.1: 'freely use, copy, distribute and transmit' with attribution."
+
+  ecb_aaa_fwd:
+    currency: EUR
+    adapter: EcbAaaForward
+    instruments:
+      aaa_govt_instantaneous_forward: {unit: percent, fields: [fwd], benchmark: "EUR STR (government curve, NOT OIS)"}
+    url: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.{keys}
+    history: official
+    naming: "instantaneous forward IF_<tenor> at monthly maturities 3..36 months (tenor_months)"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "18:00"
+    availability: "daily; observation for d available on the next business day"
+    download: {conditional: false, size_mb: 0.1}
+    horizon_months: 36
+    proxy: true
+    license: "ECB statistics, reuse with source acknowledgement."
+
+  rba_bank_bills:
+    currency: AUD
+    adapter: RbaBankBills
+    instruments:
+      bank_bill_eod_yield: {unit: percent, fields: [yield], benchmark: "RBA interbank overnight cash rate (BBSW-linked, credit spread not removed)"}
+    url: https://www.rba.gov.au/statistics/tables/csv/f1-data.csv
+    history: official
+    naming: "EOD bank bills 1M/3M/6M (F1 FIRMMBAB30D/90D/180D; source ASX)"
+    exchange_tz: Australia/Sydney
+    eod_cutoff: "23:00"
+    availability: "F1 refreshed ~09:00 AEST the next morning (Last-Modified Thu 23:00Z carried Thu's row)"
+    download: {conditional: true, validators: [last_modified], max_downloads_per_asof: 1, size_mb: 0.3}
+    horizon_months: 36
+    proxy: true
+    license: "RBA statistical table F1; bank-bill series are sourced from ASX - confirm terms. Requires a non-browser User-Agent from some IPs."
