@@ -592,5 +592,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-19T11:23:24+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_industrial_production",
+  "currency": "USD",
+  "indicator_key": "industrial_production_mm",
+  "datetime_utc": "2026-09-18 13:15:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-19T11:23:36+00:00",
+  "note": ""
  }
 ]
