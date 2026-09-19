@@ -1,0 +1,24 @@
+{
+  "atlantafed_mpt": {
+    "etag": "d0f17fe434fc4e578293943c85882627",
+    "last_modified": "Fri, 18 Sep 2026 14:24:44 GMT"
+  },
+  "boe_ois": {
+    "history": {
+      "etag": null,
+      "last_modified": "Thu, 03 Sep 2026 14:52:11 GMT"
+    },
+    "latest": {
+      "etag": null,
+      "last_modified": "Fri, 18 Sep 2026 12:58:26 GMT"
+    }
+  },
+  "jpx_tona": {
+    "etag": null,
+    "last_modified": "Fri, 18 Sep 2026 07:44:43 GMT"
+  },
+  "rba_bank_bills": {
+    "etag": null,
+    "last_modified": "Thu, 17 Sep 2026 23:00:50 GMT"
+  }
+}
