@@ -143,7 +143,7 @@ Politică-echivalent = rata overnight implicită − spread-ul curent overnight�
 
 | Val. | Politică acum · spread overnight | După ultima ședință din 2026 | După ultima din 2027 | Metodă |
 |---|---|---|---|---|
-| USD | 3.875 (midpoint) · SOFR −2.5bp | **4.305 (+43bp)**, fereastra 12-16 (1 ședință în interior; MPT 4.31) | **4.633 (+76bp)** (fereastra 2027-12-15) | MPT „Rate: mean" |
+| USD | 3.875 (midpoint) · SOFR −2.5bp | **4.335 (+46bp)**, fereastra 12-16 (1 ședință în interior; MPT 4.310) — *corectat în 0B, vezi E1* | **4.663 (+79bp)** (fereastra 2027-12-15) — *corectat* | MPT „Rate: mean" |
 | EUR | 2.50 (DFR) · €STR −6bp | 2.821 (+32bp) | 3.397 (+90bp) | **proxy** AAA-govt fwd @3.0m / @14.9m |
 | GBP | 3.75 · SONIA −2.0bp | **4.051 (+30bp)** | **4.855 (+110bp)** | curbă OIS fitată, interpolare lunară |
 | JPY | 1.25 (FF; oficial încă 1.00) · call −2.2bp | **1.497 (+25bp)** (fereastra 12-16, 1 în interior) | **2.130 (+88bp)** | TONA-3M |
@@ -152,7 +152,7 @@ Politică-echivalent = rata overnight implicită − spread-ul curent overnight�
 | NZD | 2.75 · **n/a** (B2 blocat) | BKBM-3M implicit **3.450** (fereastra 12-14, 1 în interior) — nivel BKBM, nu OCR | 3.800 la 17 feb 2027 (**singura** ședință 2027 cunoscută; RBNZ nu a publicat restul) | BB bank bills |
 | CHF | 0.00 · SARON −4bp | — | — | fără sursă |
 
-Alte valori brute: **BoE OIS fwd** 1m 3.748 · 3m 4.033 · 6m 4.412 · 12m 4.793 · 24m 4.728. **JPX TONA-3M** (implicit): 2026-12 1.225 · 2027-03 1.475 · 2027-06 1.680 · 2027-12 1.995. **MX CRA:** sep-26 2.385 · dec-26 2.775 · mar-27 3.130 · dec-27 3.595 · dec-28 3.645; **COA:** sep 2.288 · oct 2.305 · nov 2.430 · dec 2.580. **ASX IB (AUD):** sep 4.355 · dec-26 4.725 · dec-27 4.900. **ASX BB (NZD):** dec-26 3.450 · mar-27 3.800 · dec-27 4.210 (plat după). **MPT (USD, bp):** 2026-12 431 · 2027-03 455 · 2027-12 464 · 2029-12 446.
+Alte valori brute: **BoE OIS fwd** 1m 3.748 · 3m 4.033 · 6m 4.412 · 12m 4.793 · 24m 4.728. **JPX TONA-3M** (implicit; etichetat pe luna de START a ferestrei, convenția JPX — vezi E2): sep-26 1.225 · dec-26 1.475 · mar-27 1.680 · jun-27 1.850 · dec-27 2.107. *(Inițial etichetat pe luna de expirare, decalat cu un contract; calculul „+25bp / +88bp" folosea deja contractele corecte.)* **MX CRA:** sep-26 2.385 · dec-26 2.775 · mar-27 3.130 · dec-27 3.595 · dec-28 3.645; **COA:** sep 2.288 · oct 2.305 · nov 2.430 · dec 2.580. **ASX IB (AUD):** sep 4.355 · dec-26 4.725 · dec-27 4.900. **ASX BB (NZD):** dec-26 3.450 · mar-27 3.800 · dec-27 4.210 (plat după). **MPT (USD, bp):** 2026-12 431 · 2027-03 455 · 2027-12 464 · 2029-12 446.
 
 **Diferența în bps unde am 2 surse pe aceeași valută, la ultima ședință din 2026:**
 - **USD:** MPT fereastra 12-16 = 4.310 vs forward-ul T-bill 3M→6M = 4.296 ⇒ **−1bp** (baza bills–SOFR + convenții) — concordanță foarte bună.
@@ -230,6 +230,36 @@ Doar **Databento** și (indirect) **Barchart** au un preț public verificabil; r
 | JPX, MX | CloudFront | netestat | mediu |
 | ASX `markitdigital` | — (API nedocumentat) | netestat | mediu (poate fi schimbat/limitat fără avertizare) |
 | CME, Yahoo | — | 403 / 429 **și local** | blocat |
+
+---
+
+## Errata 0A (aplicată în 0B, 2026-09-19)
+
+**E1 — USD: spread-ul scăzut din MPT.** Confirmat: cifrele din 0A (4.305 / +43bp și 4.633 / +76bp) foloseau spread-ul **EFFR** (+0.5bp vs midpoint), deși eticheta spunea SOFR; MPT e construit pe opțiuni **SOFR** 3M, deci se scade spread-ul SOFR. Cauza: în primul run alegeam primul benchmark din listă (EFFR); am fixat SOFR ca benchmark USD, dar tabelul din raport rămăsese din run-ul vechi. Recalculat (SOFR 3.85 = −2.5bp vs midpoint 3.875): fereastra 2026-12-16..2027-03-17, medie 4.310 → **4.335 (+46bp)** (cu EFFR ar fi 4.305, +43bp); fereastra 2027-12-15..2028-03-15 → **4.663 (+79bp)**. Diferența MPT vs forward T-bill (−1bp) e neschimbată (valori brute, fără spread).
+
+**E2 — contracte 3M: fereastră de referință și convenția de denumire.** Confirmat pentru JPY: valoarea 1.497 provine din contractul JPX cu luna de contract **202612** (start 2026-12-16, ultima tranzacționare 2027-03-16; preț 98.525 → 1.475, plus 2.2bp), adică *exact* fereastra 12-16 din tabel; eticheta „2027-03" din lista de valori brute era luna de **expirare**. Nu era decalaj de calcul, ci de etichetare (acum corectată).
+
+| Bursă / sursă | Convenția de denumire | Fereastra de referință [start, end) | Exemple (start → end · implicit) |
+|---|---|---|---|
+| Atlanta Fed MPT (opțiuni CME 3M SOFR) | `reference_start` explicit | a 3-a miercuri a lunii de start → a 3-a miercuri +3 luni | 2026-12-16→2027-03-17 4.310 · 2027-03-17→06-16 4.549 · 2027-06-16→09-15 4.660 · 2027-09-15→12-15 4.671 |
+| JPX 3M TONA | **luna de START** (spec JPX: „from the 3rd Wednesday of each contract month to the Tuesday preceding the 3rd Wednesday of the month 3 months later"); codul din numele emisiunii e ultima zi de tranzacționare | idem | 202609 (exp. 2026-12-15): 09-16→12-16 1.225 · 202612 (exp. 2027-03-16): 12-16→2027-03-17 1.475 · 202703: 03-17→06-16 1.680 · 202706: 06-16→09-15 1.850 |
+| MX CRA (3M CORRA) | **luna de START** = „Contract Reference Month" (spec MX: „the month in which the Reference Quarter begins"); „Delivery Month" = luna de final | idem | CRAU26: 09-16→12-16 2.385 · CRAZ26: 12-16→2027-03-17 2.775 · CRAH27: 03-17→06-16 3.130 · CRAM27: 06-16→09-15 3.365 |
+| ASX 90-day NZ bank bill (BB) | luna de **decontare** (spec ASX: expirare = prima miercuri după a 9-a zi a lunii de decontare; FRA/BKBM 90 zile de la expirare) | expirare → +91 zile; `dateExpiry` din API e cu 2 zile mai devreme (luni), fără efect asupra rezultatelor | BBZ2026: 2026-12-16→2027-03-17 3.450 · BBH2027: 03-10→06-09 3.800 · BBM2027: 06-16→09-15 4.050 · BBU2027: 09-15→12-15 4.150 |
+
+**E3 — regula de selecție a ferestrei (aceeași funcție pentru USD/JPY/CAD/NZD).** Data efectivă = decizia + 1 zi (Fed, RBA, SNB), + 6 zile (ECB), + 0 (BoE, BoJ, BoC, RBNZ). Se ia **prima fereastră cu start ≥ (data efectivă − 3 zile)**; doar înainte în timp (o fereastră începută cu mai mult de 3 zile înaintea ședinței nu se folosește, fiindcă reflectă doar parțial decizia). Rezultat = media ferestrei − spread-ul curent overnight–politică; „în interior" = alte ședințe din fereastră ⇒ **margine superioară** a mișcării cumulate. În 0A cele trei locuri (raportul principal, diferența T-bill, diferența COA/CRA) foloseau reguli ușor diferite (toleranță 3 zile / fără toleranță / start ≥ data deciziei); dau aceleași ferestre pe datele curente, dar acum e o singură funcție (`pick_window` în `src/cb_probe.py`).
+
+| Val. | Ședința | Data efectivă | Fereastra aleasă | Decalaj start−efectiv | Alte ședințe în fereastră | Implicit (politică-echivalent) | Δ vs politica acum |
+|---|---|---|---|---|---|---|---|
+| USD | 2026-12-09 | 12-10 | 2026-12-16→2027-03-17 | +6 z | 1 | 4.335 | +46bp (vs 3.875) |
+| USD | 2027-12-08 | 12-09 | 2027-12-15→2028-03-15 | +6 z | 0 | 4.663 | +79bp |
+| JPY | 2026-12-18 | 12-18 | 2026-12-16→2027-03-17 | −2 z | 1 | 1.497 | +25bp (vs 1.250) |
+| JPY | 2027-12-17 | 12-17 | 2027-12-15→2028-03-15 | −2 z | 0 | 2.130 | +88bp |
+| CAD | 2026-12-09 | 12-09 | 2026-12-16→2027-03-17 | +7 z | 2 | 2.735 | +48bp (vs 2.250) |
+| CAD | 2027-12-08 | 12-08 | 2027-12-15→2028-03-15 | +7 z | 0 | 3.555 | +131bp |
+| NZD | 2026-12-09 | 12-09 | 2026-12-16→2027-03-17 | +7 z | 1 | 3.450 (nivel BKBM, nu OCR) | +70bp (vs 2.750) |
+| NZD | 2027-02-17 (singura din 2027 publicată) | 02-17 | 2027-03-10→06-09 | +21 z | 0 | 3.800 (BKBM) | +105bp |
+
+Reproducere: `python -m src.cb_probe --section e`.
 
 ---
 
