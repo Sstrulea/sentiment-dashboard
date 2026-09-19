@@ -1,4 +1,5 @@
-# Market sources collected by src/cb_collect.py into data/cb/market_quotes.parquet.
+# Market sources collected by src/cb_collect.py into data/cb/market_quotes/market_quotes_YYYY-MM.parquet
+# (one file per calendar month of the as-of).
 # Values are stored EXACTLY as published (price or rate) with their unit; price->rate
 # conversion, spread adjustments and meeting extraction belong to phase 1B.
 #

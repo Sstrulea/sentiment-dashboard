@@ -65,7 +65,13 @@ def q(src, asof, value, contract="3M", instrument="x", unit="percent", **kw):
 
 
 def rows(paths):
-    return pq.read_table(paths.parquet).to_pylist()
+    """Every stored row, all partitions (sorted for stable comparisons)."""
+    return sorted(cc.load_store(paths).values(), key=lambda r: (r["source"], r["instrument"], r["contract"], r["field"], r["asof"]))
+
+
+def parts(paths) -> dict:
+    """{partition file name: sha256} - the byte-level fingerprint of the whole quote store."""
+    return {f.name: sha(f) for f in sorted(paths.quotes.glob("*.parquet"))} if paths.quotes.exists() else {}
 
 
 def sha(p: Path) -> str:
@@ -84,7 +90,7 @@ def test_new_rows_land_with_the_stable_columns(env):
     register("a", lambda s, since, st: FetchResult("ok", [q(s, D(17), 3.5)]))
     (rep,) = cc.run(paths, cfg=cfg_for("a"), now=clock())
     assert (rep.status, rep.merge.new) == ("ok", 1)
-    t = pq.read_table(paths.parquet)
+    t = pq.read_table(paths.partition("2026-09"))
     assert t.schema.names == ["source", "currency", "instrument", "contract", "field", "ref_start", "ref_end",
                               "tenor_months", "value", "unit", "asof", "asof_inferred", "fetched_at"]
     r = t.to_pylist()[0]
@@ -114,9 +120,9 @@ def test_two_runs_the_same_day_are_byte_identical(env):
     register("b", lambda s, since, st: FetchResult("ok", [q(s, D(17), 4.0, contract="6M")], raw={"asof": D(17), "text": "r1,r2"}),)
     cfg = cfg_for("a", "b")
     cc.run(paths, cfg=cfg, now=clock())
-    first = (sha(paths.parquet), sha(paths.state), sha(paths.raw / "b" / "2026-09-17.csv.gz"))
+    first = (parts(paths), sha(paths.state), sha(paths.raw / "b" / "2026-09-17.csv.gz"))
     reps = cc.run(paths, cfg=cfg, now=clock(NOW + timedelta(hours=2)))
-    assert (sha(paths.parquet), sha(paths.state), sha(paths.raw / "b" / "2026-09-17.csv.gz")) == first
+    assert (parts(paths), sha(paths.state), sha(paths.raw / "b" / "2026-09-17.csv.gz")) == first
     assert all(r.merge.new == 0 and r.merge.updated == 0 and not r.raw_written for r in reps)
     keys = [(r["source"], r["instrument"], r["contract"], r["field"], r["asof"]) for r in rows(paths)]
     assert len(keys) == len(set(keys)) == 3                              # zero duplicates
@@ -172,7 +178,7 @@ def test_exit_code_is_nonzero_only_when_every_source_fails(env):
     register("d", lambda s, since, st: FetchResult("skipped", note="intraday"))
     assert cc.exit_code(cc.run(paths, cfg=cfg_for("a", "c"), now=clock())) == 0      # a 304 is not a failure
     assert cc.exit_code(cc.run(paths, cfg=cfg_for("a", "d"), now=clock())) == 0
-    assert not paths.parquet.exists()                                    # nothing new -> nothing written
+    assert not paths.quotes.exists()                                    # nothing new -> nothing written
 
 
 def test_broken_source_never_wipes_existing_history(env):
@@ -180,10 +186,10 @@ def test_broken_source_never_wipes_existing_history(env):
     ok = {"on": True}
     register("a", lambda s, since, st: FetchResult("ok", [q(s, D(17), 3.5)]) if ok["on"] else None)
     cc.run(paths, cfg=cfg_for("a"), now=clock())
-    h = sha(paths.parquet)
+    h = parts(paths)
     ok["on"] = False
     cc.run(paths, cfg=cfg_for("a"), now=clock(NOW + timedelta(days=1)))
-    assert sha(paths.parquet) == h
+    assert parts(paths) == h
 
 
 # ---------------------------------------------------------------------------
@@ -288,8 +294,9 @@ def test_status_reports_asof_lag_and_missing_weekdays(env):
     register("b", lambda s, since, st: None)
     cc.run(paths, cfg=cfg_for("a", "b"), now=clock())
     text, md = cc.status(paths, TODAY, cfg=cfg_for("a", "b"))
-    line = next(ln for ln in text.splitlines() if ln.startswith("a "))
-    assert "2026-09-07" in line and "2026-09-16" in line and " 3 " in line      # first, last as-of, 3 business days of lag
+    tok = next(ln for ln in text.splitlines() if ln.startswith("a ")).split()
+    assert tok[3:5] == ["2026-09-07", "2026-09-16"]                          # first, last as-of
+    assert tok[5] == "2" and tok[8] == "3"                                   # lag: Wed -> Fri = 2 business days; 3 missing weekdays
     assert "2026-09-14" in text and "2026-09-15" in text and "2026-09-09" in text
     assert "2026-09-12" not in text                                          # weekends are not "missing"
     b = next(ln for ln in text.splitlines() if ln.startswith("b "))
@@ -379,10 +386,231 @@ def test_end_to_end_all_ten_adapters_over_fixtures(tmp_path, monkeypatch):
     assert validators["atlantafed_mpt"]["etag"] == "e-mpt" and "latest" in validators["boe_ois"]
 
     # second run: idempotent, and the conditional GETs come back 304
-    before = (sha(paths.parquet), sha(paths.state))
+    before = (parts(paths), sha(paths.state))
     reps2 = cc.run(paths, now=clock(NOW + timedelta(hours=2)), lookback_days=45)
     by2 = {r.id: r for r in reps2}
     assert all(r.merge.new == 0 and r.merge.updated == 0 for r in reps2)
     assert {i for i, r in by2.items() if r.status == "not_modified"} == {"atlantafed_mpt", "boe_ois", "jpx_tona", "rba_bank_bills"}
-    assert (sha(paths.parquet), sha(paths.state)) == before
+    assert (parts(paths), sha(paths.state)) == before
     assert cc.exit_code(reps2) == 0
+
+
+# ---------------------------------------------------------------------------
+# Monthly partitions
+# ---------------------------------------------------------------------------
+
+def test_rows_are_partitioned_by_the_month_of_the_asof(env):
+    paths, register = env
+    days = [date(2026, 8, 28), date(2026, 8, 31), date(2026, 9, 1), date(2026, 9, 2)]
+    register("a", lambda s, since, st: FetchResult("ok", [q(s, d, 3.0 + d.day / 100) for d in days]))
+    register("b", lambda s, since, st: FetchResult("ok", [q(s, date(2026, 9, 1), 4.0, contract="6M")]))
+    cc.run(paths, cfg=cfg_for("a", "b"), now=clock())
+    assert sorted(p.name for p in paths.quotes.glob("*")) == ["market_quotes_2026-08.parquet", "market_quotes_2026-09.parquet"]
+    assert not (paths.dir / "market_quotes.parquet").exists()                # the single file is gone for good
+    aug = pq.read_table(paths.partition("2026-08")).to_pylist()
+    sep = pq.read_table(paths.partition("2026-09")).to_pylist()
+    assert [r["asof"] for r in aug] == [date(2026, 8, 28), date(2026, 8, 31)]                 # month boundary: 31 Aug / 1 Sep
+    assert sorted((r["source"], r["asof"]) for r in sep) == [("a", date(2026, 9, 1)), ("a", date(2026, 9, 2)), ("b", date(2026, 9, 1))]
+    assert pq.read_table(paths.partition("2026-08")).schema.names == cc.COLUMNS                # same columns everywhere
+    keys = [cc._key(r) for r in rows(paths)]
+    assert len(keys) == len(set(keys)) == 5                                                  # the key is unique globally
+
+
+def test_an_ordinary_run_rewrites_only_the_partition_it_changes(env):
+    paths, register = env
+    batch = {"days": [date(2026, 8, 28), date(2026, 8, 31), date(2026, 9, 1)]}
+    register("a", lambda s, since, st: FetchResult("ok", [q(s, d, 3.0 + d.day / 100) for d in batch["days"]]))
+    cc.run(paths, cfg=cfg_for("a"), now=clock())
+    aug, sep = paths.partition("2026-08"), paths.partition("2026-09")
+    aug_before, aug_mtime, sep_before = aug.read_bytes(), aug.stat().st_mtime_ns, sep.read_bytes()
+    batch["days"] = [date(2026, 8, 31), date(2026, 9, 1), date(2026, 9, 2)]              # the source's window moves by one day
+    (rep,) = cc.run(paths, cfg=cfg_for("a"), now=clock(NOW + timedelta(hours=2)))
+    assert (rep.merge.new, rep.merge.months) == (1, {"2026-09"})
+    assert aug.read_bytes() == aug_before and aug.stat().st_mtime_ns == aug_mtime          # August was not even touched
+    assert sep.read_bytes() != sep_before and len(pq.read_table(sep)) == 2
+    m = sep.stat().st_mtime_ns
+    cc.run(paths, cfg=cfg_for("a"), now=clock(NOW + timedelta(hours=4)))                  # idle run: nothing rewritten
+    assert sep.stat().st_mtime_ns == m and aug.stat().st_mtime_ns == aug_mtime
+
+
+def test_partition_bytes_depend_only_on_the_content(env, tmp_path):
+    paths, register = env
+    src = make_fake("z", lambda *a: None)(cfg_for("z")["sources"]["z"], now=clock())
+    rs = [cc.quote_row(q(src, D(d), 3.0 + d / 100, contract=c)) for d in (14, 15, 16) for c in ("3M", "6M")]
+    a = cc.serialize_partition(rs)
+    assert a == cc.serialize_partition(list(reversed(rs))) == cc.serialize_partition(rs[3:] + rs[:3])    # order-independent
+    store = {cc._key(r): r for r in rs}
+    assert cc.write_store(paths, store) == ["2026-09"]
+    mt = paths.partition("2026-09").stat().st_mtime_ns
+    assert cc.write_store(paths, store) == []                                            # identical bytes -> no rewrite
+    assert paths.partition("2026-09").stat().st_mtime_ns == mt
+    store2 = dict(store)
+    other = dict(rs[0], asof=date(2026, 10, 1)); store2[cc._key(other)] = other
+    assert cc.write_store(paths, store2, months={"2026-10"}) == ["2026-10"]                 # only the requested partition
+    assert cc.write_store(paths, store2, months=set()) == []
+
+
+def test_load_store_reads_everything_or_an_interval(env):
+    paths, register = env
+    days = [date(2026, m, 15) for m in (6, 7, 8, 9)]
+    register("a", lambda s, since, st: FetchResult("ok", [q(s, d, 1.0) for d in days]))
+    cc.run(paths, cfg=cfg_for("a"), now=clock(), backfill_from=date(2026, 3, 1))
+    assert sorted(r["asof"].month for r in cc.load_store(paths).values()) == [6, 7, 8, 9]
+    assert sorted(r["asof"].month for r in cc.load_store(paths, "2026-07", "2026-08").values()) == [7, 8]
+    assert sorted(r["asof"].month for r in cc.load_store(paths, start=date(2026, 8, 20)).values()) == [8, 9]
+    assert sorted(r["asof"].month for r in cc.load_store(paths, end="2026-06").values()) == [6]
+    assert list(cc.list_partitions(paths)) == ["2026-06", "2026-07", "2026-08", "2026-09"]
+
+
+# ---------------------------------------------------------------------------
+# asof_inferred guard (MX): identical to the previous recorded as-of -> not recorded
+# ---------------------------------------------------------------------------
+
+def at(y, m, d, h=12):
+    return datetime(y, m, d, h, 0, tzinfo=timezone.utc)
+
+
+FRI, MON, TUE = date(2026, 9, 18), date(2026, 9, 21), date(2026, 9, 22)
+
+
+def inferred_source(register, prices):
+    """Fake MX: asof comes from prices['asof'], values from prices['v'] (dict contract -> value)."""
+    def script(s, since, st):
+        qs = [q(s, prices["asof"], v, contract=c, instrument="corra_3m_futures", inferred=True) for c, v in prices["v"].items()]
+        return FetchResult("ok", qs, raw={"asof": prices["asof"], "text": "row"})
+    register("mx", script, currency="CAD")
+    return prices
+
+
+def test_an_inferred_asof_identical_to_the_previous_one_is_not_recorded(env):
+    paths, register = env
+    px = inferred_source(register, {"asof": FRI, "v": {"202612": 97.225, "202703": 96.87}})
+    cfg = cfg_for("mx", history="snapshot")
+    (rep,) = cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 19)))                        # Saturday: Friday's page
+    assert rep.merge.new == 2 and not rep.skipped and (paths.raw / "mx" / "2026-09-18.csv.gz").exists()
+
+    px["asof"] = MON                                                                     # Monday holiday: same numbers, new date
+    (rep,) = cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 22, 5)))
+    assert rep.skipped == {MON: FRI} and rep.merge.new == 0
+    assert "fără valori noi" in rep.note and "2026-09-21" in rep.note and "2026-09-18" in rep.note
+    assert sorted(r["asof"] for r in rows(paths)) == [FRI, FRI]                          # nothing recorded for Monday
+    assert not (paths.raw / "mx" / "2026-09-21.csv.gz").exists()                         # nor a raw file
+    assert cc.load_state(paths)[cc.NO_NEW] == {"mx": {"2026-09-21": "2026-09-18"}}
+    assert cc.exit_code([rep]) == 0
+
+    h = (parts(paths), sha(paths.state))
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 22, 7)))                                # the same skip again: no diff at all
+    assert (parts(paths), sha(paths.state)) == h
+
+    text, md = cc.status(paths, date(2026, 9, 22), cfg=cfg)
+    line = next(ln for ln in text.splitlines() if ln.startswith("mx "))
+    assert "fără valori noi (as-of 2026-09-21 = 2026-09-18)" in line and "fără valori noi" in md
+
+
+def test_the_next_real_trading_day_is_recorded_and_the_skipped_day_stays_annotated(env):
+    paths, register = env
+    px = inferred_source(register, {"asof": FRI, "v": {"202612": 97.225, "202703": 96.87}})
+    cfg = cfg_for("mx", history="snapshot")
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 19)))
+    px["asof"] = MON
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 22, 5)))                                # skipped (holiday)
+    px.update(asof=TUE, v={"202612": 97.25, "202703": 96.9})
+    (rep,) = cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 23, 5)))                       # Tuesday: real new prices
+    assert rep.merge.new == 2 and not rep.skipped
+    assert sorted({r["asof"] for r in rows(paths)}) == [FRI, TUE]                        # Monday never recorded
+    text, _ = cc.status(paths, date(2026, 9, 23), cfg=cfg)
+    line = next(ln for ln in text.splitlines() if ln.startswith("mx "))
+    assert "fără valori noi (" not in line                                               # no pending skip: Tuesday is recorded
+    assert "2026-09-21 (fără valori noi)" in text                                        # the gap is explained, not just "missing"
+
+
+def test_a_skipped_asof_that_the_page_later_updates_is_recorded_and_the_marker_dropped(env):
+    paths, register = env
+    px = inferred_source(register, {"asof": FRI, "v": {"202612": 97.225}})
+    cfg = cfg_for("mx", history="snapshot")
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 19)))
+    px["asof"] = MON
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 21, 23)))                               # page not refreshed yet -> skipped
+    assert cc.NO_NEW in cc.load_state(paths)
+    px["v"] = {"202612": 97.3}                                                           # refreshed a few hours later
+    (rep,) = cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 22, 5)))
+    assert rep.merge.new == 1 and not rep.skipped
+    assert cc.NO_NEW not in cc.load_state(paths)                                         # marker gone: Monday is recorded now
+
+
+def test_partial_difference_is_recorded_and_new_contracts_count_as_a_difference(env):
+    paths, register = env
+    px = inferred_source(register, {"asof": FRI, "v": {"202612": 97.225, "202703": 96.87}})
+    cfg = cfg_for("mx", history="snapshot")
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 19)))
+    px.update(asof=MON, v={"202612": 97.225, "202703": 96.875})                          # one contract moved half a tick
+    assert cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 22, 5)))[0].merge.new == 2
+    px.update(asof=TUE, v={"202612": 97.225, "202703": 96.875, "202706": 96.6})          # a newly listed contract
+    assert cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 23, 5)))[0].merge.new == 3
+
+
+def test_the_guard_does_not_apply_to_sources_with_a_published_asof(env):
+    """RBA / BoC / Treasury rates are flat for weeks: identical values on a new date are real data."""
+    paths, register = env
+    day = {"d": FRI}
+    register("boc", lambda s, since, st: FetchResult("ok", [q(s, day["d"], 2.25, contract="1M"), q(s, day["d"], 2.4, contract="3M")]))
+    for d in (FRI, MON, TUE):
+        day["d"] = d
+        (rep,) = cc.run(paths, cfg=cfg_for("boc"), now=clock(at(2026, 9, 23)))
+        assert rep.merge.new == 2 and not rep.skipped
+    assert len(rows(paths)) == 6 and cc.NO_NEW not in cc.load_state(paths)
+
+
+def test_refetching_an_already_recorded_inferred_asof_is_a_plain_merge(env):
+    paths, register = env
+    inferred_source(register, {"asof": FRI, "v": {"202612": 97.225}})
+    cfg = cfg_for("mx", history="snapshot")
+    cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 19)))
+    (rep,) = cc.run(paths, cfg=cfg, now=clock(at(2026, 9, 19, 20)))                      # Saturday again, Friday's page
+    assert (rep.merge.unchanged, rep.merge.new, rep.skipped) == (1, 0, {})
+
+
+def test_the_real_mx_adapter_skips_an_unrefreshed_page(tmp_path, monkeypatch):
+    """Same guard through the real MxCorra over the real fixture: Friday recorded, Monday (same page) not."""
+    monkeypatch.setattr("src.rate_sources.time.sleep", lambda s: None)
+    _router(monkeypatch)
+    paths = cc.Paths(tmp_path / "cb")
+    (rep,) = cc.run(paths, only=["mx_corra"], now=clock(at(2026, 9, 19, 16)))              # Saturday -> Friday
+    assert rep.merge.new == 8
+    (rep,) = cc.run(paths, only=["mx_corra"], now=clock(at(2026, 9, 21, 23)))              # Monday after the window, same page
+    assert rep.skipped == {date(2026, 9, 21): date(2026, 9, 18)} and rep.merge.new == 0
+    assert {r["asof"] for r in rows(paths)} == {date(2026, 9, 18)}
+
+
+# ---------------------------------------------------------------------------
+# Lag in --status: business days between the as-of and the last business day <= today
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("asof, today, lag", [
+    (date(2026, 9, 18), date(2026, 9, 19), 0),      # Saturday, Friday's data (0A convention)
+    (date(2026, 9, 17), date(2026, 9, 19), 1),      # Saturday, Thursday's data
+    (date(2026, 9, 16), date(2026, 9, 19), 2),
+    (date(2026, 9, 18), date(2026, 9, 20), 0),      # Sunday behaves like Saturday
+    (date(2026, 9, 17), date(2026, 9, 20), 1),
+    (date(2026, 9, 21), date(2026, 9, 21), 0),      # Monday, same-day data
+    (date(2026, 9, 18), date(2026, 9, 21), 1),      # Monday, Friday's data
+    (date(2026, 9, 17), date(2026, 9, 21), 2),
+    (date(2026, 9, 18), date(2026, 9, 22), 2),      # Tuesday, Friday's data: Fri + Mon
+    (date(2026, 9, 22), date(2026, 9, 22), 0),
+    (date(2026, 9, 23), date(2026, 9, 22), 0),      # an as-of ahead of "today" never gives a negative lag
+])
+def test_business_day_lag_convention(asof, today, lag):
+    assert cc.business_day_lag(asof, today) == lag
+
+
+def test_status_shows_the_lag_with_the_same_convention(env):
+    paths, register = env
+    for sid, d in (("a", date(2026, 9, 18)), ("b", date(2026, 9, 17)), ("c", date(2026, 9, 16))):
+        register(sid, lambda s, since, st, d=d: FetchResult("ok", [q(s, d, 1.0)]))
+    cfg = cfg_for("a", "b", "c")
+    cc.run(paths, cfg=cfg, now=clock())
+    text, _ = cc.status(paths, date(2026, 9, 19), cfg=cfg)                                # a Saturday
+    lag = {ln.split()[0]: ln.split()[5] for ln in text.splitlines() if ln.split() and ln.split()[0] in "abc" and len(ln.split()[0]) == 1}
+    assert lag == {"a": "0", "b": "1", "c": "2"}
+    reps = cc.run(paths, cfg=cfg, now=clock())
+    assert {r.id: r.lag_bd for r in reps} == {"a": 0, "b": 1, "c": 2}                       # the run report uses it too
