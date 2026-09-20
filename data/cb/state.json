@@ -2,6 +2,12 @@
   "_calendar_check": {
     "checked": "2026-09-20",
     "failed": {},
+    "signatures": {
+      "CH": {
+        "etag": "\"17d4d-65be2bcd6969c\"",
+        "length": 97613
+      }
+    },
     "warnings": []
   },
   "atlantafed_mpt": {
