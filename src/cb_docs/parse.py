@@ -428,3 +428,36 @@ def match_video(videos: list, meeting: date, tolerance_days: int = 1) -> Optiona
     """The official video of the press conference: a press-conference title published within +-1 day of the meeting date (the earliest one)."""
     cands = [v for v in videos if v.get("pub") and PRESS_RX.search(v.get("title", "")) and abs((v["pub"].date() - meeting).days) <= tolerance_days]
     return min(cands, key=lambda v: v["pub"]) if cands else None
+
+
+# ---- press-conference video on the bank's own pages -------------------------------------------------------------------------------
+
+def video_from_page(ccy: str, html: str, page_url: str = "") -> Optional[dict]:
+    """The press-conference video a bank's OWN page carries: {url, player, id, duration}. USD: the FOMC page embeds a Brightcove player (the page is the
+    link); CAD: the press release links the /multimedia/ page; AUD: the transcript page links the video; GBP: the Monetary Policy Report page embeds it."""
+    if ccy == "USD":
+        m = re.search(r'data-video-id="(\d+)"[^>]*data-account="(\d+)"', html)
+        return {"url": page_url, "player": "Brightcove", "id": m.group(1), "duration": None} if m else None
+    if ccy == "CAD":
+        m = re.search(r'href="(https://www\.bankofcanada\.ca/multimedia/press-conference[^"]+)"', html)
+        return {"url": m.group(1), "player": "YouTube (bank page)", "id": None, "duration": None} if m else None
+    if ccy == "AUD":
+        tag = re.search(r'<a\s[^>]*class="[^"]*video-placeholder[^"]*"[^>]*>', html)
+        href = re.search(r'href="(https://(?:youtu\.be/|www\.youtube\.com/watch\?v=)([\w-]{11}))"', tag.group(0)) if tag else None
+        dur = re.search(r'data-duration="([^"]*)"', tag.group(0)) if tag else None
+        return {"url": href.group(1), "player": "YouTube", "id": href.group(2), "duration": dur.group(1) if dur else None} if href else None
+    if ccy == "GBP":
+        i = html.find('id="press-conference"')
+        m = re.search(r'data-video="([\w-]{11})"', html[i:i + 2000]) if i >= 0 else None
+        return {"url": f"https://www.youtube.com/watch?v={m.group(1)}", "player": "YouTube", "id": m.group(1), "duration": None} if m else None
+    return None
+
+
+def ecb_landing_video(html: str) -> Optional[tuple]:
+    """(date of the meeting, YouTube id) from the ECB press-conference landing page: it shows the last conference (`ecb.is{yymmdd}~` = its statement
+    with Q&A) and its video. Older conferences are not on it - they are captured on the day they are current."""
+    dates = re.findall(r"ecb\.is(\d{6})~", html)
+    vid = re.search(r'<div data-video="([\w-]{11})"', html)
+    if not dates or not vid:
+        return None
+    return datetime.strptime(dates[0], "%y%m%d").date(), vid.group(1)

@@ -43,6 +43,14 @@
   "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "file": "misc/boe_mpcvoting.xlsx"
  },
+ "https://www.bankofengland.co.uk/monetary-policy-report/2026/april-2026": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_GBP_2026-04-30.html"
+ },
+ "https://www.bankofengland.co.uk/monetary-policy-report/2026/july-2026": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_GBP_2026-07-30.html"
+ },
  "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026": {
   "content_type": "text/html; charset=utf-8",
   "file": "statements/GBP_2026-04-30.html"
@@ -135,6 +143,10 @@
   "content_type": "text/html; charset=utf-8",
   "file": "statements/EUR_2026-09-10.html"
  },
+ "https://www.ecb.europa.eu/press/press_conference/html/index.en.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_EUR_landing.html"
+ },
  "https://www.ecb.europa.eu/rss/press.html": {
   "content_type": "application/xml",
   "file": "feeds/ecb_press.xml"
@@ -154,6 +166,22 @@
  "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260617.htm": {
   "content_type": "text/html; charset=utf-8",
   "file": "minutes/USD_2026-06-17.html"
+ },
+ "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260429.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_USD_2026-04-29.html"
+ },
+ "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260617.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_USD_2026-06-17.html"
+ },
+ "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260729.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_USD_2026-07-29.html"
+ },
+ "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_USD_2026-09-16.html"
  },
  "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm": {
   "content_type": "text/html; charset=utf-8",
@@ -210,6 +238,22 @@
  "https://www.rba.gov.au/speeches/": {
   "content_type": "text/html",
   "file": "lists/rba_speeches.html"
+ },
+ "https://www.rba.gov.au/speeches/2026/mc-gov-2026-03-17.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_AUD_2026-03-17.html"
+ },
+ "https://www.rba.gov.au/speeches/2026/mc-gov-2026-05-05.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_AUD_2026-05-05.html"
+ },
+ "https://www.rba.gov.au/speeches/2026/mc-gov-2026-06-16.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_AUD_2026-06-16.html"
+ },
+ "https://www.rba.gov.au/speeches/2026/mc-gov-2026-08-11.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/video_AUD_2026-08-11.html"
  },
  "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20250925": {
   "content_type": "text/html; charset=utf-8",

@@ -51,7 +51,7 @@ def test_latest_decision_block_of_the_fed(built):
     by = {i["type"]: i for i in L["follow_up"]}
     assert by["minutes"]["available"] is False and by["minutes"]["na"] == "expected around 2026-10-07 (+21 d after the decision)"
     assert by["presser_transcript"]["available"] and by["presser_transcript"]["url"].endswith("FOMCpresconf20260916.pdf")
-    assert by["presser_video"]["available"] is False and "robots.txt" in by["presser_video"]["na"]
+    assert by["presser_video"]["available"] and by["presser_video"]["url"].endswith("fomcpresconf20260916.htm")           # the page of the Fed carries its video
 
 
 def test_redline_payload_reproduces_the_statement_from_the_previous_one(built):
@@ -73,9 +73,9 @@ def test_decisions_table_columns_are_populated(built):
         assert all(r["summary"]["label"] == "summary pending (phase 2b)" for r in rows)
     usd = built[0]["banks"]["USD"]["decisions"]
     assert all(r["slots"]["statement"]["url"].startswith("https://www.federalreserve.gov/") for r in usd)
-    assert all(set(r["slots"]["conference"]) == {"presser_transcript"} for r in usd)
+    assert all(set(r["slots"]["conference"]) == {"presser_video", "presser_transcript"} for r in usd)
     cad = built[0]["banks"]["CAD"]["decisions"]
-    assert all(set(r["slots"]["conference"]) == {"opening_statement"} for r in cad)
+    assert all(set(r["slots"]["conference"]) == {"presser_video", "opening_statement"} for r in cad)
     assert built[0]["banks"]["NZD"]["decisions"][0]["slots"]["statement"] is None                              # RBNZ: nothing fetched
 
 
@@ -123,3 +123,14 @@ def test_payload_is_strict_json_and_the_shell_stays_empty(built, tmp_path):
     data = json.loads((tmp_path / "data" / "cb" / "usd.json").read_text())
     assert data["documents"]["latest"]["statement"]["paragraphs"]
     assert len(res["files"]) == 47
+
+
+def test_a_meeting_without_a_video_says_why_per_bank(built):
+    def latest(ccy: str) -> dict:
+        timeline = docs(built, ccy)["timeline"]
+        return {i["type"]: i for i in max(timeline, key=lambda m: m["meeting"])["follow_up"]}
+    assert "YouTube channel" in latest("JPY")["presser_video"]["na"] and "robots.txt" in latest("JPY")["presser_video"]["na"]
+    assert "robots.txt" in latest("CHF")["presser_video"]["na"]
+    assert "pooled broadcast interview" in latest("GBP")["presser_video"]["na"]                                        # 17 Sep: no MPR press conference
+    assert all(latest(c)["presser_video"]["na"].endswith("(a link can be added in data/cb/manual/documents.yaml)") for c in ("JPY", "CHF", "GBP"))
+    assert latest("USD")["presser_video"]["available"] and latest("USD")["presser_video"]["url"].endswith("fomcpresconf20260916.htm")

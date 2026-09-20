@@ -301,8 +301,13 @@ def test_roster_lists_the_decision_makers_with_voter_status_and_the_chair():
     assert {y for p in usd for y in p["voter"]} == {"2026", "2027"}
     assert sum(1 for p in usd if p["voter"]["2026"]) == 12 and sum(1 for p in usd if p["voter"]["2027"]) == 12
     assert next(p for p in usd if p["chair"])["voter"] == {"2026": True, "2027": True}    # the Chair always votes
-    for ccy in ("EUR", "GBP", "JPY", "CAD", "AUD", "CHF"):
-        assert any(p["currency"] == ccy for p in people), ccy
+    by = {c: [p for p in people if p["currency"] == c] for c in ("EUR", "GBP", "JPY", "CAD", "AUD", "CHF")}
+    assert {c: len(v) for c, v in by.items() if c != "EUR"} == {"GBP": 9, "JPY": 9, "CAD": 6, "AUD": 9, "CHF": 3}          # the committee pages, complete
+    assert len(by["EUR"]) >= 26 and sum(1 for p in by["EUR"] if p["voter"]["2026"]) == 6                                    # 6 Executive Board members always vote; the NCB governors rotate
+    assert sum(1 for p in by["GBP"] if p["role"] == "External member (MPC)") == 4                                          # the external MPC members are in
+    for ccy, chair in {"EUR": "Christine Lagarde", "GBP": "Andrew Bailey", "JPY": "Kazuo Ueda", "CAD": "Tiff Macklem", "AUD": "Michele Bullock", "CHF": "Martin Schlegel"}.items():
+        assert [p["name"] for p in by[ccy] if p["chair"]] == [chair], ccy
+    assert all(p["name"] == p["name"].strip() and not p["name"].startswith(("None", "Dr ", "Sir ", "Professor ")) for p in people)
     assert set(roster["sources"]) == {"USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"} and all(s["url"].startswith("https://") for s in roster["sources"].values())
 
 

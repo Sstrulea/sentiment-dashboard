@@ -436,7 +436,11 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   pentru backfill și dedup — cheia e vorbitor + similaritate de titlu ≥ 0.6, **data BIS nu intră în cheie** (postarea BIS e la 13–19 zile după discurs).
   Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge. Greutatea: Chair > votanți > restul.
 - **Conferința de presă**: transcrieri oficiale doar ca URL + metadate (Fed PDF, ECB HTML cu Q&A unde hash-ul a fost publicat, RBA HTML; BoC și SNB au
-  declarația introductivă în text). Videoclipul: canalul oficial YouTube, potrivit pe data ședinței ±1 zi — vezi limitările.
+  declarația introductivă în text). **Videoclipul vine din paginile oficiale ale băncilor, nu din feed-urile YouTube**: pagina FOMC (player Brightcove),
+  pagina `/multimedia/` a BoC (legată din comunicat), pagina de transcript a RBA („Watch video: Media conference …”), pagina Monetary Policy Report a BoE
+  (doar la ședințele cu conferință MPR), pagina-index a conferințelor ECB (arată doar ultima conferință: se prinde în ziua în care e curentă). O pagină
+  fără video se reține în `state.json` (`presser_checked`) și se reia doar 3 zile după decizie. BoJ, SNB, RBNZ: „—” cu motivul pe fiecare (linkează doar
+  canalul YouTube; RBNZ e blocat). `data/cb/manual/documents.yaml` rămâne pentru ce nu se poate lua automat.
 - **Așteptări de publicare**: lagurile din 0B (`expect.py`) + 2 zile de grație; `python -m src.cb_collect --status` avertizează când un document a
   depășit termenul și nu e stocat. Aceleași termene alimentează „overdue” din payload-ul paginii băncii.
 - **cb-refresh**: etapa `documents` rulează după `decisions` (rata din comunicat intră în decizii; dacă s-a schimbat un rând, deciziile se recalculează
@@ -451,8 +455,9 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
 
 ### Limitări cunoscute (raportate, nu ascunse)
 
-- **YouTube.** `youtube.com/robots.txt` interzice `/feeds/videos.xml`; respectăm robots.txt, deci videoclipurile de conferință **nu se colectează**
-  automat: se scriu manual în `data/cb/manual/documents.yaml` (`type: presser_video`). Potrivirea ±1 zi există și e testată; se aplică peste ce conține fișierul.
+- **YouTube.** `youtube.com/robots.txt` interzice `/feeds/videos.xml`; respectăm robots.txt, deci feed-urile canalelor **nu se citesc** (o notă în raport,
+  nu un eșec la fiecare rulare). Videoclipurile vin din paginile oficiale ale băncilor (vezi mai sus); potrivirea ±1 zi pe feed rămâne în cod și se aplică
+  doar dacă YouTube ar permite feed-ul.
 - **RBNZ** rămâne BOTWALL (Cloudflare): fără comunicate automate; doar fișierul manual. Pagina lui afișează „n/a” cu motivul.
 - **Nedescoperibile**: conturile ECB (`ecb.mg*~hash`) — URL-ul cu hash nu se poate deriva, iar paginile-index ECB nu îl expun fără JavaScript; se
   salvează doar cele care apar în feed-ul `press.html` (`--status` le listează pe restul ca „overdue”). Transcrierile conferințelor ECB, la fel: doar pentru
@@ -460,6 +465,7 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
 - **URL-uri derivate din data deciziei** (verificate cu HEAD, fără feed): BoJ Summary of Opinions `mpmsche_minu/opinion_{YYYY}/opi{yymmdd}.pdf` (+14 z) și
   Minutes `minu_{YYYY}/g{yymmdd}.pdf` (~+50 z); Fed minutes `fomcminutes{YYYYMMDD}.htm` (+21 z); RBA minutes; SNB deliberations (+28 z); **BoE minutes = aceeași
   pagină ca rezumatul** (partea de după „Minutes of the Monetary Policy Committee meeting”, hașată; comunicatul se oprește la acel titlu).
-- **Roster**: Fed complet (din pagina FOMC, cu rotația 2026 / 2027); BoJ și RBA din paginile de comitet; BoE / BoC / ECB / SNB sunt best-effort (lipsesc, de
-  ex., membrii externi ai MPC). Ponderea Chair > votanți > restul e exactă pentru Fed și pentru președinții celorlalte bănci.
+- **Roster** (`config/cb_roster.yaml`, generat din paginile oficiale de comitet): Fed (rotația 2026 / 2027, Chair), ECB (cele 6 membri ai Executive Board votează
+  mereu; guvernatorii băncilor naționale au vot prin rotație, pagina orarului nu se citește: `voter: null`), BoE (9 membri, cu cei 4 externi), BoJ, BoC (6, cu
+  Deputy Governor extern), RBA (9), SNB (Governing Board, 3). Doar RBNZ lipsește (Cloudflare). Căutarea unui vorbitor se face doar printre membrii băncii lui.
 - **Interviul colectiv BoE** (pooled interview) nu se colectează.

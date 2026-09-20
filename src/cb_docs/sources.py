@@ -32,6 +32,22 @@ BANK_NAME = {"USD": "Federal Reserve", "EUR": "European Central Bank", "GBP": "B
              "AUD": "Reserve Bank of Australia", "NZD": "Reserve Bank of New Zealand", "CHF": "Swiss National Bank"}
 
 
+ECB_PRESS_LANDING = "https://www.ecb.europa.eu/press/press_conference/html/index.en.html"      # carries the video of the LAST press conference only
+
+
+def video_page(ccy: str, decision: date) -> Optional[str]:
+    """The bank's own page that carries (or links) the press-conference video, when its URL follows from the decision date. Not the YouTube feeds."""
+    if ccy == "USD":
+        return f"https://www.federalreserve.gov/monetarypolicy/fomcpresconf{decision:%Y%m%d}.htm"            # Brightcove player embedded in the page
+    if ccy == "CAD":
+        return statement_url("CAD", decision, {})                                                               # the press release links the /multimedia/ page
+    if ccy == "AUD":
+        return f"https://www.rba.gov.au/speeches/{decision.year}/mc-gov-{decision:%Y-%m-%d}.html"           # "Watch video: Media conference held on ..."
+    if ccy == "GBP":
+        return f"https://www.bankofengland.co.uk/monetary-policy-report/{decision.year}/{decision:%B}-{decision.year}".lower()   # only the MPR meetings have a conference
+    return None
+
+
 def statement_url(ccy: str, decision: date, feed_links: dict) -> Optional[str]:
     """URL of the decision-day statement. ECB: the hash cannot be derived - the seed of a past meeting or the link seen in the press feed."""
     if ccy == "EUR":

@@ -1,7 +1,8 @@
 # Documents that cannot be collected automatically, typed by hand from the bank's own page:
 #   * RBNZ: rbnz.govt.nz sits behind a Cloudflare challenge (the collector never tries to get past it);
 #   * press-conference videos: the YouTube channel feeds are disallowed by youtube.com/robots.txt (Disallow: /feeds/videos.xml), which the
-#     collector respects - a video link goes here (type: presser_video) with the meeting date.
+#     collector respects. It takes the video from the banks' OWN pages instead (Fed, BoC, RBA, BoE Monetary Policy Report, ECB landing page);
+#     for the rest (BoJ, SNB, RBNZ, BoE / RBA meetings without one) a link goes here (type: presser_video) with the meeting date.
 #
 #   - {currency: NZD, type: statement, title: "...", url: "...", published: 2026-09-02, meeting: 2026-09-02, text: "...", note: "..."}
 #   - {currency: USD, type: presser_video, title: "...", url: "https://www.youtube.com/watch?v=...", published: 2026-09-16, meeting: 2026-09-16}

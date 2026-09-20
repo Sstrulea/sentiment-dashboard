@@ -1,5 +1,5 @@
 meta:
-  generated: '2026-09-20'
+  generated: '2026-09-21'
   generator: scripts/cb_gen_roster.py
   note: 'names and titles from the banks'' official committee pages; `voter`: FOMC rotation 2026 / 2027; the other decision bodies vote as a whole
     (true), the ECB Governing Council rotates (null); RBNZ is behind a Cloudflare challenge (no entries)'
@@ -191,21 +191,53 @@ people:
   role: President
   body: Governing Council
   voter:
-    '2026': null
-    '2027': null
+    '2026': true
+    '2027': true
   chair: true
 - currency: EUR
   name: Boris Vujčić
   role: Vice-President
   body: Governing Council
   voter:
-    '2026': null
-    '2027': null
+    '2026': true
+    '2027': true
+  chair: false
+- currency: EUR
+  name: Piero Cipollone
+  role: Member of the Executive Board
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: EUR
+  name: Frank Elderson
+  role: Member of the Executive Board
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: EUR
+  name: Philip R. Lane
+  role: Member of the Executive Board
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: EUR
+  name: Isabel Schnabel
+  role: Member of the Executive Board
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
   chair: false
 - currency: EUR
   name: Pierre Wunsch
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -213,7 +245,7 @@ people:
 - currency: EUR
   name: Dimitar Radev
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -221,7 +253,15 @@ people:
 - currency: EUR
   name: Joachim Nagel
   role: President
-  body: Governing Council
+  body: Governing Council (NCB governor)
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Ülo Kaasik
+  role: Governor
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -229,7 +269,7 @@ people:
 - currency: EUR
   name: Gabriel Makhlouf
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -237,15 +277,15 @@ people:
 - currency: EUR
   name: Yannis Stournaras
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
   chair: false
 - currency: EUR
-  name: Luis Escrivá
+  name: José Luis Escrivá
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -253,7 +293,15 @@ people:
 - currency: EUR
   name: Emmanuel Moulin
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Ante Žigman
+  role: Governor
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -261,7 +309,7 @@ people:
 - currency: EUR
   name: Fabio Panetta
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -269,7 +317,7 @@ people:
 - currency: EUR
   name: Christodoulos Patsalides
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -277,7 +325,15 @@ people:
 - currency: EUR
   name: Mārtiņš Kazāks
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Gediminas Šimkus
+  role: Chairman of the Board
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -285,7 +341,7 @@ people:
 - currency: EUR
   name: Gaston Reinesch
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -293,7 +349,7 @@ people:
 - currency: EUR
   name: Alexander Demarco
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -301,7 +357,7 @@ people:
 - currency: EUR
   name: Olaf Sleijpen
   role: President
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -309,15 +365,15 @@ people:
 - currency: EUR
   name: Martin Kocher
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
   chair: false
 - currency: EUR
-  name: Santos Pereira
+  name: Álvaro Santos Pereira
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -325,7 +381,7 @@ people:
 - currency: EUR
   name: Primož Dolenc
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -333,7 +389,7 @@ people:
 - currency: EUR
   name: Peter Kažimír
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -341,7 +397,7 @@ people:
 - currency: EUR
   name: Olli Rehn
   role: Governor
-  body: Governing Council
+  body: Governing Council (NCB governor)
   voter:
     '2026': null
     '2027': null
@@ -349,7 +405,7 @@ people:
 - currency: GBP
   name: Andrew Bailey
   role: Governor
-  body: MPC
+  body: Monetary Policy Committee
   voter:
     '2026': true
     '2027': true
@@ -357,7 +413,23 @@ people:
 - currency: GBP
   name: Sarah Breeden
   role: Deputy Governor
-  body: MPC
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Swati Dhingra
+  role: External member (MPC)
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Megan Greene
+  role: External member (MPC)
+  body: Monetary Policy Committee
   voter:
     '2026': true
     '2027': true
@@ -365,7 +437,15 @@ people:
 - currency: GBP
   name: Clare Lombardelli
   role: Deputy Governor
-  body: MPC
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Catherine L Mann
+  role: External member (MPC)
+  body: Monetary Policy Committee
   voter:
     '2026': true
     '2027': true
@@ -373,7 +453,7 @@ people:
 - currency: GBP
   name: Huw Pill
   role: Chief Economist
-  body: MPC
+  body: Monetary Policy Committee
   voter:
     '2026': true
     '2027': true
@@ -381,7 +461,15 @@ people:
 - currency: GBP
   name: Dave Ramsden
   role: Deputy Governor
-  body: MPC
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Alan Taylor
+  role: External member (MPC)
+  body: Monetary Policy Committee
   voter:
     '2026': true
     '2027': true
@@ -468,7 +556,7 @@ people:
   chair: true
 - currency: CAD
   name: Carolyn Rogers
-  role: Deputy Governor
+  role: Senior Deputy Governor
   body: Governing Council
   voter:
     '2026': true
@@ -491,16 +579,16 @@ people:
     '2027': true
   chair: false
 - currency: CAD
-  name: Grahame Johnson
-  role: Executive Director
+  name: Nicolas Vincent
+  role: Deputy Governor
   body: Governing Council
   voter:
     '2026': true
     '2027': true
   chair: false
 - currency: CAD
-  name: Ron Morrow
-  role: Executive Director
+  name: Michelle Alexopoulos
+  role: External Deputy Governor
   body: Governing Council
   voter:
     '2026': true
@@ -595,8 +683,8 @@ people:
     '2027': true
   chair: false
 - currency: CHF
-  name: Janom Steiner
-  role: President
+  name: Petra Tschudin
+  role: Member
   body: Governing Board
   voter:
     '2026': true

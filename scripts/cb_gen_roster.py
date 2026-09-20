@@ -11,6 +11,7 @@ Polite HTTP (robots.txt, rate limit) through src/cb_docs/http.py.
 from __future__ import annotations
 
 import argparse
+import html as html_lib
 import re
 import sys
 from datetime import date
@@ -37,7 +38,7 @@ NAME = r"[A-Z][a-z]+(?: [A-Z]\.)?(?: (?:[A-Z][a-z]+|[A-Z][a-z]+-[A-Z][a-z]+))+"
 
 def text_of(html: str) -> str:
     t = re.sub(r"<script.*?</script>|<style.*?</style>", " ", html, flags=re.S)
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", t))
+    return re.sub(r"\s+", " ", html_lib.unescape(re.sub(r"<[^>]+>", " ", t)))
 
 
 BANKS12 = ("New York", "Chicago", "Richmond", "Atlanta", "San Francisco", "Boston", "Cleveland", "Philadelphia", "Dallas", "St. Louis", "Minneapolis", "Kansas City")
@@ -59,7 +60,7 @@ def fed(text: str) -> list:
     rot = re.search(r"2027 2028 2029 Members (?P<r>.*?) Alternate Members", text[text.find("Rotation on the FOMC"):])
     banks27 = []
     if rot:
-        first = re.split(r"&nbsp;| ", rot.group("r"))[0]
+        first = "New York" + (rot.group("r").split("New York")[1] if "New York" in rot.group("r") else rot.group("r"))          # each column of the table starts with New York: the first is 2027
         banks27 = [b for b in BANKS12 if b in first]
     out = []
     for name, rest in members + alternates:
@@ -125,6 +126,58 @@ def rba(text: str) -> list:
     return out
 
 
+UNAME = r"[A-Z][^\W\d_]+(?:-[A-Z][^\W\d_]+)?"                                                         # one name token: accents, hyphens (Marc-André)
+
+
+def ecb(html: str) -> list:
+    """The Governing Council page lists every member as <div class="title">Name</div> ... <p>Role</p>: the six Executive Board members always vote, the
+    national central bank governors rotate (the schedule is a separate page, not read here: voter null)."""
+    i = html.find("<h2>Members</h2>")
+    seg = html[i:html.find("</div>\n    </div>\n  </div>", i)] if i >= 0 else ""
+    out = []
+    for name, role in re.findall(r'<div class="title">([^<]+)</div>.*?<p>([^<]+)</p>', seg, flags=re.S):
+        name, role = html_lib.unescape(name).strip(), html_lib.unescape(role).strip()
+        board = role.endswith("of the ECB")
+        if not board and not re.match(r"(Governor|President|Chairman of the Board),", role):
+            continue                                                                                            # page furniture after the list
+        out.append({"name": name, "role": role.replace(" of the ECB", "") if board else role.split(",")[0].strip(), "body": "Governing Council" if board else "Governing Council (NCB governor)",
+                    "voter": {"2026": True if board else None, "2027": True if board else None}, "chair": role.startswith("President of the ECB")})
+    return out
+
+
+def boe(text: str) -> list:
+    """`Members of the Committee Andrew Bailey Governor, Bank of England Sarah Breeden Deputy Governor, ... Dr Swati Dhingra External member, ...`."""
+    i = text.find("Members of the Committee")
+    seg = text[i:text.find("Monetary Policy Committee documentation", i)] if i >= 0 else ""
+    out = []
+    for m in re.finditer(rf"(?:(?:Dr|Sir|Professor|Prof) )?(?P<n>{UNAME} (?:[A-Z] )?{UNAME}) (?P<r>Deputy Governor|Governor|External member|Chief Economist)\b", seg):
+        role = {"External member": "External member (MPC)"}.get(m.group("r"), m.group("r"))
+        out.append({"name": m.group("n"), "role": role, "body": "Monetary Policy Committee", "voter": {"2026": True, "2027": True}, "chair": m.group("r") == "Governor"})
+    return out
+
+
+def boc(text: str) -> list:
+    """`Governing Council The Governing Council is ... Tiff Macklem Governor Carolyn Rogers Senior Deputy Governor ... Michelle Alexopoulos External Deputy Governor Executive Council`."""
+    marker = "promoting a safe and efficient financial system."                                              # the last sentence before the list
+    i = text.find(marker)
+    seg = text[i + len(marker):text.find("Executive Council", i)] if i >= 0 else ""
+    out = []
+    for m in re.finditer(rf"(?P<n>(?!Senior|External|Deputy){UNAME} {UNAME}) (?P<r>Senior Deputy Governor|External Deputy Governor|Deputy Governor|Governor)\b", seg):
+        out.append({"name": m.group("n"), "role": m.group("r"), "body": "Governing Council", "voter": {"2026": True, "2027": True}, "chair": m.group("r") == "Governor"})
+    return out
+
+
+def snb(text: str) -> list:
+    """`Martin Schlegel, Chairman of the Governing Board, Zurich` (the alternate members do not decide: they are not listed)."""
+    out, seen = [], set()
+    for m in re.finditer(rf"(?P<n>{UNAME}(?: {UNAME})+), (?P<r>Chairman|Vice Chairman|Member) of the Governing Board", re.sub(r"\bNone\b", " ", text)):   # "None" = page furniture
+        if m.group("n") in seen:
+            continue
+        seen.add(m.group("n"))
+        out.append({"name": m.group("n"), "role": m.group("r"), "body": "Governing Board", "voter": {"2026": True, "2027": True}, "chair": m.group("r") == "Chairman"})
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", default=str(Path(__file__).resolve().parent.parent / "config" / "cb_roster.yaml"))
@@ -137,7 +190,8 @@ def main(argv=None) -> int:
         if r.error:
             continue
         text = text_of(r.text)
-        got = fed(text) if ccy == "USD" else boj(text) if ccy == "JPY" else rba(text) if ccy == "AUD" else generic(text, body, None if ccy == "EUR" else True)
+        got = (fed(text) if ccy == "USD" else boj(text) if ccy == "JPY" else rba(text) if ccy == "AUD" else ecb(r.text) if ccy == "EUR" else boe(text) if ccy == "GBP"
+               else boc(text) if ccy == "CAD" else snb(text) if ccy == "CHF" else generic(text, body, True))
         for p in got:
             people.append({"currency": ccy, **p})
     doc = {"meta": {"generated": date.today().isoformat(), "generator": "scripts/cb_gen_roster.py", "note": "names and titles from the banks' official committee pages; "

@@ -206,14 +206,13 @@ def test_minutes_deliberations_opening_statements_and_transcript_links(run1):
         m, st = docs[(f"GBP:minutes:{day}",)], docs[(f"GBP:statement:{day}",)]
         assert m["url"] == st["url"] and m["text"] is None and m["text_sha256"] and m["text_sha256"] != st["text_sha256"]   # the part from "Minutes of the ..." on, hashed
         assert "Minutes of the Monetary Policy Committee" not in st["text"]                                          # ... and cut out of the statement
-    assert not any(d["type"] == "presser_video" for d in docs.values())                                             # YouTube: disallowed by robots.txt
     assert not any("youtube.com/feeds" in u for u in s.urls())
 
 
 def test_failures_are_reported_not_invented(run1):
     _, rep, _ = run1
     failed = dict((w, why) for w, why in rep.failed)
-    assert any("YouTube" in w and why.startswith("robots") for w, why in rep.failed)
+    assert not any("YouTube" in w for w, _ in rep.failed)                                                          # a known limit is a note, not a failure repeated every run
     assert any("YouTube feeds: disallowed" in n for n in rep.notes) and any("RBNZ" in n for n in rep.notes)
 
 
@@ -371,3 +370,78 @@ def test_documents_stage_hands_the_statement_rates_to_the_decisions(run1, tmp_pa
     rates = ds.statement_rates(paths)
     assert len(rates) == 28 and rates[("USD", D(2026, 9, 16))] == {"after": 3.875, "lower": 3.75, "upper": 4.0, "doc_id": "USD:statement:2026-09-16"}
     assert rates[("JPY", D(2026, 9, 18))]["after"] == 1.25
+
+
+def test_a_surname_is_looked_up_only_among_the_members_of_the_speakers_own_bank():
+    run = C._Run.__new__(C._Run)
+    run.today = D(2026, 9, 20)
+    run.roster = {"people": [{"currency": "CHF", "name": "Antoine Martin", "role": "Vice Chairman", "chair": False, "voter": {"2026": True}},
+                             {"currency": "USD", "name": "Jane Martin", "role": "Governor", "chair": False, "voter": {"2026": False}}]}
+    assert run.role_of("Martin", "CHF") == ("Antoine Martin", "Vice Chairman", True, False)
+    assert run.role_of("Martin", "USD") == ("Jane Martin", "Governor", False, False)
+    assert run.role_of("Martin", "GBP") == ("Martin", "", False, False)                                             # unknown at this bank: not borrowed from another
+
+
+# --- press-conference video from the banks' own pages ------------------------------------------------------------------------------
+
+def videos(paths) -> dict:
+    return {(d["currency"], d["meeting_date"].isoformat()): d for d in ST.load_documents(paths).values() if d["type"] == "presser_video"}
+
+
+def test_press_conference_videos_come_from_the_banks_own_pages_never_the_youtube_feed(run1):
+    import json
+    paths, _, s = run1
+    v = videos(paths)
+    assert {c: sorted(d for (cc, d) in v if cc == c) for c in ("USD", "CAD", "AUD", "GBP", "EUR", "JPY", "CHF", "NZD")} == {
+        "USD": DAYS["USD"], "CAD": DAYS["CAD"], "AUD": DAYS["AUD"], "GBP": ["2026-04-30", "2026-07-30"],                # the MPR meetings only
+        "EUR": ["2026-09-10"], "JPY": [], "CHF": [], "NZD": []}                                                       # the ECB page shows the last conference only
+    fed = v[("USD", "2026-09-16")]
+    assert fed["url"] == "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm" and json.loads(fed["meta_json"])["player"] == "Brightcove"
+    assert v[("CAD", "2026-09-02")]["url"] == "https://www.bankofcanada.ca/multimedia/press-conference-policy-rate-announcement-september-2026/"
+    assert v[("AUD", "2026-08-11")]["url"] == "https://youtu.be/-VdeRdWUgDc" and json.loads(v[("AUD", "2026-08-11")]["meta_json"])["duration"] == "47:30"
+    assert v[("AUD", "2026-03-17")]["url"].startswith("https://www.youtube.com/watch?v=")                                # the RBA uses both forms
+    assert v[("GBP", "2026-07-30")]["url"] == "https://www.youtube.com/watch?v=G5m9FOeBD1Q"
+    assert v[("EUR", "2026-09-10")]["url"] == "https://www.youtube.com/watch?v=rCBHa4xjqvI"
+    assert all(d["format"] == "video" and d["text"] is None for d in v.values())
+    assert not any("youtube.com" in u for u in s.urls())                                                            # the video pages are the banks': YouTube itself is never requested
+
+
+def test_a_meeting_without_a_video_is_remembered_and_not_asked_again(run1, tmp_path):
+    from src import cb_collect as cc2
+    paths, _, _ = run1
+    st = cc2.load_state(paths)
+    assert st[C.VIDEO_KEY]["GBP:2026-06-18"] == "none" and st[C.VIDEO_KEY]["GBP:2026-09-17"] == "none" and st[C.VIDEO_KEY]["USD:2026-09-16"] == "video"
+    s2 = FakeSession()
+    C.run_documents(paths, TODAY, fetcher=fetcher(s2), roster=C.load_roster(), now=datetime(2026, 9, 21, 9, 0, tzinfo=timezone.utc))
+    asked = " ".join(s2.urls())
+    assert "monetary-policy-report/2026/june-2026" not in asked                                                     # decided 18 Jun: past the retry window
+    assert "monetary-policy-report/2026/september-2026" in asked                                                    # decided 17 Sep: still inside it (the video may come later)
+    assert not any("fomcpresconf" in u for u in s2.urls())                                                          # a stored video is never asked for again
+
+
+def test_a_video_is_taken_on_a_later_run_when_the_page_gets_it_inside_the_retry_window(tmp_path):
+    d = data_dir(tmp_path)
+    paths = cc.Paths(d)
+    bare = Resp(200, b"<html><body><p>no player yet</p></body></html>", {"Content-Type": "text/html"})
+    page = "https://www.federalreserve.gov/monetarypolicy/fomcpresconf20260916.htm"
+    two_days_after = D(2026, 9, 18)                                                                                 # the 16 Sep decision is inside the 3-day window
+    C.run_documents(paths, two_days_after, fetcher=fetcher(FakeSession(extra={page: bare})), roster=C.load_roster(), now=datetime(2026, 9, 18, 12, 0, tzinfo=timezone.utc))
+    assert ("USD", "2026-09-16") not in videos(paths)
+    C.run_documents(paths, two_days_after, fetcher=fetcher(FakeSession()), roster=C.load_roster(), now=datetime(2026, 9, 18, 14, 0, tzinfo=timezone.utc))
+    assert ("USD", "2026-09-16") in videos(paths)                                                                   # the player appeared: taken
+    C.run_documents(paths, D(2026, 9, 25), fetcher=fetcher(s3 := FakeSession(extra={page: bare})), roster=C.load_roster(), now=datetime(2026, 9, 25, 12, 0, tzinfo=timezone.utc))
+    assert ("USD", "2026-09-16") in videos(paths) and not any("fomcpresconf" in u for u in s3.urls())              # once stored, never asked again
+
+
+def test_the_ecb_landing_video_is_kept_only_for_a_meeting_we_track(tmp_path):
+    d = data_dir(tmp_path)
+    paths = cc.Paths(d)
+    import pathlib
+
+    from .cb_docs_helpers import manifest
+    m = manifest()
+    entry = m[C.S.ECB_PRESS_LANDING]
+    page = (pathlib.Path(__file__).parent / "fixtures" / "cb_docs" / entry["file"]).read_bytes().replace(b"ecb.is260910~", b"ecb.is260101~")   # an extraordinary date
+    extra = {C.S.ECB_PRESS_LANDING: Resp(200, page, {"Content-Type": "text/html"})}
+    C.run_documents(paths, TODAY, fetcher=fetcher(FakeSession(extra=extra)), roster=C.load_roster(), now=datetime(2026, 9, 20, 12, 0, tzinfo=timezone.utc))
+    assert not any(k[0] == "EUR" for k in videos(paths))

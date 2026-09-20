@@ -13,7 +13,7 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 
 from ..cb_calendar import compute_blackout
-from ..cb_docs.expect import EXPECTED_LAG, GRACE_DAYS, TYPE_LABEL
+from ..cb_docs.expect import EXPECTED_LAG, GRACE_DAYS, TYPE_LABEL, VIDEO_NA
 from .analysis import BankReport, PairRow, bank_report, pair_row
 from .engine import Context, Point, STRENGTH, YEAR_ENDS, YearEnd, step_reason, weakest
 
@@ -331,7 +331,7 @@ def follow_up(ctx: Context, ccy: str, meeting: date, docs_of: dict, asof: date) 
     if not docs_of.get("presser_video"):
         items.append({"type": "presser_video", "label": TYPE_LABEL["presser_video"], "url": None, "available": False, "published": None, "title": None, "format": None,
                       "sha256": None, "expected": None,
-                      "na": "not collected: the YouTube channel feed is disallowed by robots.txt - add the link in data/cb/manual/documents.yaml"})
+                      "na": VIDEO_NA.get(ccy, "not collected") + " (a link can be added in data/cb/manual/documents.yaml)"})
     return items
 
 

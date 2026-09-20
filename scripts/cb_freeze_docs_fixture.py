@@ -1,6 +1,6 @@
 """Freeze REAL official documents into tests/fixtures/cb_docs/ (cut to what the parsers read) with a manifest url -> file.
 
-    python scripts/cb_freeze_docs_fixture.py [--out tests/fixtures/cb_docs] [--append boj-followups]
+    python scripts/cb_freeze_docs_fixture.py [--out tests/fixtures/cb_docs] [--append boj-followups|video-pages]
 
 Fetched politely (src/cb_docs/http.py: robots.txt, rate limit). HTML pages are cut to their container (the extraction of the cut page is
 asserted to equal the extraction of the full page), feeds to their newest items, the BoE workbook to the last two years of votes. Run once
@@ -133,14 +133,63 @@ def append_boj_followups(out: Path, f: Fetcher) -> int:
     return 0
 
 
+def append_video_pages(out: Path, f: Fetcher) -> int:
+    """The pages that carry the press-conference video, cut to the element the parser reads (a page without the video keeps only its <title>)."""
+    manifest = json.loads((out / "manifest.json").read_text())
+
+    def keep(url: str, rel: str, html: str) -> None:
+        (out / rel).write_text(html)
+        manifest[url] = {"file": rel, "content_type": "text/html; charset=utf-8"}
+
+    def shell(inner: str, title: str = "") -> str:
+        return f"<!DOCTYPE html><html><head><meta charset=\"utf-8\">{title}</head><body>\n{inner}\n</body></html>"
+
+    for ccy in ("USD", "CAD", "AUD", "GBP"):
+        for iso in MEETINGS[ccy]:
+            d = date.fromisoformat(iso)
+            url = S.video_page(ccy, d)
+            r = f.get(url, conditional=False)
+            if not r.ok:
+                print(f"skip {ccy} {iso}: {r.error}")
+                continue
+            title = (re.search(r"<title>.*?</title>", r.text, flags=re.S) or [""])[0]
+            if ccy == "USD":
+                inner = "\n".join(re.findall(r"<[^>]*data-video-id=\"\d+\"[^>]*>", r.text)[:1])
+            elif ccy == "CAD":
+                inner = "\n".join(re.findall(r'<a [^>]*href="https://www\.bankofcanada\.ca/multimedia/press-conference[^"]+"[^>]*>.*?</a>', r.text, flags=re.S)[:1])
+            elif ccy == "AUD":
+                inner = "\n".join(re.findall(r'<a [^>]*class="[^"]*video-placeholder[^"]*"[^>]*>.*?</a>', r.text, flags=re.S)[:1])
+            else:
+                i = r.text.find('id="press-conference"')
+                inner = r.text[max(0, i - 120):i + 900] if i >= 0 else ""
+            if ccy == "CAD":                                        # same URL as the statement: the link is added to that fixture, not a second file
+                rel = f"statements/CAD_{iso}.html"
+                page = (out / rel).read_text()
+                page = re.sub(r"<a [^>]*multimedia/press-conference[^>]*>.*?</a>\n?", "", page, flags=re.S)
+                (out / rel).write_text(page.replace("</body>", inner + "\n</body>", 1))
+                manifest[url] = {"file": rel, "content_type": "text/html; charset=utf-8"}
+                continue
+            keep(url, f"lists/video_{ccy}_{iso}.html", shell(inner, title))
+    r = f.get(S.ECB_PRESS_LANDING, conditional=False)
+    if r.ok:
+        box = re.search(r'<div class="jumbo-box" id="youtube">.*?<div data-video="[^"]+"></div>', r.text, flags=re.S)
+        link = re.search(r'<a [^>]*ecb\.is\d{6}~[^>]*>', r.text)
+        keep(S.ECB_PRESS_LANDING, "lists/video_EUR_landing.html", shell((link.group(0) + "</a>\n" if link else "") + (box.group(0) if box else "")))
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=1, sort_keys=True) + "\n")
+    print(f"{len(manifest)} files in the manifest, {f.requests_made} requests")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", type=Path, default=ROOT / "tests" / "fixtures" / "cb_docs")
-    ap.add_argument("--append", choices=["boj-followups"], help="add these fixtures to an existing set instead of re-freezing everything")
+    ap.add_argument("--append", choices=["boj-followups", "video-pages"], help="add these fixtures to an existing set instead of re-freezing everything")
     a = ap.parse_args(argv)
     out = a.out
     if a.append == "boj-followups":
         return append_boj_followups(out, Fetcher(min_interval=1.2))
+    if a.append == "video-pages":
+        return append_video_pages(out, Fetcher(min_interval=1.2))
     for sub in ("statements", "minutes", "feeds", "lists", "misc"):
         (out / sub).mkdir(parents=True, exist_ok=True)
     f = Fetcher(min_interval=1.2)

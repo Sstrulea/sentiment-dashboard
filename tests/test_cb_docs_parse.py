@@ -270,3 +270,48 @@ def test_video_match_on_the_meeting_date_plus_minus_one_day():
     assert P.match_video(vids, date(2026, 9, 18))["title"] == "FOMC Press Conference (replay)"                            # +-1 day
     assert P.match_video(vids, date(2026, 9, 25)) is None and P.match_video([], date(2026, 9, 16)) is None
     assert P.match_video([v("Monetary Policy Decision - press conference", (11,))], date(2026, 9, 10)) is not None
+
+
+# --- press-conference video on the banks' own pages ---------------------------------------------------------------------------------
+
+def video_fixture(name: str) -> str:
+    import json
+    from pathlib import Path
+    root = Path(__file__).parent / "fixtures" / "cb_docs"
+    m = json.loads((root / "manifest.json").read_text())
+    url = next(u for u in m if u.endswith(name))
+    return (root / m[url]["file"]).read_text(), url
+
+
+def test_video_from_the_real_pages_of_each_bank():
+    fed = {d: P.video_from_page("USD", *video_fixture(f"fomcpresconf{d.replace('-', '')}.htm")) for d in DAYS["USD"]}
+    assert [fed[d]["id"] for d in DAYS["USD"]] == ["6394190841112", "6398687166112", "6402426667112", "6405157968112"]
+    assert all(v["player"] == "Brightcove" and v["url"].endswith(".htm") for v in fed.values())                      # the FOMC page is the link
+    boc = [P.video_from_page("CAD", video_fixture(f"fad-press-release-{d}/")[0])["url"] for d in DAYS["CAD"]]
+    assert boc == ["https://www.bankofcanada.ca/multimedia/press-conference-monetary-policy-report-april-2026/",
+                   "https://www.bankofcanada.ca/multimedia/press-conference-policy-rate-announcement-june-2026/",
+                   "https://www.bankofcanada.ca/multimedia/press-conference-monetary-policy-report-july-2026/",
+                   "https://www.bankofcanada.ca/multimedia/press-conference-policy-rate-announcement-september-2026/"]
+    aud = {d: P.video_from_page("AUD", video_fixture(f"mc-gov-{d}.html")[0]) for d in DAYS["AUD"]}
+    assert aud["2026-08-11"] == {"url": "https://youtu.be/-VdeRdWUgDc", "player": "YouTube", "id": "-VdeRdWUgDc", "duration": "47:30"}
+    assert aud["2026-03-17"]["id"] == "PvCmnI_oEvE" and aud["2026-03-17"]["url"].startswith("https://www.youtube.com/watch?v=")
+    assert P.video_from_page("GBP", video_fixture("july-2026")[0])["url"] == "https://www.youtube.com/watch?v=G5m9FOeBD1Q"
+    assert P.video_from_page("GBP", video_fixture("april-2026")[0])["id"] == "VXYrFSBxhHU"
+
+
+def test_video_from_page_is_none_when_the_page_has_no_player_and_for_banks_without_one():
+    bare = "<html><body><p>Statement text with no player</p></body></html>"
+    assert all(P.video_from_page(c, bare, "https://x") is None for c in ("USD", "CAD", "AUD", "GBP"))
+    assert P.video_from_page("JPY", "<a href=\"https://youtu.be/AAAAAAAAAAA\" class=\"video-placeholder\">x</a>") is None      # no such source for the BoJ / SNB / RBNZ
+    assert P.video_from_page("GBP", '<div class="video" data-video="G5m9FOeBD1Q"></div>') is None                     # a video outside the press-conference section is not the conference
+    far = '<div data-video="AAAAAAAAAAA"></div><span id="press-conference"></span>' + " " * 3000 + '<div data-video="BBBBBBBBBBB"></div>'
+    assert P.video_from_page("GBP", far) is None                                                                       # another video of the page, far from the section
+    near = '<div data-video="AAAAAAAAAAA"></div><span id="press-conference"></span><div class="video" data-video="BBBBBBBBBBB"></div>'
+    assert P.video_from_page("GBP", near)["id"] == "BBBBBBBBBBB"                                                        # the one that follows the heading
+
+
+def test_ecb_landing_page_gives_the_last_conference_and_its_video():
+    html, _ = video_fixture("index.en.html") if False else video_fixture("press_conference/html/index.en.html")
+    assert P.ecb_landing_video(html) == (date(2026, 9, 10), "rCBHa4xjqvI")
+    assert P.ecb_landing_video("<html><body>no conference</body></html>") is None
+    assert P.ecb_landing_video('<a href="/press/x/ecb.is260910~abc.en.html"></a>') is None                          # a statement link without a video

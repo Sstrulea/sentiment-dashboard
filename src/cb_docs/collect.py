@@ -27,7 +27,9 @@ STATE_KEY = "http_validators"
 VOTE_RANK = {"summary+xlsx": 5, "minutes": 4, "statement": 3, "summary": 2, "n/a": 1}
 SPEECH_DAYS = 75                     # speeches / testimony younger than this are (re)collected
 MAX_PAGES_PER_BANK = 12              # first-paragraph fetches for the relevance filter, per bank and run
-MANUAL_FILE = "documents.yaml"                  # documents that cannot be fetched (RBNZ is behind a Cloudflare challenge; YouTube feeds are disallowed by robots.txt)
+MANUAL_FILE = "documents.yaml"
+VIDEO_KEY = "presser_checked"                                           # state.json: "USD:2026-09-16" -> "video" | "none"
+VIDEO_RETRY_DAYS = 3                                                    # a page without the video is looked at again for this long after the decision                  # documents that cannot be fetched (RBNZ is behind a Cloudflare challenge; YouTube feeds are disallowed by robots.txt)
 
 
 @dataclass
@@ -51,8 +53,10 @@ def _ts(d: Optional[datetime]) -> Optional[datetime]:
 
 
 class _Run:
-    def __init__(self, paths, today: date, fetcher: Fetcher, now: datetime, n: int, banks: tuple, roster: Optional[dict]) -> None:
+    def __init__(self, paths, today: date, fetcher: Fetcher, now: datetime, n: int, banks: tuple, roster: Optional[dict], state: Optional[dict] = None) -> None:
         self.paths, self.today, self.f, self.now, self.n, self.banks = paths, today, fetcher, now, n, banks
+        self.state = state if state is not None else {}
+        self.youtube_blocked = False
         self.rep = DocsReport()
         self.docs = ST.load_documents(paths)
         self.cfg = ds.load_banks()
@@ -305,7 +309,10 @@ class _Run:
     # ---- press conference ---------------------------------------------------------------------------------------------------
     def presser(self, ccy: str) -> None:
         cid = self.cfg[ccy].get("youtube_channel_id")
-        vids = self.feed(S.YT_FEED.format(cid=cid), f"{ccy} YouTube feed") if cid else []
+        yt = S.YT_FEED.format(cid=cid) if cid else None
+        if yt and not self.f.allowed(yt):
+            self.youtube_blocked, yt = True, None                              # robots.txt disallows the feed: not a failure, a known limit (noted once)
+        vids = self.feed(yt, f"{ccy} YouTube feed") if yt else []
         for d in self.meet.get(ccy, []):
             v = P.match_video(vids, d)
             if v is not None:
@@ -336,6 +343,47 @@ class _Run:
                                        meeting_date=d, format=fmt, text_sha256=X.sha256(text), extraction_method=method, text=text))
                     self.f.remember(r)
 
+    def official_videos(self, ccy: str) -> None:
+        """The press-conference video from the bank's OWN pages (never the YouTube feeds): the FOMC page (Brightcove), the BoC /multimedia/ page, the RBA
+        transcript page, the BoE Monetary Policy Report page (MPR meetings only) - per meeting; the ECB landing page on the day the conference is current.
+        A meeting whose page carries no video is remembered (state.json) and retried only for VIDEO_RETRY_DAYS after the decision."""
+        checked = self.state.setdefault(VIDEO_KEY, {})
+        if ccy == "EUR":
+            self.ecb_video()
+            return
+        for d in self.meet.get(ccy, []):
+            url, doc_id, key = S.video_page(ccy, d), f"{ccy}:presser_video:{d.isoformat()}", f"{ccy}:{d.isoformat()}"
+            if url is None or (doc_id,) in self.docs or (checked.get(key) == "none" and (self.today - d).days > VIDEO_RETRY_DAYS):
+                continue
+            r = self.f.get(url, conditional=False)
+            if r.status == 404 and ccy == "GBP":
+                v = None                                                        # no Monetary Policy Report page: no press conference at this meeting
+            elif r.error:
+                self.fail(f"{ccy} press conference video {d}", f"{r.error} {url}")
+                continue
+            else:
+                v = P.video_from_page(ccy, r.text, url)
+            if v is None:
+                checked[key] = "none"
+                continue
+            self.add(self.base(ccy, "presser_video", doc_id, title=f"{S.BANK_NAME[ccy]} press conference video, {d:%d %B %Y}", url=v["url"], published_date=d,
+                               meeting_date=d, format="video", meta={"source": "official page", "page": url, "player": v["player"], "video_id": v["id"], "duration": v["duration"]}))
+            checked[key] = "video"
+
+    def ecb_video(self) -> None:
+        r = self.f.get(S.ECB_PRESS_LANDING)
+        if r.error:
+            self.fail("EUR press conference video", f"{r.error} {S.ECB_PRESS_LANDING}")
+            return
+        got = None if r.not_modified else P.ecb_landing_video(r.text)
+        if got is None or got[0] not in self.meet.get("EUR", []) or (f"EUR:presser_video:{got[0].isoformat()}",) in self.docs:
+            return
+        d, vid = got
+        self.add(self.base("EUR", "presser_video", f"EUR:presser_video:{d.isoformat()}", title=f"{S.BANK_NAME['EUR']} press conference video, {d:%d %B %Y}",
+                           url=f"https://www.youtube.com/watch?v={vid}", published_date=d, meeting_date=d, format="video",
+                           meta={"source": "official page", "page": S.ECB_PRESS_LANDING, "player": "YouTube", "video_id": vid, "duration": None}))
+        self.f.remember(r)
+
     # ---- speeches -----------------------------------------------------------------------------------------------------------
     def speaker_of(self, ccy: str, it: dict) -> str:
         t = it["title"]
@@ -353,10 +401,11 @@ class _Run:
             return it.get("author", "")
         return ""
 
-    def role_of(self, name: str) -> tuple:
+    def role_of(self, name: str, ccy: str) -> tuple:
+        """(full name, role, votes this year, is the chair) of the roster member of THIS bank with that surname - a surname alone is not unique across banks."""
         sur = P.surname(name)
         for p in self.roster.get("people", []):
-            if P.surname(p["name"]) == sur:
+            if p.get("currency") == ccy and P.surname(p["name"]) == sur:
                 voter = bool((p.get("voter") or {}).get(str(self.today.year)))
                 return p["name"], p.get("role", ""), voter, bool(p.get("chair"))
         return name, "", False, False
@@ -418,7 +467,7 @@ class _Run:
                 pages += 1
             rel = P.monetary_relevance(it["title"], desc)
             who = it.get("speaker") or prior
-            name, role, voter, chair = self.role_of(who) if who else ("", "", False, False)
+            name, role, voter, chair = self.role_of(who, ccy) if who else ("", "", False, False)
             self.add(self.base(ccy, typ, doc_id, title=it["title"], url=it["link"], published_date=it["pub"].date(), published_at=_ts(it["pub"]), speaker=name, role=role,
                                relevance=rel, format="pdf" if it["link"].lower().endswith(".pdf") else "html",
                                meta={"weight": P.speaker_weight(role, voter, chair), "voter": voter, "chair": chair, "first": desc[:300], "via": "bank"}))
@@ -436,7 +485,7 @@ class _Run:
                 continue
             if own.get(ccy) and it["pub"] >= min(o["pub"] for o in own[ccy] if o["pub"]):
                 continue                                                    # inside the window the bank's own feed covers: the bank is the source
-            name, role, voter, chair = self.role_of(speaker) if speaker else ("", "", False, False)
+            name, role, voter, chair = self.role_of(speaker, ccy) if speaker else ("", "", False, False)
             doc_id = f"{ccy}:speech:{hashlib.sha1(it['link'].encode()).hexdigest()[:12]}"
             self.add(self.base(ccy, "speech", doc_id, title=it["title"], url=it["link"], published_date=it["pub"].date(), speaker=name or speaker, role=role,
                                relevance=P.monetary_relevance(it["title"], it["desc"]), format="html",
@@ -485,7 +534,7 @@ def run_documents(paths, today: date, *, fetcher: Optional[Fetcher] = None, now:
     from ..cb_collect import load_state, save_state
     state = state if state is not None else load_state(paths)
     f = fetcher or Fetcher(validators=state.setdefault(STATE_KEY, {}))
-    run = _Run(paths, today, f, now or datetime.now(timezone.utc), n, banks, roster if roster is not None else load_roster())
+    run = _Run(paths, today, f, now or datetime.now(timezone.utc), n, banks, roster if roster is not None else load_roster(), state)
     links = run.discover()
     own: dict = {}
     for ccy in banks:
@@ -496,6 +545,7 @@ def run_documents(paths, today: date, *, fetcher: Optional[Fetcher] = None, now:
             run.minutes(ccy, d)
             run.discovered(ccy, d)
         run.presser(ccy)
+        run.official_videos(ccy)
         own[ccy] = run.speeches(ccy)
     if "NZD" in run.cfg:
         run.presser("NZD")                                                  # the YouTube feed only: RBNZ pages are behind Cloudflare
@@ -512,8 +562,9 @@ def run_documents(paths, today: date, *, fetcher: Optional[Fetcher] = None, now:
         state[STATE_KEY] = f.validators
     save_state(paths, state)
     rep.notes.append("RBNZ: behind a Cloudflare challenge - no automatic fetch; documents only from data/cb/manual/documents.yaml")
-    if any("YouTube" in w for w, _ in rep.failed):
-        rep.notes.append("YouTube feeds: disallowed by youtube.com/robots.txt (Disallow: /feeds/videos.xml) - press-conference videos only from data/cb/manual/documents.yaml")
+    if run.youtube_blocked:
+        rep.notes.append("YouTube feeds: disallowed by youtube.com/robots.txt (Disallow: /feeds/videos.xml) - not read; press-conference videos come from the banks' own pages "
+                         "(Fed, BoC, RBA, BoE MPR, ECB) or from data/cb/manual/documents.yaml")
     return rep
 
 
