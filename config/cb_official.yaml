@@ -1,0 +1,83 @@
+# Official rate series collected by src/cb_collect.py into data/cb/official_series/official_series_YYYY-MM.parquet
+# (same monthly store as the market quotes; key (series_id, date); partition = month of `date`).
+# Values are stored as published, in percent. `series_id` = "<provider>:<code>".
+#
+#   role   policy_lower / policy_upper / policy_level  the policy rate itself (Fed range, single-level banks)
+#          policy_mro                                   ECB main refinancing rate (FF's ECB row is the MRO)
+#          policy_bis                                   BIS WS_CBPOL: the bank's rate where no official machine-readable
+#                                                       series exists (BoJ target, RBNZ OCR); published with a 3-5 day lag
+#          overnight                                    the bank's overnight benchmark (SOFR, EUR STR, SONIA, TONA,
+#                                                       CORRA, AONIA-equivalent, SARON); call rate for JPY
+#   calendar_id   holiday calendar of the publisher (config/cb_calendars.yaml)
+#
+# The RBA F1 OIS columns (FIRMMOIS*) stopped in 2022-12 and are NOT collected. RBNZ publishes no accessible series
+# (Cloudflare challenge): the OCR comes from BIS, and the OCR track is manual (data/cb/manual/rbnz.yaml).
+
+meta:
+  version: 1
+  backfill_from: 2025-09-01        # covers the last 4 SNB decisions (2025-09-25 ... 2026-06-18)
+  lookback_days: 10                # normal run
+
+providers:
+  fred:
+    adapter: FredSeries
+    url: "https://fred.stlouisfed.org/graph/fredgraph.csv?id={key}&cosd={since}"
+    ua: non_browser                # a Chrome UA is tarpitted
+    license: "FRED (Federal Reserve Bank of St. Louis); series sourced from the Federal Reserve Board / NY Fed."
+  ecb:
+    adapter: EcbSeries
+    url: "https://data-api.ecb.europa.eu/service/data/{key}?format=csvdata&startPeriod={since}"
+    license: "ECB statistics, reuse with source acknowledgement."
+  boe:
+    adapter: BoeSeries
+    url: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom={since_dmy}&Dateto=now&SeriesCodes={key}&CSVF=TN&UsingCodes=Y"
+    license: "Bank of England Interactive Database, OGL v3.0."
+  boj:
+    adapter: BojSeries
+    url: "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db={db}&code={code}&startDate={since_ym}"
+    license: "Bank of Japan Time-Series Data Search - source acknowledgement."
+  boc:
+    adapter: BocSeries
+    url: "https://www.bankofcanada.ca/valet/observations/{key}/json?start_date={since}"
+    license: "Bank of Canada Terms of Use s.1: freely use, copy, distribute and transmit with attribution."
+  rba:
+    adapter: RbaSeries
+    url: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv"
+    ua: non_browser
+    conditional: true              # Last-Modified
+    license: "RBA statistical table F1."
+  bis:
+    adapter: BisSeries
+    url: "https://stats.bis.org/api/v2/data/dataflow/BIS/WS_CBPOL/1.0/D.{areas}?startPeriod={since}&format=csv"
+    license: "BIS statistics WS_CBPOL: source acknowledgement."
+  snb:
+    adapter: SnbSeries
+    url: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en?fromDate={since}"
+    license: "Swiss National Bank data portal: source acknowledgement."
+
+series:
+  fred:DFEDTARL: {currency: USD, role: policy_lower, provider: fred, key: DFEDTARL, unit: percent, calendar_id: US, name: "Federal funds target range - lower limit"}
+  fred:DFEDTARU: {currency: USD, role: policy_upper, provider: fred, key: DFEDTARU, unit: percent, calendar_id: US, name: "Federal funds target range - upper limit"}
+  fred:EFFR:     {currency: USD, role: overnight,    provider: fred, key: EFFR,     unit: percent, calendar_id: US, name: "Effective federal funds rate"}
+  fred:SOFR:     {currency: USD, role: overnight,    provider: fred, key: SOFR,     unit: percent, calendar_id: US, name: "Secured overnight financing rate"}
+
+  ecb:DFR:  {currency: EUR, role: policy_level, provider: ecb, key: "FM/D.U2.EUR.4F.KR.DFR.LEV",    unit: percent, calendar_id: EU, name: "Deposit facility rate"}
+  ecb:MRO:  {currency: EUR, role: policy_mro,   provider: ecb, key: "FM/D.U2.EUR.4F.KR.MRR_FR.LEV", unit: percent, calendar_id: EU, name: "Main refinancing operations rate (fixed rate)"}
+  ecb:ESTR: {currency: EUR, role: overnight,    provider: ecb, key: "EST/B.EU000A2X2A25.WT",        unit: percent, calendar_id: EU, name: "Euro short-term rate"}
+
+  boe:IUDBEDR: {currency: GBP, role: policy_level, provider: boe, key: IUDBEDR, unit: percent, calendar_id: UK, name: "Official Bank Rate"}
+  boe:IUDSOIA: {currency: GBP, role: overnight,    provider: boe, key: IUDSOIA, unit: percent, calendar_id: UK, name: "SONIA"}
+
+  boj:STRDCLUCON: {currency: JPY, role: overnight,   provider: boj, db: FM01, code: STRDCLUCON, unit: percent, calendar_id: JP, name: "Uncollateralized overnight call rate, average (TONA proxy)"}
+  bis:JP:         {currency: JPY, role: policy_bis,  provider: bis, key: JP, unit: percent, calendar_id: JP, name: "BoJ guideline for the overnight call rate (BIS WS_CBPOL)"}
+
+  boc:V39079:  {currency: CAD, role: policy_level, provider: boc, key: V39079,     unit: percent, calendar_id: CA, name: "Target for the overnight rate"}
+  boc:AVG.INTWO: {currency: CAD, role: overnight,  provider: boc, key: AVG.INTWO,  unit: percent, calendar_id: CA, name: "CORRA"}
+
+  rba:FIRMMCRTD: {currency: AUD, role: policy_level, provider: rba, key: FIRMMCRTD, unit: percent, calendar_id: AU, name: "Cash rate target (F1)"}
+  rba:FIRMMCRID: {currency: AUD, role: overnight,    provider: rba, key: FIRMMCRID, unit: percent, calendar_id: AU, name: "Interbank overnight cash rate (F1)"}
+
+  bis:NZ: {currency: NZD, role: policy_bis, provider: bis, key: NZ, unit: percent, calendar_id: NZ, name: "Official Cash Rate (BIS WS_CBPOL)"}
+
+  snb:LZ:    {currency: CHF, role: policy_level, provider: snb, key: LZ,    unit: percent, calendar_id: CH, name: "SNB policy rate (cube snbgwdzid, D0=LZ)"}
+  snb:SARON: {currency: CHF, role: overnight,    provider: snb, key: SARON, unit: percent, calendar_id: CH, name: "SARON (cube snbgwdzid)"}

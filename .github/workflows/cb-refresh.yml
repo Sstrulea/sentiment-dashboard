@@ -1,5 +1,6 @@
 name: cb-refresh
-# Central Banks market collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md).
+# Central Banks collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md): market quotes, official rate series,
+# rate decisions, Fed SEP projections and the weekly check of meetings.yaml against the official calendar pages.
 # GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
 # Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ (never public/ or other data/).
 on:
@@ -26,9 +27,10 @@ jobs:
           cache: 'pip'
       - run: pip install -r requirements.txt
 
-      # Writes the per-source report to $GITHUB_STEP_SUMMARY. Exit 0 on partial failure,
-      # non-zero only when EVERY source failed.
-      - name: Collect market quotes
+      # All stages (market, official, decisions, projections, calendar). Writes the per-source report to
+      # $GITHUB_STEP_SUMMARY. Exit 0 on partial failure, non-zero only when EVERY source failed; decisions,
+      # projections and the calendar check only warn.
+      - name: Collect
         run: python -m src.cb_collect
 
       - name: Freshness status

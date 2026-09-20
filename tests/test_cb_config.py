@@ -132,13 +132,15 @@ def test_adapter_instruments_and_units_match_the_config(sources):
 def test_meetings_cover_2026_2027_with_the_specified_fields(meetings):
     assert list(meetings) == BANKS
     counts = {b: len(m) for b, m in meetings.items()}
-    assert counts == {"USD": 16, "EUR": 16, "GBP": 16, "JPY": 16, "CAD": 16, "AUD": 16, "NZD": 8, "CHF": 8}
+    assert counts == {"USD": 16, "EUR": 16, "GBP": 16, "JPY": 16, "CAD": 16, "AUD": 16, "NZD": 8, "CHF": 10}   # CHF from 2025-09 (last 4 decisions)
     for b, rows in meetings.items():
         dates = [r["date"] for r in rows]
         assert dates == sorted(set(dates)), b
-        assert all(date(2026, 1, 1) <= d <= date(2027, 12, 31) for d in dates), b
+        lo = date(2025, 9, 1) if b == "CHF" else date(2026, 1, 1)
+        assert all(lo <= d <= date(2027, 12, 31) for d in dates), b
         for r in rows:
-            assert set(r) == {"date", "has_projections", "has_presser", "source", "verified"}, (b, r)
+            assert set(r) - {"first_day"} == {"date", "has_projections", "has_presser", "source", "verified"}, (b, r)
+            assert r.get("first_day") is None or (isinstance(r["first_day"], date) and r["first_day"] < r["date"]), (b, r)
             assert r["source"] in {"official", "ff", "manual"}
             assert isinstance(r["has_projections"], bool) and isinstance(r["has_presser"], bool)
             assert r["verified"] is False or isinstance(r["verified"], date)
@@ -153,7 +155,7 @@ def test_meeting_sources_and_verification_are_honest(meetings):
     for b, rows in meetings.items():
         for r in rows:
             if r["source"] == "official" and not (b == "GBP" and r["date"].year == 2027):
-                assert r["verified"] == date(2026, 9, 19), (b, r["date"])
+                assert r["verified"] == date(2026, 9, 20), (b, r["date"])
 
 
 def test_meetings_agree_with_the_bank_config(meetings, banks):
@@ -221,3 +223,29 @@ def test_workflow_paths_are_disjoint_from_econ_refresh(workflow):
                      if not ln.lstrip().startswith("#"))              # comments may say what it does NOT touch
     assert "data/cb" not in econ and "public/" not in mine
     assert workflow["concurrency"]["group"] != "econ-refresh"
+
+
+def test_multi_day_meetings_carry_first_day_and_one_day_meetings_do_not(meetings):
+    multi = {"USD", "EUR", "JPY", "AUD"}
+    for b, rows in meetings.items():
+        for r in rows:
+            if b in multi:
+                assert isinstance(r.get("first_day"), date) and 0 < (r["date"] - r["first_day"]).days <= 3, (b, r["date"])
+            else:
+                assert r.get("first_day") is None, (b, r["date"])
+    by = {r["date"]: r for r in meetings["USD"]}
+    assert by[date(2026, 9, 16)]["first_day"] == date(2026, 9, 15)            # Tue-Wed FOMC
+    assert {r["date"]: r["first_day"] for r in meetings["JPY"]}[date(2026, 9, 18)] == date(2026, 9, 17)
+    assert {r["date"]: r["first_day"] for r in meetings["AUD"]}[date(2026, 9, 29)] == date(2026, 9, 28)
+    ecb = {r["date"]: r for r in meetings["EUR"]}
+    assert ecb[date(2026, 9, 10)]["first_day"] == date(2026, 9, 9) and ecb[date(2026, 9, 10)]["source"] == "ff"     # derived, unverified
+
+
+def test_bank_config_carries_the_1b1_fields(banks):
+    for b, c in banks.items():
+        assert c["calendar_id"] and c["policy_rate"]["official"] and "blackout_rule" in c, b
+        assert (c["blackout_rule"] is None) == (c["blackout"] is None), b            # a rule exists exactly where the bank states one
+        assert c["policy_rate"]["ff_name"], b
+    assert banks["NZD"]["policy_rate"]["bis_offset_days"] == 1 and banks["JPY"]["policy_rate"]["bis_offset_days"] == 0
+    assert banks["JPY"]["blackout_rule"]["verified"] is False and banks["USD"]["blackout_rule"]["verified"] is True
+    assert banks["GBP"]["blackout_rule"]["precision"] == "approximate"

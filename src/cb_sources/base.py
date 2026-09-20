@@ -109,17 +109,43 @@ def _hhmm(s: str) -> dtime:
     return dtime(int(h), int(m))
 
 
-class MarketSource(BaseSource):
+class HttpSource(BaseSource):
+    """BaseSource + conditional GET; shared by the market and official-series adapters."""
+    ua: Optional[str] = None                       # None -> BaseSource's default browser UA
+
+    def __init__(self, now: Callable[[], datetime] | None = None) -> None:
+        super().__init__()
+        self._now = now or (lambda: datetime.now(timezone.utc))
+
+    def get_url(self, url: str, validators: dict | None = None, ua: Optional[str] = None):
+        """GET via BaseSource._get, conditional when validators are known.
+        Returns (response | None, not_modified, new_validators)."""
+        extra: dict = {}
+        if ua or self.ua:
+            extra["User-Agent"] = ua or self.ua
+        v = validators or {}
+        if v.get("etag"):
+            extra["If-None-Match"] = v["etag"]
+        if v.get("last_modified"):
+            extra["If-Modified-Since"] = v["last_modified"]
+        r = self._get(url, extra_headers=extra or None, retries=0 if (v.get("etag") or v.get("last_modified")) else 2)
+        if r is None:
+            if self.last_note == "HTTP 304":
+                self.last_status = self.last_note = ""
+                return None, True, dict(v)
+            return None, False, {}
+        return r, False, {"etag": r.headers.get("ETag"), "last_modified": r.headers.get("Last-Modified")}
+
+
+class MarketSource(HttpSource):
     """Base for market adapters. Subclasses set `id`/`currency` and implement `_fetch`."""
     id = ""
     currency = ""
-    ua: Optional[str] = None                       # None -> BaseSource's default browser UA
 
     def __init__(self, cfg: dict | None = None, now: Callable[[], datetime] | None = None) -> None:
-        super().__init__()
+        super().__init__(now)
         self.cfg = cfg if cfg is not None else load_sources()["sources"][self.id]
         self.name = self.id
-        self._now = now or (lambda: datetime.now(timezone.utc))
 
     # ---- RateSource-like surface -------------------------------------------------
     def supports(self, currency: str) -> bool:
@@ -170,25 +196,6 @@ class MarketSource(BaseSource):
             return None
         d = now.date() if t >= end else now.date() - timedelta(days=1)
         return roll_back_weekend(d)
-
-    def get_url(self, url: str, validators: dict | None = None, ua: Optional[str] = None):
-        """GET via BaseSource._get, conditional when validators are known.
-        Returns (response | None, not_modified, new_validators)."""
-        extra: dict = {}
-        if ua or self.ua:
-            extra["User-Agent"] = ua or self.ua
-        v = validators or {}
-        if v.get("etag"):
-            extra["If-None-Match"] = v["etag"]
-        if v.get("last_modified"):
-            extra["If-Modified-Since"] = v["last_modified"]
-        r = self._get(url, extra_headers=extra or None, retries=0 if (v.get("etag") or v.get("last_modified")) else 2)
-        if r is None:
-            if self.last_note == "HTTP 304":
-                self.last_status = self.last_note = ""
-                return None, True, dict(v)
-            return None, False, {}
-        return r, False, {"etag": r.headers.get("ETag"), "last_modified": r.headers.get("Last-Modified")}
 
     def quote(self, instrument: str, contract: str, field_: str, value: float, unit: str, asof: date, *,
               ref_start: date | None = None, ref_end: date | None = None, tenor_months: float | None = None,

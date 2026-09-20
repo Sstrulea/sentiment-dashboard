@@ -310,7 +310,7 @@ def test_main_writes_the_github_step_summary(env, tmp_path, monkeypatch, capsys)
     monkeypatch.setattr(cc, "load_sources", lambda: cfg_for("a"))
     summary = tmp_path / "summary.md"
     monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
-    assert cc.main(["--data-dir", str(paths.dir)]) == 0
+    assert cc.main(["--stage", "market", "--data-dir", str(paths.dir)]) == 0
     assert cc.main(["--status", "--data-dir", str(paths.dir)]) == 0
     s = summary.read_text()
     assert "### cb_collect " in s and "### cb_collect --status" in s and "| a |" in s

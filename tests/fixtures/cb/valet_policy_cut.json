@@ -1,0 +1,61 @@
+{
+    "terms": {
+        "url": "https://www.bankofcanada.ca/terms/"
+    },
+    "seriesDetail": {
+        "AVG.INTWO": {
+            "label": "Canadian Overnight Repo Rate Average (CORRA) (%)",
+            "description": "Canadian Overnight Repo Rate Average (CORRA) (%)",
+            "dimension": {
+                "key": "d",
+                "name": "Date"
+            }
+        },
+        "V39079": {
+            "label": "Target for the overnight rate (business daily)",
+            "description": "Also called the policy interest rate, the average rate that the Bank of Canada wants to see in the market for overnight money market financing. (V39079)",
+            "dimension": {
+                "key": "d",
+                "name": "Date"
+            }
+        }
+    },
+    "observations": [
+        {
+            "d": "2026-09-14",
+            "AVG.INTWO": {
+                "v": "2.2800"
+            },
+            "V39079": {
+                "v": "2.25"
+            }
+        },
+        {
+            "d": "2026-09-15",
+            "AVG.INTWO": {
+                "v": "2.2900"
+            },
+            "V39079": {
+                "v": "2.25"
+            }
+        },
+        {
+            "d": "2026-09-16",
+            "AVG.INTWO": {
+                "v": "2.2900"
+            },
+            "V39079": {
+                "v": "2.25"
+            }
+        },
+        {
+            "d": "2026-09-17",
+            "AVG.INTWO": {
+                "v": "2.2900"
+            },
+            "V39079": {
+                "v": "2.25"
+            }
+        }
+    ]
+}

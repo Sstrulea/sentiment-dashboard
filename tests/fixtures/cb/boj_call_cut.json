@@ -1,0 +1,43 @@
+{
+ "STATUS": 200,
+ "MESSAGEID": "M181000I",
+ "MESSAGE": "Successfully completed",
+ "DATE": "2026-09-20T20:34:58.008+09:00",
+ "PARAMETER": {
+  "FORMAT": "JSON",
+  "LANG": "EN",
+  "DB": "FM01",
+  "STARTDATE": "202609",
+  "ENDDATE": "",
+  "STARTPOSITION": ""
+ },
+ "NEXTPOSITION": null,
+ "RESULTSET": [
+  {
+   "SERIES_CODE": "STRDCLUCON",
+   "NAME_OF_TIME_SERIES": "Call Rate, Uncollateralized Overnight, Average (Daily)",
+   "UNIT": "percent per annum",
+   "FREQUENCY": "DAILY",
+   "CATEGORY": "Call Rate",
+   "LAST_UPDATE": 20260918,
+   "VALUES": {
+    "SURVEY_DATES": [
+     20260911,
+     20260912,
+     20260913,
+     20260914,
+     20260915,
+     20260916
+    ],
+    "VALUES": [
+     0.977,
+     null,
+     null,
+     0.977,
+     0.978,
+     0.977
+    ]
+   }
+  }
+ ]
+}

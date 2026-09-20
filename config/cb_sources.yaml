@@ -20,6 +20,8 @@
 #   benchmark      the instrument's own reference rate (the overnight-minus-policy spread of phase 1B
 #                  is specific to it); `proxy: true` = not an OIS/futures path, marked PROXY in the UI.
 #   license        attribution/terms note shown in the UI.
+#   calendar_id    holiday calendar of the source's publisher/exchange (config/cb_calendars.yaml): --status
+#                  excludes its holidays from the missing days and counts its business days for the lag.
 
 meta:
   version: 1
@@ -29,6 +31,7 @@ meta:
 sources:
   atlantafed_mpt:
     currency: USD
+    calendar_id: US
     adapter: AtlantaMpt
     instruments:
       sofr_3m_ref_quarter_mean: {unit: bp, fields: [mean], benchmark: SOFR}
@@ -45,6 +48,7 @@ sources:
 
   boe_ois:
     currency: GBP
+    calendar_id: UK
     adapter: BoeOis
     instruments:
       sonia_instantaneous_forward: {unit: percent, fields: [fwd], benchmark: SONIA}
@@ -63,6 +67,7 @@ sources:
 
   jpx_tona:
     currency: JPY
+    calendar_id: JP
     adapter: JpxTona
     instruments:
       tona_3m_futures: {unit: index_points, fields: [settle], benchmark: TONA}
@@ -79,6 +84,7 @@ sources:
 
   mx_corra:
     currency: CAD
+    calendar_id: CA
     adapter: MxCorra
     instruments:
       corra_3m_futures: {unit: index_points, fields: [settle], benchmark: CORRA}
@@ -98,6 +104,7 @@ sources:
 
   asx_ib:
     currency: AUD
+    calendar_id: AU
     adapter: AsxIb
     instruments:
       ib_30d_interbank_futures: {unit: index_points, fields: [settle], benchmark: "RBA interbank overnight cash rate (AONIA-equivalent)"}
@@ -114,6 +121,7 @@ sources:
 
   asx_bb:
     currency: NZD
+    calendar_id: AU  # ASX trading days (the underlying is NZ 90-day BKBM)
     adapter: AsxBb
     instruments:
       bb_90d_nz_bank_bill_futures: {unit: index_points, fields: [settle],
@@ -131,6 +139,7 @@ sources:
 
   ust_bills:
     currency: USD
+    calendar_id: US
     adapter: TreasuryBills
     instruments:
       ust_par_curve: {unit: percent, fields: [yield], benchmark: "SOFR (bills-OIS basis not removed)"}
@@ -147,6 +156,7 @@ sources:
 
   boc_tbills:
     currency: CAD
+    calendar_id: CA
     adapter: BocTbills
     instruments:
       gov_tbill_yield: {unit: percent, fields: [yield], benchmark: "CORRA (bills-OIS basis not removed)"}
@@ -163,6 +173,7 @@ sources:
 
   ecb_aaa_fwd:
     currency: EUR
+    calendar_id: EU
     adapter: EcbAaaForward
     instruments:
       aaa_govt_instantaneous_forward: {unit: percent, fields: [fwd], benchmark: "EUR STR (government curve, NOT OIS)"}
@@ -179,6 +190,7 @@ sources:
 
   rba_bank_bills:
     currency: AUD
+    calendar_id: AU
     adapter: RbaBankBills
     instruments:
       bank_bill_eod_yield: {unit: percent, fields: [yield], benchmark: "RBA interbank overnight cash rate (BBSW-linked, credit spread not removed)"}

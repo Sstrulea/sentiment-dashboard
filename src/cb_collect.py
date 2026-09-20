@@ -37,8 +37,11 @@ import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from . import cb_store as cs
 from .cb_sources import ADAPTERS, load_sources
+from .cb_calendar import Calendar, load_calendars, weekends_only
 from .cb_sources.base import Quote
+from .cb_sources.official import PROVIDERS, Obs, load_official
 
 log = logging.getLogger("cb_collect")
 
@@ -64,6 +67,10 @@ class Paths:
         self.quotes = self.dir / "market_quotes"
         self.state = self.dir / "state.json"
         self.raw = self.dir / "raw"
+        self.meetings = self.dir / "meetings.yaml"
+        self.decisions = self.dir / "decisions.parquet"
+        self.projections = self.dir / "projections.parquet"
+        self.manual = self.dir / "manual"
 
     def partition(self, month: str) -> Path:
         return self.quotes / f"market_quotes_{month}.parquet"
@@ -73,101 +80,49 @@ class Paths:
 # Store
 # ---------------------------------------------------------------------------
 
+OFFICIAL_SCHEMA = pa.schema([
+    ("series_id", pa.string()), ("currency", pa.string()), ("date", pa.date32()), ("value", pa.float64()),
+    ("unit", pa.string()), ("fetched_at", pa.timestamp("us", tz="UTC")),
+])
+OFFICIAL = cs.Dataset("official_series", "official_series", OFFICIAL_SCHEMA, ("series_id", "date"), "date",
+                      ("currency", "value", "unit"))
+MARKET = cs.Dataset("market_quotes", "market_quotes", SCHEMA, KEY, "asof", CONTENT)
+Merge = cs.Merge
+month_of = cs.month_of
+
+
 def _key(row: dict) -> tuple:
-    return tuple(row[k] for k in KEY)
-
-
-def month_of(d: date) -> str:
-    return f"{d.year}-{d.month:02d}"
-
-
-def _as_month(v: str | date | None) -> Optional[str]:
-    return month_of(v) if isinstance(v, date) else v
+    return MARKET.row_key(row)
 
 
 def list_partitions(paths: Paths) -> dict[str, Path]:
-    """{'2026-09': path, ...} for every partition on disk."""
-    out = {}
-    for f in sorted(paths.quotes.glob("market_quotes_????-??.parquet")):
-        out[f.stem.removeprefix("market_quotes_")] = f
-    return out
+    """{'2026-09': path, ...} for every market partition on disk."""
+    return cs.list_partitions(MARKET, paths.dir)
 
 
 def load_store(paths: Paths, start: str | date | None = None, end: str | date | None = None) -> dict[tuple, dict]:
     """Every partition, or only the months in [start, end] (inclusive, 'YYYY-MM' or a date)."""
-    lo, hi = _as_month(start), _as_month(end)
-    store: dict[tuple, dict] = {}
-    for month, f in list_partitions(paths).items():
-        if (lo and month < lo) or (hi and month > hi):
-            continue
-        for r in pq.read_table(f).to_pylist():
-            store[_key(r)] = r
-    return store
+    return cs.load(MARKET, paths.dir, start, end)
 
 
 def serialize_partition(rows: list[dict]) -> bytes:
-    """Same rows -> same bytes: rows sorted by key, fixed writer settings (pyarrow is pinned in requirements)."""
-    rows = sorted(rows, key=_key)
-    sink = pa.BufferOutputStream()
-    pq.write_table(pa.Table.from_pylist(rows, schema=SCHEMA), sink, compression="zstd", compression_level=3,
-                   use_dictionary=True, write_statistics=True, data_page_version="1.0", version="2.6",
-                   row_group_size=max(len(rows), 1))
-    return sink.getvalue().to_pybytes()
+    """Same rows -> same bytes: rows sorted by key, fixed writer settings (pyarrow is pinned in requirements.txt)."""
+    return cs.serialize(SCHEMA, KEY, rows)
 
 
 def write_store(paths: Paths, store: dict[tuple, dict], months: set[str] | None = None) -> list[str]:
     """Rewrite only the partitions in `months` (default: all) - and, of those, only when the bytes differ.
     Returns the months actually written."""
-    by_month: dict[str, list[dict]] = {}
-    for r in store.values():
-        by_month.setdefault(month_of(r["asof"]), []).append(r)
-    written = []
-    for month in sorted(months if months is not None else by_month):
-        rows = by_month.get(month)
-        if not rows:
-            continue
-        data = serialize_partition(rows)
-        f = paths.partition(month)
-        if f.exists() and f.read_bytes() == data:
-            continue
-        f.parent.mkdir(parents=True, exist_ok=True)
-        tmp = f.with_suffix(".parquet.tmp")
-        tmp.write_bytes(data)
-        os.replace(tmp, f)
-        written.append(month)
-    return written
+    return cs.write(MARKET, paths.dir, store, months)
 
 
 def quote_row(q: Quote) -> dict:
     return {c: getattr(q, c) for c in COLUMNS}
 
 
-@dataclass
-class Merge:
-    new: int = 0
-    updated: int = 0
-    unchanged: int = 0
-    months: set = field(default_factory=set)       # partitions with a new / changed row
-
-
 def merge_quotes(store: dict[tuple, dict], quotes: list[Quote]) -> Merge:
     """Last-write-wins on the key; identical content keeps the stored row (and its fetched_at)."""
-    st = Merge()
-    for q in quotes:
-        row = quote_row(q)
-        k = _key(row)
-        old = store.get(k)
-        if old is None:
-            store[k] = row
-            st.new += 1
-            st.months.add(month_of(row["asof"]))
-        elif all(old[c] == row[c] for c in CONTENT):
-            st.unchanged += 1
-        else:
-            store[k] = row
-            st.updated += 1
-            st.months.add(month_of(row["asof"]))
-    return st
+    return cs.merge(MARKET, store, (quote_row(q) for q in quotes))
 
 
 # ---------------------------------------------------------------------------
@@ -226,13 +181,14 @@ class SourceReport:
     lag_bd: Optional[int] = None
 
 
-def business_day_lag(asof: date, today: date) -> int:
-    """Business days between the as-of and the last business day <= today (0A convention: on a Saturday,
-    Friday's data = 0 and Thursday's = 1). Exchange holidays are not modelled."""
-    last = today
-    while last.weekday() >= 5:
-        last -= timedelta(days=1)
-    return int(np.busday_count(asof, last)) if asof < last else 0
+def business_day_lag(asof: date, today: date, cal: Optional[Calendar] = None) -> int:
+    """Business days between the as-of and the last business day <= today in the source's calendar (0A convention:
+    on a Saturday, Friday's data = 0 and Thursday's = 1). Without a calendar only weekends are skipped."""
+    return (cal or weekends_only()).lag(asof, today)
+
+
+def calendar_of(cals: dict, cal_id: Optional[str]) -> Calendar:
+    return cals.get(cal_id) or weekends_only()
 
 
 def drop_unchanged_inferred(store: dict[tuple, dict], sid: str, quotes: list[Quote]) -> tuple[list[Quote], dict]:
@@ -345,6 +301,65 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
     return reports
 
 
+def obs_row(o: Obs) -> dict:
+    return {c: getattr(o, c) for c in OFFICIAL_SCHEMA.names}
+
+
+def load_official_store(paths: Paths, start=None, end=None) -> dict:
+    return cs.load(OFFICIAL, paths.dir, start, end)
+
+
+def run_official(paths: Paths, *, only: list[str] | None = None, backfill_from: date | None = None,
+                 lookback_days: int | None = None, now: Callable[[], datetime] | None = None,
+                 cfg: dict | None = None) -> list[SourceReport]:
+    """Official rate series (config/cb_official.yaml) -> data/cb/official_series/. One report per provider."""
+    cfg = cfg or load_official()
+    clock = now or (lambda: datetime.now(timezone.utc))
+    today = clock().date()
+    since = backfill_from or (today - timedelta(days=lookback_days or cfg["meta"]["lookback_days"]))
+    names = only or list(cfg["providers"])
+    unknown = [n for n in names if n not in cfg["providers"]]
+    if unknown:
+        raise SystemExit(f"unknown provider(s): {unknown}; known: {list(cfg['providers'])}")
+    store = load_official_store(paths)
+    state = load_state(paths)
+    new_state = dict(state)
+    reports: list[SourceReport] = []
+    for prov in names:
+        rep = SourceReport(f"official:{prov}")
+        reports.append(rep)
+        series = {sid: sc for sid, sc in cfg["series"].items() if sc["provider"] == prov}
+        try:
+            src = PROVIDERS[prov](cfg["providers"][prov], series, now=clock)
+        except Exception as e:
+            rep.status, rep.note = "FAILED", f"init {type(e).__name__}: {e}"
+            log.error("%s: %s", rep.id, rep.note)
+            continue
+        res = src.fetch(since=since, state={} if backfill_from else state.get(rep.id, {}))
+        if res is None:
+            rep.status, rep.note = "FAILED", f"{src.last_status} {src.last_note}".strip()
+            log.warning("%s: %s", rep.id, rep.note)
+            continue
+        rep.status, rep.note = res.status, res.note
+        rep.merge = cs.merge(OFFICIAL, store, (obs_row(o) for o in res.obs))
+        if res.state and not res.failed:
+            new_state[rep.id] = res.state
+    cs.write(OFFICIAL, paths.dir, store, set().union(*(r.merge.months for r in reports)))
+    save_state(paths, new_state)
+    cals = load_calendars()
+    last: dict[str, date] = {}
+    for row in store.values():
+        prov = row["series_id"].split(":", 1)[0]
+        last[prov] = max(last.get(prov, row["date"]), row["date"])
+    for r in reports:
+        prov = r.id.split(":", 1)[1]
+        if prov in last:
+            r.asof_max = last[prov]
+            first = next(sc for sc in cfg["series"].values() if sc["provider"] == prov)
+            r.lag_bd = business_day_lag(last[prov], today, calendar_of(cals, first.get("calendar_id")))
+    return reports
+
+
 def exit_code(reports: list[SourceReport]) -> int:
     return 1 if reports and all(r.status == "FAILED" for r in reports) else 0
 
@@ -380,6 +395,7 @@ def status(paths: Paths, today: date, cfg: dict | None = None) -> tuple[str, str
     store = load_store(paths)
     state = load_state(paths)
     marks = state.get(NO_NEW, {})
+    cals = load_calendars()
     per: dict[str, list[dict]] = {}
     for row in store.values():
         per.setdefault(row["source"], []).append(row)
@@ -394,12 +410,12 @@ def status(paths: Paths, today: date, cfg: dict | None = None) -> tuple[str, str
         days = sorted({r["asof"] for r in rs})
         have = set(days)
         m = marks.get(sid, {})
-        missing = [d for d in (days[0] + timedelta(n) for n in range((days[-1] - days[0]).days + 1))
-                   if d.weekday() < 5 and d not in have]
+        cal = calendar_of(cals, c.get("calendar_id"))
+        missing = cal.missing_days(have, days[0], days[-1])            # weekdays that are not holidays and have no row
         pending = sorted(a for a in m if date.fromisoformat(a) > days[-1])
         note = f"fără valori noi (as-of {pending[-1]} = {m[pending[-1]]})" if pending else ""
         wrote = max(r["fetched_at"] for r in rs)
-        rows.append([sid, c.get("history"), len(rs), days[0], days[-1], business_day_lag(days[-1], today),
+        rows.append([sid, c.get("history"), len(rs), days[0], days[-1], cal.lag(days[-1], today),
                      wrote.strftime("%Y-%m-%d %H:%M"), len(missing), "yes" if state.get(sid) else "no", note])
         if missing:
             tag = lambda d: d.isoformat() + (" (fără valori noi)" if d.isoformat() in m else "")   # noqa: E731
@@ -407,15 +423,17 @@ def status(paths: Paths, today: date, cfg: dict | None = None) -> tuple[str, str
                         + (f" (+{len(missing) - 8} earlier)" if len(missing) > 8 else ""))
     foot = ("last write = newest fetched_at of a row that was new or changed (unchanged rows keep their original "
             "timestamp so idle runs leave no diff); lag bd = business days between the as-of and the last business "
-            "day <= today (Saturday: Friday's data = 0); missing wd = weekdays without a row between first and last "
-            "as-of (exchange holidays included - the calendar of each exchange is not modelled).")
+            "day <= today in the source's holiday calendar (Saturday: Friday's data = 0); missing wd = business days of that "
+            "calendar without a row between first and last as-of (its holidays are excluded).")
     text = f"cb_collect --status  {today}\n" + _fmt_text(heads, rows) + "\n\n" + foot
     if gaps:
         text += "\nmissing weekdays (latest 8): \n  " + "\n  ".join(gaps)
     md = f"### cb_collect --status {today}\n\n" + _md_table(heads, rows) + f"\n\n_{foot}_"
     if gaps:
         md += "\n\nMissing weekdays (latest 8):\n" + "\n".join(f"- {g}" for g in gaps)
-    return text, md
+    from . import cb_datasets as dsets                        # decisions / projections / manual / calendar sections
+    et, em = dsets.extra_status(paths, today)
+    return text + ("\n" + et if et else ""), md + ("\n" + em if em else "")
 
 
 def _summary(md: str) -> None:
@@ -425,12 +443,25 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
+STAGES = ("market", "official", "decisions", "projections", "calendar")
+
+
+def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
+    text, md = run_report(reports, today)
+    return text.replace("cb_collect", title, 1), md.replace("cb_collect", title, 1)
+
+
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Central Banks market-quote collector")
-    ap.add_argument("--source", action="append", help="source id (repeatable); default all")
-    ap.add_argument("--backfill", action="store_true", help="official-history sources from meta.backfill_from")
-    ap.add_argument("--backfill-from", type=date.fromisoformat, help="explicit backfill start (YYYY-MM-DD)")
+    ap = argparse.ArgumentParser(description="Central Banks collector: market quotes, official series, decisions, "
+                                             "projections, calendar check")
+    ap.add_argument("--stage", action="append", choices=STAGES, help="stage to run (repeatable); default all")
+    ap.add_argument("--source", action="append", help="market source id (repeatable); default all")
+    ap.add_argument("--provider", action="append", help="official-series provider (repeatable); default all")
+    ap.add_argument("--backfill", action="store_true",
+                    help="market: official-history sources from meta.backfill_from; official series from theirs")
+    ap.add_argument("--backfill-from", type=date.fromisoformat, help="explicit backfill start (YYYY-MM-DD), both datasets")
     ap.add_argument("--lookback-days", type=int, default=LOOKBACK_DAYS)
+    ap.add_argument("--force-calendar-check", action="store_true", help="run the weekly meetings check now")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
     a = ap.parse_args(argv)
@@ -444,14 +475,51 @@ def main(argv: list[str] | None = None) -> int:
         _summary(md)
         return 0
 
-    bf = a.backfill_from or (load_sources()["meta"]["backfill_from"] if a.backfill else None)
-    if isinstance(bf, str):
-        bf = date.fromisoformat(bf)
-    reports = run(paths, only=a.source, backfill_from=bf, lookback_days=a.lookback_days)
-    text, md = run_report(reports, today)
-    print(text)
-    _summary(md)
-    return exit_code(reports)
+    stages = a.stage or list(STAGES)
+    fetch_reports: list[SourceReport] = []
+    out_text, out_md = [], []
+
+    def emit(text: str, md: str) -> None:
+        out_text.append(text)
+        out_md.append(md)
+
+    if "market" in stages:
+        bf = a.backfill_from or (load_sources()["meta"]["backfill_from"] if a.backfill else None)
+        if isinstance(bf, str):
+            bf = date.fromisoformat(bf)
+        reps = run(paths, only=a.source, backfill_from=bf, lookback_days=a.lookback_days)
+        fetch_reports += reps
+        emit(*run_report(reps, today))
+    if "official" in stages:
+        bf = a.backfill_from or (load_official()["meta"]["backfill_from"] if a.backfill else None)
+        if isinstance(bf, str):
+            bf = date.fromisoformat(bf)
+        reps = run_official(paths, only=a.provider, backfill_from=bf)
+        fetch_reports += reps
+        emit(*_run_stage_report("cb_collect official series", reps, today))
+    # derived / manual datasets never fail the run: they warn (a stale source must not block the others)
+    from . import cb_datasets as dsets
+    if "decisions" in stages:
+        try:
+            emit(*dsets.decisions_report(dsets.run_decisions(paths, today), today))
+        except Exception as e:
+            log.exception("decisions stage failed")
+            emit(f"decisions: FAILED {type(e).__name__}: {e}", f"### decisions\n\nFAILED `{type(e).__name__}: {e}`")
+    if "projections" in stages:
+        try:
+            emit(*dsets.projections_report(dsets.run_projections(paths, today)))
+        except Exception as e:
+            log.exception("projections stage failed")
+            emit(f"projections: FAILED {type(e).__name__}: {e}", f"### projections\n\nFAILED `{type(e).__name__}: {e}`")
+    if "calendar" in stages:
+        try:
+            emit(*dsets.calendar_check_report(dsets.run_calendar_check(paths, today, force=a.force_calendar_check)))
+        except Exception as e:
+            log.exception("calendar check failed")
+            emit(f"calendar check: FAILED {type(e).__name__}: {e}", f"### calendar check\n\nFAILED `{type(e).__name__}: {e}`")
+    print("\n\n".join(out_text))
+    _summary("\n\n".join(out_md))
+    return exit_code(fetch_reports)
 
 
 if __name__ == "__main__":

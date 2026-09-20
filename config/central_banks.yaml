@@ -29,6 +29,7 @@ banks:
     name: Federal Reserve (FOMC)
     tz: America/New_York
     calendar_url: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
+    calendar_id: US                    # config/cb_calendars.yaml
     decision_time: {local: "14:00", variable: false,
                     evidence: "statement page Last-Modified +0.2-0.3 min after 14:00 ET (4/4)"}
     conference: {held: every_meeting, local: "14:30", verified: true,
@@ -39,8 +40,10 @@ banks:
       ff_row_maps_to: upper                  # FF 'Federal Funds Rate' = upper limit (confirmed 4.00 = DFEDTARU)
       series: {upper: {source: fred, id: DFEDTARU}, lower: {source: fred, id: DFEDTARL}}
       unit: percent
+      ff_name: "Federal Funds Rate"            # FF row name; matched on (currency, name)
+      official: {lower: "fred:DFEDTARL", upper: "fred:DFEDTARU"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SOFR, source: fred, id: SOFR,
-                          url: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR"}
+                          url: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR", series_id: "fred:SOFR"}
     effective_rule: {kind: calendar_days, days: 1, verified: true,
                      source: "https://www.federalreserve.gov/monetarypolicy/files/monetary20260916a1.pdf",
                      note: "16 Sep 2026 decision, implementation note 'effective September 17, 2026'; FRED DFEDTARU changes decision+1 (4/4 in 2025-26)"}
@@ -48,6 +51,7 @@ banks:
     blackout: {text: "00:00 ET on the second Saturday before the meeting -> 23:59 ET the day after it ends",
                url: "https://www.federalreserve.gov/monetarypolicy/files/FOMC_ExtCommunicationParticipants.pdf"}
     youtube_channel_id: UCAzhpt9DmG6PnHXjmJTvRGQ
+    blackout_rule: {kind: saturday_before_start, saturdays: 2, tz: America/New_York, start_time: "00:00", end_days_after: 1, end_time: "23:59", precision: exact, verified: true}
     can_be_zero: false
 
   EUR:
@@ -55,6 +59,7 @@ banks:
     name: European Central Bank (Governing Council)
     tz: Europe/Berlin
     calendar_url: https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html
+    calendar_id: EU                    # config/cb_calendars.yaml
     decision_time: {local: "14:15", variable: false, evidence: "press feed pubDate 14:15 CEST (10 Sep 2026)"}
     conference: {held: every_meeting, local: "14:45", verified: true,
                  source: "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"}
@@ -66,8 +71,10 @@ banks:
                    note: "spread was 0.50 until 2024-09-17, 0.15 since 2024-09-18 - never use a constant offset"}
       series: {level: {source: ecb, id: "FM/D.U2.EUR.4F.KR.DFR.LEV"}}
       unit: percent
+      ff_name: "Main Refinancing Rate"            # FF row name; matched on (currency, name)
+      official: {level: "ecb:DFR", mro: "ecb:MRO"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: "EUR short-term rate (EUR STR)", source: ecb, id: "EST/B.EU000A2X2A25.WT",
-                          url: "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT?format=csvdata"}
+                          url: "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT?format=csvdata", series_id: "ecb:ESTR"}
     effective_rule: {kind: calendar_days, days: 6, verified: true,
                      source: "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html",
                      note: "11 Jun decision 'with effect from 17 June'; DFR series changes decision+6 (6/6 in 2025-26)"}
@@ -75,6 +82,7 @@ banks:
     blackout: {text: "quiet period: 7 days before each monetary-policy meeting",
                url: "https://www.ecb.europa.eu/ecb-and-you/explainers/tell-me/html/what-is-the_quiet_period.en.html"}
     youtube_channel_id: UCXB8fM4VyQubRu3UVGhd3wA
+    blackout_rule: {kind: days_before_start, days: 7, tz: Europe/Berlin, start_time: "00:00", end_days_after: 0, end_time: "14:45", precision: exact, verified: true, note: "ends with the press conference"}
     can_be_zero: false
 
   GBP:
@@ -82,6 +90,7 @@ banks:
     name: Bank of England (MPC)
     tz: Europe/London
     calendar_url: https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates
+    calendar_id: UK                    # config/cb_calendars.yaml
     decision_time: {local: "12:00", variable: false, evidence: "BoE MPC dates page; no page timestamp to verify latency"}
     conference: {held: mpr_only, local: null, verified: true,
                  source: "BoE YouTube 'Monetary Policy Report Press Conference, 30 July'; other meetings = pooled broadcast interview"}
@@ -91,8 +100,10 @@ banks:
       ff_row_maps_to: value
       series: {level: {source: boe_iadb, id: IUDBEDR}}
       unit: percent
+      ff_name: "Official Bank Rate"            # FF row name; matched on (currency, name)
+      official: {level: "boe:IUDBEDR"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SONIA, source: boe_iadb, id: IUDSOIA,
-                          url: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes&SeriesCodes=IUDSOIA&CSVF=TN&UsingCodes=Y"}
+                          url: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes&SeriesCodes=IUDSOIA&CSVF=TN&UsingCodes=Y", series_id: "boe:IUDSOIA"}
     effective_rule: {kind: calendar_days, days: 0, verified: true,
                      source: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?SeriesCodes=IUDBEDR",
                      note: "IUDBEDR changes on the decision day (4/4 in 2025: 6 Feb, 8 May, 7 Aug, 18 Dec)"}
@@ -100,6 +111,7 @@ banks:
     blackout: {text: "MPC quiet period from start of deliberations (usually 8-9 days before) until the announcement",
                url: "https://www.bankofengland.co.uk/about/governance-and-funding/mpc-external-communications-code"}
     youtube_channel_id: UCY70MMJ8Rj4wtwt7bVN6hIA
+    blackout_rule: {kind: days_before_decision, days: 8, tz: Europe/London, start_time: "00:00", end_days_after: 0, end_time: "12:00", precision: approximate, verified: true, note: "the page says usually 8-9 days before; 8 used"}
     can_be_zero: false
 
   JPY:
@@ -107,6 +119,7 @@ banks:
     name: Bank of Japan (Policy Board)
     tz: Asia/Tokyo
     calendar_url: https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm
+    calendar_id: JP                    # config/cb_calendars.yaml
     decision_time: {local: null, variable: true, window_local: ["11:30", "13:30"],
                     evidence: "statement PDF Last-Modified 12:28-13:06 JST (28 Apr, 16 Jun, 31 Jul, 18 Sep); RSS 18 Sep 12:40 JST"}
     conference: {held: every_meeting, local: "15:30", verified: true,
@@ -119,8 +132,11 @@ banks:
       fallbacks: [{source: bis_wscbpol, area: JP, lag: "3-4 bd"}, {source: ff}]
       machine_readable_proxy: {source: boj_api, id: "IR01/MADR1Z@D", relation: "Basic Loan Rate = guideline + 0.25"}
       unit: percent
+      ff_name: "BOJ Policy Rate"            # FF row name; matched on (currency, name)
+      official: {bis: "bis:JP"}    # series ids in config/cb_official.yaml
+      bis_offset_days: 0           # BIS books the BoJ change on the effective date (17 Jun 2026 for the 16 Jun decision)
     overnight_benchmark: {name: "TONA (uncollateralized overnight call rate, average)", source: boj_api, id: "FM01/STRDCLUCON",
-                          url: "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=FM01&code=STRDCLUCON"}
+                          url: "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=FM01&code=STRDCLUCON", series_id: "boj:STRDCLUCON"}
     effective_rule: {kind: next_business_day, calendar: JP, verified: true,
                      source: "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
                      note: "18 Sep 2026 decision, statement footnote 1: effective 24 Sep 2026 (21-23 Sep are JP holidays); Basic Loan Rate changed decision+1 bd in Jan-25, Dec-25, Jun-26"}
@@ -128,6 +144,7 @@ banks:
     blackout: {text: "2 business days before day 1 of the MPM -> end of the last MPM day (wording from an older BoJ notice; verify current)",
                url: "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mpm0104a.htm", verified: false}
     youtube_channel_id: UC32Yu7NyStgmKYsXvYofPvQ
+    blackout_rule: {kind: business_days_before_start, days: 2, calendar: JP, tz: Asia/Tokyo, start_time: "00:00", end_days_after: 0, end_time: "23:59", precision: exact, verified: false, note: "wording from an older BoJ notice"}
     can_be_zero: false
 
   CAD:
@@ -135,6 +152,7 @@ banks:
     name: Bank of Canada (Governing Council)
     tz: America/Toronto
     calendar_url: https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/
+    calendar_id: CA                    # config/cb_calendars.yaml
     decision_time: {local: "09:45", variable: false, evidence: "BoC blackout page: decision at 9:45 ET, press conference 10:30 ET"}
     conference: {held: every_meeting, local: "10:30", verified: true,
                  source: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/blackout-guidelines/"}
@@ -144,8 +162,10 @@ banks:
       ff_row_maps_to: value
       series: {level: {source: boc_valet, id: V39079}}
       unit: percent
+      ff_name: "Overnight Rate"            # FF row name; matched on (currency, name)
+      official: {level: "boc:V39079"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: CORRA, source: boc_valet, id: AVG.INTWO,
-                          url: "https://www.bankofcanada.ca/valet/observations/AVG.INTWO/json"}
+                          url: "https://www.bankofcanada.ca/valet/observations/AVG.INTWO/json", series_id: "boc:AVG.INTWO"}
     effective_rule: {kind: calendar_days, days: 1, verified: true,
                      source: "https://www.bankofcanada.ca/valet/observations/V39079/json",
                      note: "V39079 changes decision+1 (4/4 in 2025: 30 Jan, 13 Mar, 18 Sep, 30 Oct)"}
@@ -153,6 +173,7 @@ banks:
     blackout: {text: "starts Tuesday 8 days before the decision in MPR months (Jan/Apr/Jul/Oct), else Wednesday 7 days before; ends 10:30 ET when the press conference starts",
                url: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/blackout-guidelines/"}
     youtube_channel_id: UCY4EvEbIox0M4JuEsu5OKnQ
+    blackout_rule: {kind: weekday_before_decision, tz: America/Toronto, start_time: "00:00", end_days_after: 0, end_time: "10:30", mpr_months: [1, 4, 7, 10], mpr: {weekday: 1, days_before: 8}, other: {weekday: 2, days_before: 7}, precision: exact, verified: true}
     can_be_zero: false
 
   AUD:
@@ -160,6 +181,7 @@ banks:
     name: Reserve Bank of Australia (Monetary Policy Board)
     tz: Australia/Sydney
     calendar_url: https://www.rba.gov.au/schedules-events/board-meeting-schedules.html
+    calendar_id: AU                    # config/cb_calendars.yaml
     decision_time: {local: "14:30", variable: false, evidence: "RBA decision announcements 2:30 pm AEST/AEDT (FF rows)"}
     conference: {held: every_meeting, local: "15:30", verified: true,
                  source: "https://www.rba.gov.au/monetary-policy/media-conferences/2026/"}
@@ -169,8 +191,10 @@ banks:
       ff_row_maps_to: value
       series: {level: {source: rba_f1, id: FIRMMCRTD}}
       unit: percent
+      ff_name: "Cash Rate"            # FF row name; matched on (currency, name)
+      official: {level: "rba:FIRMMCRTD"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: "Interbank overnight cash rate (AONIA-equivalent)", source: rba_f1, id: FIRMMCRID,
-                          url: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv"}
+                          url: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv", series_id: "rba:FIRMMCRID"}
     effective_rule: {kind: calendar_days, days: 1, verified: true,
                      source: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv",
                      note: "F1 cash rate target changes decision+1 (6/6: Feb/May/Aug 2025, Feb/Mar/May 2026)"}
@@ -178,6 +202,7 @@ banks:
     blackout: {text: "external MPB members: from 14:00 Sydney on the Wednesday before the meeting until the minutes; trading blackout to 17:00 on decision day",
                url: "https://www.rba.gov.au/about-rba/our-policies/monetary-policy-board-external-members-comms-and-public-engagement-policy.html"}
     youtube_channel_id: UCaLmgAMEglL-yGvuGzTx6ig
+    blackout_rule: {kind: weekday_before_start, weekday: 2, tz: Australia/Sydney, start_time: "14:00", end_days_after: 0, end_time: "17:00", precision: exact, verified: true, note: "external MPB members; trading blackout ends 17:00 on decision day, the minutes come later"}
     can_be_zero: false
 
   NZD:
@@ -185,6 +210,7 @@ banks:
     name: Reserve Bank of New Zealand (MPC)
     tz: Pacific/Auckland
     calendar_url: https://www.rbnz.govt.nz/news-and-events/how-we-release-information/monetary-policy-and-ocr-decision-dates-until-february-2027
+    calendar_id: NZ                    # config/cb_calendars.yaml
     decision_time: {local: "14:00", variable: false, evidence: "FF rows 02:00 UTC = 14:00 NZ; site bot-walled, not verified on RBNZ pages", verified: false}
     conference: {held: every_meeting, local: "15:00", verified: false,
                  source: "RBNZ 'all OCR announcements are followed by a media conference at 3pm' (via search; site bot-walled)"}
@@ -195,12 +221,16 @@ banks:
       series: null                            # RBNZ site is behind a Cloudflare challenge
       fallbacks: [{source: ff}, {source: bis_wscbpol, area: NZ, lag: "5 bd"}, {source: manual}]
       unit: percent
+      ff_name: "Official Cash Rate"            # FF row name; matched on (currency, name)
+      official: {bis: "bis:NZ"}    # series ids in config/cb_official.yaml
+      bis_offset_days: 1           # BIS books the OCR change the day after (3 Sep 2026 for the 2 Sep decision)
     overnight_benchmark: null                 # OCR is itself the overnight rate; BKBM-90d (instrument benchmark) not published by an accessible source
     effective_rule: {kind: calendar_days, days: 0, verified: false, source: null,
                      note: "assumed same day (OCR announced 14:00 NZ); BIS shows decision+1 by its own convention; RBNZ pages blocked"}
     projections: {name: Monetary Policy Statement (OCR track), months: [2, 5, 9, 12], source: manual_from_release_schedule}
     blackout: null
     youtube_channel_id: UC1v0CeB83SX6Px9r5KT0NuQ
+    blackout_rule: null
     manual: true
     can_be_zero: false
 
@@ -209,6 +239,7 @@ banks:
     name: Swiss National Bank (Governing Board)
     tz: Europe/Zurich
     calendar_url: https://www.snb.ch/en/services-events/digital-services/event-schedule
+    calendar_id: CH                    # config/cb_calendars.yaml
     decision_time: {local: "09:30", variable: false, evidence: "RSS mopo pubDate 07:30Z = 09:30 CEST (0.0 min)"}
     conference: {held: quarterly, local: "10:00", verified: true,
                  source: "https://www.snb.ch/en/services-events/digital-services/event-schedule"}
@@ -218,12 +249,15 @@ banks:
       ff_row_maps_to: none                    # FF has emitted no numeric SNB rate row since 2025-06-19
       series: {level: {source: snb_data_portal, id: "snbgwdzid/LZ"}}
       unit: percent
+      ff_name: "SNB Policy Rate"            # FF row name; matched on (currency, name)
+      official: {level: "snb:LZ"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SARON, source: snb_data_portal, id: "snbgwdzid/SARON",
-                          url: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en"}
+                          url: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en", series_id: "snb:SARON"}
     effective_rule: {kind: calendar_days, days: 1, verified: true,
                      source: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en",
                      note: "SNB policy rate series changes decision+1 (2/2 in 2025: 21 Mar, 20 Jun)"}
     projections: {name: Conditional inflation forecast, months: [3, 6, 9, 12], source: snb_practice_derived}
     blackout: null
     youtube_channel_id: UC4vQTVEqtj2orppzBkdGmyg
+    blackout_rule: null
     can_be_zero: true
