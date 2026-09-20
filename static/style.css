@@ -412,6 +412,43 @@ body.dark .theme-toggle .moon { display: none; }
   }
 }
 
+/* Narrow screens: brand + theme toggle on the first row, the eight links on a second row that scrolls sideways
+   (before this the single row was ~700 px wide and stretched the whole page on a 390 px phone). */
+@media (max-width: 640px) {
+  .nav-container {
+    flex-wrap: wrap;
+    min-height: 0;
+  }
+  .nav-brand {
+    order: 1;
+    flex: 1 1 auto;
+    padding: 10px 0;
+  }
+  .theme-toggle {
+    order: 2;
+    margin: 0;
+  }
+  .nav-links {
+    order: 3;
+    flex: 1 0 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-links li {
+    flex: 0 0 auto;
+  }
+  .nav-links li a {
+    padding: 10px 12px;
+    white-space: nowrap;
+  }
+}
+
 /* === P/C Ratio page (added in Stage 4) === */
 .pc-page {
   max-width: 1400px;
