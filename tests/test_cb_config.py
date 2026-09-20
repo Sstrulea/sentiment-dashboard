@@ -268,3 +268,18 @@ def test_bank_config_carries_the_1b1_fields(banks):
         assert r["verified"] is True and r["source"] and ":" in r["source"], b
     assert banks["JPY"]["blackout_rule"]["verified"] is False and banks["USD"]["blackout_rule"]["verified"] is True
     assert banks["GBP"]["blackout_rule"]["precision"] == "approximate"
+
+
+def test_econ_refresh_can_render_every_page_on_dispatch_only():
+    """The navbar (shared template) reaches every page through a workflow_dispatch input of econ-refresh; the schedule is untouched and no
+    workflow commits public/ from a local run."""
+    econ = yaml.safe_load((ROOT / ".github/workflows/econ-refresh.yml").read_text())
+    on = econ.get("on", econ.get(True))
+    assert on["workflow_dispatch"]["inputs"]["render_all"]["type"] == "boolean" and on["workflow_dispatch"]["inputs"]["render_all"]["default"] is False
+    assert [c["cron"] for c in on["schedule"]] == ["5 * * * 1-5", "5 */4 * * 0,6"]
+    steps = econ["jobs"]["refresh"]["steps"]
+    names = [s.get("name") for s in steps]
+    step = next(s for s in steps if s.get("name") == "Render all pages (navbar sync)")
+    assert step["if"] == "inputs.render_all" and step["run"] == "python -m src.main --mode render-all"
+    assert names.index("Render") < names.index("Render all pages (navbar sync)") < names.index("Commit + push")
+    assert "public/" in next(s for s in steps if s.get("name") == "Commit + push")["run"]

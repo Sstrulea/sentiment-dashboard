@@ -4,6 +4,11 @@ on:
     - cron: '5 * * * 1-5'
     - cron: '5 */4 * * 0,6'
   workflow_dispatch:
+    inputs:
+      render_all:
+        description: "After the refresh, re-render EVERY page from the data on disk (keeps shared assets such as the navbar in sync across all pages); no extra fetch"
+        type: boolean
+        default: false
 
 concurrency:
   group: econ-refresh
@@ -40,6 +45,12 @@ jobs:
 
       - name: Render
         run: python -m src.main --mode economic
+
+      # Dispatch-only: `python -m src.main --mode render-all` (COT, P/C, VIX, retail, economic, carry, strength, history) so a shared template
+      # change (the navbar) reaches every page without waiting for each pipeline's own schedule. Committed below with the rest of public/.
+      - name: Render all pages (navbar sync)
+        if: inputs.render_all
+        run: python -m src.main --mode render-all
 
       - name: Commit + push
         run: |
