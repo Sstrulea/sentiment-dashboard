@@ -278,8 +278,13 @@ efectivă; ECB AAA începe la 3M, iar prima ședință ECB e la ~1.6 luni, deci 
 end”: rata implicită (politică-echivalentă), bp cumulat față de rata curentă, pasul și probabilitatea la următoarea ședință, surpriza vs piață
 T−1, diferențialul de nivel al perechilor. Rămân: nivelurile brute ale curbei (`level`, `level_kind: sovereign_proxy`, „sovereign proxy, not
 policy-equivalent”, media curbei pe intervalul dintre datele efective, cu nota „shortest tenor extended flat” când intervalul începe înainte de
-primul tenor), repricing-ul și reacția (Δ de nivel al aceluiași instrument, nu au nevoie de bază). CURVE (politică-echivalent, cu spread) își
-păstrează propriul gard: n/a dacă intervalul începe cu mai mult de 1 lună înaintea primului tenor.
+primul tenor), repricing-ul și reacția (Δ de nivel al aceluiași instrument, nu au nevoie de bază).
+
+**Acoperire (regulă generală, 3a).** Orice nivel raportat (PROXY, CURVE, cross-check pe bills) trebuie să aibă intervalul INTEGRAL în interiorul
+tenorilor observați: `outside curve coverage (<3M)` când începe sub primul tenor, `(>36M)` când se termină peste ultimul; fără extrapolare plată la
+niciun capăt. Ex.: nivelul ECB pentru ședința din 29 oct (interval 4 nov → 23 dec, curba începe la 3M) e n/a; end-2026 / end-2027 rămân. Consecință: cu
+prima maturitate BoE la 1M, o ședință aflată la <1 lună (surpriza vs piață T−1, pasul repricing-ului când ședința dinaintea ei era foarte aproape)
+devine n/a pentru GBP.
 
 Reguli ale lanțului EXACT (toate cu test + mutație):
 - fereastra de coadă: `N − d_pre < 5` (ședință în ultimele 5 zile ale lunii) și luna următoare fără ședință → `r_post` = media lunii
@@ -372,6 +377,9 @@ public/data/cb/overview.json, <ccy>.json, pairs.json   încărcate la cerere de 
 - **Culori și forma**: albastru = hawkish (pozitiv pentru valută), roșu = dovish (aceeași paletă ca /economic, `ScorePalette`); semnul (+/−) e mereu scris.
   Stale = gri + tooltip; n/a = „—” cu motivul în tooltip (pe pagina perechii, și în text). Cifre tabulare; rată `%.2f` (3 zecimale doar când 2 ar
   deforma un midpoint, ex. 3.875), bp cu semn, Fed ca interval. Desktop-first; tabelele se derulează orizontal pe mobil.
+- **Etichetarea bazei.** Orice celulă cu valoare poartă badge-ul de metodă; un nivel care nu e policy-equivalent are și eticheta bazei („BKBM base” la
+  NZD, „sovereign proxy” la EUR) și tooltip cu motivul pentru care nu există bp (la NZD și motivul pentru care GAP e n/a). Overview-ul e compact: toate
+  coloanele, inclusiv LAST DECISION (dată · Δ bp · surpriza vs consens) și REACTION (Δ la următoarea ședință / la sfârșit de an), încap pe 1440 px.
 - **Overview**: rând = valută · bancă (click → pagina băncii): rata (o decizie neintrată în vigoare = „1.25 (from 24 Sep)”), următoarea ședință cu
   countdown (BoJ: „time TBD”, fereastra din config `decision_time.window_local`), pas + probabilitate (EXACT / CURVE) sau bp cumulat până la prima
   fereastră + „N mtgs” + UPPER BOUND, bp cumulat end-2026 / end-2027, GAP (doar Fed), repricing 1w (Δ nivel end-2026; 1m, end-2027 și pasul în tooltip),

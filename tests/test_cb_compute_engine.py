@@ -177,7 +177,7 @@ def test_stale_when_the_source_lags_more_than_the_threshold():
 
 # --- CURVE ------------------------------------------------------------------------------------------------------------
 
-def ctx_curve(fn, meetings, *, spread=0.02, asof=ASOF, tenors=range(1, 37), decisions=None, method="CURVE", **kw):
+def ctx_curve(fn, meetings, *, spread=0.02, asof=ASOF, tenors=range(0, 37), decisions=None, method="CURVE", **kw):
     quotes = curve_quotes("crv", "inst", asof, fn, tenors)
     return make_ctx(decisions=decisions or [BASE_DEC], meetings=[(D(2026, 9, 16), D(2026, 9, 17))] + meetings, quotes=quotes,
                     policy_path=BASE_PATH, spread=spread, sources=src("crv", method), **kw)
@@ -226,7 +226,7 @@ def test_curve_fractional_step_probabilities():
 def test_curve_beyond_the_horizon_is_na_with_a_reason():
     ctx = ctx_curve(lambda t: 2.02, [(D(2026, 11, 4), D(2026, 11, 5)), (D(2029, 6, 1), D(2029, 6, 2))], tenors=range(1, 13))
     p = E.trajectory(ctx, CUR, ASOF).points[1]
-    assert p.rate is None and "beyond the curve horizon" in p.reason
+    assert p.rate is None and p.level is None and p.reason.startswith("outside curve coverage (>12M)")
 
 
 # --- PROXY ------------------------------------------------------------------------------------------------------------
@@ -286,23 +286,41 @@ def test_proxy_basis_function_needs_an_observed_tenor():
     assert M.proxy_basis([(1, 2.2), (1.4, 2.4), (2, 9.0)], 0.0, 1.5, 2.0)[0] == pytest.approx(((1 * 2.2 + 0.4 * 2.3 + 0.1 * 2.4) / 1.5) - 2.0)
 
 
-def test_proxy_without_short_end_keeps_only_the_labelled_levels():
-    """ECB AAA case: the curve starts at 3M, the first meeting is ~1.6 months out. No basis: no bp, no step, no probability - only the
-    raw level, labelled a sovereign proxy."""
+def test_proxy_without_short_end_keeps_only_the_labelled_levels_that_the_curve_covers():
+    """ECB AAA case: the curve starts at 3M, the first meeting is ~1.2 months out. No basis: no bp, no step, no probability; the raw level
+    (a sovereign proxy) stays only where the WHOLE interval lies inside the tenors (the first meeting's interval starts below 3M: n/a)."""
     ctx = ctx_curve(lambda t: 2.30, [(D(2026, 11, 4), D(2026, 11, 5)), (D(2027, 1, 13), D(2027, 1, 14))], method="PROXY_CURVE",
                     has_spread=False, tenors=range(3, 37))
     tr = E.trajectory(ctx, CUR, ASOF)
     assert tr.extra["proxy_basis"] is None and any("PROXY basis n/a" in n for n in tr.notes)
-    for p in tr.points:
-        assert (p.rate, p.cum_bp, p.step_bp) == (None, None, None) and p.flag == "PROXY"
-        assert p.level == pytest.approx(2.30) and p.level_kind == "sovereign_proxy"
-        assert p.reason.startswith("proxy without short end") and E.step_reason(p) == p.reason
-    assert any("shortest tenor is extended flat" in n for n in tr.points[0].notes)
+    p1, p2 = tr.points
+    assert (p1.rate, p1.level, p1.cum_bp, p1.step_bp) == (None, None, None, None) and p1.reason.startswith("outside curve coverage (<3M)")
+    assert E.step_reason(p1).startswith("proxy without short end")                                 # the step needs the basis as well
+    assert (p2.rate, p2.cum_bp, p2.step_bp) == (None, None, None) and p2.flag == "PROXY"
+    assert p2.level == pytest.approx(2.30) and p2.level_kind == "sovereign_proxy" and p2.reason.startswith("proxy without short end")
     nm = E.next_meeting(tr)
     assert nm.step_bp is None and nm.probabilities is None and nm.step_reason.startswith("proxy without short end") and nm.prob_reason.startswith("proxy without short end")
     ye = E.year_end(ctx, tr, 2027)
     assert (ye.cum_bp, ye.rate) == (None, None) and ye.level == pytest.approx(2.30) and ye.level_kind == "sovereign_proxy" and ye.flag == "PROXY"
     assert ye.reason.startswith("proxy without short end")
+    ye0 = E.year_end(ctx, tr, 2026)
+    assert ye0.level is None and ye0.reason.startswith("outside curve coverage (<3M)")
+
+
+def test_a_reported_level_needs_the_whole_interval_inside_the_tenors_at_both_ends():
+    """The curve covers 2M..12M; the interval of a meeting must lie inside it: too early, too late, or in between."""
+    fn = lambda t: 2.30                                                                    # noqa: E731
+    early = (D(2026, 10, 14), D(2026, 10, 15))                                             # starts 0.5 months out
+    ok = (D(2026, 12, 9), D(2026, 12, 10))                                                 # 2.3 months out .. 6 weeks
+    late = (D(2027, 8, 25), D(2027, 8, 26))                                                # ends beyond 12M
+    ctx = ctx_curve(fn, [early, ok, late], method="PROXY_CURVE", has_spread=False, tenors=range(2, 13))
+    p_early, p_ok, p_late = E.trajectory(ctx, CUR, ASOF).points
+    assert p_early.level is None and p_early.reason.startswith("outside curve coverage (<2M)")
+    assert p_ok.level == pytest.approx(2.30)
+    assert p_late.level is None and p_late.reason.startswith("outside curve coverage (>12M)")
+    cur = ctx_curve(fn, [early, ok], spread=0.02, tenors=range(2, 13))                     # the same rule for a policy-equivalent CURVE
+    c_early, c_ok = E.trajectory(cur, CUR, ASOF).points
+    assert c_early.rate is None and c_early.reason.startswith("outside curve coverage (<2M)") and c_ok.rate == pytest.approx(2.28)
 
 
 def test_the_no_short_end_rule_is_general_a_policy_curve_is_not_affected():
@@ -324,7 +342,7 @@ def test_reaction_of_a_proxy_uses_the_level_change_and_the_surprise_vs_market_st
     cal = weekends_only()
     T = D(2026, 9, 16)
     t1 = cal.prev_business_day(T)
-    quotes = curve_quotes("crv", "inst", t1, lambda t: 2.15, range(3, 37)) + curve_quotes("crv", "inst", T, lambda t: 2.30, range(3, 37))
+    quotes = curve_quotes("crv", "inst", t1, lambda t: 2.15, range(1, 37)) + curve_quotes("crv", "inst", T, lambda t: 2.30, range(1, 37))
     ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 2.00, 2.00), dec(T, D(2026, 9, 17), 2.00, 2.25)],
                    meetings=[(T, D(2026, 9, 17)), (D(2026, 10, 28), D(2026, 10, 29)), (D(2026, 12, 9), D(2026, 12, 10))], quotes=quotes,
                    policy_path=[(D(2026, 1, 1), 2.00)], sources=src("crv", "PROXY_CURVE"), has_spread=False)
@@ -339,13 +357,13 @@ def test_repricing_of_a_proxy_is_the_level_change_and_has_no_cumulative():
     asof = D(2026, 9, 30)
     quotes = []
     for d, lvl in ((cal.add_business_days(asof, -21), 2.30), (cal.add_business_days(asof, -5), 2.30), (asof, 2.40)):
-        quotes += curve_quotes("crv", "inst", d, lambda t, lvl=lvl: lvl, range(3, 37))
+        quotes += curve_quotes("crv", "inst", d, lambda t, lvl=lvl: lvl, range(2, 37))
     ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 1.75, 2.00)], meetings=[(D(2026, 11, 4), D(2026, 11, 5)), (D(2026, 12, 16), D(2026, 12, 17)), (D(2027, 12, 15), D(2027, 12, 16))],
                    quotes=quotes, policy_path=[(D(2026, 1, 1), 2.00)], sources=src("crv", "PROXY_CURVE"), has_spread=False)
     for name in ("1s", "1l"):
         rp = A.bank_report(ctx, CUR, asof).repricing[name]
         assert rp.level == {2026: pytest.approx(10.0), 2027: pytest.approx(10.0)} and rp.level_flag[2026] == "PROXY"
-        assert rp.cum == {} and rp.step_bp is None and rp.reasons["step"].startswith("proxy without short end")
+        assert rp.cum == {} and rp.step_bp is None and rp.reasons["step"].startswith("proxy without short end")     # the first meeting starts below 2M
 
 
 def test_repricing_step_is_the_same_meeting_at_both_dates():
@@ -356,7 +374,7 @@ def test_repricing_step_is_the_same_meeting_at_both_dates():
     d5, d21 = cal.add_business_days(asof, -5), cal.add_business_days(asof, -21)
     quotes = []
     for d, lvl in ((d21, 2.02), (d5, 2.02), (asof, 2.30)):
-        quotes += curve_quotes("crv", "inst", d, lambda t, lvl=lvl: lvl, range(1, 37))
+        quotes += curve_quotes("crv", "inst", d, lambda t, lvl=lvl: lvl, range(0, 37))
     A_m, B_m, C_m = (D(2026, 9, 28), D(2026, 9, 29)), (D(2026, 11, 4), D(2026, 11, 5)), (D(2026, 12, 16), D(2026, 12, 17))
     ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 2.00, 2.00), dec(*A_m, 2.00, 2.25)], meetings=[A_m, B_m, C_m, (D(2027, 12, 15), D(2027, 12, 16))],
                    quotes=quotes, policy_path=[(D(2026, 1, 1), 2.00), (D(2026, 9, 29), 2.25)], spread=0.02, sources=src("crv", "CURVE"), official_start=D(2026, 6, 1))
@@ -545,7 +563,7 @@ def test_surprise_vs_market_t_minus_1_and_the_reaction_of_the_next_and_year_end_
     T = D(2026, 9, 16)
     t1 = cal.prev_business_day(T)
     decided = dec(T, D(2026, 9, 17), 2.00, 2.25, consensus=5.0)
-    quotes = curve_quotes("crv", "inst", t1, lambda t: 2.15, range(1, 37)) + curve_quotes("crv", "inst", T, lambda t: 2.30, range(1, 37))
+    quotes = curve_quotes("crv", "inst", t1, lambda t: 2.15, range(0, 37)) + curve_quotes("crv", "inst", T, lambda t: 2.30, range(0, 37))
     ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 2.00, 2.00), decided],
                    meetings=[(T, D(2026, 9, 17)), (D(2026, 10, 28), D(2026, 10, 29)), (D(2026, 12, 9), D(2026, 12, 10))], quotes=quotes,
                    policy_path=[(D(2026, 1, 1), 2.00), (D(2026, 9, 17), 2.25)], spread=0.0, sources=src("crv", "CURVE"),

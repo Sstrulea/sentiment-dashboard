@@ -1857,3 +1857,16 @@ table.cb-table th { white-space: normal; }
 /* /economic -> Central Banks cross-link on the RATE EXP (2Y) cell */
 a.cb-xlink { color: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
 a.cb-xlink:hover { text-decoration: underline; }
+/* overview: compact layout so every column (incl. LAST DECISION and REACTION) fits a 1440px screen; badges under the value */
+table.cb-compact { font-size: 12.5px; }
+table.cb-compact th, table.cb-compact td { padding: 6px 7px; }
+table.cb-compact td .cb-flag { display: table; margin: 2px auto 0; }
+table.cb-compact td.cb-bank { min-width: 0; max-width: none; white-space: nowrap; position: sticky; left: 0; z-index: 1; background: var(--surface); }
+table.cb-compact tbody tr:nth-child(even) td.cb-bank { background: var(--row-alt); }
+table.cb-compact tbody tr.cb-row:hover td.cb-bank { background: var(--surface-alt); }
+table.cb-compact .cb-prob { white-space: normal; max-width: 150px; margin-left: auto; margin-right: auto; }
+table.cb-compact td.cb-lastdec { line-height: 1.25; }
+.cb-lvl { color: var(--warn-mid-fg); font-weight: 600; }
+td.cb-lvlcell { font-weight: 600; }
+td.cb-lvlcell .cb-lvl { color: var(--fg); }
+td.cb-num .cb-sep { color: inherit; opacity: 0.7; }

@@ -20,7 +20,6 @@ from .spread import Spread, compute_spread
 
 FLAG_OF = {"EXACT": "EXACT", "CURVE": "CURVE", "WINDOW": "UPPER_BOUND", "PROXY_CURVE": "PROXY", "PROXY_TENOR": "PROXY"}
 STRENGTH = {"EXACT": 0, "CURVE": 1, "UPPER_BOUND": 2, "PROXY": 3, "DECIDED": -1}      # higher = weaker
-EXTRAPOLATION_MONTHS = 1.0             # a policy-equivalent CURVE is not extrapolated flat further than this below its first tenor
 LEVEL_KINDS = ("policy", "bkbm", "sovereign_proxy")
 YEAR_ENDS = (2026, 2027)
 GAP_YEARS = (2026, 2027, 2028)
@@ -361,16 +360,17 @@ def _curve_points(ctx, tr, unknown, sid, snap, rows, covered, proxy: bool) -> di
     label = "basis" if proxy else "spread"
     out, prev = {}, (None if proxy and basis is None else tr.base.rate)
     for u, e0, e1 in zip(unknown, effs, ends):
-        t0m = t(e0)
+        t0m, t1m = t(e0), t(e1)
         why = ""
-        if not proxy and t0m < curve.t[0] - EXTRAPOLATION_MONTHS:
-            why = (f"interval starts {t0m:.1f} months out, more than {EXTRAPOLATION_MONTHS:g} month before the curve's first tenor "
-                   f"({curve.t[0]:g}M): the curve carries no information about it")
-        elif t0m > curve.horizon + 1e-9:
-            why = f"beyond the curve horizon ({curve.horizon:g} months)"
+        # a reported level needs its WHOLE interval inside the tenors observed: no flat extrapolation at either end
+        if t0m < curve.t[0] - 1e-9:
+            why = f"outside curve coverage (<{curve.t[0]:g}M): the interval starts {t0m:.1f} months out, before the curve's first tenor"
+        elif t1m > curve.horizon + 1e-9:
+            why = f"outside curve coverage (>{curve.horizon:g}M): the interval ends {t1m:.1f} months out, beyond the curve's last tenor"
         if why:
             if u.decision not in covered:
-                out[u.decision] = _pt(sid, snap, u, method=method, reason=why)
+                out[u.decision] = _pt(sid, snap, u, method=method, reason=why,
+                                      extra={"step_reason": basis_reason} if proxy and basis is None else {})       # the step needs the basis too
             prev = None
             continue
         level = curve.average(t(e0), t(e1))
@@ -378,8 +378,6 @@ def _curve_points(ctx, tr, unknown, sid, snap, rows, covered, proxy: bool) -> di
         if proxy:
             rate = None if basis is None else level - basis
             kind = "sovereign_proxy"
-            if t0m < curve.t[0] - 1e-9:
-                notes.append(f"interval starts {t0m:.1f} months out, before the curve's first tenor ({curve.t[0]:g}M): the shortest tenor is extended flat")
         else:
             rate, level, kind = level - offset, level - offset, "policy"
         if u.decision not in covered:
@@ -472,7 +470,7 @@ def next_meeting(tr: Trajectory) -> NextMeeting:
     if p.step_bp is not None and p.method in ("EXACT", "CURVE"):
         nm.probabilities = step_probabilities(p.step_bp)
     else:
-        nm.prob_reason = (p.reason or step_reason(p)) if p.step_bp is None else f"only EXACT / CURVE give a per-meeting probability (this is {p.method})"
+        nm.prob_reason = step_reason(p) if p.step_bp is None else f"only EXACT / CURVE give a per-meeting probability (this is {p.method})"
     return nm
 
 

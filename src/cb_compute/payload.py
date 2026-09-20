@@ -30,8 +30,9 @@ FLAG_HELP = {
     "PROXY": "Government-curve proxy - not policy-equivalent. Shown as a raw sovereign level unless a basis can be measured from a short tenor.",
     "DECIDED": "The meeting has already been decided: it is part of the base rate.",
 }
-LEVEL_HELP = {"policy": "implied policy rate", "bkbm": "BKBM level (ASX 90-day bank bills), not the OCR",
-              "sovereign_proxy": "sovereign proxy, not policy-equivalent"}
+LEVEL_HELP = {"policy": "implied policy rate", "bkbm": "BKBM base: level of the ASX 90-day bank bill, not the OCR - no BKBM-OCR spread exists, so no bp vs the OCR",
+              "sovereign_proxy": "sovereign proxy: raw government-curve level, not policy-equivalent"}
+LEVEL_LABEL = {"policy": "policy-equivalent", "bkbm": "BKBM base", "sovereign_proxy": "sovereign proxy"}
 
 METHODOLOGY = [
     {"title": "Base rate", "text": "The last rate DECIDED on or before the as-of date, including a decision that has been announced but is not in force yet "
@@ -161,7 +162,11 @@ def horizon_json(ctx: Context, rep: BankReport) -> dict:
         return {**base, "kind": "window", "cum_bp": num(p.cum_bp, 2), "window": [iso(p.window[0]), iso(p.window[1])], "upper_bound": True,
                 "interior": e.get("interior"), "pre_days": e.get("pre_days"),
                 "n_meetings": n_meetings_to(ctx, rep.currency, rep.asof, p.window[1]), "na": None}
-    return {**base, "kind": "na", "na": (p.reason or step_reason(p) or "n/a")}
+    na = p.reason or step_reason(p) or "n/a"
+    sr = step_reason(p)
+    if sr and sr != na:                                                    # e.g. the level is outside the curve AND the step needs a basis
+        na += " | step and probability: " + sr
+    return {**base, "kind": "na", "na": na}
 
 
 # ---------------------------------------------------------------------------
@@ -394,7 +399,7 @@ def bank_page(ctx: Context, rep: BankReport, asof: date) -> dict:
 
 def meta(ctx: Context, asof: date) -> dict:
     return {"asof": iso(asof), "stale_after_bd": ctx.stale_after_bd, "flags": {k: {"label": FLAG_LABEL[k], "help": v} for k, v in FLAG_HELP.items()},
-            "level_help": LEVEL_HELP, "methodology": METHODOLOGY}
+            "level_help": LEVEL_HELP, "level_label": LEVEL_LABEL, "methodology": METHODOLOGY}
 
 
 def pair_json(pr: PairRow, display: str) -> dict:

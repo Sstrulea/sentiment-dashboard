@@ -75,14 +75,14 @@ class Curve:
 
 
 class TenorCurve:
-    """Yield by tenor (months): linear between tenors, flat below the shortest one, None beyond the longest."""
+    """Yield by tenor (months): linear between the observed tenors, None outside them (no extrapolation at either end)."""
 
     def __init__(self, pts: list) -> None:
         self.pts = sorted((float(t), float(v)) for t, v in pts)
         self._c = Curve(self.pts)
 
     def value(self, t: float) -> Optional[float]:
-        return None if t > self.pts[-1][0] + 1e-9 else self._c.value(t)
+        return None if t > self.pts[-1][0] + 1e-9 or t < self.pts[0][0] - 1e-9 else self._c.value(t)
 
     @property
     def max_tenor(self) -> float:

@@ -152,15 +152,16 @@ def test_next_meeting_step_and_probabilities(reports):
 
 
 def test_proxy_without_short_end_keeps_only_the_levels(reports):
-    """EUR: no bp, no step, no probability, no surprise vs the market - only the raw levels, labelled, and the delta metrics."""
+    """EUR: no bp, no step, no probability, no surprise vs the market; levels only where the curve (from 3M) covers the whole interval."""
     eur = reports["EUR"]
     why = "proxy without short end"
     assert eur.next.step_bp is None and eur.next.probabilities is None and eur.next.step_reason.startswith(why) and eur.next.prob_reason.startswith(why)
-    assert all(p.rate is None and p.cum_bp is None and p.step_bp is None and p.level is not None and p.level_kind == "sovereign_proxy"
-               for p in eur.trajectory.points)
+    first, rest = eur.trajectory.points[0], eur.trajectory.points[1:]
+    assert first.level is None and first.reason.startswith("outside curve coverage (<3M)")            # 4 Nov - 23 Dec starts below the first tenor
+    assert all(p.rate is None and p.cum_bp is None and p.step_bp is None and p.level is not None and p.level_kind == "sovereign_proxy" for p in rest)
     assert all(s.vs_market_bp is None and s.vs_market_reason.startswith(why) for s in eur.surprises if s.decided)
-    assert all(s.reaction_next_bp is not None for s in eur.surprises if s.decided)                      # the reaction needs no basis
-    assert eur.trajectory.points[1].step_bp is None and eur.trajectory.points[2].step_bp is None
+    assert all(s.reaction_year_bp is not None for s in eur.surprises if s.decided)                    # the year-end level is covered at both dates
+    assert all(s.reaction_next_bp is None and s.reaction_reason["next"].startswith("outside curve coverage") for s in eur.surprises if s.decided)
 
 
 def test_year_end_cumulative_bp(reports):
@@ -235,8 +236,9 @@ def test_repricing_main_value_is_the_change_of_the_level(reports):
     eur = reports["EUR"].repricing                                # raw sovereign levels: no basis needed for a difference
     assert eur["1s"].level[2026] == pytest.approx(-0.7, abs=0.1) and eur["1l"].level[2027] == pytest.approx(42.3, abs=0.1)
     assert eur["1s"].level_flag[2026] == "PROXY" and not eur["1s"].cum and eur["1s"].reasons["step"].startswith("proxy without short end")
-    gbp = reports["GBP"].repricing                                # the SAME next meeting (5 Nov) at both dates, although on 11 Sep the next one was 17 Sep
-    assert gbp["1s"].step_meeting == D(2026, 11, 5) and gbp["1s"].step_bp == pytest.approx(2.0, abs=0.1) and gbp["1l"].step_bp == pytest.approx(9.8, abs=0.1)
+    gbp = reports["GBP"].repricing                                # the SAME next meeting (5 Nov) at both dates: on 11 Sep the meeting before it (17 Sep,
+    assert gbp["1s"].step_bp is None and gbp["1l"].step_bp is None    # 0.2 months out) lies below the curve's first tenor (1M), so its level - and the step - are n/a
+    assert "not identified on 2026-09-11" in gbp["1s"].reasons["step"] and "previous meeting is not identified" in gbp["1s"].reasons["step"]
     assert gbp["1l"].level[2026] == pytest.approx(14.2, abs=0.1) and gbp["1l"].cum[2026] == pytest.approx(14.2, abs=0.1)
 
 
@@ -244,7 +246,7 @@ def test_surprises_and_reaction(reports):
     gbp = [s for s in reports["GBP"].surprises if s.decided]
     assert [s.meeting for s in gbp] == [D(2026, 4, 30), D(2026, 6, 18), D(2026, 7, 30), D(2026, 9, 17)]
     last = gbp[-1]
-    assert last.delta_bp == 0 and last.vs_market_flag == "CURVE" and last.vs_market_bp == pytest.approx(-5.0, abs=0.1)
+    assert last.delta_bp == 0 and last.vs_market_bp is None and last.vs_market_reason.startswith("outside curve coverage (<1M)")     # T-1: the meeting is 0 months out
     assert last.reaction_next_target == D(2026, 11, 5) and last.reaction_year_target == D(2026, 12, 17)
     usd = [s for s in reports["USD"].surprises if s.decided]
     assert all(s.vs_market_bp is None and "only EXACT / CURVE / PROXY" in s.vs_market_reason for s in usd)
@@ -252,8 +254,8 @@ def test_surprises_and_reaction(reports):
     assert all("no market history before 2026-09-18" in s.vs_market_reason for s in reports["JPY"].surprises if s.decided)
     eur = [s for s in reports["EUR"].surprises if s.decided]
     assert all(s.vs_market_bp is None and s.vs_market_reason.startswith("proxy without short end") for s in eur)
-    assert eur[-1].reaction_next_bp == pytest.approx(9.7, abs=0.1) and eur[-1].reaction_year_bp == pytest.approx(11.1, abs=0.1)
-    assert eur[-1].reaction_next_flag == "PROXY" and eur[-1].reaction_next_target == D(2026, 10, 29)
+    assert eur[-1].reaction_next_bp is None and eur[-1].reaction_year_bp == pytest.approx(11.1, abs=0.1)
+    assert eur[-1].reaction_year_flag == "PROXY" and eur[-1].reaction_year_target == D(2026, 12, 17)
     assert [s.meeting for s in reports["AUD"].surprises if not s.decided] == [D(2026, 9, 29), D(2026, 11, 3)]
 
 

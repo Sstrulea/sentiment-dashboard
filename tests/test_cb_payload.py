@@ -96,18 +96,21 @@ def test_step_banks_carry_the_probabilities(built):
     assert aud["step_bp"] == pytest.approx(21.5, abs=0.05) and aud["flag"] == "EXACT" and {p["moves"]: p["p"] for p in aud["probabilities"]} == pytest.approx({0: 0.14, 1: 0.86}, abs=0.001)
     assert cad["step_bp"] == pytest.approx(14.0, abs=0.05) and cad["flag"] == "EXACT" and {p["moves"]: p["p"] for p in cad["probabilities"]} == pytest.approx({0: 0.44, 1: 0.56}, abs=0.001)
     assert (rs["CAD"]["end"]["2026"]["flag"], rs["CAD"]["end"]["2027"]["flag"]) == ("EXACT", "UPPER_BOUND")
-    assert rs["GBP"]["repricing"]["1w"]["step"]["v"] == pytest.approx(2.0, abs=0.05) and rs["GBP"]["repricing"]["1w"]["step"]["meeting"] == "2026-11-05"
+    step = rs["GBP"]["repricing"]["1w"]["step"]
+    assert step["v"] is None and "previous meeting is not identified" in step["na"]            # the meeting before 5 Nov was 0.2 months out on 11 Sep (< 1M tenor)
 
 
-def test_eur_proxy_shows_levels_and_the_reason_not_bp(built):
+def test_eur_proxy_shows_levels_only_where_the_curve_covers_the_interval(built):
     r = rows(built)["EUR"]
-    assert r["horizon"]["kind"] == "na" and r["horizon"]["na"].startswith("proxy without short end") and r["horizon"]["level_kind"] == "sovereign_proxy"
-    assert r["horizon"]["level"] == 2.762 and r["horizon"]["flag"] == "PROXY"
-    for y, lvl in (("2026", 2.872), ("2027", 3.339)):
+    h = r["horizon"]
+    assert h["kind"] == "na" and h["na"].startswith("outside curve coverage (<3M)") and "step and probability: proxy without short end" in h["na"]
+    assert h["level"] is None and h["flag"] == "PROXY"                                                # the next meeting's interval starts below the first tenor
+    for y, lvl in (("2026", 2.872), ("2027", 3.339)):                                                 # end-2026 / end-2027 are fully covered
         e = r["end"][y]
         assert e["v"] is None and e["na"].startswith("proxy without short end") and e["level"] == lvl and e["level_kind"] == "sovereign_proxy" and e["flag"] == "PROXY"
     assert r["repricing"]["1w"]["years"]["2026"]["v"] == pytest.approx(-0.7, abs=0.05) and r["repricing"]["1w"]["years"]["2026"]["flag"] == "PROXY"         # deltas need no basis
-    assert r["reaction"]["next"]["v"] == pytest.approx(9.7, abs=0.05) and r["reaction"]["next"]["flag"] == "PROXY"
+    assert r["reaction"]["next"]["v"] is None and r["reaction"]["next"]["na"].startswith("outside curve coverage")
+    assert r["reaction"]["year"]["v"] == pytest.approx(11.1, abs=0.05) and r["reaction"]["year"]["flag"] == "PROXY"
 
 
 def test_jpy_pending_decision_and_variable_time(built):
@@ -172,7 +175,9 @@ def test_chart_series(built):
     gbp = built["banks"]["GBP"]["chart"]
     assert gbp["bank"]["kind"] == "n/a" and [p["method"] for p in gbp["market"]][:2] == ["CURVE", "CURVE"] and gbp["market"][0]["rate"] == 3.954
     eur = built["banks"]["EUR"]["chart"]["market"][0]
-    assert eur["rate"] is None and eur["level"] == 2.762 and eur["level_kind"] == "sovereign_proxy" and eur["na"].startswith("proxy without short end")
+    assert eur["rate"] is None and eur["level"] is None and eur["na"].startswith("outside curve coverage (<3M)")
+    eur2 = built["banks"]["EUR"]["chart"]["market"][1]
+    assert eur2["rate"] is None and eur2["level"] == 2.872 and eur2["level_kind"] == "sovereign_proxy" and eur2["na"].startswith("proxy without short end")
 
 
 def test_unverified_markers_are_labelled(built):

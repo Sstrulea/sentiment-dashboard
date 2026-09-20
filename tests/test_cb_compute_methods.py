@@ -118,9 +118,9 @@ def test_interval_ends_last_meeting_runs_the_tail():
     assert M.interval_ends(effs) == [D(2026, 12, 17), D(2026, 12, 17) + timedelta(days=M.TAIL_DAYS)]
 
 
-def test_tenor_curve_is_none_beyond_its_longest_tenor():
+def test_tenor_curve_is_none_outside_its_tenors():
     tc = M.TenorCurve([(1, 2.0), (3, 2.2), (6, 2.5)])
-    assert tc.value(4.5) == pytest.approx(2.35) and tc.value(6.5) is None and tc.value(0.5) == 2.0
+    assert tc.value(4.5) == pytest.approx(2.35) and tc.value(6.5) is None and tc.value(0.5) is None      # no extrapolation at either end
 
 
 # --- WINDOW -----------------------------------------------------------------------------------------------------------

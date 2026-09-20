@@ -65,9 +65,9 @@
     return '<td class="econ-cell cb-num' + (m.stale ? " cb-stale" : "") + (o.cls ? " " + o.cls : "") + '"' + (m.stale ? "" : tint(m.v, o.scale || 25)) +
       (tip.trim() ? ' title="' + esc(tip.trim()) + '"' : "") + ">" + fmtSigned(m.v, o.dp) + (o.unit || "") + (o.noBadge ? "" : flagBadge(m.flag)) + (o.extra || "") + "</td>";
   }
-  function valueSpan(m, dp, unit) {
+  function valueSpan(m, dp, unit, plain) {
     if (!m || !isNum(m.v)) return '<span class="cb-na" title="' + esc((m && m.na) || "n/a") + '">' + NA + "</span>";
-    return '<span class="cb-val ' + (m.v > 0 ? "cb-hawk" : m.v < 0 ? "cb-dove" : "") + '">' + fmtSigned(m.v, dp) + (unit || "") + "</span>";
+    return '<span class="cb-val ' + (plain ? "" : m.v > 0 ? "cb-hawk" : m.v < 0 ? "cb-dove" : "") + '">' + fmtSigned(m.v, dp) + (unit || "") + "</span>";
   }
 
   // ---- countdown / decision time -----------------------------------------------------------------------------------------
@@ -121,6 +121,15 @@
   }
 
   // ---- overview ------------------------------------------------------------------------------------------------------------
+  // A value that is a LEVEL (BKBM base, sovereign proxy), not a policy-equivalent bp: shown as a level with its method badge and its basis
+  // label ("BKBM base" / "sovereign proxy"); the tooltip says why there is no bp (and, for NZD, why the GAP is n/a).
+  function levelCell(m, r, what) {
+    const meta = state.meta || {};
+    const label = (meta.level_label || {})[m.level_kind] || m.level_kind;
+    const tip = [what, (meta.level_help || {})[m.level_kind] || "", m.na ? "No bp: " + m.na : "", m.level_kind === "bkbm" && r.gap && r.gap.na ? "GAP n/a: " + r.gap.na : ""].filter(Boolean).join("\n");
+    return '<td class="econ-cell cb-lvlcell' + (m.stale ? " cb-stale" : "") + '" title="' + esc(tip) + '"><span class="cb-lvl">' + fmtRate(m.level, 2) + "%</span>" + flagBadge(m.flag) + staleBadge(m.stale) +
+      '<div class="cb-prob">' + esc(label) + "</div></td>";
+  }
   function horizonCell(r) {
     const h = r.horizon || {};
     if (h.kind === "step") {
@@ -133,7 +142,8 @@
       return numCell({ v: h.cum_bp, flag: h.flag, stale: h.stale }, { scale: 100, dp: 1, extra: extra,
         tip: "Cumulative bp to the first window that covers the next meeting; the window average spans " + h.n_meetings + " meeting(s), so it is an upper bound for the next meeting alone." });
     }
-    return '<td class="econ-cell cell-na cb-na" title="' + esc(h.na || r.na || "n/a") + '">' + NA + (isNum(h.level) ? '<div class="cb-prob" title="' + esc(((state.meta || {}).level_help || {})[h.level_kind] || "") + '">' + fmtRate(h.level) + "% level</div>" : "") + "</td>";
+    if (isNum(h.level)) return levelCell({ level: h.level, level_kind: h.level_kind, flag: h.flag, stale: h.stale, na: h.na }, r, "Level at the " + fmtDate(h.meeting) + " meeting");
+    return '<td class="econ-cell cell-na cb-na" title="' + esc(h.na || r.na || "n/a") + '">' + NA + "</td>";
   }
   function repricingTip(rep) {
     return ["1w", "1m"].map(function (w) {
@@ -152,17 +162,18 @@
   function lastDecisionCell(r) {
     const d = r.last_decision;
     if (!d) return '<td class="econ-cell cell-na cb-na" title="no decision on record">' + NA + "</td>";
-    const sp = isNum(d.surprise_consensus_bp) ? "vs consensus " + fmtSigned(d.surprise_consensus_bp, 1) + " bp" : "consensus n/a";
+    const hasSp = isNum(d.surprise_consensus_bp);
     const cls = d.delta_bp > 0 ? "cb-hawk" : d.delta_bp < 0 ? "cb-dove" : "";
-    return '<td class="econ-cell cb-lastdec" title="' + esc("Decided " + fmtDate(d.date) + ", effective " + fmtDate(d.effective) + ", status " + d.status) + '">' +
-      '<span class="cb-val ' + cls + '">' + fmtSigned(d.delta_bp, 0) + " bp</span>" + '<div class="cb-prob">' + fmtDay(d.date) + DOT + esc(sp) + "</div></td>";
+    return '<td class="econ-cell cb-lastdec" title="' + esc("Decided " + fmtDate(d.date) + ", effective " + fmtDate(d.effective) + ", status " + d.status + "\n" + (hasSp ? "surprise vs consensus " + fmtSigned(d.surprise_consensus_bp, 1) + " bp" : "no consensus on record")) + '">' +
+      fmtDay(d.date) + DOT + '<span class="cb-val ' + cls + '">' + fmtSigned(d.delta_bp, 0) + " bp</span>" +
+      '<div class="cb-prob">' + (hasSp ? "surprise " + fmtSigned(d.surprise_consensus_bp, 1) : "surprise " + NA) + "</div></td>";
   }
   function reactionCell(r) {
     const a = r.reaction.next, b = r.reaction.year;
     if (!isNum(a.v) && !isNum(b.v)) return '<td class="econ-cell cell-na cb-na" title="' + esc("next meeting: " + a.na + "\nyear end: " + b.na) + '">' + NA + "</td>";
     const tip = "Change of the implied level between the close of T-1 and T (" + fmtDate(r.reaction.date) + ")\nnext meeting: " + (isNum(a.v) ? fmtSigned(a.v, 1) + " bp" : a.na) +
       "\nlast meeting of the year: " + (isNum(b.v) ? fmtSigned(b.v, 1) + " bp" : b.na);
-    return '<td class="econ-cell cb-num"' + tint(isNum(a.v) ? a.v : b.v, 10) + ' title="' + esc(tip) + '">' + valueSpan(a, 1, "") + '<span class="cb-sep"> / </span>' + valueSpan(b, 1, "") +
+    return '<td class="econ-cell cb-num"' + tint(isNum(a.v) ? a.v : b.v, 10) + ' title="' + esc(tip) + '">' + valueSpan(a, 1, "", true) + '<span class="cb-sep"> / </span>' + valueSpan(b, 1, "", true) +
       flagBadge(isNum(a.v) ? a.flag : b.flag) + "</td>";
   }
   function gapCell(r) {
@@ -174,9 +185,9 @@
     }).join("\n");
     return numCell(g.headline, { scale: 50, dp: 1, tip: "GAP = market - bank (Fed dots), end-2026 headline\n" + tip });
   }
-  function endCell(m, y) {
-    const lvl = isNum(m.level) && !isNum(m.v) ? "\nlevel " + fmtRate(m.level, 3) + "% (" + (((state.meta || {}).level_help || {})[m.level_kind] || "") + ")" : "";
-    if (!isNum(m.v)) return '<td class="econ-cell cell-na cb-na" title="' + esc((m.na || "n/a") + lvl) + '">' + NA + (isNum(m.level) ? '<div class="cb-prob">' + fmtRate(m.level, 2) + "% level</div>" : "") + "</td>";
+  function endCell(m, y, r) {
+    if (!isNum(m.v) && isNum(m.level)) return levelCell(m, r, "Level at the last meeting of " + y + " (" + fmtDate(m.meeting) + ")");
+    if (!isNum(m.v)) return '<td class="econ-cell cell-na cb-na" title="' + esc(m.na || "n/a") + '">' + NA + "</td>";
     return numCell(m, { scale: 100, dp: 1, tip: "Cumulative bp at the last meeting of " + y + " (" + fmtDate(m.meeting) + ")" });
   }
   function bankTable(ov) {
@@ -186,24 +197,24 @@
         ? '<div class="cb-next-date">' + fmtDate(n.decision) + '</div><div class="cb-prob">' + cdSpan(n) + (n.time && n.time.tbd ? DOT + '<span title="The BoJ announces at an irregular time on the day">' + esc(timeText(n.time)) + "</span>" : "") + "</div>"
         : '<span class="cb-na" title="' + esc((n && n.na) || "n/a") + '">' + NA + "</span>";
       return '<tr class="cb-row" data-href="' + esc(r.href) + '" tabindex="0">' +
-        '<td class="cb-bank"><a href="' + esc(r.href) + '"><b>' + esc(r.ccy) + "</b>" + DOT + esc(r.bank.short) + "</a>" + staleBadge(r.stale) + '<div class="cb-prob">' + esc(r.bank.name) + "</div></td>" +
+        '<td class="cb-bank" title="' + esc(r.bank.name) + '"><a href="' + esc(r.href) + '"><b>' + esc(r.ccy) + "</b>" + DOT + esc(r.bank.short) + "</a>" + staleBadge(r.stale) + "</td>" +
         '<td class="econ-cell cb-ratecell">' + rateHtml(r.rate) + "</td>" +
         '<td class="econ-cell cb-nextcell">' + nextHtml + "</td>" +
         horizonCell(r) +
-        endCell(r.end["2026"], "2026") + endCell(r.end["2027"], "2027") +
+        endCell(r.end["2026"], "2026", r) + endCell(r.end["2027"], "2027", r) +
         gapCell(r) +
         repricingCell(r) +
         lastDecisionCell(r) + reactionCell(r) + "</tr>";
     }).join("");
-    return '<div class="cb-scroll"><table class="cb-table"><thead><tr>' +
+    return '<div class="cb-scroll"><table class="cb-table cb-compact"><thead><tr>' +
       "<th>Bank</th><th>Rate %</th><th>Next meeting</th>" +
       '<th title="EXACT / CURVE: implied step and probability at the next meeting. UPPER BOUND: cumulative bp to the first window that covers it and the number of meetings it spans.">Next mtg / horizon</th>' +
       '<th title="Cumulative bp at the last meeting of 2026 (implied policy rate minus the base rate)">End-2026</th>' +
       '<th title="Cumulative bp at the last meeting of 2027">End-2027</th>' +
       '<th title="Market minus bank, bp: Fed dots median vs the implied rate at the end of 2026. Other banks publish no comparable path.">GAP</th>' +
       '<th title="Change of the implied level at end-2026 over 5 business days; 1 month, end-2027 and the next-meeting step are in the tooltip.">Repricing 1w</th>' +
-      "<th>Last decision</th>" +
-      '<th title="Change of the implied level around the last decision: at the next meeting / at the last meeting of the year">Reaction</th>' +
+      '<th title="Date, change in bp and surprise vs consensus (decided rate minus consensus, bp)">Last decision</th>' +
+      '<th title="Change of the implied level between the close of T-1 and T of the last decision: at the next meeting / at the last meeting of the year">Reaction</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table></div>";
   }
 
@@ -467,7 +478,10 @@
     const head = isNum(hz.v)
       ? '<div class="cb-bigrate ' + (hz.v > 0 ? "cb-hawk" : hz.v < 0 ? "cb-dove" : "") + '">' + fmtSigned(hz.v, 1) + " bp" + flagBadge(hz.flag) + staleBadge(hz.stale) + "</div>" +
         '<div class="cb-sub">Implied ' + fmtRate(hz.rate, 3) + "% after the " + fmtDate(hz.meeting) + " meeting</div>"
-      : '<div class="cb-bigrate cb-na" title="' + esc(hz.na || "n/a") + '">' + NA + flagBadge(hz.flag) + '</div><div class="cb-sub">' + esc(hz.na || "n/a") + "</div>" + levelNote(hz);
+      : (isNum(hz.level)
+        ? '<div class="cb-bigrate"><span class="cb-lvl">' + fmtRate(hz.level, 3) + "%</span>" + flagBadge(hz.flag) + staleBadge(hz.stale) + '</div><div class="cb-sub"><b>' + esc(((state.meta || {}).level_label || {})[hz.level_kind] || "level") + "</b>" + DOT + esc(((state.meta || {}).level_help || {})[hz.level_kind] || "") + "</div>" +
+          '<div class="cb-sub">No bp: ' + esc(hz.na || "n/a") + (hz.level_kind === "bkbm" && d.gap && d.gap.na ? "<br>GAP n/a: " + esc(d.gap.na) : "") + "</div>"
+        : '<div class="cb-bigrate cb-na" title="' + esc(hz.na || "n/a") + '">' + NA + flagBadge(hz.flag) + '</div><div class="cb-sub">' + esc(hz.na || "n/a") + "</div>");
     const one = function (m) { return isNum(m && m.v) ? valueSpan(m, 1, " bp") : '<span class="cb-na" title="' + esc((m && m.na) || "n/a") + '">' + NA + "</span>"; };
     return '<section class="cb-card cb-horizon"><h3>End-' + y + '</h3>' + head + window +
       '<div class="cb-kv"><span>Repricing 1w</span>' + one(rp["1w"]) + "</div>" + '<div class="cb-kv"><span>Repricing 1m</span>' + one(rp["1m"]) + "</div></section>";
