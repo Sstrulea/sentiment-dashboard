@@ -118,8 +118,8 @@ def spread_on(view: SeriesView, on: date, mro: str = "ecb:MRO", dfr: str = "ecb:
 
 
 def official_candidate(cfg: dict, view: SeriesView, eff: date) -> Optional[Candidate]:
-    """Official series level on the effective date (Fed: the two range limits; JPY / NZD: BIS, `bis_offset_days`
-    later because BIS books NZ changes the day after)."""
+    """Official series level on the effective date (Fed: the two range limits; JPY / NZD: BIS WS_CBPOL, which is dated
+    by the effective date exactly like the official series - checked for every change since 2025-09)."""
     pr = cfg["policy_rate"]
     off = pr.get("official") or {}
     if "lower" in off and "upper" in off:
@@ -137,14 +137,10 @@ def official_candidate(cfg: dict, view: SeriesView, eff: date) -> Optional[Candi
             return None
         return Candidate(_r(view.level(sid, eff)), _r(view.level(sid, eff - ONE)), sid, "official")
     if "bis" in off:
-        sid, k = off["bis"], int(pr.get("bis_offset_days", 0))
-        after_day = eff + timedelta(days=k)
-        if not view.covers(sid, after_day):
+        sid = off["bis"]
+        if not view.covers(sid, eff):
             return None
-        c = Candidate(_r(view.level(sid, after_day)), _r(view.level(sid, after_day - ONE)), sid, "bis")
-        if k:
-            c.notes.append(f"BIS books the change {k} day(s) after the effective date ({after_day})")
-        return c
+        return Candidate(_r(view.level(sid, eff)), _r(view.level(sid, eff - ONE)), sid, "bis")
     return None
 
 

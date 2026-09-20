@@ -105,9 +105,11 @@ src/cb_calendar.py                   (pur) zile lucrătoare, data efectivă, fer
 src/cb_compute/decisions.py          (pur) deciziile: precedență, validare FF, consens, surpriză
 src/cb_store.py                      stocare deterministă: partiții lunare + fișiere unice
 src/cb_datasets.py                   lipiciul I/O: decizii, proiecții, RBNZ, verificare calendar, secțiunile --status
-src/cb_sources/{base,market,official,fed_sep,calendar}.py
+src/cb_sources/{base,market,official,fed_sep,calendar,holidays,meetings}.py
 src/cb_collect.py                    python -m src.cb_collect [--stage S] [--backfill] [--status] ...
 scripts/cb_gen_calendars.py          generatorul lui cb_calendars.yaml (UK și JP live, restul din tabele cu sursă)
+scripts/cb_gen_meetings.py           generatorul lui meetings.yaml (paginile oficiale + FF pentru ECB trecut + RBNZ manual)
+scripts/cb_check_effective_dates.py  dovada regulilor de dată efectivă (serii oficiale / BIS, de la 2025-09)
 .github/workflows/cb-refresh.yml     workflow_dispatch + cron `37 */2 * * *`
 ```
 
@@ -134,8 +136,13 @@ lower, upper (Fed), delta_bp, effective_date, consensus, surprise_consensus_bp, 
   cel mai apropiat de ora deciziei; **0.0 cu previous > 0 respins** dacă oficialul nu confirmă 0.0; **NaN respins**.
 - **Consens** = forecast FF. Fed: limita superioară → midpoint (lățime 25 bp presupusă, notată). ECB: MRO → DFR cu
   spread-ul seriilor ECB (0.50 până la 2024-09-17, 0.15 după). SNB: n/a (FF nu are rânduri numerice din 2025-06).
-- **Data efectivă**: regula băncii din config, cu calendarul băncii (BoJ: 18 sep → 24 sep; Fed: miercuri → joi; ECB:
-  joi → miercurea următoare).
+- **Data efectivă — un singur mecanism**: regula băncii din config (`effective_rule`), cu calendarul băncii (BoJ: 18 sep →
+  24 sep; Fed: miercuri → joi; ECB: joi → miercurea următoare; RBNZ: următoarea zi lucrătoare NZ, ex. 2 sep → 3 sep,
+  *derivată din BIS, site-ul RBNZ e blocat*). **BIS WS_CBPOL e datat pe data efectivă**, la fel ca seriile oficiale, deci se
+  citește la data efectivă, fără offset. Regulile sunt validate contra fiecărei schimbări din serii de la 2025-09
+  (`scripts/cb_check_effective_dates.py`, `src/cb_compute/effective_check.py`): Fed 4/4, ECB 2/2, BoE 1/1, BoJ 2/2, BoC 2/2,
+  RBA 3/3, RBNZ 4/4 (derivată), SNB 0 schimbări în fereastră; BIS vs seria oficială: aceeași zi în 10/10 comparații
+  acoperite de BIS. Regulile potrivite sunt `verified` cu sursa = seria (`config/central_banks.yaml`).
 - **Conflict** oficial (sau BIS) vs FF → `status = conflict`; sursa cu precedență câștigă; apare în `--status`.
 - Acoperire: ultimele 4 ședințe / bancă + cele care trec; rândurile mai vechi nu se șterg.
 
@@ -147,8 +154,16 @@ RBNZ: `data/cb/manual/rbnz.yaml` (schemă validată; o intrare `filled` cere sur
 `src/cb_calendar.py`. Reguli neverificate rămân marcate (`verified: false`: BoJ; `precision: approximate`: BoE).
 RBNZ și SNB: nu s-a găsit regulă → fără fereastră.
 
-**Verificarea săptămânală a calendarului.** Compară `meetings.yaml` (rândurile oficiale) cu paginile oficiale (Fed, ECB,
-BoE, BoJ, BoC, RBA, SNB); **doar avertizează** (în `--status` și în `$GITHUB_STEP_SUMMARY`), nu rescrie fișierul.
+**Verificarea săptămânală.** (1) `meetings.yaml` (rândurile oficiale) vs paginile oficiale (Fed, ECB, BoE, BoJ, BoC, RBA,
+SNB). (2) **Calendarele de sărbători** vs sursele oficiale (UK gov.uk JSON, JP CSV Cabinet Office, US Fed K.8, EU ECB T2, CA
+BoC, AU NSW, NZ employment.govt.nz; CH: ETag / lungimea PDF-ului SIC, fără bibliotecă PDF). Avertizează când pagina oficială
+are date care lipsesc din YAML, când o dată `verified` a dispărut, sau când un an marcat `verified: false` devine
+verificabil (apare pagina oficială / se schimbă fișierul). **Doar avertizează** (în `--status` și în `$GITHUB_STEP_SUMMARY`),
+nu rescrie nimic; zilele bancare de sfârșit de an din JP (statut) nu pot fi verificate pe CSV și rămân în afara controlului.
+
+**`meetings.yaml`** se generează cu `scripts/cb_gen_meetings.py` (`--check` arată diferențele față de paginile oficiale de
+azi); regulile stau în `src/cb_sources/meetings.py`; calendarul RBNZ publicat stă în `data/cb/manual/rbnz.yaml`. Testul
+reface fișierul octet cu octet din tăieturi reale ale paginilor.
 
 **`--status`**: piața (ultima scriere, as-of, lag, zile lipsă, validatori, „fără valori noi”), seriile oficiale, ultima
 decizie pe valută (inclusiv conflicte și `ff_pending`), proiecții, avertizările RBNZ, verificarea calendarului și
@@ -164,8 +179,6 @@ lucrătoare ≤ azi, în calendarul sursei; zilele lipsă exclud sărbătorile a
 - **Spread-ul ECB se citește la data efectivă, nu la ziua ședinței.** Tăierea din 12 sep 2024 a intrat în vigoare pe 18,
   când MRO − DFR trecuse deja la 0.15: FF dă MRO 3.65, iar DFR = 3.65 − 0.15 = 3.50 (= seria oficială); cu spread-ul zilei
   ședinței (0.50) ar ieși 3.15. Testul folosește rândul FF real din 2024-09-12.
-- **BIS trece schimbarea OCR cu o zi mai târziu** (2 sep 2026 → 2.75 pe 3 sep). `policy_rate.bis_offset_days` (NZD 1, JPY 0)
-  citește nivelul BIS la data efectivă + offset.
 - Fed: `rate_before` / `rate_after` sunt midpoint-uri (convenția de calcul), `lower` / `upper` = intervalul de după decizie,
   `consensus` în aceeași convenție ca `rate_after`.
 - `decision_time_utc` = ora fixă a băncii pe ziua ședinței; BoJ (fereastră 11:30–13:30 JST): gol.
@@ -201,22 +214,14 @@ Fără calculul traiectoriilor (vine în 1B-2), fără texte / rezumate, fără 
 | 14 | slug-uri URL | de acord: `/central-banks/usd` etc.; perechea `/central-banks/pair/eurusd` |
 | 15 | cross-link RATE EXP | ajustat: rândurile de pereche de pe `/economic` → vederea de pereche, DXY → `/central-banks/usd`; în faza 3, fără să strice click-ul pe rând |
 
-## 11. Întrebări deschise noi (1B-1)
+## 11. Întrebările noi din 1B-1 — decizii
 
-Cu recomandarea într-un rând (recomandare, nu decizie).
-
-1. **Spread-ul ECB la data efectivă** (nota de mai sus) diferă de formularea „la data ședinței”. *Recomandare:* rămâne la
-   data efectivă — singura citire care reproduce DFR-ul oficial peste schimbarea din 2024-09-18.
-2. **Offset-ul BIS pentru NZD (+1 zi)** e observat pe patru decizii din 2026. *Recomandare:* se păstrează; dacă BIS își
-   schimbă convenția, decizia devine `conflict` cu FF și se vede în `--status`.
-3. **Calendare neverificate:** CA 2027 (BoC nu l-a publicat), CH după 2 ian 2027 (lista SIC se oprește acolo), sărbătorile
-   bancare de sfârșit de an din JP (statut, nefetch-uit). *Recomandare:* re-rulare `scripts/cb_gen_calendars.py` când
-   apar paginile, iar verificarea săptămânală se extinde ulterior la calendarele de sărbători.
-4. **OCR track RBNZ: trei MPS 2026 rămân placeholder** (nu există niciun PDF MPS în `~/projects/macro-cb`; site-ul e blocat).
-   *Recomandare:* pui PDF-urile MPS (feb, mai, sep 2026) în directorul proiectului și le extrag; PDF-urile nu se comit.
-5. **`first_day` pentru ședințele ECB deja trecute** e derivat (miercurea dinaintea deciziei), fiindcă pagina ECB listează
-   doar viitorul. *Recomandare:* rămâne derivat, marcat `verified: false` prin `source: ff`.
-6. **Blackout BoJ** rămâne neverificat (formularea e dintr-un anunț vechi), iar BoE e aproximativ („de regulă 8–9 zile”).
-   *Recomandare:* UI le afișează cu marcaj „approximate / unverified” până apare o sursă curentă.
-7. **Deciziile `ff_pending`** (acum doar BoJ 18 sep) devin `bis` când BIS ajunge la data efectivă (24 sep). *Recomandare:*
-   nu se cere nimic manual; `--status` le listează cât timp așteaptă.
+| # | subiect | decizie |
+|---|---|---|
+| 1 | spread-ul ECB | **aprobat:** se citește la data efectivă (singura citire care reproduce DFR-ul oficial peste schimbarea din 2024-09-18) |
+| 2 | offset-ul BIS pentru NZD | **înlocuită** de mecanismul unic de dată efectivă (§8): BIS e pe data efectivă la toate băncile, RBNZ are regula „+1 zi lucrătoare NZ”, derivată din BIS; `bis_offset_days` a dispărut |
+| 3 | calendare neverificate | **acoperită** de verificarea săptămânală, care include acum calendarele de sărbători (§8) |
+| 4 | OCR track RBNZ | de la RBNZ trebuie **doar MPS sep 2026** (`data/cb/manual/rbnz.yaml`); PDF-ul nu se comite |
+| 5 | `first_day` ECB trecut | **aprobat:** rămâne derivat (miercurea dinaintea deciziei), `verified: false` prin `source: ff` |
+| 6 | blackout BoJ / BoE | **aprobat:** UI le afișează cu marcaj „approximate / unverified” |
+| 7 | decizii `ff_pending` | **aprobat:** fără intervenție manuală; devin `bis` când BIS ajunge la data efectivă |

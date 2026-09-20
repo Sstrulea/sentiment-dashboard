@@ -4,7 +4,7 @@
 #   * the OCR track of every Monetary Policy Statement (MPS) - the bank's own path, quarterly averages;
 #   * the meeting calendar after 2027-02-17 (RBNZ published it only until then).
 # `python -m src.cb_collect --status` warns when an MPS that has passed has no filled track, and when the calendar
-# runs out.
+# runs out. Only the latest MPS needs a track.
 #
 # How to fill an MPS (from the MPS PDF / the OCR projection table):
 #   status: filled
@@ -18,6 +18,21 @@ meta:
   owner: manual
   updated: 2026-09-20
 
+# The published meeting calendar (the RBNZ release "Monetary policy and OCR decision dates until February 2027",
+# transcribed via web search because rbnz.govt.nz is bot-walled). scripts/cb_gen_meetings.py reads it: source manual.
+# has_projections = the meeting is an MPS.
+published_calendar:
+  source: "RBNZ: Monetary policy and OCR decision dates until February 2027 (via web search; site bot-walled)"
+  meetings:
+    - {date: 2026-02-18, has_projections: true}
+    - {date: 2026-04-08, has_projections: false}
+    - {date: 2026-05-27, has_projections: true}
+    - {date: 2026-07-08, has_projections: false}
+    - {date: 2026-09-02, has_projections: true}
+    - {date: 2026-10-28, has_projections: false}
+    - {date: 2026-12-09, has_projections: true}
+    - {date: 2027-02-17, has_projections: true}
+
 calendar_2027:
   status: pending                   # pending | entered
   published_until: 2027-02-17       # last meeting date RBNZ has published (meetings.yaml carries the rows up to it)
@@ -25,6 +40,5 @@ calendar_2027:
   meetings: []                      # when entered: [{date: 2027-05-26, has_projections: true}, ...]
 
 mps:
-  - {meeting: 2026-02-18, status: placeholder, source: null, ocr_track: [], bank_bill_90d: []}
-  - {meeting: 2026-05-27, status: placeholder, source: null, ocr_track: [], bank_bill_90d: []}
+  # Only the latest MPS is needed (its OCR track and 90-day bank bill projection feed the GAP): Sep 2026.
   - {meeting: 2026-09-02, status: placeholder, source: null, ocr_track: [], bank_bill_90d: []}

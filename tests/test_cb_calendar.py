@@ -155,7 +155,8 @@ def test_effective_dates_per_bank():
     assert eff("CAD", D(2026, 9, 2)) == D(2026, 9, 3)
     assert eff("AUD", D(2026, 8, 11)) == D(2026, 8, 12)
     assert eff("CHF", D(2026, 6, 18)) == D(2026, 6, 19)
-    assert eff("NZD", D(2026, 9, 2)) == D(2026, 9, 2)
+    assert eff("NZD", D(2026, 9, 2)) == D(2026, 9, 3)                     # RBNZ: next NZ business day, derived from BIS
+    assert eff("NZD", D(2026, 7, 8)) == D(2026, 7, 9) and eff("NZD", D(2025, 11, 26)) == D(2025, 11, 27)
 
 
 def test_effective_rule_kinds_are_validated():

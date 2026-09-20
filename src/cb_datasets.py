@@ -21,6 +21,7 @@ from . import cb_store as cs
 from .cb_calendar import load_calendars
 from .cb_compute.decisions import SeriesView, compute_all, ff_rows_from_frame
 from .cb_sources.calendar import PARSERS, CalendarPages, check_meetings
+from .cb_sources import holidays as hol
 from .cb_sources.fed_sep import FedSepSource, parse_sep
 
 log = logging.getLogger("cb_datasets")
@@ -180,9 +181,15 @@ def validate_rbnz(doc: dict) -> list:
     err = []
     if not isinstance(doc, dict) or not doc:
         return ["file missing or empty"]
-    for k in ("meta", "calendar_2027", "mps"):
+    for k in ("meta", "published_calendar", "calendar_2027", "mps"):
         if k not in doc:
             err.append(f"missing key {k!r}")
+    pub = doc.get("published_calendar") or {}
+    if not pub.get("source") or not pub.get("meetings"):
+        err.append("published_calendar needs a source and meetings")
+    for m in pub.get("meetings") or []:
+        if not isinstance(m.get("date"), date) or not isinstance(m.get("has_projections"), bool):
+            err.append(f"published_calendar meeting needs date and has_projections: {m}")
     cal = doc.get("calendar_2027") or {}
     if cal.get("status") not in ("pending", "entered"):
         err.append("calendar_2027.status must be pending | entered")
@@ -219,19 +226,20 @@ def validate_rbnz(doc: dict) -> list:
     return err
 
 
-def rbnz_warnings(doc: dict, nzd_meetings: list, today: date) -> list:
-    """Warnings for --status: a new MPS without a filled track, an unusable file, the missing 2027 calendar."""
-    w = []
+def rbnz_warnings(doc: dict, nz_meetings: list, today: date) -> list:
+    """Warnings for --status: the LATEST MPS without a filled OCR track (older MPS are not needed), an unusable file, the
+    missing 2027 calendar."""
     errs = validate_rbnz(doc)
     if errs:
         return [f"RBNZ manual file invalid: {e}" for e in errs]
+    w = []
     filled = {e["meeting"] for e in doc["mps"] if e["status"] == "filled"}
     placeholder = {e["meeting"] for e in doc["mps"] if e["status"] == "placeholder"}
-    for m in sorted(nzd_meetings, key=lambda x: x["date"]):
-        if m.get("has_projections") and m["date"] <= today and m["date"] not in filled:
-            kind = "placeholder" if m["date"] in placeholder else "no entry"
-            w.append(f"RBNZ MPS {m['date']}: no OCR track ({kind}) - fill data/cb/manual/rbnz.yaml")
-    known = {m["date"] for m in nzd_meetings} | {m["date"] for m in (doc["calendar_2027"].get("meetings") or [])}
+    past = sorted(m["date"] for m in nz_meetings if m.get("has_projections") and m["date"] <= today)
+    if past and past[-1] not in filled:
+        kind = "placeholder" if past[-1] in placeholder else "no entry"
+        w.append(f"RBNZ MPS {past[-1]}: no OCR track ({kind}) - fill data/cb/manual/rbnz.yaml")
+    known = {m["date"] for m in nz_meetings} | {m["date"] for m in (doc["calendar_2027"].get("meetings") or [])}
     last = max(known) if known else None
     if doc["calendar_2027"]["status"] == "pending" and last is not None and today >= last:
         w.append(f"RBNZ calendar after {last} not entered yet (calendar_2027 is pending)")
@@ -300,18 +308,49 @@ class CalendarCheckReport:
     checked: Optional[date] = None
     warnings: list = field(default_factory=list)
     failed: dict = field(default_factory=dict)
+    signatures: dict = field(default_factory=dict)      # files that cannot be parsed (SIC PDF): ETag / length at the last check
 
 
 def stored_calendar_check(state: dict) -> CalendarCheckReport:
     c = state.get(CHECK_KEY) or {}
     return CalendarCheckReport(False, date.fromisoformat(c["checked"]) if c.get("checked") else None,
-                               list(c.get("warnings", [])), dict(c.get("failed", {})))
+                               list(c.get("warnings", [])), dict(c.get("failed", {})), dict(c.get("signatures", {})))
 
 
-def run_calendar_check(paths, today: date, *, source=None, force: bool = False, banks: dict | None = None,
-                       meetings: dict | None = None) -> CalendarCheckReport:
-    """At most once a week: compare meetings.yaml (official rows) with the bank calendar pages. Warnings only - the
-    file is never rewritten. The result lives in state.json so --status can show it."""
+CALENDARS_YAML = ROOT / "config" / "cb_calendars.yaml"
+HOLIDAY_CALENDARS = ("UK", "JP", "US", "EU", "CA", "AU", "NZ")
+
+
+def holiday_check(rep: CalendarCheckReport, prev: CalendarCheckReport, today: date, src, rows_by_cal: dict) -> None:
+    """Holiday calendars vs the official pages: dates missing from the YAML, dates that vanished, years that became
+    verifiable (page appeared / file changed). Appends to `rep`; never touches the YAML."""
+    for cal in HOLIDAY_CALENDARS:
+        listing = src.listing(cal)
+        if listing is None:
+            rep.failed[f"HOLIDAYS {cal}"] = f"{getattr(src, 'last_status', '')} {getattr(src, 'last_note', '')}".strip() or "unreachable"
+            continue
+        rep.warnings += hol.check_calendar(cal, listing, rows_by_cal[cal], today)
+    for cal, years in hol.PROBES.items():
+        for year, url in years.items():
+            w = hol.check_probe(cal, year, src.probe(url), rows_by_cal[cal])
+            if w:
+                rep.warnings.append(w)
+    sig = src.signature(hol.URLS["CH"])
+    if sig is None:
+        rep.failed["HOLIDAYS CH"] = "SIC file unreachable"
+        rep.signatures = dict(prev.signatures)
+    else:
+        w = hol.check_signature("CH", prev.signatures.get("CH"), sig, rows_by_cal["CH"])
+        if w:
+            rep.warnings.append(w)
+        rep.signatures = {"CH": sig}
+
+
+def run_calendar_check(paths, today: date, *, source=None, holidays=None, force: bool = False, banks: dict | None = None,
+                       meetings: dict | None = None, calendars_yaml: Path | str | None = None) -> CalendarCheckReport:
+    """At most once a week: compare meetings.yaml (official rows) with the bank calendar pages AND the holiday calendars
+    with the official holiday pages. Warnings only - nothing is rewritten. The result lives in state.json so --status can
+    show it."""
     from .cb_collect import load_state, save_state
     state = load_state(paths)
     prev = stored_calendar_check(state)
@@ -327,8 +366,10 @@ def run_calendar_check(paths, today: date, *, source=None, force: bool = False, 
             rep.failed[bank] = f"{getattr(src, 'last_status', '')} {getattr(src, 'last_note', '')}".strip() or "unreachable"
             continue
         rep.warnings += check_meetings(bank, page, meetings.get(bank, []), today)
+    raw = yaml.safe_load(Path(calendars_yaml or CALENDARS_YAML).read_text())["calendars"]
+    holiday_check(rep, prev, today, holidays or hol.HolidayPages(), {c: v["holidays"] for c, v in raw.items()})
     new = dict(state)
-    new[CHECK_KEY] = {"checked": today.isoformat(), "warnings": rep.warnings, "failed": rep.failed}
+    new[CHECK_KEY] = {"checked": today.isoformat(), "warnings": rep.warnings, "failed": rep.failed, "signatures": rep.signatures}
     save_state(paths, new)
     return rep
 

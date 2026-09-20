@@ -42,8 +42,8 @@ def _dm(day: int, mon: str, year: int) -> date:
     return date(year, MONTHS[mon.lower().rstrip(".")], day)
 
 
-def _m(decision: date, first_day: Optional[date] = None, projections: Optional[bool] = None) -> dict:
-    return {"date": decision, "first_day": first_day, "has_projections": projections}
+def _m(decision: date, first_day: Optional[date] = None, projections: Optional[bool] = None, provisional: bool = False) -> dict:
+    return {"date": decision, "first_day": first_day, "has_projections": projections, "provisional": provisional}
 
 
 _MON = "January|February|March|April|May|June|July|August|September|October|November|December"
@@ -82,7 +82,7 @@ def parse_boe(page: str) -> list:
                               r"(?=(?:Monday|Tuesday|Wednesday|Thursday|Friday) \d{1,2} [A-Z][a-z]+ |Current Bank Rate|"
                               r"Monetary Policy Committee voting|Monetary Policy Committee Reports|2027 provisional|$)", blk):
             d, mon, desc = mm.groups()
-            out.append(_m(_dm(int(d), mon, year), None, "Monetary Policy Report" in desc))
+            out.append(_m(_dm(int(d), mon, year), None, "Monetary Policy Report" in desc, provisional=(year == 2027)))
     return out
 
 

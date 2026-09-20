@@ -246,6 +246,12 @@ def test_bank_config_carries_the_1b1_fields(banks):
         assert c["calendar_id"] and c["policy_rate"]["official"] and "blackout_rule" in c, b
         assert (c["blackout_rule"] is None) == (c["blackout"] is None), b            # a rule exists exactly where the bank states one
         assert c["policy_rate"]["ff_name"], b
-    assert banks["NZD"]["policy_rate"]["bis_offset_days"] == 1 and banks["JPY"]["policy_rate"]["bis_offset_days"] == 0
+    assert not any("bis_offset_days" in c["policy_rate"] for c in banks.values())          # BIS is dated by the effective date
+    nz = banks["NZD"]["effective_rule"]
+    assert (nz["kind"], nz["calendar"], nz["verified"], nz["derived_from"]) == ("next_business_day", "NZ", False, "bis:NZ")
+    assert "derived from BIS (RBNZ site blocked)" in nz["note"]
+    for b in ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"):                                 # verified rules cite the series tested
+        r = banks[b]["effective_rule"]
+        assert r["verified"] is True and r["source"] and ":" in r["source"], b
     assert banks["JPY"]["blackout_rule"]["verified"] is False and banks["USD"]["blackout_rule"]["verified"] is True
     assert banks["GBP"]["blackout_rule"]["precision"] == "approximate"

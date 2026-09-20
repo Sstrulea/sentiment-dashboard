@@ -11,6 +11,7 @@ import pytest
 from src import cb_collect as cc
 from src import cb_datasets as ds
 from src.cb_sources import calendar as C
+from src.cb_sources import holidays as H
 
 FIX = Path(__file__).parent / "fixtures" / "cb"
 ROOT = Path(__file__).resolve().parents[1]
@@ -155,6 +156,38 @@ class FakePages:
         return self.parsed[bank]
 
 
+class FakeHolidays:
+    """Holiday source over the real page cuts (no network); `probes` = urls that answer 200, `sig` = the SIC file signature."""
+    last_status = last_note = ""
+
+    def __init__(self, listings=None, probes=(), sig=None, down=()):
+        self.listings = listings if listings is not None else HOLIDAY_LISTINGS
+        self.probes, self.sig, self.down, self.calls = set(probes), sig or {"etag": '"a"', "length": 97613}, set(down), []
+
+    def listing(self, cal):
+        self.calls.append(cal)
+        if cal in self.down:
+            self.last_status, self.last_note = "UNREACHABLE", "HTTP 503"
+            return None
+        return self.listings[cal]
+
+    def probe(self, url):
+        return url in self.probes
+
+    def signature(self, url):
+        return self.sig
+
+
+def _hol(name):
+    return (FIX / name).read_text()
+
+
+HOLIDAY_LISTINGS = {
+    "UK": H.parse_uk(_hol("hol_uk_cut.json")), "JP": H.parse_jp((FIX / "hol_jp_cut.csv").read_bytes().decode("cp932")),
+    "US": H.parse_us(_hol("hol_us_k8_cut.htm")), "EU": H.parse_eu(_hol("hol_eu_t2_cut.htm")), "CA": H.parse_boc(_hol("hol_ca_boc_cut.html")),
+    "AU": H.parse_nsw(_hol("hol_au_nsw_cut.htm")), "NZ": H.parse_nz(_hol("hol_nz_cut.htm"))}
+
+
 def stage(tmp_path):
     paths = cc.Paths(tmp_path / "cb")
     paths.dir.mkdir(parents=True)
@@ -166,15 +199,15 @@ def test_the_check_runs_weekly_and_only_warns(tmp_path):
     paths = stage(tmp_path)
     before = paths.meetings.read_text()
     src = FakePages()
-    rep = ds.run_calendar_check(paths, D(2026, 9, 20), source=src)
+    rep = ds.run_calendar_check(paths, D(2026, 9, 20), source=src, holidays=FakeHolidays())
     assert rep.ran and rep.checked == D(2026, 9, 20) and rep.warnings == [] and len(src.calls) == 7
     assert [c[1] for c in src.calls] == [BANKS[b]["calendar_url"] for b in ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF")]
     src2 = FakePages()
-    again = ds.run_calendar_check(paths, D(2026, 9, 26), source=src2)                    # 6 days later: not due
+    again = ds.run_calendar_check(paths, D(2026, 9, 26), source=src2, holidays=FakeHolidays())                    # 6 days later: not due
     assert not again.ran and src2.calls == [] and again.checked == D(2026, 9, 20)
-    due = ds.run_calendar_check(paths, D(2026, 9, 27), source=FakePages())                # 7 days later
+    due = ds.run_calendar_check(paths, D(2026, 9, 27), source=FakePages(), holidays=FakeHolidays())                # 7 days later
     assert due.ran and due.checked == D(2026, 9, 27)
-    forced = ds.run_calendar_check(paths, D(2026, 9, 28), source=FakePages(), force=True)
+    forced = ds.run_calendar_check(paths, D(2026, 9, 28), source=FakePages(), holidays=FakeHolidays(), force=True)
     assert forced.ran and forced.checked == D(2026, 9, 28)
     assert paths.meetings.read_text() == before                                          # never rewritten
 
@@ -183,7 +216,7 @@ def test_warnings_and_unreachable_pages_are_kept_in_state_for_status(tmp_path):
     paths = stage(tmp_path)
     drifted = dict(PARSED)
     drifted["JPY"] = [m for m in PARSED["JPY"] if m["date"] != D(2026, 12, 18)] + [{"date": D(2026, 12, 21), "first_day": D(2026, 12, 18), "has_projections": False}]
-    rep = ds.run_calendar_check(paths, D(2026, 9, 20), source=FakePages(drifted, down={"AUD"}))
+    rep = ds.run_calendar_check(paths, D(2026, 9, 20), source=FakePages(drifted, down={"AUD"}), holidays=FakeHolidays())
     assert any("JPY: 2026-12-21 is on the official page" in w for w in rep.warnings) and any("2026-12-18 is in meetings.yaml but no longer" in w for w in rep.warnings)
     assert "AUD" in rep.failed and "403" in rep.failed["AUD"] and not any(w.startswith("AUD") for w in rep.warnings)    # unreachable != drift
     st = cc.load_state(paths)[ds.CHECK_KEY]
@@ -196,7 +229,7 @@ def test_warnings_and_unreachable_pages_are_kept_in_state_for_status(tmp_path):
 
 def test_status_warns_when_the_weekly_check_itself_is_stale(tmp_path):
     paths = stage(tmp_path)
-    ds.run_calendar_check(paths, D(2026, 9, 20), source=FakePages())
+    ds.run_calendar_check(paths, D(2026, 9, 20), source=FakePages(), holidays=FakeHolidays())
     text, _ = ds.extra_status(paths, D(2026, 10, 5))
     assert "WARN the check is 15 days old (runs weekly)" in text
     assert "days old" not in ds.extra_status(paths, D(2026, 9, 26))[0]
@@ -204,7 +237,7 @@ def test_status_warns_when_the_weekly_check_itself_is_stale(tmp_path):
 
 def test_meetings_stay_untouched_and_the_check_state_is_a_separate_section(tmp_path):
     paths = stage(tmp_path)
-    ds.run_calendar_check(paths, D(2026, 9, 20), source=FakePages())
+    ds.run_calendar_check(paths, D(2026, 9, 20), source=FakePages(), holidays=FakeHolidays())
     state = cc.load_state(paths)
     assert set(state) == {ds.CHECK_KEY}                                                   # validators of the collectors are not touched
 
@@ -212,6 +245,7 @@ def test_meetings_stay_untouched_and_the_check_state_is_a_separate_section(tmp_p
 def test_the_collector_stage_reports_the_check(tmp_path, monkeypatch, capsys):
     paths = stage(tmp_path)
     monkeypatch.setattr(ds, "CalendarPages", lambda: FakePages())
+    monkeypatch.setattr(ds.hol, "HolidayPages", lambda: FakeHolidays())
     assert cc.main(["--stage", "calendar", "--force-calendar-check", "--data-dir", str(paths.dir)]) == 0
     out = capsys.readouterr().out
     assert "calendar check: ran" in out and "0 warning(s)" in out

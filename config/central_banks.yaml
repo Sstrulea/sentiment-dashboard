@@ -12,7 +12,9 @@
 #                   spread is computed per instrument in phase 1B (it depends on the
 #                   instrument's benchmark, see config/cb_sources.yaml `benchmark`).
 #   effective_rule  how the effective date follows the decision date.
-#                   kind: calendar_days (+N days) | next_business_day (calendar: JP).
+#                   kind: calendar_days (+N days) | next_business_day (first business day after the decision,
+#                   calendar: JP | NZ). `source` = the series whose change dates were tested against the rule
+#                   (scripts/cb_check_effective_dates.py); `derived_from` marks a rule inferred from BIS.
 #   projections     the meetings that carry projections (SEP / staff projections / MPR /
 #                   Outlook Report / SMP / MPS / conditional forecast).
 #   blackout        official quiet-period rule (text + url); null = not found.
@@ -44,9 +46,8 @@ banks:
       official: {lower: "fred:DFEDTARL", upper: "fred:DFEDTARU"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SOFR, source: fred, id: SOFR,
                           url: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR", series_id: "fred:SOFR"}
-    effective_rule: {kind: calendar_days, days: 1, verified: true,
-                     source: "https://www.federalreserve.gov/monetarypolicy/files/monetary20260916a1.pdf",
-                     note: "16 Sep 2026 decision, implementation note 'effective September 17, 2026'; FRED DFEDTARU changes decision+1 (4/4 in 2025-26)"}
+    effective_rule: {kind: calendar_days, days: 1, verified: true, source: "fred:DFEDTARU",
+                     note: "4/4 changes since 2025-09 land on decision+1 (2025-09-18, 2025-10-30, 2025-12-11, 2026-09-17); BIS WS_CBPOL US changes on the same days; Fed implementation note of 16 Sep 2026: 'effective September 17, 2026'"}
     projections: {name: SEP (dot plot), months: [3, 6, 9, 12], source: calendar_page_asterisk}
     blackout: {text: "00:00 ET on the second Saturday before the meeting -> 23:59 ET the day after it ends",
                url: "https://www.federalreserve.gov/monetarypolicy/files/FOMC_ExtCommunicationParticipants.pdf"}
@@ -75,9 +76,8 @@ banks:
       official: {level: "ecb:DFR", mro: "ecb:MRO"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: "EUR short-term rate (EUR STR)", source: ecb, id: "EST/B.EU000A2X2A25.WT",
                           url: "https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT?format=csvdata", series_id: "ecb:ESTR"}
-    effective_rule: {kind: calendar_days, days: 6, verified: true,
-                     source: "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html",
-                     note: "11 Jun decision 'with effect from 17 June'; DFR series changes decision+6 (6/6 in 2025-26)"}
+    effective_rule: {kind: calendar_days, days: 6, verified: true, source: "ecb:DFR",
+                     note: "2/2 changes since 2025-09 land on decision+6, the Wednesday after the Thursday decision (2026-06-17, 2026-09-16); BIS XM changes on the same day; ECB press release of 11 Jun: 'with effect from 17 June'"}
     projections: {name: Eurosystem staff projections, months: [3, 6, 9, 12], source: ecb_practice_derived}
     blackout: {text: "quiet period: 7 days before each monetary-policy meeting",
                url: "https://www.ecb.europa.eu/ecb-and-you/explainers/tell-me/html/what-is-the_quiet_period.en.html"}
@@ -104,9 +104,8 @@ banks:
       official: {level: "boe:IUDBEDR"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SONIA, source: boe_iadb, id: IUDSOIA,
                           url: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes&SeriesCodes=IUDSOIA&CSVF=TN&UsingCodes=Y", series_id: "boe:IUDSOIA"}
-    effective_rule: {kind: calendar_days, days: 0, verified: true,
-                     source: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?SeriesCodes=IUDBEDR",
-                     note: "IUDBEDR changes on the decision day (4/4 in 2025: 6 Feb, 8 May, 7 Aug, 18 Dec)"}
+    effective_rule: {kind: calendar_days, days: 0, verified: true, source: "boe:IUDBEDR",
+                     note: "1/1 change since 2025-09 lands on the decision day (2025-12-18); 4/4 in 2025 (6 Feb, 8 May, 7 Aug, 18 Dec); BIS GB changes on the same day"}
     projections: {name: Monetary Policy Report, months: [2, 4, 7, 11], source: calendar_page_mpr}
     blackout: {text: "MPC quiet period from start of deliberations (usually 8-9 days before) until the announcement",
                url: "https://www.bankofengland.co.uk/about/governance-and-funding/mpc-external-communications-code"}
@@ -134,12 +133,10 @@ banks:
       unit: percent
       ff_name: "BOJ Policy Rate"            # FF row name; matched on (currency, name)
       official: {bis: "bis:JP"}    # series ids in config/cb_official.yaml
-      bis_offset_days: 0           # BIS books the BoJ change on the effective date (17 Jun 2026 for the 16 Jun decision)
     overnight_benchmark: {name: "TONA (uncollateralized overnight call rate, average)", source: boj_api, id: "FM01/STRDCLUCON",
                           url: "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db=FM01&code=STRDCLUCON", series_id: "boj:STRDCLUCON"}
-    effective_rule: {kind: next_business_day, calendar: JP, verified: true,
-                     source: "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
-                     note: "18 Sep 2026 decision, statement footnote 1: effective 24 Sep 2026 (21-23 Sep are JP holidays); Basic Loan Rate changed decision+1 bd in Jan-25, Dec-25, Jun-26"}
+    effective_rule: {kind: next_business_day, calendar: JP, verified: true, source: "bis:JP",
+                     note: "2/2 changes since 2025-09 land on the first JP business day after the decision (2025-12-19 -> 2025-12-22, 2026-06-16 -> 2026-06-17); the BoJ statement of 18 Sep 2026 (footnote 1) says effective 24 Sep (21-23 Sep are JP holidays)"}
     projections: {name: Outlook Report, months: [1, 4, 7, 10], source: schedule_page}
     blackout: {text: "2 business days before day 1 of the MPM -> end of the last MPM day (wording from an older BoJ notice; verify current)",
                url: "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mpm0104a.htm", verified: false}
@@ -166,9 +163,8 @@ banks:
       official: {level: "boc:V39079"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: CORRA, source: boc_valet, id: AVG.INTWO,
                           url: "https://www.bankofcanada.ca/valet/observations/AVG.INTWO/json", series_id: "boc:AVG.INTWO"}
-    effective_rule: {kind: calendar_days, days: 1, verified: true,
-                     source: "https://www.bankofcanada.ca/valet/observations/V39079/json",
-                     note: "V39079 changes decision+1 (4/4 in 2025: 30 Jan, 13 Mar, 18 Sep, 30 Oct)"}
+    effective_rule: {kind: calendar_days, days: 1, verified: true, source: "boc:V39079",
+                     note: "2/2 changes since 2025-09 land on decision+1 (2025-09-18, 2025-10-30); 4/4 in 2025 (30 Jan, 13 Mar, 18 Sep, 30 Oct); BIS CA changes on the same days"}
     projections: {name: Monetary Policy Report, months: [1, 4, 7, 10], source: calendar_page_mpr}
     blackout: {text: "starts Tuesday 8 days before the decision in MPR months (Jan/Apr/Jul/Oct), else Wednesday 7 days before; ends 10:30 ET when the press conference starts",
                url: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/blackout-guidelines/"}
@@ -195,9 +191,8 @@ banks:
       official: {level: "rba:FIRMMCRTD"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: "Interbank overnight cash rate (AONIA-equivalent)", source: rba_f1, id: FIRMMCRID,
                           url: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv", series_id: "rba:FIRMMCRID"}
-    effective_rule: {kind: calendar_days, days: 1, verified: true,
-                     source: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv",
-                     note: "F1 cash rate target changes decision+1 (6/6: Feb/May/Aug 2025, Feb/Mar/May 2026)"}
+    effective_rule: {kind: calendar_days, days: 1, verified: true, source: "rba:FIRMMCRTD",
+                     note: "3/3 changes since 2025-09 land on decision+1 (2026-02-04, 2026-03-18, 2026-05-06); 6/6 counting Feb/May/Aug 2025; BIS AU changes on the same days"}
     projections: {name: Statement on Monetary Policy, months: [2, 5, 8, 11], source: rba_practice_derived}
     blackout: {text: "external MPB members: from 14:00 Sydney on the Wednesday before the meeting until the minutes; trading blackout to 17:00 on decision day",
                url: "https://www.rba.gov.au/about-rba/our-policies/monetary-policy-board-external-members-comms-and-public-engagement-policy.html"}
@@ -223,10 +218,9 @@ banks:
       unit: percent
       ff_name: "Official Cash Rate"            # FF row name; matched on (currency, name)
       official: {bis: "bis:NZ"}    # series ids in config/cb_official.yaml
-      bis_offset_days: 1           # BIS books the OCR change the day after (3 Sep 2026 for the 2 Sep decision)
     overnight_benchmark: null                 # OCR is itself the overnight rate; BKBM-90d (instrument benchmark) not published by an accessible source
-    effective_rule: {kind: calendar_days, days: 0, verified: false, source: null,
-                     note: "assumed same day (OCR announced 14:00 NZ); BIS shows decision+1 by its own convention; RBNZ pages blocked"}
+    effective_rule: {kind: next_business_day, calendar: NZ, verified: false, source: null, derived_from: "bis:NZ",
+                     note: "derived from BIS (RBNZ site blocked): BIS dates every other bank by the effective date, and its 5/5 OCR changes since 2025-08 (2025-08-21, 2025-10-09, 2025-11-27, 2026-07-09, 2026-09-03) fall on the first NZ business day after the decision"}
     projections: {name: Monetary Policy Statement (OCR track), months: [2, 5, 9, 12], source: manual_from_release_schedule}
     blackout: null
     youtube_channel_id: UC1v0CeB83SX6Px9r5KT0NuQ
@@ -253,9 +247,8 @@ banks:
       official: {level: "snb:LZ"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SARON, source: snb_data_portal, id: "snbgwdzid/SARON",
                           url: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en", series_id: "snb:SARON"}
-    effective_rule: {kind: calendar_days, days: 1, verified: true,
-                     source: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en",
-                     note: "SNB policy rate series changes decision+1 (2/2 in 2025: 21 Mar, 20 Jun)"}
+    effective_rule: {kind: calendar_days, days: 1, verified: true, source: "snb:LZ",
+                     note: "no SNB change since 2025-09 to test; earlier evidence (0A): 2/2 in 2025 land on decision+1 (2025-03-21, 2025-06-20)"}
     projections: {name: Conditional inflation forecast, months: [3, 6, 9, 12], source: snb_practice_derived}
     blackout: null
     youtube_channel_id: UC4vQTVEqtj2orppzBkdGmyg

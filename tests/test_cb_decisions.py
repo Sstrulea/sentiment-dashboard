@@ -67,10 +67,10 @@ ORACLE = {
     ("AUD", D(2026, 5, 5)): (4.10, 4.35, None, None, 25, D(2026, 5, 6), "official"),
     ("AUD", D(2026, 6, 16)): (4.35, 4.35, None, None, 0, D(2026, 6, 17), "official"),
     ("AUD", D(2026, 8, 11)): (4.35, 4.35, None, None, 0, D(2026, 8, 12), "official"),
-    ("NZD", D(2026, 4, 8)): (2.25, 2.25, None, None, 0, D(2026, 4, 8), "bis"),
-    ("NZD", D(2026, 5, 27)): (2.25, 2.25, None, None, 0, D(2026, 5, 27), "bis"),
-    ("NZD", D(2026, 7, 8)): (2.25, 2.50, None, None, 25, D(2026, 7, 8), "bis"),
-    ("NZD", D(2026, 9, 2)): (2.50, 2.75, None, None, 25, D(2026, 9, 2), "bis"),
+    ("NZD", D(2026, 4, 8)): (2.25, 2.25, None, None, 0, D(2026, 4, 9), "bis"),
+    ("NZD", D(2026, 5, 27)): (2.25, 2.25, None, None, 0, D(2026, 5, 28), "bis"),
+    ("NZD", D(2026, 7, 8)): (2.25, 2.50, None, None, 25, D(2026, 7, 9), "bis"),
+    ("NZD", D(2026, 9, 2)): (2.50, 2.75, None, None, 25, D(2026, 9, 3), "bis"),
     ("CHF", D(2025, 9, 25)): (0.0, 0.0, None, None, 0, D(2025, 9, 26), "official"),
     ("CHF", D(2025, 12, 11)): (0.0, 0.0, None, None, 0, D(2025, 12, 12), "official"),
     ("CHF", D(2026, 3, 19)): (0.0, 0.0, None, None, 0, D(2026, 3, 20), "official"),
@@ -122,10 +122,13 @@ def test_boj_zero_placeholder_and_nan_rows_are_rejected_with_a_trace(real):
     assert r["decision_time_utc"] is None                                            # BoJ publishes only a window
 
 
-def test_nzd_reads_bis_a_day_after_the_effective_date(real):
+def test_nzd_takes_effect_on_the_next_nz_business_day_and_bis_is_read_on_that_date(real):
+    """RBNZ (site blocked): the rule is derived from BIS - the OCR change of 2 Sep 2026 shows on 3 Sep. BIS is read on
+    the effective date exactly like the official series of the other banks (no offset)."""
     r = real[0][("NZD", D(2026, 9, 2))]
-    assert r["rate_before"] == pytest.approx(2.50) and r["rate_after"] == pytest.approx(2.75)
-    assert "1 day(s) after the effective date (2026-09-03)" in r["notes"] and r["effective_date"] == D(2026, 9, 2)
+    assert r["effective_date"] == D(2026, 9, 3) and r["rate_before"] == pytest.approx(2.50) and r["rate_after"] == pytest.approx(2.75)
+    assert r["status"] == "bis" and r["rate_source"] == "bis:NZ" and "after the effective date" not in r["notes"]
+    assert real[0][("NZD", D(2026, 7, 8))]["effective_date"] == D(2026, 7, 9)
 
 
 def test_duplicate_ff_rows_on_the_decision_day_use_the_closest_to_the_decision_time(real):
