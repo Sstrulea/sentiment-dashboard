@@ -15,12 +15,13 @@ from typing import Callable, Iterable, Optional
 from ..cb_calendar import Calendar, weekends_only
 from .decisions import SeriesView
 from .methods import (Curve, TenorCurve, Window, chain_path, exact_chain, interior_meetings, interval_ends, months_between,
-                      path_average, pick_window, pre_days, step_probabilities)
+                      path_average, pick_window, pre_days, proxy_basis, step_probabilities)
 from .spread import Spread, compute_spread
 
 FLAG_OF = {"EXACT": "EXACT", "CURVE": "CURVE", "WINDOW": "UPPER_BOUND", "PROXY_CURVE": "PROXY", "PROXY_TENOR": "PROXY"}
 STRENGTH = {"EXACT": 0, "CURVE": 1, "UPPER_BOUND": 2, "PROXY": 3, "DECIDED": -1}      # higher = weaker
-EXTRAPOLATION_MONTHS = 1.0             # a curve is not extrapolated flat further than this below its first tenor
+EXTRAPOLATION_MONTHS = 1.0             # a policy-equivalent CURVE is not extrapolated flat further than this below its first tenor
+LEVEL_KINDS = ("policy", "bkbm", "sovereign_proxy")
 YEAR_ENDS = (2026, 2027)
 GAP_YEARS = (2026, 2027, 2028)
 REPRICING_BD = {"1s": 5, "1l": 21}
@@ -155,7 +156,7 @@ class Point:
     meeting: Optional[date]                      # decision date of the meeting (None for a tenor point)
     eff: Optional[date]
     kind: str                                    # meeting | window | tenor
-    rate: Optional[float]                        # implied policy rate, percent
+    rate: Optional[float]                        # implied POLICY-equivalent rate, percent (None when only a level exists)
     cum_bp: Optional[float]                      # vs the base
     step_bp: Optional[float]                     # implied step at this meeting (per-meeting methods only)
     method: str                                  # EXACT | CURVE | WINDOW | PROXY_CURVE | PROXY_TENOR
@@ -168,6 +169,8 @@ class Point:
     reason: str = ""                             # why rate / cum / step are n/a
     notes: list = field(default_factory=list)
     extra: dict = field(default_factory=dict)
+    level: Optional[float] = None                # the value the DELTA metrics (repricing, reaction) use: == rate for policy-equivalent
+    level_kind: str = "policy"                   # policy | bkbm (ASX BB, not the OCR) | sovereign_proxy (raw government curve)
 
 
 @dataclass
@@ -246,7 +249,7 @@ def trajectory(ctx: Context, cur: str, asof: date) -> Trajectory:
             if not rows:
                 tr.notes.append(f"{sid}: no {inst} rows in the {snap.asof} snapshot")
                 continue
-            covered = {m for m, p in pts.items() if p.rate is not None}
+            covered = {m for m, p in pts.items() if p.level is not None}
             for m, p in _METHODS[method](ctx, tr, unknown, sid, snap, rows, covered).items():
                 if m not in covered:
                     pts[m] = _finish(ctx, p, asof)
@@ -306,7 +309,7 @@ def _exact(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
             extra = {"days_after": cp.days_after, "how": cp.how, "r_prev": cp.r_prev, "months": last}
             if gap:                                                       # r_prev is the rate before an unidentified meeting
                 extra["step_reason"] = "the previous meeting is not identified: the difference to the last identified rate spans two meetings"
-            out[u.decision] = _pt(sid, snap, u, method="EXACT", rate=cp.r_post, cum_bp=_cum(cp.r_post, tr.base.rate),
+            out[u.decision] = _pt(sid, snap, u, method="EXACT", rate=cp.r_post, level=cp.r_post, cum_bp=_cum(cp.r_post, tr.base.rate),
                                   step_bp=None if gap else (cp.r_post - cp.r_prev) * 100, notes=notes, extra=extra)
             gap = False
     tr.extra.update(exact_path=chain_path(chain, r_start, S0, known), exact_start=S0,
@@ -335,22 +338,29 @@ def _curve_points(ctx, tr, unknown, sid, snap, rows, covered, proxy: bool) -> di
     ends = interval_ends(effs)
     t = lambda d: months_between(snap.asof, d)                                   # noqa: E731
     start0 = _base_start(tr)
-    avg0 = curve.average(t(start0), t(effs[0])) if effs[0] > start0 else curve.value(t(start0))
+    method = "PROXY_CURVE" if proxy else "CURVE"
+    basis, basis_reason, offset = None, "", 0.0
     if proxy:
-        offset, label = avg0 - tr.base.rate, "basis"
-        tr.notes.append(f"PROXY basis {offset * 100:+.1f} bp = curve average on [{start0}, {effs[0]}) - base {tr.base.rate:g}")
+        # the basis comes only from tenors observed before the first effective date; without one it is n/a and so is every
+        # policy-equivalent metric (cum bp, step, probability, surprise vs the market) - the raw levels remain
+        basis, basis_reason = proxy_basis(list(zip(curve.t, curve.v)), t(start0), t(effs[0]), tr.base.rate)
+        tr.extra["proxy_basis"] = basis
+        offset = basis if basis is not None else 0.0
+        tr.notes.append(f"PROXY basis {basis * 100:+.1f} bp = observed-tenor curve average on [{start0}, {effs[0]}) - base {tr.base.rate:g}"
+                        if basis is not None else f"PROXY basis n/a - {basis_reason}")
     else:
+        avg0 = curve.average(t(start0), t(effs[0])) if effs[0] > start0 else curve.value(t(start0))
         sp = tr.spread.value if tr.spread and tr.spread.value is not None else None
         if sp is None:
-            return {u.decision: _pt(sid, snap, u, method="CURVE", reason="spread unavailable") for u in todo}
-        offset, label = sp, "spread"
+            return {u.decision: _pt(sid, snap, u, method=method, reason="spread unavailable") for u in todo}
+        offset = sp
         tr.consistency.append(("CURVE " + sid, f"[{start0}, {effs[0]})", (avg0 - offset - tr.base.rate) * 100, f"curve {avg0:.3f} - spread {offset * 100:+.1f} bp vs base {tr.base.rate:g}"))
-    method = "PROXY_CURVE" if proxy else "CURVE"
-    out, prev = {}, tr.base.rate
+    label = "basis" if proxy else "spread"
+    out, prev = {}, (None if proxy and basis is None else tr.base.rate)
     for u, e0, e1 in zip(unknown, effs, ends):
-        t0m = months_between(snap.asof, e0)
+        t0m = t(e0)
         why = ""
-        if t0m < curve.t[0] - EXTRAPOLATION_MONTHS:
+        if not proxy and t0m < curve.t[0] - EXTRAPOLATION_MONTHS:
             why = (f"interval starts {t0m:.1f} months out, more than {EXTRAPOLATION_MONTHS:g} month before the curve's first tenor "
                    f"({curve.t[0]:g}M): the curve carries no information about it")
         elif t0m > curve.horizon + 1e-9:
@@ -360,13 +370,26 @@ def _curve_points(ctx, tr, unknown, sid, snap, rows, covered, proxy: bool) -> di
                 out[u.decision] = _pt(sid, snap, u, method=method, reason=why)
             prev = None
             continue
-        rate = curve.average(t(e0), t(e1)) - offset
+        level = curve.average(t(e0), t(e1))
+        notes = []
+        if proxy:
+            rate = None if basis is None else level - basis
+            kind = "sovereign_proxy"
+            if t0m < curve.t[0] - 1e-9:
+                notes.append(f"interval starts {t0m:.1f} months out, before the curve's first tenor ({curve.t[0]:g}M): the shortest tenor is extended flat")
+        else:
+            rate, level, kind = level - offset, level - offset, "policy"
         if u.decision not in covered:
-            extra = {"interval": (e0, e1), label: offset}
-            if prev is None:
+            extra = {"interval": (e0, e1), label: basis if proxy else offset}
+            if proxy:
+                extra["level_raw"] = level
+            reason = basis_reason if rate is None else ""
+            if rate is not None and prev is None:
                 extra["step_reason"] = "the previous meeting is not identified: the difference to the base would span two meetings"
-            out[u.decision] = _pt(sid, snap, u, method=method, rate=rate, cum_bp=_cum(rate, tr.base.rate),
-                                  step_bp=None if prev is None else (rate - prev) * 100, window=(e0, e1), extra=extra)
+            out[u.decision] = _pt(sid, snap, u, method=method, rate=rate, level=level, level_kind=kind,
+                                  cum_bp=None if rate is None else _cum(rate, tr.base.rate),
+                                  step_bp=None if rate is None or prev is None else (rate - prev) * 100,
+                                  window=(e0, e1), reason=reason, notes=notes, extra=extra)
         prev = rate
     return out
 
@@ -400,11 +423,12 @@ def _window(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
             out[u.decision] = _pt(sid, snap, u, method="WINDOW", reason="no window starts on or after the effective date - 7 days (contract horizon)")
             continue
         notes = []
-        cum = _cum(w.rate, tr.base.rate) if has_spread else None
         if not has_spread:
             notes.append("BKBM level, not the OCR: no BKBM-OCR spread exists, so no bp vs the OCR")
-        out[u.decision] = _pt(sid, snap, u, method="WINDOW", rate=w.rate, cum_bp=cum, window=(w.start, w.end), notes=notes,
-                              reason="" if cum is not None else "BKBM basis (no OCR spread)",
+        out[u.decision] = _pt(sid, snap, u, method="WINDOW", rate=w.rate if has_spread else None, level=w.rate,
+                              level_kind="policy" if has_spread else "bkbm",
+                              cum_bp=_cum(w.rate, tr.base.rate) if has_spread else None, window=(w.start, w.end), notes=notes,
+                              reason="" if has_spread else "BKBM basis (no OCR spread)",
                               extra={"pre_days": pre_days(w, u.eff), "interior": interior_meetings(w, u.eff, effs),
                                      "gap_days": (w.start - u.eff).days, "contract": w.label,
                                      "step": "n/a: window average (UPPER_BOUND), not a per-meeting value"})
@@ -460,6 +484,8 @@ class YearEnd:
     stale: bool = False
     reason: str = ""
     extra: dict = field(default_factory=dict)
+    level: Optional[float] = None                # what the delta metrics use (see Point.level)
+    level_kind: str = "policy"
 
 
 def last_meeting_of(ctx: Context, cur: str, year: int) -> Optional[Meeting]:
@@ -475,8 +501,10 @@ def year_end(ctx: Context, tr: Trajectory, year: int) -> YearEnd:
         return YearEnd(year, None, reason=f"no {year} meeting on record")
     if m.decision <= tr.asof:
         return YearEnd(year, m.decision, cum_bp=0.0, rate=tr.base.rate if tr.base else None, flag="DECIDED",
-                       reason="the last meeting of the year is already decided: it is part of the base")
+                       reason="the last meeting of the year is already decided: it is part of the base",
+                       level=tr.base.rate if tr.base else None)
     p = tr.point_for(m.decision)
-    if p is None or p.rate is None:
+    if p is None or p.level is None:
         return YearEnd(year, m.decision, reason=(p.reason if p else "meeting not in the trajectory"))
-    return YearEnd(year, m.decision, p.cum_bp, p.rate, p.flag, p.window, p.stale, p.reason if p.cum_bp is None else "", p.extra)
+    return YearEnd(year, m.decision, p.cum_bp, p.rate, p.flag, p.window, p.stale, p.reason if p.cum_bp is None else "", p.extra,
+                   level=p.level, level_kind=p.level_kind)

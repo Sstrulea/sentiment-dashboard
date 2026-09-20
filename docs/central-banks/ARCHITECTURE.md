@@ -81,8 +81,9 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **1A** | fundație + colector în CI (config, adaptoare de piață, `cb_collect`, `cb-refresh.yml`) |
 | **1B-1** | date oficiale: calendare, serii oficiale, ședințe (first_day, blackout), decizii, proiecții Fed, RBNZ manual, verificare săptămânală a calendarului |
 | **1B-2** | calcul: traiectorie pe ședință, cumulat, GAP, repricing, surprize față de piață, pereche |
+| **3a** | UI pentru partea numerică: `/central-banks`, `/central-banks/<ccy>`, `/central-banks/pair/<pair>`, JSON în `public/data/cb/`, render în `cb-refresh` |
 | **2** | texte + rezumate |
-| **3** | UI |
+| **3b** | UI pentru texte |
 | **4** | trigger extern + verificări finale: **scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`**, 3 reîncercări cu backoff, alertă la eșec (Vercel Cron pe Hobby rulează o dată pe zi) |
 
 ## 8. Ce există după 1B-1
@@ -265,12 +266,20 @@ Fără dependențe noi. Nimic în `public/`, nimic în UI.
 | **EXACT** | futures 1M pe media lunii: `r_post = (N·X − d_pre·r_prev)/(N − d_pre)`, zile calendaristice, rata se schimbă doar la data efectivă; pașii deciși dar neintrați în vigoare sunt cunoscuți; lunile fără ședință = verificare de consistență (abaterea în bp, raportată) | CAD COA (MX 1M), AUD ASX IB |
 | **CURVE** | curbă OIS forward, media pe `[eff_m, eff_{m+1})` (interpolare liniară pe grila lunară; ultima ședință: 56 de zile) − spread | GBP BoE OIS |
 | **UPPER_BOUND** | (metoda WINDOW) contracte 3M: o valoare pe fereastra de referință; `pick_window` = fereastra cu start în `[eff − 7 zile calendaristice, ∞)` cea mai apropiată de data efectivă (egalitate: cea mai timpurie); ieșire cu numărul de ședințe în interior și zilele ferestrei dinainte de data efectivă | USD MPT, JPY JPX TONA-3M, CAD MX CRA (dincolo de COA), NZD ASX BB (nivel BKBM) |
-| **PROXY** | curbe de stat / bills: `bază = media curbei pe [as-of, prima dată efectivă) − rata curentă`; implicit = medie − bază; lunar (per ședință) sau pe tenor | EUR ECB AAA (per ședință); UST, BoC bills, RBA bank bills (doar cross-check, pe tenor) |
+| **PROXY** | curbe de stat / bills: `bază = media curbei, construită DOAR din tenorii observați înainte de prima dată efectivă, pe [as-of, prima dată efectivă) − rata curentă` (bills: randamentul celui mai lung tenor care se încheie înainte de ea); implicit = medie − bază; lunar (per ședință) sau pe tenor. **Fără un astfel de tenor baza e n/a** („proxy without short end”) și tot ce cere baza devine n/a — vezi mai jos | EUR ECB AAA (per ședință); UST, BoC bills, RBA bank bills (doar cross-check, pe tenor) |
 | n/a | CHF (fără sursă); NZD față de OCR (fără spread BKBM–OCR: se arată nivelul BKBM, nu bp) | — |
 
 Instrumentul principal per valută: USD MPT (cross-check Treasury), EUR ECB AAA, GBP BoE OIS, JPY JPX, CAD COA apoi CRA dincolo de
 orizontul COA (cross-check bills BoC), AUD ASX IB (cross-check RBA bills), NZD ASX BB, CHF n/a. Metodele exacte au prioritate;
 ferestrele 3M completează doar ședințele pe care EXACT nu le acoperă.
+
+**Regula PROXY „fără capăt scurt” (generală, se aplică oricărui PROXY).** Baza se măsoară doar pe tenori observați înainte de prima dată
+efectivă; ECB AAA începe la 3M, iar prima ședință ECB e la ~1.6 luni, deci baza EUR = n/a. Atunci sunt n/a, cu motivul „proxy without short
+end”: rata implicită (politică-echivalentă), bp cumulat față de rata curentă, pasul și probabilitatea la următoarea ședință, surpriza vs piață
+T−1, diferențialul de nivel al perechilor. Rămân: nivelurile brute ale curbei (`level`, `level_kind: sovereign_proxy`, „sovereign proxy, not
+policy-equivalent”, media curbei pe intervalul dintre datele efective, cu nota „shortest tenor extended flat” când intervalul începe înainte de
+primul tenor), repricing-ul și reacția (Δ de nivel al aceluiași instrument, nu au nevoie de bază). CURVE (politică-echivalent, cu spread) își
+păstrează propriul gard: n/a dacă intervalul începe cu mai mult de 1 lună înaintea primului tenor.
 
 Reguli ale lanțului EXACT (toate cu test + mutație):
 - fereastra de coadă: `N − d_pre < 5` (ședință în ultimele 5 zile ale lunii) și luna următoare fără ședință → `r_post` = media lunii
@@ -281,7 +290,9 @@ Reguli ale lanțului EXACT (toate cu test + mutație):
 ### Ieșiri per bancă (la un as-of)
 
 1. **Traiectorie**: punct pe ședință (data efectivă sau fereastra, rata implicită, cumulat în bp față de bază, metodă, sursă + as-of,
-   `stale`), motiv când e n/a.
+   `stale`), motiv când e n/a. Fiecare punct are și `level` + `level_kind` (`policy` = rata implicită; `bkbm` = nivelul ASX BB, nu OCR;
+   `sovereign_proxy` = curba brută): valoarea pe care o folosesc metricile de Δ (repricing, reacție). `rate` (politică-echivalent) și
+   `cum_bp` sunt n/a când există doar un nivel (NZD BKBM, PROXY fără capăt scurt).
 2. **Următoarea ședință**: pas implicit (EXACT / CURVE / PROXY lunar) și probabilitate doar pentru EXACT / CURVE: `n = ⌊|pas|/25⌋`,
    `p = (|pas| − 25n)/25`; P(n+1 mișcări) = p, P(n) = 1 − p, în direcția pasului. Altfel n/a + motiv.
 3. **Cumulat la ultima ședință din 2026 și din 2027** (WINDOW: fereastra `pick_window`, UPPER_BOUND; dacă ședința e deja decisă e parte
@@ -289,33 +300,41 @@ Reguli ale lanțului EXACT (toate cu test + mutație):
 4. **stale** = lag (zile lucrătoare în calendarul sursei) > `stale_after_bd` (implicit 2; se poate suprascrie pe sursă).
 5. **GAP (bp) = piață − bancă.** Fed: mediana dot-urilor (ultimul SEP) față de piață la ultima ședință din 2026 / 2027 / 2028, plus
    distribuția dot-urilor. Pentru 2028 nu există calendar: se presupune ultima ședință = a doua miercuri din decembrie (tiparul
-   Fed), marcat în notă. RBNZ: doar pe aceeași bază — proiecția MPS „90-day bank bill” pe trimestru față de ASX BB al cărui interval de
-   90 de zile începe în acel trimestru (cel mai apropiat de mijloc); n/a cât MPS-ul e placeholder. Celelalte: n/a („nu publică o cale proprie”).
-6. **Repricing 1s / 1l** = Δ peste 5 / 21 zile lucrătoare (calendarul sursei) al cumulatului la sfârșitul lui 2026 / 2027 și al pasului
-   următoarei ședințe, recalculând traiectoria la as-of-ul anterior. n/a cu motiv când istoricul nu ajunge (JPX, MX, ASX sunt snapshot:
-   istoric doar din 2026-09-18). **Dacă între cele două date a căzut o decizie**, cumulatul e față de altă bază: se marchează
-   `base_change_bp` și se arată în plus Δ al NIVELULUI implicit (`level`).
+   Fed), marcat în notă. RBNZ: GAP doar pe aceeași bază — proiecția MPS „90-day bank bill” față de ASX BB. Tabelele din PDF-ul MPS sep 2026
+   nu conțin proiecția 90-day (doar OCR track), deci **GAP NZD = n/a** (OCR și BKBM sunt baze diferite); traiectoria băncii (OCR track,
+   medii trimestriale rotunjite la 0.1, transcriere manuală din Appendix 1, Table 6.1, p. 50, proiecții finalizate 2026-08-26) se afișează
+   **separat** (`bank_path`). Dacă un MPS viitor are proiecția 90-day, GAP-ul folosește ASX BB al cărui interval de 90 de zile începe în
+   trimestru (cel mai apropiat de mijloc). Celelalte: n/a („nu publică o cale proprie”).
+6. **Repricing 1s / 1l** = Δ peste 5 / 21 zile lucrătoare (calendarul sursei), recalculând traiectoria la as-of-ul anterior. **Valoarea
+   principală = Δ al NIVELULUI implicit la orizont fix** (ultima ședință din 2026 / 2027): nu depinde de deciziile dintre cele două date
+   (o hike de 25 bp nu apare ca −25 bp). Δ al bp cumulat rămâne câmp secundar (față de baza fiecărei date; `base_change_bp` marchează o
+   decizie între date). **Pasul la următoarea ședință: aceeași ședință la ambele date** (pasul ei la data veche = nivelul ei − nivelul
+   ședinței dinaintea ei la acea dată), nu „următoarea ședință de atunci”. n/a cu motiv când istoricul nu ajunge (JPX, MX, ASX sunt
+   snapshot: istoric doar din 2026-09-18) sau când nivelul / pasul nu există (EUR: pasul cere baza; NZD are Δ pe BKBM).
 7. **Surprize / reacție** (ultimele 4 decizii + următoarele): față de consens (din `decisions.parquet`); față de piață T−1 = pasul decis −
-   pasul implicit la T−1 (doar EXACT / CURVE / PROXY lunar); reacția = Δ(EOD T − EOD T−1) al nivelului implicit la următoarea ședință și la
+   pasul implicit la T−1 (doar EXACT / CURVE / PROXY lunar cu bază; PROXY fără capăt scurt = n/a); reacția = Δ(EOD T − EOD T−1) al `level` la următoarea ședință și la
    ultima ședință a anului.
-8. **Cross-check-uri**: USD MPT vs Treasury (fără bază → bază scoasă), CAD lanțul COA vs CRA pe aceeași perioadă, AUD lanțul IB vs RBA bank
-   bills la 3M / 6M.
+8. **Cross-check-uri**: USD MPT vs Treasury (baza din bill-ul de 1M, singurul care se încheie înainte de 29 oct), CAD lanțul COA vs CRA pe
+   aceeași perioadă, AUD lanțul IB vs RBA bank bills: **n/a** — cel mai scurt bill RBA (1M) se încheie după prima dată efectivă (30 sep),
+   deci „proxy without short end”.
 
-### Perechi (cele 28 din `data/economic_instruments.yaml`, `type: fx`)
+### Perechi (cele 28 din `data/economic_instruments.yaml`, `type: fx`) — n/a pe metrică, nu pe pereche
 
-`bază − cotată` pentru rata curentă (bp), rata implicită și cumulatul la ultima ședință din 2026 / 2027, plus repricingul diferențialului
-(Δ al diferențialului implicit al nivelurilor, deci o decizie între date nu intră). Flag = cel mai slab dintre cele două picioare
-(`EXACT < CURVE < UPPER_BOUND < PROXY`); n/a dacă lipsește un picior (CHF, NZD față de OCR) sau un istoric.
+`bază − cotată`, metrică cu metrică (fiecare e n/a separat, cu motivul fiecărui picior):
+- **rata curentă (carry)**: cere ambele baze — există pentru toate cele 28 (și CHF, și NZD);
+- **diferențialul implicit / cumulat la ultima ședință din 2026 / 2027**: cere ambele niveluri politică-echivalente (deci n/a pentru EUR pe
+  proxy, NZD pe BKBM, CHF);
+- **repricing-ul diferențialului** (5 / 21 zile): cere Δ de nivel la ambele picioare — EUR (proxy) și NZD (BKBM) au Δ; CHF nu.
+Flag = cel mai slab dintre cele două picioare (`EXACT < CURVE < UPPER_BOUND < PROXY`).
 
-### Decizii de execuție (de confirmat)
+### Decizii de execuție
 
-- **PROXY nu extrapolează plat sub primul tenor al curbei.** Curba ECB AAA începe la 3M: o ședință al cărei interval începe cu mai mult de
-  1 lună înaintea primului tenor (`EXTRAPOLATION_MONTHS`) e n/a („curba nu spune nimic despre ea”); altfel pasul ar ieși ~0 din
-  extrapolare, nu din piață. Consecință: pentru EUR, următoarea ședință (la ~1.6 luni) și surprizele față de piață T−1 sunt n/a.
-- **Excluderea din spread în jurul datei efective** se face pentru schimbări de rată, nu pentru menținere.
+- **Confirmate:** excluderea din spread în jurul datei efective se face pentru schimbări de rată, nu pentru menținere; ultima ședință Fed din
+  2028 e presupusă (a doua miercuri din decembrie) și marcată.
+- **Închise de ajustările 1B-2:** întrebarea EUR (extrapolare sub primul tenor) → regula PROXY „fără capăt scurt”; întrebarea repricing (cum vs
+  nivel) → nivelul e valoarea principală; întrebarea GAP RBNZ → înlocuită de OCR track (bank path separat) + GAP n/a fără proiecția 90-day.
 - **E3 (regula ferestrei)** din 0A („prima fereastră cu start ≥ eff − 3 zile”) e înlocuită de regula de mai sus (7 zile, cea mai apropiată);
   `cb_probe.pick_window` a fost aliniată, `docs/spikes/cb_sources_numeric.md` are nota.
-- Ultima ședință Fed din 2028: presupusă (a doua miercuri din decembrie).
 
 ### Față de 0A / 0B (as-of 2026-09-18, date înghețate în `tests/fixtures/cb_engine/`)
 
@@ -324,4 +343,5 @@ Valori BRUTE (înainte de spread), aceeași metodă: USD MPT 4.310 / 4.638, JPY 
 Metoda schimbată (nou / 0A / diferență): spread USD +2.0 bp (mediană) vs −2.5 bp (o zi) → USD 2026 4.290 vs 4.335 (−4.5 bp); CAD 28 oct
 +14.0 vs +12 (+2.0; BoC efectiv +1, coadă → media lui noiembrie); AUD 8 dec 4.7343 vs 4.726 (+0.8; coada 29 sep); GBP 2026 4.160 vs 4.051 (+10.9;
 media pe interval față de valoarea punctuală, curba crește); GBP 2027 4.854 vs 4.855; EUR 2026 2.611 vs 2.821 (−21.0), 2027 3.078 vs 3.397
-(−31.9): baza PROXY +26.1 bp scăzută.
+(−31.9) în prima versiune; cu regula „fără capăt scurt” EUR nu mai are rată politică-echivalentă: nivelul brut e 2.872 / 3.339 față de 0A 2.821 /
+3.397 (+5.1 / −5.8 bp: media pe interval față de valoarea punctuală).

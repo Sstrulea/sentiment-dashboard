@@ -189,14 +189,21 @@ def nz_meetings():
     return ds.load_meetings(ROOT / "data" / "cb" / "meetings.yaml")["NZD"]
 
 
-def test_seed_rbnz_file_is_valid_and_needs_only_the_sep_2026_mps():
+def test_seed_rbnz_file_is_valid_and_carries_the_sep_2026_mps_track():
     doc = seed()
     assert ds.validate_rbnz(doc) == []
-    assert [(e["meeting"], e["status"]) for e in doc["mps"]] == [(D(2026, 9, 2), "placeholder")]
+    (mps,) = doc["mps"]                                                                  # only the latest MPS is needed
+    assert (mps["meeting"], mps["status"]) == (D(2026, 9, 2), "filled")
+    assert mps["source"]["page"] == "Appendix 1, Table 6.1, p. 50" and mps["source"]["url"].endswith("/2026/sep-2926/mps_report_sep2026.pdf")
+    assert mps["projections_finalised"] == D(2026, 8, 26)
+    assert [(p["period"], p["value"]) for p in mps["ocr_track"]] == [
+        ("2026Q3", 2.6), ("2026Q4", 2.8), ("2027Q1", 3.0), ("2027Q2", 3.1), ("2027Q3", 3.1), ("2027Q4", 3.2),
+        ("2028Q1", 3.2), ("2028Q2", 3.2), ("2028Q3", 3.2), ("2028Q4", 3.2), ("2029Q1", 3.3), ("2029Q2", 3.3), ("2029Q3", 3.3)]
+    assert mps["bank_bill_90d"] == []                                                    # not in the PDF tables: the RBNZ GAP stays n/a
     assert [m["date"] for m in doc["published_calendar"]["meetings"]] == [m["date"] for m in nz_meetings()]      # the meetings.yaml source
     assert doc["calendar_2027"]["status"] == "pending" and doc["calendar_2027"]["published_until"] == D(2027, 2, 17)
-    mps = {m["date"] for m in nz_meetings() if m["has_projections"]}
-    assert {e["meeting"] for e in doc["mps"]} <= mps                                    # every entry is a real MPS of the calendar
+    mps_dates = {m["date"] for m in nz_meetings() if m["has_projections"]}
+    assert {e["meeting"] for e in doc["mps"]} <= mps_dates                              # every entry is a real MPS of the calendar
 
 
 def filled(meeting=D(2026, 9, 2)):
@@ -218,6 +225,12 @@ def test_schema_rejects_the_usual_mistakes():
     assert any("period (str) and value (number)" in x for x in with_mps(e))
     e = filled(); e["status"] = "done"
     assert any("status must be placeholder | filled" in x for x in with_mps(e))
+    e = filled(); e["ocr_track"] = [{"period": "2026-Q4", "value": 2.8}]
+    assert any("period must look like 2026Q4" in x for x in with_mps(e))                    # a typo in a manual quarter label
+    e = filled(); e["ocr_track"] = [{"period": "2026Q4", "value": 2.8}, {"period": "2026Q4", "value": 2.9}]
+    assert any("duplicate period" in x for x in with_mps(e))
+    e = filled(); e["bank_bill_90d"] = [{"period": "2026Q5", "value": 2.9}]
+    assert any("bank_bill_90d period must look like" in x for x in with_mps(e))
     assert any("duplicate meeting" in x for x in with_mps(filled(), filled()))
     e = filled(); e["meeting"] = "2026-09-02"
     assert any("meeting must be a date" in x for x in with_mps(e))
@@ -232,16 +245,17 @@ def test_schema_rejects_the_usual_mistakes():
     assert ds.validate_rbnz({}) == ["file missing or empty"]
 
 
-def test_status_warns_only_for_the_latest_mps_and_clears_once_it_is_filled():
+def test_status_warns_only_for_an_mps_newer_than_the_one_in_the_file():
     doc = seed()
-    w = ds.rbnz_warnings(doc, nz_meetings(), D(2026, 9, 20))
-    assert w == ["RBNZ MPS 2026-09-02: no OCR track (placeholder) - fill data/cb/manual/rbnz.yaml"]         # Feb / May are not needed
-    doc["mps"][0] = filled(D(2026, 9, 2))
-    assert ds.rbnz_warnings(doc, nz_meetings(), D(2026, 9, 20)) == []
-    # a NEW MPS (9 Dec) after its date, with no entry at all
-    later = ds.rbnz_warnings(doc, nz_meetings(), D(2026, 12, 10))
+    assert ds.rbnz_warnings(doc, nz_meetings(), D(2026, 9, 20)) == []                          # Sep is filled; Feb / May are not needed
+    later = ds.rbnz_warnings(doc, nz_meetings(), D(2026, 12, 10))                               # a NEW MPS (9 Dec), no entry at all
     assert later == ["RBNZ MPS 2026-12-09: no OCR track (no entry) - fill data/cb/manual/rbnz.yaml"]
     assert ds.rbnz_warnings(doc, nz_meetings(), D(2026, 12, 8)) == []                           # before the MPS: nothing to ask for
+    doc["mps"].append({"meeting": D(2026, 12, 9), "status": "placeholder", "source": None, "ocr_track": [], "bank_bill_90d": []})
+    assert ds.rbnz_warnings(doc, nz_meetings(), D(2026, 12, 10))[0].startswith("RBNZ MPS 2026-12-09: no OCR track (placeholder)")
+    doc["mps"][0]["status"] = "placeholder"                                                     # the Sep entry alone, unfilled
+    doc["mps"] = doc["mps"][:1]
+    assert ds.rbnz_warnings(doc, nz_meetings(), D(2026, 9, 20)) == ["RBNZ MPS 2026-09-02: no OCR track (placeholder) - fill data/cb/manual/rbnz.yaml"]
 
 
 def test_status_warns_when_the_2027_calendar_runs_out():
@@ -266,5 +280,7 @@ def test_status_shows_the_rbnz_warnings(tmp_path):
     (paths.manual / "rbnz.yaml").write_text((ROOT / "data" / "cb" / "manual" / "rbnz.yaml").read_text())
     paths.meetings.write_text((ROOT / "data" / "cb" / "meetings.yaml").read_text())
     text, md = ds.extra_status(paths, D(2026, 9, 20))
-    assert "RBNZ manual file" in text and "WARN RBNZ MPS 2026-09-02: no OCR track (placeholder)" in text and "RBNZ MPS 2026-09-02" in md
+    assert "RBNZ manual file" in text and "WARN RBNZ" not in text and "MPS entries  filled  placeholders" in text          # Sep is filled
+    text, md = ds.extra_status(paths, D(2026, 12, 10))                                                                 # the 9 Dec MPS has passed
+    assert "WARN RBNZ MPS 2026-12-09: no OCR track (no entry)" in text and "RBNZ MPS 2026-12-09" in md
     assert "2026-02-18" not in text.split("RBNZ manual file")[1].split("\n\n")[0]

@@ -113,16 +113,17 @@ def test_where_the_method_changed_new_vs_0a_is_pinned(reports):
     assert point(aud, D(2026, 9, 29)).extra["how"] == "next_month" and point(aud, D(2026, 9, 29)).cum_bp == pytest.approx(21.5, abs=0.1)
 
 
-def test_gbp_interval_average_and_eur_basis_against_0a(reports):
+def test_gbp_interval_average_and_eur_level_against_0a(reports):
     gbp, eur = reports["GBP"].trajectory, reports["EUR"].trajectory
     g26, g27 = point(gbp, D(2026, 12, 17)), point(gbp, D(2027, 12, 16))
-    assert (g26.rate, 4.051) == (pytest.approx(4.160, abs=0.001), 4.051)                 # interval average over a rising curve vs the point forward
-    assert (g26.rate - 4.051) * 100 == pytest.approx(10.9, abs=0.3)
+    assert g26.rate == pytest.approx(4.160, abs=0.001) and (g26.rate - 4.051) * 100 == pytest.approx(10.9, abs=0.3)   # interval average over a rising curve vs the point forward
     assert g27.rate == pytest.approx(4.854, abs=0.001) and abs(g27.rate - 4.855) < TOL      # 2027: the curve is flat there: same as 0A
+    # EUR: the ECB AAA curve starts at 3M, after the first effective date -> no basis, so no policy-equivalent value: only the raw level
     e26, e27 = point(eur, D(2026, 12, 17)), point(eur, D(2027, 12, 16))
-    assert e26.flag == "PROXY" and e26.rate == pytest.approx(2.611, abs=0.001) and (e26.rate - 2.821) * 100 == pytest.approx(-21.0, abs=0.3)
-    assert e27.rate == pytest.approx(3.078, abs=0.001) and (e27.rate - 3.397) * 100 == pytest.approx(-31.9, abs=0.3)
-    assert any("PROXY basis +26.1 bp" in n for n in eur.notes)                            # the 0A value had no basis subtracted
+    assert e26.flag == "PROXY" and e26.rate is None and e26.cum_bp is None and e26.level_kind == "sovereign_proxy"
+    assert e26.level == pytest.approx(2.872, abs=0.001) and (e26.level - 2.821) * 100 == pytest.approx(5.1, abs=0.3)       # 0A raw @3.0m: interval average vs the point
+    assert e27.level == pytest.approx(3.339, abs=0.001) and (e27.level - 3.397) * 100 == pytest.approx(-5.8, abs=0.3)
+    assert eur.extra["proxy_basis"] is None and any("PROXY basis n/a" in n for n in eur.notes)
 
 
 def test_new_spread_against_the_single_day_spread_of_0a(reports):
@@ -150,25 +151,34 @@ def test_next_meeting_step_and_probabilities(reports):
     assert reports["CHF"].next.step_reason == "no market path for this currency"
 
 
-def test_eur_proxy_first_meeting_is_na_because_the_curve_starts_at_3m(reports):
+def test_proxy_without_short_end_keeps_only_the_levels(reports):
+    """EUR: no bp, no step, no probability, no surprise vs the market - only the raw levels, labelled, and the delta metrics."""
     eur = reports["EUR"]
-    assert eur.next.step_bp is None and "carries no information" in eur.next.step_reason
-    assert reports["EUR"].trajectory.points[1].step_bp is None and reports["EUR"].trajectory.points[2].step_bp == pytest.approx(14.1, abs=0.1)
+    why = "proxy without short end"
+    assert eur.next.step_bp is None and eur.next.probabilities is None and eur.next.step_reason.startswith(why) and eur.next.prob_reason.startswith(why)
+    assert all(p.rate is None and p.cum_bp is None and p.step_bp is None and p.level is not None and p.level_kind == "sovereign_proxy"
+               for p in eur.trajectory.points)
+    assert all(s.vs_market_bp is None and s.vs_market_reason.startswith(why) for s in eur.surprises if s.decided)
+    assert all(s.reaction_next_bp is not None for s in eur.surprises if s.decided)                      # the reaction needs no basis
+    assert eur.trajectory.points[1].step_bp is None and eur.trajectory.points[2].step_bp is None
 
 
 def test_year_end_cumulative_bp(reports):
-    exp = {"USD": (41.5, 74.3, "UPPER_BOUND"), "EUR": (11.1, 57.8, "PROXY"), "GBP": (41.0, 110.4, "CURVE"), "JPY": (24.8, 88.1, "UPPER_BOUND"),
-           "AUD": (38.4, 53.5, "EXACT")}
+    exp = {"USD": (41.5, 74.3, "UPPER_BOUND"), "GBP": (41.0, 110.4, "CURVE"), "JPY": (24.8, 88.1, "UPPER_BOUND"), "AUD": (38.4, 53.5, "EXACT")}
     for c, (y26, y27, flag) in exp.items():
         ye = reports[c].year_ends
         assert ye[2026].cum_bp == pytest.approx(y26, abs=0.1) and ye[2027].cum_bp == pytest.approx(y27, abs=0.1), c
         assert ye[2027].flag == flag or c == "AUD", c
     cad = reports["CAD"].year_ends
     assert (cad[2026].flag, cad[2027].flag) == ("EXACT", "UPPER_BOUND") and cad[2027].cum_bp == pytest.approx(130.5, abs=0.1)
-    nzd = reports["NZD"]
-    assert all(nzd.year_ends[y].cum_bp is None for y in (2026, 2027))                          # BKBM level, no OCR spread
-    assert nzd.trajectory.point_for(D(2026, 12, 9)).rate == pytest.approx(3.450) and nzd.trajectory.point_for(D(2027, 2, 17)).rate == pytest.approx(3.800)
-    assert reports["CHF"].year_ends[2026].reason == "no market path for this currency"
+    eur = reports["EUR"].year_ends                                                                     # a sovereign level, no bp
+    assert all(eur[y].cum_bp is None and eur[y].rate is None and eur[y].level_kind == "sovereign_proxy" for y in (2026, 2027))
+    assert eur[2026].level == pytest.approx(2.872, abs=0.001) and eur[2027].level == pytest.approx(3.339, abs=0.001)
+    nzd = reports["NZD"]                                                                               # a BKBM level, no bp
+    assert all(nzd.year_ends[y].cum_bp is None and nzd.year_ends[y].rate is None and nzd.year_ends[y].level_kind == "bkbm" for y in (2026, 2027))
+    assert nzd.year_ends[2026].level == pytest.approx(3.450) and nzd.year_ends[2027].level == pytest.approx(3.800)
+    assert nzd.trajectory.point_for(D(2026, 12, 9)).level == pytest.approx(3.450) and nzd.trajectory.point_for(D(2027, 2, 17)).level == pytest.approx(3.800)
+    assert reports["CHF"].year_ends[2026].reason == "no market path for this currency" and reports["CHF"].year_ends[2026].level is None
 
 
 def test_stale_is_only_flagged_beyond_two_business_days(ctx, reports):
@@ -189,10 +199,16 @@ def test_fed_gap_against_the_dots(reports):
     assert got[2026].gap_bp == pytest.approx((got[2026].market_rate - 4.125) * 100)
 
 
-def test_gap_is_na_for_banks_without_a_published_path_and_for_rbnz_without_the_mps(reports):
+def test_gap_is_na_for_banks_without_a_published_path_and_for_rbnz_without_a_90d_projection(reports):
     for c in ("EUR", "GBP", "JPY", "CAD", "AUD", "CHF"):
         assert reports[c].gap.kind == "n/a" and "does not publish" in reports[c].gap.reason
-    assert reports["NZD"].gap.kind == "n/a" and "placeholder" in reports["NZD"].gap.reason
+        assert reports[c].bank_path.kind == "n/a"
+    nzd = reports["NZD"]
+    assert nzd.gap.kind == "n/a" and "carry no 90-day bank bill projection" in nzd.gap.reason and not nzd.gap.years     # the same-basis rule
+    assert nzd.bank_path.kind == "ocr_track" and nzd.bank_path.source == D(2026, 9, 2) and nzd.bank_path.finalised == D(2026, 8, 26)
+    assert nzd.bank_path.points[:3] == [("2026Q3", 2.6), ("2026Q4", 2.8), ("2027Q1", 3.0)] and len(nzd.bank_path.points) == 13   # shown separately
+    usd = reports["USD"].bank_path
+    assert usd.kind == "dots" and usd.source == D(2026, 9, 16) and usd.points == [("2026", 4.125), ("2027", 4.125), ("2028", 3.875)]
 
 
 def test_rbnz_gap_uses_the_same_basis_when_the_mps_is_filled(ctx):
@@ -204,18 +220,24 @@ def test_rbnz_gap_uses_the_same_basis_when_the_mps_is_filled(ctx):
     assert g.years[0].market_window == (D(2026, 12, 16), D(2027, 3, 17))
 
 
-def test_repricing_and_history(reports):
+def test_repricing_main_value_is_the_change_of_the_level(reports):
     for c in ("USD", "EUR", "GBP"):
         for name in ("1s", "1l"):
             rp = reports[c].repricing[name]
-            assert rp.cum and not rp.reasons.get("all"), (c, name)
+            assert set(rp.level) == {2026, 2027} and not rp.reasons.get("all"), (c, name)
     for c in ("JPY", "CAD", "AUD", "NZD"):
         for name in ("1s", "1l"):
             assert "history starts 2026-09-18" in reports[c].repricing[name].reasons["all"]
-    usd = reports["USD"].repricing["1s"]
-    assert usd.base_change_bp == 25.0 and usd.cum[2026] == pytest.approx(-17.5, abs=0.1) and usd.level[2026] == pytest.approx(7.5, abs=0.1)
-    assert reports["GBP"].repricing["1l"].cum[2026] == pytest.approx(14.2, abs=0.1)
-    assert "next meeting changed" in reports["GBP"].repricing["1s"].reasons["step"]
+    usd = reports["USD"].repricing["1s"]                          # a 25 bp hike fell in between: the level moved +7.5 bp, the cumulative bp -17.5 bp
+    assert usd.level[2026] == pytest.approx(7.5, abs=0.1) and usd.level[2027] == pytest.approx(4.1, abs=0.1)
+    assert usd.cum[2026] == pytest.approx(-17.5, abs=0.1) and usd.base_change_bp == 25.0
+    assert reports["USD"].repricing["1l"].level[2026] == pytest.approx(37.5, abs=0.1)
+    eur = reports["EUR"].repricing                                # raw sovereign levels: no basis needed for a difference
+    assert eur["1s"].level[2026] == pytest.approx(-0.7, abs=0.1) and eur["1l"].level[2027] == pytest.approx(42.3, abs=0.1)
+    assert eur["1s"].level_flag[2026] == "PROXY" and not eur["1s"].cum and eur["1s"].reasons["step"].startswith("proxy without short end")
+    gbp = reports["GBP"].repricing                                # the SAME next meeting (5 Nov) at both dates, although on 11 Sep the next one was 17 Sep
+    assert gbp["1s"].step_meeting == D(2026, 11, 5) and gbp["1s"].step_bp == pytest.approx(2.0, abs=0.1) and gbp["1l"].step_bp == pytest.approx(9.8, abs=0.1)
+    assert gbp["1l"].level[2026] == pytest.approx(14.2, abs=0.1) and gbp["1l"].cum[2026] == pytest.approx(14.2, abs=0.1)
 
 
 def test_surprises_and_reaction(reports):
@@ -229,17 +251,19 @@ def test_surprises_and_reaction(reports):
     assert usd[-1].delta_bp == 25.0 and usd[-1].reaction_next_bp == pytest.approx(4.5, abs=0.1) and usd[-1].reaction_next_flag == "UPPER_BOUND"
     assert all("no market history before 2026-09-18" in s.vs_market_reason for s in reports["JPY"].surprises if s.decided)
     eur = [s for s in reports["EUR"].surprises if s.decided]
-    assert all(s.vs_market_bp is None and "carries no information" in s.vs_market_reason for s in eur)
+    assert all(s.vs_market_bp is None and s.vs_market_reason.startswith("proxy without short end") for s in eur)
+    assert eur[-1].reaction_next_bp == pytest.approx(9.7, abs=0.1) and eur[-1].reaction_year_bp == pytest.approx(11.1, abs=0.1)
+    assert eur[-1].reaction_next_flag == "PROXY" and eur[-1].reaction_next_target == D(2026, 10, 29)
     assert [s.meeting for s in reports["AUD"].surprises if not s.decided] == [D(2026, 9, 29), D(2026, 11, 3)]
 
 
 def test_cross_checks_are_reported_and_close(reports):
-    usd = reports["USD"].crosschecks
-    assert len(usd) == 4 and all(abs(c.diff_bp) < 12 for c in usd) and "basis" in usd[0].note
+    usd = reports["USD"].crosschecks                                   # basis from the 1M bill (the only tenor before the first effective date, 29 Oct)
+    assert len(usd) == 4 and all(abs(c.diff_bp) < 12 for c in usd) and "basis +9.5 bp" in usd[0].note
     cad = reports["CAD"].crosschecks
     assert len(cad) == 1 and cad[0].period == "2026-09-16..2026-12-16" and abs(cad[0].diff_bp) < 2                  # COA path vs CRA, same period
-    aud = {c.period.split("(")[1]: c for c in reports["AUD"].crosschecks}
-    assert abs(aud["3M)"].diff_bp) < 3 and aud["6M)"].diff_bp > 20                                                   # 6M bills carry a term premium
+    (aud,) = reports["AUD"].crosschecks                                # the shortest RBA bill (1M) ends after the first effective date (30 Sep)
+    assert aud.diff_bp is None and aud.na_reason.startswith("proxy without short end")
     assert reports["GBP"].crosschecks == [] and reports["EUR"].crosschecks == []
 
 
@@ -252,23 +276,38 @@ def test_the_28_pairs_come_from_the_economic_instruments():
     assert {n for n, i in doc["instruments"].items() if i["type"] == "fx"} == {n for n, _, _ in pairs}
 
 
-def test_pairs_table_sign_flag_and_na(ctx, reports):
+def test_pairs_table_sign_and_flag(ctx, reports):
     rows = {p.pair: p for p in (A.pair_row(n, reports[b], reports[q]) for n, b, q in load_pairs())}
     assert rows["AUDUSD"].current_bp == pytest.approx((4.35 - 3.875) * 100)
     assert rows["AUDUSD"].cum_bp[2026] == pytest.approx(38.4 - 41.5, abs=0.1) and rows["AUDUSD"].flag[2026] == "UPPER_BOUND"
     assert rows["AUDCAD"].flag[2026] == "EXACT" and rows["AUDCAD"].flag[2027] == "UPPER_BOUND"
     assert rows["GBPAUD"].flag[2026] == "CURVE"
-    assert rows["EURUSD"].flag[2026] == "PROXY"
     assert rows["USDJPY"].current_bp == pytest.approx((3.875 - 1.25) * 100)
-    assert rows["USDCHF"].current_bp == pytest.approx(387.5) and not rows["USDCHF"].implied and "CHF" in rows["USDCHF"].reasons[2026]
-    assert not rows["NZDCAD"].implied and "NZD" in rows["NZDCAD"].reasons[2026]
     for n, b, q in load_pairs():                                                                   # antisymmetry: reversing the pair flips the sign
         if rows[n].implied:
             rev = A.pair_row(q + b, reports[q], reports[b])
             assert rev.current_bp == pytest.approx(-rows[n].current_bp)
             assert rev.cum_bp[2026] == pytest.approx(-rows[n].cum_bp[2026]) and rev.flag == rows[n].flag
-    assert rows["EURGBP"].reprice[("1l", 2026)] == pytest.approx(9.0, abs=0.2)                     # repricing of the differential
-    assert ("1s", 2026) not in rows["USDJPY"].reprice and "history starts" in rows["USDJPY"].reasons[("1s", 2026)]
+    assert rows["EURGBP"].reprice[("1l", 2026)] == pytest.approx(6.4, abs=0.2)                     # repricing of the differential
+
+
+def test_pairs_are_na_metric_by_metric_not_pair_by_pair(reports):
+    rows = {p.pair: p for p in (A.pair_row(n, reports[b], reports[q]) for n, b, q in load_pairs())}
+    assert len(rows) == 28 and all(p.current_bp is not None for p in rows.values())                # both base rates exist, CHF and NZD included
+    policy = {"USD", "GBP", "JPY", "CAD", "AUD"}                                                   # policy-equivalent implied levels
+    assert {n for n, p in rows.items() if p.implied} == {n for n, p in rows.items() if p.base in policy and p.quote in policy}
+    assert {n for n, p in rows.items() if p.reprice} == {"EURUSD", "GBPUSD", "EURGBP"}              # both legs have a change of level (history)
+    eur = rows["EURUSD"]                                                                           # EUR proxy: no level differential, but a repricing
+    assert not eur.implied and not eur.cum_bp and eur.reasons[("implied", 2026)][0][0] == "EUR"
+    assert eur.reasons[("implied", 2026)][0][1].startswith("proxy without short end")
+    assert eur.reprice[("1s", 2026)] == pytest.approx(-0.7 - 7.5, abs=0.2) and eur.reprice_flag[("1s", 2026)] == "PROXY"
+    nzd = rows["NZDUSD"]                                                                           # NZD on BKBM: no level differential; a repricing once it has history
+    assert not nzd.implied and "BKBM" in nzd.reasons[("implied", 2026)][0][1] and ("1s", 2026) not in nzd.reprice
+    assert nzd.reasons[("reprice", "1s", 2026)] == [("NZD", "history starts 2026-09-18 (needs 5 business days back to 2026-09-11)")]
+    chf = rows["USDCHF"]
+    assert chf.current_bp == pytest.approx(387.5) and not chf.implied and not chf.reprice
+    assert chf.reasons[("implied", 2026)] == [("CHF", "no market path for this currency")]
+    assert rows["NZDCHF"].reasons[("implied", 2026)][0][0] == "NZD" and rows["NZDCHF"].reasons[("implied", 2026)][1][0] == "CHF"       # both legs named
 
 
 # --- CLI / report -----------------------------------------------------------------------------------------------------

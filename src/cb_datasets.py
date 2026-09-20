@@ -8,6 +8,7 @@ manual RBNZ file, the Carry comparison. I/O lives here; the arithmetic is in src
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -170,6 +171,7 @@ def load_projections(paths) -> list:
 # ---------------------------------------------------------------------------
 
 RBNZ_STATUSES = ("placeholder", "filled")
+RBNZ_PERIOD = re.compile(r"^\d{4}Q[1-4]$")
 
 
 def load_rbnz(path: Path | str) -> dict:
@@ -220,9 +222,16 @@ def validate_rbnz(doc: dict) -> list:
             for pt in e["ocr_track"]:
                 if not (isinstance(pt.get("period"), str) and isinstance(pt.get("value"), (int, float))):
                     err.append(f"{tag}: ocr_track point needs period (str) and value (number): {pt}")
+                elif not RBNZ_PERIOD.match(pt["period"]):
+                    err.append(f"{tag}: ocr_track period must look like 2026Q4: {pt['period']!r}")
             for pt in e.get("bank_bill_90d") or []:
                 if not (isinstance(pt.get("period"), str) and isinstance(pt.get("value"), (int, float))):
                     err.append(f"{tag}: bank_bill_90d point needs period and value: {pt}")
+                elif not RBNZ_PERIOD.match(pt["period"]):
+                    err.append(f"{tag}: bank_bill_90d period must look like 2026Q4: {pt['period']!r}")
+            periods = [pt.get("period") for pt in e["ocr_track"]]
+            if len(set(periods)) != len(periods):
+                err.append(f"{tag}: ocr_track has a duplicate period")
     return err
 
 

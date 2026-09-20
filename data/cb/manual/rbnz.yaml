@@ -1,15 +1,15 @@
 # RBNZ inputs that cannot be collected: rbnz.govt.nz sits behind a Cloudflare challenge (HTTP 403 for every client,
 # 0A/0B). Everything else about the RBNZ is automatic: the rate decision comes from FF (validated on the official
 # meeting) and BIS WS_CBPOL. What stays manual:
-#   * the OCR track of every Monetary Policy Statement (MPS) - the bank's own path, quarterly averages;
+#   * the OCR track of the LATEST Monetary Policy Statement (MPS) - the bank's own path, quarterly averages;
 #   * the meeting calendar after 2027-02-17 (RBNZ published it only until then).
-# `python -m src.cb_collect --status` warns when an MPS that has passed has no filled track, and when the calendar
-# runs out. Only the latest MPS needs a track.
+# `python -m src.cb_collect --status` warns only when an MPS NEWER than the one in this file has passed (the Feb / May
+# 2026 MPS are not needed), and when the calendar runs out. Only the latest MPS needs a track.
 #
 # How to fill an MPS (from the MPS PDF / the OCR projection table):
 #   status: filled
 #   source: {url: <PDF or page URL>, page: "<page / table number>", retrieved: <YYYY-MM-DD>}
-#   ocr_track: [{period: 2026Q4, value: 2.75}, ...]        # percent, quarterly average OCR projection
+#   ocr_track: [{period: 2026Q4, value: 2.75}, ...]        # percent, quarterly average OCR projection (YYYYQn)
 #   bank_bill_90d: [{period: 2026Q4, value: 2.90}, ...]    # optional, the 90-day bank bill projection
 # Nothing may be typed from memory: a `filled` entry needs a source url and page.
 
@@ -40,5 +40,28 @@ calendar_2027:
   meetings: []                      # when entered: [{date: 2027-05-26, has_projections: true}, ...]
 
 mps:
-  # Only the latest MPS is needed (its OCR track and 90-day bank bill projection feed the GAP): Sep 2026.
-  - {meeting: 2026-09-02, status: placeholder, source: null, ocr_track: [], bank_bill_90d: []}
+  # Only the latest MPS is needed (its OCR track is the bank's own path; the 90-day bank bill projection, when the tables
+  # carry it, feeds the RBNZ GAP): Sep 2026.
+  - meeting: 2026-09-02
+    status: filled
+    source:
+      url: https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf
+      page: "Appendix 1, Table 6.1, p. 50"
+      retrieved: 2026-09-20
+    projections_finalised: 2026-08-26
+    transcription: "manual, from the official PDF (quarterly averages, rounded to 0.1 as published). The XLSX with decimals is on the MPS page but is blocked for scripts."
+    ocr_track:
+      - {period: 2026Q3, value: 2.6}
+      - {period: 2026Q4, value: 2.8}
+      - {period: 2027Q1, value: 3.0}
+      - {period: 2027Q2, value: 3.1}
+      - {period: 2027Q3, value: 3.1}
+      - {period: 2027Q4, value: 3.2}
+      - {period: 2028Q1, value: 3.2}
+      - {period: 2028Q2, value: 3.2}
+      - {period: 2028Q3, value: 3.2}
+      - {period: 2028Q4, value: 3.2}
+      - {period: 2029Q1, value: 3.3}
+      - {period: 2029Q2, value: 3.3}
+      - {period: 2029Q3, value: 3.3}
+    bank_bill_90d: []                # the PDF tables carry no 90-day bank bill projection: the RBNZ GAP stays n/a (same-basis rule)

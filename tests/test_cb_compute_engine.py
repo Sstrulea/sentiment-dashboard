@@ -10,6 +10,7 @@ import pytest
 from src.cb_calendar import weekends_only
 from src.cb_compute import analysis as A
 from src.cb_compute import engine as E
+from src.cb_compute import methods as M
 from src.cb_compute import spread as S
 
 from .cb_synth import (BENCH, CUR, D, POL, bdays, curve_quotes, dec, futures_month, make_ctx, month_avg, quote, src, window_avg)
@@ -257,13 +258,115 @@ def test_proxy_flat_curve_above_the_rate_is_zero_bp_after_the_basis():
     assert [round(p.cum_bp, 6) for p in E.trajectory(ctx, CUR, ASOF).points] == [0.0, 0.0]
 
 
-def test_proxy_first_meeting_far_below_the_first_tenor_is_na_not_a_flat_extrapolation():
-    ctx = ctx_curve(lambda t: 2.30, [(D(2026, 10, 15), D(2026, 10, 16)), (D(2027, 1, 13), D(2027, 1, 14))], method="PROXY_CURVE",
-                    has_spread=False, tenors=range(3, 37))                       # grid starts at 3M (the ECB AAA case)
-    p1, p2 = E.trajectory(ctx, CUR, ASOF).points
-    assert p1.rate is None and "carries no information" in p1.reason
-    assert p2.rate is not None and p2.step_bp is None and "previous meeting is not identified" in p2.extra["step_reason"]
-    assert E.next_meeting(E.trajectory(ctx, CUR, ASOF)).probabilities is None
+def test_proxy_basis_uses_only_tenors_observed_before_the_first_effective_date():
+    """The 1M tenor is observed before the first effective date (~1.2 months out); the 2M tenor (3.20) is not and must not leak into
+    the basis through interpolation: basis = 2.20 - 2.00 = +20.0 bp exactly."""
+    curve = lambda t: 2.20 if t <= 1 else 3.20                                   # noqa: E731
+    ctx = ctx_curve(curve, [(D(2026, 11, 4), D(2026, 11, 5)), (D(2027, 1, 13), D(2027, 1, 14))], method="PROXY_CURVE", has_spread=False)
+    tr = E.trajectory(ctx, CUR, ASOF)
+    assert tr.extra["proxy_basis"] == pytest.approx(0.20, abs=1e-9) and any("PROXY basis +20.0 bp" in n for n in tr.notes)
+    assert tr.points[1].rate == pytest.approx(3.20 - 0.20 - 0.0) and tr.points[1].cum_bp == pytest.approx(100.0)
+
+
+def test_proxy_basis_boundary_shortest_tenor_before_or_after_the_first_effective_date():
+    early = D(2026, 11, 26)                                                       # 57 days = 1.87 months out: the 2M tenor is after it
+    late = D(2026, 12, 2)                                                         # 63 days = 2.07 months out: the 2M tenor is before it
+    kw = dict(method="PROXY_CURVE", has_spread=False, tenors=range(2, 37))
+    a = E.trajectory(ctx_curve(lambda t: 2.30, [(early - timedelta(1), early)], **kw), CUR, ASOF)
+    b = E.trajectory(ctx_curve(lambda t: 2.30, [(late - timedelta(1), late)], **kw), CUR, ASOF)
+    assert a.extra["proxy_basis"] is None and a.points[0].rate is None
+    assert b.extra["proxy_basis"] == pytest.approx(0.30) and b.points[0].rate == pytest.approx(2.00)
+
+
+def test_proxy_basis_function_needs_an_observed_tenor():
+    assert M.proxy_basis([(3, 2.5), (4, 2.6)], 0.0, 1.6, 2.0)[0] is None
+    assert "proxy without short end" in M.proxy_basis([(3, 2.5)], 0.0, 1.6, 2.0)[1]
+    basis, why = M.proxy_basis([(1, 2.2), (2, 9.0)], 0.0, 1.5, 2.0)
+    assert basis == pytest.approx(0.20) and why == ""
+    assert M.proxy_basis([(1, 2.2), (1.4, 2.4), (2, 9.0)], 0.0, 1.5, 2.0)[0] == pytest.approx(((1 * 2.2 + 0.4 * 2.3 + 0.1 * 2.4) / 1.5) - 2.0)
+
+
+def test_proxy_without_short_end_keeps_only_the_labelled_levels():
+    """ECB AAA case: the curve starts at 3M, the first meeting is ~1.6 months out. No basis: no bp, no step, no probability - only the
+    raw level, labelled a sovereign proxy."""
+    ctx = ctx_curve(lambda t: 2.30, [(D(2026, 11, 4), D(2026, 11, 5)), (D(2027, 1, 13), D(2027, 1, 14))], method="PROXY_CURVE",
+                    has_spread=False, tenors=range(3, 37))
+    tr = E.trajectory(ctx, CUR, ASOF)
+    assert tr.extra["proxy_basis"] is None and any("PROXY basis n/a" in n for n in tr.notes)
+    for p in tr.points:
+        assert (p.rate, p.cum_bp, p.step_bp) == (None, None, None) and p.flag == "PROXY"
+        assert p.level == pytest.approx(2.30) and p.level_kind == "sovereign_proxy"
+        assert p.reason.startswith("proxy without short end") and E.step_reason(p) == p.reason
+    assert any("shortest tenor is extended flat" in n for n in tr.points[0].notes)
+    nm = E.next_meeting(tr)
+    assert nm.step_bp is None and nm.probabilities is None and nm.step_reason.startswith("proxy without short end") and nm.prob_reason.startswith("proxy without short end")
+    ye = E.year_end(ctx, tr, 2027)
+    assert (ye.cum_bp, ye.rate) == (None, None) and ye.level == pytest.approx(2.30) and ye.level_kind == "sovereign_proxy" and ye.flag == "PROXY"
+    assert ye.reason.startswith("proxy without short end")
+
+
+def test_the_no_short_end_rule_is_general_a_policy_curve_is_not_affected():
+    """CURVE (policy-equivalent, spread) keeps its own guard; a curve with a short end gives full PROXY values."""
+    ctx = ctx_curve(lambda t: 2.30, [(D(2026, 11, 4), D(2026, 11, 5))], method="PROXY_CURVE", has_spread=False, tenors=range(1, 37))
+    (p,) = E.trajectory(ctx, CUR, ASOF).points
+    assert p.rate == pytest.approx(2.00) and p.cum_bp == pytest.approx(0.0, abs=1e-9) and p.level == pytest.approx(2.30) and p.level_kind == "sovereign_proxy"
+
+
+def test_bills_basis_from_observed_tenors_only():
+    tc = M.TenorCurve([(1, 2.20), (3, 3.20), (6, 3.50)])
+    first_eff = ASOF + timedelta(days=43)                                        # ~1.4 months out: only the 1M bill ends before it
+    assert A.bills_basis(tc, ASOF, first_eff, 2.00) == pytest.approx(0.20)       # not the interpolated 2.20 + 0.4 * 0.5 * 1 = 2.40 - 2.00
+    assert A.bills_basis(tc, ASOF, ASOF + timedelta(days=20), 2.00) is None      # 0.66 months: no bill ends before the first effective date
+    assert A.bills_basis(tc, ASOF, ASOF + timedelta(days=100), 2.00) == pytest.approx(3.20 - 2.00)     # the LONGEST observed tenor
+
+
+def test_reaction_of_a_proxy_uses_the_level_change_and_the_surprise_vs_market_stays_na():
+    cal = weekends_only()
+    T = D(2026, 9, 16)
+    t1 = cal.prev_business_day(T)
+    quotes = curve_quotes("crv", "inst", t1, lambda t: 2.15, range(3, 37)) + curve_quotes("crv", "inst", T, lambda t: 2.30, range(3, 37))
+    ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 2.00, 2.00), dec(T, D(2026, 9, 17), 2.00, 2.25)],
+                   meetings=[(T, D(2026, 9, 17)), (D(2026, 10, 28), D(2026, 10, 29)), (D(2026, 12, 9), D(2026, 12, 10))], quotes=quotes,
+                   policy_path=[(D(2026, 1, 1), 2.00)], sources=src("crv", "PROXY_CURVE"), has_spread=False)
+    row = next(r for r in A.surprises(ctx, CUR, T, E.trajectory(ctx, CUR, T)) if r.meeting == T)
+    assert row.vs_market_bp is None and row.vs_market_reason.startswith("proxy without short end")
+    assert row.reaction_next_bp == pytest.approx(15.0) and row.reaction_next_flag == "PROXY"       # a difference of two levels needs no basis
+    assert row.reaction_year_bp == pytest.approx(15.0) and row.reaction_year_target == D(2026, 12, 9)
+
+
+def test_repricing_of_a_proxy_is_the_level_change_and_has_no_cumulative():
+    cal = weekends_only()
+    asof = D(2026, 9, 30)
+    quotes = []
+    for d, lvl in ((cal.add_business_days(asof, -21), 2.30), (cal.add_business_days(asof, -5), 2.30), (asof, 2.40)):
+        quotes += curve_quotes("crv", "inst", d, lambda t, lvl=lvl: lvl, range(3, 37))
+    ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 1.75, 2.00)], meetings=[(D(2026, 11, 4), D(2026, 11, 5)), (D(2026, 12, 16), D(2026, 12, 17)), (D(2027, 12, 15), D(2027, 12, 16))],
+                   quotes=quotes, policy_path=[(D(2026, 1, 1), 2.00)], sources=src("crv", "PROXY_CURVE"), has_spread=False)
+    for name in ("1s", "1l"):
+        rp = A.bank_report(ctx, CUR, asof).repricing[name]
+        assert rp.level == {2026: pytest.approx(10.0), 2027: pytest.approx(10.0)} and rp.level_flag[2026] == "PROXY"
+        assert rp.cum == {} and rp.step_bp is None and rp.reasons["step"].startswith("proxy without short end")
+
+
+def test_repricing_step_is_the_same_meeting_at_both_dates():
+    """On 23 Sep the next meeting was A (28 Sep); on 30 Sep A is decided and the next one is B (4 Nov). B's step is compared with B's
+    step on 23 Sep (its level minus A's level then), not declared n/a because 'the next meeting changed'."""
+    cal = weekends_only()
+    asof = D(2026, 9, 30)
+    d5, d21 = cal.add_business_days(asof, -5), cal.add_business_days(asof, -21)
+    quotes = []
+    for d, lvl in ((d21, 2.02), (d5, 2.02), (asof, 2.30)):
+        quotes += curve_quotes("crv", "inst", d, lambda t, lvl=lvl: lvl, range(1, 37))
+    A_m, B_m, C_m = (D(2026, 9, 28), D(2026, 9, 29)), (D(2026, 11, 4), D(2026, 11, 5)), (D(2026, 12, 16), D(2026, 12, 17))
+    ctx = make_ctx(decisions=[dec(D(2026, 7, 29), D(2026, 7, 30), 2.00, 2.00), dec(*A_m, 2.00, 2.25)], meetings=[A_m, B_m, C_m, (D(2027, 12, 15), D(2027, 12, 16))],
+                   quotes=quotes, policy_path=[(D(2026, 1, 1), 2.00), (D(2026, 9, 29), 2.25)], spread=0.02, sources=src("crv", "CURVE"), official_start=D(2026, 6, 1))
+    r = A.bank_report(ctx, CUR, asof)
+    assert r.next.decision == B_m[0] and r.next.step_bp == pytest.approx(3.0)                # 2.28 - 2.25
+    for name in ("1s", "1l"):
+        rp = r.repricing[name]
+        assert rp.step_meeting == B_m[0] and rp.step_bp == pytest.approx(3.0) and rp.step_flag == "CURVE"   # 3 bp now, 0 bp on the earlier date
+        assert rp.level[2026] == pytest.approx(28.0) and rp.cum[2026] == pytest.approx(3.0 - 0.0)            # level moved 2.00 -> 2.28; cum vs base 2.00 -> 2.25
+        assert rp.base_change_bp == pytest.approx(25.0)
 
 
 # --- WINDOW -----------------------------------------------------------------------------------------------------------
@@ -317,12 +420,16 @@ def test_window_upper_bound_has_no_probability_and_says_why():
     assert "UPPER_BOUND" in nm.step_reason and nm.prob_reason
 
 
-def test_window_without_an_ocr_spread_reports_the_level_but_no_bp():
-    """NZD: the ASX bank bill is BKBM, not the OCR - no spread pair exists, so the level is shown and cum bp is n/a."""
+def test_window_without_an_ocr_spread_reports_the_bkbm_level_but_no_bp():
+    """NZD: the ASX bank bill is BKBM, not the OCR - no spread pair exists: the level (labelled) is kept for the delta metrics, the
+    policy-equivalent rate and the bp are n/a."""
     ctx = ctx_window([(D(2026, 12, 9), D(2026, 12, 10))], WINDOWS, has_spread=False)
-    (p,) = E.trajectory(ctx, CUR, ASOF).points
-    assert p.rate == pytest.approx(2.55) and p.cum_bp is None and "BKBM" in p.reason
+    tr = E.trajectory(ctx, CUR, ASOF)
+    (p,) = tr.points
+    assert p.rate is None and p.cum_bp is None and p.level == pytest.approx(2.55) and p.level_kind == "bkbm" and "BKBM" in p.reason
     assert p.notes and "BKBM" in p.notes[0]
+    ye = E.year_end(ctx, tr, 2026)
+    assert (ye.cum_bp, ye.rate) == (None, None) and ye.level == pytest.approx(2.55) and ye.level_kind == "bkbm"
 
 
 def test_window_meeting_beyond_the_last_contract_is_na():
@@ -477,12 +584,19 @@ def test_surprise_needs_market_history_before_the_meeting():
 
 # --- pairs ------------------------------------------------------------------------------------------------------------
 
-def leg(cur, base, y26, y27, flags=("EXACT", "EXACT"), lvl=None):
+def leg(cur, base, y26, y27, flags=("EXACT", "EXACT"), lvl=None, kind="policy"):
+    """A stub bank report. kind: policy (rate + cum), bkbm / sovereign_proxy (a level only), or n/a with y26 None."""
     ye = {}
     for y, cum, fl in zip((2026, 2027), (y26, y27), flags):
-        ye[y] = E.YearEnd(y, D(y, 12, 9), cum_bp=cum, rate=None if cum is None else base + cum / 100, flag=fl,
-                          reason="" if cum is not None else "no path")
-    rep = {n: A.Repricing(n, 5 if n == "1s" else 21, cum={2026: (lvl or 0)}, level={2026: (lvl or 0)}, cum_flag={2026: flags[0]}) for n in ("1s", "1l")}
+        if cum is None:
+            ye[y] = E.YearEnd(y, D(y, 12, 9), flag=None, reason="no path")
+        elif kind == "policy":
+            ye[y] = E.YearEnd(y, D(y, 12, 9), cum_bp=cum, rate=base + cum / 100, flag=fl, level=base + cum / 100)
+        else:
+            ye[y] = E.YearEnd(y, D(y, 12, 9), flag=fl, reason=f"{kind} level", level=base + cum / 100, level_kind=kind)
+    has = y26 is not None
+    rep = {n: A.Repricing(n, 5 if n == "1s" else 21, level={2026: lvl} if has else {}, level_flag={2026: flags[0]} if has else {},
+                          reasons={} if has else {"all": "no path"}) for n in ("1s", "1l")} if lvl is not None else {}
     tr = SimpleNamespace(base=E.BaseRate(base, D(2026, 9, 16), D(2026, 9, 17), False))
     return SimpleNamespace(currency=cur, trajectory=tr, year_ends=ye, repricing=rep)
 
@@ -500,16 +614,46 @@ def test_pair_is_base_minus_quote_everywhere_with_the_weakest_flag():
     assert rev.current_bp == pytest.approx(-p.current_bp) and rev.cum_bp[2026] == pytest.approx(-p.cum_bp[2026])
 
 
-def test_pair_is_na_when_one_leg_is_missing_and_says_which():
-    chf = leg("CHF", 0.0, None, None)
-    usd = leg("USD", 3.875, 41.5, 74.3)
+def test_pair_metrics_are_na_one_by_one_with_the_reason_of_each_leg():
+    usd = leg("USD", 3.875, 41.5, 74.3, flags=("UPPER_BOUND", "UPPER_BOUND"), lvl=2.0)
+    eur = leg("EUR", 2.50, 11.0, 57.0, flags=("PROXY", "PROXY"), lvl=-1.0, kind="sovereign_proxy")     # a raw level: no policy-equivalent rate
+    p = A.pair_row("EURUSD", eur, usd)
+    assert p.current_bp == pytest.approx((2.50 - 3.875) * 100)
+    assert not p.implied and not p.cum_bp and p.reasons[("implied", 2026)] == [("EUR", "sovereign_proxy level")]
+    assert p.reprice[("1s", 2026)] == pytest.approx(-3.0) and p.reprice_flag[("1s", 2026)] == "PROXY"       # both legs have a change of level
+    rev = A.pair_row("USDEUR", usd, eur)                                                                     # the weaker flag is the QUOTE leg's here
+    assert rev.reprice[("1s", 2026)] == pytest.approx(3.0) and rev.reprice_flag[("1s", 2026)] == "PROXY"
+    nzd = leg("NZD", 2.75, 70.0, 105.0, flags=("UPPER_BOUND", "UPPER_BOUND"), lvl=1.0, kind="bkbm")
+    q = A.pair_row("NZDUSD", nzd, usd)
+    assert not q.implied and q.reprice[("1l", 2026)] == pytest.approx(-1.0) and q.reasons[("implied", 2026)][0][0] == "NZD"
+
+
+def test_pair_is_na_when_a_leg_has_no_market_path_but_the_current_rate_stays():
+    chf = leg("CHF", 0.0, None, None, lvl=0.0)
+    usd = leg("USD", 3.875, 41.5, 74.3, lvl=2.0)
     p = A.pair_row("USDCHF", usd, chf)
-    assert p.current_bp == pytest.approx(387.5) and not p.implied and not p.cum_bp
-    assert "CHF: no path" in p.reasons[2026] and "USD" not in p.reasons[2026]
+    assert p.current_bp == pytest.approx(387.5) and not p.implied and not p.cum_bp and not p.reprice
+    assert p.reasons[("implied", 2026)] == [("CHF", "no path")] and p.reasons[("reprice", "1s", 2026)] == [("CHF", "no path")]
+    assert all(c == "CHF" for k, reasons in p.reasons.items() if k[-1] == 2026 for c, _ in reasons)      # USD is not blamed
 
 
-def test_pair_repricing_is_na_when_a_leg_has_no_history():
-    a, b = leg("AUD", 4.35, 38.4, 53.5), leg("USD", 3.875, 41.5, 74.3)
+def test_pair_repricing_is_na_when_a_leg_has_no_history_but_the_levels_stay():
+    a, b = leg("AUD", 4.35, 38.4, 53.5, lvl=6.0), leg("USD", 3.875, 41.5, 74.3, lvl=2.0)
     b.repricing["1s"] = A.Repricing("1s", 5, reasons={"all": "history starts 2026-09-18"})
     p = A.pair_row("AUDUSD", a, b)
-    assert ("1s", 2026) not in p.reprice and "history starts" in p.reasons[("1s", 2026)] and ("1l", 2026) in p.reprice
+    assert p.cum_bp[2026] == pytest.approx(-3.1) and ("1s", 2026) not in p.reprice and ("1l", 2026) in p.reprice
+    assert p.reasons[("reprice", "1s", 2026)] == [("USD", "history starts 2026-09-18")]
+
+
+def test_rbnz_bank_path_is_shown_and_the_gap_stays_na_without_a_90d_projection():
+    mps = {"meeting": D(2026, 9, 2), "status": "filled", "projections_finalised": D(2026, 8, 26), "bank_bill_90d": [],
+           "ocr_track": [{"period": "2026Q3", "value": 2.6}, {"period": "2026Q4", "value": 2.8}]}
+    ctx = make_ctx(decisions=[BASE_DEC], meetings=[], quotes=[], policy_path=BASE_PATH)
+    ctx.rbnz = {"mps": [mps]}
+    g = A.rbnz_gap(ctx, ASOF)
+    assert g.kind == "n/a" and "no 90-day bank bill projection" in g.reason and not g.years
+    bp = A.bank_path(ctx, "NZD", g, ASOF)
+    assert bp.kind == "ocr_track" and bp.points == [("2026Q3", 2.6), ("2026Q4", 2.8)] and bp.source == D(2026, 9, 2) and bp.finalised == D(2026, 8, 26)
+    assert A.bank_path(ctx, "EUR", g, ASOF).kind == "n/a"
+    ctx.rbnz = {"mps": [{**mps, "meeting": D(2026, 12, 9)}]}                                   # an MPS that has not happened yet at this as-of
+    assert A.bank_path(ctx, "NZD", g, ASOF).kind == "n/a"

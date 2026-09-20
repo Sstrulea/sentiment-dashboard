@@ -9,6 +9,7 @@ from .analysis import BankReport, PairRow, bank_report, pair_row
 from .engine import Context, Point, YEAR_ENDS
 
 NA = "n/a"
+KIND_TEXT = {"bkbm": "BKBM level, not the OCR", "sovereign_proxy": "sovereign proxy, not policy-equivalent"}
 ORDER = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")
 
 
@@ -35,9 +36,18 @@ def table(rows: list, header: list, indent: str = "  ") -> list:
     return [line(header), indent + "  ".join("-" * w for w in width)] + [line(r) for r in rows]
 
 
+def short(reason: str) -> str:
+    """The headline of a long reason (the full text stays in the note line and in the JSON)."""
+    if reason.startswith("proxy without short end"):
+        return reason.split(":", 1)[0]
+    if reason.startswith("history starts"):
+        return reason.split(" (", 1)[0]
+    return reason
+
+
 def probs(nm) -> str:
     if nm.probabilities is None:
-        return f"{NA} ({nm.prob_reason})"
+        return f"{NA} ({short(nm.prob_reason)})"
     d, mv = nm.probabilities["direction"], nm.probabilities["moves"]
     return d + ": " + ", ".join(f"{k} move{'s' if k != 1 else ''} {v * 100:.1f}%" for k, v in mv.items())
 
@@ -52,11 +62,15 @@ def point_row(p: Point) -> list:
         extra.append(f"interior={e.get('interior')} pre={e.get('pre_days')}d gap={e.get('gap_days'):+d}d")
     if p.method == "EXACT" and p.extra.get("how") == "next_month":
         extra.append("next-month avg")
+    if p.rate is None and p.level is not None:
+        extra.append(KIND_TEXT.get(p.level_kind, p.level_kind))
     if p.rate is None:
-        extra.append(p.reason)
+        extra.append(short(p.reason))
     elif p.step_bp is None and p.method != "WINDOW":
-        extra.append("step " + NA + ": " + (p.extra.get("step_reason") or ""))
-    return [dt(p.meeting), where, pct(p.rate), bp(p.cum_bp), bp(p.step_bp) if p.step_bp is not None else NA, p.flag,
+        extra.append("step " + NA + ": " + short(p.extra.get("step_reason") or ""))
+    extra += [n for n in p.notes if p.method in ("CURVE", "PROXY_CURVE")]
+    rate_s = pct(p.rate) if p.rate is not None else (f"[{pct(p.level)}]" if p.level is not None else NA)      # [x] = a level, not a policy rate
+    return [dt(p.meeting), where, rate_s, bp(p.cum_bp), bp(p.step_bp) if p.step_bp is not None else NA, p.flag,
             f"{p.source} {dt(p.source_asof)}", "STALE" if p.stale else "", "; ".join(x for x in extra if x)]
 
 
@@ -78,6 +92,8 @@ def bank_block(r: BankReport, points: int = 8) -> list:
         out.append("  trajectory (implied policy rate; cum = vs base; step = at the meeting, per-meeting methods only)")
         out += table([point_row(p) for p in tr.points[:points]],
                      ["meeting", "effective / window", "rate %", "cum bp", "step bp", "flag", "source (as-of)", "", "notes"], indent="    ")
+        if any(p.rate is None and p.level is not None for p in tr.points):
+            out.append("    [x] = a level that is not a policy-equivalent rate (see notes); n/a = not available")
         if len(tr.points) > points:
             out.append(f"    ... {len(tr.points) - points} more meetings")
     for n in tr.notes:
@@ -87,7 +103,7 @@ def bank_block(r: BankReport, points: int = 8) -> list:
 
     nm = r.next
     out.append(f"  next meeting: {dt(nm.decision)} (effective {dt(nm.eff)})  step: " +
-               (f"{bp(nm.step_bp)} bp [{nm.flag}]{' STALE' if nm.stale else ''}" if nm.step_bp is not None else f"{NA} ({nm.step_reason})"))
+               (f"{bp(nm.step_bp)} bp [{nm.flag}]{' STALE' if nm.stale else ''}" if nm.step_bp is not None else f"{NA} ({short(nm.step_reason)})"))
     out.append(f"    probability: {probs(nm)}")
     for y in YEAR_ENDS:
         ye = r.year_ends[y]
@@ -103,9 +119,8 @@ def bank_block(r: BankReport, points: int = 8) -> list:
         elif ye.flag == "DECIDED":
             out.append(f"{head}decided: part of the base ({ye.reason})")
         else:
-            lvl = next((p for p in tr.points if p.meeting == ye.meeting and p.rate is not None), None)
-            extra = f" (BKBM level {lvl.rate:.3f}%, {lvl.flag})" if lvl else ""
-            out.append(f"{head}cum {NA} ({ye.reason}){extra}")
+            extra = f"; level {pct(ye.level)}% ({KIND_TEXT.get(ye.level_kind, ye.level_kind)}) [{ye.flag}]" if ye.level is not None else ""
+            out.append(f"{head}cum {NA} ({short(ye.reason)}){extra}")
 
     g = r.gap
     out.append("  GAP = market - bank: " + (f"{NA} ({g.reason})" if g.kind == "n/a" or (not g.years and g.reason) else f"{g.kind}, SEP/MPS {dt(g.sep)}"))
@@ -119,6 +134,11 @@ def bank_block(r: BankReport, points: int = 8) -> list:
         else:
             out.append(f"    {gy.note}: MPS {pct(gy.bank_median, 2)} | ASX BB {pct(gy.market_rate)} [{gy.market_flag or NA}] {rng(gy.market_window)} | GAP {bp(gy.gap_bp)} bp")
 
+    bpth = r.bank_path
+    if bpth and bpth.kind == "ocr_track":
+        out.append(f"  bank path ({bpth.note}; MPS {dt(bpth.source)}, projections finalised {dt(bpth.finalised)})")
+        out.append("    " + "  ".join(f"{lbl} {v:g}" for lbl, v in bpth.points))
+
     for name in ("1s", "1l"):
         rp = r.repricing.get(name)
         if rp is None:
@@ -127,49 +147,54 @@ def bank_block(r: BankReport, points: int = 8) -> list:
         if "all" in rp.reasons:
             out.append(head + f"{NA} ({rp.reasons['all']})")
             continue
-        parts = [f"cum {y} {bp(rp.cum[y])} bp [{rp.cum_flag.get(y)}]" if y in rp.cum else f"cum {y} {NA} ({rp.reasons.get(str(y), '')})" for y in YEAR_ENDS]
-        parts.append(f"next step {bp(rp.step_bp)} bp [{rp.step_flag}]" if rp.step_bp is not None else f"next step {NA} ({rp.reasons.get('step', '')})")
+        parts = [f"level {y} {bp(rp.level[y])} bp [{rp.level_flag.get(y)}]" if y in rp.level else f"level {y} {NA} ({short(rp.reasons.get(str(y), ''))})" for y in YEAR_ENDS]
+        parts.append(f"next step ({dt(rp.step_meeting)}) {bp(rp.step_bp)} bp [{rp.step_flag}]" if rp.step_bp is not None else f"next step {NA} ({short(rp.reasons.get('step', ''))})")
         out.append(head + "; ".join(parts))
-        if rp.base_change_bp:
-            lv = ", ".join(f"{y} {bp(v)}" for y, v in rp.level.items())
-            out.append(f"      the base moved {bp(rp.base_change_bp)} bp in between (a decision): cum bp is vs another base; change of the implied rate LEVEL: {lv} bp")
+        sec = ", ".join(f"{y} {bp(rp.cum[y])}" for y in YEAR_ENDS if y in rp.cum)
+        if sec:
+            out.append(f"      secondary - change of the cumulative bp (vs the base at each date): {sec}"
+                       + (f"; the base moved {bp(rp.base_change_bp)} bp in between (a decision)" if rp.base_change_bp else ""))
 
     if r.surprises:
         out.append("  surprises and reaction (last 4 decisions + upcoming)")
         rows = []
         for s in r.surprises:
             if s.decided:
-                vm = f"{bp(s.vs_market_bp)} [{s.vs_market_flag}] (T-1 implied {bp(s.implied_step_bp)})" if s.vs_market_bp is not None else f"{NA}: {s.vs_market_reason}"
+                vm = f"{bp(s.vs_market_bp)} [{s.vs_market_flag}] (T-1 implied {bp(s.implied_step_bp)})" if s.vs_market_bp is not None else f"{NA}: {short(s.vs_market_reason)}"
                 rn = f"{bp(s.reaction_next_bp)} -> {s.reaction_next_target:%m-%d} [{s.reaction_next_flag}]" if s.reaction_next_bp is not None else f"{NA}: {s.reaction_reason.get('next', '')}"
                 ry = f"{bp(s.reaction_year_bp)} -> {s.reaction_year_target:%m-%d} [{s.reaction_year_flag}]" if s.reaction_year_bp is not None else f"{NA}: {s.reaction_reason.get('year', '')}"
                 rows.append([dt(s.meeting), bp(s.delta_bp), bp(s.vs_consensus_bp), vm, rn, ry])
             else:
-                st = f"{bp(s.implied_step_bp)} [{s.vs_market_flag}]" if s.implied_step_bp is not None else f"{NA}: {s.vs_market_reason}"
+                st = f"{bp(s.implied_step_bp)} [{s.vs_market_flag}]" if s.implied_step_bp is not None else f"{NA}: {short(s.vs_market_reason)}"
                 rows.append([dt(s.meeting) + " (upcoming)", "-", "-", f"priced now {st}", "-", "-"])
         out += table(rows, ["meeting", "decided bp", "vs consensus", "vs market T-1", "reaction next meeting", "reaction last meeting of year"], indent="    ")
 
     if r.crosschecks:
         out.append("  cross-checks")
-        out += table([[c.name, c.period, f"{c.a_label} {c.a:.3f}", f"{c.b_label} {c.b:.3f}", f"{c.diff_bp:+.1f} bp", c.note] for c in r.crosschecks],
-                     ["check", "period", "primary", "second source", "diff", "note"], indent="    ")
+        out += table([[c.name, c.period, f"{c.a_label} {c.a:.3f}" if c.a is not None else c.a_label,
+                       f"{c.b_label} {c.b:.3f}" if c.b is not None else c.b_label, f"{c.diff_bp:+.1f} bp" if c.diff_bp is not None else NA, c.note or c.na_reason]
+                      for c in r.crosschecks], ["check", "period", "primary", "second source", "diff", "note"], indent="    ")
     return out
 
 
 def pairs_table(pairs: list) -> list:
     rows = []
     for p in pairs:
-        cell = lambda y: (f"{p.cum_bp[y]:+.1f} ({p.implied[y] * 100:+.1f}) [{p.flag[y]}]" if y in p.implied else f"{NA}")     # noqa: E731
-        rep = lambda n, y: (f"{p.reprice[(n, y)]:+.1f} [{p.reprice_flag.get((n, y))}]" if (n, y) in p.reprice else NA)        # noqa: E731
+        cell = lambda y: (f"{p.cum_bp[y]:+.1f} ({p.implied[y] * 100:+.1f}) [{p.implied_flag[y]}]" if y in p.implied else NA)     # noqa: E731
+        rep = lambda n, y: (f"{p.reprice[(n, y)]:+.1f} [{p.reprice_flag.get((n, y))}]" if (n, y) in p.reprice else NA)              # noqa: E731
         rows.append([p.pair, bp(p.current_bp) if p.current_bp is not None else NA, cell(2026), cell(2027),
                      rep("1s", 2026), rep("1s", 2027), rep("1l", 2026), rep("1l", 2027)])
-    out = ["=== Pairs: base - quote (bp). cum = differential of the cumulative bp; (in parentheses) implied rate differential at the last meeting of the year",
-           "    flag = the weaker of the two legs; repricing = change of the implied differential over 5 / 21 business days"]
+    out = ["=== Pairs: base - quote (bp), each metric n/a on its own. cum = differential of the cumulative bp; (in parentheses) implied rate differential",
+           "    at the last meeting of the year (both legs policy-equivalent); flag = the weaker of the two legs;",
+           "    repricing = change of the implied differential over 5 / 21 business days (needs a change of level on both legs)"]
     out += table(rows, ["pair", "now bp", "2026 cum (diff)", "2027 cum (diff)", "1s 2026", "1s 2027", "1l 2026", "1l 2027"], indent="  ")
-    na = [p for p in pairs if not p.implied]
+    why: dict = {}                                                    # (currency, headline) -> pairs
     for p in pairs:
-        why = {k: v for k, v in p.reasons.items() if isinstance(k, int)}
-        if why and not p.implied:
-            out.append(f"  {p.pair} n/a: " + "; ".join(sorted({v for v in why.values()})))
+        for reasons in p.reasons.values():
+            for cur, reason in reasons:
+                why.setdefault((cur, short(reason)), set()).add(p.pair)
+    for (cur, reason), names in sorted(why.items()):
+        out.append(f"  n/a - {cur}: {reason}  ->  {', '.join(sorted(names))}")
     return out
 
 

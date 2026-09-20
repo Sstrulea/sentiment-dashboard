@@ -89,6 +89,20 @@ class TenorCurve:
         return self.pts[-1][0]
 
 
+def proxy_basis(pts: list, t_start: float, t_eff: float, base: float) -> tuple:
+    """PROXY basis = average, on [t_start, t_eff), of the curve built ONLY from the tenors observed on or before the first
+    effective date, minus the current rate. Returns (basis, reason); without such a tenor the basis is None ("proxy without
+    short end": a curve that starts after the first meeting says nothing about the rate that is in force now)."""
+    obs = sorted((float(t), float(v)) for t, v in pts if t <= t_eff + 1e-9)
+    if not obs:
+        first = min(t for t, _ in pts) if pts else float("nan")
+        return None, (f"proxy without short end: the shortest observed tenor ({first:g}M) is after the first effective date "
+                      f"({t_eff:.1f} months out), so no basis can be measured")
+    c = Curve(obs)
+    avg = c.average(t_start, t_eff) if t_eff > t_start else c.value(t_start)
+    return avg - base, ""
+
+
 def curve_interval_averages(curve: Curve, asof: date, starts: list, ends: list) -> list:
     return [curve.average(months_between(asof, a), months_between(asof, b)) for a, b in zip(starts, ends)]
 
