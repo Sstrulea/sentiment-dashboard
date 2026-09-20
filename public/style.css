@@ -1870,3 +1870,31 @@ table.cb-compact td.cb-lastdec { line-height: 1.25; }
 td.cb-lvlcell { font-weight: 600; }
 td.cb-lvlcell .cb-lvl { color: var(--fg); }
 td.cb-num .cb-sep { color: inherit; opacity: 0.7; }
+/* official texts (phase 2a) */
+.cb-stmt { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
+.cb-stmt summary { cursor: pointer; font-weight: 600; font-size: 13px; }
+.cb-stmt-body { margin-top: 10px; max-height: 520px; overflow-y: auto; font-size: 13px; line-height: 1.55; padding-right: 8px; }
+.cb-stmt-body p { margin: 0 0 9px; }
+.cb-rl-toggle { display: block; margin: 8px 0 4px; font-size: 12px; cursor: pointer; }
+.cb-stmt-body ins { background: rgba(76, 175, 80, 0.22); color: inherit; text-decoration: none; border-radius: 2px; }
+.cb-stmt-body del { background: rgba(244, 67, 54, 0.18); color: inherit; text-decoration: line-through; border-radius: 2px; }
+.cb-votes { display: inline-block; font-weight: 700; padding: 1px 8px; border-radius: 10px; background: var(--surface-alt); cursor: help; }
+.cb-votes-counted { background: var(--info-bg); color: var(--info-fg); }
+.cb-votes-unanimous { background: var(--success-bg); color: var(--success-fg); }
+.cb-votes-not_published, .cb-votes-consensus { color: var(--muted); font-weight: 500; }
+.cb-bigrate .cb-votes-not_published, .cb-bigrate .cb-votes-consensus { font-size: 1rem; }        /* a word, not a count: no need for the big-number size */
+.cb-against { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+.cb-dir { font-size: 10px; }
+.cb-dir-raise { background: var(--info-bg); color: var(--info-fg); }
+.cb-dir-lower { background: var(--warning-bg); color: var(--warning-fg); }
+.cb-dir-hold { background: var(--surface-alt); color: var(--muted); }
+.cb-links { display: grid; gap: 6px; margin-top: 4px; }
+.cb-linkitem { display: flex; gap: 10px; align-items: baseline; font-size: 13px; }
+.cb-linkitem .cb-kicker { min-width: 150px; margin: 0; }
+.cb-doclink { color: var(--accent); }
+.cb-summary-slot { margin-top: 12px; padding: 8px 10px; border: 1px dashed var(--border); border-radius: 6px; color: var(--muted); font-size: 12px; }
+.cb-h3-gap { margin-top: 18px; }
+tr.cb-dim td { opacity: 0.55; }
+.cb-chip-chair { background: var(--accent); color: #fff; }
+body.dark .cb-chip-chair { color: #0d0f12; }
+.cb-chip-voter { background: var(--info-bg); color: var(--info-fg); }

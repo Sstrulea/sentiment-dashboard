@@ -91,6 +91,13 @@ def load_manual_decisions(path: Path) -> dict:
     return {(r["currency"], r["meeting_date"]): r for r in raw.get("decisions", [])}
 
 
+def statement_rates(paths) -> dict:
+    """{(currency, meeting_date): {after, lower, upper, doc_id}} - the rates parsed from the banks' own statements (phase 2a)."""
+    from .cb_docs import store as dst                                   # late import: cb_docs.collect imports this module
+    return {(d["currency"], d["meeting_date"]): {"after": d["rate_after"], "lower": d["rate_lower"], "upper": d["rate_upper"], "doc_id": d["doc_id"]}
+            for d in dst.load_documents(paths).values() if d["type"] == "statement" and d["rate_after"] is not None and d["meeting_date"]}
+
+
 def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: dict | None = None,
                   meetings: dict | None = None, ff_path: Path | str | None = None, n: int = 4) -> DecisionsReport:
     from .cb_collect import load_official_store                         # late import: cb_collect imports this module
@@ -100,7 +107,7 @@ def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: d
     view = SeriesView(list(load_official_store(paths).values()))
     ff = pd.read_parquet(ff_path or FF_PARQUET)
     rows, unresolved = compute_all(banks, meetings, calendars, view, ff_by_bank(banks, ff), today,
-                                   load_manual_decisions(paths.manual / "decisions.yaml"), n)
+                                   load_manual_decisions(paths.manual / "decisions.yaml"), n, statement_rates(paths))
     keep = {(r["currency"], r["meeting_date"]): r for r in cs.read_table_file(paths.decisions)}
     for r in rows:
         keep[(r["currency"], r["meeting_date"])] = r                    # recomputed inside the window; older rows stay
@@ -291,6 +298,15 @@ def decisions_report(rep: DecisionsReport, today: date) -> tuple:
     return "\n".join([line] + extra), md
 
 
+def documents_report(rep) -> tuple:
+    line = (f"documents: {rep.new} new, {rep.updated} updated, {rep.unchanged} unchanged; statement rates {rep.statement_rates}, votes {rep.votes}, "
+            f"redlines {rep.redlines}; {rep.requests} requests")
+    types = ", ".join(f"{k}={v}" for k, v in sorted(rep.by_type.items()))
+    extra = [f"  FAILED {w}: {why}" for w, why in rep.failed] + [f"  NOTE {n}" for n in rep.notes]
+    md = f"### documents\n\n{line}" + (f"\n\nchanged by type: {types}" if types else "") + ("\n\n" + "\n".join(f"- {e.strip()}" for e in extra) if extra else "")
+    return "\n".join([line] + ([f"  by type: {types}"] if types else []) + extra), md
+
+
 def projections_report(rep: ProjectionsReport) -> tuple:
     if rep.failed.get("calendar"):
         line = f"projections: FOMC calendar page failed ({rep.failed['calendar']})"
@@ -456,6 +472,19 @@ def extra_status(paths, today: date, *, banks: dict | None = None, official_cfg:
             pass
         add("decisions (latest per currency)", ["cur", "meeting", "before", "after", "delta bp", "effective", "consensus",
                                                  "surprise bp", "status", "source"], rows, notes)
+
+    from .cb_docs import collect as dcol, store as dst
+    docs = dst.load_documents(paths)
+    if docs:
+        per: dict = {}
+        for d in docs.values():
+            per.setdefault(d["currency"], {}).setdefault(d["type"], []).append(d)
+        rows = [[c, len(t.get("statement", [])), len(t.get("minutes", [])) + len(t.get("account", [])) + len(t.get("deliberations", [])) + len(t.get("summary_of_opinions", [])),
+                 len(t.get("speech", [])) + len(t.get("testimony", [])), len(t.get("presser_video", [])),
+                 len(t.get("presser_transcript", [])) + len(t.get("opening_statement", [])),
+                 max((d["first_seen_at"] for v in t.values() for d in v)).strftime("%Y-%m-%d %H:%M")] for c, t in sorted(per.items())]
+        add("official texts (phase 2a)", ["cur", "statements", "minutes etc.", "speeches", "videos", "transcripts", "last first-seen (UTC)"], rows,
+            [f"WARN {w}" for w in dcol.expectations(paths, today)] + ["RBNZ: BOTWALL - manual file only (data/cb/manual/documents.yaml)"])
 
     prj = cs.read_table_file(paths.projections)
     if prj:

@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:cb="http://www.cbwiki.net/wiki/index.php/Specification_1.2/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" version="2.0">
+  <channel>
+    <atom:link href="https://www.snb.ch/en/news-publications/speeches" rel="self" type="application/rss+xml" />
+    <title>Speeches</title>
+    <link>https://www.snb.ch/en/news-publications/speeches</link>
+    <description>Swiss National Bank (SNB): Recent speeches</description>
+    <dc:publisher>SNB</dc:publisher>
+    <dc:date>2026-09-20T19:07:02Z</dc:date>
+    <dc:rights>Copyright © Swiss National Bank, Zurich (Switzerland) 2026</dc:rights>
+    <dcterms:created>2026-09-20T19:07:02Z</dcterms:created>
+    <dcterms:license>https://www.snb.ch/en/srv/disclaimer</dcterms:license>
+    <item>
+      <title>2026-08-26 - Antoine Martin: Monetary policy and financial stability at the SNB: the role of macroprudential tools</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260826_anmar</link>
+      <description>The SNB’s core mandate is to ensure price stability. Alongside this, it is also tasked with contributing to the stability of the financial system. With this hierarchy, the legislator gives precedence to price stability over the SNB’s role in financial stability. 
+
+Monetary policy and financial stability interact with each other. A stable financial system is essential to achieving macroeconomic stability. Furthermore, a well-functioning banking sector is important for the effective transmission of monetary policy. At the same time, price stability provides an important foundation for financial stability. Nonetheless, price stability does not preclude the build-up of financial vulnerabilities. 
+
+Because the monetary policy actions required to achieve price stability do not always ensure financial stability, dedicated macroprudential tools are needed as a complement. This is even more important since the SNB does not lean against the wind. In Switzerland, the countercyclical capital buffer constitutes such an instrument. 
+
+Three recent examples illustrate the interaction: 
+
+
+	The crisis at Credit Suisse showed that financial stability is a precondition for price stability and illustrated how important sufficient buffers are for ensuring smooth monetary policy transmission. 
+	The phase of globally low interest rates from 2009 until 2021 highlighted how vulnerabilities can emerge and how the SNB addressed them with macroprudential tools.  
+	The monetary policy tightening cycle from 2022 until 2023 demonstrated that the measures required from a monetary policy perspective aligned with those required from a financial stability perspective. 
+
+
+The interaction of monetary policy and financial stability underscores the importance of a resilient financial system. It also highlights the need for the ability to strengthen resilience in the system in a targeted manner when vulnerabilities are building up. Banks can and will lend only if they have sufficient capital. A sound macroprudential policy can ensure just that.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260826_anmar</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Monetary policy and financial stability at the SNB: the role of macroprudential tools</cb:simpleTitle>
+        <cb:occurrenceDate>2026-08-26T16:15:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Monetary policy and financial stability at the SNB: the role of macroprudential tools</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260826_anmar</cb:link>
+          <cb:description>The SNB’s core mandate is to ensure price stability. Alongside this, it is also tasked with contributing to the stability of the financial system. With this hierarchy, the legislator gives precedence to price stability over the SNB’s role in financial stability. 
+
+Monetary policy and financial stability interact with each other. A stable financial system is essential to achieving macroeconomic stability. Furthermore, a well-functioning banking sector is important for the effective transmission of monetary policy. At the same time, price stability provides an important foundation for financial stability. Nonetheless, price stability does not preclude the build-up of financial vulnerabilities. 
+
+Because the monetary policy actions required to achieve price stability do not always ensure financial stability, dedicated macroprudential tools are needed as a complement. This is even more important since the SNB does not lean against the wind. In Switzerland, the countercyclical capital buffer constitutes such an instrument. 
+
+Three recent examples illustrate the interaction: 
+
+
+	The crisis at Credit Suisse showed that financial stability is a precondition for price stability and illustrated how important sufficient buffers are for ensuring smooth monetary policy transmission. 
+	The phase of globally low interest rates from 2009 until 2021 highlighted how vulnerabilities can emerge and how the SNB addressed them with macroprudential tools.  
+	The monetary policy tightening cycle from 2022 until 2023 demonstrated that the measures required from a monetary policy perspective aligned with those required from a financial stability perspective. 
+
+
+The interaction of monetary policy and financial stability underscores the importance of a resilient financial system. It also highlights the need for the ability to strengthen resilience in the system in a targeted manner when vulnerabilities are building up. Banks can and will lend only if they have sufficient capital. A sound macroprudential policy can ensure just that.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Antoine Martin</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Vice Chairman of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>University of Basel, Basel</cb:venue>
+      </cb:speech>
+      <dc:date>2026-08-26T16:15:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2026-06-18 - Martin Schlegel / Antoine Martin / Petra Tschudin: Introductory remarks, news conference</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260618_mslanmargpe</link>
+      <description>Monetary policy decision
+
+We have decided to leave the SNB policy rate unchanged at 0%. Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold. The discount for sight deposits above this threshold is unchanged at 0.25 percentage points. If necessary, we have an increased willingness to intervene in the foreign exchange market. We thereby counter a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland.
+
+Inflation has risen in recent months as a result of higher energy prices. Medium-term inflationary pressure, however, is virtually unchanged compared with the last monetary policy assessment. Our monetary policy is appropriate to keep inflation within the range consistent with price stability and it supports economic development. We will continue to monitor the situation and adjust our monetary policy if necessary, in order to ensure price stability.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260618_mslanmargpe</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Introductory remarks, news conference</cb:simpleTitle>
+        <cb:occurrenceDate>2026-06-18T08:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Introductory remarks, news conference</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260618_mslanmargpe</cb:link>
+          <cb:description>Monetary policy decision
+
+We have decided to leave the SNB policy rate unchanged at 0%. Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold. The discount for sight deposits above this threshold is unchanged at 0.25 percentage points. If necessary, we have an increased willingness to intervene in the foreign exchange market. We thereby counter a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland.
+
+Inflation has risen in recent months as a result of higher energy prices. Medium-term inflationary pressure, however, is virtually unchanged compared with the last monetary policy assessment. Our monetary policy is appropriate to keep inflation within the range consistent with price stability and it supports economic development. We will continue to monitor the situation and adjust our monetary policy if necessary, in order to ensure price stability.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Martin Schlegel / Antoine Martin / Petra Tschudin</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Chairman of the Governing Board / Vice Chairman of the Governing Board / Member of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>News conference of the Swiss National Bank, Berne</cb:venue>
+      </cb:speech>
+      <dc:date>2026-06-18T08:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2026-04-24 - Barbara Janom Steiner: The SNB - firmly anchored even in turbulent times</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260424_jsb</link>
+      <description>The SNB is institutionally sound and on a solid footing. Its unique legal form, that of a special-statute joint-stock company administered with the participation and under the oversight of the Confederation, has remained unchanged since its foundation. This special institutional structure contributes significantly to the SNB's independence and stability. The shareholder structure is characterised by remarkable continuity. All cantons are shareholders in the SNB, as are all cantonal banks. The Confederation, on the other hand, does not hold shares in the SNB. What is more, because ownership is spread across a broad range of private shareholders, the SNB is firmly rooted in the Swiss population. This institutional anchoring of the SNB has proved its worth and must be maintained.
+
+In turbulent times, stability becomes a particularly valuable asset. This is precisely what the SNB has always stood for. Its mandate to ensure price stability while taking due account of economic developments forms the basis of its actions. This stability-oriented monetary policy is the result of clear principles: institutional independence, professional competence and a consistent focus on the SNB's statutory mandate. The SNB does not act in response to short-term stimuli, but on the basis of careful analysis and with a clear focus on Switzerland's long-term interests as a whole. It is precisely this that makes it a dependable point of reference in an often unsettled environment.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260424_jsb</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>The SNB - firmly anchored even in turbulent times</cb:simpleTitle>
+        <cb:occurrenceDate>2026-04-24T08:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>The SNB - firmly anchored even in turbulent times</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260424_jsb</cb:link>
+          <cb:description>The SNB is institutionally sound and on a solid footing. Its unique legal form, that of a special-statute joint-stock company administered with the participation and under the oversight of the Confederation, has remained unchanged since its foundation. This special institutional structure contributes significantly to the SNB's independence and stability. The shareholder structure is characterised by remarkable continuity. All cantons are shareholders in the SNB, as are all cantonal banks. The Confederation, on the other hand, does not hold shares in the SNB. What is more, because ownership is spread across a broad range of private shareholders, the SNB is firmly rooted in the Swiss population. This institutional anchoring of the SNB has proved its worth and must be maintained.
+
+In turbulent times, stability becomes a particularly valuable asset. This is precisely what the SNB has always stood for. Its mandate to ensure price stability while taking due account of economic developments forms the basis of its actions. This stability-oriented monetary policy is the result of clear principles: institutional independence, professional competence and a consistent focus on the SNB's statutory mandate. The SNB does not act in response to short-term stimuli, but on the basis of careful analysis and with a clear focus on Switzerland's long-term interests as a whole. It is precisely this that makes it a dependable point of reference in an often unsettled environment.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Barbara Janom Steiner</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>President of the Bank Council</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>118th Ordinary General Meeting of Shareholders of the Swiss National Bank, Berne</cb:venue>
+      </cb:speech>
+      <dc:date>2026-04-24T08:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2026-04-24 - Martin Schlegel: Comments on Swiss monetary policy</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260424_msl</link>
+      <description>The world is going through a period of great uncertainty. As a central bank, we have to accept this as it is - and deal with the uncertainty. The past 25 years have seen several phases of great uncertainty. Nevertheless, the SNB has achieved its objective of price stability. The Swiss economy has also developed favourably overall. We were able to do so because three prerequisites for our work were met.
+
+The first is our institutional framework and, in particular, the independence of the SNB. Independence means that in conducting our monetary policy, we must not take instructions from the government, parliament or anybody else. Legislators gave us this independence for good reason, because an independent central bank is best able to fulfil its mandate. The counterbalance to independence is accountability, and the SNB reports comprehensively on how it fulfils its tasks.
+
+The second is our monetary policy strategy, which defines our long-term frame of reference. Our definition of price stability and the conditional inflation forecast form the core of this strategy. The conditional inflation forecast is our main indicator for monetary policy. It tells us whether price stability is being met in the medium term, and shows whether there will be a need for action in the future. It is therefore at the heart of our communications. Third, the contribution made by our employees is also central to the success of our monetary policy. Every day, they put their expertise to work for the SNB, doing so with great commitment.
+
+The conflict in the Middle East is making the global economic situation very uncertain. The higher energy prices will lead to a further increase in inflation in many countries in the coming months. Global growth is likely to slow temporarily. The SNB cannot change the uncertain global environment. However, even in such conditions, we are able to successfully pursue a monetary policy that serves the interests of the country as a whole. We are prepared to adjust our monetary policy at any time if necessary, and we have the instruments to do so. Thanks to our independence, our proven monetary policy strategy and the expertise of our staff, we are well equipped to ensure that we continue to fulfil our mandate in the future.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260424_msl</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Comments on Swiss monetary policy</cb:simpleTitle>
+        <cb:occurrenceDate>2026-04-24T08:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Comments on Swiss monetary policy</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260424_msl</cb:link>
+          <cb:description>The world is going through a period of great uncertainty. As a central bank, we have to accept this as it is - and deal with the uncertainty. The past 25 years have seen several phases of great uncertainty. Nevertheless, the SNB has achieved its objective of price stability. The Swiss economy has also developed favourably overall. We were able to do so because three prerequisites for our work were met.
+
+The first is our institutional framework and, in particular, the independence of the SNB. Independence means that in conducting our monetary policy, we must not take instructions from the government, parliament or anybody else. Legislators gave us this independence for good reason, because an independent central bank is best able to fulfil its mandate. The counterbalance to independence is accountability, and the SNB reports comprehensively on how it fulfils its tasks.
+
+The second is our monetary policy strategy, which defines our long-term frame of reference. Our definition of price stability and the conditional inflation forecast form the core of this strategy. The conditional inflation forecast is our main indicator for monetary policy. It tells us whether price stability is being met in the medium term, and shows whether there will be a need for action in the future. It is therefore at the heart of our communications. Third, the contribution made by our employees is also central to the success of our monetary policy. Every day, they put their expertise to work for the SNB, doing so with great commitment.
+
+The conflict in the Middle East is making the global economic situation very uncertain. The higher energy prices will lead to a further increase in inflation in many countries in the coming months. Global growth is likely to slow temporarily. The SNB cannot change the uncertain global environment. However, even in such conditions, we are able to successfully pursue a monetary policy that serves the interests of the country as a whole. We are prepared to adjust our monetary policy at any time if necessary, and we have the instruments to do so. Thanks to our independence, our proven monetary policy strategy and the expertise of our staff, we are well equipped to ensure that we continue to fulfil our mandate in the future.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Martin Schlegel</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Chairman of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>118th Ordinary General Meeting of Shareholders of the Swiss National Bank, Berne</cb:venue>
+      </cb:speech>
+      <dc:date>2026-04-24T08:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2026-04-16 - Petra Tschudin / Thomas Moser: Swipe, scan, tap: the cashless payments market</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260416_gpetmo</link>
+      <description>Payments are the backbone of a modern economy. Virtually no goods would change hands and virtually no services would be provided in today's world without a functioning payments system.
+
+From a macroeconomic perspective, resilience and efficiency are the overarching objectives in the payments system. Payment methods must be secure and, where possible, available continuously; and they must be technically reliable and widely accepted. A good cost-benefit ratio is also desirable.
+
+The payments system is characterised by network effects and economies of scale. These can lead to strong market concentration on certain platforms. In particular, two-sided markets in payment networks with different user groups tend to be highly concentrated due to their economic structure. It thus makes sense to consider competition-enhancing measures in this context. Lowering barriers to entry for new players through open interfaces is an important means of achieving this end.
+
+As part of its mandate, the SNB therefore supports initiatives that make it easier for new providers to link their services with the systems of other players. One such initiative is the Instant Payments Bridge project, which aims to provide technical access to the instant payments settlement infrastructure. Another project involves exploring how the Swiss and European settlement systems for instant payments could be linked, with a view to enabling cross-border instant payments.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260416_gpetmo</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Swipe, scan, tap: the cashless payments market</cb:simpleTitle>
+        <cb:occurrenceDate>2026-04-16T16:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Swipe, scan, tap: the cashless payments market</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260416_gpetmo</cb:link>
+          <cb:description>Payments are the backbone of a modern economy. Virtually no goods would change hands and virtually no services would be provided in today's world without a functioning payments system.
+
+From a macroeconomic perspective, resilience and efficiency are the overarching objectives in the payments system. Payment methods must be secure and, where possible, available continuously; and they must be technically reliable and widely accepted. A good cost-benefit ratio is also desirable.
+
+The payments system is characterised by network effects and economies of scale. These can lead to strong market concentration on certain platforms. In particular, two-sided markets in payment networks with different user groups tend to be highly concentrated due to their economic structure. It thus makes sense to consider competition-enhancing measures in this context. Lowering barriers to entry for new players through open interfaces is an important means of achieving this end.
+
+As part of its mandate, the SNB therefore supports initiatives that make it easier for new providers to link their services with the systems of other players. One such initiative is the Instant Payments Bridge project, which aims to provide technical access to the instant payments settlement infrastructure. Another project involves exploring how the Swiss and European settlement systems for instant payments could be linked, with a view to enabling cross-border instant payments.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Petra Tschudin / Thomas Moser</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Member of the Governing Board / Alternate Member of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>Money Market Event, Zurich</cb:venue>
+      </cb:speech>
+      <dc:date>2026-04-16T16:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2026-03-19 - Martin Schlegel / Antoine Martin / Petra Tschudin: Introductory remarks, news conference</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260319_mslanmargpe</link>
+      <description>Monetary policy decision
+
+We have decided to leave the SNB policy rate unchanged at 0%. Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold. The discount for sight deposits above this threshold still stands at 0.25 percentage points. Given the conflict in the Middle East, our willingness to intervene in the foreign exchange market has increased. We thereby counter a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland.
+
+Our conditional inflation forecast for the coming quarters is higher than in December due to the rise in energy prices. Medium-term inflationary pressure, however, has remained virtually unchanged since the last monetary policy assessment. Our monetary policy helps to keep inflation within the range consistent with price stability and supports economic development. We will continue to monitor the situation closely and adjust our monetary policy if necessary, in order to ensure price stability over the medium term.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260319_mslanmargpe</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Introductory remarks, news conference</cb:simpleTitle>
+        <cb:occurrenceDate>2026-03-19T09:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Introductory remarks, news conference</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260319_mslanmargpe</cb:link>
+          <cb:description>Monetary policy decision
+
+We have decided to leave the SNB policy rate unchanged at 0%. Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold. The discount for sight deposits above this threshold still stands at 0.25 percentage points. Given the conflict in the Middle East, our willingness to intervene in the foreign exchange market has increased. We thereby counter a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland.
+
+Our conditional inflation forecast for the coming quarters is higher than in December due to the rise in energy prices. Medium-term inflationary pressure, however, has remained virtually unchanged since the last monetary policy assessment. Our monetary policy helps to keep inflation within the range consistent with price stability and supports economic development. We will continue to monitor the situation closely and adjust our monetary policy if necessary, in order to ensure price stability over the medium term.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Martin Schlegel / Antoine Martin / Petra Tschudin</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Chairman of the Governing Board / Vice Chairman of the Governing Board / Member of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>News conference of the Swiss National Bank, Zurich</cb:venue>
+      </cb:speech>
+      <dc:date>2026-03-19T09:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2026-03-04 - Antoine Martin / Sébastien Kraenzlin: Emphase Ltd to design new banknote series</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260304_anmarskr</link>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260304_anmarskr</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Emphase Ltd to design new banknote series</cb:simpleTitle>
+        <cb:occurrenceDate>2026-03-04T09:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Emphase Ltd to design new banknote series</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260304_anmarskr</cb:link>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Antoine Martin / Sébastien Kraenzlin</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Vice Chairman of the Governing Board / Alternate Member of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>News conference on new banknote series, Zurich</cb:venue>
+      </cb:speech>
+      <dc:date>2026-03-04T09:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2025-12-11 - Martin Schlegel / Antoine Martin / Petra Tschudin: Introductory remarks, news conference</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20251211_mslanmargpe</link>
+      <description>Monetary policy decision
+
+We have decided to leave the SNB policy rate unchanged at 0%. Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold. The discount for sight deposits above this threshold still stands at 0.25 percentage points. We remain willing to be active in the foreign exchange market as necessary.
+
+Inflation in recent months has been slightly lower than expected. In the medium term, however, inflationary pressure is virtually unchanged compared to the last monetary policy assessment. Our monetary policy helps to keep inflation within the range consistent with price stability and supports economic development. We will continue to monitor the situation and adjust our monetary policy if necessary, in order to ensure price stability.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20251211_mslanmargpe</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Introductory remarks, news conference</cb:simpleTitle>
+        <cb:occurrenceDate>2025-12-11T09:00:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Introductory remarks, news conference</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20251211_mslanmargpe</cb:link>
+          <cb:description>Monetary policy decision
+
+We have decided to leave the SNB policy rate unchanged at 0%. Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold. The discount for sight deposits above this threshold still stands at 0.25 percentage points. We remain willing to be active in the foreign exchange market as necessary.
+
+Inflation in recent months has been slightly lower than expected. In the medium term, however, inflationary pressure is virtually unchanged compared to the last monetary policy assessment. Our monetary policy helps to keep inflation within the range consistent with price stability and supports economic development. We will continue to monitor the situation and adjust our monetary policy if necessary, in order to ensure price stability.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Martin Schlegel / Antoine Martin / Petra Tschudin</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Chairman of the Governing Board / Vice Chairman of the Governing Board / Member of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>News conference of the Swiss National Bank, Berne</cb:venue>
+      </cb:speech>
+      <dc:date>2025-12-11T09:00:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2025-11-21 - Martin Schlegel: The path to the monetary policy decision at the SNB</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2025/ref_20251121_msl</link>
+      <description>At its monetary policy assessment in September 2025, the Swiss National Bank decided to leave its policy rate at 0%. The SNB also indicated that it remains willing to be active in the foreign exchange market as necessary.
+
+The SNB makes monetary policy decisions, such as that taken in September, at its monetary policy assessments. These take place in March, June, September and December.
+
+Every decision is based on the SNB's mandate, which is to ensure price stability while taking due account of economic developments. The monetary policy strategy provides the framework for monetary policy decision-making. In it the SNB sets out its definition of price stability, namely an inflation rate of between 0% and 2%. The SNB seeks to keep inflation within the range consistent with price stability over the medium term.
+
+The monetary policy decision-making process is divided into two phases: the preparation phase and the monetary policy assessment phase. Shortly after the completion of a monetary policy assessment, the preparation phase for the next decision, during which economic developments are monitored and analysed, begins. Around the middle of the quarter, an interim assessment takes place. Economists from the Economic Affairs division report to the Governing Board on economic developments since the last monetary policy assessment and on whether the forecasts made at the last monetary policy assessment are still valid.
+
+The preparation for the monetary policy decision involves numerous staff members from across the SNB. The economists from the Economic Affairs division play a key role. They analyse data using statistical methods and develop forecasting models. In addition, each quarter, structured talks are held with around 250 Swiss companies whose economic situation is surveyed.
+
+Around two weeks before the monetary policy assessment the economists from the Economic Affairs division hold intensive discussions with the Chairman of the Governing Board and his deputies. Economic developments abroad and in Switzerland, as well as monetary indicators such as interest rates, exchange rates, monetary aggregates and loans, are also closely scrutinised. The economists then prepare the documentation for the monetary policy assessment. The Money Market and Foreign Exchange as well as the Financial Stability divisions also prepare assessments of the current environment for the Governing Board. This concludes the preparation phase.
+
+The monetary policy decision-making process is the same every quarter, irrespective of the prevailing economic environment. This structured and systematic approach facilitates the identification of changes as well as the need for monetary policy action. However, the process is by no means rigid or mechanical; rather, it allows the SNB to react flexibly to new developments. If the environment changes rapidly or unexpected developments occur, further analyses are carried out or scenarios simulated. The Governing Board can always decide to adjust monetary policy between quarterly monetary policy assessments.
+
+The second phase on the path to the monetary policy decision is the monetary policy assessment. The key question addressed is whether the current monetary policy stance is still appropriate to ensure price stability over the medium term. Are monetary conditions - a product of the level of interest rates and of the Swiss franc exchange rate - still suitable or should they be adjusted? When making its monetary policy decision the SNB sets the SNB policy rate. Changes to the policy rate affect the level of interest rates and the Swiss franc exchange rate. If necessary, the SNB can also use other measures, such as interventions in the foreign exchange market, to ensure price stability.
+
+On the first day of the monetary policy assessment, in addition to the Members and Alternate Members of the Governing Board, representatives from the divisions Economic Affairs, Money Market and Foreign Exchange, Financial Stability, International Monetary Cooperation and the Secretariat General, as well as from Communications, are present. If necessary, they answer specific questions from the Members and Alternate Members of the Governing Board.
+
+During the first day, the following topics are discussed:
+
+
+	The Money Market and Foreign Exchange division starts by reporting on financial markets. These assessments may provide up-to-date information on monetary conditions and global risk sentiment, as well as on the implementation of monetary policy.
+	Analyses of monetary conditions are carried out by the Economic Affairs division. The focus is on interest rate developments in Switzerland and the Swiss franc exchange rate. Growth in monetary aggregates and in loans is also carefully analysed.
+	The Economic Affairs division then presents its analyses of global economic developments. These include economic activity abroad and forecasts for the global economy. Besides the growth outlook, further developments in inflation and in monetary policy abroad are also discussed. The baseline scenario for the global economy prepared by the Economic Affairs division is the basis for the forecasts for Switzerland.
+	And finally, the Economic Affairs division explains the current economic situation in Switzerland as well as the latest growth and inflation forecasts. An important part of this is the approximately 250 talks that the SNB's delegates hold with Swiss companies every quarter.
+	Topical issues from the Financial Stability division, such as developments on the real estate market and in lending, are also discussed.
+
+
+The presentations provide a comprehensive picture of the current environment. However, as some uncertainty always persists, it is essential to think in terms of scenarios. Prevailing risks are also analysed in detail.
+
+The second day of the monetary policy assessment is the day of the decision. In addition to the Members and Alternate Members of the Governing Board, the heads of the divisions Economic Affairs, Money Market and Foreign Exchange, Financial Stability, International Monetary Cooperation and the Secretariat General are present, as well as the heads of the Monetary Policy Analysis, Forecast and Analysis Switzerland, Regional Economic Relations, Forecast and Analysis International, Economic Data Science, and Communications units.
+
+First, the Economic Affairs division summarises the background situation for the monetary policy decision. The final discussion about the monetary policy decision can then begin. Here, the Governing Board consults on whether current monetary policy is appropriate, or whether it should be tightened or eased, to ensure price stability over the medium term.
+
+When making a monetary policy decision, the Governing Board takes a broad perspective. It considers the prevailing risks and performs a comprehensive cost/benefit analysis of various options. In doing so the SNB pursues a risk management approach, which allows for the fact that the decision is being taken under uncertainty about future developments. The aim of the risk management approach is to reach a monetary policy decision that is appropriate for a number of probable scenarios. Here, the Governing Board does not simply rely on forecasts for various scenarios, but it also uses its own judgement.
+
+Once it has made its decision, it signs off the communications material setting out and explaining the interest rate decision. A key element of the communications is the conditional inflation forecast. This shows how the SNB expects consumer prices to develop, assuming the given interest rate remains unchanged for the next three years.
+
+At 9.30 am on the Thursday at the end of the monetary policy assessment, a press release on the monetary policy decision, including a conditional inflation forecast, is published on the SNB website. From 10.00 am, a news conference takes place, which is broadcast live on the SNB website. At the news conference, the Governing Board first explains its decision in introductory remarks. Journalists then have the opportunity to ask the Governing Board questions. One week after the monetary policy assessment, the monetary policy report is published in the Quarterly Bulletin. Starting at the September 2025 assessment, a summary of the monetary policy assessment discussion is published four weeks after each monetary policy decision.
+
+This marks the end of the process and a new cycle begins.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2025/ref_20251121_msl</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>The path to the monetary policy decision at the SNB</cb:simpleTitle>
+        <cb:occurrenceDate>2025-11-21T12:40:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>The path to the monetary policy decision at the SNB</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2025/ref_20251121_msl</cb:link>
+          <cb:description>At its monetary policy assessment in September 2025, the Swiss National Bank decided to leave its policy rate at 0%. The SNB also indicated that it remains willing to be active in the foreign exchange market as necessary.
+
+The SNB makes monetary policy decisions, such as that taken in September, at its monetary policy assessments. These take place in March, June, September and December.
+
+Every decision is based on the SNB's mandate, which is to ensure price stability while taking due account of economic developments. The monetary policy strategy provides the framework for monetary policy decision-making. In it the SNB sets out its definition of price stability, namely an inflation rate of between 0% and 2%. The SNB seeks to keep inflation within the range consistent with price stability over the medium term.
+
+The monetary policy decision-making process is divided into two phases: the preparation phase and the monetary policy assessment phase. Shortly after the completion of a monetary policy assessment, the preparation phase for the next decision, during which economic developments are monitored and analysed, begins. Around the middle of the quarter, an interim assessment takes place. Economists from the Economic Affairs division report to the Governing Board on economic developments since the last monetary policy assessment and on whether the forecasts made at the last monetary policy assessment are still valid.
+
+The preparation for the monetary policy decision involves numerous staff members from across the SNB. The economists from the Economic Affairs division play a key role. They analyse data using statistical methods and develop forecasting models. In addition, each quarter, structured talks are held with around 250 Swiss companies whose economic situation is surveyed.
+
+Around two weeks before the monetary policy assessment the economists from the Economic Affairs division hold intensive discussions with the Chairman of the Governing Board and his deputies. Economic developments abroad and in Switzerland, as well as monetary indicators such as interest rates, exchange rates, monetary aggregates and loans, are also closely scrutinised. The economists then prepare the documentation for the monetary policy assessment. The Money Market and Foreign Exchange as well as the Financial Stability divisions also prepare assessments of the current environment for the Governing Board. This concludes the preparation phase.
+
+The monetary policy decision-making process is the same every quarter, irrespective of the prevailing economic environment. This structured and systematic approach facilitates the identification of changes as well as the need for monetary policy action. However, the process is by no means rigid or mechanical; rather, it allows the SNB to react flexibly to new developments. If the environment changes rapidly or unexpected developments occur, further analyses are carried out or scenarios simulated. The Governing Board can always decide to adjust monetary policy between quarterly monetary policy assessments.
+
+The second phase on the path to the monetary policy decision is the monetary policy assessment. The key question addressed is whether the current monetary policy stance is still appropriate to ensure price stability over the medium term. Are monetary conditions - a product of the level of interest rates and of the Swiss franc exchange rate - still suitable or should they be adjusted? When making its monetary policy decision the SNB sets the SNB policy rate. Changes to the policy rate affect the level of interest rates and the Swiss franc exchange rate. If necessary, the SNB can also use other measures, such as interventions in the foreign exchange market, to ensure price stability.
+
+On the first day of the monetary policy assessment, in addition to the Members and Alternate Members of the Governing Board, representatives from the divisions Economic Affairs, Money Market and Foreign Exchange, Financial Stability, International Monetary Cooperation and the Secretariat General, as well as from Communications, are present. If necessary, they answer specific questions from the Members and Alternate Members of the Governing Board.
+
+During the first day, the following topics are discussed:
+
+
+	The Money Market and Foreign Exchange division starts by reporting on financial markets. These assessments may provide up-to-date information on monetary conditions and global risk sentiment, as well as on the implementation of monetary policy.
+	Analyses of monetary conditions are carried out by the Economic Affairs division. The focus is on interest rate developments in Switzerland and the Swiss franc exchange rate. Growth in monetary aggregates and in loans is also carefully analysed.
+	The Economic Affairs division then presents its analyses of global economic developments. These include economic activity abroad and forecasts for the global economy. Besides the growth outlook, further developments in inflation and in monetary policy abroad are also discussed. The baseline scenario for the global economy prepared by the Economic Affairs division is the basis for the forecasts for Switzerland.
+	And finally, the Economic Affairs division explains the current economic situation in Switzerland as well as the latest growth and inflation forecasts. An important part of this is the approximately 250 talks that the SNB's delegates hold with Swiss companies every quarter.
+	Topical issues from the Financial Stability division, such as developments on the real estate market and in lending, are also discussed.
+
+
+The presentations provide a comprehensive picture of the current environment. However, as some uncertainty always persists, it is essential to think in terms of scenarios. Prevailing risks are also analysed in detail.
+
+The second day of the monetary policy assessment is the day of the decision. In addition to the Members and Alternate Members of the Governing Board, the heads of the divisions Economic Affairs, Money Market and Foreign Exchange, Financial Stability, International Monetary Cooperation and the Secretariat General are present, as well as the heads of the Monetary Policy Analysis, Forecast and Analysis Switzerland, Regional Economic Relations, Forecast and Analysis International, Economic Data Science, and Communications units.
+
+First, the Economic Affairs division summarises the background situation for the monetary policy decision. The final discussion about the monetary policy decision can then begin. Here, the Governing Board consults on whether current monetary policy is appropriate, or whether it should be tightened or eased, to ensure price stability over the medium term.
+
+When making a monetary policy decision, the Governing Board takes a broad perspective. It considers the prevailing risks and performs a comprehensive cost/benefit analysis of various options. In doing so the SNB pursues a risk management approach, which allows for the fact that the decision is being taken under uncertainty about future developments. The aim of the risk management approach is to reach a monetary policy decision that is appropriate for a number of probable scenarios. Here, the Governing Board does not simply rely on forecasts for various scenarios, but it also uses its own judgement.
+
+Once it has made its decision, it signs off the communications material setting out and explaining the interest rate decision. A key element of the communications is the conditional inflation forecast. This shows how the SNB expects consumer prices to develop, assuming the given interest rate remains unchanged for the next three years.
+
+At 9.30 am on the Thursday at the end of the monetary policy assessment, a press release on the monetary policy decision, including a conditional inflation forecast, is published on the SNB website. From 10.00 am, a news conference takes place, which is broadcast live on the SNB website. At the news conference, the Governing Board first explains its decision in introductory remarks. Journalists then have the opportunity to ask the Governing Board questions. One week after the monetary policy assessment, the monetary policy report is published in the Quarterly Bulletin. Starting at the September 2025 assessment, a summary of the monetary policy assessment discussion is published four weeks after each monetary policy decision.
+
+This marks the end of the process and a new cycle begins.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Martin Schlegel</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Chairman of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>Keynote speech at the conference 'The SNB and its Watchers', Zurich</cb:venue>
+      </cb:speech>
+      <dc:date>2025-11-21T12:40:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+    <item>
+      <title>2025-11-13 - Petra Tschudin / Thomas Moser: Bank funding costs: latest developments from a monetary policy perspective</title>
+      <link>https://www.snb.ch/en/publications/communication/speeches/2025/ref_20251113_gpetmo</link>
+      <description>Since the beginning of 2024, the SNB has lowered its policy rate by 1.75 percentage points. This has led to lower financial market and lending rates. Nevertheless, bank funding costs, as measured by swap spreads, have increased. The main reasons for this are the rise in foreign government bond yields relative to swap rates, the structural change following the acquisition of Credit Suisse by UBS, and developments that have made banks' liquidity management more challenging. These factors increased liquidity premia, while credit premia remained unchanged. Despite higher funding costs, lending in Switzerland remains robust. The lowering of the SNB policy rate is thus also having its intended effect via the credit markets.</description>
+      <guid>https://www.snb.ch/en/publications/communication/speeches/2025/ref_20251113_gpetmo</guid>
+      <cb:speech rdf:parseType="Resource">
+        <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#LocatedAnnouncement" />
+        <cb:simpleTitle>Bank funding costs: latest developments from a monetary policy perspective</cb:simpleTitle>
+        <cb:occurrenceDate>2025-11-13T17:30:00Z</cb:occurrenceDate>
+        <cb:institutionAbbrev>SNB</cb:institutionAbbrev>
+        <cb:resource rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Resource" />
+          <cb:title>Bank funding costs: latest developments from a monetary policy perspective</cb:title>
+          <cb:link>https://www.snb.ch/en/publications/communication/speeches/2025/ref_20251113_gpetmo</cb:link>
+          <cb:description>Since the beginning of 2024, the SNB has lowered its policy rate by 1.75 percentage points. This has led to lower financial market and lending rates. Nevertheless, bank funding costs, as measured by swap spreads, have increased. The main reasons for this are the rise in foreign government bond yields relative to swap rates, the structural change following the acquisition of Credit Suisse by UBS, and developments that have made banks' liquidity management more challenging. These factors increased liquidity premia, while credit premia remained unchanged. Despite higher funding costs, lending in Switzerland remains robust. The lowering of the SNB policy rate is thus also having its intended effect via the credit markets.</cb:description>
+        </cb:resource>
+        <cb:person rdf:parseType="Resource">
+          <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Person" />
+          <cb:nameAsWritten>Petra Tschudin / Thomas Moser</cb:nameAsWritten>
+          <cb:role rdf:parseType="Resource">
+            <rdf:type rdf:resource="http://www.cbwiki.net/wiki/index.php/RSS-CB_1.2_RDF_Schema#Role" />
+            <cb:jobTitle>Member of the Governing Board / Alternate Member of the Governing Board</cb:jobTitle>
+          </cb:role>
+        </cb:person>
+        <cb:venue>Money Market Event, Geneva</cb:venue>
+      </cb:speech>
+      <dc:date>2025-11-13T17:30:00Z</dc:date>
+      <dc:language>en</dc:language>
+    </item>
+  </channel>
+</rss>

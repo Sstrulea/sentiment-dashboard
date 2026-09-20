@@ -81,9 +81,9 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **1A** | fundație + colector în CI (config, adaptoare de piață, `cb_collect`, `cb-refresh.yml`) |
 | **1B-1** | date oficiale: calendare, serii oficiale, ședințe (first_day, blackout), decizii, proiecții Fed, RBNZ manual, verificare săptămânală a calendarului |
 | **1B-2** | calcul: traiectorie pe ședință, cumulat, GAP, repricing, surprize față de piață, pereche |
-| **3a** | UI pentru partea numerică: `/central-banks`, `/central-banks/<ccy>`, `/central-banks/pair/<pair>`, JSON în `public/data/cb/`, render în `cb-refresh` |
-| **2** | texte + rezumate |
-| **3b** | UI pentru texte |
+| **3a** | UI pentru partea numerică: `/central-banks`, `/central-banks/<ccy>`, `/central-banks/pair/<pair>`, JSON în `public/data/cb/`, render în `cb-refresh` (livrat) |
+| **2a** | texte oficiale fără AI: comunicate, voturi, redline, discursuri, conferințe (URL + video), rata din comunicat; UI pentru blocurile de text |
+| **2b** | rezumate AI peste textele din 2a (sloturile „summary pending”) |
 | **4** | trigger extern + verificări finale: **scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`**, 3 reîncercări cu backoff, alertă la eșec (Vercel Cron pe Hobby rulează o dată pe zi) |
 
 ## 8. Ce există după 1B-1
@@ -397,3 +397,69 @@ public/data/cb/overview.json, <ccy>.json, pairs.json   încărcate la cerere de 
   `stopPropagation`, click-ul pe rând (modalul) rămâne neschimbat.
 - **Decizii de execuție**: fereastra BoJ „time TBD” vine din config (11:30–13:30 JST), nu din „~12:00–13:30” din cerere; NZD are „approximate /
   unverified” pe două reguli (data efectivă derivată din BIS, ora deciziei) — fiecare cu eticheta ei.
+
+
+## 14. FAZA 2a — texte oficiale (fără AI)
+
+Comunicate, voturi, redline, procese-verbale, discursuri și conferințe de presă, luate **doar** de la sursele oficiale din raportul 0B
+(`docs/spikes/cb_sources_text.md`). Nicio cerere către un model. Rezumatele AI sunt faza 2b; declanșatorul extern + verificările finale, faza 4.
+
+```
+src/cb_docs/http.py      Fetcher politicos: UA identificabil, robots.txt, GET condițional, 2 s / host, buget 400 cereri, HEAD
+src/cb_docs/sources.py   unde stă fiecare text (URL-uri derivate din data ședinței, feed-uri RSS, liste HTML) + lagurile 0B
+src/cb_docs/extract.py   HTML (container fix per bancă, fără boilerplate) și PDF (pypdf 6.19.0, normalizarea artefactelor de spațiere BoJ)
+src/cb_docs/parse.py     rata din comunicat, voturi, redline pe cuvinte, relevanță monetară, dedup față de BIS, potrivire video
+src/cb_docs/store.py     documente în partiții lunare (`data/cb/documents/`), `votes.parquet`, `redlines.parquet`
+src/cb_docs/collect.py   orchestrarea (etapa `documents` din `python -m src.cb_collect`), așteptările de publicare pentru `--status`
+config/cb_roster.yaml    membrii comitetelor (nume, rol, votant FOMC 2026 / 2027, președinte), generat de `scripts/cb_gen_roster.py` din paginile oficiale
+data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipuri) — șablon comentat
+```
+
+- **Model.** Un document = `doc_id` (`USD:statement:2026-09-16`), bancă, tip (statement, minutes, account, summary_of_opinions, deliberations,
+  presser_transcript, opening_statement, speech, testimony), titlu, vorbitor + rol, URL, `published_at`, `first_seen_at`, `meeting_date`, limbă, format,
+  **sha256 al textului extras**, metoda de extragere, nota de licență. **Textul integral se comite doar la comunicate și la declarațiile introductive**
+  (BoC, SNB); minutele / deliberările / transcrierile / discursurile se hașează și se leagă (se descarcă la cerere în 2b). Idempotență: același sha ⇒
+  nicio rescriere (`Dataset` scrie o partiție doar dacă i se schimbă octeții); `first_seen_at` nu se mută niciodată.
+- **Politețe.** robots.txt respectat pe fiecare gazdă (o gazdă cu robots ilizibil e sărită); un bloc (Cloudflare, 403/429) e raportat, nu ocolit;
+  validatorii ETag / Last-Modified stau în `data/cb/state.json` și avansează **doar după ce datele au fost stocate** (`remember`). Feed-urile se citesc
+  necondiționat (un 304 nu are elemente). O ședință de comunicat mai veche de 14 zile nu se mai cere deloc.
+- **Rata din comunicat** = sursă intermediară. Precedență nouă: **serie oficială > comunicat > BIS > FF validat > manual**; status nou `statement`.
+  Fiecare bancă are propriul regex; rata e validată (interval −1…15 %, pas ≤ 100 bp, direcția coerentă cu verbul, la Fed intervalul de 25 bp). Ce nu se
+  parsează sau nu trece validarea nu se inventează (rând de eșec în raport). Conflictul rămâne conflict, cu câștigătorul din sursa mai sus în precedență.
+  SNB primește rata în ziua deciziei; JPY iese din `ff_pending` (comunicatul BoJ e publicat în aceeași zi).
+- **Voturi** (`votes.parquet`: pentru / contra, nume, direcția fiecărui disident): Fed din comunicat (antet + nume), BoE din rezumat + istoricul
+  `mpcvoting.xlsx` (nume și preferințe), BoJ din PDF (propunerea disidentului comparată cu rata decisă dă direcția), RBA din minute (+14 zile).
+  ECB, BoC, SNB = „not published” (decizie prin consens fără număr), RBNZ = „consensus”. O sursă mai săracă nu înlocuiește una mai bogată (`VOTE_RANK`).
+- **Redline** (`redlines.parquet`): diferență pe cuvinte față de comunicatul anterior al aceleiași bănci, stocat compact (adăugat / șters / neschimbat)
+  cu ancore pe paragrafe; `apply_redline` reface textul curent exact (testat pe perechi reale consecutive).
+- **Discursuri și mărturii**: feed-ul RSS oficial al fiecărei bănci (Fed, ECB `ecb.sp*` / `ecb.in*`, BoE, BoC, SNB; listele HTML BoJ și RBA); BIS doar
+  pentru backfill și dedup — cheia e vorbitor + similaritate de titlu ≥ 0.6, **data BIS nu intră în cheie** (postarea BIS e la 13–19 zile după discurs).
+  Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge. Greutatea: Chair > votanți > restul.
+- **Conferința de presă**: transcrieri oficiale doar ca URL + metadate (Fed PDF, ECB HTML cu Q&A unde hash-ul a fost publicat, RBA HTML; BoC și SNB au
+  declarația introductivă în text). Videoclipul: canalul oficial YouTube, potrivit pe data ședinței ±1 zi — vezi limitările.
+- **Așteptări de publicare**: lagurile din 0B (`expect.py`) + 2 zile de grație; `python -m src.cb_collect --status` avertizează când un document a
+  depășit termenul și nu e stocat. Aceleași termene alimentează „overdue” din payload-ul paginii băncii.
+- **cb-refresh**: etapa `documents` rulează după `decisions` (rata din comunicat intră în decizii; dacă s-a schimbat un rând, deciziile se recalculează
+  în aceeași rulare); se comit tot doar `data/cb/` și fișierele CB din `public/`. Timeout 10 → 15 min (pornire la rece ≈ 3 min).
+- **UI** (bancă): blocul „Latest decision” (comunicatul pliabil, redline vs precedentul, voturi, linkuri spre comunicat / minute / video / transcriere),
+  „Documents” (ultimele 4 ședințe + discursuri recente cu vorbitor, rol, dată, titlu, link, marcaj de relevanță), tabelul deciziilor cu Votes / Statement /
+  Press conf populate; sloturile de rezumat sunt etichetate „summary pending” (2b). **Ziua deciziei**: decizia și blocul conferinței urcă în capul paginii.
+- **Teste**: fixturi tăiate din paginile reale (`tests/fixtures/cb_docs/`, ~1.3 MB, `manifest.json`; regenerate cu `scripts/cb_freeze_docs_fixture.py`),
+  sesiune HTTP falsă peste ele; parametrizat pe cele 4 comunicate reale ale fiecărei bănci (rata, voturile Fed 8–4 / 12–0 / 9–3 / 12–0, BoE 8–1 / 7–2 / 6–3 /
+  6–3, BoJ 6–3 / 7–1 / 8–1 / 7–2, RBA 5–4 / 8–1 / unanim / unanim), redline pe două comunicate consecutive, dedup, relevanță, video, conflict, eșec de
+  parsare, idempotență; ~45 de mutații pe precedență, voturi, redline, robots / blocuri, politica textului integral, așteptări — toate omorâte.
+
+### Limitări cunoscute (raportate, nu ascunse)
+
+- **YouTube.** `youtube.com/robots.txt` interzice `/feeds/videos.xml`; respectăm robots.txt, deci videoclipurile de conferință **nu se colectează**
+  automat: se scriu manual în `data/cb/manual/documents.yaml` (`type: presser_video`). Potrivirea ±1 zi există și e testată; se aplică peste ce conține fișierul.
+- **RBNZ** rămâne BOTWALL (Cloudflare): fără comunicate automate; doar fișierul manual. Pagina lui afișează „n/a” cu motivul.
+- **Nedescoperibile**: conturile ECB (`ecb.mg*~hash`) — URL-ul cu hash nu se poate deriva, iar paginile-index ECB nu îl expun fără JavaScript; se
+  salvează doar cele care apar în feed-ul `press.html` (`--status` le listează pe restul ca „overdue”). Transcrierile conferințelor ECB, la fel: doar pentru
+  ședințele cu URL-ul cu hash publicat.
+- **URL-uri derivate din data deciziei** (verificate cu HEAD, fără feed): BoJ Summary of Opinions `mpmsche_minu/opinion_{YYYY}/opi{yymmdd}.pdf` (+14 z) și
+  Minutes `minu_{YYYY}/g{yymmdd}.pdf` (~+50 z); Fed minutes `fomcminutes{YYYYMMDD}.htm` (+21 z); RBA minutes; SNB deliberations (+28 z); **BoE minutes = aceeași
+  pagină ca rezumatul** (partea de după „Minutes of the Monetary Policy Committee meeting”, hașată; comunicatul se oprește la acel titlu).
+- **Roster**: Fed complet (din pagina FOMC, cu rotația 2026 / 2027); BoJ și RBA din paginile de comitet; BoE / BoC / ECB / SNB sunt best-effort (lipsesc, de
+  ex., membrii externi ai MPC). Ponderea Chair > votanți > restul e exactă pentru Fed și pentru președinții celorlalte bănci.
+- **Interviul colectiv BoE** (pooled interview) nu se colectează.

@@ -198,7 +198,7 @@ def test_workflow_triggers_and_guards(workflow):
     assert workflow["concurrency"] == {"group": "cb-refresh", "cancel-in-progress": False}
     assert workflow["permissions"] == {"contents": "write"}
     job = workflow["jobs"]["refresh"]
-    assert job["timeout-minutes"] == 10 and job["runs-on"] == "ubuntu-latest"
+    assert job["timeout-minutes"] == 15 and job["runs-on"] == "ubuntu-latest"
 
 
 CB_PUBLIC = ["public/central-banks.html", "public/central-banks/", "public/data/cb/"]          # the only public/ paths the workflow may write
@@ -283,3 +283,42 @@ def test_econ_refresh_can_render_every_page_on_dispatch_only():
     assert step["if"] == "inputs.render_all" and step["run"] == "python -m src.main --mode render-all"
     assert names.index("Render") < names.index("Render all pages (navbar sync)") < names.index("Commit + push")
     assert "public/" in next(s for s in steps if s.get("name") == "Commit + push")["run"]
+
+
+# ---------------------------------------------------------------------------
+# Phase 2a: config/cb_roster.yaml, the "documents" stage, requirements
+# ---------------------------------------------------------------------------
+
+def test_roster_lists_the_decision_makers_with_voter_status_and_the_chair():
+    roster = load("config/cb_roster.yaml")
+    people = roster["people"]
+    assert len(people) >= 40 and roster["meta"]["generator"] == "scripts/cb_gen_roster.py"
+    assert {p["currency"] for p in people} <= set(BANKS) - {"NZD"}                       # RBNZ sits behind Cloudflare: no entries, and the file says so
+    for p in people:
+        assert p["name"].strip() and p["role"].strip() and isinstance(p["chair"], bool), p
+    usd = [p for p in people if p["currency"] == "USD"]
+    assert len(usd) == 17 and sum(p["chair"] for p in usd) == 1                          # 7 governors + 12 presidents - one shared seat (17 in office)
+    assert {y for p in usd for y in p["voter"]} == {"2026", "2027"}
+    assert sum(1 for p in usd if p["voter"]["2026"]) == 12 and sum(1 for p in usd if p["voter"]["2027"]) == 12
+    assert next(p for p in usd if p["chair"])["voter"] == {"2026": True, "2027": True}    # the Chair always votes
+    for ccy in ("EUR", "GBP", "JPY", "CAD", "AUD", "CHF"):
+        assert any(p["currency"] == ccy for p in people), ccy
+    assert set(roster["sources"]) == {"USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"} and all(s["url"].startswith("https://") for s in roster["sources"].values())
+
+
+def test_documents_stage_runs_after_decisions_and_before_projections():
+    from src.cb_collect import STAGES
+    assert STAGES.index("decisions") < STAGES.index("documents") < STAGES.index("projections")
+
+
+def test_pypdf_is_the_only_new_dependency_and_is_pinned_exactly():
+    reqs = [ln.strip() for ln in (ROOT / "requirements.txt").read_text().splitlines() if ln.strip() and not ln.startswith("#")]
+    pinned = [r for r in reqs if r.lower().startswith("pypdf")]
+    assert len(pinned) == 1 and re.fullmatch(r"pypdf==\d+\.\d+\.\d+", pinned[0]), pinned
+    assert not any(r.lower().startswith(("pdfminer", "pdfplumber", "pymupdf", "fitz", "openai", "anthropic")) for r in reqs)
+
+
+def test_the_manual_documents_file_is_a_commented_template_and_valid_yaml():
+    data = yaml.safe_load((ROOT / "data/cb/manual/documents.yaml").read_text())
+    assert data in (None, {}) or isinstance(data.get("documents", []), list)
+    assert "RBNZ" in (ROOT / "data/cb/manual/documents.yaml").read_text()

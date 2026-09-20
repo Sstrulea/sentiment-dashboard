@@ -537,12 +537,14 @@
         numCell(x.vs_market, { scale: 10, dp: 1, tip: isNum(x.vs_market.implied_step_bp) ? "Step implied at T-1: " + fmtSigned(x.vs_market.implied_step_bp, 1) + " bp" : "" }) +
         numCell(x.reaction.next, { scale: 10, dp: 1, tip: x.reaction.next.target ? "Level implied for the " + fmtDate(x.reaction.next.target) + " meeting, T minus T-1" : "" }) +
         numCell(x.reaction.year, { scale: 10, dp: 1, tip: x.reaction.year.target ? "Level implied for the " + fmtDate(x.reaction.year.target) + " meeting, T minus T-1" : "" }) +
-        '<td class="cb-slot" title="Filled in phase 2">' + NA + '</td><td class="cb-slot" title="Filled in phase 2">' + NA + '</td><td class="cb-slot" title="Filled in phase 2">' + NA + "</td></tr>";
+        '<td class="cb-slot">' + voteChip(x.slots.votes) + '</td><td class="cb-slot">' + (x.slots.statement ? docAnchor(x.slots.statement, "text") : '<span class="cb-na" title="statement not collected">' + NA + "</span>") + "</td>" +
+        '<td class="cb-slot">' + confLinks(x.slots.conference) + "</td></tr>";
     }).join("");
     return '<section class="cb-card"><h3>Last decisions</h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Date</th><th>Δ bp</th><th>Rate after %</th><th>Effective</th><th>Consensus %</th>' +
       '<th title="Decided rate minus consensus, bp">vs consensus</th><th title="Decided step minus the step implied at T-1, bp (EXACT / CURVE / PROXY with a basis only)">vs market T-1</th>' +
       '<th title="Change of the implied level at the next meeting, T minus T-1, bp">React. next</th><th title="Change of the implied level at the last meeting of the year, bp">React. year-end</th>' +
-      '<th title="Phase 2">Votes</th><th title="Phase 2">Statement</th><th title="Phase 2">Press conf.</th></tr></thead><tbody>' + rows + "</tbody></table></div></section>";
+      '<th title="Votes for / against; hover for the names and the direction of each dissent">Votes</th><th title="The bank\u2019s own statement">Statement</th><th title="Official video / transcript / introductory statement of the press conference">Press conf.</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      '<div class="cb-summary-slot">Decision summaries: summary pending (phase 2b)</div></section>';
   }
   function calendarCard(d) {
     const rows = d.calendar.map(function (m) {
@@ -587,6 +589,84 @@
     bits.push("vertical dashes = upcoming meetings");
     return bits.join("; ") + "." + (ms_.length ? "" : " " + (d.summary.na || "No market path for this currency."));
   }
+
+  // ---- official texts (phase 2a) -------------------------------------------------------------------------------------------
+  function docAnchor(it, label) {
+    if (!it || !it.url) return '<span class="cb-na" title="' + esc((it && it.na) || "n/a") + '">' + NA + "</span>";
+    return '<a class="cb-doclink" href="' + esc(it.url) + '" target="_blank" rel="noopener" title="' + esc((it.title || it.label || "") + (it.published ? " · " + it.published : "")) + '">' + esc(label || it.label) + "</a>";
+  }
+  function confLinks(conf) {
+    if (!conf) return '<span class="cb-na" title="no official video or transcript collected">' + NA + "</span>";
+    return Object.keys(conf).map(function (k) { return docAnchor(conf[k], k === "presser_video" ? "video" : k === "presser_transcript" ? "transcript" : "statement"); }).join(" · ");
+  }
+  function voteChip(v) {
+    if (!v) return '<span class="cb-na" title="votes not collected yet">' + NA + "</span>";
+    const tip = [v.evidence || "", v.for && v.for.length ? "For: " + v.for.join(", ") : "", (v.against || []).map(function (a) { return "Against: " + (a.name || "member(s)") + " (wanted: " + a.direction + ")" + (a.note ? " - " + a.note : ""); }).join("\n"), v.notes || ""].filter(Boolean).join("\n");
+    return '<span class="cb-votes cb-votes-' + esc(v.kind) + '" title="' + esc(tip) + '">' + esc(v.label) + "</span>";
+  }
+  function paraHtml(p) { return "<p>" + esc(p) + "</p>"; }
+  function redlineParas(st, rl) {
+    return rl.paras.map(function (x) {
+      if (x.kind === "same") return paraHtml(st.paragraphs[x.p] || "");
+      if (x.kind === "removed") return '<p class="cb-rl-removed"><del>' + esc(x.ops[0][1]) + "</del></p>";
+      return "<p>" + x.ops.map(function (o) { return o[0] === "+" ? "<ins>" + esc(o[1]) + "</ins>" : o[0] === "-" ? "<del>" + esc(o[1]) + "</del>" : esc(o[1]); }).join("") + "</p>";
+    }).join("");
+  }
+  function votesBlock(v) {
+    if (!v) return '<div class="cb-sub">Votes: not collected yet.</div>';
+    const against = (v.against || []).map(function (a) {
+      return '<li><b>' + esc(a.name || "member(s)") + '</b> <span class="econ-flag cb-dir cb-dir-' + esc(a.direction) + '">' + esc(a.direction === "hold" ? "wanted no change" : a.direction === "raise" ? "wanted higher" : "wanted lower") + "</span>" + (a.note ? '<div class="cb-sub">' + esc(a.note) + "</div>" : "") + "</li>";
+    }).join("");
+    return '<div class="cb-votes-block"><div class="cb-kicker">Votes</div><div class="cb-bigrate">' + voteChip(v) + '</div>' +
+      (v.kind === "not_published" || v.kind === "consensus" ? '<div class="cb-sub">' + esc(v.evidence || "") + "</div>" : "") +
+      (v.for && v.for.length ? '<div class="cb-sub"><b>For:</b> ' + esc(v.for.join(", ")) + "</div>" : "") + (against ? '<ul class="cb-against">' + against + "</ul>" : "") +
+      '<div class="cb-sub">Source: ' + esc(v.source) + (v.notes ? " · " + esc(v.notes) : "") + "</div></div>";
+  }
+  function linksBlock(items) {
+    return '<div class="cb-links">' + (items || []).map(function (it) {
+      return '<div class="cb-linkitem"><span class="cb-kicker">' + esc(it.label) + "</span>" + (it.url ? docAnchor(it, it.published ? fmtDate(it.published) : "open") : '<span class="cb-na" title="' + esc(it.na || "n/a") + '">' + esc(it.expected ? "expected " + fmtDate(it.expected) : NA) + "</span>") + "</div>";
+    }).join("") + "</div>";
+  }
+  function latestDecisionCard(d, dayMode) {
+    const doc = d.documents, L = doc && doc.latest;
+    if (!L) return "";
+    const st = L.statement;
+    const body = st
+      ? '<details class="cb-stmt"' + (dayMode ? " open" : "") + "><summary>Statement text · " + fmtDate(L.meeting) + " (" + st.paragraphs.length + " paragraphs, " + esc(st.format) + ")</summary>" +
+        (L.redline ? '<label class="cb-rl-toggle"><input type="checkbox" id="cbRlToggle"> Show changes vs the statement of ' + fmtDate(L.redline.prev_meeting) + ' <span class="cb-sub">(+' + L.redline.added_words + " / −" + L.redline.removed_words + " words, similarity " + (L.redline.similarity * 100).toFixed(0) + "%)</span></label>" : "") +
+        '<div class="cb-stmt-body" id="cbStmtBody">' + st.paragraphs.map(paraHtml).join("") + '</div><div class="cb-sub">Source: <a href="' + esc(st.url) + '" target="_blank" rel="noopener">' + esc(st.url) + "</a>" + (st.rate_after !== null ? " · rate in the text: " + fmtRateAuto(st.rate_after) + "%" : "") + "<br>" + esc(st.license || "") + "</div></details>"
+      : '<div class="cb-sub">' + esc(L.na || "n/a") + "</div>";
+    return '<section class="cb-card cb-latest' + (dayMode ? " cb-daycard" : "") + '" id="cbLatest">' + (dayMode ? '<div class="cb-daytag">Decision day</div>' : "") + "<h3>Latest decision · " + fmtDate(L.meeting) + "</h3>" +
+      '<div class="cb-grid">' + '<div>' + votesBlock(L.votes) + "</div><div>" + '<div class="cb-kicker">Documents</div>' + linksBlock(L.follow_up) + "</div></div>" + body +
+      '<div class="cb-summary-slot">' + esc(L.summary.label) + "</div></section>";
+  }
+  function wireRedline(d) {
+    const box = document.getElementById("cbRlToggle");
+    if (!box) return;
+    const L = d.documents.latest;
+    box.addEventListener("change", function () {
+      document.getElementById("cbStmtBody").innerHTML = box.checked ? redlineParas(L.statement, L.redline) : L.statement.paragraphs.map(paraHtml).join("");
+    });
+  }
+  function documentsCard(d) {
+    const doc = d.documents;
+    if (!doc) return "";
+    const rows = doc.timeline.map(function (t) {
+      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0; }).map(function (i) { return i.url ? docAnchor(i, i.label) : '<span class="cb-na" title="' + esc(i.na || "n/a") + '">' + esc(i.label) + " " + NA + "</span>"; }).join("<br>") || NA; };
+      return "<tr><td>" + fmtDate(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") : '<span class="cb-na">' + NA + "</span>") + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) +
+        "</td><td>" + fu(["presser_video", "presser_transcript", "opening_statement"]) + "</td><td>" + voteChip(t.votes) + "</td></tr>";
+    }).join("");
+    const sp = doc.speeches.slice(0, 12).map(function (x) {
+      return '<tr class="' + (x.relevance === "other" ? "cb-dim" : "") + '"><td>' + fmtDate(x.published) + "</td><td>" + esc(x.speaker || NA) + (x.role ? '<div class="cb-prob">' + esc(x.role) + "</div>" : "") +
+        (x.chair ? ' <span class="econ-flag cb-chip-chair" title="Chair / head of the decision body">chair</span>' : x.voter ? ' <span class="econ-flag cb-chip-voter" title="Votes at the meetings this year">voter</span>' : "") + "</td>" +
+        '<td class="cb-notes"><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></td><td>" + esc(x.type) + '</td><td title="' + esc(x.relevance === "other" ? "kept but marked: not about monetary policy / the outlook" : "monetary policy / inflation / outlook") + '">' + esc(x.relevance || NA) + (x.via === "bis" ? ' <span class="cb-prob" title="from the BIS feed (backfill): posting date, not the speech date">BIS</span>' : "") + "</td></tr>";
+    }).join("");
+    return '<section class="cb-card"><h3>Documents <small class="muted">last four meetings and recent speeches</small></h3>' + (doc.manual_only ? '<div class="cb-sub">RBNZ: the site is behind a Cloudflare challenge; texts only from the manual file (data/cb/manual/documents.yaml).</div>' : "") +
+      '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Meeting</th><th>Statement</th><th>Minutes / account / summary</th><th>Press conference</th><th>Votes</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+      '<h3 class="cb-h3-gap">Speeches and testimony <small class="muted">' + doc.n_speeches + " in the last 60 days; a dimmed row is not about monetary policy</small></h3>" +
+      (sp ? '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Date</th><th>Speaker</th><th>Title</th><th>Type</th><th>Relevance</th></tr></thead><tbody>' + sp + "</tbody></table></div>" : '<div class="cb-sub">' + NA + " no speeches collected in the last 60 days.</div>") + "</section>";
+  }
+
   function renderBank(d) {
     state.meta = d.meta;
     titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + "</span>";
@@ -595,10 +675,11 @@
     metaEl.innerHTML = '<a href="' + esc(CFG.urls.overview_page) + '">' + "← All banks</a>" + DOT + "As of " + esc(fmtDate(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "");
     const n = d.summary.next;
     const dayMode = !!(n && n.decision && todayIn((n.time || {}).tz || "UTC") === n.decision);
-    root.innerHTML = (dayMode ? nextCard(d, true) : "") + headerCard(d) +
+    root.innerHTML = (dayMode ? nextCard(d, true) + latestDecisionCard(d, true) : "") + headerCard(d) +
       '<section class="cb-card cb-chartcard"><h3>Policy-rate trajectory <small class="muted">market-implied vs history' + (d.chart.bank.kind !== "n/a" ? " and the bank’s own path" : "") + '</small></h3><div class="cb-chart-wrap"><canvas id="cbChart"></canvas></div>' +
       '<div class="cb-sub">' + esc(chartHelp(d)) + "</div></section>" +
-      '<div class="cb-grid">' + (dayMode ? "" : nextCard(d, false)) + horizonCard(d, "2026") + horizonCard(d, "2027") + "</div>" + gapCard(d) + pathTable(d) + decisionsCard(d) + calendarCard(d) + footerCard(d) + methodPanel(d);
+      '<div class="cb-grid">' + (dayMode ? "" : nextCard(d, false)) + horizonCard(d, "2026") + horizonCard(d, "2027") + "</div>" + gapCard(d) + pathTable(d) + (dayMode ? "" : latestDecisionCard(d, false)) + decisionsCard(d) + documentsCard(d) + calendarCard(d) + footerCard(d) + methodPanel(d);
+    wireRedline(d);
     const canvas = document.getElementById("cbChart");
     registerRedraw(function () { drawBankChart(canvas, d); });
     watchTheme();

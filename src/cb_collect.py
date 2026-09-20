@@ -71,6 +71,9 @@ class Paths:
         self.decisions = self.dir / "decisions.parquet"
         self.projections = self.dir / "projections.parquet"
         self.manual = self.dir / "manual"
+        self.documents = self.dir / "documents"                  # monthly partitions documents_YYYY-MM.parquet (phase 2a)
+        self.votes = self.dir / "votes.parquet"
+        self.redlines = self.dir / "redlines.parquet"
 
     def partition(self, month: str) -> Path:
         return self.quotes / f"market_quotes_{month}.parquet"
@@ -443,7 +446,7 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "projections", "calendar")
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar")
 
 
 def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
@@ -505,6 +508,16 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("decisions stage failed")
             emit(f"decisions: FAILED {type(e).__name__}: {e}", f"### decisions\n\nFAILED `{type(e).__name__}: {e}`")
+    if "documents" in stages:
+        try:
+            from .cb_docs.collect import run_documents
+            rep = run_documents(paths, today, state=load_state(paths))
+            emit(*dsets.documents_report(rep))
+            if rep.rate_rows_changed:                                   # a statement rate is new: the decisions take it (precedence official > statement > BIS > FF)
+                emit(*dsets.decisions_report(dsets.run_decisions(paths, today), today))
+        except Exception as e:
+            log.exception("documents stage failed")
+            emit(f"documents: FAILED {type(e).__name__}: {e}", f"### documents\n\nFAILED `{type(e).__name__}: {e}`")
     if "projections" in stages:
         try:
             emit(*dsets.projections_report(dsets.run_projections(paths, today)))

@@ -3,6 +3,7 @@ src/cb_compute/ stays pure)."""
 from __future__ import annotations
 
 from pathlib import Path
+from datetime import date
 from typing import Optional
 
 import yaml
@@ -11,6 +12,7 @@ from . import cb_collect as cc
 from . import cb_datasets as ds
 from .cb_calendar import effective_date, load_calendars
 from .cb_compute.decisions import SeriesView
+from .cb_docs import store as dst
 from .cb_compute.engine import Context, MarketIndex, Meeting
 from .cb_sources.base import load_sources
 from .cb_sources.official import load_official
@@ -47,6 +49,10 @@ def load_context(data_dir: Path | str | None = None) -> Context:
         series_calendar={sid: s.get("calendar_id") for sid, s in official["series"].items()},
         projections=ds.load_projections(paths),
         rbnz=ds.load_rbnz(paths.manual / "rbnz.yaml"),
+        documents=sorted(dst.load_documents(paths).values(), key=lambda r: (r["currency"], r["published_date"], r["doc_id"])),
+        votes={(r["currency"], r["meeting_date"]): r for r in dst.load_votes(paths)},
+        redlines={(r["currency"], r["meeting_date"]): r for r in dst.load_redlines(paths)},
+
         stale_after_bd=int(sources_cfg["meta"].get("stale_after_bd", 2)))
 
 

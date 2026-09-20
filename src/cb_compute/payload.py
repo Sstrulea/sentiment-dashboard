@@ -13,6 +13,7 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 
 from ..cb_calendar import compute_blackout
+from ..cb_docs.expect import EXPECTED_LAG, GRACE_DAYS, TYPE_LABEL
 from .analysis import BankReport, PairRow, bank_report, pair_row
 from .engine import Context, Point, STRENGTH, YEAR_ENDS, YearEnd, step_reason, weakest
 
@@ -235,11 +236,15 @@ def decision_rows(ctx: Context, rep: BankReport, limit: int = 4) -> list:
             v = getattr(s, f"reaction_{key}_bp")
             react[key] = (metric(v, flag=getattr(s, f"reaction_{key}_flag"), nd=1, target=iso(getattr(s, f"reaction_{key}_target"))) if v is not None
                           else metric(None, na=s.reaction_reason.get(key) or "n/a"))
+        mine = {x["type"]: x for x in ctx.documents if x["currency"] == cur and x["meeting_date"] == s.meeting}
+        stm = doc_link(mine["statement"]) if "statement" in mine else None
+        conf = {t: doc_link(mine[t]) for t in ("presser_video", "presser_transcript", "opening_statement") if t in mine} or None
         rows.append({
             "date": iso(s.meeting), "effective": iso(d.get("effective_date")), "delta_bp": num(s.delta_bp, 1), "rate_before": num(d.get("rate_before")),
             "rate_after": num(d.get("rate_after")), "lower": num(d.get("lower")), "upper": num(d.get("upper")), "consensus": num(d.get("consensus")),
             "surprise_consensus_bp": num(s.vs_consensus_bp, 1), "status": d.get("status"), "vs_market": vs_market, "reaction": react,
-            "slots": {"votes": None, "statement": None, "conference": None},              # phase 2 fills these
+            "slots": {"votes": votes_json(ctx, cur, s.meeting), "statement": stm, "conference": conf},
+            "summary": {"status": "pending", "label": "summary pending (phase 2b)"},
         })
     return rows
 
@@ -271,6 +276,112 @@ def next_json(ctx: Context, rep: BankReport, asof: date) -> dict:
             "has_projections": m.has_projections, "projections_name": proj.get("name"), "has_presser": m.has_presser,
             "conference": {"local": conf.get("local"), "held": conf.get("held"), "verified": conf.get("verified")},
             "blackout": blackout_of(ctx, cur, m), "source": m.source, "date_verified": m.verified, "na": None}
+
+
+# ---------------------------------------------------------------------------
+# official texts (phase 2a)
+# ---------------------------------------------------------------------------
+
+FOLLOW_UP = ("minutes", "account", "summary_of_opinions", "deliberations")
+SPEECH_WINDOW_DAYS = 60
+
+
+def vote_label(v: dict) -> str:
+    k = v["kind"]
+    if k == "counted":
+        return f"{v['n_for']}\u2013{v['n_against']}"
+    if k == "unanimous":
+        return f"{v['n_for']}\u20130" if v["n_for"] else "unanimous"
+    return {"not_published": "not published", "consensus": "consensus"}.get(k, k)
+
+
+def votes_json(ctx: Context, ccy: str, meeting: date) -> Optional[dict]:
+    v = ctx.votes.get((ccy, meeting))
+    if v is None:
+        return None
+    import json as _json
+    return {"kind": v["kind"], "label": vote_label(v), "n_for": v["n_for"], "n_against": v["n_against"], "for": _json.loads(v["for_names"] or "[]"),
+            "against": _json.loads(v["against"] or "[]"), "source": v["source"], "evidence": v["evidence"], "notes": v["notes"] or None, "doc_id": v["source_doc_id"] or None}
+
+
+def doc_link(d: dict, expected: Optional[date] = None) -> dict:
+    return {"type": d["type"], "label": TYPE_LABEL.get(d["type"], d["type"]), "url": d["url"], "published": iso(d["published_date"]), "title": d["title"],
+            "format": d["format"], "available": True, "na": None, "expected": None, "sha256": d["text_sha256"]}
+
+
+def follow_up(ctx: Context, ccy: str, meeting: date, docs_of: dict, asof: date) -> list:
+    """The documents of one meeting after the statement: minutes / account / opinions / deliberations, press-conference video, transcript,
+    introductory statement - each present (link) or n/a with the reason (not published yet / expected date / overdue / not available)."""
+    items = []
+    for typ in FOLLOW_UP:
+        lag = EXPECTED_LAG.get((ccy, typ))
+        d = docs_of.get(typ)
+        if d is not None:
+            items.append(doc_link(d))
+        elif lag is not None:
+            due = meeting + timedelta(days=lag)
+            why = (f"expected around {due} (+{lag} d after the decision)" if asof <= due + timedelta(days=GRACE_DAYS)
+                   else f"overdue: expected around {due} (+{lag} d), not collected")
+            items.append({"type": typ, "label": TYPE_LABEL[typ], "url": None, "available": False, "na": why, "expected": iso(due), "published": None, "title": None,
+                          "format": None, "sha256": None})
+    for typ in ("presser_video", "presser_transcript", "opening_statement"):
+        d = docs_of.get(typ)
+        if d is not None:
+            items.append(doc_link(d))
+    if not docs_of.get("presser_video"):
+        items.append({"type": "presser_video", "label": TYPE_LABEL["presser_video"], "url": None, "available": False, "published": None, "title": None, "format": None,
+                      "sha256": None, "expected": None,
+                      "na": "not collected: the YouTube channel feed is disallowed by robots.txt - add the link in data/cb/manual/documents.yaml"})
+    return items
+
+
+def statement_json(d: dict) -> dict:
+    return {"doc_id": d["doc_id"], "url": d["url"], "title": d["title"], "published": iso(d["published_date"]), "format": d["format"], "method": d["extraction_method"],
+            "sha256": d["text_sha256"], "paragraphs": (d["text"] or "").split("\n") if d["text"] else [], "rate_after": num(d["rate_after"]),
+            "license": d["license_note"]}
+
+
+def redline_json(ctx: Context, ccy: str, meeting: date) -> Optional[dict]:
+    r = ctx.redlines.get((ccy, meeting))
+    if r is None:
+        return None
+    import json as _json
+    return {"prev_meeting": iso(r["prev_meeting_date"]), "added_words": r["added_words"], "removed_words": r["removed_words"], "unchanged_words": r["unchanged_words"],
+            "similarity": num(r["similarity"], 4), "paras": _json.loads(r["ops_json"])}
+
+
+def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
+    """`meetings` = the decided meetings to show, most recent first (the last 4 decisions)."""
+    mine = [d for d in ctx.documents if d["currency"] == ccy]
+    by_meeting: dict = {}
+    for d in mine:
+        if d["meeting_date"]:
+            by_meeting.setdefault(d["meeting_date"], {})[d["type"]] = d
+    timeline = []
+    for m in meetings:
+        docs_of = by_meeting.get(m, {})
+        st = docs_of.get("statement")
+        timeline.append({"meeting": iso(m), "statement": None if st is None else doc_link(st), "follow_up": follow_up(ctx, ccy, m, docs_of, asof),
+                         "votes": votes_json(ctx, ccy, m)})
+    latest = None
+    if meetings:
+        m = meetings[0]
+        st = by_meeting.get(m, {}).get("statement")
+        latest = {"meeting": iso(m), "statement": None if st is None else statement_json(st), "redline": redline_json(ctx, ccy, m),
+                  "votes": votes_json(ctx, ccy, m), "follow_up": timeline[0]["follow_up"] if timeline else [],
+                  "summary": {"status": "pending", "label": "summary pending (phase 2b)"},
+                  "na": None if st is not None else ("RBNZ: the site is behind a Cloudflare challenge - texts only from the manual file" if ccy == "NZD"
+                                                     else "statement not collected yet")}
+    import json as _json
+    cutoff = asof - timedelta(days=SPEECH_WINDOW_DAYS)
+    speeches = []
+    for d in sorted((d for d in mine if d["type"] in ("speech", "testimony") and d["published_date"] >= cutoff), key=lambda d: (d["published_date"], d["doc_id"]), reverse=True):
+        meta = _json.loads(d["meta_json"]) if d["meta_json"] else {}
+        speeches.append({"doc_id": d["doc_id"], "type": d["type"], "speaker": d["speaker"] or None, "role": d["role"] or None, "title": d["title"], "url": d["url"],
+                         "published": iso(d["published_date"]), "relevance": d["relevance"], "weight": meta.get("weight", 3), "voter": bool(meta.get("voter")),
+                         "chair": bool(meta.get("chair")), "via": meta.get("via", "bank")})
+    return {"latest": latest, "timeline": timeline, "speeches": speeches[:30], "n_speeches": len(speeches),
+            "manual_only": ccy == "NZD", "warnings": [w for w in ctx.doc_warnings if w.startswith(ccy + " ")]}
 
 
 def calendar_json(ctx: Context, ccy: str, asof: date, limit: int = 12) -> list:
@@ -390,7 +501,8 @@ def bank_page(ctx: Context, rep: BankReport, asof: date) -> dict:
         "summary": row, "unverified": unverified, "spread": spread, "proxy_basis_bp": num((tr.extra.get("proxy_basis") or 0) * 100, 1) if tr.extra.get("proxy_basis") is not None else None,
         "trajectory": [point_json(p) for p in tr.points], "notes": list(tr.notes), "consistency": [{"source": c[0], "period": c[1], "dev_bp": num(c[2], 2), "detail": c[3]} for c in tr.consistency],
         "chart": chart_json(ctx, rep, asof), "next_card": {"horizon": row["horizon"], "next": row["next"]}, "horizons": horizons, "gap": row["gap"],
-        "decisions": decision_rows(ctx, rep), "calendar": calendar_json(ctx, rep.currency, asof), "sources": sources_json(ctx, rep.currency, asof),
+        "decisions": decision_rows(ctx, rep), "documents": documents_json(ctx, rep.currency, asof, [x.meeting for x in reversed([x for x in rep.surprises if x.decided][-4:])]),
+        "calendar": calendar_json(ctx, rep.currency, asof), "sources": sources_json(ctx, rep.currency, asof),
         "crosschecks": [{"name": c.name, "period": c.period, "primary": num(c.a), "second": num(c.b), "diff_bp": num(c.diff_bp, 2), "note": c.note, "na": c.na_reason or None}
                         for c in rep.crosschecks],
         "meta": meta(ctx, asof),

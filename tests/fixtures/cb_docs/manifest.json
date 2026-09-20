@@ -1,0 +1,250 @@
+{
+ "https://www.bankofcanada.ca/2026/04/fad-press-release-2026-04-29/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-04-29.html"
+ },
+ "https://www.bankofcanada.ca/2026/04/opening-statement-2026-04-29/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-04-29_opening.html"
+ },
+ "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-06-10.html"
+ },
+ "https://www.bankofcanada.ca/2026/06/opening-statement-2026-06-10/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-06-10_opening.html"
+ },
+ "https://www.bankofcanada.ca/2026/07/fad-press-release-2026-07-15/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-07-15.html"
+ },
+ "https://www.bankofcanada.ca/2026/07/opening-statement-2026-07-15/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-07-15_opening.html"
+ },
+ "https://www.bankofcanada.ca/2026/09/fad-press-release-2026-09-02/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-09-02.html"
+ },
+ "https://www.bankofcanada.ca/2026/09/opening-statement-2026-09-02/": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CAD_2026-09-02_opening.html"
+ },
+ "https://www.bankofcanada.ca/content_type/speeches/feed/": {
+  "content_type": "application/xml",
+  "file": "feeds/boc_speeches.xml"
+ },
+ "https://www.bankofcanada.ca/content_type/summary-of-deliberations/feed/": {
+  "content_type": "application/xml",
+  "file": "feeds/boc_summary_feed.xml"
+ },
+ "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-summary-and-minutes/mpcvoting.xlsx": {
+  "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "file": "misc/boe_mpcvoting.xlsx"
+ },
+ "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/GBP_2026-04-30.html"
+ },
+ "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/GBP_2026-07-30.html"
+ },
+ "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/GBP_2026-06-18.html"
+ },
+ "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/GBP_2026-09-17.html"
+ },
+ "https://www.bankofengland.co.uk/rss/speeches": {
+  "content_type": "application/xml",
+  "file": "feeds/boe_speeches.xml"
+ },
+ "https://www.bis.org/doclist/cbspeeches.rss": {
+  "content_type": "application/xml",
+  "file": "feeds/bis_cbspeeches.xml"
+ },
+ "https://www.boj.or.jp/en/about/press/koen_2026/index.htm": {
+  "content_type": "text/html",
+  "file": "lists/boj_koen.html"
+ },
+ "https://www.boj.or.jp/en/about/press/koen_2026/ko260827a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/boj_ko260827a.htm"
+ },
+ "https://www.boj.or.jp/en/about/press/koen_2026/ko260902a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/boj_ko260902a.htm"
+ },
+ "https://www.boj.or.jp/en/about/press/koen_2026/ko260910a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "lists/boj_ko260910a.htm"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260428a.pdf": {
+  "content_type": "application/pdf",
+  "file": "statements/JPY_2026-04-28.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616a.pdf": {
+  "content_type": "application/pdf",
+  "file": "statements/JPY_2026-06-16.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260731a.pdf": {
+  "content_type": "application/pdf",
+  "file": "statements/JPY_2026-07-31.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf": {
+  "content_type": "application/pdf",
+  "file": "statements/JPY_2026-09-18.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260428.pdf": {
+  "content_type": "application/pdf",
+  "file": "minutes/JPY_minutes_2026-04-28.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf": {
+  "content_type": "application/pdf",
+  "file": "minutes/JPY_minutes_2026-06-16.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260428.pdf": {
+  "content_type": "application/pdf",
+  "file": "minutes/JPY_summary_of_opinions_2026-04-28.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260616.pdf": {
+  "content_type": "application/pdf",
+  "file": "minutes/JPY_summary_of_opinions_2026-06-16.pdf"
+ },
+ "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf": {
+  "content_type": "application/pdf",
+  "file": "minutes/JPY_summary_of_opinions_2026-07-31.pdf"
+ },
+ "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260430~81b7179e6f.en.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/EUR_2026-04-30.html"
+ },
+ "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/EUR_2026-06-11.html"
+ },
+ "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/EUR_2026-07-23.html"
+ },
+ "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/EUR_2026-09-10.html"
+ },
+ "https://www.ecb.europa.eu/rss/press.html": {
+  "content_type": "application/xml",
+  "file": "feeds/ecb_press.xml"
+ },
+ "https://www.federalreserve.gov/feeds/speeches.xml": {
+  "content_type": "application/xml",
+  "file": "feeds/fed_speeches.xml"
+ },
+ "https://www.federalreserve.gov/feeds/testimony.xml": {
+  "content_type": "application/xml",
+  "file": "feeds/fed_testimony.xml"
+ },
+ "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260429.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "minutes/USD_2026-04-29.html"
+ },
+ "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260617.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "minutes/USD_2026-06-17.html"
+ },
+ "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/USD_2026-04-29.html"
+ },
+ "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/USD_2026-06-17.html"
+ },
+ "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/USD_2026-07-29.html"
+ },
+ "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/USD_2026-09-16.html"
+ },
+ "https://www.rba.gov.au/media-releases/2026/mr-26-08.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/AUD_2026-03-17.html"
+ },
+ "https://www.rba.gov.au/media-releases/2026/mr-26-12.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/AUD_2026-05-05.html"
+ },
+ "https://www.rba.gov.au/media-releases/2026/mr-26-15.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/AUD_2026-06-16.html"
+ },
+ "https://www.rba.gov.au/media-releases/2026/mr-26-19.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/AUD_2026-08-11.html"
+ },
+ "https://www.rba.gov.au/monetary-policy/int-rate-decisions/2026/": {
+  "content_type": "text/html",
+  "file": "lists/rba_decisions.html"
+ },
+ "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-03-17.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "minutes/AUD_2026-03-17.html"
+ },
+ "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-05-05.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "minutes/AUD_2026-05-05.html"
+ },
+ "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-06-16.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "minutes/AUD_2026-06-16.html"
+ },
+ "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-08-11.html": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "minutes/AUD_2026-08-11.html"
+ },
+ "https://www.rba.gov.au/speeches/": {
+  "content_type": "text/html",
+  "file": "lists/rba_speeches.html"
+ },
+ "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20250925": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2025-09-25.html"
+ },
+ "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20251211": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2025-12-11.html"
+ },
+ "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260319": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2026-03-19.html"
+ },
+ "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260618": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2026-06-18.html"
+ },
+ "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20250925_mslanmargpe": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2025-09-25_opening.html"
+ },
+ "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20251211_mslanmargpe": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2025-12-11_opening.html"
+ },
+ "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260319_mslanmargpe": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2026-03-19_opening.html"
+ },
+ "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260618_mslanmargpe": {
+  "content_type": "text/html; charset=utf-8",
+  "file": "statements/CHF_2026-06-18_opening.html"
+ },
+ "https://www.snb.ch/public/rss/en/speeches": {
+  "content_type": "application/xml",
+  "file": "feeds/snb_speeches.xml"
+ }
+}

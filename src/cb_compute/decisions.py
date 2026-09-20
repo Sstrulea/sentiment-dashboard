@@ -2,9 +2,9 @@
 rows and (last resort) a manual entry. Pure functions - the caller supplies the meetings, the series views and the FF
 rows; nothing here reads a file or a URL.
 
-Precedence for `rate_after`:  official series (level on the effective date)  >  BIS WS_CBPOL  >  validated FF  >
-manual.  A row whose winner is FF is `ff_pending` (waiting for the official / BIS series to reach the effective date);
-if a lower-precedence source disagrees with the winner the row is `conflict` (the winner's value stays).
+Precedence for `rate_after`:  official series (level on the effective date)  >  the rate in the bank's own statement (phase 2a)  >
+BIS WS_CBPOL  >  validated FF  >  manual.  A row whose winner is FF is `ff_pending` (waiting for the official / BIS series to reach
+the effective date); if a lower-precedence source disagrees with the winner the row is `conflict` (the winner's value stays).
 
 FF validation:
   * matched on (currency, name) - the caller passes only the rows of the bank's FF name - and on the OFFICIAL meeting
@@ -30,7 +30,7 @@ from ..cb_calendar import Calendar, effective_date
 TOL = 0.001                               # percentage points: source disagreement threshold (0.1 bp)
 RANGE_WIDTH = 0.25                        # Fed target range width (percentage points)
 ONE = timedelta(days=1)
-STATUSES = ("official", "bis", "ff_pending", "manual", "conflict")
+STATUSES = ("official", "statement", "bis", "ff_pending", "manual", "conflict")
 
 
 def _r(x: Optional[float], n: int = 6) -> Optional[float]:
@@ -106,7 +106,7 @@ class Candidate:
     after: float
     before: Optional[float]
     source: str
-    status: str                                  # official | bis | ff_pending | manual
+    status: str                                  # official | statement | bis | ff_pending | manual
     lower: Optional[float] = None                # Fed range after the decision
     upper: Optional[float] = None
     notes: list = field(default_factory=list)
@@ -225,8 +225,9 @@ def ff_candidate(cfg: dict, view: SeriesView, rows: list, meeting: dict, eff: da
 # ---------------------------------------------------------------------------
 
 def compute_decision(bank: str, cfg: dict, meeting: dict, calendars: dict, view: SeriesView, ff_rows: list,
-                     manual: Optional[dict] = None) -> Optional[dict]:
-    """The decision row of one meeting, or None when no source has a rate for it yet."""
+                     manual: Optional[dict] = None, statement: Optional[dict] = None) -> Optional[dict]:
+    """The decision row of one meeting, or None when no source has a rate for it yet. `statement` = {"after", "lower", "upper",
+    "doc_id"}: the rate parsed (and validated) from the bank's own statement."""
     decision = meeting["date"]
     cal: Calendar = calendars[cfg["calendar_id"]]
     eff = effective_date(cfg["effective_rule"], decision, cal)
@@ -235,28 +236,35 @@ def compute_decision(bank: str, cfg: dict, meeting: dict, calendars: dict, view:
         notes.append(f"calendar {cal.id} does not cover {eff}: weekends only")
     expected = _expected_utc(cfg, decision)
 
-    official = official_candidate(cfg, view, eff)
+    official = official_candidate(cfg, view, eff)                        # official series or BIS (status says which)
+    series = official if official is not None and official.status == "official" else None
+    bis = official if official is not None and official.status == "bis" else None
+    stmt = None
+    if statement and statement.get("after") is not None:
+        stmt = Candidate(_r(statement["after"]), None, f"statement:{statement['doc_id']}", "statement", _r(statement.get("lower")), _r(statement.get("upper")))
     ff, consensus, ff_notes = ff_candidate(cfg, view, ff_rows, meeting, eff, expected, official.after if official else None)
     notes += ff_notes
     man = None
     if manual:
         man = Candidate(_r(manual["rate_after"]), _r(manual.get("rate_before")), "manual", "manual", notes=[manual.get("note", "manual entry")])
 
-    win = official or ff or man
+    win = series or stmt or bis or ff or man
     if win is None:
         return None
     status, source = win.status, win.source
     notes += win.notes
-    if win is not ff and ff is not None and abs(ff.after - win.after) > TOL:
+    disagree = [c for c in (series, stmt, bis, ff) if c is not None and c is not win and abs(c.after - win.after) > TOL]
+    if disagree:
         status = "conflict"
-        notes.append(f"CONFLICT: {win.source} says {win.after:g} but FF says {ff.after:g}; {win.source} wins")
+        for c in disagree:
+            notes.append(f"CONFLICT: {win.source} says {win.after:g} but {'FF' if c is ff else c.source} says {c.after:g}; {win.source} wins")
     elif win is ff and man is not None and abs(man.after - ff.after) > TOL:
         notes.append(f"manual entry says {man.after:g}; FF wins by precedence")
     if win is ff and official is None:
         notes.append("waiting for the official / BIS series to reach the effective date")
     before = win.before
     if before is None:
-        before = next((c.before for c in (official, ff, man) if c is not None and c.before is not None), None)
+        before = next((c.before for c in (official, ff, man, stmt) if c is not None and c.before is not None), None)
         if before is not None:
             notes.append("rate_before taken from another source")
     delta = None if before is None else _r((win.after - before) * 100, 4)
@@ -278,13 +286,13 @@ def select_meetings(meetings: list, today: date, n: int = 4) -> list:
 
 
 def compute_all(cfgs: dict, meetings: dict, calendars: dict, view: SeriesView, ff_by_bank: dict, today: date,
-                manual: Optional[dict] = None, n: int = 4) -> tuple:
+                manual: Optional[dict] = None, n: int = 4, statements: Optional[dict] = None) -> tuple:
     """Rows for the last `n` meetings of every bank; also the list of (bank, date) that no source could resolve."""
     rows, unresolved = [], []
     for bank, cfg in cfgs.items():
         for m in select_meetings(meetings.get(bank, []), today, n):
             man = (manual or {}).get((bank, m["date"]))
-            row = compute_decision(bank, cfg, m, calendars, view, ff_by_bank.get(bank, []), man)
+            row = compute_decision(bank, cfg, m, calendars, view, ff_by_bank.get(bank, []), man, (statements or {}).get((bank, m["date"])))
             if row is None:
                 unresolved.append((bank, m["date"]))
             else:

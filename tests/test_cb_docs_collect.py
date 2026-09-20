@@ -1,0 +1,373 @@
+"""Phase 2a: polite HTTP, the documents collector end to end on the frozen real documents (no network), idempotence, the statement rate in
+the decisions (precedence official > statement > BIS > FF > manual, conflicts, SNB on decision day, JPY out of ff_pending)."""
+from __future__ import annotations
+
+import hashlib
+import shutil
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+
+import pandas as pd
+import pyarrow.parquet as pq
+import pytest
+
+from src import cb_collect as cc
+from src import cb_datasets as ds
+from src.cb_calendar import load_calendars
+from src.cb_compute import decisions as dd
+from src.cb_docs import collect as C
+from src.cb_docs import parse as P
+from src.cb_docs import sources as S
+from src.cb_docs import store as ST
+from src.cb_docs.http import Fetcher
+
+from .cb_docs_helpers import D, FakeSession, Resp, statement_text
+from .test_cb_docs_parse import ALL, DAYS, RATES
+
+ROOT = Path(__file__).resolve().parents[1]
+ENGINE_FIX = Path(__file__).parent / "fixtures" / "cb_engine"
+TODAY = D(2026, 9, 20)
+BANKS = ds.load_banks()
+CALS = load_calendars()
+MEETINGS = ds.load_meetings(ENGINE_FIX / "meetings.yaml")
+
+
+def fetcher(session=None, **kw) -> Fetcher:
+    return Fetcher(session=session or FakeSession(), sleep=lambda s: None, min_interval=0, **kw)
+
+
+# --- polite HTTP ------------------------------------------------------------------------------------------------------------------
+
+def test_robots_txt_is_respected_and_the_page_is_never_requested():
+    s = FakeSession()
+    f = fetcher(s)
+    r = f.get("https://www.youtube.com/feeds/videos.xml?channel_id=UCAzhpt9DmG6PnHXjmJTvRGQ")
+    assert r.error == "robots" and not r.ok
+    assert s.urls() == []                                                                          # only robots.txt was fetched
+    assert f.get("https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm").ok
+
+
+def test_a_block_is_reported_never_worked_around():
+    ua_seen = []
+
+    class Blocked(FakeSession):
+        def get(self, url, headers=None, **kw):
+            ua_seen.append((headers or {}).get("User-Agent"))
+            return Resp(403, b"cf challenge") if not url.endswith("/robots.txt") else Resp(404)
+    f = fetcher(Blocked())
+    r = f.get("https://www.rbnz.govt.nz/monetary-policy/monetary-policy-decisions")
+    assert r.error == "blocked" and not r.ok and len(set(ua_seen)) == 1 and "CbDocsBot" in ua_seen[0]     # one honest identity, no retries
+    assert f.requests_made == 2                                                                        # robots.txt + one GET
+
+
+def test_robots_unreadable_skips_the_host():
+    class Down(FakeSession):
+        def get(self, url, headers=None, **kw):
+            return Resp(503) if url.endswith("/robots.txt") else Resp(200, b"x")
+    r = fetcher(Down()).get("https://example.org/a")
+    assert r.error == "robots"
+
+
+def test_conditional_get_and_validators_advance_only_when_remembered():
+    s = FakeSession()
+    f = fetcher(s)
+    url = "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+    r1 = f.get(url)
+    assert r1.ok and not r1.not_modified and r1.validators["etag"] and url not in f.validators
+    f.remember(r1)                                                                                 # only after the data was stored
+    r2 = f.get(url)
+    assert r2.not_modified and r2.ok and s.calls[-1][2]["If-None-Match"] == r1.validators["etag"]
+
+
+def test_rate_limit_waits_per_host_and_the_request_budget_is_capped():
+    naps, t = [], [0.0]
+    f = Fetcher(session=FakeSession(), sleep=lambda s: (naps.append(s), t.__setitem__(0, t[0] + s)), clock=lambda: t[0], min_interval=2.0, max_requests=6)
+    for _ in range(3):
+        f.get("https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm")
+    assert len(naps) >= 2 and all(n == pytest.approx(2.0) for n in naps[:2])
+    r = None
+    for _ in range(10):
+        r = f.get("https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm")
+    assert f.requests_made == 6 and r.error.startswith("network: per-run request budget")
+
+
+def test_head_is_robots_aware_and_has_no_body():
+    s = FakeSession()
+    f = fetcher(s)
+    assert f.head("https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260916.pdf").ok
+    assert not f.head("https://www.federalreserve.gov/mediacenter/files/nope.pdf").ok
+    assert f.head("https://www.youtube.com/feeds/videos.xml?channel_id=x").error == "robots"
+
+
+# --- collector end to end ---------------------------------------------------------------------------------------------------------
+
+def data_dir(tmp_path) -> Path:
+    d = tmp_path / "cb"
+    (d / "manual").mkdir(parents=True)
+    for f in ("meetings.yaml", "decisions.parquet"):
+        shutil.copy(ENGINE_FIX / f, d / f)
+    shutil.copy(ENGINE_FIX / "manual" / "rbnz.yaml", d / "manual" / "rbnz.yaml")
+    return d
+
+
+def snapshot(d: Path) -> dict:
+    return {str(p.relative_to(d)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(d.rglob("*")) if p.is_file()}
+
+
+@pytest.fixture(scope="module")
+def run1(tmp_path_factory):
+    d = data_dir(tmp_path_factory.mktemp("docs"))
+    paths = cc.Paths(d)
+    s = FakeSession()
+    rep = C.run_documents(paths, TODAY, fetcher=fetcher(s), roster=C.load_roster(), now=datetime(2026, 9, 20, 12, 0, tzinfo=timezone.utc))
+    return paths, rep, s
+
+
+def test_all_28_statements_are_extracted_stored_and_carry_their_rate(run1):
+    paths, rep, _ = run1
+    docs = ST.load_documents(paths)
+    stm = sorted((d for d in docs.values() if d["type"] == "statement"), key=lambda d: (d["currency"], d["published_date"]))
+    assert len(stm) == 28 and rep.statement_rates == 28
+    for d in stm:
+        assert d["rate_after"] == pytest.approx(RATES[d["currency"]][DAYS[d["currency"]].index(d["published_date"].isoformat())])
+        assert d["text_sha256"] and d["text"] and d["extraction_method"] in ("html-selector", "pypdf") and d["license_note"] and d["url"].startswith("https://")
+        assert d["meeting_date"] == d["published_date"] and d["first_seen_at"] == datetime(2026, 9, 20, 12, 0, tzinfo=timezone.utc)
+    assert {d["currency"] for d in stm} == {"USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"}                     # RBNZ: BOTWALL, nothing fetched
+    assert not any(d["currency"] == "NZD" for d in stm)
+
+
+def test_only_statements_and_opening_statements_keep_their_text(run1):
+    paths, _, _ = run1
+    docs = list(ST.load_documents(paths).values())
+    assert ST.FULL_TEXT_TYPES == ("statement", "opening_statement")
+    with_text = {d["type"] for d in docs if d["text"] is not None}
+    assert with_text == {"statement", "opening_statement"}
+    assert all(d["text"] for d in docs if d["type"] in ST.FULL_TEXT_TYPES)                                          # never a hash without its text
+    assert {d["currency"] for d in docs if d["type"] == "opening_statement"} == {"CAD", "CHF"}                     # the short introductory statements are committed
+    long = [d for d in docs if d["type"] not in ST.FULL_TEXT_TYPES]
+    assert {"minutes", "deliberations", "presser_transcript", "speech"} <= {d["type"] for d in long}
+    assert all(d["text"] is None for d in long)
+    assert any(d["type"] == "minutes" and d["text_sha256"] for d in long)                                          # hashed, not committed
+
+
+def test_doc_row_drops_the_text_of_long_documents_whatever_the_caller_passes():
+    kw = dict(doc_id="x", currency="USD", bank="Federal Reserve", title="t", url="https://x", published_date=D(2026, 9, 1), first_seen=datetime(2026, 9, 2, tzinfo=timezone.utc),
+              text="long text", text_sha256="ab")
+    assert ST.doc_row(type="minutes", **kw)["text"] is None and ST.doc_row(type="speech", **kw)["text"] is None
+    assert ST.doc_row(type="statement", **kw)["text"] == "long text" and ST.doc_row(type="opening_statement", **kw)["text"] == "long text"
+    assert ST.doc_row(type="minutes", **kw)["text_sha256"] == "ab"                                                  # the hash stays
+    with pytest.raises(ValueError):
+        ST.doc_row(type="tweet", **kw)
+
+
+def test_merge_table_is_order_independent_and_a_new_row_replaces_the_old_one():
+    a = [{"k": "b", "v": 1}, {"k": None, "v": 2}, {"k": "a", "v": 3}]
+    merged = ST.merge_table(a, [{"k": "b", "v": 9}], ("k",))
+    assert [r["k"] for r in merged] == [None, "a", "b"] and merged[2]["v"] == 9                                     # None first, then sorted: same rows -> same bytes
+    assert ST.merge_table(list(reversed(a)), [{"k": "b", "v": 9}], ("k",)) == merged
+
+
+def test_votes_rows_for_every_bank_including_not_published_and_consensus(run1):
+    paths, rep, _ = run1
+    v = {(r["currency"], r["meeting_date"].isoformat()): r for r in ST.load_votes(paths)}
+    assert len(v) == 32
+    assert [(v[("USD", d)]["n_for"], v[("USD", d)]["n_against"]) for d in DAYS["USD"]] == [(8, 4), (12, 0), (9, 3), (12, 0)]
+    assert [(v[("GBP", d)]["n_for"], v[("GBP", d)]["n_against"]) for d in DAYS["GBP"]] == [(8, 1), (7, 2), (6, 3), (6, 3)]
+    assert [(v[("JPY", d)]["n_for"], v[("JPY", d)]["n_against"]) for d in DAYS["JPY"]] == [(6, 3), (7, 1), (8, 1), (7, 2)]
+    assert [(v[("AUD", d)]["kind"], v[("AUD", d)]["n_for"], v[("AUD", d)]["n_against"]) for d in DAYS["AUD"]] == [("counted", 5, 4), ("counted", 8, 1), ("unanimous", None, 0), ("unanimous", None, 0)]
+    assert {v[(c, d)]["kind"] for c in ("EUR", "CAD", "CHF") for d in DAYS[c]} == {"not_published"}
+    assert {r["kind"] for r in ST.load_votes(paths) if r["currency"] == "NZD"} == {"consensus"}
+    assert v[("GBP", "2026-09-17")]["source"] == "summary+xlsx" and v[("AUD", "2026-06-16")]["source"] == "minutes"
+
+
+def test_redlines_between_consecutive_statements_of_the_same_bank(run1):
+    paths, rep, _ = run1
+    rl = {(r["currency"], r["meeting_date"].isoformat()): r for r in ST.load_redlines(paths)}
+    assert len(rl) == 21 == rep.redlines                                                                            # 7 banks x 3 (the oldest has no predecessor)
+    r = rl[("USD", "2026-09-16")]
+    assert r["prev_meeting_date"] == D(2026, 7, 29) and r["prev_doc_id"] == "USD:statement:2026-07-29" and r["added_words"] > 0
+    import json
+    prev = statement_text("USD", "2026-07-29").split("\n")
+    assert P.apply_redline(prev, {"paras": json.loads(r["ops_json"])}) == statement_text("USD", "2026-09-16").split("\n")
+
+
+def test_minutes_deliberations_opening_statements_and_transcript_links(run1):
+    paths, _, s = run1
+    docs = ST.load_documents(paths)
+    ty = lambda ccy, t: sorted(d["meeting_date"].isoformat() for d in docs.values() if d["currency"] == ccy and d["type"] == t)      # noqa: E731
+    assert ty("AUD", "minutes") == DAYS["AUD"] and ty("USD", "minutes") == DAYS["USD"][:2]                         # fixtures hold two of them; the 16 Sep minutes are not due until 7 Oct
+    assert ty("CAD", "opening_statement") == DAYS["CAD"] and ty("CHF", "opening_statement") == DAYS["CHF"]
+    assert ty("USD", "presser_transcript") == DAYS["USD"] and ty("AUD", "presser_transcript") == DAYS["AUD"]
+    assert ty("EUR", "presser_transcript") == ["2026-06-11", "2026-09-10"]                                          # the hash URLs the bank published
+    assert ty("JPY", "summary_of_opinions") == DAYS["JPY"][:3] and ty("JPY", "minutes") == DAYS["JPY"][:2]         # PDFs named after the decision date; July's minutes are not due yet
+    assert all(docs[(f"JPY:minutes:{d}",)]["extraction_method"] == "pypdf" and docs[(f"JPY:minutes:{d}",)]["text"] is None for d in DAYS["JPY"][:2])
+    assert ty("GBP", "minutes") == DAYS["GBP"]                                                                      # same page as the summary, published together
+    for day in DAYS["GBP"]:
+        m, st = docs[(f"GBP:minutes:{day}",)], docs[(f"GBP:statement:{day}",)]
+        assert m["url"] == st["url"] and m["text"] is None and m["text_sha256"] and m["text_sha256"] != st["text_sha256"]   # the part from "Minutes of the ..." on, hashed
+        assert "Minutes of the Monetary Policy Committee" not in st["text"]                                          # ... and cut out of the statement
+    assert not any(d["type"] == "presser_video" for d in docs.values())                                             # YouTube: disallowed by robots.txt
+    assert not any("youtube.com/feeds" in u for u in s.urls())
+
+
+def test_failures_are_reported_not_invented(run1):
+    _, rep, _ = run1
+    failed = dict((w, why) for w, why in rep.failed)
+    assert any("YouTube" in w and why.startswith("robots") for w, why in rep.failed)
+    assert any("YouTube feeds: disallowed" in n for n in rep.notes) and any("RBNZ" in n for n in rep.notes)
+
+
+def test_speeches_are_typed_weighted_and_filtered_but_kept(run1):
+    paths, _, _ = run1
+    sp = [d for d in ST.load_documents(paths).values() if d["type"] in ("speech", "testimony")]
+    assert len(sp) > 20 and {d["relevance"] for d in sp} == {"monetary", "other"}
+    assert any(d["type"] == "testimony" for d in sp)
+    import json
+    fed = [d for d in sp if d["currency"] == "USD" and d["speaker"]]
+    assert fed and all(json.loads(d["meta_json"])["weight"] in (1, 2, 3) for d in fed)
+    warsh = next((d for d in fed if d["speaker"].endswith("Warsh")), None)
+    assert warsh is None or json.loads(warsh["meta_json"])["weight"] == 1                                            # the Chair carries the most weight
+    boj = {d["published_date"].isoformat(): d for d in sp if d["currency"] == "JPY"}
+    assert set(boj) == {"2026-08-27", "2026-09-02", "2026-09-10"}
+    assert [boj[k]["speaker"] for k in sorted(boj)] == ["Ryozo Himino", "Hajime Takata", "Kazuyuki Masu"]              # the BoJ list has none: taken from the page title
+    assert boj["2026-08-27"]["role"] == "Deputy Governor" and all("&nbsp;" not in d["title"] and "\xa0" not in d["title"] for d in boj.values())
+
+
+def test_a_second_run_is_idempotent_and_conditional(run1, tmp_path):
+    paths, rep1, _ = run1
+    before = snapshot(paths.dir)
+    s2 = FakeSession()
+    rep2 = C.run_documents(paths, TODAY, fetcher=fetcher(s2), roster=C.load_roster(), now=datetime(2026, 9, 21, 9, 0, tzinfo=timezone.utc))
+    assert rep2.new == 0 and rep2.updated == 0 and rep2.statement_rates <= 28
+    assert snapshot(paths.dir) == {k: v for k, v in snapshot(paths.dir).items()}
+    changed = {k for k in before if before[k] != snapshot(paths.dir).get(k)}
+    assert changed <= {"state.json"}                                                                               # no document, vote or redline was rewritten
+    assert not any("federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm" in u for u in s2.urls())     # an old statement is never re-requested
+
+
+def test_a_changed_page_layout_is_a_failure_not_an_empty_document(tmp_path):
+    d = data_dir(tmp_path)
+    s = FakeSession(extra={"https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm": Resp(200, b"<html><body><p>new layout</p></body></html>", {"Content-Type": "text/html"})})
+    rep = C.run_documents(cc.Paths(d), TODAY, fetcher=fetcher(s), roster={}, banks=("USD",))
+    assert any("USD statement 2026-09-16" in w and "no text extracted" in why for w, why in rep.failed)
+    assert ST.load_documents(cc.Paths(d)).get(("USD:statement:2026-09-16",)) is None
+
+
+def test_a_rate_that_cannot_be_parsed_or_is_implausible_is_not_taken(tmp_path):
+    d = data_dir(tmp_path)
+    bad = statement_text("EUR", "2026-09-10").replace("2.50%", "9.50%")                                             # a raise of 700 bp
+    page = ("<html><body><div class='section'>" + "".join(f"<p>{p}</p>" for p in bad.split("\n")) + "</div></body></html>").encode()
+    from src.cb_probe import ECB_SEEDS
+    s = FakeSession(extra={ECB_SEEDS[D(2026, 9, 10)]: Resp(200, page, {"Content-Type": "text/html"})})
+    rep = C.run_documents(cc.Paths(d), TODAY, fetcher=fetcher(s), roster={}, banks=("EUR",))
+    doc = ST.load_documents(cc.Paths(d))[("EUR:statement:2026-09-10",)]
+    assert doc["rate_after"] is None and doc["text"]                                                                # the text is kept, the rate is not
+    assert any("EUR statement 2026-09-10 rate" in w and "rejected" in why for w, why in rep.failed)
+
+
+def test_the_manual_file_adds_documents_the_collector_cannot_fetch(tmp_path):
+    d = data_dir(tmp_path)
+    (d / "manual" / "documents.yaml").write_text(
+        "documents:\n  - {currency: NZD, type: statement, title: RBNZ statement, url: 'https://www.rbnz.govt.nz/x', published: 2026-09-02, meeting: 2026-09-02, text: 'The Committee agreed the OCR', note: typed}\n"
+        "  - {currency: USD, type: presser_video, title: FOMC press conference, url: 'https://www.youtube.com/watch?v=abc', published: 2026-09-16, meeting: 2026-09-16}\n"
+        "  - {currency: USD, type: bogus, title: t, url: u, published: 2026-09-16}\n")
+    rep = C.run_documents(cc.Paths(d), TODAY, fetcher=fetcher(), roster={}, banks=())
+    docs = ST.load_documents(cc.Paths(d)).values()
+    nz = next(x for x in docs if x["currency"] == "NZD")
+    assert nz["format"] == "manual" and nz["text"] == "The Committee agreed the OCR" and nz["text_sha256"] and nz["extraction_method"] == "manual"
+    assert any(x["type"] == "presser_video" and x["currency"] == "USD" for x in docs)
+    assert any("manual documents" in w for w, _ in rep.failed)                                                       # the unknown type is skipped with a reason
+
+
+def test_publication_expectations_warn_only_past_the_usual_lag(run1):
+    paths, _, _ = run1
+    w = C.expectations(paths, TODAY)
+    assert not any(x.startswith("USD minutes") and "2026-09-16" in x for x in w)                                    # due 7 Oct
+    assert any(x.startswith("EUR account") for x in w)                                                               # the ECB accounts are not collected: reported
+    assert not w or all("overdue" in x for x in w)
+    late = C.expectations(paths, D(2026, 10, 20))
+    assert any(x.startswith("USD minutes of the 2026-09-16") for x in late)                                          # 7 Oct + 2 days grace has passed
+    stored = {(d["currency"], d["type"], d["meeting_date"]) for d in ST.load_documents(paths).values()
+              if d["meeting_date"] and (d["currency"], d["type"]) in S.EXPECTED_LAG}
+    assert stored                                                                                                    # e.g. the USD / AUD minutes of earlier meetings
+    due_by_now = {(c, t, m) for (c, t, m) in stored if m + timedelta(days=S.EXPECTED_LAG[(c, t)] + S.GRACE_DAYS) < D(2026, 10, 20)}
+    assert due_by_now                                                                                                # documents that were due and are stored
+    assert not any(f"{c} {t.replace('_', ' ')} of the {m} meeting" in x for (c, t, m) in due_by_now for x in late)   # a stored document is never reported as overdue
+
+
+# --- the statement rate in the decisions -------------------------------------------------------------------------------------------
+
+STATEMENTS = {(c, D.fromisoformat(d)): {"after": RATES[c][i], "lower": None, "upper": None, "doc_id": f"{c}:statement:{d}"}
+              for c, days in DAYS.items() for i, d in enumerate(days)}
+STATEMENTS[("USD", D(2026, 9, 16))].update(lower=3.75, upper=4.0)
+for i, d in enumerate(DAYS["USD"][:3]):
+    STATEMENTS[("USD", D.fromisoformat(d))].update(lower=3.5, upper=3.75)
+
+
+def real_inputs():
+    view = dd.SeriesView(pq.read_table(Path(__file__).parent / "fixtures" / "cb" / "decisions_official_cut.parquet").to_pylist())
+    ff = ds.ff_by_bank(BANKS, pd.read_parquet(Path(__file__).parent / "fixtures" / "cb" / "decisions_ff_cut.parquet"))
+    return view, ff
+
+
+def test_real_statements_agree_with_the_official_series_everywhere_and_free_jpy_from_ff_pending():
+    view, ff = real_inputs()
+    base_rows, _ = dd.compute_all(BANKS, MEETINGS, CALS, view, ff, TODAY)
+    rows, unresolved = dd.compute_all(BANKS, MEETINGS, CALS, view, ff, TODAY, statements=STATEMENTS)
+    base = {(r["currency"], r["meeting_date"]): r for r in base_rows}
+    new = {(r["currency"], r["meeting_date"]): r for r in rows}
+    assert not unresolved and not [k for k, r in new.items() if r["status"] == "conflict"]                          # the seven banks' own texts agree with the series
+    for k, r in new.items():
+        assert r["rate_after"] == pytest.approx(base[k]["rate_after"]), k
+        if k[0] in ("USD", "EUR", "GBP", "CAD", "AUD", "CHF", "NZD"):
+            assert r["status"] == base[k]["status"], k                                                              # an official series still outranks the statement
+    jpy = [new[("JPY", D.fromisoformat(d))] for d in DAYS["JPY"]]
+    assert [r["status"] for r in jpy] == ["statement"] * 4 and jpy[-1]["rate_source"] == "statement:JPY:statement:2026-09-18"
+    assert base[("JPY", D(2026, 9, 18))]["status"] == "ff_pending" and jpy[-1]["rate_after"] == 1.25
+
+
+def cfg_view(rate_series: dict | None = None):
+    return dd.SeriesView([{"series_id": k, "date": d, "value": v} for k, pts in (rate_series or {}).items() for d, v in pts])
+
+
+def test_snb_gets_its_rate_on_the_decision_day_from_the_statement():
+    """No official series has reached the meeting yet (SNB publishes with a lag): the row exists on the day, from the statement."""
+    meeting = {"date": D(2026, 6, 18), "first_day": None}
+    empty = dd.SeriesView([])
+    assert dd.compute_decision("CHF", BANKS["CHF"], meeting, CALS, empty, []) is None
+    row = dd.compute_decision("CHF", BANKS["CHF"], meeting, CALS, empty, [], statement={"after": 0.0, "lower": None, "upper": None, "doc_id": "CHF:statement:2026-06-18"})
+    assert row["status"] == "statement" and row["rate_after"] == 0.0 and row["effective_date"] == D(2026, 6, 19) and row["rate_source"] == "statement:CHF:statement:2026-06-18"
+
+
+def test_precedence_official_then_statement_then_bis_then_ff_then_manual():
+    gbp, meeting = BANKS["GBP"], {"date": D(2026, 9, 17), "first_day": None}
+    sid = gbp["policy_rate"]["official"]["level"]
+    official = cfg_view({sid: [(D(2026, 9, 1), 3.75), (D(2026, 9, 17), 3.75)]})
+    stmt = {"after": 3.75, "lower": None, "upper": None, "doc_id": "GBP:statement:2026-09-17"}
+    assert dd.compute_decision("GBP", gbp, meeting, CALS, official, [], statement=stmt)["status"] == "official"      # the series wins when it has the level
+    none = dd.SeriesView([])
+    manual = {"rate_after": 3.5, "note": "typed"}
+    r = dd.compute_decision("GBP", gbp, meeting, CALS, none, [], manual=manual, statement=stmt)
+    assert (r["status"], r["rate_after"]) == ("statement", 3.75)                                                     # statement beats manual
+    r = dd.compute_decision("GBP", gbp, meeting, CALS, none, [], manual=manual)
+    assert (r["status"], r["rate_after"]) == ("manual", 3.5)
+
+
+def test_conflicts_keep_the_higher_precedence_value_and_say_who_disagreed():
+    gbp, meeting = BANKS["GBP"], {"date": D(2026, 9, 17), "first_day": None}
+    sid = gbp["policy_rate"]["official"]["level"]
+    official = cfg_view({sid: [(D(2026, 9, 1), 4.0), (D(2026, 9, 17), 4.0)]})
+    stmt = {"after": 3.75, "lower": None, "upper": None, "doc_id": "GBP:statement:2026-09-17"}
+    r = dd.compute_decision("GBP", gbp, meeting, CALS, official, [], statement=stmt)
+    assert r["status"] == "conflict" and r["rate_after"] == 4.0 and "statement:GBP:statement:2026-09-17 says 3.75" in r["notes"] and "wins" in r["notes"]  # the official value stays
+    jpy = BANKS["JPY"]
+    bis = cfg_view({jpy["policy_rate"]["official"]["bis"]: [(D(2026, 9, 1), 1.0), (D(2026, 9, 24), 1.0)]})
+    r = dd.compute_decision("JPY", jpy, {"date": D(2026, 9, 18), "first_day": None}, CALS, bis, [], statement={"after": 1.25, "lower": None, "upper": None, "doc_id": "JPY:statement:2026-09-18"})
+    assert r["status"] == "conflict" and r["rate_after"] == 1.25 and "bis:JP says 1" in r["notes"]                      # statement outranks BIS
+
+
+def test_documents_stage_hands_the_statement_rates_to_the_decisions(run1, tmp_path):
+    paths, _, _ = run1
+    rates = ds.statement_rates(paths)
+    assert len(rates) == 28 and rates[("USD", D(2026, 9, 16))] == {"after": 3.875, "lower": 3.75, "upper": 4.0, "doc_id": "USD:statement:2026-09-16"}
+    assert rates[("JPY", D(2026, 9, 18))]["after"] == 1.25

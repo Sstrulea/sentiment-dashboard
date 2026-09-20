@@ -1,0 +1,604 @@
+meta:
+  generated: '2026-09-20'
+  generator: scripts/cb_gen_roster.py
+  note: 'names and titles from the banks'' official committee pages; `voter`: FOMC rotation 2026 / 2027; the other decision bodies vote as a whole
+    (true), the ECB Governing Council rotates (null); RBNZ is behind a Cloudflare challenge (no entries)'
+sources:
+  USD:
+    url: https://www.federalreserve.gov/monetarypolicy/fomc.htm
+    status: 200
+    error: null
+  EUR:
+    url: https://www.ecb.europa.eu/ecb/orga/decisions/govc/html/index.en.html
+    status: 200
+    error: null
+  GBP:
+    url: https://www.bankofengland.co.uk/about/people/monetary-policy-committee
+    status: 200
+    error: null
+  JPY:
+    url: https://www.boj.or.jp/en/about/organization/policyboard/index.htm
+    status: 200
+    error: null
+  CAD:
+    url: https://www.bankofcanada.ca/about/people/governing-council/
+    status: 200
+    error: null
+  AUD:
+    url: https://www.rba.gov.au/about-rba/boards/monetary-policy-board.html
+    status: 200
+    error: null
+  CHF:
+    url: https://www.snb.ch/en/the-snb/organisation/supervisory-management-boards
+    status: 200
+    error: null
+people:
+- currency: USD
+  name: Kevin Warsh
+  role: Chair
+  chair: true
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: John C. Williams
+  role: Vice Chair
+  chair: false
+  body: FOMC
+  bank: New York
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Michael S. Barr
+  role: Governor
+  chair: false
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Michelle W. Bowman
+  role: Governor
+  chair: false
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Lisa D. Cook
+  role: Governor
+  chair: false
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Beth M. Hammack
+  role: President
+  chair: false
+  body: FOMC
+  bank: Cleveland
+  voter:
+    '2026': true
+    '2027': false
+- currency: USD
+  name: Philip N. Jefferson
+  role: Governor
+  chair: false
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Neel Kashkari
+  role: President
+  chair: false
+  body: FOMC
+  bank: Minneapolis
+  voter:
+    '2026': true
+    '2027': false
+- currency: USD
+  name: Lorie K. Logan
+  role: President
+  chair: false
+  body: FOMC
+  bank: Dallas
+  voter:
+    '2026': true
+    '2027': false
+- currency: USD
+  name: Anna Paulson
+  role: President
+  chair: false
+  body: FOMC
+  bank: Philadelphia
+  voter:
+    '2026': true
+    '2027': false
+- currency: USD
+  name: Jerome H. Powell
+  role: Governor
+  chair: false
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Christopher J. Waller
+  role: Governor
+  chair: false
+  body: FOMC
+  bank: Board of Governors
+  voter:
+    '2026': true
+    '2027': true
+- currency: USD
+  name: Thomas I. Barkin
+  role: President
+  chair: false
+  body: FOMC alternate
+  bank: Richmond
+  voter:
+    '2026': false
+    '2027': true
+- currency: USD
+  name: Mary C. Daly
+  role: President
+  chair: false
+  body: FOMC alternate
+  bank: San Francisco
+  voter:
+    '2026': false
+    '2027': true
+- currency: USD
+  name: Austan D. Goolsbee
+  role: President
+  chair: false
+  body: FOMC alternate
+  bank: Chicago
+  voter:
+    '2026': false
+    '2027': true
+- currency: USD
+  name: Sushmita Shukla
+  role: First Vice President
+  chair: false
+  body: FOMC alternate
+  bank: New York
+  voter:
+    '2026': false
+    '2027': false
+- currency: USD
+  name: Cheryl Venable
+  role: Interim President
+  chair: false
+  body: FOMC alternate
+  bank: Atlanta
+  voter:
+    '2026': false
+    '2027': true
+- currency: EUR
+  name: Christine Lagarde
+  role: President
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: true
+- currency: EUR
+  name: Boris Vujčić
+  role: Vice-President
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Pierre Wunsch
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Dimitar Radev
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Joachim Nagel
+  role: President
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Gabriel Makhlouf
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Yannis Stournaras
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Luis Escrivá
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Emmanuel Moulin
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Fabio Panetta
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Christodoulos Patsalides
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Mārtiņš Kazāks
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Gaston Reinesch
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Alexander Demarco
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Olaf Sleijpen
+  role: President
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Martin Kocher
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Santos Pereira
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Primož Dolenc
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Peter Kažimír
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: EUR
+  name: Olli Rehn
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': null
+    '2027': null
+  chair: false
+- currency: GBP
+  name: Andrew Bailey
+  role: Governor
+  body: MPC
+  voter:
+    '2026': true
+    '2027': true
+  chair: true
+- currency: GBP
+  name: Sarah Breeden
+  role: Deputy Governor
+  body: MPC
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Clare Lombardelli
+  role: Deputy Governor
+  body: MPC
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Huw Pill
+  role: Chief Economist
+  body: MPC
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: GBP
+  name: Dave Ramsden
+  role: Deputy Governor
+  body: MPC
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Kazuo Ueda
+  role: Governor
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: true
+- currency: JPY
+  name: Shinichi Uchida
+  role: Deputy Governor
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Ryozo Himino
+  role: Deputy Governor
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Hajime Takata
+  role: Member
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Naoki Tamura
+  role: Member
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Junko Koeda
+  role: Member
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Kazuyuki Masu
+  role: Member
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Toichiro Asada
+  role: Member
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: JPY
+  name: Ayano Sato
+  role: Member
+  body: Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CAD
+  name: Tiff Macklem
+  role: Governor
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: true
+- currency: CAD
+  name: Carolyn Rogers
+  role: Deputy Governor
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CAD
+  name: Toni Gravelle
+  role: Deputy Governor
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CAD
+  name: Marc-André Gosselin
+  role: Deputy Governor
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CAD
+  name: Grahame Johnson
+  role: Executive Director
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CAD
+  name: Ron Morrow
+  role: Executive Director
+  body: Governing Council
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Michele Bullock
+  role: Chair
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: true
+- currency: AUD
+  name: Andrew Hauser
+  role: Deputy Chair
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Marnie Baker
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Melinda Cilento
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Renée Fry-McKibbin
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Carolyn Hewson
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Bruce Preston
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Iain Ross
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: AUD
+  name: Jenny Wilkinson
+  role: Member
+  body: Monetary Policy Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CHF
+  name: Martin Schlegel
+  role: Chairman
+  body: Governing Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: true
+- currency: CHF
+  name: Antoine Martin
+  role: Vice Chairman
+  body: Governing Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: CHF
+  name: Janom Steiner
+  role: President
+  body: Governing Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false

@@ -1,6 +1,7 @@
 name: cb-refresh
 # Central Banks collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md): market quotes, official rate series,
-# rate decisions, Fed SEP projections and the weekly check of meetings.yaml against the official calendar pages.
+# rate decisions, the official texts (statements, votes, redlines, minutes, speeches - phase 2a), Fed SEP projections and the weekly
+# check of meetings.yaml against the official calendar pages.
 # GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
 # Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ and the Central Banks files of public/
 # (central-banks.html, central-banks/, data/cb/) - never any other public/ file or other data/.
@@ -24,7 +25,7 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15                      # the documents stage is polite (2 s per host, 400 requests at most): ~3 min on a cold start
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,7 +34,7 @@ jobs:
           cache: 'pip'
       - run: pip install -r requirements.txt
 
-      # All stages (market, official, decisions, projections, calendar). Writes the per-source report to
+      # All stages (market, official, decisions, documents, projections, calendar). Writes the per-source report to
       # $GITHUB_STEP_SUMMARY. Exit 0 on partial failure, non-zero only when EVERY source failed; decisions,
       # projections and the calendar check only warn.
       - name: Collect
