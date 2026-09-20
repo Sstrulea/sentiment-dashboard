@@ -42,6 +42,9 @@ class Meeting:
     eff: date                                   # effective date (bank rule + calendar)
     first_day: Optional[date] = None
     has_projections: bool = False
+    has_presser: bool = False
+    source: str = ""                            # official | ff | manual (meetings.yaml)
+    verified: bool = False                      # the decision DATE was matched to an official page
 
 
 @dataclass

@@ -1,29 +1,38 @@
-<nav class="main-nav">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NZD/CHF | Central Banks | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <nav class="main-nav">
   <div class="nav-container">
     <div class="nav-brand">Dashboard</div>
     <ul class="nav-links">
-      <li class="{% if active_page == 'economic' %}active{% endif %}">
+      <li class="">
         <a href="/economic">Economic</a>
       </li>
-      <li class="{% if active_page == 'carry' %}active{% endif %}">
+      <li class="">
         <a href="/carry">Carry</a>
       </li>
-      <li class="{% if active_page == 'central-banks' %}active{% endif %}">
+      <li class="active">
         <a href="/central-banks">Central Banks</a>
       </li>
-      <li class="{% if active_page == 'strength' %}active{% endif %}">
+      <li class="">
         <a href="/strength">Currency Strength</a>
       </li>
-      <li class="{% if active_page == 'history' %}active{% endif %}">
+      <li class="">
         <a href="/history">History</a>
       </li>
-      <li class="{% if active_page == 'cot' %}active{% endif %}">
+      <li class="">
         <a href="/">COT</a>
       </li>
-      <li class="{% if active_page == 'pc-ratio' %}active{% endif %}">
+      <li class="">
         <a href="/pc-ratio">P/C Ratio</a>
       </li>
-      <li class="{% if active_page == 'vix-ratio' %}active{% endif %}">
+      <li class="">
         <a href="/vix-ratio">VIX/VIX3M</a>
       </li>
     </ul>
@@ -43,3 +52,23 @@
   </div>
 </nav>
 <script src="/theme-toggle.js"></script>
+
+  <main class="page-content cb-page" id="cbPage" data-page="pair">
+    <header class="econ-header">
+      <h1 id="cbTitle">Central Banks</h1>
+      <div class="econ-header-right">
+        <div class="econ-meta-bar" id="cbMeta"><span class="muted">Loading…</span></div>
+      </div>
+    </header>
+    <div id="cbRoot"><p class="muted cb-loading">Loading…</p></div>
+  </main>
+
+  <script>window.CB = {"ccy": null, "page": "pair", "pair": "NZDCHF", "urls": {"bank": "/data/cb/{ccy}.json", "overview": "/data/cb/overview.json", "overview_page": "/central-banks.html", "pairs": "/data/cb/pairs.json"}};</script>
+  
+  <script src="/chart.umd.min.js"></script>
+  <script src="/chartjs-plugin-annotation.min.js"></script>
+  
+  <script src="/score-palette.js"></script>
+  <script src="/cb.js"></script>
+</body>
+</html>

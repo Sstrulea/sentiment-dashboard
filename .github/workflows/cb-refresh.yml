@@ -2,7 +2,8 @@ name: cb-refresh
 # Central Banks collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md): market quotes, official rate series,
 # rate decisions, Fed SEP projections and the weekly check of meetings.yaml against the official calendar pages.
 # GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
-# Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ (never public/ or other data/).
+# Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ and the Central Banks files of public/
+# (central-banks.html, central-banks/, data/cb/) - never any other public/ file or other data/.
 on:
   schedule:
     - cron: '37 */2 * * *'
@@ -42,13 +43,17 @@ jobs:
         if: always()
         run: python -m src.cb_collect --status
 
+      # Phase 3a: data/cb -> public/data/cb/*.json + the 37 static pages (one template). Deterministic: unchanged data rewrites nothing.
+      - name: Render Central Banks pages
+        run: python -m src.cb_render
+
       # Only on main: a dispatch from another ref (e.g. a feature branch) collects and reports but never pushes.
       - name: Commit + push
         if: github.ref == 'refs/heads/main'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cb/
+          git add data/cb/ public/central-banks.html public/central-banks/ public/data/cb/
           git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
           git commit -m "cb: market refresh $(date -u +%FT%TZ) [ci]"
           for i in 1 2 3; do

@@ -345,3 +345,47 @@ Metoda schimbată (nou / 0A / diferență): spread USD +2.0 bp (mediană) vs −
 media pe interval față de valoarea punctuală, curba crește); GBP 2027 4.854 vs 4.855; EUR 2026 2.611 vs 2.821 (−21.0), 2027 3.078 vs 3.397
 (−31.9) în prima versiune; cu regula „fără capăt scurt” EUR nu mai are rată politică-echivalentă: nivelul brut e 2.872 / 3.339 față de 0A 2.821 /
 3.397 (+5.1 / −5.8 bp: media pe interval față de valoarea punctuală).
+
+## 13. FAZA 3a — UI pentru partea numerică
+
+Aceleași unelte ca restul site-ului: Jinja + JS static + `style.css` cu variabilele de temă; grafice Chart.js 4 (+ plugin annotation) deja folosite de
+celelalte pagini. UI în engleză; **nimic hardcodat în HTML**: scheletul poartă doar tipul paginii, tot conținutul vine din JSON.
+
+```
+src/cb_compute/payload.py      pur: overview / pagină de bancă / perechi -> dict-uri JSON-ready (rotunjite, deterministe, fără ceas)
+src/cb_render.py               python -m src.cb_render [--asof D]: JSON + 37 pagini dintr-UN singur template (templates/central_banks.html.j2)
+static/cb.js  (+ copie public/) overview, pagina băncii, pagina perechii; static/style.css (+ copie) blocul `.cb-*`
+public/central-banks.html            overview (tab Banks / Pairs)
+public/central-banks/<ccy>.html      8 pagini de bancă
+public/central-banks/pair/<pair>.html  28 de pagini de pereche (cele din /economic)
+public/data/cb/overview.json, <ccy>.json, pairs.json   încărcate la cerere de pagini
+```
+
+- **Legături** interne cu `.html` (merg și local cu `python -m http.server` din `public/`, și pe Vercel, unde `cleanUrls` le redirecționează);
+  navbar-ul are „Central Banks” lângă Carry (`/central-banks`), ca restul intrărilor. Paginile existente primesc navbar-ul nou la următorul
+  render (după merge: un render-all).
+- **cb-refresh**: `collect → render → commit` doar `data/cb/` + `public/central-banks.html`, `public/central-banks/`, `public/data/cb/`. Randarea e
+  deterministă (payload-ul depinde doar de date și de as-of; fișierul se rescrie doar dacă i se schimbă octeții), deci fără date noi nu se comite nimic.
+- **Convenții JSON**: fiecare valoare care poate fi n/a e `{v, flag, stale, na, ...}` (`na` = motivul exact când `v` e null, altfel null; testat pe
+  toate metricile). `flag` ∈ EXACT / CURVE / UPPER_BOUND / PROXY (+ DECIDED); `stale` din engine. Semnul: pozitiv = hawkish. `level` + `level_kind`
+  (`policy` / `bkbm` / `sovereign_proxy`) există și când nu există bp.
+- **Culori și forma**: albastru = hawkish (pozitiv pentru valută), roșu = dovish (aceeași paletă ca /economic, `ScorePalette`); semnul (+/−) e mereu scris.
+  Stale = gri + tooltip; n/a = „—” cu motivul în tooltip (pe pagina perechii, și în text). Cifre tabulare; rată `%.2f` (3 zecimale doar când 2 ar
+  deforma un midpoint, ex. 3.875), bp cu semn, Fed ca interval. Desktop-first; tabelele se derulează orizontal pe mobil.
+- **Overview**: rând = valută · bancă (click → pagina băncii): rata (o decizie neintrată în vigoare = „1.25 (from 24 Sep)”), următoarea ședință cu
+  countdown (BoJ: „time TBD”, fereastra din config `decision_time.window_local`), pas + probabilitate (EXACT / CURVE) sau bp cumulat până la prima
+  fereastră + „N mtgs” + UPPER BOUND, bp cumulat end-2026 / end-2027, GAP (doar Fed), repricing 1w (Δ nivel end-2026; 1m, end-2027 și pasul în tooltip),
+  ultima decizie (Δ, surpriza vs consens), reacția (următoarea ședință / sfârșit de an). Tab „Pairs”: cele 28, cu diferențialul curent, cel implicit
+  la end-2026 / end-2027 și repricing-ul lui.
+- **Pagina băncii**: header (rata, următoarea ședință, badge „in blackout” calculat în browser din ferestrele UTC, marcaje „approximate / unverified”
+  etichetate pe regulă), graficul traiectoriei (istoricul ratei în trepte; piața: EXACT / CURVE în trepte pe datele efective, WINDOW ca bare marcate ≤,
+  PROXY punctat cu eticheta lui; banca: mediana dot-urilor + distribuția lor, respectiv OCR track pe trimestre; „today” și ședințele viitoare),
+  cardul următoarei ședințe (pas + bare de probabilitate, altfel explicația metodei), orizonturi end-2026 / end-2027, GAP / traiectoria băncii, traiectoria
+  pe ședințe, ultimele 4 decizii (voturi / comunicat / conferință = sloturi goale pentru faza 2), calendar + blackout, surse cu licența din `cb_sources.yaml`,
+  as-of, stale și panoul „How is this calculated?”. **Ziua deciziei** (data locală a băncii): cardul următoarei ședințe urcă în capul paginii.
+- **Pagina perechii**: cele două traiectorii suprapuse (market-implied întrerupt) + diferențialul; tabel: acum (carry), end-2026, end-2027, repricing,
+  n/a pe metrică cu motivul fiecărui picior; flag = cel mai slab.
+- **Cross-link din /economic**: celula RATE EXP (2Y) a rândurilor de pereche → pagina perechii, a rândului DXY → `/central-banks/usd`; link separat cu
+  `stopPropagation`, click-ul pe rând (modalul) rămâne neschimbat.
+- **Decizii de execuție**: fereastra BoJ „time TBD” vine din config (11:30–13:30 JST), nu din „~12:00–13:30” din cerere; NZD are „approximate /
+  unverified” pe două reguli (data efectivă derivată din BIS, ora deciziei) — fiecare cu eticheta ei.

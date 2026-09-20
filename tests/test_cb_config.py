@@ -201,7 +201,10 @@ def test_workflow_triggers_and_guards(workflow):
     assert job["timeout-minutes"] == 10 and job["runs-on"] == "ubuntu-latest"
 
 
-def test_workflow_steps_mirror_econ_refresh_and_touch_only_data_cb(workflow):
+CB_PUBLIC = ["public/central-banks.html", "public/central-banks/", "public/data/cb/"]          # the only public/ paths the workflow may write
+
+
+def test_workflow_steps_mirror_econ_refresh_and_touch_only_the_cb_files(workflow):
     steps = workflow["jobs"]["refresh"]["steps"]
     uses = [s.get("uses") for s in steps if "uses" in s]
     assert uses == ["actions/checkout@v4", "actions/setup-python@v5"]
@@ -211,10 +214,15 @@ def test_workflow_steps_mirror_econ_refresh_and_touch_only_data_cb(workflow):
     collect = next(s for s in steps if s.get("name") == "Collect")
     assert collect["run"].startswith("python -m src.cb_collect") and "--force-calendar-check" in collect["run"]   # only via the dispatch input
     assert "python -m src.cb_collect --status" in runs
+    names = [s.get("name") for s in steps]
+    assert names.index("Collect") < names.index("Render Central Banks pages") < names.index("Commit + push")     # collect -> render -> commit
+    assert next(s for s in steps if s.get("name") == "Render Central Banks pages")["run"] == "python -m src.cb_render"
     commit = next(s for s in steps if s.get("name") == "Commit + push")
     assert commit["if"] == "github.ref == 'refs/heads/main'"          # a dispatch from another ref never pushes
     adds = re.findall(r"git add (\S+)", commit["run"])
-    assert adds == ["data/cb/"], adds                                  # nothing outside data/cb/ (no public/, no other data/)
+    add_line = re.search(r"git add (.+)", commit["run"]).group(1).split()
+    assert add_line == ["data/cb/"] + CB_PUBLIC, add_line              # data/cb/ + the CB files of public/ and nothing else
+    assert adds == ["data/cb/"]
     assert "git diff --cached --quiet" in commit["run"]                # no commit when nothing changed
     assert "git pull --rebase --autostash origin main && git push origin main" in commit["run"]
     assert "for i in 1 2 3" in commit["run"]
@@ -224,7 +232,9 @@ def test_workflow_paths_are_disjoint_from_econ_refresh(workflow):
     econ = (ROOT / ".github/workflows/econ-refresh.yml").read_text()
     mine = "\n".join(ln for ln in (ROOT / ".github/workflows/cb-refresh.yml").read_text().splitlines()
                      if not ln.lstrip().startswith("#"))              # comments may say what it does NOT touch
-    assert "data/cb" not in econ and "public/" not in mine
+    assert "data/cb" not in econ and "central-banks" not in econ
+    for path in re.findall(r"public/\S*", mine):                          # any public/ path it names is a Central Banks one
+        assert path in CB_PUBLIC, path
     assert workflow["concurrency"]["group"] != "econ-refresh"
 
 

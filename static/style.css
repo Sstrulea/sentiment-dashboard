@@ -1732,3 +1732,128 @@ td.carry-cell-na { text-align: center; color: var(--muted); }
   .carry-page { max-width: 100%; padding-left: 12px; padding-right: 12px; }
   table.carry-table th.carry-leg-th, table.carry-table td.carry-leg-col { display: none; }
 }
+
+/* ===== Central Banks (phase 3a) =====================================================================================
+   Everything is namespaced .cb-*; colours come from the theme variables above (blue = hawkish, red = dovish). */
+.cb-page { font-variant-numeric: tabular-nums; }
+.cb-hawk { color: var(--accent); }
+.cb-dove { color: var(--warning-fg); }
+.cb-na { color: var(--muted); }
+.cb-loading, .cb-fail { padding: 40px; text-align: center; color: var(--muted); }
+.cb-fail { color: var(--warning-fg); }
+.cb-title-sub { font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+.cb-legend .cb-legend-badges { margin-top: 8px; display: grid; gap: 4px; }
+.cb-legend-item { font-size: 12px; line-height: 1.5; }
+
+.cb-tabs { display: flex; gap: 6px; margin: 0 0 12px; }
+.cb-tab {
+  padding: 6px 16px; border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+  border-radius: 6px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.cb-tab:hover { color: var(--fg); border-color: var(--fg); }
+.cb-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+body.dark .cb-tab.active { color: #0d0f12; }
+
+.cb-tablewrap { margin: 0 0 16px; }
+.cb-scroll { overflow-x: auto; }
+table.cb-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+table.cb-table th, table.cb-table td {
+  padding: 7px 10px; border: 1px solid var(--grid); vertical-align: middle; white-space: nowrap; text-align: center;
+}
+table.cb-table th {
+  background: var(--header-bg); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; cursor: help;
+}
+table.cb-table td.cb-bank, table.cb-table th:first-child { text-align: left; }
+table.cb-table td.cb-bank a { color: var(--fg); text-decoration: none; }
+table.cb-table td.cb-bank a:hover { text-decoration: underline; }
+table.cb-table tbody tr:nth-child(even) { background: var(--row-alt); }
+table.cb-table tbody tr.cb-row { cursor: pointer; transition: background 0.1s ease; }
+table.cb-table tbody tr.cb-row:hover { background: rgba(100, 181, 246, 0.10); }
+table.cb-table tbody tr.cb-row:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+table.cb-table td.cb-n { text-align: right; }
+table.cb-table td.cb-notes, table.cb-table td.cb-dots { text-align: left; font-size: 11px; color: var(--muted); white-space: normal; min-width: 180px; max-width: 420px; }
+table.cb-table td.cb-slot { color: var(--muted); }
+table.cb-table td.cell-na { color: var(--muted); }
+table.cb-table td.cb-stale, table.cb-table tr.cb-stale td { color: var(--muted); opacity: 0.75; }
+table.cb-table td.cb-num { font-weight: 600; }
+table.cb-table td.cb-ratecell, table.cb-table td.cb-nextcell { white-space: nowrap; }
+table.cb-mini th, table.cb-mini td { padding: 5px 8px; font-size: 12px; }
+table.cb-mini td { text-align: left; }
+table.cb-mini td.econ-cell, table.cb-mini td.cb-n { text-align: center; }
+.cb-prob { font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 1px; white-space: nowrap; }
+.cb-sep { color: var(--muted); font-weight: 400; }
+.cb-next-date { font-weight: 600; }
+.cb-rate { font-weight: 700; }
+.cb-pending { font-size: 12px; color: var(--warn-mid-fg); cursor: help; }
+.cb-val { font-weight: 600; }
+.cb-lvl { color: var(--warn-mid-fg); }
+
+.cb-flag-EXACT { background: var(--success-bg); color: var(--success-fg); cursor: help; }
+.cb-flag-CURVE { background: var(--info-bg); color: var(--info-fg); cursor: help; }
+.cb-flag-UPPER_BOUND { background: var(--caution-bg); color: var(--caution-fg); cursor: help; }
+.cb-flag-PROXY { background: var(--excluded-bg); color: var(--excluded-fg); cursor: help; }
+.cb-flag-DECIDED { background: var(--surface-alt); color: var(--muted); cursor: help; }
+.cb-flag { margin-left: 4px; vertical-align: middle; }
+td.cb-num .cb-flag, td.cb-num .flag-stale { background: rgba(255, 255, 255, 0.85); color: #222; }
+body.dark td.cb-num .cb-flag, body.dark td.cb-num .flag-stale { background: rgba(0, 0, 0, 0.55); color: #eee; }
+.cb-blackout { background: var(--warning-bg); color: var(--warning-fg); }
+
+.cb-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; margin: 0 0 16px;
+}
+.cb-card h3 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+.cb-card h3 small { text-transform: none; letter-spacing: 0; font-size: 12px; }
+.cb-head { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+.cb-head-main, .cb-head-next { min-width: 240px; }
+.cb-kicker { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+.cb-bigrate { font-size: 30px; font-weight: 700; line-height: 1.15; }
+.cb-bigdate { font-size: 22px; font-weight: 600; }
+.cb-cdbig { font-size: 15px; color: var(--accent); font-weight: 600; margin-left: 6px; }
+.cb-sub { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.cb-sub a, .cb-card a, .cb-meta a { color: var(--accent); }
+.econ-meta-bar a { color: var(--accent); }
+.cb-badges { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.cb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 0 0 16px; }
+.cb-grid .cb-card { margin: 0; }
+.cb-kv { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; padding: 4px 0; border-top: 1px solid var(--border); margin-top: 6px; }
+.cb-kv span:first-child { color: var(--muted); }
+.cb-daycard { border: 2px solid var(--accent); background: var(--info-bg); }
+.cb-daytag { display: inline-block; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; margin-bottom: 8px; }
+body.dark .cb-daytag { color: #0d0f12; }
+
+.cb-chart-wrap { position: relative; height: 380px; }
+.cb-chart-short { height: 220px; }
+.cb-bars { margin-top: 12px; display: grid; gap: 6px; }
+.cb-bar-row { display: grid; grid-template-columns: 70px 1fr 48px; gap: 8px; align-items: center; font-size: 13px; }
+.cb-bar-track { background: var(--surface-alt); border-radius: 4px; height: 14px; overflow: hidden; }
+.cb-bar { display: block; height: 100%; background: var(--muted); }
+.cb-bar-hawk { background: var(--accent); }
+.cb-bar-dove { background: var(--warning-fg); }
+.cb-bar-pct { text-align: right; font-weight: 600; }
+
+.cb-method summary { cursor: pointer; font-weight: 600; }
+.cb-method dl { margin: 12px 0 0; display: grid; grid-template-columns: 160px 1fr; gap: 6px 16px; font-size: 13px; }
+.cb-method dt { font-weight: 600; }
+.cb-method dd { margin: 0; color: var(--muted); }
+.cb-method h4 { margin: 14px 0 4px; font-size: 13px; }
+.cb-method ul { margin: 0; padding-left: 18px; font-size: 12px; color: var(--muted); }
+.cb-method p { font-size: 13px; }
+.cb-foot .cb-scroll { margin-bottom: 6px; }
+.cb-method-link { text-align: center; }
+
+@media (max-width: 700px) {
+  .cb-head { gap: 20px; }
+  .cb-bigrate { font-size: 24px; }
+  .cb-method dl { grid-template-columns: 1fr; }
+  .cb-chart-wrap { height: 300px; }
+  .cb-card { padding: 12px; }
+}
+.cb-page [hidden] { display: none !important; }
+td.cb-num .cb-prob { color: inherit; opacity: 0.85; }
+table.cb-table td.cb-bank { white-space: normal; min-width: 150px; max-width: 230px; }
+table.cb-table td.cb-bank .cb-prob { white-space: normal; }
+table.cb-table th { white-space: normal; }
+@media (min-width: 701px) { table.cb-table th, table.cb-table td { padding: 6px 8px; } }
+/* /economic -> Central Banks cross-link on the RATE EXP (2Y) cell */
+a.cb-xlink { color: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
+a.cb-xlink:hover { text-decoration: underline; }

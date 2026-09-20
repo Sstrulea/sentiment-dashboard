@@ -558,6 +558,21 @@
     return ' <span class="econ-xf-mismatch" title="' + escAttr(c.transform_tip || "") + '">*</span>';
   }
 
+  // Cross-link to the Central Banks module: the RATE EXP (2Y) cell of a pair row opens the pair page, the one of the
+  // single-currency (DXY) row opens the USD bank page. A separate link (stopPropagation in renderTable), so the row click
+  // that opens the breakdown modal is untouched.
+  function cbHref(inst) {
+    if (inst.type === "fx") return "/central-banks/pair/" + String(inst.symbol).toLowerCase();
+    const ccy = inst.breakdown && inst.breakdown.base && inst.breakdown.base.currency;
+    return ccy ? "/central-banks/" + String(ccy).toLowerCase() : null;
+  }
+  function cbLink(inst, key, inner) {
+    if (key !== "rate_expectations") return inner;
+    const href = cbHref(inst);
+    if (!href) return inner;
+    return '<a class="cb-xlink" href="' + escAttr(href) + '" title="Open the central-bank rate outlook">' + inner + "</a>";
+  }
+
   function indicatorCellHtml(inst, key) {
     const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
     const v = c.v;
@@ -569,11 +584,11 @@
     if (c.stale) {
       const staleTip = "stale — latest release is outside the lookback window; excluded from scoring" +
         (tip ? " " + tip : "");
-      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + fmtScoreCell(v) + mark + '</td>';
+      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + cbLink(inst, key, fmtScoreCell(v)) + mark + '</td>';
     }
     // Continuous gradient on the per-indicator differential (saturates at ±4).
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
-      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + fmtScoreCell(v) + mark + "</td>";
+      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + cbLink(inst, key, fmtScoreCell(v)) + mark + "</td>";
   }
 
   // TREND sub-cell for an FX row (display-only). Same divergent color engine as
@@ -778,6 +793,9 @@
       }
     });
 
+    wrap.querySelectorAll("a.cb-xlink").forEach(a => {
+      a.addEventListener("click", ev => ev.stopPropagation());
+    });
     wrap.querySelectorAll("tbody tr").forEach(tr => {
       tr.addEventListener("click", () => openModal(tr.dataset.symbol));
     });

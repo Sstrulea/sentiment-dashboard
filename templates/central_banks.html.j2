@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} | Dashboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  {% include '_navbar.html.j2' %}
+
+  <main class="page-content cb-page" id="cbPage" data-page="{{ cfg.page }}">
+    <header class="econ-header">
+      <h1 id="cbTitle">Central Banks</h1>
+      <div class="econ-header-right">
+        <div class="econ-meta-bar" id="cbMeta"><span class="muted">Loading…</span></div>
+      </div>
+    </header>
+    <div id="cbRoot"><p class="muted cb-loading">Loading…</p></div>
+  </main>
+
+  <script>window.CB = {{ cfg | tojson }};</script>
+  {% if cfg.page != 'overview' %}
+  <script src="/chart.umd.min.js"></script>
+  <script src="/chartjs-plugin-annotation.min.js"></script>
+  {% endif %}
+  <script src="/score-palette.js"></script>
+  <script src="/cb.js"></script>
+</body>
+</html>
