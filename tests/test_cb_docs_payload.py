@@ -41,7 +41,7 @@ def docs(built, ccy):
 
 def test_latest_decision_block_of_the_fed(built):
     L = docs(built, "USD")["latest"]
-    assert L["meeting"] == "2026-09-16" and L["summary"] == {"status": "pending", "label": "summary pending (phase 2b)"}
+    assert L["meeting"] == "2026-09-16" and L["summary"] == {"status": "pending", "label": "summary pending", "doc_id": "USD:statement:2026-09-16", "reason": "not generated yet"}
     st = L["statement"]
     assert st["rate_after"] == 3.875 and len(st["paragraphs"]) == 4 and st["paragraphs"][0].startswith("The Federal Open Market Committee approved")
     assert st["url"].endswith("monetary20260916a.htm") and len(st["sha256"]) == 64 and "copyright of the bank" in st["license"]
@@ -70,7 +70,7 @@ def test_decisions_table_columns_are_populated(built):
     for ccy, labels in exp.items():
         rows = built[0]["banks"][ccy]["decisions"]
         assert [r["slots"]["votes"]["label"] for r in rows] == labels, ccy
-        assert all(r["summary"]["label"] == "summary pending (phase 2b)" for r in rows)
+        assert all(r["summary"]["label"] == "summary pending" and r["summary"]["status"] == "pending" for r in rows)
     usd = built[0]["banks"]["USD"]["decisions"]
     assert all(r["slots"]["statement"]["url"].startswith("https://www.federalreserve.gov/") for r in usd)
     assert all(set(r["slots"]["conference"]) == {"presser_video", "presser_transcript"} for r in usd)

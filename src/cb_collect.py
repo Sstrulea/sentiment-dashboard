@@ -74,6 +74,7 @@ class Paths:
         self.documents = self.dir / "documents"                  # monthly partitions documents_YYYY-MM.parquet (phase 2a)
         self.votes = self.dir / "votes.parquet"
         self.redlines = self.dir / "redlines.parquet"
+        self.summaries = self.dir / "summaries"                  # monthly partitions summaries_YYYY-MM.json + failures.json (phase 2b)
 
     def partition(self, month: str) -> Path:
         return self.quotes / f"market_quotes_{month}.parquet"
@@ -446,7 +447,8 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "documents", "projections", "calendar")
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "summaries")
+DEFAULT_STAGES = STAGES[:-1]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret)
 
 
 def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
@@ -457,7 +459,7 @@ def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Central Banks collector: market quotes, official series, decisions, "
                                              "projections, calendar check")
-    ap.add_argument("--stage", action="append", choices=STAGES, help="stage to run (repeatable); default all")
+    ap.add_argument("--stage", action="append", choices=STAGES, help="stage to run (repeatable); default: every stage except summaries")
     ap.add_argument("--source", action="append", help="market source id (repeatable); default all")
     ap.add_argument("--provider", action="append", help="official-series provider (repeatable); default all")
     ap.add_argument("--backfill", action="store_true",
@@ -465,6 +467,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--backfill-from", type=date.fromisoformat, help="explicit backfill start (YYYY-MM-DD), both datasets")
     ap.add_argument("--lookback-days", type=int, default=LOOKBACK_DAYS)
     ap.add_argument("--force-calendar-check", action="store_true", help="run the weekly meetings check now")
+    ap.add_argument("--summaries-bank", action="append", metavar="CCY", help="summaries stage: only these banks (repeatable), e.g. USD")
+    ap.add_argument("--summaries-type", action="append", metavar="TYPE", help="summaries stage: only these document types (repeatable), e.g. statement")
+    ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
     a = ap.parse_args(argv)
@@ -478,7 +483,7 @@ def main(argv: list[str] | None = None) -> int:
         _summary(md)
         return 0
 
-    stages = a.stage or list(STAGES)
+    stages = a.stage or list(DEFAULT_STAGES)
     fetch_reports: list[SourceReport] = []
     out_text, out_md = [], []
 
@@ -530,6 +535,18 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("calendar check failed")
             emit(f"calendar check: FAILED {type(e).__name__}: {e}", f"### calendar check\n\nFAILED `{type(e).__name__}: {e}`")
+    if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
+        try:
+            from .cb_summarize import run as sum_run
+            narrow = dict(banks=set(a.summaries_bank or []) or None, types=set(a.summaries_type or []) or None)
+            if a.summaries_dry_run:
+                text = sum_run.estimate_report(sum_run.estimate(paths, today, **narrow))
+                emit(text, "### summaries (dry run)\n\n```\n" + text + "\n```")
+            else:
+                emit(*dsets.summaries_report(sum_run.run_summaries(paths, today, state=load_state(paths), **narrow)))
+        except Exception as e:
+            log.exception("summaries stage failed")
+            emit(f"summaries: FAILED {type(e).__name__}: {e}", f"### summaries\n\nFAILED `{type(e).__name__}: {e}`")
     print("\n\n".join(out_text))
     _summary("\n\n".join(out_md))
     return exit_code(fetch_reports)

@@ -469,3 +469,69 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   mereu; guvernatorii băncilor naționale au vot prin rotație, pagina orarului nu se citește: `voter: null`), BoE (9 membri, cu cei 4 externi), BoJ, BoC (6, cu
   Deputy Governor extern), RBA (9), SNB (Governing Board, 3). Doar RBNZ lipsește (Cloudflare). Căutarea unui vorbitor se face doar printre membrii băncii lui.
 - **Interviul colectiv BoE** (pooled interview) nu se colectează.
+
+
+## 15. FAZA 2b — rezumate AI, strict factuale
+
+Peste textele din 2a: comunicatul deciziei, textele conferinței, minute / accounts / summary of opinions / deliberations, discursurile trecute de filtrul de
+relevanță — ultimele 4 ședințe per bancă. **Modelul doar reformulează ce scrie în document**: fără direcție, hawkish / dovish, prognoze sau evaluări. Nu mai există
+nicio „interpretare” în cod: ce nu trece verificarea automată nu se scrie.
+
+```
+config/cb_summaries.yaml        modelul (claude-sonnet-5), max_tokens, temperature 0, limitele, cuvintele blocate, plafoanele per rulare, prețurile (presupuse)
+src/cb_summarize/client.py      HTTP direct pe Messages API (requests, fără SDK / dependență nouă) + RecordedClient pentru teste; cheia nu se loghează
+src/cb_summarize/prompts/       system.md + statement / transcript / minutes / speech .md, fiecare cu `prompt_version:`; versions.json fixează sha256 al fiecărui prompt
+src/cb_summarize/source.py      textul unui document: comunicatele vin din store; restul se descarcă la nevoie (extragerea din 2a, sha identic) și NU se comit
+src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate, coverage
+src/cb_summarize/changes.py     changes_vs_previous din redline-ul existent (cuvintele scoase / adăugate, per paragraf) — fără model, fără interpretare
+src/cb_summarize/run.py         selecția, plafoanele, apelul, reîncercarea unică, marcajul validation_failed, idempotența; `estimate()` = dry run
+src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (partiții lunare, sortate, octeți deterministe) + failures.json
+```
+
+- **Contract** (un rând per `doc_id`): `doc_id`, `model`, `prompt_version`, `generated_at`, `input_sha256`, `summary` (3–6 puncte, engleză), `quotes` (1–5, fiecare
+  `text` + `paragraph` + `start` / `end` = offset în textul sursă), `changes_vs_previous` (doar comunicate), `numbers` (fiecare număr din rezumat cu offset-ul lui în
+  sursă), `coverage` (paragrafele folosite + dacă documentul a fost tăiat), `usage` (tokeni). Nu se stochează textul sursei.
+- **Verificarea (obligatorie, înainte de scriere).** Citat: verbatim în paragraful pe care îl numește (modelul declară paragraful; offset-ul absolut îl derivă
+  verificatorul și e re-verificabil: `verify_stored` — un offset greșit se detectează); ghilimele curbe, diacritice, majuscule: exact, fără normalizare
+  Unicode. Număr: fiecare număr din puncte trebuie să existe în sursă, comparat pe valoare + unitate compatibilă, cu normalizare de separatori (`1,234`, spațiu
+  fără întrerupere / subțire), procente (`%`, `percent`, `per cent`), puncte de bază (`25 bp` = `25bp` = `25 basis points`), fracții (`3-3/4`, `1/4`, `2¼`), semne
+  minus; **fără conversie** (`1/4 percentage point` ≠ `25 basis points`) și fără număr pe care documentul nu îl scrie. Cuvinte blocate (hawkish, dovish, bullish,
+  bearish, likely, expects to, signals, suggests, paves the way + variantele lor) — doar în puncte, nu în citate (un citat e cuvântul băncii). Lungimi: 3–6 puncte de
+  20–400 caractere, ≤ 1800 în total, citate 15–500 caractere. Coverage: paragrafe existente.
+- **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
+  `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
+  reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).
+- **Idempotență și cost.** Cheia: `(doc_id, input_sha256, prompt_version)`. Un document deja rezumat nu se rezumă a doua oară și, dacă hash-ul lui e cunoscut din 2a
+  (comunicate, minute, opinions), nici nu se mai descarcă; unul fără hash stocat (transcripturi, discursuri) se consideră imuabil după primul rezumat. Plafoane per
+  rulare în config: `max_documents` (12) și `max_input_tokens` (250 000, numărate pe consumul real din răspuns); la depășire rularea se oprește curat și raportează.
+  O eroare de API (auth, 400, rate limit / overload / server după reîncercările de transport) oprește rularea fără să scrie nimic. Ordinea: comunicat → conferință →
+  minute / accounts / opinions / deliberations → discursuri (relevanță „monetary”, ultimele 60 de zile); în fiecare rang, cele mai noi întâi.
+- **Prompturi.** `system.md` (regulile factuale, JSON-ul cerut) + un fișier per tip; `prompt_version` (`statement-v1`, `transcript-v1`, `minutes-v1`, `speech-v1`). sha256 al fiecărui
+  prompt asamblat e în `versions.json`: **modificarea unui prompt fără versiune nouă pică suita**; o versiune nouă = documentele acelui tip se rezumă din nou.
+- **Fără cheie** (`ANTHROPIC_API_KEY`): etapa se sare, nu e eroare; `--status` avertizează („WARN … the summaries stage is skipped (N candidate documents are waiting)”).
+  `--status` mai arată: rezumate stocate / candidate / în așteptare / `validation_failed` (cu motiv), ultima rulare (noi, sărite, picate, tokeni, cost estimat) și totalul.
+  `python -m src.cb_collect --stage summaries --summaries-dry-run [--summaries-bank USD --summaries-type statement]` măsoară ce a rămas și estimează costul fără apel și fără cheie.
+- **cb-refresh**: `summaries` e ultima etapă (`--stage summaries`, nu face parte dintr-o rulare simplă), într-un pas separat: `Check for the summaries key` → `Summaries`
+  (`if` pe existența secretului, `continue-on-error: true`, `timeout-minutes: 8`) → render → commit. Secretul e vizibil doar pasului de verificare, pasului `Summaries` și
+  `--status` (care doar avertizează), nu întregului job; un eșec sau un timeout al pasului nu oprește celelalte etape.
+- **UI.** Sloturile „summary pending” se umplu: puncte, `changes vs previous` pliabile (cuvintele scoase / adăugate), citate cu link către pagina băncii și **ancoră text-fragment**
+  (`#:~:text=…`, doar pentru surse HTML; PDF: linkul fără ancoră), iar sub fiecare rezumat: „Factual summary, no interpretation · model · prompt_version · data”. Un rezumat
+  picat la validare nu se afișează: slotul rămâne „summary pending”, motivul în tooltip. Locuri: cardul „Latest decision”, sub fiecare document din „Documents”, rândurile de
+  discursuri, sub tabelul deciziilor (un rezumat pliabil per decizie).
+
+### Decizii de execuție (abateri mici, motivate)
+
+- **Offset-urile citatelor.** Un model nu numără fiabil caractere într-un text lung; de aceea modelul declară *paragraful* citatului (numerotat în input), iar `start` / `end`
+  absolute le derivă verificatorul din acel paragraf (`find` exact) și le stochează. Verbatim-ul și offset-ul rămân verificate; `verify_stored` re-verifică orice rezumat stocat.
+- **`changes_vs_previous`** nu e cerut modelului: se citește din redline-ul deja stocat (deterministă, fără risc de halucinație); paragraf dispărut = `paragraph: null`.
+- **`numbers`**: lista o produce verificatorul (numerele din puncte, cu locul lor în sursă), nu modelul.
+- **Sursa rezumată** e textul extras în 2a: pentru documente foarte lungi (peste `max_source_chars` = 120 000) se taie la limită de paragraf și înregistrarea spune `truncated`.
+- **Prețurile** din `config/cb_summaries.yaml` (3 / 15 USD per milion de tokeni) sunt o *presupunere* declarată în fișier, folosită doar la estimare; nu s-a putut face o rulare
+  reală în această sesiune (fără cheie): estimarea vine din dry run pe textele reale, nu din facturi.
+
+### Limitări
+
+- Trei surse din dry run nu au conținut extractibil (două pagini „media availability” BoC și un discurs ECB fără container cunoscut): se raportează la fiecare rulare
+  (`SOURCE …`), nu se marchează și nu costă nimic.
+- Documentele fără hash stocat (transcripturi, discursuri) nu se re-descarcă după primul rezumat: o corectură ulterioară a paginii nu se vede.
+- Prima rulare cu cheie acoperă doar 12 documente (plafonul); backlog-ul actual (~90 de documente) se termină în ~8 rulări (16 ore la 2 ore între rulări).

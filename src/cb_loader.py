@@ -13,6 +13,7 @@ from . import cb_datasets as ds
 from .cb_calendar import effective_date, load_calendars
 from .cb_compute.decisions import SeriesView
 from .cb_docs import store as dst
+from .cb_summarize import store as sm
 from .cb_compute.engine import Context, MarketIndex, Meeting
 from .cb_sources.base import load_sources
 from .cb_sources.official import load_official
@@ -52,6 +53,7 @@ def load_context(data_dir: Path | str | None = None) -> Context:
         documents=sorted(dst.load_documents(paths).values(), key=lambda r: (r["currency"], r["published_date"], r["doc_id"])),
         votes={(r["currency"], r["meeting_date"]): r for r in dst.load_votes(paths)},
         redlines={(r["currency"], r["meeting_date"]): r for r in dst.load_redlines(paths)},
+        summaries=sm.load(paths.summaries), summary_failures=sm.load_failures(paths.summaries),
 
         stale_after_bd=int(sources_cfg["meta"].get("stale_after_bd", 2)))
 

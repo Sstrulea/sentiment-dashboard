@@ -1,0 +1,60 @@
+# Phase 2b - factual summaries of the official texts (docs/central-banks/ARCHITECTURE.md section 15).
+# The model, its limits and the per-run caps are fixed here; a prompt change is a new prompt_version (src/cb_summarize/prompts/), never an edit in place.
+model: claude-sonnet-5
+max_tokens: 3000
+temperature: 0
+api:
+  url: https://api.anthropic.com/v1/messages
+  version: "2023-06-01"
+  env_key: ANTHROPIC_API_KEY          # GitHub secret in CI, environment variable locally; missing -> the stage is skipped (a warning in --status, not an error)
+  timeout_s: 180
+  transport_retries: 2                # 429 / 5xx / timeouts only; the validation retry is separate and is exactly one
+backfill_meetings: 4                  # the last N decided meetings per bank
+speech_window_days: 60                # speeches / testimony that passed the monetary-relevance filter and are this recent
+max_source_chars: 120000              # longer documents are cut at a paragraph boundary and marked truncated in the record
+chars_per_token: 4                    # only to estimate the input size before a call (the response carries the real usage)
+estimate_output_tokens: 700           # ASSUMPTION for the dry-run estimate only: the typical output of one summary (3-6 points, 1-5 quotes)
+run_caps:                             # a run stops cleanly and reports when either is reached
+  max_documents: 12
+  max_input_tokens: 250000
+priority:                             # what is summarised first (1 = first)
+  statement: 1
+  presser_transcript: 2
+  opening_statement: 2
+  minutes: 3
+  account: 3
+  summary_of_opinions: 3
+  deliberations: 3
+  speech: 4
+  testimony: 4
+limits:                               # the automatic check before anything is written
+  summary_points: [3, 6]
+  point_chars: [20, 400]
+  quotes: [1, 5]
+  quote_chars: [15, 500]
+  summary_total_chars: 1800
+blocked_words:                        # direction / forecast / evaluation vocabulary: never in a summary point (a quote is the bank's own words, it is not checked)
+  - hawkish
+  - dovish
+  - bullish
+  - bearish
+  - likely
+  - expects to
+  - signals
+  - signal
+  - signalled
+  - signaled
+  - signalling
+  - signaling
+  - suggests
+  - suggest
+  - suggested
+  - suggesting
+  - paves the way
+  - paved the way
+  - paving the way
+# ASSUMPTION - list prices in USD per million tokens used ONLY for the cost estimate in --status and the report; set them from the current
+# Anthropic price list for the configured model. Nothing else reads them.
+pricing_usd_per_mtok:
+  input: 3.0
+  output: 15.0

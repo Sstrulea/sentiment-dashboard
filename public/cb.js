@@ -528,6 +528,11 @@
     return '<section class="cb-card"><h3>Implied path by meeting</h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Meeting</th><th>Effective / window</th><th>Rate %</th><th>Cum bp</th><th>Step bp</th><th>Method</th><th>Notes</th></tr></thead><tbody>' +
       (rows || '<tr><td colspan="7" class="muted">' + esc(d.summary.na || "no upcoming meeting") + "</td></tr>") + "</tbody></table></div></section>";
   }
+  function decisionSummaries(rows) {                              // one collapsible summary per decision that has one; else the pending marker (reason in the tooltip)
+    const ready = rows.filter(function (x) { return x.summary && x.summary.status === "ready" && SUMMARIES[x.summary.doc_id]; });
+    if (!ready.length) return summarySlot(rows[0] && rows[0].summary);
+    return '<div class="cb-sum-list">' + ready.map(function (x) { return summaryDetails(x.summary, fmtDate(x.date) + " · statement summary"); }).join("") + "</div>";
+  }
   function decisionsCard(d) {
     const rows = d.decisions.map(function (x) {
       const cons = isNum(x.surprise_consensus_bp) ? { v: x.surprise_consensus_bp, flag: null, na: "" } : { v: null, na: "no consensus on record" };
@@ -544,7 +549,7 @@
       '<th title="Decided rate minus consensus, bp">vs consensus</th><th title="Decided step minus the step implied at T-1, bp (EXACT / CURVE / PROXY with a basis only)">vs market T-1</th>' +
       '<th title="Change of the implied level at the next meeting, T minus T-1, bp">React. next</th><th title="Change of the implied level at the last meeting of the year, bp">React. year-end</th>' +
       '<th title="Votes for / against; hover for the names and the direction of each dissent">Votes</th><th title="The bank\u2019s own statement">Statement</th><th title="Official video / transcript / introductory statement of the press conference">Press conf.</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
-      '<div class="cb-summary-slot">Decision summaries: summary pending (phase 2b)</div></section>';
+      decisionSummaries(d.decisions) + "</section>";
   }
   function calendarCard(d) {
     const rows = d.calendar.map(function (m) {
@@ -599,6 +604,31 @@
     if (!conf) return '<span class="cb-na" title="no official video or transcript collected">' + NA + "</span>";
     return Object.keys(conf).map(function (k) { return docAnchor(conf[k], k === "presser_video" ? "video" : k === "presser_transcript" ? "transcript" : "statement"); }).join(" · ");
   }
+  // ---- summaries: strictly factual, checked against the source before they are stored ---------------------------------------
+  let SUMMARIES = {};                                               // doc_id -> summary of the page being rendered
+  function changesBlock(c) {
+    const items = c.changes.map(function (x) {
+      return "<li>" + (x.paragraph ? "¶" + x.paragraph + ": " : "paragraph removed: ") + (x.removed ? "<del>" + esc(x.removed) + "</del>" : "") + (x.removed && x.added ? " → " : "") + (x.added ? "<ins>" + esc(x.added) + "</ins>" : "") + "</li>";
+    }).join("");
+    return '<details class="cb-sum-changes"><summary>Changes vs the statement of ' + fmtDate(c.vs_meeting) + " (+" + c.added_words + " / −" + c.removed_words + " words)</summary><ul>" + items + "</ul>" + (c.truncated ? '<div class="cb-sub">first changes only</div>' : "") + "</details>";
+  }
+  function summaryBlock(s) {
+    const pts = '<ul class="cb-sum-points">' + s.points.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ul>";
+    const qs = '<div class="cb-sum-quotes">' + s.quotes.map(function (q) {
+      return "<blockquote>\u201c" + esc(q.text) + "\u201d " + '<a href="' + esc(q.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">source \u00b6' + q.paragraph + " \u2197</a></blockquote>";
+    }).join("") + "</div>";
+    const foot = '<div class="cb-sum-foot">' + esc(s.note.charAt(0).toUpperCase() + s.note.slice(1)) + " · " + esc(s.model) + " · " + esc(s.prompt_version) + " · generated " + fmtDate(s.generated) +
+      (s.truncated ? " · covers the first part of a long document only" : "") + "</div>";
+    return '<div class="cb-summary">' + pts + (s.changes ? changesBlock(s.changes) : "") + qs + foot + "</div>";
+  }
+  function summarySlot(slot) {                                      // the summary when ready; otherwise the pending marker, the reason in its tooltip
+    if (slot && slot.status === "ready" && SUMMARIES[slot.doc_id]) return summaryBlock(SUMMARIES[slot.doc_id]);
+    return '<div class="cb-summary-slot" title="' + esc((slot && slot.reason) || "not generated yet") + '">' + esc((slot && slot.label) || "summary pending") + "</div>";
+  }
+  function summaryDetails(slot, label) {                            // a collapsible summary under a document link; nothing when there is none
+    if (!slot || slot.status !== "ready" || !SUMMARIES[slot.doc_id]) return "";
+    return '<details class="cb-sum-doc"><summary>' + esc(label || "Summary") + "</summary>" + summaryBlock(SUMMARIES[slot.doc_id]) + "</details>";
+  }
   function voteChip(v) {
     if (!v) return '<span class="cb-na" title="votes not collected yet">' + NA + "</span>";
     const tip = [v.evidence || "", v.for && v.for.length ? "For: " + v.for.join(", ") : "", (v.against || []).map(function (a) { return "Against: " + (a.name || "member(s)") + " (wanted: " + a.direction + ")" + (a.note ? " - " + a.note : ""); }).join("\n"), v.notes || ""].filter(Boolean).join("\n");
@@ -624,7 +654,7 @@
   }
   function linksBlock(items) {
     return '<div class="cb-links">' + (items || []).map(function (it) {
-      return '<div class="cb-linkitem"><span class="cb-kicker">' + esc(it.label) + "</span>" + (it.url ? docAnchor(it, it.published ? fmtDate(it.published) : "open") : '<span class="cb-na" title="' + esc(it.na || "n/a") + '">' + esc(it.expected ? "expected " + fmtDate(it.expected) : NA) + "</span>") + "</div>";
+      return '<div class="cb-linkitem"><span class="cb-kicker">' + esc(it.label) + "</span>" + (it.url ? docAnchor(it, it.published ? fmtDate(it.published) : "open") : '<span class="cb-na" title="' + esc(it.na || "n/a") + '">' + esc(it.expected ? "expected " + fmtDate(it.expected) : NA) + "</span>") + summaryDetails(it.summary, "Summary") + "</div>";
     }).join("") + "</div>";
   }
   function latestDecisionCard(d, dayMode) {
@@ -638,7 +668,7 @@
       : '<div class="cb-sub">' + esc(L.na || "n/a") + "</div>";
     return '<section class="cb-card cb-latest' + (dayMode ? " cb-daycard" : "") + '" id="cbLatest">' + (dayMode ? '<div class="cb-daytag">Decision day</div>' : "") + "<h3>Latest decision · " + fmtDate(L.meeting) + "</h3>" +
       '<div class="cb-grid">' + '<div>' + votesBlock(L.votes) + "</div><div>" + '<div class="cb-kicker">Documents</div>' + linksBlock(L.follow_up) + "</div></div>" + body +
-      '<div class="cb-summary-slot">' + esc(L.summary.label) + "</div></section>";
+      summarySlot(L.summary) + "</section>";
   }
   function wireRedline(d) {
     const box = document.getElementById("cbRlToggle");
@@ -652,14 +682,15 @@
     const doc = d.documents;
     if (!doc) return "";
     const rows = doc.timeline.map(function (t) {
-      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0; }).map(function (i) { return i.url ? docAnchor(i, i.label) : '<span class="cb-na" title="' + esc(i.na || "n/a") + '">' + esc(i.label) + " " + NA + "</span>"; }).join("<br>") || NA; };
-      return "<tr><td>" + fmtDate(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") : '<span class="cb-na">' + NA + "</span>") + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) +
+      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0; }).map(function (i) { return i.url ? docAnchor(i, i.label) + summaryDetails(i.summary, "summary") : '<span class="cb-na" title="' + esc(i.na || "n/a") + '">' + esc(i.label) + " " + NA + "</span>"; }).join("<br>") || NA; };
+      return "<tr><td>" + fmtDate(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") + summaryDetails(t.statement.summary, "summary") : '<span class="cb-na">' + NA + "</span>") + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) +
         "</td><td>" + fu(["presser_video", "presser_transcript", "opening_statement"]) + "</td><td>" + voteChip(t.votes) + "</td></tr>";
     }).join("");
     const sp = doc.speeches.slice(0, 12).map(function (x) {
       return '<tr class="' + (x.relevance === "other" ? "cb-dim" : "") + '"><td>' + fmtDate(x.published) + "</td><td>" + esc(x.speaker || NA) + (x.role ? '<div class="cb-prob">' + esc(x.role) + "</div>" : "") +
         (x.chair ? ' <span class="econ-flag cb-chip-chair" title="Chair / head of the decision body">chair</span>' : x.voter ? ' <span class="econ-flag cb-chip-voter" title="Votes at the meetings this year">voter</span>' : "") + "</td>" +
-        '<td class="cb-notes"><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></td><td>" + esc(x.type) + '</td><td title="' + esc(x.relevance === "other" ? "kept but marked: not about monetary policy / the outlook" : "monetary policy / inflation / outlook") + '">' + esc(x.relevance || NA) + (x.via === "bis" ? ' <span class="cb-prob" title="from the BIS feed (backfill): posting date, not the speech date">BIS</span>' : "") + "</td></tr>";
+        '<td class="cb-notes"><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></td><td>" + esc(x.type) + '</td><td title="' + esc(x.relevance === "other" ? "kept but marked: not about monetary policy / the outlook" : "monetary policy / inflation / outlook") + '">' + esc(x.relevance || NA) + (x.via === "bis" ? ' <span class="cb-prob" title="from the BIS feed (backfill): posting date, not the speech date">BIS</span>' : "") + "</td></tr>" +
+        (x.summary && x.summary.status === "ready" && SUMMARIES[x.summary.doc_id] ? '<tr class="cb-sumrow"><td colspan="5">' + summaryDetails(x.summary, "Summary of this " + x.type) + "</td></tr>" : "");
     }).join("");
     return '<section class="cb-card"><h3>Documents <small class="muted">last four meetings and recent speeches</small></h3>' + (doc.manual_only ? '<div class="cb-sub">RBNZ: the site is behind a Cloudflare challenge; texts only from the manual file (data/cb/manual/documents.yaml).</div>' : "") +
       '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Meeting</th><th>Statement</th><th>Minutes / account / summary</th><th>Press conference</th><th>Votes</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
@@ -669,6 +700,7 @@
 
   function renderBank(d) {
     state.meta = d.meta;
+    SUMMARIES = (d.documents && d.documents.summaries) || {};
     titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + "</span>";
     document.title = d.ccy + " " + d.bank.short + " | Central Banks | Dashboard";
     const anyStale = d.summary.stale || d.sources.some(function (s) { return s.stale; });

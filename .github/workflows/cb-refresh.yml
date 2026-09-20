@@ -1,6 +1,7 @@
 name: cb-refresh
 # Central Banks collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md): market quotes, official rate series,
-# rate decisions, the official texts (statements, votes, redlines, minutes, speeches - phase 2a), Fed SEP projections and the weekly
+# rate decisions, the official texts (statements, votes, redlines, minutes, speeches - phase 2a), their factual summaries (phase 2b, needs the
+# ANTHROPIC_API_KEY secret), Fed SEP projections and the weekly
 # check of meetings.yaml against the official calendar pages.
 # GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
 # Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ and the Central Banks files of public/
@@ -40,8 +41,27 @@ jobs:
       - name: Collect
         run: python -m src.cb_collect ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
 
+      # Phase 2b: factual summaries of the collected texts (src/cb_summarize, config/cb_summaries.yaml). Last of the stages, and only when the secret exists.
+      # Capped per run (documents, tokens); a failure or a timeout of this step never fails the job: the other stages are committed as usual.
+      # The secret reaches only this step (and the read-only status step, which just warns when it is missing), not the whole job.
+      - name: Check for the summaries key
+        id: key
+        env:
+          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: echo "present=$([ -n "$KEY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Summaries
+        if: ${{ steps.key.outputs.present == 'true' }}
+        continue-on-error: true
+        timeout-minutes: 8
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python -m src.cb_collect --stage summaries
+
       - name: Freshness status
         if: always()
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python -m src.cb_collect --status
 
       # Phase 3a: data/cb -> public/data/cb/*.json + the 37 static pages (one template). Deterministic: unchanged data rewrites nothing.

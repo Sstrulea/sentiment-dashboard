@@ -1,0 +1,437 @@
+"""Phase 2b, the stage end to end with a recorded client: nothing here reaches the API. Real documents (the frozen phase 2a ones), recorded model outputs."""
+from __future__ import annotations
+
+import dataclasses
+import json
+import shutil
+from datetime import date
+from pathlib import Path
+
+import pytest
+
+from src import cb_collect as cc
+from src.cb_docs import store as dst
+from src.cb_summarize import prompts as PR
+from src.cb_summarize import run as R
+from src.cb_summarize import store as SS
+from src.cb_summarize.client import APIError, RecordedClient, Response
+from src.cb_summarize.config import load as load_cfg
+
+from .cb_docs_helpers import FakeSession
+from .cb_sum_helpers import FED_KEY, GOOD_FED, NOW, TODAY, collected_dir, dumps, fresh_copy, responder_generic, variant
+from .test_cb_docs_collect import fetcher
+
+CFG = load_cfg()
+
+
+@pytest.fixture(scope="module")
+def base(tmp_path_factory):
+    return collected_dir(tmp_path_factory)
+
+
+@pytest.fixture()
+def paths(base, tmp_path):
+    return cc.Paths(fresh_copy(base, tmp_path))
+
+
+def go(paths, client, *, cfg=CFG, session=None, **kw):
+    return R.run_summaries(paths, TODAY, client=client, fetcher=fetcher(session or FakeSession()), env={}, now=NOW, cfg=cfg, **kw)
+
+
+def fed_only(paths, client, **kw):
+    kw.setdefault("only", {FED_KEY})
+    return go(paths, client, **kw)
+
+
+# --- no key: the stage is skipped, not failed --------------------------------------------------------------------------------------------
+
+def test_without_a_key_the_stage_is_skipped_and_touches_nothing(paths):
+    rep = R.run_summaries(paths, TODAY, env={}, cfg=CFG, now=NOW)
+    assert rep.enabled is False and "ANTHROPIC_API_KEY is not set" in rep.skipped_reason and rep.calls == 0 and rep.new == 0
+    assert not paths.summaries.exists()
+
+
+def test_status_warns_that_the_key_is_missing_and_counts_what_waits(paths, monkeypatch):
+    from src import cb_datasets as ds
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    title, heads, rows, notes = ds._summaries_status_section(paths, TODAY)
+    assert title == "summaries (phase 2b)" and rows[0][0] == 0 and rows[0][1] > 20 and rows[0][2] == rows[0][1]
+    assert any(n.startswith("WARN ANTHROPIC_API_KEY is not set: the summaries stage is skipped") for n in notes)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    assert not any(n.startswith("WARN") for n in ds._summaries_status_section(paths, TODAY)[3])
+
+
+def test_the_summaries_stage_is_last_and_not_part_of_a_plain_run():
+    assert cc.STAGES[-1] == "summaries" and "summaries" not in cc.DEFAULT_STAGES and cc.DEFAULT_STAGES == cc.STAGES[:-1]
+
+
+# --- the good path and the contract ----------------------------------------------------------------------------------------------------------
+
+def test_a_good_output_is_stored_with_the_contract(paths):
+    c = RecordedClient([dumps(GOOD_FED)], tokens=(1200, 340))
+    rep = fed_only(paths, c)
+    assert (rep.new, rep.calls, rep.failed_validation, rep.stopped) == (1, 1, [], None) and (rep.input_tokens, rep.output_tokens) == (1200, 340)
+    assert rep.cost_usd == CFG.cost_usd(1200, 340) > 0
+    files = sorted(p.name for p in paths.summaries.iterdir())
+    assert files == ["summaries_2026-09.json"]                                                                          # the month of the statement
+    rec = SS.load(paths.summaries)[FED_KEY]
+    doc = dst.load_documents(paths)[(FED_KEY,)]
+    assert rec["model"] == "claude-sonnet-5" and rec["prompt_version"] == "statement-v1" and rec["generated_at"] == "2026-09-21T08:00:00Z"
+    assert rec["input_sha256"] == doc["text_sha256"]
+    assert len(rec["summary"]) == 3 and 1 <= len(rec["quotes"]) <= 5 and rec["coverage"]["paragraphs"] == [1, 2, 3, 4] and rec["coverage"]["truncated"] is False
+    assert all(set(q) == {"paragraph", "text", "start", "end"} and doc["text"][q["start"]:q["end"]] == q["text"] for q in rec["quotes"])
+    assert rec["numbers"] and all(doc["text"][n["start"]:n["end"]].strip() == n["source_text"] for n in rec["numbers"])
+    assert rec["usage"] == {"input_tokens": 1200, "output_tokens": 340, "attempts": 1}
+    assert "text" not in rec and set(rec) >= {"doc_id", "model", "prompt_version", "generated_at", "input_sha256", "summary", "quotes", "changes_vs_previous", "numbers", "coverage"}
+
+
+def test_the_call_carries_the_prompt_of_the_kind_and_the_numbered_paragraphs_of_the_document(paths):
+    c = RecordedClient([dumps(GOOD_FED)])
+    fed_only(paths, c)
+    system, messages = c.calls[0]
+    assert system == PR.load("statement").system and "Never use these words in a summary point" in system
+    assert len(messages) == 1 and messages[0]["role"] == "user"
+    body = messages[0]["content"]
+    assert body.startswith("Document: Monetary policy decision statement\nBank: Federal Reserve\nSource: https://www.federalreserve.gov/")
+    assert "[1] The Federal Open Market Committee approved the following statement" in body and "[4] Inflation remains elevated." in body
+
+
+def test_changes_vs_previous_is_read_off_the_redline_for_statements_only(paths):
+    fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    ch = SS.load(paths.summaries)[FED_KEY]["changes_vs_previous"]
+    red = next(r for r in dst.load_redlines(paths) if r["currency"] == "USD" and r["meeting_date"] == date(2026, 9, 16))
+    assert ch["vs_meeting"] == "2026-07-29" and ch["vs_doc_id"] == "USD:statement:2026-07-29"
+    assert (ch["added_words"], ch["removed_words"]) == (red["added_words"], red["removed_words"])
+    assert {"paragraph": 2, "removed": "maintain", "added": "raise"} in ch["changes"]                                     # exactly the words, no reading of them
+    assert {"paragraph": 1, "removed": "9", "added": "12"} in ch["changes"] and {"paragraph": 1, "removed": "3", "added": "0"} in ch["changes"]      # the vote, word for word
+    dropped = [c for c in ch["changes"] if c["paragraph"] is None]
+    assert len(dropped) == 1 and dropped[0]["added"] == "" and dropped[0]["removed"].startswith("Voting against the monetary policy action were")   # a paragraph that is gone
+    assert all(set(c) == {"paragraph", "removed", "added"} for c in ch["changes"]) and ch["truncated"] is False
+    rec = R.run_summaries(paths, TODAY, client=RecordedClient(responder=responder_generic), fetcher=fetcher(FakeSession()), env={}, now=NOW, cfg=CFG, types={"minutes"})
+    assert rec.new >= 1
+    assert all(r["changes_vs_previous"] is None for r in SS.load(paths.summaries).values() if r["type"] != "statement")
+
+
+def test_summary_files_are_deterministic_sorted_and_written_once(paths):
+    fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    p = paths.summaries / "summaries_2026-09.json"
+    first = p.read_bytes()
+    assert p.read_text().endswith("\n") and json.loads(first)["version"] == 1
+    SS.write(paths.summaries, SS.load(paths.summaries))
+    assert p.read_bytes() == first                                                                                     # same records -> same bytes
+
+
+# --- validation failure: one retry with the errors, then nothing ---------------------------------------------------------------------------
+
+def paragraph_swapped(q_text):
+    return variant(quotes=[{"paragraph": 2, "text": q_text}])
+
+
+BAD = {
+    "invented quote": (dumps(paragraph_swapped("The Committee decided to lower the target range for the federal funds rate")), "quote 1 is not verbatim in paragraph 2"),
+    "invented number": (dumps(variant(summary=[GOOD_FED["summary"][0], "The Committee raised the target range to 4.5 percent.", GOOD_FED["summary"][2]])),
+                        "'4.5 percent' of summary point 2 does not appear in the document"),
+    "direction word": (dumps(variant(summary=GOOD_FED["summary"][:2] + ["The move is hawkish, the Committee says."])), "uses the word 'hawkish'"),
+    "too long": (dumps(variant(summary=GOOD_FED["summary"][:2] + ["The Committee " + "states that inflation remains elevated " * 30])), "characters; allowed 20-400"),
+    "invalid json": ('Here is the summary: {"summary": [', "the output is not valid JSON"),
+}
+
+
+@pytest.mark.parametrize("case", sorted(BAD))
+def test_a_bad_first_output_gets_one_retry_with_the_errors_as_feedback_and_a_good_second_is_stored(paths, case):
+    bad, expected = BAD[case]
+    c = RecordedClient([bad, dumps(GOOD_FED)])
+    rep = fed_only(paths, c)
+    assert (rep.new, rep.calls, rep.failed_validation) == (1, 2, [])
+    second = c.calls[1][1]
+    assert [m["role"] for m in second] == ["user", "assistant", "user"] and second[1]["content"] == bad                     # the model sees its own output
+    assert expected in second[2]["content"] and second[2]["content"].startswith("Your previous output failed the automatic check")
+    assert SS.load(paths.summaries)[FED_KEY]["usage"]["attempts"] == 2
+
+
+@pytest.mark.parametrize("case", sorted(BAD))
+def test_two_bad_outputs_write_nothing_and_mark_validation_failed(paths, case):
+    bad, expected = BAD[case]
+    c = RecordedClient([bad, bad])
+    rep = fed_only(paths, c)
+    assert rep.new == 0 and rep.calls == 2 and [d for d, _ in rep.failed_validation] == [FED_KEY]
+    assert SS.load(paths.summaries) == {}                                                                              # no summary, and never a repaired one
+    assert not list(paths.summaries.glob("summaries_*.json"))
+    f = SS.load_failures(paths.summaries)[f"{FED_KEY}|statement-v1"]
+    assert f["doc_id"] == FED_KEY and f["input_sha256"] == dst.load_documents(paths)[(FED_KEY,)]["text_sha256"] and expected in " ".join(f["errors"])
+    again = fed_only(paths, RecordedClient([]))                                                                         # the same failure is not paid for again
+    assert again.calls == 0 and again.unchanged == 1
+
+
+def test_a_failed_document_does_not_stop_the_others(paths):
+    def responder(system, messages):
+        return dumps(GOOD_FED) if "Today's policy action will support a timelier return" in messages[0]["content"] else "not json"
+    rep = go(paths, RecordedClient(responder=responder), types={"statement"}, banks={"USD", "GBP"})
+    assert rep.new == 1 and len(rep.failed_validation) == 7 and rep.calls == 1 + 2 * 7                                  # 3 other FOMC + 4 BoE statements, 2 calls each
+    assert list(SS.load(paths.summaries)) == [FED_KEY] and len(SS.load_failures(paths.summaries)) == 7
+
+
+def alt_prompts(tmp_path, monkeypatch, version="statement-v2"):
+    alt = tmp_path / "prompts_alt"
+    shutil.copytree(PR.DIR, alt)
+    (alt / "statement.md").write_text((alt / "statement.md").read_text().replace("statement-v1", version))
+    monkeypatch.setattr(PR, "DIR", alt)
+
+
+def test_a_new_prompt_version_summarises_again_and_a_success_clears_the_old_failure(paths, tmp_path, monkeypatch):
+    fed_only(paths, RecordedClient(["nope", "nope"]))
+    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|statement-v1"]
+    alt_prompts(tmp_path, monkeypatch)
+    rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    assert rep.new == 1 and rep.calls == 1
+    assert SS.load(paths.summaries)[FED_KEY]["prompt_version"] == "statement-v2" and SS.load_failures(paths.summaries) == {}
+
+
+# --- idempotence ---------------------------------------------------------------------------------------------------------------------------
+
+def test_the_same_input_makes_no_call_the_second_time(paths):
+    fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    snap = {p.name: p.read_bytes() for p in paths.summaries.iterdir()}
+    c = RecordedClient([])                                                                                              # any call would raise: nothing is recorded
+    rep = fed_only(paths, c)
+    assert c.calls == [] and (rep.new, rep.calls, rep.unchanged) == (0, 0, 1)
+    assert {p.name: p.read_bytes() for p in paths.summaries.iterdir()} == snap                                          # not a byte changed
+
+
+def test_a_changed_document_text_is_a_new_input_and_is_summarised_again(paths):
+    fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    docs = dst.load_documents(paths)
+    d = docs[(FED_KEY,)]
+    new_text = d["text"].replace("Inflation remains elevated.", "Inflation remains elevated at this time.")
+    d["text"], d["text_sha256"] = new_text, dst.X.sha256(new_text) if hasattr(dst, "X") else __import__("hashlib").sha256(new_text.encode()).hexdigest()
+    dst.write_documents(paths, docs)
+    edited = dumps(variant(quotes=[{"paragraph": 4, "text": "Inflation remains elevated at this time."}]))
+    c = RecordedClient([edited])
+    rep = fed_only(paths, c)
+    assert (rep.new, rep.calls) == (1, 1)
+    assert SS.load(paths.summaries)[FED_KEY]["input_sha256"] == d["text_sha256"]
+
+
+def test_a_new_prompt_version_costs_one_call_per_document_of_that_kind_only(paths, tmp_path, monkeypatch):
+    cfg = dataclasses.replace(CFG, max_documents=50)
+    rep1 = go(paths, RecordedClient(responder=responder_generic), cfg=cfg, types={"statement", "minutes"}, banks={"USD", "AUD"})
+    assert rep1.new == 14 and rep1.stopped is None                                                                      # 8 statements + 6 minutes (2 FOMC + 4 RBA in the fixtures)
+    alt_prompts(tmp_path, monkeypatch, "statement-v2")
+    c = RecordedClient(responder=responder_generic)
+    rep2 = go(paths, c, cfg=cfg, types={"statement", "minutes"}, banks={"USD", "AUD"})
+    statements = [r for r in SS.load(paths.summaries).values() if r["type"] == "statement"]
+    assert rep2.new == len(statements) == len(c.calls) == 8 and rep2.unchanged == 6                                     # the minutes are still summarised under minutes-v1
+    assert {r["prompt_version"] for r in statements} == {"statement-v2"}
+    assert {r["prompt_version"] for r in SS.load(paths.summaries).values() if r["type"] == "minutes"} == {"minutes-v1"}
+
+
+# --- caps ----------------------------------------------------------------------------------------------------------------------------------
+
+def test_the_document_cap_stops_the_run_cleanly_and_the_next_run_goes_on(paths):
+    cfg = dataclasses.replace(CFG, max_documents=2)
+    c = RecordedClient(responder=responder_generic)
+    rep = go(paths, c, cfg=cfg)
+    assert (rep.new, rep.calls) == (2, 2) and rep.stopped == "document cap reached (2 per run)" and rep.pending > 0
+    rep2 = go(paths, RecordedClient(responder=responder_generic), cfg=cfg)
+    assert rep2.new == 2 and rep2.unchanged >= 2 and set(SS.load(paths.summaries)) >= {d for d in list(SS.load(paths.summaries))[:2]}
+    assert len(SS.load(paths.summaries)) == 4
+
+
+def test_the_input_token_budget_counts_the_real_usage_and_stops_before_the_call_that_would_exceed_it(paths):
+    cfg = dataclasses.replace(CFG, max_input_tokens=2500)
+    c = RecordedClient(responder=responder_generic, tokens=(1000, 200))
+    rep = go(paths, c, cfg=cfg, types={"statement"}, banks={"USD"})
+    assert rep.new == 2 and rep.input_tokens == 2000 and rep.stopped.startswith("input token budget reached (2000 used, 2500 allowed per run)")
+    tiny = dataclasses.replace(CFG, max_input_tokens=200)
+    rep0 = go(paths, RecordedClient([]), cfg=tiny, types={"statement"})
+    assert rep0.calls == 0 and rep0.new == 0 and rep0.stopped.startswith("input token budget reached")
+
+
+# --- what is summarised, in which order ------------------------------------------------------------------------------------------------------
+
+def test_candidates_follow_the_priority_the_last_four_meetings_and_the_relevance_filter(paths):
+    from src.cb_docs import store as ST
+    from src import cb_datasets as ds
+    docs = sorted(ST.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    meetings = ds.load_meetings(paths.meetings)
+    todo = R.candidates(docs, meetings, TODAY, CFG)
+    ranks = [CFG.priority[d["type"]] for d in todo]
+    assert ranks == sorted(ranks) and set(ranks) == {1, 2, 3, 4}
+    assert [d["type"] for d in todo[:28]] == ["statement"] * 28 and len({d["doc_id"] for d in todo}) == len(todo)
+    stmts = [d for d in todo if d["type"] == "statement"]
+    assert [d["published_date"] for d in stmts[:7]] == sorted((d["published_date"] for d in stmts[:7]), reverse=True)  # newest first within a rank
+    speeches = [d for d in todo if d["type"] in ("speech", "testimony")]
+    assert speeches and all(d["relevance"] == "monetary" and (TODAY - d["published_date"]).days <= 60 for d in speeches)
+    assert not any(d["type"] in ("presser_video",) for d in todo)
+    older = {c: sorted(m["date"] for m in meetings[c] if m["date"] <= TODAY)[:-4] for c in meetings}
+    assert not any(d["meeting_date"] in older.get(d["currency"], ()) for d in todo if d["meeting_date"])               # only the last four decided meetings
+
+
+def test_speeches_that_did_not_pass_the_relevance_filter_are_never_summarised(paths):
+    c = RecordedClient(responder=responder_generic)
+    go(paths, dataclasses.replace(CFG) and c, cfg=dataclasses.replace(CFG, max_documents=60, max_input_tokens=10**7), types={"speech", "testimony"})
+    docs = dst.load_documents(paths)
+    done = [docs[(k,)] for k in SS.load(paths.summaries)]
+    assert done and all(d["relevance"] == "monetary" for d in done)
+
+
+# --- long documents: downloaded at need, summarised, never committed -------------------------------------------------------------------------
+
+def test_long_documents_are_downloaded_summarised_and_not_committed(paths):
+    before = {p.name: p.read_bytes() for p in paths.documents.iterdir()}
+    s = FakeSession()
+    rep = go(paths, RecordedClient(responder=responder_generic), session=s, types={"minutes"}, banks={"AUD", "USD"})
+    assert rep.new >= 4 and not rep.failed_validation
+    assert {p.name: p.read_bytes() for p in paths.documents.iterdir()} == before                                        # the document store is untouched: no text committed
+    recs = SS.load(paths.summaries)
+    docs = dst.load_documents(paths)
+    aud = recs["AUD:minutes:2026-08-11"]
+    assert aud["source"]["method"] == "html-selector" and aud["input_sha256"] == docs[("AUD:minutes:2026-08-11",)]["text_sha256"]   # the hash phase 2a stored
+    assert "text" not in aud and docs[("AUD:minutes:2026-08-11",)]["text"] is None
+    assert any("rba-board-minutes/2026/2026-08-11.html" in u for u in s.urls())
+    s2 = FakeSession()
+    rep2 = go(paths, RecordedClient([]), session=s2, types={"minutes"}, banks={"AUD", "USD"})
+    assert rep2.calls == 0 and rep2.new == 0 and not any("minutes" in u for u in s2.urls())                             # a summarised document is not even downloaded again
+
+
+def test_a_pdf_document_is_read_with_the_phase_2a_extraction(paths):
+    rep = go(paths, RecordedClient(responder=responder_generic), types={"summary_of_opinions"}, banks={"JPY"})
+    assert rep.new + len(rep.source_errors) == 3
+    recs = SS.load(paths.summaries)
+    assert recs and all(r["source"]["method"] == "pypdf" and r["format"] == "pdf" for r in recs.values())
+
+
+def test_a_document_that_cannot_be_downloaded_is_reported_and_tried_again_not_marked(paths):
+    from .cb_docs_helpers import Resp
+    url = "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-08-11.html"
+    rep = go(paths, RecordedClient(responder=responder_generic), session=FakeSession(extra={url: Resp(404)}), types={"minutes"}, banks={"AUD"})
+    assert [d for d, _ in rep.source_errors] == ["AUD:minutes:2026-08-11"] and "404" in rep.source_errors[0][1] and rep.new == 3    # the other three minutes are done
+    assert not SS.load_failures(paths.summaries) and "AUD:minutes:2026-08-11" not in SS.load(paths.summaries)
+    again = go(paths, RecordedClient(responder=responder_generic), types={"minutes"}, banks={"AUD"})
+    assert again.new == 1 and not again.source_errors                                                                   # the page is back: summarised on the next run
+
+
+def test_a_document_longer_than_the_limit_is_cut_at_a_paragraph_and_says_so(paths):
+    cfg = dataclasses.replace(CFG, max_source_chars=1500)
+    c = RecordedClient(responder=responder_generic)
+    rep = go(paths, c, cfg=cfg, types={"minutes"}, banks={"AUD"})
+    assert rep.new >= 1
+    rec = SS.load(paths.summaries)["AUD:minutes:2026-08-11"]
+    assert rec["source"]["truncated"] and rec["coverage"]["truncated"] and rec["source"]["chars_sent"] <= 1500 and rec["source"]["chars"] > 1500
+    n_sent = sum(1 for line in c.calls[0][1][0]["content"].splitlines() if line.startswith("[") and "] " in line[:8])
+    assert n_sent == rec["source"]["paragraphs_sent"]
+
+
+# --- the API -------------------------------------------------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("kind", ["auth", "bad_request", "overloaded", "rate_limit", "server", "transport"])
+def test_an_api_failure_stops_the_run_cleanly_and_writes_nothing(paths, kind):
+    c = RecordedClient([APIError(kind, 401 if kind == "auth" else None, "boom")])
+    rep = go(paths, c, types={"statement"})
+    assert rep.stopped == f"the API stopped the run ({kind}): boom" and rep.new == 0 and rep.calls == 0 and len(c.calls) == 1   # no second document is tried
+    assert not paths.summaries.exists() or not list(paths.summaries.glob("*.json"))
+
+
+def test_a_stage_error_is_reported_never_raised_by_the_collector(paths, monkeypatch, capsys):
+    monkeypatch.setattr("src.cb_summarize.run.run_summaries", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("kaput")))
+    rc = cc.main(["--data-dir", str(paths.dir), "--stage", "summaries"])
+    assert rc == 0 and "summaries: FAILED RuntimeError: kaput" in capsys.readouterr().out
+
+
+def test_the_run_is_recorded_in_the_state_for_status(paths):
+    from src import cb_datasets as ds
+    fed_only(paths, RecordedClient([dumps(GOOD_FED)], tokens=(1500, 400)))
+    st = cc.load_state(paths)["summaries"]
+    assert st["last_run"]["new"] == 1 and st["last_run"]["input_tokens"] == 1500 and st["totals"] == {"calls": 1, "input_tokens": 1500, "output_tokens": 400, "summaries": 1}
+    fed_only(paths, RecordedClient([]))
+    assert cc.load_state(paths)["summaries"]["totals"]["summaries"] == 1
+    title, heads, rows, notes = ds._summaries_status_section(paths, TODAY)
+    assert rows[0][0] == 1 and rows[0][4] == 0 and rows[0][5] == 1                                                      # stored 1 - the last run: 0 new, 1 skipped
+    assert any("all runs: 1 summaries, 1 calls, 1500 in / 400 out tokens" in n for n in notes)
+    fed_only(paths, RecordedClient(["x", "x"]), only={"USD:statement:2026-07-29"})
+    assert any(n.startswith("validation_failed USD:statement:2026-07-29 (statement-v1)") for n in ds._summaries_status_section(paths, TODAY)[3])
+
+
+# --- the dry run: what would it cost, without calling anything ------------------------------------------------------------------------------
+
+def test_the_dry_run_measures_what_is_pending_without_calling_the_model_or_writing_anything(paths):
+    from .test_cb_docs_collect import snapshot
+    before = snapshot(paths.dir)
+    est = R.estimate(paths, TODAY, fetcher=fetcher(FakeSession()), cfg=CFG, banks={"USD"}, types={"statement", "minutes"})
+    assert [t for _id, t, _c, _k in est.documents].count("statement") == 4 and [t for _id, t, _c, _k in est.documents].count("minutes") == 2
+    assert est.output_tokens == 6 * CFG.estimate_output_tokens and est.input_tokens == sum(k for *_x, k in est.documents) > 0
+    assert est.cost_usd == CFG.cost_usd(est.input_tokens, est.output_tokens) and est.runs == 1
+    assert snapshot(paths.dir) == before                                                                                # not a file was written
+    text = R.estimate_report(est, CFG)
+    assert "6 documents still to summarise, 1 runs at 12 documents per run" in text and "assumed prices" in text and "statement" in text and "minutes" in text
+
+
+def test_the_dry_run_leaves_out_what_is_already_summarised_or_failed(paths):
+    fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    fed_only(paths, RecordedClient(["x", "x"]), only={"USD:statement:2026-07-29"})
+    est = R.estimate(paths, TODAY, fetcher=fetcher(FakeSession()), cfg=CFG, banks={"USD"}, types={"statement"})
+    assert sorted(i for i, *_ in est.documents) == ["USD:statement:2026-04-29", "USD:statement:2026-06-17"]
+
+
+def test_the_backlog_is_split_into_capped_runs(paths):
+    est = R.estimate(paths, TODAY, fetcher=fetcher(FakeSession()), cfg=dataclasses.replace(CFG, max_documents=5), banks={"USD", "AUD"}, types={"statement", "minutes"})
+    assert len(est.documents) == 14 and est.runs == 3
+
+
+def test_the_dry_run_command_needs_no_key_and_prints_the_estimate(paths, capsys, monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setattr("src.cb_summarize.run.estimate", lambda paths_, today, **kw: R.Estimate(documents=[("USD:statement:x", "statement", 900, 800)], input_tokens=800, output_tokens=700, cost_usd=0.0129, runs=1))
+    rc = cc.main(["--data-dir", str(paths.dir), "--stage", "summaries", "--summaries-dry-run", "--summaries-bank", "USD"])
+    out = capsys.readouterr().out
+    assert rc == 0 and "summaries dry run (no call): 1 documents still to summarise" in out and "about $0.01" in out
+    assert not paths.summaries.exists()
+
+
+# --- gaps found by the mutations ---------------------------------------------------------------------------------------------------------
+
+def test_a_document_of_an_older_meeting_than_the_last_four_is_not_a_candidate(paths):
+    from src import cb_datasets as ds
+    docs = sorted(dst.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    meetings = ds.load_meetings(paths.meetings)
+    last = sorted(m["date"] for m in meetings["USD"] if m["date"] <= TODAY)
+    fifth = last[-5]
+    old = dict(next(d for d in docs if d["doc_id"] == FED_KEY), doc_id="USD:statement:old", meeting_date=fifth, published_date=fifth)
+    got = {d["doc_id"] for d in R.candidates(docs + [old], meetings, TODAY, CFG)}
+    assert "USD:statement:old" not in got and FED_KEY in got
+    future = dict(old, doc_id="USD:statement:future", meeting_date=date(2026, 10, 28), published_date=date(2026, 10, 28))
+    assert "USD:statement:future" not in {d["doc_id"] for d in R.candidates(docs + [future], meetings, TODAY, CFG)}               # not decided yet
+
+
+def test_a_failure_of_an_older_prompt_version_is_history_and_is_dropped(paths):
+    SS.write_failures(paths.summaries, {"USD:statement:2026-06-17|statement-v0": {"doc_id": "USD:statement:2026-06-17", "prompt_version": "statement-v0", "input_sha256": "x",
+                                                                              "errors": ["old"], "at": "2026-01-01T00:00:00Z"}})
+    rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    assert rep.new == 1 and SS.load_failures(paths.summaries) == {}
+
+
+def test_a_success_clears_the_failure_of_the_same_document(paths):
+    fed_only(paths, RecordedClient(["nope", "nope"]))
+    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|statement-v1"]
+    docs = dst.load_documents(paths)
+    d = docs[(FED_KEY,)]
+    import hashlib
+    d["text"] = d["text"].replace("Inflation remains elevated.", "Inflation remains elevated at this time.")
+    d["text_sha256"] = hashlib.sha256(d["text"].encode()).hexdigest()
+    dst.write_documents(paths, docs)                                                                                    # the statement changed: a new input, the failure no longer applies
+    rep = fed_only(paths, RecordedClient([dumps(variant(quotes=[{"paragraph": 4, "text": "Inflation remains elevated at this time."}]))]))
+    assert rep.new == 1 and SS.load_failures(paths.summaries) == {} and FED_KEY in SS.load(paths.summaries)
+
+
+def test_changes_vs_previous_lists_added_changed_and_dropped_paragraphs():
+    from src.cb_summarize import changes as CH
+    row = {"prev_meeting_date": date(2026, 7, 29), "prev_doc_id": "USD:statement:2026-07-29", "added_words": 12, "removed_words": 3,
+           "ops_json": json.dumps([{"p": 0, "prev": 0, "kind": "same", "ops": []},
+                                   {"p": 1, "prev": 1, "kind": "changed", "ops": [["=", "The rate is "], ["-", "3.5"], ["+", "3.75"], ["=", " percent; "], ["-", "old"], ["+", "new "], ["+", "words"]]},
+                                   {"p": 2, "prev": None, "kind": "added", "ops": [["+", " A brand new paragraph. "]]},
+                                   {"p": None, "prev": 2, "kind": "removed", "ops": [["-", "A paragraph that is gone."]]}])}
+    ch = CH.from_redline(row)
+    assert ch["changes"] == [{"paragraph": 2, "removed": "3.5", "added": "3.75"}, {"paragraph": 2, "removed": "old", "added": "new words"},
+                             {"paragraph": 3, "removed": "", "added": "A brand new paragraph."}, {"paragraph": None, "removed": "A paragraph that is gone.", "added": ""}]
+    assert (ch["vs_meeting"], ch["vs_doc_id"], ch["added_words"], ch["removed_words"], ch["truncated"]) == ("2026-07-29", "USD:statement:2026-07-29", 12, 3, False)
+    many = dict(row, ops_json=json.dumps([{"p": i, "prev": None, "kind": "added", "ops": [["+", f"p{i}"]]} for i in range(CH.MAX_ITEMS + 5)]))
+    assert len(CH.from_redline(many)["changes"]) == CH.MAX_ITEMS and CH.from_redline(many)["truncated"] is True

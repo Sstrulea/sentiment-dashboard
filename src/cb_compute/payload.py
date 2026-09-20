@@ -244,7 +244,7 @@ def decision_rows(ctx: Context, rep: BankReport, limit: int = 4) -> list:
             "rate_after": num(d.get("rate_after")), "lower": num(d.get("lower")), "upper": num(d.get("upper")), "consensus": num(d.get("consensus")),
             "surprise_consensus_bp": num(s.vs_consensus_bp, 1), "status": d.get("status"), "vs_market": vs_market, "reaction": react,
             "slots": {"votes": votes_json(ctx, cur, s.meeting), "statement": stm, "conference": conf},
-            "summary": {"status": "pending", "label": "summary pending (phase 2b)"},
+            "summary": summary_slot(ctx, mine.get("statement")),
         })
     return rows
 
@@ -305,7 +305,7 @@ def votes_json(ctx: Context, ccy: str, meeting: date) -> Optional[dict]:
 
 
 def doc_link(d: dict, expected: Optional[date] = None) -> dict:
-    return {"type": d["type"], "label": TYPE_LABEL.get(d["type"], d["type"]), "url": d["url"], "published": iso(d["published_date"]), "title": d["title"],
+    return {"doc_id": d["doc_id"], "type": d["type"], "label": TYPE_LABEL.get(d["type"], d["type"]), "url": d["url"], "published": iso(d["published_date"]), "title": d["title"],
             "format": d["format"], "available": True, "na": None, "expected": None, "sha256": d["text_sha256"]}
 
 
@@ -350,6 +350,45 @@ def redline_json(ctx: Context, ccy: str, meeting: date) -> Optional[dict]:
             "similarity": num(r["similarity"], 4), "paras": _json.loads(r["ops_json"])}
 
 
+SUMMARY_NOTE = "factual summary, no interpretation"
+
+
+def text_fragment(text: str) -> str:
+    """A URL text fragment (#:~:text=) that makes the browser scroll to and highlight the quote on the bank's own page. Short quotes are matched whole,
+    long ones by their first and last words; `-`, `,` and `&` are percent-encoded because they are the directive's own syntax."""
+    from urllib.parse import quote
+    enc = lambda t: quote(t, safe="").replace("-", "%2D")                            # noqa: E731
+    words = text.split()
+    if len(text) <= 120 or len(words) <= 10:
+        return "#:~:text=" + enc(text)
+    return "#:~:text=" + enc(" ".join(words[:5])) + "," + enc(" ".join(words[-5:]))
+
+
+def summary_slot(ctx: Context, doc: Optional[dict]) -> dict:
+    """The summary slot of one document: `ready` (the content is in documents.summaries[doc_id]) or `pending` with the reason for the tooltip. A summary that
+    failed validation is never shown: its slot stays pending and says so."""
+    if doc is None:
+        return {"status": "pending", "label": "summary pending", "doc_id": None, "reason": "the document is not collected"}
+    if doc["doc_id"] in ctx.summaries:
+        return {"status": "ready", "label": "summary", "doc_id": doc["doc_id"], "reason": None}
+    fail = next((f for k, f in sorted(ctx.summary_failures.items()) if k.startswith(doc["doc_id"] + "|")), None)
+    if fail:
+        return {"status": "pending", "label": "summary pending", "doc_id": doc["doc_id"],
+                "reason": f"the generated summary failed the automatic check twice and is not shown ({fail['errors'][0]})"}
+    return {"status": "pending", "label": "summary pending", "doc_id": doc["doc_id"], "reason": "not generated yet"}
+
+
+def summary_json(rec: dict) -> dict:
+    """What the page shows of a stored summary. The quotes carry a link to the bank's own page with a text fragment (HTML sources only: a PDF has none)."""
+    html = rec.get("format") == "html"
+    return {"doc_id": rec["doc_id"], "type": rec["type"], "label": TYPE_LABEL.get(rec["type"], rec["type"]), "title": rec["title"], "url": rec["url"],
+            "points": rec["summary"], "changes": rec["changes_vs_previous"],
+            "quotes": [{"text": q["text"], "paragraph": q["paragraph"], "href": rec["url"] + text_fragment(q["text"]) if html and "#" not in rec["url"] else rec["url"]}
+                       for q in rec["quotes"]],
+            "model": rec["model"], "prompt_version": rec["prompt_version"], "generated": rec["generated_at"][:10], "note": SUMMARY_NOTE,
+            "truncated": bool(rec["coverage"]["truncated"]), "paragraphs_covered": rec["coverage"]["paragraphs"]}
+
+
 def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
     """`meetings` = the decided meetings to show, most recent first (the last 4 decisions)."""
     mine = [d for d in ctx.documents if d["currency"] == ccy]
@@ -361,7 +400,11 @@ def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
     for m in meetings:
         docs_of = by_meeting.get(m, {})
         st = docs_of.get("statement")
-        timeline.append({"meeting": iso(m), "statement": None if st is None else doc_link(st), "follow_up": follow_up(ctx, ccy, m, docs_of, asof),
+        fu = follow_up(ctx, ccy, m, docs_of, asof)
+        for it in fu:
+            if it["available"] and it.get("doc_id"):
+                it["summary"] = summary_slot(ctx, next((d for d in mine if d["doc_id"] == it["doc_id"]), None))
+        timeline.append({"meeting": iso(m), "statement": None if st is None else dict(doc_link(st), summary=summary_slot(ctx, st)), "follow_up": fu,
                          "votes": votes_json(ctx, ccy, m)})
     latest = None
     if meetings:
@@ -369,7 +412,7 @@ def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
         st = by_meeting.get(m, {}).get("statement")
         latest = {"meeting": iso(m), "statement": None if st is None else statement_json(st), "redline": redline_json(ctx, ccy, m),
                   "votes": votes_json(ctx, ccy, m), "follow_up": timeline[0]["follow_up"] if timeline else [],
-                  "summary": {"status": "pending", "label": "summary pending (phase 2b)"},
+                  "summary": summary_slot(ctx, st),
                   "na": None if st is not None else ("RBNZ: the site is behind a Cloudflare challenge - texts only from the manual file" if ccy == "NZD"
                                                      else "statement not collected yet")}
     import json as _json
@@ -379,8 +422,12 @@ def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
         meta = _json.loads(d["meta_json"]) if d["meta_json"] else {}
         speeches.append({"doc_id": d["doc_id"], "type": d["type"], "speaker": d["speaker"] or None, "role": d["role"] or None, "title": d["title"], "url": d["url"],
                          "published": iso(d["published_date"]), "relevance": d["relevance"], "weight": meta.get("weight", 3), "voter": bool(meta.get("voter")),
-                         "chair": bool(meta.get("chair")), "via": meta.get("via", "bank")})
-    return {"latest": latest, "timeline": timeline, "speeches": speeches[:30], "n_speeches": len(speeches),
+                         "chair": bool(meta.get("chair")), "via": meta.get("via", "bank"), "summary": summary_slot(ctx, d)})
+    speeches = speeches[:30]
+    shown = ({it["summary"]["doc_id"] for t in timeline for it in t["follow_up"] if it.get("summary", {}).get("status") == "ready"}
+             | {t["statement"]["doc_id"] for t in timeline if t["statement"]} | {x["doc_id"] for x in speeches})
+    summaries = {k: summary_json(ctx.summaries[k]) for k in sorted(shown) if k in ctx.summaries}          # only what this page shows
+    return {"latest": latest, "timeline": timeline, "speeches": speeches, "n_speeches": len(speeches), "summaries": summaries, "summary_note": SUMMARY_NOTE,
             "manual_only": ccy == "NZD", "warnings": [w for w in ctx.doc_warnings if w.startswith(ccy + " ")]}
 
 
