@@ -248,6 +248,8 @@ Doar **Databento** și (indirect) **Barchart** au un preț public verificabil; r
 
 **E3 — regula de selecție a ferestrei (aceeași funcție pentru USD/JPY/CAD/NZD).** Data efectivă = decizia + 1 zi (Fed, RBA, SNB), + 6 zile (ECB), + 0 (BoE, BoJ, BoC, RBNZ). Se ia **prima fereastră cu start ≥ (data efectivă − 3 zile)**; doar înainte în timp (o fereastră începută cu mai mult de 3 zile înaintea ședinței nu se folosește, fiindcă reflectă doar parțial decizia). Rezultat = media ferestrei − spread-ul curent overnight–politică; „în interior" = alte ședințe din fereastră ⇒ **margine superioară** a mișcării cumulate. În 0A cele trei locuri (raportul principal, diferența T-bill, diferența COA/CRA) foloseau reguli ușor diferite (toleranță 3 zile / fără toleranță / start ≥ data deciziei); dau aceleași ferestre pe datele curente, dar acum e o singură funcție (`pick_window` în `src/cb_probe.py`).
 
+**Actualizare 1B-2:** regula de mai sus a fost înlocuită: fereastra cu start ≥ (data efectivă − **7** zile) **cea mai apropiată** de data efectivă (egalitate: cea mai timpurie), pentru că BoJ hotărăște vineri și devine efectivă luni/marți, iar ferestrele încep miercurea. Aceeași funcție în `src/cb_compute/methods.py` și `src/cb_probe.py`; vezi `docs/central-banks/ARCHITECTURE.md` §12. Tabelul de mai jos e cel din 0B (regula veche; dă aceleași ferestre).
+
 | Val. | Ședința | Data efectivă | Fereastra aleasă | Decalaj start−efectiv | Alte ședințe în fereastră | Implicit (politică-echivalent) | Δ vs politica acum |
 |---|---|---|---|---|---|---|---|
 | USD | 2026-12-09 | 12-10 | 2026-12-16→2027-03-17 | +6 z | 1 | 4.335 | +46bp (vs 3.875) |

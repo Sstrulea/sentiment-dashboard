@@ -11,6 +11,8 @@
 #   overnight_benchmark  the bank's own overnight reference; the overnight-minus-policy
 #                   spread is computed per instrument in phase 1B (it depends on the
 #                   instrument's benchmark, see config/cb_sources.yaml `benchmark`).
+#   spread          overnight benchmark - policy pair whose median (20 business days) turns an implied
+#                   benchmark rate into an implied policy rate (src/cb_compute/spread.py); null = not used.
 #   effective_rule  how the effective date follows the decision date.
 #                   kind: calendar_days (+N days) | next_business_day (first business day after the decision,
 #                   calendar: JP | NZ). `source` = the series whose change dates were tested against the rule
@@ -32,6 +34,7 @@ banks:
     tz: America/New_York
     calendar_url: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
     calendar_id: US                    # config/cb_calendars.yaml
+    spread: {benchmark: "fred:SOFR", policy: ["fred:DFEDTARL", "fred:DFEDTARU"], note: "MPT is built on SOFR options; policy = midpoint"}
     decision_time: {local: "14:00", variable: false,
                     evidence: "statement page Last-Modified +0.2-0.3 min after 14:00 ET (4/4)"}
     conference: {held: every_meeting, local: "14:30", verified: true,
@@ -61,6 +64,7 @@ banks:
     tz: Europe/Berlin
     calendar_url: https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html
     calendar_id: EU                    # config/cb_calendars.yaml
+    spread: null     # not needed: PROXY basis (EUR), BKBM basis (NZD) or no market path (CHF)
     decision_time: {local: "14:15", variable: false, evidence: "press feed pubDate 14:15 CEST (10 Sep 2026)"}
     conference: {held: every_meeting, local: "14:45", verified: true,
                  source: "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"}
@@ -91,6 +95,7 @@ banks:
     tz: Europe/London
     calendar_url: https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates
     calendar_id: UK                    # config/cb_calendars.yaml
+    spread: {benchmark: "boe:IUDSOIA", policy: ["boe:IUDBEDR"]}
     decision_time: {local: "12:00", variable: false, evidence: "BoE MPC dates page; no page timestamp to verify latency"}
     conference: {held: mpr_only, local: null, verified: true,
                  source: "BoE YouTube 'Monetary Policy Report Press Conference, 30 July'; other meetings = pooled broadcast interview"}
@@ -119,6 +124,7 @@ banks:
     tz: Asia/Tokyo
     calendar_url: https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm
     calendar_id: JP                    # config/cb_calendars.yaml
+    spread: {benchmark: "boj:STRDCLUCON", policy: ["bis:JP"], note: "call rate vs the BoJ guideline (BIS)"}
     decision_time: {local: null, variable: true, window_local: ["11:30", "13:30"],
                     evidence: "statement PDF Last-Modified 12:28-13:06 JST (28 Apr, 16 Jun, 31 Jul, 18 Sep); RSS 18 Sep 12:40 JST"}
     conference: {held: every_meeting, local: "15:30", verified: true,
@@ -150,6 +156,7 @@ banks:
     tz: America/Toronto
     calendar_url: https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/
     calendar_id: CA                    # config/cb_calendars.yaml
+    spread: {benchmark: "boc:AVG.INTWO", policy: ["boc:V39079"]}
     decision_time: {local: "09:45", variable: false, evidence: "BoC blackout page: decision at 9:45 ET, press conference 10:30 ET"}
     conference: {held: every_meeting, local: "10:30", verified: true,
                  source: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/blackout-guidelines/"}
@@ -178,6 +185,7 @@ banks:
     tz: Australia/Sydney
     calendar_url: https://www.rba.gov.au/schedules-events/board-meeting-schedules.html
     calendar_id: AU                    # config/cb_calendars.yaml
+    spread: {benchmark: "rba:FIRMMCRID", policy: ["rba:FIRMMCRTD"], note: "interbank overnight vs cash rate target"}
     decision_time: {local: "14:30", variable: false, evidence: "RBA decision announcements 2:30 pm AEST/AEDT (FF rows)"}
     conference: {held: every_meeting, local: "15:30", verified: true,
                  source: "https://www.rba.gov.au/monetary-policy/media-conferences/2026/"}
@@ -206,6 +214,7 @@ banks:
     tz: Pacific/Auckland
     calendar_url: https://www.rbnz.govt.nz/news-and-events/how-we-release-information/monetary-policy-and-ocr-decision-dates-until-february-2027
     calendar_id: NZ                    # config/cb_calendars.yaml
+    spread: null     # not needed: PROXY basis (EUR), BKBM basis (NZD) or no market path (CHF)
     decision_time: {local: "14:00", variable: false, evidence: "FF rows 02:00 UTC = 14:00 NZ; site bot-walled, not verified on RBNZ pages", verified: false}
     conference: {held: every_meeting, local: "15:00", verified: false,
                  source: "RBNZ 'all OCR announcements are followed by a media conference at 3pm' (via search; site bot-walled)"}
@@ -234,6 +243,7 @@ banks:
     tz: Europe/Zurich
     calendar_url: https://www.snb.ch/en/services-events/digital-services/event-schedule
     calendar_id: CH                    # config/cb_calendars.yaml
+    spread: null     # not needed: PROXY basis (EUR), BKBM basis (NZD) or no market path (CHF)
     decision_time: {local: "09:30", variable: false, evidence: "RSS mopo pubDate 07:30Z = 09:30 CEST (0.0 min)"}
     conference: {held: quarterly, local: "10:00", verified: true,
                  source: "https://www.snb.ch/en/services-events/digital-services/event-schedule"}

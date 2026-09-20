@@ -2368,11 +2368,13 @@ def report_a3bis(probes: list[Probe], today: date) -> None:
 # ---------------------------------------------------------------------------
 
 def pick_window(windows: list[dict], eff: date, tol: Optional[int] = None):
-    """THE window rule: earliest 3M reference window whose start is on/after (effective date − tol days).
-    Forward-only: a window that began more than `tol` days before the meeting is never used, because it
-    only partly reflects the decision. Returns (window, gap_days = start − eff) or (None, None)."""
+    """THE window rule (E3, revised in 1B-2): among the 3M reference windows whose start is on/after (effective date -
+    tol days), the one whose start is CLOSEST to the effective date (ties: the earlier one). Forward-only: a window that
+    began more than `tol` days before the meeting is never used, because it only partly reflects the decision.
+    Same rule as `src/cb_compute/methods.pick_window`. Returns (window, gap_days = start - eff) or (None, None)."""
     tol = WINDOW_TOL_DAYS if tol is None else tol
-    w = next((r for r in sorted(windows, key=lambda r: r["start"]) if r["start"] >= eff - timedelta(days=tol)), None)
+    cands = [r for r in windows if r["start"] >= eff - timedelta(days=tol)]
+    w = min(cands, key=lambda r: (abs((r["start"] - eff).days), r["start"]), default=None)
     return (w, (w["start"] - eff).days) if w else (None, None)
 
 
@@ -2446,7 +2448,7 @@ def report_e(probes: list[Probe], today: date) -> None:
         print("\n[E2] 3M CONTRACTS — reference window [start, end) and exchange naming convention")
         for r in x["listing"]:
             print(f"   {r[0]} {r[1]:<24} {r[2]:<38} window {r[3]}..{r[4]}  implied {r[6]:.3f}  | {r[5]}")
-        print(f"\n[E3] WINDOW RULE: earliest window with start ≥ (effective date − {WINDOW_TOL_DAYS}d); forward-only; effective = decision + "
+        print(f"\n[E3] WINDOW RULE: the window with start ≥ (effective date − {WINDOW_TOL_DAYS}d) CLOSEST to the effective date; forward-only; effective = decision + "
               f"{EFF_LAG_DAYS}; result = window mean − current overnight–policy spread; 'inside' = other meetings inside the window (upper bound).")
         for a in x["applied"]:
             w = a["window"]
@@ -2736,7 +2738,7 @@ def report_a5(probes: list[Probe], today: date) -> None:
 
 
 BENCH_PREF = {"USD": "SOFR"}
-WINDOW_TOL_DAYS = 3     # an IMM window starting <=3d before the meeting still captures ~all of its effect
+WINDOW_TOL_DAYS = 7     # an IMM window starting <=7d before the effective date (JPX/BoJ: 3rd Wednesday vs a Friday decision + 1 business day) still captures ~all of its effect
 COARSE_PROXIES = {"treasury_par_curve", "ecb_yc_forward"}   # bills / AAA-govt curve: no per-meeting resolution, not OIS
 EFF_LAG_DAYS = {"USD": 1, "EUR": 6, "GBP": 0, "JPY": 0, "CAD": 0, "AUD": 1, "NZD": 0, "CHF": 1}
 

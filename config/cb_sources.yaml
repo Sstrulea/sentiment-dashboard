@@ -20,11 +20,18 @@
 #   benchmark      the instrument's own reference rate (the overnight-minus-policy spread of phase 1B
 #                  is specific to it); `proxy: true` = not an OIS/futures path, marked PROXY in the UI.
 #   license        attribution/terms note shown in the UI.
+#   role           primary | crosscheck: the implied trajectory of a currency comes from its primary
+#                  instrument(s); crosscheck instruments are only compared with it (src/cb_compute/).
+#   method         per instrument: EXACT (1M futures, month-average chain) | CURVE (OIS forward curve, interval average) |
+#                  WINDOW (3M contracts, one value per window, UPPER_BOUND) | PROXY_CURVE (government forward curve, basis
+#                  removed, per meeting) | PROXY_TENOR (bills by tenor, basis removed). n/a: CHF, NZD vs OCR.
+#   stale_after_bd business days after which a quote is stale (meta default; a source may override).
 #   calendar_id    holiday calendar of the source's publisher/exchange (config/cb_calendars.yaml): --status
 #                  excludes its holidays from the missing days and counts its business days for the lag.
 
 meta:
   version: 1
+  stale_after_bd: 2               # a quote older than this many business days (source calendar) is stale
   horizon_months: 36
   backfill_from: 2026-03-01        # 4 decisions of market T-1 for the last 4 meetings
 
@@ -32,9 +39,10 @@ sources:
   atlantafed_mpt:
     currency: USD
     calendar_id: US
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: AtlantaMpt
     instruments:
-      sofr_3m_ref_quarter_mean: {unit: bp, fields: [mean], benchmark: SOFR}
+      sofr_3m_ref_quarter_mean: {method: WINDOW, unit: bp, fields: [mean], benchmark: SOFR}
     url: https://www.atlantafed.org/-/media/Project/Atlanta/FRBA/Documents/cenfis/market-probability-tracker/mpt_histdata.xlsx
     history: official
     naming: "explicit reference_start (3rd Wednesday of the start month of each 3M SOFR quarter); contract label = start month YYYYMM; ref_end = next window start"
@@ -49,9 +57,10 @@ sources:
   boe_ois:
     currency: GBP
     calendar_id: UK
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: BoeOis
     instruments:
-      sonia_instantaneous_forward: {unit: percent, fields: [fwd], benchmark: SONIA}
+      sonia_instantaneous_forward: {method: CURVE, unit: percent, fields: [fwd], benchmark: SONIA}
     urls:
       latest: https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/latest-yield-curve-data.zip
       history: https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/oisddata.zip
@@ -68,9 +77,10 @@ sources:
   jpx_tona:
     currency: JPY
     calendar_id: JP
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: JpxTona
     instruments:
-      tona_3m_futures: {unit: index_points, fields: [settle], benchmark: TONA}
+      tona_3m_futures: {method: WINDOW, unit: index_points, fields: [settle], benchmark: TONA}
     url: https://www.jpx.co.jp/english/markets/derivatives/settlement-price/index.html
     history: snapshot
     naming: "contract month = START month of the reference period (3rd Wednesday of the contract month -> Tuesday before the 3rd Wednesday 3 months later); the code in the issue name is the last trading day"
@@ -85,10 +95,11 @@ sources:
   mx_corra:
     currency: CAD
     calendar_id: CA
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: MxCorra
     instruments:
-      corra_3m_futures: {unit: index_points, fields: [settle], benchmark: CORRA}
-      corra_1m_futures: {unit: index_points, fields: [settle], benchmark: CORRA}
+      corra_3m_futures: {method: WINDOW, unit: index_points, fields: [settle], benchmark: CORRA}
+      corra_1m_futures: {method: EXACT, unit: index_points, fields: [settle], benchmark: CORRA}
     url: https://www.m-x.ca/en/trading/tools/canadian-interest-rate-expectations
     history: snapshot
     naming: "CRA contract = 'Contract Reference Month' = START month of the Reference Quarter (3rd Wednesday of that month to the 3rd Wednesday 3 months later); COA = calendar month"
@@ -105,9 +116,10 @@ sources:
   asx_ib:
     currency: AUD
     calendar_id: AU
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: AsxIb
     instruments:
-      ib_30d_interbank_futures: {unit: index_points, fields: [settle], benchmark: "RBA interbank overnight cash rate (AONIA-equivalent)"}
+      ib_30d_interbank_futures: {method: EXACT, unit: index_points, fields: [settle], benchmark: "RBA interbank overnight cash rate (AONIA-equivalent)"}
     url: https://asx.api.markitdigital.com/asx-research/1.0/derivatives/interest-rate/IB/futures?days=1&height=179&width=179
     history: snapshot
     naming: "contract = calendar month (symbol IB<M><YYYY>); window = that month"
@@ -122,9 +134,10 @@ sources:
   asx_bb:
     currency: NZD
     calendar_id: AU  # ASX trading days (the underlying is NZ 90-day BKBM)
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: AsxBb
     instruments:
-      bb_90d_nz_bank_bill_futures: {unit: index_points, fields: [settle],
+      bb_90d_nz_bank_bill_futures: {method: WINDOW, unit: index_points, fields: [settle],
                                     benchmark: "BKBM 90-day (3M bank-bill FRA); NOT an overnight rate - spread vs OCR unavailable (RBNZ B2 blocked)"}
     url: https://asx.api.markitdigital.com/asx-research/1.0/derivatives/interest-rate/BB/futures?days=1&height=179&width=179
     history: snapshot
@@ -140,9 +153,10 @@ sources:
   ust_bills:
     currency: USD
     calendar_id: US
+    role: crosscheck                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: TreasuryBills
     instruments:
-      ust_par_curve: {unit: percent, fields: [yield], benchmark: "SOFR (bills-OIS basis not removed)"}
+      ust_par_curve: {method: PROXY_TENOR, unit: percent, fields: [yield], benchmark: "SOFR (bills-OIS basis not removed)"}
     url: "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/{year}/all?type=daily_treasury_yield_curve&field_tdr_date_value={year}&page&_format=csv"
     history: official
     naming: "tenors 1, 1.5, 2, 3, 4, 6 months, 1, 2, 3 years (tenor_months)"
@@ -157,9 +171,10 @@ sources:
   boc_tbills:
     currency: CAD
     calendar_id: CA
+    role: crosscheck                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: BocTbills
     instruments:
-      gov_tbill_yield: {unit: percent, fields: [yield], benchmark: "CORRA (bills-OIS basis not removed)"}
+      gov_tbill_yield: {method: PROXY_TENOR, unit: percent, fields: [yield], benchmark: "CORRA (bills-OIS basis not removed)"}
     url: https://www.bankofcanada.ca/valet/observations/TB.CDN.30D.MID,TB.CDN.60D.MID,TB.CDN.90D.MID,TB.CDN.180D.MID/json
     history: official
     naming: "tenors 1, 2, 3, 6 months (series TB.CDN.30D/60D/90D/180D.MID)"
@@ -174,9 +189,10 @@ sources:
   ecb_aaa_fwd:
     currency: EUR
     calendar_id: EU
+    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: EcbAaaForward
     instruments:
-      aaa_govt_instantaneous_forward: {unit: percent, fields: [fwd], benchmark: "EUR STR (government curve, NOT OIS)"}
+      aaa_govt_instantaneous_forward: {method: PROXY_CURVE, unit: percent, fields: [fwd], benchmark: "EUR STR (government curve, NOT OIS)"}
     url: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.{keys}
     history: official
     naming: "instantaneous forward IF_<tenor> at monthly maturities 3..36 months (tenor_months)"
@@ -191,9 +207,10 @@ sources:
   rba_bank_bills:
     currency: AUD
     calendar_id: AU
+    role: crosscheck                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: RbaBankBills
     instruments:
-      bank_bill_eod_yield: {unit: percent, fields: [yield], benchmark: "RBA interbank overnight cash rate (BBSW-linked, credit spread not removed)"}
+      bank_bill_eod_yield: {method: PROXY_TENOR, unit: percent, fields: [yield], benchmark: "RBA interbank overnight cash rate (BBSW-linked, credit spread not removed)"}
     url: https://www.rba.gov.au/statistics/tables/csv/f1-data.csv
     history: official
     naming: "EOD bank bills 1M/3M/6M (F1 FIRMMBAB30D/90D/180D; source ASX)"
