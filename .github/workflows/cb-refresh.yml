@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '37 */2 * * *'
   workflow_dispatch:
+    inputs:
+      force_calendar_check:
+        description: "Run the weekly meetings / holiday-calendar check now (it otherwise runs once a week)"
+        type: boolean
+        default: false
 
 concurrency:
   group: cb-refresh
@@ -31,7 +36,7 @@ jobs:
       # $GITHUB_STEP_SUMMARY. Exit 0 on partial failure, non-zero only when EVERY source failed; decisions,
       # projections and the calendar check only warn.
       - name: Collect
-        run: python -m src.cb_collect
+        run: python -m src.cb_collect ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
 
       - name: Freshness status
         if: always()

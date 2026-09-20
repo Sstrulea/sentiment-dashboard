@@ -192,6 +192,7 @@ def workflow():
 def test_workflow_triggers_and_guards(workflow):
     on = workflow.get("on", workflow.get(True))          # PyYAML (YAML 1.1) reads the bare key `on` as True
     assert set(on) == {"schedule", "workflow_dispatch"}
+    assert on["workflow_dispatch"]["inputs"]["force_calendar_check"]["type"] == "boolean"
     cron = on["schedule"][0]["cron"]
     assert cron == "37 */2 * * *" and len(cron.split()) == 5
     assert workflow["concurrency"] == {"group": "cb-refresh", "cancel-in-progress": False}
@@ -206,7 +207,9 @@ def test_workflow_steps_mirror_econ_refresh_and_touch_only_data_cb(workflow):
     assert uses == ["actions/checkout@v4", "actions/setup-python@v5"]
     assert steps[1]["with"] == {"python-version": "3.11", "cache": "pip"}
     runs = [s.get("run", "") for s in steps]
-    assert "pip install -r requirements.txt" in runs and "python -m src.cb_collect" in runs
+    assert "pip install -r requirements.txt" in runs
+    collect = next(s for s in steps if s.get("name") == "Collect")
+    assert collect["run"].startswith("python -m src.cb_collect") and "--force-calendar-check" in collect["run"]   # only via the dispatch input
     assert "python -m src.cb_collect --status" in runs
     commit = next(s for s in steps if s.get("name") == "Commit + push")
     assert commit["if"] == "github.ref == 'refs/heads/main'"          # a dispatch from another ref never pushes
