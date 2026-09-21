@@ -21,7 +21,7 @@ def rules(**over):
     r = dict(points=CFG.summary_points, point_chars=CFG.point_chars, quotes=CFG.quotes, quote_chars=CFG.quote_chars, total_chars=CFG.summary_total_chars,
              blocked=CFG.blocked_words, attributed=CFG.attributed_words, subjects=CFG.attribution_subjects, evidence_paragraphs=CFG.evidence_paragraphs,
              fragments=CFG.fragments, fragment_words=CFG.fragment_words, fragment_shared=CFG.fragment_shared, min_support=CFG.min_support,
-             attribution_words=CFG.attribution_words, pronouns=CFG.attribution_pronouns, negations=CFG.negations)
+             attribution_words=CFG.attribution_words, pronouns=CFG.attribution_pronouns, negations=CFG.negations, speaker_verbs=CFG.speaker_verbs)
     r.update(over)
     return r
 

@@ -47,6 +47,7 @@ class Config:
     min_support: float
     attribution_words: tuple
     negations: tuple
+    speaker_verbs: tuple
     attribution_pronouns: tuple
     price_input: float
     price_cached_input: float
@@ -79,7 +80,7 @@ def load(path=None, provider: Optional[str] = None) -> Config:
         attributed_words=tuple(str(w) for w in raw["attributed_words"]), attribution_subjects=tuple(str(w) for w in raw["attribution_subjects"]),
         evidence_paragraphs=tuple(raw["grounding"]["evidence_paragraphs"]), fragments=tuple(raw["grounding"]["fragments"]), fragment_words=tuple(raw["grounding"]["fragment_words"]),
         fragment_shared=int(raw["grounding"]["fragment_shared_words"]), min_support=float(raw["grounding"]["min_support"]),
-        attribution_words=tuple(str(w) for w in raw["grounding"]["attribution_words"]), negations=tuple(str(w) for w in raw["grounding"]["negations"]),
+        attribution_words=tuple(str(w) for w in raw["grounding"]["attribution_words"]), negations=tuple(str(w) for w in raw["grounding"]["negations"]), speaker_verbs=tuple(str(w) for w in raw["grounding"]["speaker_verbs"]),
         attribution_pronouns=tuple(str(w) for w in raw["attribution_pronouns"]),
         price_input=float(price["input"]), price_cached_input=float(price["cached_input"]), price_output=float(price["output"]), price_source=str(p["pricing_source"]),
         price_model_page=str(p["pricing_model_page"]), price_checked=str(p["pricing_checked"]), price_note=" ".join(str(p["pricing_note"]).split()))

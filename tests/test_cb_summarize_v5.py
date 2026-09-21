@@ -658,3 +658,70 @@ def tmp_path_factory_of(tmp_path):
             d.mkdir()
             return d
     return F()
+
+
+VERBS = CFG.speaker_verbs + CFG.attribution_words + CFG.attributed_words
+GROUPS = (("kevin", "warsh"), ("colby", "smith"), ("jennifer", "schonberger"))
+
+
+@pytest.mark.parametrize("text, who, word", [
+    ("In response to Colby Smith, Chairman Warsh said he is not in the business.", "warsh", "warsh"),                  # the object of "to" is not the subject
+    ("Chairman Warsh, in his answer to Jennifer Schonberger, said it.", "warsh", "warsh"),
+    ("Answering a question from Colby Smith, Warsh said no.", "warsh", "warsh"),
+    ("Warsh said Smith asked about tariffs.", "warsh", "warsh"),                                                        # the first verb
+    ("Jennifer Schonberger asked whether Warsh will act.", "schonberger", "schonberger"),
+    ("The decision was sober, Warsh noted.", "warsh", "warsh"),
+    ("Kevin said the decision was sober.", "warsh", "kevin"),                                                           # a first name names the same person
+    ("Kevin Warsh also said the decision was sober.", "warsh", "warsh"),                                                # two words between the name and the verb at most
+    ("Colby Smith and Warsh discussed it.", "smith", "smith"),                                                          # no reporting verb: the first person named
+    ("Warsh, the Chairman of the Committee, said it.", "smith" if False else "warsh", "warsh"),
+])
+def test_the_person_a_point_attributes_the_statement_to_is_the_one_before_the_reporting_verb(text, who, word):
+    got = V.named_person(text, GROUPS, VERBS)
+    assert got is not None and got[0][-1] == who and got[1] == word, got
+
+
+def test_no_person_named_and_no_verb_fall_back_to_the_first_name():
+    assert V.named_person("Nobody is named here.", GROUPS, VERBS) is None
+    assert V.named_person("Warsh and Smith.", GROUPS, ())[0][-1] == "warsh" and V.named_person("Smith and Warsh.", GROUPS, ())[0][-1] == "smith"
+    assert V.named_person("In response to Smith, the Chairman said it.", GROUPS, VERBS)[0][-1] == "smith"                # only an object named: the fallback (a person is named)
+
+
+def test_a_point_that_answers_a_journalist_is_the_chairs_and_rests_on_the_chairs_turn():
+    ans = point("To Colby Smith, Chairman Warsh said he is not in the forward guidance business.", [3], "This won't surprise you, I'm not in the forward guidance business.")
+    people = PEOPLE + (("colby", "smith"),)
+    speakers = SPEAKERS + ("colby", "smith")
+    assert transcript(SOBER, STRONG, ans, speakers=speakers, people=people, speaker_verbs=CFG.speaker_verbs).ok
+    wrong = point("To Colby Smith, Chairman Warsh said inflation has run up mostly from higher energy prices and tariffs, which rate hikes cannot fix.", [Q_PARA],
+                  "Inflation has run up mostly from higher energy prices and tariffs, which some say are supply shocks")
+    r = transcript(SOBER, STRONG, wrong, speakers=speakers, people=people, speaker_verbs=CFG.speaker_verbs)
+    assert not r.ok and any("attributes the statement to Warsh, but paragraph %d that it cites is the turn of JENNIFER SCHONBERGER" % Q_PARA in e for e in r.errors)
+
+
+def test_the_verb_must_be_within_two_words_of_the_name_and_the_nearest_name_wins():
+    text = "Warsh spoke to the press. Smith listened carefully to all of it and later the Chairman said it."
+    assert V.named_person(text, GROUPS, VERBS)[0][-1] == "warsh"                                                        # nobody within two words of "said": the first person named
+    assert V.named_person("Warsh listened to the long discussion and Smith then said it.", GROUPS, VERBS)[0][-1] == "smith"    # Smith is one word from the verb
+    assert V.named_person("Warsh and Smith said it.", GROUPS, VERBS)[0][-1] == "smith"                                    # both are close: the nearest to the verb
+
+
+def test_the_run_gives_the_check_the_speaker_verbs_of_the_config():
+    import dataclasses
+
+    from src.cb_summarize import prompts as PR
+    from src.cb_summarize import run as R
+    from src.cb_summarize.client import RecordedClient
+
+    from .cb_sum_helpers import dumps
+    src = SRC.from_paragraphs(EXCERPT, "pypdf", 10**6, transcript={"officials": ["warsh"]})
+    asked = point("Kevin Warsh heard Jennifer Schonberger asked about higher energy prices and tariffs, which rate hikes cannot fix.", [Q_PARA],
+                  "Inflation has run up mostly from higher energy prices and tariffs, which some say are supply shocks")
+    out = dumps({"summary": [SOBER, NOT_FG, asked], "quotes": [{"paragraph": 3, "text": "I'm not going to pre-judge any future decisions we make."}], "coverage": [3, Q_PARA]})
+    doc = {"doc_id": "USD:presser_transcript:2026-09-16", "currency": "USD", "type": "presser_transcript", "url": "https://www.federalreserve.gov/x.pdf", "speaker": ""}
+    people = PEOPLE + (("jennifer", "schonberger"),)
+    speakers = SPEAKERS + ("jennifer", "schonberger")
+    ok, usage, errs = R.summarise(RecordedClient([out]), CFG, PR.load("transcript"), doc, src, speakers, people=people)
+    assert ok is not None and ok.ok, errs                                                                               # "asked" says who the point is about: Schonberger, and it is her turn
+    silent = dataclasses.replace(CFG, speaker_verbs=())
+    ok, usage, errs = R.summarise(RecordedClient([out, out]), silent, PR.load("transcript"), doc, src, speakers, people=people)
+    assert ok is None and any("attributes the statement to Warsh, but paragraph %d" % Q_PARA in e for e in errs)          # without the verb: the first person named

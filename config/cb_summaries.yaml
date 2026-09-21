@@ -94,6 +94,23 @@ grounding:                            # every summary point carries evidence; th
     - explained
     - explains
     - according
+  speaker_verbs:                      # with attribution_words and attributed_words: the verbs that tell WHO a point attributes a statement to ("In response to X, Warsh said ..." is Warsh's)
+    - asked
+    - asks
+    - replied
+    - answered
+    - answers
+    - told
+    - added
+    - argued
+    - believes
+    - thinks
+    - warned
+    - responded
+    - called
+    - agreed
+    - wants
+    - wanted
   negations:                          # a point has a negation exactly when its closest source sentence has one ("not only" is not one)
     - not
     - "no"

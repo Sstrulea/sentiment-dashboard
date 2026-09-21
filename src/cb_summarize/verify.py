@@ -327,25 +327,36 @@ def negation_error(point: str, cited: list, rx: re.Pattern, drop_forms: set, i: 
 
 # ---- speakers: in a press-conference transcript a statement rests only on its own speaker's turns ------------------------------------------------------------
 
-def named_person(text: str, groups: tuple) -> Optional[tuple]:
-    """(the name words of the person a point names first, the word that names them): by surname (the last word of a group) - or by another name word only when no
-    surname is named."""
-    def earliest(pairs):
-        best = None
-        for g, w in pairs:
-            m = re.search(r"(?<!\w)" + re.escape(w) + r"(?!\w)", text, re.I)
-            if m and (best is None or m.start() < best[0]):
-                best = (m.start(), tuple(g), w)
-        return best
-    hit = earliest((g, g[-1]) for g in groups) or earliest((g, w) for g in groups for w in g[:-1])
-    return (hit[1], hit[2]) if hit else None
+def _object_of(text: str, at: int) -> bool:
+    """True when the name that starts at `at` follows a preposition ("in response to Colby Smith", "the answer to Smith", "asked by Smith"): the person it names is not the subject."""
+    return re.search(r"(?<!\w)(?:to|of|from|by|with|for|about|at)\s+(?:[\w’'-]+\s+)?$", text[:at], re.I) is not None
 
 
-def speaker_errors(point: str, cited: list, labels: list, groups: tuple, i: int) -> list:
+def named_person(text: str, groups: tuple, verbs: tuple = ()) -> Optional[tuple]:
+    """(the name words of the person a point attributes the statement to, the word that names them). The person is the one named just before the first reporting verb of
+    `verbs` ("In response to Colby Smith, Chairman Warsh said ..." is Warsh's; "Warsh said Smith asked ..." is Warsh's) - at most two words between the name and the
+    verb; without one, the first person named. A person is named by their surname (the last word of the group) - by another name word only when the surname is not named."""
+    occ = [(m.start(), m.end(), tuple(g), w) for g in groups for w in g for m in re.finditer(r"(?<!\w)" + re.escape(w) + r"(?!\w)", text, re.I)]
+    if not occ:
+        return None
+    if verbs:
+        for vm in sorted(blocked_regex(verbs).finditer(text), key=lambda m: m.start()):
+            before = [o for o in occ if o[1] <= vm.start() and len(re.findall(r"\w+", text[o[1]:vm.start()])) <= 2 and not _object_of(text, o[0])]
+            if before:
+                who = max(before, key=lambda o: o[1])[2]                                    # the group of the name closest to the verb
+                mine = [o for o in before if o[2] == who]
+                best = next((o for o in mine if o[3] == who[-1]), None) or max(mine, key=lambda o: o[1])
+                return who, best[3]
+    by_surname = [o for o in occ if o[3] == o[2][-1]]
+    best = min(by_surname or occ, key=lambda o: o[0])
+    return best[2], best[3]
+
+
+def speaker_errors(point: str, cited: list, labels: list, groups: tuple, i: int, verbs: tuple = ()) -> list:
     """`labels`: one turns.Turn (or None) per paragraph. A point that names a speaker may cite only that speaker's turns - the label must carry the surname the point
     names (or, when the point names a first name only, one of the person's names); a point that names none may cite only the bank's own turns (never a journalist's
     question, presented as the bank's word)."""
-    named = named_person(point, groups)
+    named = named_person(point, groups, verbs)
     errors = []
     for c in cited:
         turn = labels[c - 1]
@@ -363,7 +374,7 @@ def speaker_errors(point: str, cited: list, labels: list, groups: tuple, i: int)
 
 
 def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tuple, lim_frags: tuple, lim_words: tuple, min_share: float, drop_forms: set, *,
-                   shared: int = 2, exclude_names: frozenset = frozenset(), rx_neg: Optional[re.Pattern] = None, labels: Optional[list] = None, groups: tuple = ()) -> tuple:
+                   shared: int = 2, exclude_names: frozenset = frozenset(), rx_neg: Optional[re.Pattern] = None, labels: Optional[list] = None, groups: tuple = (), verbs: tuple = ()) -> tuple:
     """(evidence record, errors) for one summary point {text, evidence: {paragraphs: [1-3 numbers], fragments: [1-3 verbatim passages of 5-40 words]}}: every
     fragment is verbatim in one of the cited paragraphs (its offsets are then derived) and shares content words with the point; at least `min_share` of the point's
     content words are in the cited paragraphs; its dates, months, days and proper names are there too; its negation matches its closest source sentence; and in a
@@ -418,7 +429,7 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
         if neg:
             errors.append(neg)
     if labels is not None:
-        errors += speaker_errors(point["text"], cited, labels, groups, i)
+        errors += speaker_errors(point["text"], cited, labels, groups, i, verbs)
     if errors:
         return None, errors
     return {"paragraphs": cited, "fragments": found, "coverage": round(share, 3)}, []
@@ -427,7 +438,7 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
 def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, quotes: tuple, quote_chars: tuple, total_chars: int, blocked: tuple,
            attributed: tuple = (), subjects: tuple = (), speakers: tuple = (), evidence_paragraphs: tuple = (1, 3), fragments: tuple = (1, 3), fragment_words: tuple = (5, 40),
            min_support: float = 0.85, attribution_words: tuple = (), fragment_shared: int = 2, pronouns: tuple = (), negations: tuple = (), bank_terms: tuple = (),
-           labels: Optional[list] = None, people: tuple = ()) -> Verified:
+           labels: Optional[list] = None, people: tuple = (), speaker_verbs: tuple = ()) -> Verified:
     """Check a parsed model output against the source paragraphs. Returns the record parts (points with their evidence, quotes with offsets, numbers with source
     offsets, coverage) only when every check passed. `blocked` words are refused always; `attributed` words only unless the document uses them and the point
     attributes them (check_attributed). Every point carries evidence (paragraphs + 1-3 verbatim fragments) and must be supported by the paragraphs it cites: content
@@ -436,7 +447,7 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     errors: list = []
     src = source_text(paragraphs)
     starts = paragraph_starts(paragraphs)
-    drop = forms_of_text(" ".join(tuple(attribution_words) + tuple(subjects) + tuple(speakers) + tuple(bank_terms)))    # attribution vocabulary and names: not claims
+    drop = forms_of_text(" ".join(tuple(attribution_words) + tuple(speaker_verbs) + tuple(subjects) + tuple(speakers) + tuple(bank_terms)))    # attribution vocabulary and names: not claims
     exclude_names = frozenset(drop | forms_of_text(" ".join(TITLES)))
     groups = tuple(people) or tuple((w,) for w in speakers if w.lower() not in TITLES)
     rx_neg = negation_regex(negations) if negations else None
@@ -458,7 +469,7 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
         errors.append(f"the summary has {sum(len(s) for s in summary)} characters in all; allowed {total_chars}")
     for i, p in enumerate(raw, 1):
         ev, errs = check_evidence(p, i, paragraphs, starts, evidence_paragraphs, fragments, fragment_words, min_support, drop, shared=fragment_shared,
-                                  exclude_names=exclude_names, rx_neg=rx_neg, labels=labels, groups=groups)
+                                  exclude_names=exclude_names, rx_neg=rx_neg, labels=labels, groups=groups, verbs=tuple(speaker_verbs) + tuple(attribution_words) + tuple(attributed))
         errors += errs
         evidence.append(ev)
 

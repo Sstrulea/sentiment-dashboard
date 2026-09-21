@@ -188,7 +188,7 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
                            total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects,
                            speakers=speakers, evidence_paragraphs=cfg.evidence_paragraphs, fragments=cfg.fragments, fragment_words=cfg.fragment_words, min_support=cfg.min_support,
                            attribution_words=cfg.attribution_words, fragment_shared=cfg.fragment_shared, pronouns=cfg.attribution_pronouns, negations=cfg.negations,
-                           bank_terms=bank_terms(doc), labels=src.turns, people=people)
+                           bank_terms=bank_terms(doc), labels=src.turns, people=people, speaker_verbs=cfg.speaker_verbs)
             if res.ok:
                 return res, usage, []
             errors = res.errors
