@@ -556,6 +556,10 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   numai dacă sunt îndeplinite toate trei:** (1) publică cel puțin la fel de multe documente (integral + parțial); (2) punctele eliminate + documentele care au avut nevoie de reîncercare (al doilea apel) sunt mai puține;
   (3) costul total pe cele 11 documente ≤ 2 × cel de la `low`. Altfel rămâne `low`. **Condiția de merge**, cu varianta aleasă: (a) cele 6 documente Fed publicate, integral sau parțial, comunicatele cu punctul de decizie
   valid; (b) din cele 11, ≥ 10 publicate sau clasificate `non_prose`; (c) nicio regulă de verificare slăbită.
+- **Rezultatul măsurătorii pre-înregistrate (2026-09-21, scratch, 11 documente, cod și prompt v6).** `low` / `medium`: publicate (integral + parțial) 10 / 10; puncte eliminate + documente cu al doilea apel
+  3 + 7 = 10 / 1 + 5 = 6; cost total 0,374 / 0,402 USD (× 1,07; limita 2×); tokeni 107 141 + 13 320 / 96 654 + 17 396 (din care raționament 2 204 / 7 291); apeluri 17 / 15. Toate cele trei criterii îndeplinite ⇒
+  **`medium`** (config `reasoning_effort`, `estimate_output_tokens` 1700 măsurat). Discursul Lane: `non_prose` în ambele rulări. Pe urmă am scos din regula negației minimul de 2 cuvinte comune (o clauză se
+  compară de la un cuvânt comun în sus, ca în regula aprobată) și am refăcut rularea pe `medium` cu codul final: aceea e evaluarea condiției de merge.
 - **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
   `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
   reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).

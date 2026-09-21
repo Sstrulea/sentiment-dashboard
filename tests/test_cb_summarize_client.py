@@ -64,7 +64,7 @@ def test_the_openai_request_is_a_responses_call_with_a_strict_schema_and_no_temp
     assert p["url"] == "https://api.openai.com/v1/responses" and p["timeout"] == OAI.timeout_s
     assert p["headers"] == {"Authorization": f"Bearer {KEY}", "Content-Type": "application/json"}
     assert p["json"] == {"model": "gpt-5.6-terra", "input": [{"role": "developer", "content": "SYSTEM"}, {"role": "user", "content": "hello"}],
-                         "max_output_tokens": OAI.max_output_tokens, "store": False, "reasoning": {"effort": "low"},
+                         "max_output_tokens": OAI.max_output_tokens, "store": False, "reasoning": {"effort": "medium"},
                          "text": {"format": {"type": "json_schema", "name": SCHEMA_NAME, "strict": True, "schema": OUTPUT_SCHEMA}}}
     assert "temperature" not in p["json"]                                                                              # a reasoning model: not sent (see the config)
 

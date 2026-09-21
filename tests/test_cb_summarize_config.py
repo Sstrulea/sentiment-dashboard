@@ -23,7 +23,7 @@ def test_the_provider_the_model_and_its_limits_are_fixed_in_the_config():
     o = raw["providers"]["openai"]
     assert raw["provider"] == "openai" and CFG.provider == "openai" and CFG.model == "gpt-5.6-terra" == o["model"]
     assert CFG.max_output_tokens == o["max_output_tokens"] >= 4000                                                    # reasoning tokens come out of it
-    assert CFG.temperature is None and CFG.reasoning_effort == "low"                                                   # a reasoning model: no temperature (noted in the file), effort instead
+    assert CFG.temperature is None and CFG.reasoning_effort == "medium"                                                   # a reasoning model: no temperature (noted in the file), effort instead
     assert "reasoning model" in CONFIG_PATH.read_text() and "not applicable" in CONFIG_PATH.read_text()
     assert CFG.env_key == "OPENAI_API_KEY" and CFG.api_url == "https://api.openai.com/v1/responses" and CFG.backfill_meetings == 4
     assert CFG.summary_points == (3, 6) and CFG.quotes == (1, 5) and CFG.max_documents > 0 and CFG.max_input_tokens > 0

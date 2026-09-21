@@ -325,8 +325,7 @@ def clauses_of(sentence: str) -> list:
 
 def negation_error(point: str, cited: list, rx: re.Pattern, drop_forms: set, i: int) -> Optional[str]:
     """None when every clause of the point has a negation exactly when the clause of the cited paragraphs that is closest to it has one. The sentences of the cited
-    paragraphs are cut in clauses; the closest clause is the one with the most content words of the point's clause (at least 2, or all of them when it has fewer; on a
-    tie, one that agrees is taken). A negation elsewhere in a long sentence is another clause's business."""
+    paragraphs are cut in clauses; the closest clause is the one with the most content words of the point's clause (on a tie, one that agrees is taken). A negation elsewhere in a long sentence is another clause's business."""
     units = [c for p in cited for x in _SENTENCE.split(p) if x.strip() for c in clauses_of(x)]
     if not units:
         return None
@@ -336,7 +335,7 @@ def negation_error(point: str, cited: list, rx: re.Pattern, drop_forms: set, i: 
             continue
         scored = [(sum(1 for w in words if forms(w) & forms_of_text(x)), x) for x in units]
         top = max(n for n, _ in scored)
-        if top < min(2, len(words)):
+        if top == 0:                                                       # nothing in common with any clause: nothing to compare
             continue
         best = [x for n, x in scored if n == top]
         mine = has_negation(mine_text, rx)

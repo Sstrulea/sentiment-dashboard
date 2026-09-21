@@ -388,7 +388,7 @@ def test_the_command_line_takes_the_reasoning_effort_and_a_scratch_run_and_docum
     seen = {}
     monkeypatch.setattr("src.cb_summarize.run.run_summaries", lambda p, t, **kw: seen.update(kw, summaries=str(p.summaries)) or R.SummariesReport())
     cc.main(["--data-dir", str(paths.dir), "--stage", "summaries", "--summaries-doc", f"{FED_KEY},USD:statement:2026-07-29", "--summaries-doc", "USD:speech:a89335cf0468"])
-    assert seen["only"] == {FED_KEY, "USD:statement:2026-07-29", "USD:speech:a89335cf0468"} and seen["cfg"].reasoning_effort == "low" and seen["persist"] is True
+    assert seen["only"] == {FED_KEY, "USD:statement:2026-07-29", "USD:speech:a89335cf0468"} and seen["cfg"].reasoning_effort == "medium" and seen["persist"] is True
     assert seen["summaries"] == str(paths.summaries)
     cc.main(["--data-dir", str(paths.dir), "--stage", "summaries", "--summaries-effort", "medium", "--summaries-scratch", "--summaries-doc", FED_KEY])
     assert seen["cfg"].reasoning_effort == "medium" and seen["persist"] is False and seen["state"] == {}
@@ -412,17 +412,18 @@ def test_the_effort_reaches_the_request_of_the_model(paths):
     body, _h = CL.OpenAIClient(cfg, "k", session=object()).build("system", [{"role": "user", "content": "x"}], {"type": "object"})
     assert body["reasoning"] == {"effort": "medium"}
     body, _h = CL.OpenAIClient(CFG, "k", session=object()).build("system", [{"role": "user", "content": "x"}], {"type": "object"})
-    assert body["reasoning"] == {"effort": "low"}
+    assert body["reasoning"] == {"effort": "medium"} == {"effort": CFG.reasoning_effort}                                              # the chosen one (config comment: the pre-registered rule)
 
 
 # --- the edges (found by mutating the checks) ------------------------------------------------------------------------------------------------------------------
 
-def test_a_clause_of_the_point_is_compared_only_when_it_shares_two_content_words_or_all_of_them():
+def test_a_clause_of_the_point_is_compared_as_soon_as_it_shares_one_content_word_with_a_clause():
     rx = V.negation_regex(CFG.negations)
     cited = ["Growth is not bright across the sectors of the economy."]
-    assert V.negation_error("The weather is bright and sunny.", cited, rx, set(), 1) is None                    # one word in common of three: nothing to compare
-    assert V.negation_error("Growth", cited, rx, set(), 1) is not None                                          # a clause of one word: that one word is enough
-    assert V.negation_error("Growth is bright.", cited, rx, set(), 1) is not None                               # two words in common: compared (the source says "not bright")
+    assert V.negation_error("The weather is bright and sunny.", cited, rx, set(), 1) is not None                # one word in common of three: the closest clause is compared (no minimum)
+    assert V.negation_error("Growth", cited, rx, set(), 1) is not None
+    assert V.negation_error("Growth is bright.", cited, rx, set(), 1) is not None                               # (the source says "not bright")
+    assert V.negation_error("The weather is fine and sunny.", cited, rx, set(), 1) is None                      # nothing in common with any clause: nothing to compare
 
 
 def test_a_clause_is_also_cut_at_which_without_a_comma_and_is_trimmed():

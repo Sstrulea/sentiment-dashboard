@@ -11,12 +11,13 @@ providers:
     max_output_tokens: 8000           # a reasoning model spends part of this on reasoning tokens: a summary itself is ~1 000
     temperature: null                 # NOT SENT: gpt-5.6-terra is a reasoning model, "Temperature parameter: not applicable" (model page, 2026-09-21). Determinism here comes
                                       # from reasoning_effort + the strict schema + the verifier, the only gate that writes. (A model that supports it: set 0 here.)
-    reasoning_effort: low             # none | low | medium | high | xhigh | max (model page): a factual restatement does not need more
+    reasoning_effort: medium          # none | low | medium | high | xhigh | max (model page). CHOSEN 2026-09-21 by a rule written before the measurement (11 documents, same code and prompt v6):
+                                      # medium published as many documents as low (10 / 10), had fewer removed points + second calls (6 / 10) and cost 1.07x (limit 2x)
     timeout_s: 180
     transport_retries: 2              # 429 / 5xx / timeouts only; the validation retry is separate and is exactly one
     chars_per_token: 4                # only to estimate the input size before a call (the response carries the real usage); the usual 4 characters of English per token
-    estimate_output_tokens: 400       # for the dry-run estimate only. MEASURED on the first real runs (2026-09-21, effort low): 335 output tokens per statement summary (4 calls), ~430 per attempt on a
-                                      # transcript and ~400 on a speech, reasoning tokens included (0 / 73 / 108 in all) - the median is rounded up
+    estimate_output_tokens: 1700      # for the dry-run estimate only. MEASURED (2026-09-21, effort medium, prompt v6, 10 documents summarised, 15 calls): 17 396 output tokens, reasoning included
+                                      # (7 291 of them reasoning) = 1 740 per document, retries included; at effort low it was 1 332 per document (13 320 / 10)
     pricing_usd_per_mtok:             # standard tier, short context, per million tokens
       input: 2.0
       cached_input: 0.2               # not used here (no caching)
