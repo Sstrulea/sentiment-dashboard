@@ -18,7 +18,7 @@ from src.cb_summarize.client import APIError, RecordedClient, Response
 from src.cb_summarize.config import load as load_cfg
 
 from .cb_docs_helpers import FakeSession
-from .cb_sum_helpers import FED_KEY, GOOD_FED, MIN_V, NEXT_STMT_V, NOW, STMT_V, TODAY, collected_dir, dumps, fresh_copy, responder_generic, variant
+from .cb_sum_helpers import FED_KEY, GOOD_FED, GOOD_TEXTS, MIN_V, NEXT_STMT_V, NOW, STMT_V, TODAY, collected_dir, dumps, fresh_copy, responder_generic, variant
 from .test_cb_docs_collect import fetcher
 
 CFG = load_cfg()
@@ -79,6 +79,11 @@ def test_a_good_output_is_stored_with_the_contract(paths):
     doc = dst.load_documents(paths)[(FED_KEY,)]
     assert rec["model"] == "gpt-5.6-terra" and rec["provider"] == "openai" and rec["prompt_version"] == STMT_V and rec["generated_at"] == "2026-09-21T08:00:00Z"
     assert rec["input_sha256"] == doc["text_sha256"]
+    assert [p["text"] for p in rec["summary"]] == GOOD_TEXTS and all(set(p) == {"text", "evidence"} for p in rec["summary"])
+    for p in rec["summary"]:                                                                                            # the evidence: paragraphs, the verbatim fragment, where it is
+        ev = p["evidence"]
+        assert set(ev) == {"paragraphs", "fragment", "paragraph", "start", "end", "coverage"} and doc["text"][ev["start"]:ev["end"]] == ev["fragment"] and ev["coverage"] == 1.0
+        assert ev["paragraph"] in ev["paragraphs"] and ev["fragment"] in doc["text"].split("\n")[ev["paragraph"] - 1]
     assert len(rec["summary"]) == 3 and 1 <= len(rec["quotes"]) <= 5 and rec["coverage"]["paragraphs"] == [1, 2, 3, 4] and rec["coverage"]["truncated"] is False
     assert all(set(q) == {"paragraph", "text", "start", "end"} and doc["text"][q["start"]:q["end"]] == q["text"] for q in rec["quotes"])
     assert rec["numbers"] and all(doc["text"][n["start"]:n["end"]].strip() == n["source_text"] for n in rec["numbers"])
@@ -137,6 +142,13 @@ BAD = {
                                       "the word 'signals' of summary point 3 is not in the document"),
     "too long": (dumps(variant(summary=GOOD_FED["summary"][:2] + ["The Committee " + "states that inflation remains elevated " * 30])), "characters; allowed 20-400"),
     "invalid json": ('Here is the summary: {"summary": [', "the output is not valid JSON"),
+    "unsupported claim": (dumps(variant(summary=GOOD_FED["summary"][:2] + [{"text": "The Committee will begin buying government bonds and mortgage securities at a faster pace.",
+                                                                            "evidence": {"paragraphs": [2], "fragment": GOOD_FED["summary"][1]["evidence"]["fragment"]}}])),
+                          "summary point 3 is not supported by the paragraph(s) it cites [2]"),
+    "altered fragment": (dumps(variant(summary=[GOOD_FED["summary"][0], {"text": GOOD_TEXTS[1], "evidence": {"paragraphs": [2], "fragment": GOOD_FED["summary"][1]["evidence"]["fragment"].replace("percent", "per cent")}},
+                                                GOOD_FED["summary"][2]])),
+                         "the evidence fragment of summary point 2 is not verbatim in the paragraph(s) it cites [2]"),
+    "no evidence": (dumps(variant(summary=[{"text": t} for t in GOOD_TEXTS])), "needs 'evidence'"),
 }
 
 
@@ -538,3 +550,95 @@ def test_the_command_line_can_narrow_the_stage_to_banks_types_and_documents(path
     seen.clear()
     cc.main(["--data-dir", str(paths.dir), "--stage", "summaries"])
     assert seen["banks"] is None and seen["types"] is None and seen["only"] is None                                   # nothing narrowed: everything that is due
+
+
+# --- named speakers and the grounding of a speech ------------------------------------------------------------------------------------------------
+
+ROSTER = {"people": [{"name": "Christopher J. Waller", "currency": "USD"}, {"name": "Michelle W. Bowman", "currency": "USD"}, {"name": "Kazuo Ueda", "currency": "JPY"},
+                     {"name": "Jo Li", "currency": "USD"}]}
+
+
+def test_the_speakers_of_a_document_are_its_banks_roster_its_speaker_and_the_names_it_gives_after_a_title():
+    text = "Chairman Warsh opened. Governor Cook's remarks followed. Then Mr. Smith and Dr. Nguyen spoke, and Bob agreed."
+    got = R.speakers_of({"currency": "USD", "speaker": "Philip N. Jefferson"}, text, ROSTER)                          # Jefferson: only as the speaker of the document
+    assert got == ("bowman", "cook", "jefferson", "nguyen", "smith", "waller", "warsh")                                  # not Ueda (another bank), not "Jo Li" (2 letters), not "Bob" (no title)
+    assert R.speakers_of({"currency": "JPY", "speaker": ""}, "nothing here", ROSTER) == ("ueda",)
+    assert R.speakers_of({"currency": "USD"}, "", None) == ()
+
+
+SPEECH_PARAS = ["Good morning. I am pleased to be here to talk about the economy and the outlook for monetary policy in the coming year, and I thank the organisers for the invitation.",
+                "I expect inflation to move down as the labor market cools, and I see the risks to employment as more important than a month ago.",
+                "Inflation is likely to remain above the 2 percent goal for some time, and I support a cautious approach to the next steps in policy."]
+SPEECH_OUT = {"summary": [{"text": "Waller talks about the economy and the outlook for monetary policy.", "evidence": {"paragraphs": [1], "fragment": "talk about the economy and the outlook for monetary policy"}},
+                          {"text": "Waller expects inflation to move down as the labor market cools.", "evidence": {"paragraphs": [2], "fragment": "I expect inflation to move down as the labor market cools,"}},
+                          {"text": "Governor Waller says inflation is likely to remain above the 2 percent goal for some time.",
+                           "evidence": {"paragraphs": [3], "fragment": "Inflation is likely to remain above the 2 percent goal for some time,"}}],
+              "quotes": [{"paragraph": 2, "text": "I expect inflation to move down as the labor market cools"}], "coverage": [1, 2, 3]}
+
+
+def speech_run(client, speakers, cfg=CFG):
+    from src.cb_summarize import source as SRC
+    doc = {"currency": "USD", "type": "speech", "url": "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm", "speaker": "Christopher J. Waller"}
+    src = SRC.from_paragraphs(SPEECH_PARAS, "html-selector", 10**6, min_chars=1)
+    return R.summarise(client, cfg, PR.load("speech"), doc, src, speakers=speakers)
+
+
+def test_a_speech_that_says_i_expect_is_summarised_as_waller_expects_at_the_first_attempt():
+    c = RecordedClient([dumps(SPEECH_OUT)])
+    ok, usage, errs = speech_run(c, R.speakers_of({"currency": "USD", "speaker": "Christopher J. Waller"}, "\n".join(SPEECH_PARAS), ROSTER))
+    assert ok.ok and errs == [] and usage["attempts"] == 1 and len(c.calls) == 1
+    assert [p["evidence"]["paragraph"] for p in ok.points] == [1, 2, 3]
+
+
+def test_the_same_output_without_a_known_speaker_fails_twice_and_the_feedback_says_who_may_be_named():
+    c = RecordedClient([dumps(SPEECH_OUT), dumps(SPEECH_OUT)])
+    ok, usage, errs = speech_run(c, ())
+    assert ok is None and usage["attempts"] == 2
+    assert any("'expects' of summary point 2 is not attributed to the bank or to a named speaker" in e for e in errs)
+    assert "named speaker" in c.calls[1][1][2]["content"]
+
+
+def test_a_retry_after_an_unsupported_claim_carries_the_missing_words():
+    bad = json.loads(dumps(SPEECH_OUT))
+    bad["summary"][0]["text"] = "Waller talks about the economy, the outlook for monetary policy and the bond purchases of the central bank."
+    c = RecordedClient([dumps(bad), dumps(SPEECH_OUT)])
+    ok, usage, errs = speech_run(c, ("waller",))
+    assert ok.ok and usage["attempts"] == 2
+    fb = c.calls[1][1][2]["content"]
+    assert "summary point 1 is not supported by the paragraph(s) it cites [1]" in fb and "'bond'" in fb and "'purchases'" in fb
+
+
+def with_point(i, **changes):
+    out = json.loads(dumps(SPEECH_OUT))
+    out["summary"][i] = dict(out["summary"][i], **changes)
+    return dumps(out)
+
+
+@pytest.mark.parametrize("what, output, cfg_over, needle", [
+    ("min_support", with_point(0, text="Waller talks about the economy and the outlook for monetary policy in the coming year today."), {"min_support": 1.0}, "100% needed"),
+    ("fragment_words", with_point(0, evidence={"paragraphs": [1], "fragment": "talk about the economy and"}), {"fragment_words": (6, 40)}, "has 5 words; allowed 6-40"),
+    ("evidence_paragraphs", with_point(0, evidence={"paragraphs": [1, 2], "fragment": "talk about the economy and the outlook"}), {"evidence_paragraphs": (1, 1)}, "cites 2 paragraphs as evidence; allowed 1-1"),
+    ("attribution_words", with_point(0, text="Waller noted the economy and the outlook for monetary policy."), {"attribution_words": ()}, "'noted'"),
+])
+def test_the_run_applies_the_grounding_rules_of_the_config(what, output, cfg_over, needle):
+    ok, usage, errs = speech_run(RecordedClient([output]), ("waller",))                                                # the configured rules: accepted
+    assert ok is not None and ok.ok, errs
+    strict = dataclasses.replace(CFG, **cfg_over)
+    c = RecordedClient([output, output])
+    ok, usage, errs = speech_run(c, ("waller",), cfg=strict)
+    assert ok is None and any(needle in e for e in errs), (what, errs)
+
+
+def test_the_run_gives_each_document_the_speakers_of_its_own_bank_and_its_own_speaker(paths, monkeypatch):
+    seen = {}
+    real = R.summarise
+
+    def spy(client, cfg, prompt, doc, src, speakers=()):
+        seen[doc["doc_id"]] = speakers
+        return real(client, cfg, prompt, doc, src, speakers=speakers)
+    monkeypatch.setattr(R, "summarise", spy)
+    go(paths, RecordedClient(responder=responder_generic), cfg=dataclasses.replace(CFG, max_documents=60, max_input_tokens=10**7), types={"speech"}, banks={"JPY"})
+    assert seen and all("ueda" in sp and "masu" in sp for sp in seen.values())                                          # the roster of the bank
+    docs = dst.load_documents(paths)
+    takata = next(k for k in seen if docs[(k,)]["speaker"] == "Hajime Takata")
+    assert "takata" in seen[takata] and not {"waller", "powell", "warsh"} & set(seen[takata])                          # no member of another bank

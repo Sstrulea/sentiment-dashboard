@@ -80,6 +80,18 @@ def test_the_output_schema_is_strict_and_matches_what_the_verifier_reads():
     check(OUTPUT_SCHEMA)
     assert set(OUTPUT_SCHEMA["properties"]) == {"summary", "quotes", "coverage"}
     assert set(OUTPUT_SCHEMA["properties"]["quotes"]["items"]["properties"]) == {"paragraph", "text"}
+    point = OUTPUT_SCHEMA["properties"]["summary"]["items"]                                                            # every point carries its evidence
+    assert set(point["properties"]) == {"text", "evidence"} and point["properties"]["text"]["type"] == "string"
+    assert set(point["properties"]["evidence"]["properties"]) == {"paragraphs", "fragment"}
+    assert point["properties"]["evidence"]["properties"]["paragraphs"] == {"type": "array", "items": {"type": "integer"}}
+    assert point["properties"]["evidence"]["properties"]["fragment"] == {"type": "string"}
+
+
+def test_the_grounding_and_vocabulary_settings_are_the_approved_ones():
+    assert CFG.evidence_paragraphs == (1, 3) and CFG.fragment_words == (5, 40) and CFG.min_support == 0.85
+    assert {"states", "said", "noted", "reported"} <= set(CFG.attribution_words)
+    assert {"likely", "expect", "expects", "expected", "expecting", "signal", "signals", "signalled", "suggest", "suggests", "suggested"} <= set(CFG.attributed_words)
+    assert set(CFG.blocked_words) == {"hawkish", "dovish", "bullish", "bearish", "paves the way", "paved the way", "paving the way"}
 
 
 # --- prompts -----------------------------------------------------------------------------------------------------------------------------
@@ -87,7 +99,7 @@ def test_the_output_schema_is_strict_and_matches_what_the_verifier_reads():
 def test_every_document_type_has_a_prompt_with_a_pinned_version():
     reg = PR.registry()
     current = {PR.load(k).version for k in PR.KINDS}
-    assert current == {"statement-v3", "transcript-v3", "minutes-v3", "speech-v3"} and current <= set(reg)
+    assert current == {"statement-v4", "transcript-v4", "minutes-v4", "speech-v4"} and current <= set(reg)
     for k in PR.KINDS:
         p = PR.load(k)
         assert p.version.startswith(k) and re.fullmatch(r"[a-z]+-v\d+", p.version) and reg[p.version] == p.sha256 == hashlib.sha256(p.system.encode()).hexdigest()
@@ -96,9 +108,9 @@ def test_every_document_type_has_a_prompt_with_a_pinned_version():
 
 def test_the_registry_keeps_the_versions_that_were_replaced_and_they_differ_from_the_current_ones():
     reg = PR.registry()
-    assert {k for k in reg if k.endswith(("-v1", "-v2"))} == {f"{k}-v{n}" for k in PR.KINDS for n in (1, 2)}              # history: a summary made under v1 / v2 names a known prompt
+    assert {k for k in reg if k.endswith(("-v1", "-v2", "-v3"))} == {f"{k}-v{n}" for k in PR.KINDS for n in (1, 2, 3)}   # history: a summary made under v1-v3 names a known prompt
     for k in PR.KINDS:
-        assert len({reg[f"{k}-v1"], reg[f"{k}-v2"], reg[PR.load(k).version]}) == 3                                     # every version is another prompt
+        assert len({reg[f"{k}-v1"], reg[f"{k}-v2"], reg[f"{k}-v3"], reg[PR.load(k).version]}) == 4                      # every version is another prompt
 
 
 def test_editing_a_prompt_without_a_new_version_is_caught(tmp_path):
@@ -115,7 +127,8 @@ def test_the_prompt_states_the_factual_rules_and_every_listed_word_of_the_config
     for w in CFG.blocked_words + CFG.attributed_words:
         assert w in system, w
     for phrase in ("Factual only", "never add, subtract, round or compute", "character for character", "single JSON object", "3 to 6 summary points", "1 to 5 quotes",
-                   "only when the document itself uses that same word", "attribute it to the bank", "never in your own voice", "a strict JSON schema enforces the shape"):
+                   "only when the document itself uses that word", "in any of its forms", "to the bank or to a named speaker", "never in your own voice", "a strict JSON schema enforces the shape",
+                   "Evidence for every summary point", "1 to 3 paragraph numbers", "5 to 40 words", "content words"):
         assert phrase in system, phrase
     assert "hawkish" in system and "do not forecast" in system.lower() and "do not interpret" in system.lower()
     assert set(CFG.blocked_words).isdisjoint(CFG.attributed_words) and {"hawkish", "dovish", "bullish", "bearish", "paves the way"} <= set(CFG.blocked_words)

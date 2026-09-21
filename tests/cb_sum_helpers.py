@@ -10,6 +10,8 @@ from pathlib import Path
 
 from src import cb_collect as cc
 from src.cb_docs import collect as C
+from src.cb_summarize import verify as V
+from src.cb_summarize.config import load as _load_cfg
 
 from .cb_docs_helpers import FakeSession
 from .test_cb_docs_collect import ENGINE_FIX, data_dir, fetcher
@@ -24,11 +26,52 @@ STMT_V = _PR.load("statement").version
 MIN_V = _PR.load("minutes").version
 NEXT_STMT_V = "statement-v" + str(int(STMT_V.rsplit("v", 1)[1]) + 1)
 
+_CFG = _load_cfg()
+DROP = V.forms_of_text(" ".join(_CFG.attribution_words + _CFG.attribution_subjects))         # what the verifier does not count as a claim
+
+
+def best_evidence(text: str, paras: list) -> dict:
+    """Evidence for a point written in a test: the paragraphs (at most 3) that cover most of its content words, and a verbatim window of 8 words from the first of
+    them, starting where the point's first content word occurs. Tests about other checks use it so that grounding does not get in their way."""
+    words = V.content_words(text, DROP)
+    order = sorted(range(len(paras)), key=lambda k: -len([w for w in set(words) if V.forms(w) & V.forms_of_text(paras[k])]))
+    chosen = order[:1]
+    for k in order[1:3]:
+        if V.support(text, [paras[c] for c in chosen], DROP)[0] >= 0.85:
+            break
+        chosen.append(k)
+    body = paras[chosen[0]]
+    m = re.search(r"\S+(?:\s+\S+){4,7}", body)
+    at = 0
+    for w in words:
+        hit = re.search(r"\b" + re.escape(w[:5]), body, flags=re.I)
+        if hit:
+            at = hit.start()
+            break
+    frag = re.match(r"\S+(?:\s+\S+){4,7}", body[at:]) or m
+    return {"paragraphs": [c + 1 for c in chosen], "fragment": frag.group(0) if frag else body}
+
+
+def wrap_points(points: list, paras: list) -> list:
+    """Strings become points with automatic evidence; anything else (a dict, a malformed item) is kept as it is."""
+    return [{"text": p, "evidence": best_evidence(p, paras)} if isinstance(p, str) else p for p in points]
+
+
+FED_PARAS = ["The Federal Open Market Committee approved the following statement for release by a 12 \u2013 0 vote:",
+             "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate. "
+             "The Committee is continuing its policy of maintaining ample reserves in the banking system.",
+             "Economic activity is expanding at a solid pace. While uncertainty remains elevated owing, in part, to geopolitical developments, domestic spending has been resilient. "
+             "Productivity growth is strong, and capital investment is robust. Job gains have kept pace with the workforce, and the unemployment rate has changed little.",
+             "Inflation remains elevated. Today's policy action will support a timelier return to the Committee's 2 percent goal. The Committee will deliver price stability."]
+
 GOOD_FED = {
     "summary": [
-        "The Federal Open Market Committee approved the statement by a 12 – 0 vote.",
-        "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent.",
-        "The Committee states that economic activity is expanding at a solid pace and that inflation remains elevated.",
+        {"text": "The Federal Open Market Committee approved the statement by a 12 \u2013 0 vote.",
+         "evidence": {"paragraphs": [1], "fragment": "approved the following statement for release by a 12 \u2013 0 vote:"}},
+        {"text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent.",
+         "evidence": {"paragraphs": [2], "fragment": "raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"}},
+        {"text": "The Committee states that economic activity is expanding at a solid pace and that inflation remains elevated.",
+         "evidence": {"paragraphs": [3, 4], "fragment": "Economic activity is expanding at a solid pace."}},
     ],
     "quotes": [
         {"paragraph": 2, "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"},
@@ -36,6 +79,7 @@ GOOD_FED = {
     ],
     "coverage": [1, 2, 3, 4],
 }
+GOOD_TEXTS = [p["text"] for p in GOOD_FED["summary"]]
 
 
 def dumps(obj) -> str:
@@ -43,8 +87,10 @@ def dumps(obj) -> str:
 
 
 def variant(**changes) -> dict:
-    """GOOD_FED with some keys replaced."""
+    """GOOD_FED with some keys replaced; `summary` may be given as plain strings (evidence is then made automatically from the Fed statement of 16 Sep)."""
     out = json.loads(json.dumps(GOOD_FED))
+    if "summary" in changes and isinstance(changes["summary"], list):
+        changes = dict(changes, summary=wrap_points(changes["summary"], FED_PARAS))
     out.update(changes)
     return out
 
@@ -55,13 +101,34 @@ def paragraphs_of(messages: list) -> list:
     return [m.group(2) for m in re.finditer(r"^\[(\d+)\] (.*)$", body, flags=re.M)]
 
 
+VOCAB = V.forms_of_text(" ".join(_CFG.attributed_words), adverbs=False)
+BLOCKED_RX = V.blocked_regex(_CFG.blocked_words)
+
+
+def clean_window(body: str, size: int = 10):
+    """The first `size` words of a paragraph that use no word of the soft vocabulary and no blocked word (a real document is full of "likely" and "expects";
+    the generic output must not depend on which one it is shown). None when the paragraph has no such window."""
+    toks = body.split()
+    for at in range(0, max(1, len(toks) - size + 1)):
+        w = toks[at:at + size]
+        text = " ".join(w)
+        if len(w) >= 5 and not (V.forms_of_text(text, adverbs=False) & VOCAB) and not BLOCKED_RX.search(text):
+            return at, w
+    return None
+
+
 def generic_output(messages: list) -> str:
-    """A valid output for whatever document is shown: the opening of its first substantial paragraph as the one quote, no numbers, no direction words."""
+    """A valid output for whatever document is shown: three points that say "The Committee says <ten words of one of its paragraphs>" (so the evidence is verbatim and
+    fully covered), the opening of the first substantial paragraph as the one quote. No direction words, no soft words."""
     paras = paragraphs_of(messages)
-    i = next(k for k, p in enumerate(paras) if len(p) >= 60)
-    return dumps({"summary": ["The document sets out the matters listed in its opening paragraphs.", "It is an official publication of the bank named in the heading.",
-                              "The points below are taken from its text and quoted where they are worded."],
-                  "quotes": [{"paragraph": i + 1, "text": paras[i][:40]}], "coverage": [i + 1]})
+    big = [k for k, p in enumerate(paras) if len(p) >= 80 and clean_window(p)] or [k for k, p in enumerate(paras) if clean_window(p)] or list(range(len(paras)))
+    picks = [big[n % len(big)] for n in range(3)]
+    points = []
+    for k in picks:
+        at, w = clean_window(paras[k]) or (0, paras[k].split()[:10])
+        frag = " ".join(w[:8])
+        points.append({"text": "The Committee says " + " ".join(w), "evidence": {"paragraphs": [k + 1], "fragment": frag}})
+    return dumps({"summary": points, "quotes": [{"paragraph": picks[0] + 1, "text": paras[picks[0]][:40]}], "coverage": sorted({k + 1 for k in picks})})
 
 
 def responder_generic(system: str, messages: list) -> str:

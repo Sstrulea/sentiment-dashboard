@@ -381,13 +381,22 @@ def summary_slot(ctx: Context, doc: Optional[dict]) -> dict:
     return {"status": "pending", "label": "summary pending", "doc_id": doc["doc_id"], "reason": "not generated yet"}
 
 
-def summary_json(rec: dict) -> dict:
-    """What the page shows of a stored summary. The quotes carry a link to the bank's own page with a text fragment (HTML sources only: a PDF has none)."""
-    html = rec.get("format") == "html"
+def summary_json(rec: dict, text: Optional[str] = None) -> dict:
+    """What the page shows of a stored summary. Each point carries its evidence (the cited paragraphs and the verbatim fragment, linked to the bank's own page with a
+    text fragment - HTML sources only); the paragraphs' words are added only for a document whose text is committed anyway (`text`: a statement). The quotes link the same way."""
+    html = rec.get("format") == "html" and "#" not in rec["url"]
+    paras = text.split("\n") if text else None
+    pts, evidence = [], []
+    for p in rec["summary"]:
+        pts.append(p["text"] if isinstance(p, dict) else p)                              # (a summary made before the evidence existed has plain strings)
+        ev = p.get("evidence") if isinstance(p, dict) else None
+        evidence.append(None if ev is None else {
+            "paragraphs": ev["paragraphs"], "paragraph": ev["paragraph"], "fragment": ev["fragment"], "coverage": ev.get("coverage"),
+            "href": rec["url"] + text_fragment(ev["fragment"]) if html else rec["url"],
+            "texts": {str(n): paras[n - 1] for n in ev["paragraphs"]} if paras else None})
     return {"doc_id": rec["doc_id"], "type": rec["type"], "label": TYPE_LABEL.get(rec["type"], rec["type"]), "title": rec["title"], "url": rec["url"],
-            "points": rec["summary"], "changes": rec["changes_vs_previous"],
-            "quotes": [{"text": q["text"], "paragraph": q["paragraph"], "href": rec["url"] + text_fragment(q["text"]) if html and "#" not in rec["url"] else rec["url"]}
-                       for q in rec["quotes"]],
+            "points": pts, "evidence": evidence, "changes": rec["changes_vs_previous"],
+            "quotes": [{"text": q["text"], "paragraph": q["paragraph"], "href": rec["url"] + text_fragment(q["text"]) if html else rec["url"]} for q in rec["quotes"]],
             "provider": rec.get("provider"), "model": rec["model"], "prompt_version": rec["prompt_version"], "generated": rec["generated_at"][:10], "note": SUMMARY_NOTE,
             "truncated": bool(rec["coverage"]["truncated"]), "paragraphs_covered": rec["coverage"]["paragraphs"]}
 
@@ -430,7 +439,8 @@ def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
     speeches = speeches[:30]
     shown = ({it["summary"]["doc_id"] for t in timeline for it in t["follow_up"] if it.get("summary", {}).get("status") == "ready"}
              | {t["statement"]["doc_id"] for t in timeline if t["statement"]} | {x["doc_id"] for x in speeches})
-    summaries = {k: summary_json(ctx.summaries[k]) for k in sorted(shown) if k in ctx.summaries}          # only what this page shows
+    text_of = {d["doc_id"]: d["text"] for d in mine if d["text"]}
+    summaries = {k: summary_json(ctx.summaries[k], text_of.get(k)) for k in sorted(shown) if k in ctx.summaries}          # only what this page shows
     return {"latest": latest, "timeline": timeline, "speeches": speeches, "n_speeches": len(speeches), "summaries": summaries, "summary_note": SUMMARY_NOTE,
             "manual_only": ccy == "NZD", "warnings": [w for w in ctx.doc_warnings if w.startswith(ccy + " ")]}
 

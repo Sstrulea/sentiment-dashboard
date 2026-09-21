@@ -73,6 +73,25 @@ limits:                               # the automatic check before anything is w
   quotes: [1, 5]
   quote_chars: [15, 500]
   summary_total_chars: 1800
+grounding:                            # every summary point carries evidence; the verifier checks it (the only gate that writes)
+  evidence_paragraphs: [1, 3]         # a point cites 1-3 paragraphs
+  fragment_words: [5, 40]             # ... and one fragment of 5-40 words, verbatim, from one of them
+  min_support: 0.85                   # >= 85% of the point's content words (alphabetic, no stopwords, no attribution vocabulary, stemmed) must be in the cited paragraphs
+  attribution_words:                  # not claims: who says it (the Committee / Bank / Board / Governor / Chair ... states, said, noted, reported); speakers' names are added per document
+    - states
+    - state
+    - stated
+    - said
+    - says
+    - noted
+    - notes
+    - reported
+    - reports
+    - described
+    - describes
+    - explained
+    - explains
+    - according
 blocked_words:                        # direction / evaluation vocabulary: never in a summary point, whatever the document says (a quote is the bank's own words: not checked)
   - hawkish
   - dovish
@@ -82,8 +101,11 @@ blocked_words:                        # direction / evaluation vocabulary: never
   - paved the way
   - paving the way
 attributed_words:                     # allowed in a summary point ONLY when the document itself uses the same word AND the point attributes it to the bank
-  - likely                            # ("The Committee expects ..."): banks write "expects", "is likely", "suggests" all the time, and reporting that is not an opinion
+  - likely                            # ("The Committee expects ..."): banks write "expects", "is likely", "suggests" all the time, and reporting that is not an opinion.
+  - expect                            # The document's own word may be in another form (a speech says "I expect", the point says "Waller expects"): forms are matched.
   - expects
+  - expected
+  - expecting
   - signals
   - signal
   - signalled

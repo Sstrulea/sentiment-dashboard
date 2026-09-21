@@ -7,13 +7,16 @@ Everything the run needs from outside (HTTP, the model) is passed in: tests give
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from typing import Optional
 
 from .. import cb_datasets as ds
+from ..cb_docs import parse as DP
 from ..cb_docs import sources as S
 from ..cb_docs import store as dst
+from ..cb_docs.collect import load_roster
 from ..cb_docs.http import Fetcher
 from . import changes as CH
 from . import prompts as PR
@@ -98,10 +101,24 @@ def _record(doc: dict, prompt: PR.Prompt, src: SRC.Source, ok: V.Verified, chang
         "provider": cfg.provider, "model": cfg.model, "prompt_version": prompt.version, "generated_at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
         "input_sha256": src.sha256,
         "source": {"method": src.method, "chars": src.chars_total, "chars_sent": src.chars_sent, "paragraphs_sent": len(src.paragraphs), "truncated": src.truncated},
-        "summary": ok.summary, "quotes": ok.quotes, "changes_vs_previous": changes, "numbers": ok.numbers,
+        "summary": ok.points, "quotes": ok.quotes, "changes_vs_previous": changes, "numbers": ok.numbers,
         "coverage": {"paragraphs": ok.coverage, "paragraphs_sent": len(src.paragraphs), "truncated": src.truncated},
         "usage": usage,
     }
+
+
+TITLED_NAME = re.compile(r"\b(?:Chair(?:man|woman|person)?|Vice[- ]Chair(?:man)?|Governor|Deputy Governor|President|Mr|Ms|Mrs|Dr)\.?\s+([A-Z\u00c0-\u017f][\w\u2019'\-]+)")
+
+
+def speakers_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
+    """The surnames a point may attribute a statement to, besides the bank and its bodies: the members of the document's bank (config/cb_roster.yaml), the speaker of
+    a speech, and every name the document itself gives after a title ("Chairman Warsh", "Governor Waller")."""
+    names = {DP.surname(p["name"]) for p in (roster or {}).get("people", []) if p.get("currency") == doc["currency"]}
+    if doc.get("speaker"):
+        names.add(DP.surname(doc["speaker"]))
+    for m in TITLED_NAME.finditer(text):
+        names.add(re.sub(r"[\u2019']s$", "", m.group(1)).lower())
+    return tuple(sorted(n for n in names if len(n) >= 3))
 
 
 def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> tuple:
@@ -110,7 +127,7 @@ def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> t
     return chars_in // cfg.chars_per_token, len(output) // cfg.chars_per_token
 
 
-def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source) -> tuple:
+def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source, speakers: tuple = ()) -> tuple:
     """One document: (Verified, usage, errors_of_the_last_attempt). At most two model calls: the second only with the errors of the first as feedback. A refusal,
     an output cut at the token limit and invalid JSON are all failed attempts (the same one retry); a response without usage is estimated, and says so."""
     user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs)
@@ -140,7 +157,9 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
             obj, errors = V.parse_output(resp.text)
         if obj is not None:
             res = V.verify(obj, src.paragraphs, points=cfg.summary_points, point_chars=cfg.point_chars, quotes=cfg.quotes, quote_chars=cfg.quote_chars,
-                           total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects)
+                           total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects,
+                           speakers=speakers, evidence_paragraphs=cfg.evidence_paragraphs, fragment_words=cfg.fragment_words, min_support=cfg.min_support,
+                           attribution_words=cfg.attribution_words)
             if res.ok:
                 return res, usage, []
             errors = res.errors
@@ -151,7 +170,8 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
 
 
 def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher] = None, env=None, now: Optional[datetime] = None, cfg: Optional[Config] = None,
-                  state: Optional[dict] = None, banks: Optional[set] = None, types: Optional[set] = None, only: Optional[set] = None) -> SummariesReport:
+                  state: Optional[dict] = None, banks: Optional[set] = None, types: Optional[set] = None, only: Optional[set] = None,
+                  roster: Optional[dict] = None) -> SummariesReport:
     from ..cb_collect import load_state, save_state
     cfg = cfg or load_config()
     env = os.environ if env is None else env
@@ -171,6 +191,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
     failures = {k: f for k, f in SS.load_failures(paths.summaries).items()                    # a failure of an older prompt version, or of another provider / model, is history
                 if f["prompt_version"] in current and f.get("provider") == cfg.provider and f.get("model") == cfg.model}
     fetcher = fetcher or Fetcher()
+    roster = roster if roster is not None else load_roster()
     no_text = SS.load_no_text(paths.summaries)
     todo = [d for d in candidates(docs, meetings, today, cfg)                # optional narrowing (--summaries-bank / --summaries-type / a doc_id list): never widens
             if (not banks or d["currency"] in banks) and (not types or d["type"] in types) and (not only or d["doc_id"] in only)]
@@ -211,7 +232,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
             break
         attempted += 1
         try:
-            ok, usage, errors = summarise(client, cfg, prompt, doc, src)
+            ok, usage, errors = summarise(client, cfg, prompt, doc, src, speakers_of(doc, src.text, roster))
         except APIError as e:
             rep.stopped = f"the API stopped the run ({e.kind}): {e.message[:160]}"
             break

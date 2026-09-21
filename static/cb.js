@@ -612,8 +612,29 @@
     }).join("");
     return '<details class="cb-sum-changes"><summary>Changes vs the statement of ' + fmtDate(c.vs_meeting) + " (+" + c.added_words + " / −" + c.removed_words + " words)</summary><ul>" + items + "</ul>" + (c.truncated ? '<div class="cb-sub">first changes only</div>' : "") + "</details>";
   }
+  function markFragment(para, frag) {                               // the paragraph with the evidence fragment highlighted
+    const i = frag ? para.indexOf(frag) : -1;
+    return i < 0 ? esc(para) : esc(para.slice(0, i)) + "<mark>" + esc(frag) + "</mark>" + esc(para.slice(i + frag.length));
+  }
+  function pointHtml(text, ev) {                                    // a summary point; with its evidence: hover shows the source fragment, click the paragraph(s) and the link to the text
+    if (!ev) return "<li>" + esc(text) + "</li>";
+    const paras = ev.paragraphs.map(function (n) { return "\u00b6" + n; }).join(", ");
+    const texts = ev.texts ? ev.paragraphs.map(function (n) { return '<div class="cb-sum-para"><b>\u00b6' + n + "</b> " + markFragment(ev.texts[String(n)] || "", ev.fragment) + "</div>"; }).join("") : "";
+    return '<li class="cb-sum-point" title="Source ' + esc(paras) + ": \u201c" + esc(ev.fragment) + '\u201d (click for the source)"><span class="cb-sum-text" tabindex="0" role="button" aria-expanded="false">' + esc(text) + "</span>" +
+      '<div class="cb-sum-evidence" hidden><div class="cb-sum-frag"><b>Source ' + esc(paras) + "</b> \u201c" + esc(ev.fragment) + '\u201d <a href="' + esc(ev.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">open the source \u2197</a></div>' + texts + "</div></li>";
+  }
+  document.addEventListener("click", function (e) {                 // one delegated handler: a point opens / closes its evidence
+    const t = e.target.closest ? e.target.closest(".cb-sum-text") : null;
+    if (!t || !t.nextElementSibling) return;
+    const box = t.nextElementSibling, open = box.hidden;
+    box.hidden = !open;
+    t.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("cb-sum-text")) { e.preventDefault(); e.target.click(); }
+  });
   function summaryBlock(s) {
-    const pts = '<ul class="cb-sum-points">' + s.points.map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("") + "</ul>";
+    const pts = '<ul class="cb-sum-points">' + s.points.map(function (p, i) { return pointHtml(p, s.evidence && s.evidence[i]); }).join("") + "</ul>";
     const qs = '<div class="cb-sum-quotes">' + s.quotes.map(function (q) {
       return "<blockquote>\u201c" + esc(q.text) + "\u201d " + '<a href="' + esc(q.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">source \u00b6' + q.paragraph + " \u2197</a></blockquote>";
     }).join("") + "</div>";

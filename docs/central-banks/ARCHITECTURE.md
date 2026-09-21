@@ -492,13 +492,13 @@ src/cb_summarize/client.py      o interfață (`complete(system, messages, schem
 src/cb_summarize/schema.py      contractul de ieșire ca JSON schema strictă (structured outputs)
 src/cb_summarize/prompts/       system.md + statement / transcript / minutes / speech .md, fiecare cu `prompt_version:`; versions.json fixează sha256 al fiecărui prompt
 src/cb_summarize/source.py      textul unui document: comunicatele vin din store; restul se descarcă la nevoie (extragerea din 2a, sha identic) și NU se comit
-src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate, coverage
+src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate / atribuite (pe familii de forme, vorbitori numiți), grounding pe fiecare punct, coverage
 src/cb_summarize/changes.py     changes_vs_previous din redline-ul existent (cuvintele scoase / adăugate, per paragraf) — fără model, fără interpretare
 src/cb_summarize/run.py         selecția, plafoanele, apelul, reîncercarea unică, marcajul validation_failed, idempotența; `estimate()` = dry run
 src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (partiții lunare, sortate, octeți deterministe) + failures.json
 ```
 
-- **Contract** (un rând per `doc_id`): `doc_id`, `model`, `prompt_version`, `generated_at`, `input_sha256`, `summary` (3–6 puncte, engleză), `quotes` (1–5, fiecare
+- **Contract** (un rând per `doc_id`): `doc_id`, `model`, `prompt_version`, `generated_at`, `input_sha256`, `summary` (3–6 puncte, engleză; fiecare punct = `text` + `evidence`: `paragraphs` 1–3, `fragment` verbatim 5–40 cuvinte, `paragraph` în care e, `start` / `end`, `coverage` = partea din cuvintele punctului găsită în paragrafele citate), `quotes` (1–5, fiecare
   `text` + `paragraph` + `start` / `end` = offset în textul sursă), `changes_vs_previous` (doar comunicate), `numbers` (fiecare număr din rezumat cu offset-ul lui în
   sursă), `coverage` (paragrafele folosite + dacă documentul a fost tăiat), `usage` (tokeni). Nu se stochează textul sursei.
 - **Verificarea (obligatorie, înainte de scriere).** Citat: verbatim în paragraful pe care îl numește (modelul declară paragraful; offset-ul absolut îl derivă
@@ -506,12 +506,22 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   Unicode. Număr: fiecare număr din puncte trebuie să existe în sursă, comparat pe valoare + unitate compatibilă, cu normalizare de separatori (`1,234`, spațiu
   fără întrerupere / subțire), procente (`%`, `percent`, `per cent`), puncte de bază (`25 bp` = `25bp` = `25 basis points`), fracții (`3-3/4`, `1/4`, `2¼`), semne
   minus; **fără conversie** (`1/4 percentage point` ≠ `25 basis points`) și fără număr pe care documentul nu îl scrie. Vocabular, în două trepte (`config/cb_summaries.yaml`): **mereu interzise** în puncte — hawkish, dovish, bullish, bearish, paves the way (+ paved / paving the way), chiar dacă
-  documentul le folosește; **permise doar atribuite** — likely, expects, signals, suggests (+ variantele) — dacă (1) documentul folosește *același cuvânt* și (2) punctul îl
-  atribuie băncii: un subiect din lista `attribution_subjects` (Committee, Board, Bank, SNB, minutes, statement …) apare mai devreme în aceeași propoziție („The Committee expects …”,
-  „The Board says inflation is likely to remain high”), niciodată în vocea rezumatului. Motivul: comunicatele reale spun „likely”, „expects”, „suggests” aproape în fiecare
-  rând (SNB „currently expects growth of around 1%”, RBA „inflation is likely to remain high”), iar interdicția simplă dădea fals-negative. Verificarea se face doar în puncte,
-  nu în citate (un citat e cuvântul băncii). Regula a schimbat promptul: **`statement-v2` / `transcript-v2` / `minutes-v2` / `speech-v2`** (`versions.json` păstrează și v1). Lungimi: 3–6 puncte de
-  20–400 caractere, ≤ 1800 în total, citate 15–500 caractere. Coverage: paragrafe existente.
+  documentul le folosește; **permise doar atribuite** — likely, expect(s) / expecting, signal(s) / signalled, suggest(s) / suggested (lista din config) — dacă (1) documentul folosește *același
+  cuvânt, în orice formă flexionată* („I expect” într-un discurs permite „Waller expects”; „suggests” permite „suggested”; „like” NU permite „likely”) și (2) punctul îl atribuie
+  băncii sau unui vorbitor numit: un subiect din `attribution_subjects` (Committee, Board, Bank, SNB, minutes …) **sau numele de familie al unui vorbitor din document** — al
+  vorbitorului discursului, al membrilor băncii din roster, ori orice nume dat în text după un titlu („Chair Warsh”, „Governor Waller’s”), cu sau fără titlu — apare mai devreme în
+  aceeași propoziție („The Committee expects …”, „Waller expects real GDP to grow”), niciodată în vocea rezumatului. Motivul: comunicatele reale spun „likely”, „expects”, „suggests”
+  aproape în fiecare rând, iar prima rulare reală a arătat două fals-negative ale regulii (vezi mai jos). Potrivirea pe formă folosește reguli de sufix fără dicționar (`forms()`: -s / -es /
+  -ed / -ing / -ies, literă dublată, -e final), aplicate ambelor părți; „-ly” nu se taie la cuvintele din vocabular. Verificarea se face doar în puncte, nu în citate (un citat e
+  cuvântul băncii). **`statement-v4` / `transcript-v4` / `minutes-v4` / `speech-v4`** (`versions.json` păstrează v1–v3). Lungimi: 3–6 puncte de 20–400 caractere, ≤ 1800 în total, citate 15–500 caractere.
+  Coverage: paragrafe existente.
+- **Grounding pe fiecare punct** (v4). Fiecare punct poartă `evidence`: 1–3 paragrafe citate + un fragment verbatim de 5–40 cuvinte dintr-unul dintre ele. Verificatorul cere: (a) fragmentul
+  e verbatim (caractere exacte) într-un paragraf citat — dacă e într-unul necitat, mesajul spune care; (b) **≥ 85 % din cuvintele-conținut ale punctului se găsesc în paragrafele citate**
+  (config `grounding.min_support`). Cuvânt-conținut = alfabetic, ≥ 3 litere, nu stopword (listă fixă în `verify.py`), nu vocabular de atribuire (`grounding.attribution_words`: states, said, noted,
+  reported … + subiectele băncii + numele vorbitorilor). Cuvintele se potrivesc pe forme (stem minimal, fără dependențe), se numără distinct, iar ce lipsește se listează în feedback
+  („not found: 'bonds', 'mortgage'”). Asta prinde afirmația nesusținută **fără numere și fără cuvinte interzise** (ex.: „The Committee will begin buying government bonds …” cu un fragment real).
+  Picare ⇒ aceeași reîncercare unică, cu motivul; a doua picare ⇒ `validation_failed` cu motivul. **Limite cunoscute:** e o verificare lexicală, nu semantică — o negație („does not remain
+  elevated”) sau o schimbare de subiect cu aceleași cuvinte trece; se prind doar cuvintele care nu sunt în paragrafele citate. Se completează cu citatele verbatim și cu numerele.
 - **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
   `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
   reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).
@@ -531,7 +541,9 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   `stage` (all / market / … / summaries), `bank` și `type` (intră în shell doar prin `env`). **Commit după ref-ul rulat**: pe `main` — `data/cb/` + fișierele CB din `public/`,
   push pe main (condiție + gardă explicită în script); pe orice alt branch — **doar `data/cb/summaries/`**, push pe *acel* branch, niciodată pe main (gardă explicită), fără
   pagini randate și fără restul din `data/cb/` (`state.json` rămâne în runner).
-- **UI.** Sloturile „summary pending” se umplu: puncte, `changes vs previous` pliabile (cuvintele scoase / adăugate), citate cu link către pagina băncii și **ancoră text-fragment**
+- **UI.** Sloturile „summary pending” se umplu: puncte (hover = fragmentul-sursă și paragraful, în tooltip; click / Enter = caseta cu fragmentul, linkul „open the source ↗” cu ancoră
+  text-fragment către pagina băncii și, pentru comunicate — al căror text e oricum comis —, paragrafele citate cu fragmentul evidențiat; pentru transcripturi / discursuri, care nu se comit, doar
+  numărul paragrafului, fragmentul și linkul), `changes vs previous` pliabile (cuvintele scoase / adăugate), citate cu link către pagina băncii și **ancoră text-fragment**
   (`#:~:text=…`, doar pentru surse HTML; PDF: linkul fără ancoră), iar sub fiecare rezumat: „Factual summary, no interpretation · model · prompt_version · data”. Un rezumat
   picat la validare nu se afișează: slotul rămâne „summary pending”, motivul în tooltip. Locuri: cardul „Latest decision”, sub fiecare document din „Documents”, rândurile de
   discursuri, sub tabelul deciziilor (un rezumat pliabil per decizie).
@@ -556,7 +568,7 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   Un refuz, o ieșire tăiată la limită (`status: incomplete`, `max_output_tokens`), un JSON invalid sau lipsa `usage` sunt tratate explicit: primele trei sunt încercări picate (aceeași
   reîncercare unică, cu motivul ca feedback), a patra se estimează din text și înregistrarea spune `estimated`.
 - **Cheia de idempotență**: `(doc_id, input_sha256, prompt_version, provider, model)`; înregistrarea poartă `provider`. Un alt provider sau model rezumă din nou; un eșec de validare e ținut
-  și pe provider + model. `prompt_version` a devenit `*-v3` pentru toate tipurile (v1 și v2 rămân în `versions.json`).
+  și pe provider + model. `prompt_version` a devenit `*-v3` (vocabularul potrivit pe cuvântul exact) și apoi `*-v4` (grounding + vorbitori numiți) pentru toate tipurile (v1–v3 rămân în `versions.json`).
 - **Costul.** Dry run pe textele reale (92 de documente încă nerezumate: ~506 000 tokeni de intrare la 4 caractere / token) + prima utilizare reală (rularea CI din 2026-09-21 pe
   branch: 8 apeluri, 26 289 tokeni de intrare, 2 999 de ieșire din care 181 de raționament, **0,0886 USD**; un comunicat Fed ≈ 1 000 intrare / 335 ieșire ≈ 0,006 USD, cu raționament 0
   la `low`). Cu ieșirea măsurată (~400 tokeni / document): backlog ≈ **1,45 USD** (≈ 2,9 dacă fiecare document ar cheltui și reîncercarea), 8 rulări de câte 12 documente ≈ 0,2 USD fiecare;

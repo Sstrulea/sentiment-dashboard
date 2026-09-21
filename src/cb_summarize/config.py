@@ -40,6 +40,10 @@ class Config:
     blocked_words: tuple
     attributed_words: tuple
     attribution_subjects: tuple
+    evidence_paragraphs: tuple
+    fragment_words: tuple
+    min_support: float
+    attribution_words: tuple
     price_input: float
     price_cached_input: float
     price_output: float
@@ -69,6 +73,8 @@ def load(path=None, provider: Optional[str] = None) -> Config:
         priority=dict(raw["priority"]), summary_points=tuple(lim["summary_points"]), point_chars=tuple(lim["point_chars"]), quotes=tuple(lim["quotes"]),
         quote_chars=tuple(lim["quote_chars"]), summary_total_chars=int(lim["summary_total_chars"]), blocked_words=tuple(str(w) for w in raw["blocked_words"]),
         attributed_words=tuple(str(w) for w in raw["attributed_words"]), attribution_subjects=tuple(str(w) for w in raw["attribution_subjects"]),
+        evidence_paragraphs=tuple(raw["grounding"]["evidence_paragraphs"]), fragment_words=tuple(raw["grounding"]["fragment_words"]), min_support=float(raw["grounding"]["min_support"]),
+        attribution_words=tuple(str(w) for w in raw["grounding"]["attribution_words"]),
         price_input=float(price["input"]), price_cached_input=float(price["cached_input"]), price_output=float(price["output"]), price_source=str(p["pricing_source"]),
         price_model_page=str(p["pricing_model_page"]), price_checked=str(p["pricing_checked"]), price_note=" ".join(str(p["pricing_note"]).split()))
     if cfg.max_output_tokens <= 0 or cfg.max_documents <= 0 or cfg.max_input_tokens <= 0:
