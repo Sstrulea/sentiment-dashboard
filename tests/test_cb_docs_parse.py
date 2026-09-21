@@ -315,3 +315,11 @@ def test_ecb_landing_page_gives_the_last_conference_and_its_video():
     assert P.ecb_landing_video(html) == (date(2026, 9, 10), "rCBHa4xjqvI")
     assert P.ecb_landing_video("<html><body>no conference</body></html>") is None
     assert P.ecb_landing_video('<a href="/press/x/ecb.is260910~abc.en.html"></a>') is None                          # a statement link without a video
+
+
+def test_a_media_availability_is_an_announcement_not_a_document():
+    assert P.is_non_document("Media Availability: Halifax Partnership", "https://www.bankofcanada.ca/multimedia/media-availability-halifax-partnership/")
+    assert P.is_non_document("Media availability - Governor Macklem", "")
+    assert P.is_non_document("Governor Macklem speaks in Paris", "https://www.bankofcanada.ca/multimedia/media-availability-france-canada-chamber/")   # by its URL
+    assert not P.is_non_document("Governor Macklem: Monetary policy in a fragmenting world", "https://www.bankofcanada.ca/2026/09/remarks-macklem/")
+    assert not P.is_non_document("Remarks on media availability of central bank data", "https://x/y")                # only a title that STARTS with it

@@ -378,6 +378,27 @@ NON_MONETARY_RX = re.compile(r"payments?|stablecoin|crypto|digital (?:euro|curre
                              r"cash (?:usage|access)|banknote|museum|history of|award|ceremony|tribute|farewell|opening remarks at the conference", re.I)
 
 
+NON_DOCUMENT_RX = re.compile(r"^\s*media availability\b", re.I)
+
+
+def is_non_document(title: str, url: str = "") -> bool:
+    """A feed item that is an announcement, not a text: the BoC's "Media availability: <Governor speaks at ...>" pages (a time, a place, a topic - no speech).
+    Kept in the store but marked `non_document`: not shown as a speech, never summarised."""
+    return bool(NON_DOCUMENT_RX.match(title)) or "/media-availability" in url
+
+
+def webcast_kind(ccy: str, title: str, url: str = "") -> Optional[str]:
+    """The BoC lists its webcast pages (/multimedia/...) next to its speeches: "press_conference" for the page of a decision's press conference, "webcast" for any
+    other recording. They are conference media, not documents: the first is attached to its meeting, neither is ever a speech."""
+    if ccy != "CAD" or "/multimedia/" not in url or "/media-availability" in url:
+        return None
+    if "press-conference" in url or re.search(r"press conference", title, re.I):
+        return "press_conference"
+    if "webcast" in url or re.search(r"webcast", title, re.I):
+        return "webcast"
+    return None
+
+
 def monetary_relevance(title: str, first_paragraph: str = "") -> str:
     """'monetary' when the title or the opening paragraph speaks about policy / inflation / the outlook, else 'other' (kept, marked)."""
     t = f"{title} {first_paragraph[:600]}"

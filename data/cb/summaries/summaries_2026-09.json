@@ -1,0 +1,1301 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     8,
+     9,
+     16,
+     19,
+     20,
+     28,
+     32,
+     53,
+     55
+    ],
+    "paragraphs_sent": 85,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:minutes:2026-09-17",
+   "format": "html",
+   "generated_at": "2026-09-21T15:59:14Z",
+   "input_sha256": "fe508cf394ebee9ad6f3144f6f4620776550b171201b697ebe46ad6d8804d413",
+   "meeting_date": "2026-09-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 693,
+     "point": 1,
+     "source_text": "36%",
+     "start": 690,
+     "text": "36%"
+    },
+    {
+     "end": 701,
+     "point": 1,
+     "source_text": "78%",
+     "start": 698,
+     "text": "78%"
+    },
+    {
+     "end": 3168,
+     "point": 2,
+     "source_text": "95 basis points",
+     "start": 3153,
+     "text": "95 basis points"
+    },
+    {
+     "end": 6899,
+     "point": 3,
+     "source_text": "3¾%",
+     "start": 6896,
+     "text": "3¾%"
+    },
+    {
+     "end": 76,
+     "point": 3,
+     "source_text": "2026",
+     "start": 72,
+     "text": "2026"
+    },
+    {
+     "end": 1463,
+     "point": 3,
+     "source_text": "4",
+     "start": 1462,
+     "text": "4%"
+    },
+    {
+     "end": 3636,
+     "point": 3,
+     "source_text": "2027",
+     "start": 3632,
+     "text": "2027"
+    },
+    {
+     "end": 8418,
+     "point": 4,
+     "source_text": "0.4%",
+     "start": 8414,
+     "text": "0.4%"
+    },
+    {
+     "end": 76,
+     "point": 4,
+     "source_text": "2026",
+     "start": 72,
+     "text": "2026"
+    },
+    {
+     "end": 6899,
+     "point": 6,
+     "source_text": "3¾%",
+     "start": 6896,
+     "text": "3.75%"
+    },
+    {
+     "end": 19290,
+     "point": 6,
+     "source_text": "0.25 percentage point",
+     "start": 19269,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 1463,
+     "point": 6,
+     "source_text": "4",
+     "start": 1462,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "minutes-v5",
+   "provider": "openai",
+   "published": "2026-09-17",
+   "quotes": [
+    {
+     "end": 4251,
+     "paragraph": 12,
+     "start": 4053,
+     "text": "Twelve-month CPI inflation had been 3.1% in August, triggering the exchange of open letters between the Governor and the Chancellor of the Exchequer that was being published alongside these minutes."
+    },
+    {
+     "end": 15049,
+     "paragraph": 28,
+     "start": 14845,
+     "text": "The Committee nevertheless judged that the risk of material second-round effects had increased since July, and was likely to increase further to the extent that energy prices remained elevated for longer."
+    },
+    {
+     "end": 17895,
+     "paragraph": 32,
+     "start": 17734,
+     "text": "Taken together, the Committee judged that risks to the inflation outlook were tilted further to the upside compared with at the time of the previous MPC meeting."
+    },
+    {
+     "end": 30858,
+     "paragraph": 55,
+     "start": 30710,
+     "text": "Six members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Clare Lombardelli, Dave Ramsden and Alan Taylor) voted in favour of the first proposition."
+    },
+    {
+     "end": 31090,
+     "paragraph": 56,
+     "start": 31022,
+     "text": "The Committee voted unanimously in favour of the second proposition."
+    }
+   ],
+   "source": {
+    "chars": 45020,
+    "chars_sent": 45021,
+    "method": "html-selector",
+    "paragraphs_sent": 85,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 762,
+        "paragraph": 4,
+        "start": 625,
+        "text": "The spot prices of Brent crude and UK wholesale gas had risen by 36% and 78% respectively since the period leading up to the July Report."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Committee reported that Brent crude and UK wholesale gas spot prices had risen by 36% and 78% respectively since the period leading up to the July Report."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2621,
+        "paragraph": 8,
+        "start": 2485,
+        "text": "UK financial conditions had tightened further since the July Report, driven by increases in short-term overnight index swap (OIS) rates."
+       },
+       {
+        "end": 3203,
+        "paragraph": 9,
+        "start": 3093,
+        "text": "the quoted rate on two-year fixed-rate mortgages was around 95 basis points higher than prior to the conflict."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "UK financial conditions had tightened further since the July Report, and the quoted rate on two-year fixed-rate mortgages was around 95 basis points higher than prior to the conflict."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7005,
+        "paragraph": 16,
+        "start": 6847,
+        "text": "CPI inflation was expected to increase to around 3¾% in 2026 Q4, compared with 3.2% at the time of the July Report, and to reach slightly above 4% in 2027 Q1."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "The Committee expected CPI inflation to increase to around 3¾% in 2026 Q4 and to reach slightly above 4% in 2027 Q1."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 8502,
+        "paragraph": 19,
+        "start": 8390,
+        "text": "UK GDP had increased by 0.4% in 2026 Q2, 0.1 percentage points higher than had been expected in the July Report."
+       },
+       {
+        "end": 10094,
+        "paragraph": 20,
+        "start": 10021,
+        "text": "it was now judged likely that there had been some stabilisation in slack."
+       }
+      ],
+      "paragraphs": [
+       19,
+       20
+      ]
+     },
+     "text": "UK GDP increased by 0.4% in 2026 Q2, while the Committee judged that there had likely been some stabilisation in slack despite weak labour demand."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 15049,
+        "paragraph": 28,
+        "start": 14845,
+        "text": "The Committee nevertheless judged that the risk of material second-round effects had increased since July, and was likely to increase further to the extent that energy prices remained elevated for longer."
+       },
+       {
+        "end": 17895,
+        "paragraph": 32,
+        "start": 17734,
+        "text": "Taken together, the Committee judged that risks to the inflation outlook were tilted further to the upside compared with at the time of the previous MPC meeting."
+       }
+      ],
+      "paragraphs": [
+       28,
+       32
+      ]
+     },
+     "text": "The Committee judged that risks to the inflation outlook were tilted further to the upside, with a growing risk of material second-round effects if energy prices remained elevated for longer."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30251,
+        "paragraph": 53,
+        "start": 30211,
+        "text": "Bank Rate should be maintained at 3.75%;"
+       },
+       {
+        "end": 31017,
+        "paragraph": 55,
+        "start": 30859,
+        "text": "Three members (Megan Greene, Catherine L Mann and Huw Pill) voted against this proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       53,
+       55
+      ]
+     },
+     "text": "Six members voted in favour of maintaining Bank Rate at 3.75%, while three members preferred to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England minutes of the 17 September 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21500,
+    "output_tokens": 2273,
+    "reasoning_tokens": 573
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     35,
+     44,
+     46,
+     47,
+     51,
+     54
+    ],
+    "paragraphs_sent": 90,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:c2e9c4edbf10",
+   "format": "html",
+   "generated_at": "2026-09-21T16:03:19Z",
+   "input_sha256": "47784415482d164d7817c0111feff3d6dc04009c2f3c8f66aa7ad1e17abb11c3",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v5",
+   "provider": "openai",
+   "published": "2026-09-04",
+   "quotes": [
+    {
+     "end": 10227,
+     "paragraph": 35,
+     "start": 10149,
+     "text": "The modern central bank is therefore the product of a long historical process."
+    },
+    {
+     "end": 14110,
+     "paragraph": 44,
+     "start": 13947,
+     "text": "In the Bank of England’s case, Parliament defines the objectives, establishes the powers, and retains the authority to amend the framework within which we operate."
+    },
+    {
+     "end": 17082,
+     "paragraph": 51,
+     "start": 17033,
+     "text": "Central banks cannot take legitimacy for granted."
+    },
+    {
+     "end": 18199,
+     "paragraph": 54,
+     "start": 18133,
+     "text": "Central bank independence does not mean detachment from democracy."
+    }
+   ],
+   "source": {
+    "chars": 24294,
+    "chars_sent": 24295,
+    "method": "html-selector",
+    "paragraphs_sent": 90,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 10341,
+        "paragraph": 35,
+        "start": 10228,
+        "text": "On one hand lies the Montesquieu tradition, concerned with limiting arbitrary power through institutional checks."
+       },
+       {
+        "end": 10481,
+        "paragraph": 35,
+        "start": 10342,
+        "text": "On the other lies the tradition of Locke and Hume, concerned with establishing money and credit as public goods upon which society depends."
+       }
+      ],
+      "paragraphs": [
+       35
+      ]
+     },
+     "text": "The speaker says modern central banks combine institutional checks on arbitrary power with money and credit as public goods upon which society depends."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13946,
+        "paragraph": 44,
+        "start": 13751,
+        "text": "Modern independent central banks are not independent of democratic government in the important sense that their authority originates in legislation or the like enacted by elected representatives."
+       },
+       {
+        "end": 14110,
+        "paragraph": 44,
+        "start": 13947,
+        "text": "In the Bank of England’s case, Parliament defines the objectives, establishes the powers, and retains the authority to amend the framework within which we operate."
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "The speaker says modern independent central banks are not independent of democratic government, and Parliament defines the Bank of England’s objectives and establishes its powers."
+    },
+    {
+     "evidence": {
+      "coverage": 0.875,
+      "fragments": [
+       {
+        "end": 14966,
+        "paragraph": 46,
+        "start": 14871,
+        "text": "One version of the criticism is that the central bank remains too close to financial interests."
+       },
+       {
+        "end": 15399,
+        "paragraph": 47,
+        "start": 15236,
+        "text": "The irony is that central banks can, and today do, face an opposite accusation from the financial interests themselves, who argue that regulation has gone too far."
+       }
+      ],
+      "paragraphs": [
+       46,
+       47
+      ]
+     },
+     "text": "The speaker says critics argue central banks are too close to financial interests, while financial interests argue that regulation has gone too far."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17125,
+        "paragraph": 51,
+        "start": 17033,
+        "text": "Central banks cannot take legitimacy for granted. They must explain their decisions clearly."
+       },
+       {
+        "end": 17254,
+        "paragraph": 51,
+        "start": 17126,
+        "text": "They must engage openly with the public. They must remain accountable to elected representatives for their statutory objectives."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "The speaker says central banks must explain decisions clearly, engage openly with the public, and remain accountable to elected representatives for their statutory objectives."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18286,
+        "paragraph": 54,
+        "start": 18200,
+        "text": "It means insulation from short-term political pressures within a democratic framework."
+       },
+       {
+        "end": 18389,
+        "paragraph": 54,
+        "start": 18287,
+        "text": "Its legitimacy derives from a parliamentary delegation and accountability goes with that independence."
+       }
+      ],
+      "paragraphs": [
+       54
+      ]
+     },
+     "text": "The speaker says central bank independence means insulation from short-term political pressures within a democratic framework, and its legitimacy derives from a parliamentary delegation."
+    }
+   ],
+   "title": "The institutional form of independent central banks: from history to contemporary challenges - speech by Andrew Bailey",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/september/andrew-bailey-keynote-speech-at-lse-trium-anniversary-conference",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 6428,
+    "output_tokens": 982,
+    "reasoning_tokens": 432
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     4,
+     21,
+     59
+    ],
+    "paragraphs_sent": 60,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:presser_transcript:2026-09-16",
+   "format": "pdf",
+   "generated_at": "2026-09-21T15:54:56Z",
+   "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
+   "meeting_date": "2026-09-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 215,
+     "point": 1,
+     "source_text": "¼ percentage point",
+     "start": 197,
+     "text": "¼ percentage point"
+    },
+    {
+     "end": 221,
+     "point": 1,
+     "source_text": "3¾",
+     "start": 219,
+     "text": "3¾"
+    },
+    {
+     "end": 234,
+     "point": 1,
+     "source_text": "4 percent",
+     "start": 225,
+     "text": "4 percent"
+    },
+    {
+     "end": 1889,
+     "point": 2,
+     "source_text": "4.1 percent",
+     "start": 1878,
+     "text": "4.1 percent"
+    },
+    {
+     "end": 4412,
+     "point": 4,
+     "source_text": "2.3 percent",
+     "start": 4401,
+     "text": "2.3 percent"
+    },
+    {
+     "end": 2640,
+     "point": 4,
+     "source_text": "2.4 percent",
+     "start": 2629,
+     "text": "2.4 percent"
+    },
+    {
+     "end": 4489,
+     "point": 4,
+     "source_text": "3.7 percent",
+     "start": 4478,
+     "text": "3.7 percent"
+    },
+    {
+     "end": 4412,
+     "point": 4,
+     "source_text": "2.3 percent",
+     "start": 4401,
+     "text": "2.3 percent"
+    }
+   ],
+   "prompt_version": "transcript-v5",
+   "provider": "openai",
+   "published": "2026-09-16",
+   "quotes": [
+    {
+     "end": 285,
+     "paragraph": 2,
+     "start": 93,
+     "text": "In the meeting just concluded, the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
+    },
+    {
+     "end": 2344,
+     "paragraph": 3,
+     "start": 2273,
+     "text": "The plain fact is that inflation is too high and has been for too long."
+    },
+    {
+     "end": 3679,
+     "paragraph": 4,
+     "start": 3613,
+     "text": "Today, the FOMC decided that this standard has not been satisfied."
+    },
+    {
+     "end": 11594,
+     "paragraph": 21,
+     "start": 11509,
+     "text": "All three of those things led -- lend themselves to a firm, unanimous decision today."
+    },
+    {
+     "end": 25531,
+     "paragraph": 59,
+     "start": 25445,
+     "text": "I don't believe that we need to do harm to the labor markets to achieve our objective."
+    }
+   ],
+   "source": {
+    "chars": 26070,
+    "chars_sent": 26071,
+    "method": "pypdf",
+    "paragraphs_sent": 60,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 234,
+        "paragraph": 2,
+        "start": 124,
+        "text": "the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent"
+       },
+       {
+        "end": 377,
+        "paragraph": 2,
+        "start": 286,
+        "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Chairman Warsh said the FOMC raised the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent and continues to maintain ample reserves."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 1951,
+        "paragraph": 3,
+        "start": 1839,
+        "text": "The jobless rate remains low at around 4.1 percent, and both job openings and weekly hours have been increasing."
+       },
+       {
+        "end": 2272,
+        "paragraph": 3,
+        "start": 2129,
+        "text": "Yet for more than five years, inflation has been running above target. So, our predominant focus is on the price-stability side of our mandate."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Chairman Warsh said inflation remains elevated, while the jobless rate remains low at around 4.1 percent, and the Committee’s predominant focus is price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3776,
+        "paragraph": 4,
+        "start": 3680,
+        "text": "The committee’s unanimous vote shows our resolve to achieve price stability on a timelier basis."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Chairman Warsh said the FOMC unanimously voted to achieve price stability on a timelier basis."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4449,
+        "paragraph": 4,
+        "start": 4346,
+        "text": "In the Summary’s median projections, real GDP rises at 2.3 percent this year and 2.4 percent next year."
+       },
+       {
+        "end": 4535,
+        "paragraph": 4,
+        "start": 4450,
+        "text": "Total PCE inflation runs at 3.7 percent this year and falls to 2.3 percent next year."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Chairman Warsh said the Summary’s median projections show real GDP rising at 2.3 percent this year and 2.4 percent next year, while total PCE inflation falls from 3.7 percent to 2.3 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10822,
+        "paragraph": 21,
+        "start": 10709,
+        "text": "There's been a pretty wideranging set of data, including in the labor markets, that the economy has strengthened."
+       },
+       {
+        "end": 11174,
+        "paragraph": 21,
+        "start": 11090,
+        "text": "My judgment some weeks ago was the inflation summer trends weren't passing the test."
+       },
+       {
+        "end": 11346,
+        "paragraph": 21,
+        "start": 11280,
+        "text": "And the third thing that's changed in seven weeks are geopolitics."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Chairman Warsh said the economy had strengthened, inflation summer trends were not passing his test, and geopolitical judgments had changed in seven weeks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 25531,
+        "paragraph": 59,
+        "start": 25445,
+        "text": "I don't believe that we need to do harm to the labor markets to achieve our objective."
+       }
+      ],
+      "paragraphs": [
+       59
+      ]
+     },
+     "text": "Chairman Warsh said he does not believe that harm to labor markets is needed to achieve the objective."
+    }
+   ],
+   "title": "Federal Reserve press conference transcript, 16 September 2026",
+   "type": "presser_transcript",
+   "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260916.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 15849,
+    "output_tokens": 1886,
+    "reasoning_tokens": 395
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     12,
+     15,
+     17,
+     21,
+     22
+    ],
+    "paragraphs_sent": 32,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:a89335cf0468",
+   "format": "html",
+   "generated_at": "2026-09-21T15:55:58Z",
+   "input_sha256": "c4708270b517192d5f6ccad8133c48fd61fbbf53ee00dc4a62b3ba822dfedadc",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1415,
+     "point": 1,
+     "source_text": "1.8 percent",
+     "start": 1404,
+     "text": "1.8 percent"
+    },
+    {
+     "end": 1761,
+     "point": 1,
+     "source_text": "3 percent",
+     "start": 1752,
+     "text": "3 percent"
+    },
+    {
+     "end": 3917,
+     "point": 2,
+     "source_text": "60,000",
+     "start": 3911,
+     "text": "60,000"
+    },
+    {
+     "end": 4243,
+     "point": 2,
+     "source_text": "4.1 percent",
+     "start": 4232,
+     "text": "4.1 percent"
+    },
+    {
+     "end": 6963,
+     "point": 3,
+     "source_text": "3.05 percent",
+     "start": 6951,
+     "text": "3.05 percent"
+    },
+    {
+     "end": 7176,
+     "point": 3,
+     "source_text": "4.76 percent",
+     "start": 7164,
+     "text": "4.76 percent"
+    },
+    {
+     "end": 459,
+     "point": 5,
+     "source_text": "2 percent",
+     "start": 450,
+     "text": "2 percent"
+    },
+    {
+     "end": 459,
+     "point": 6,
+     "source_text": "2 percent",
+     "start": 450,
+     "text": "2 percent"
+    }
+   ],
+   "prompt_version": "speech-v5",
+   "provider": "openai",
+   "published": "2026-09-03",
+   "quotes": [
+    {
+     "end": 1459,
+     "paragraph": 6,
+     "start": 1385,
+     "text": "Real GDP grew at a 1.8 percent annual rate in the first half of this year."
+    },
+    {
+     "end": 7189,
+     "paragraph": 17,
+     "start": 7117,
+     "text": "Three-month inflation has fallen steadily from 4.76 percent in February."
+    },
+    {
+     "end": 9386,
+     "paragraph": 21,
+     "start": 9254,
+     "text": "If there is continued progress toward our 2 percent goal, then I am willing to support holding the policy rate at its current level."
+    },
+    {
+     "end": 10961,
+     "paragraph": 25,
+     "start": 10850,
+     "text": "The key point here is that this it is not a commitment to a policy action—it is a conditional policy statement."
+    }
+   ],
+   "source": {
+    "chars": 15430,
+    "chars_sent": 15431,
+    "method": "html-selector",
+    "paragraphs_sent": 32,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1459,
+        "paragraph": 6,
+        "start": 1385,
+        "text": "Real GDP grew at a 1.8 percent annual rate in the first half of this year."
+       },
+       {
+        "end": 1788,
+        "paragraph": 6,
+        "start": 1603,
+        "text": "Overall, real private domestic final purchases, the measure of spending that best reflects the underlying strength of consumer demand, rose a strong 3 percent in the first half of 2026."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Waller says real GDP grew at a 1.8 percent annual rate in the first half of this year, while real private domestic final purchases rose 3 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 3939,
+        "paragraph": 12,
+        "start": 3833,
+        "text": "Job creation, though a bit volatile, has increased this year by an average of 60,000 a month through July."
+       },
+       {
+        "end": 4276,
+        "paragraph": 12,
+        "start": 4190,
+        "text": "the unemployment rate has fallen a bit to 4.1 percent in July, a historically low rate"
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Waller says job creation has increased this year by an average of 60,000 a month through July, and the unemployment rate fell to 4.1 percent in July."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6997,
+        "paragraph": 17,
+        "start": 6921,
+        "text": "Three-month core inflation is 3.05 percent for the three months through July"
+       },
+       {
+        "end": 7189,
+        "paragraph": 17,
+        "start": 7117,
+        "text": "Three-month inflation has fallen steadily from 4.76 percent in February."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Waller says three-month core inflation was 3.05 percent through July and had fallen steadily from 4.76 percent in February."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6303,
+        "paragraph": 15,
+        "start": 6198,
+        "text": "I don't see elevated energy prices and tariffs now as a significant source of ongoing inflation pressure."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Waller says he does not see elevated energy prices and tariffs now as a significant source of ongoing inflation pressure."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9386,
+        "paragraph": 21,
+        "start": 9254,
+        "text": "If there is continued progress toward our 2 percent goal, then I am willing to support holding the policy rate at its current level."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Waller says he is willing to support holding the policy rate at its current level if there is continued progress toward the 2 percent goal."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9447,
+        "paragraph": 22,
+        "start": 9387,
+        "text": "But if inflation comes in hot, I would consider a rate hike."
+       },
+       {
+        "end": 9769,
+        "paragraph": 22,
+        "start": 9620,
+        "text": "If there is evidence that progress toward 2 percent inflation reversed in August, a small adjustment in our stance would help ensure that it resumes."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "Waller says he would consider a rate hike if inflation comes in hot and would support tighter policy if progress toward 2 percent inflation reversed in August."
+    }
+   ],
+   "title": "Waller, The Economic Outlook and Some Comments on My Policy Communication",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4561,
+    "output_tokens": 915,
+    "reasoning_tokens": 273
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 35,
+    "changes": [
+     {
+      "added": "12",
+      "paragraph": 1,
+      "removed": "9"
+     },
+     {
+      "added": "0",
+      "paragraph": 1,
+      "removed": "3"
+     },
+     {
+      "added": "raise",
+      "paragraph": 2,
+      "removed": "maintain"
+     },
+     {
+      "added": "by 1/4 percentage point",
+      "paragraph": 2,
+      "removed": "at 3-1/2"
+     },
+     {
+      "added": "to 4",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "pace. While uncertainty remains",
+      "paragraph": 3,
+      "removed": "pace despite"
+     },
+     {
+      "added": "owing,",
+      "paragraph": 3,
+      "removed": "uncertainty that owes,"
+     },
+     {
+      "added": "geopolitical developments, domestic spending has been resilient.",
+      "paragraph": 3,
+      "removed": "the conflict in the Middle East."
+     },
+     {
+      "added": "is strong,",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "is robust.",
+      "paragraph": 3,
+      "removed": "are strong."
+     },
+     {
+      "added": "elevated. Today's policy action will support a timelier return",
+      "paragraph": 4,
+      "removed": "elevated relative"
+     },
+     {
+      "added": "goal.",
+      "paragraph": 4,
+      "removed": "goal, in part reflecting supply shocks that have driven price increases in certain sectors, including energy."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Voting against the monetary policy action were Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting."
+     }
+    ],
+    "removed_words": 71,
+    "truncated": false,
+    "vs_doc_id": "USD:statement:2026-07-29",
+    "vs_meeting": "2026-07-29"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "paragraphs_sent": 4,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:statement:2026-09-16",
+   "format": "html",
+   "generated_at": "2026-09-21T15:53:30Z",
+   "input_sha256": "fc27d85fa8d02c2afe3ef5e54416802aac2fa1d2b926b26424f0fbf70842367b",
+   "meeting_date": "2026-09-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 195,
+     "point": 1,
+     "source_text": "1/4 percentage point",
+     "start": 175,
+     "text": "1/4 percentage point"
+    },
+    {
+     "end": 204,
+     "point": 1,
+     "source_text": "3-3/4",
+     "start": 199,
+     "text": "3-3/4"
+    },
+    {
+     "end": 217,
+     "point": 1,
+     "source_text": "4 percent",
+     "start": 208,
+     "text": "4 percent"
+    },
+    {
+     "end": 793,
+     "point": 4,
+     "source_text": "2 percent",
+     "start": 784,
+     "text": "2 percent"
+    },
+    {
+     "end": 86,
+     "point": 6,
+     "source_text": "12",
+     "start": 84,
+     "text": "12"
+    },
+    {
+     "end": 90,
+     "point": 6,
+     "source_text": "0",
+     "start": 89,
+     "text": "0"
+    }
+   ],
+   "prompt_version": "statement-v5",
+   "provider": "openai",
+   "published": "2026-09-16",
+   "quotes": [
+    {
+     "end": 268,
+     "paragraph": 2,
+     "start": 97,
+     "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate."
+    },
+    {
+     "end": 408,
+     "paragraph": 3,
+     "start": 361,
+     "text": "Economic activity is expanding at a solid pace."
+    },
+    {
+     "end": 711,
+     "paragraph": 4,
+     "start": 684,
+     "text": "Inflation remains elevated."
+    },
+    {
+     "end": 799,
+     "paragraph": 4,
+     "start": 712,
+     "text": "Today's policy action will support a timelier return to the Committee's 2 percent goal."
+    },
+    {
+     "end": 96,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:"
+    }
+   ],
+   "source": {
+    "chars": 843,
+    "chars_sent": 844,
+    "method": "stored",
+    "paragraphs_sent": 4,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 217,
+        "paragraph": 2,
+        "start": 97,
+        "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 408,
+        "paragraph": 3,
+        "start": 361,
+        "text": "Economic activity is expanding at a solid pace."
+       },
+       {
+        "end": 592,
+        "paragraph": 3,
+        "start": 490,
+        "text": "domestic spending has been resilient. Productivity growth is strong, and capital investment is robust."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee stated that economic activity is expanding at a solid pace, with domestic spending resilient, productivity growth strong, and capital investment robust."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 683,
+        "paragraph": 3,
+        "start": 593,
+        "text": "Job gains have kept pace with the workforce, and the unemployment rate has changed little."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee stated that job gains have kept pace with the workforce and the unemployment rate has changed little."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 799,
+        "paragraph": 4,
+        "start": 684,
+        "text": "Inflation remains elevated. Today's policy action will support a timelier return to the Committee's 2 percent goal."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Committee stated that inflation remains elevated and that today's policy action will support a timelier return to its 2 percent goal."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 360,
+        "paragraph": 2,
+        "start": 269,
+        "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 96,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:"
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Federal Open Market Committee approved the statement by a 12 – 0 vote."
+    }
+   ],
+   "title": "Federal Reserve monetary policy statement, 16 September 2026",
+   "type": "statement",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 3727,
+    "output_tokens": 1042,
+    "reasoning_tokens": 0
+   }
+  }
+ ],
+ "version": 1
+}

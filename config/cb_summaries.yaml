@@ -1,0 +1,238 @@
+# Phase 2b - factual summaries of the official texts (docs/central-banks/ARCHITECTURE.md section 15).
+# The provider, its model, its limits and the per-run caps are fixed here; a prompt change is a new prompt_version (src/cb_summarize/prompts/), never an edit in place.
+# The provider and its model are fixed in this file; a later change of provider is this file plus the client (src/cb_summarize/client.py: one class per provider,
+# one factory). Everything below `providers` is provider-independent. Which provider wrote a summary is stored in the record (`provider`, `model`).
+provider: openai                      # openai | anthropic
+providers:
+  openai:
+    model: gpt-5.6-terra              # the mid-range model of the current family (frontier: gpt-6-astra, gpt-5.6-sol; small: gpt-5.6-luna) - see the source block below
+    api_url: https://api.openai.com/v1/responses    # Responses API; structured outputs = text.format {type: json_schema, strict: true}
+    env_key: OPENAI_API_KEY           # GitHub secret in CI, environment variable locally; missing -> the stage is skipped (a warning in --status, not an error)
+    max_output_tokens: 8000           # a reasoning model spends part of this on reasoning tokens: a summary itself is ~1 000
+    temperature: null                 # NOT SENT: gpt-5.6-terra is a reasoning model, "Temperature parameter: not applicable" (model page, 2026-09-21). Determinism here comes
+                                      # from reasoning_effort + the strict schema + the verifier, the only gate that writes. (A model that supports it: set 0 here.)
+    reasoning_effort: medium          # none | low | medium | high | xhigh | max (model page). CHOSEN 2026-09-21 by a rule written before the measurement (11 documents, same code and prompt v6):
+                                      # medium published as many documents as low (10 / 10), had fewer removed points + second calls (6 / 10) and cost 1.07x (limit 2x)
+    timeout_s: 180
+    transport_retries: 2              # 429 / 5xx / timeouts only; the validation retry is separate and is exactly one
+    chars_per_token: 4                # only to estimate the input size before a call (the response carries the real usage); the usual 4 characters of English per token
+    estimate_output_tokens: 1700      # for the dry-run estimate only. MEASURED (2026-09-21, effort medium, prompt v6, 10 documents summarised, 15 calls): 17 396 output tokens, reasoning included
+                                      # (7 291 of them reasoning) = 1 740 per document, retries included; at effort low it was 1 332 per document (13 320 / 10)
+    pricing_usd_per_mtok:             # standard tier, short context, per million tokens
+      input: 2.0
+      cached_input: 0.2               # not used here (no caching)
+      output: 12.0
+    pricing_source: https://developers.openai.com/api/docs/pricing
+    pricing_model_page: https://developers.openai.com/api/docs/models/gpt-5.6-terra
+    pricing_checked: "2026-09-21"
+    pricing_note: >-
+      Read on the official pages on 2026-09-21. models page: gpt-6-astra "most capable model", gpt-5.6-sol "complex professional work", gpt-5.6-terra "balances
+      intelligence and cost" (mid-range), gpt-5.6-luna "optimized for cost-sensitive workloads". Pricing page, gpt-5.6-terra: "Short context input $2.00 | cached input
+      $0.20 | output $12.00" (long context $4 / $18; batch = 50% of standard; not used). Model page: 1,050,000 context window, 128,000 max output tokens, structured
+      outputs supported, Chat Completions and Responses supported, temperature not applicable (reasoning effort instead). Reasoning tokens are output tokens.
+  anthropic:                          # the alternative, kept and tested (client + config): plain JSON text, no schema
+    model: claude-sonnet-5
+    api_url: https://api.anthropic.com/v1/messages
+    api_version: "2023-06-01"
+    env_key: ANTHROPIC_API_KEY
+    max_output_tokens: 3000
+    temperature: 0
+    reasoning_effort: null
+    timeout_s: 180
+    transport_retries: 2
+    chars_per_token: 3                # the tokenizer of Claude 4.7+ gives ~30% more tokens than 4 characters per token
+    estimate_output_tokens: 700
+    pricing_usd_per_mtok:
+      input: 2.0
+      cached_input: 0.2
+      output: 10.0
+    pricing_source: https://platform.claude.com/docs/en/about-claude/pricing
+    pricing_model_page: https://platform.claude.com/docs/en/about-claude/pricing
+    pricing_checked: "2026-09-21"
+    pricing_note: >-
+      Read 2026-09-21: "Claude Sonnet 5 | Base input tokens $2 / MTok | Output tokens $10 / MTok"; the $2 / $10 introductory price is now the standard price ("the
+      increase to $3 / $15 on September 1, 2026 will not occur").
+backfill_meetings: 4                  # the last N decided meetings per bank
+speech_window_days: 60                # speeches / testimony that passed the monetary-relevance filter and are this recent
+max_source_chars: 120000              # longer documents are cut at a paragraph boundary and marked truncated in the record
+run_caps:                             # a run stops cleanly and reports when either is reached
+  max_documents: 12
+  max_input_tokens: 250000
+priority:                             # what is summarised first (1 = first)
+  statement: 1
+  presser_transcript: 2
+  opening_statement: 2
+  minutes: 3
+  account: 3
+  summary_of_opinions: 3
+  deliberations: 3
+  speech: 4
+  testimony: 4
+limits:                               # the automatic check before anything is written
+  summary_points: [3, 6]
+  point_chars: [20, 400]
+  quotes: [1, 5]
+  quote_chars: [15, 500]
+  summary_total_chars: 1800
+publish:                              # each point and each quote is checked on its own; after the one retry the ones that still fail are removed
+  min_points: 3                       # ... and the summary is published when at least this many valid points remain (else it stays pending)
+decision:                             # a decision statement (these types) must keep a valid point that states the decision on the policy rate, else it stays pending
+  types: [statement]
+  rate_terms:                         # the rate (a phrase or a word: whole words)
+    - target range
+    - policy rate
+    - cash rate
+    - funds rate
+    - Bank Rate
+    - overnight rate
+    - call rate
+    - interest rate
+    - interest rates
+    - policy interest rate
+    - deposit facility rate
+    - refinancing rate
+    - official cash rate
+    - OCR
+    - guideline
+  action_terms:                       # ... and an action on it (forms are matched: raise / raised / raising)
+    - decided
+    - decision
+    - maintain
+    - keep
+    - kept
+    - hold
+    - held
+    - leave
+    - left
+    - unchanged
+    - raise
+    - lower
+    - cut
+    - reduce
+    - increase
+    - set
+    - encourage
+non_prose:                            # a source that is a deck of tables or slides, not text: marked non_prose, not summarised (the UI shows the link)
+  prose_share_min: 0.5                # share of the characters that sit in paragraphs of full sentences
+  digit_ratio_max: 0.08               # digits / characters
+  short_share_max: 0.5                # share of paragraphs shorter than 40 characters
+grounding:                            # every summary point carries evidence; the verifier checks it (the only gate that writes)
+  evidence_paragraphs: [1, 3]         # a point cites 1-3 paragraphs
+  fragments: [1, 3]                   # ... and 1-3 fragments (one per claim of the point), each of 5-40 words, verbatim, from one of them
+  fragment_words: [5, 40]
+  fragment_shared_words: 2            # each fragment must share at least this many content words with the point (no filler passages)
+  min_support: 0.85                   # >= 85% of the point's content words (alphabetic, no stopwords, no attribution vocabulary, stemmed) must be in the cited paragraphs
+  attribution_words:                  # not claims: who says it (the Committee / Bank / Board / Governor / Chair ... states, said, noted, reported); speakers' names are added per document
+    - states
+    - state
+    - stated
+    - said
+    - says
+    - noted
+    - notes
+    - reported
+    - reports
+    - described
+    - describes
+    - explained
+    - explains
+    - according
+  speaker_verbs:                      # with attribution_words and attributed_words: the verbs that tell WHO a point attributes a statement to ("In response to X, Warsh said ..." is Warsh's)
+    - asked
+    - asks
+    - replied
+    - answered
+    - answers
+    - told
+    - added
+    - argued
+    - believes
+    - thinks
+    - warned
+    - responded
+    - called
+    - agreed
+    - wants
+    - wanted
+  allowed_names:                      # names that need not be in the cited paragraphs: the bank's own bodies (with the bank, the committee and the speaker of the document with their title)
+    - Governing Council
+    - Governing Board
+    - Executive Board
+    - Monetary Policy Committee
+    - Monetary Policy Board
+    - Monetary Policy Meeting
+    - Policy Board
+    - Board of Governors
+    - Federal Open Market Committee
+    - Open Market Committee
+    - Monetary Authority
+  negations:                          # a point has a negation exactly when its closest source sentence has one ("not only" is not one)
+    - not
+    - "no"
+    - never
+    - without
+    - neither
+    - nor
+    - cannot
+    - "n't"
+blocked_words:                        # direction / evaluation vocabulary: never in a summary point, whatever the document says (a quote is the bank's own words: not checked)
+  - hawkish
+  - dovish
+  - bullish
+  - bearish
+  - paves the way
+  - paved the way
+  - paving the way
+attributed_words:                     # allowed in a summary point ONLY when the document itself uses the same word AND the point attributes it to the bank
+  - likely                            # ("The Committee expects ..."): banks write "expects", "is likely", "suggests" all the time, and reporting that is not an opinion.
+  - expect                            # The document's own word may be in another form (a speech says "I expect", the point says "Waller expects"): forms are matched.
+  - expects
+  - expected
+  - expecting
+  - signals
+  - signal
+  - signalled
+  - signaled
+  - signalling
+  - signaling
+  - suggests
+  - suggest
+  - suggested
+  - suggesting
+attribution_pronouns:                 # a pronoun attributes a soft word when the bank or the speaker is named earlier in the same POINT ("Waller says X; he expects Y")
+  - he
+  - she
+  - they
+attribution_subjects:                 # one of these must come earlier in the same sentence of the point (the bank, its body or its officers, or its own document)
+  - Committee
+  - Board
+  - Bank
+  - Council
+  - Governor
+  - Chair
+  - Chairman
+  - Chairperson
+  - President
+  - Vice-President
+  - members
+  - participants
+  - speaker
+  - Federal Reserve
+  - Fed
+  - FOMC
+  - ECB
+  - RBA
+  - RBNZ
+  - SNB
+  - BoJ
+  - BoE
+  - BoC
+  - MPC
+  - statement
+  - minutes
+  - account
+  - summary
+  - transcript
+  - speech
+  - testimony
+  - document

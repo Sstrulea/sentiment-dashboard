@@ -21,7 +21,7 @@ from src.cb_docs import sources as S
 from src.cb_docs import store as ST
 from src.cb_docs.http import Fetcher
 
-from .cb_docs_helpers import D, FakeSession, Resp, statement_text
+from .cb_docs_helpers import D, FakeSession, JitterSession, Resp, statement_text
 from .test_cb_docs_parse import ALL, DAYS, RATES
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -219,7 +219,11 @@ def test_failures_are_reported_not_invented(run1):
 def test_speeches_are_typed_weighted_and_filtered_but_kept(run1):
     paths, _, _ = run1
     sp = [d for d in ST.load_documents(paths).values() if d["type"] in ("speech", "testimony")]
-    assert len(sp) > 20 and {d["relevance"] for d in sp} == {"monetary", "other"}
+    assert len(sp) > 20 and {d["relevance"] for d in sp} == {"monetary", "other", "non_document"}
+    non = [d for d in sp if d["relevance"] == "non_document"]
+    assert non and all(d["currency"] == "CAD" and any(k in d["url"] for k in ("/media-availability", "press-conference", "webcast")) for d in non)   # BoC announcements + recordings
+    assert not any("/media-availability" in u or "webcast" in u for u in run1[2].urls())                            # ... whose pages are never even requested
+    assert not [d for d in sp if "/media-availability" in d["url"] and d["relevance"] != "non_document"]
     assert any(d["type"] == "testimony" for d in sp)
     import json
     fed = [d for d in sp if d["currency"] == "USD" and d["speaker"]]
@@ -445,3 +449,157 @@ def test_the_ecb_landing_video_is_kept_only_for_a_meeting_we_track(tmp_path):
     extra = {C.S.ECB_PRESS_LANDING: Resp(200, page, {"Content-Type": "text/html"})}
     C.run_documents(paths, TODAY, fetcher=fetcher(FakeSession(extra=extra)), roster=C.load_roster(), now=datetime(2026, 9, 20, 12, 0, tzinfo=timezone.utc))
     assert not any(k[0] == "EUR" for k in videos(paths))
+
+
+# --- validators: state.json changes only with the content ------------------------------------------------------------------------------------
+
+def test_validators_advance_only_when_the_stored_content_changes():
+    f = Fetcher(session=FakeSession(), validators={}, sleep=lambda s: None, min_interval=0)
+    from src.cb_docs.http import Fetched
+    r = lambda etag, lm="Mon": Fetched("https://x.example/p", 200, b"x", {}, validators={"etag": etag, "last_modified": lm})      # noqa: E731
+    f.remember(r('"a"'), content_sha="AAA")
+    assert f.validators["https://x.example/p"] == {"etag": '"a"', "last_modified": "Mon", "sha256": "AAA"}
+    f.remember(r('"b"', "Tue"), content_sha="AAA")                                                                      # same content, new validators: nothing moves
+    assert f.validators["https://x.example/p"] == {"etag": '"a"', "last_modified": "Mon", "sha256": "AAA"}
+    f.remember(r('"c"', "Wed"), content_sha="BBB")                                                                      # the content changed: they advance
+    assert f.validators["https://x.example/p"] == {"etag": '"c"', "last_modified": "Wed", "sha256": "BBB"}
+    f.remember(r('"d"'))                                                                                                # no hash given: the caller did not vouch for the content
+    assert f.validators["https://x.example/p"]["etag"] == '"d"'
+
+
+def test_the_ecb_etag_is_ignored_it_is_neither_stored_nor_sent_but_last_modified_still_is():
+    url = "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html"
+    s = FakeSession(extra={url: Resp(200, b"<html>x</html>", {"ETag": '"myra-1"', "Last-Modified": "Thu, 10 Sep 2026 12:15:00 GMT", "Content-Type": "text/html"})})
+    stored = {url: {"etag": '"myra-old"', "last_modified": "Thu, 10 Sep 2026 12:15:00 GMT", "sha256": "h"}}
+    f = Fetcher(session=s, validators=stored, sleep=lambda x: None, min_interval=0)
+    assert "etag" not in stored[url]                                                                                    # a legacy ECB ETag is dropped when the state is loaded
+    stored[url]["etag"] = '"myra-put-back"'                                                                             # even if one gets into the dict some other way, it is not sent
+    r = f.get(url)
+    sent = next(h for m, u, h in s.calls if u == url)
+    assert "If-None-Match" not in sent and sent["If-Modified-Since"] == "Thu, 10 Sep 2026 12:15:00 GMT"
+    assert r.validators == {"last_modified": "Thu, 10 Sep 2026 12:15:00 GMT"}                                            # the response's ETag is not kept
+    other = "https://www.federalreserve.gov/x.htm"
+    s2 = FakeSession(extra={other: Resp(200, b"<html>y</html>", {"ETag": '"e"', "Content-Type": "text/html"})})
+    assert Fetcher(session=s2, sleep=lambda x: None, min_interval=0).get(other).validators == {"etag": '"e"'}              # every other host keeps its ETag
+
+
+def test_a_jittering_etag_alone_never_changes_state_json(tmp_path):
+    d = data_dir(tmp_path)
+    paths = cc.Paths(d)
+    run = lambda session, hour: C.run_documents(paths, TODAY, fetcher=fetcher(session, validators=cc.load_state(paths).setdefault(C.STATE_KEY, {})),   # noqa: E731
+                                                 roster=C.load_roster(), now=datetime(2026, 9, 20, hour, 0, tzinfo=timezone.utc))
+    run(JitterSession(), 12)
+    run(JitterSession(), 13)                                                                                            # settles (one-off additions of the content hash)
+    settled = snapshot(d)
+    rep = run(JitterSession(), 14)                                                                                      # every ETag is different again, the bytes are not
+    assert rep.new == 0 and rep.updated == 0
+    assert snapshot(d) == settled                                                                                       # not one file changed: nothing to commit
+    v = cc.load_state(paths)[C.STATE_KEY]
+    assert v and all("sha256" in x for x in v.values() if "etag" in x or "last_modified" in x)
+    assert not any("etag" in x for u, x in v.items() if "ecb.europa.eu" in u)                                            # and no ECB ETag anywhere
+
+
+def test_new_content_does_advance_the_validators_and_state_json(tmp_path):
+    d = data_dir(tmp_path)
+    paths = cc.Paths(d)
+    url = "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm"
+    run = lambda session: C.run_documents(paths, D(2026, 9, 18), fetcher=fetcher(session, validators=cc.load_state(paths).setdefault(C.STATE_KEY, {})),   # noqa: E731
+                                          roster=C.load_roster(), now=datetime(2026, 9, 18, 12, 0, tzinfo=timezone.utc))
+    run(JitterSession())
+    before = cc.load_state(paths)[C.STATE_KEY][url]
+    page = (Path(__file__).parent / "fixtures" / "cb_docs" / "statements" / "USD_2026-09-16.html").read_text().replace("Inflation remains elevated.", "Inflation remains elevated at this time.")
+    run(JitterSession(extra={url: Resp(200, page.encode(), {"Content-Type": "text/html", "ETag": '"changed"', "Last-Modified": "Tue, 15 Sep 2026 20:00:00 GMT"})}))
+    after = cc.load_state(paths)[C.STATE_KEY][url]
+    assert after["sha256"] != before["sha256"] and after["etag"] == '"changed"' and after["last_modified"] == "Tue, 15 Sep 2026 20:00:00 GMT"
+
+
+def test_an_announcement_without_a_description_is_still_never_requested(tmp_path):
+    import re as _re
+    feed_url = "https://www.bankofcanada.ca/content_type/speeches/feed/"
+    xml = (Path(__file__).parent / "fixtures" / "cb_docs" / "feeds" / "boc_speeches.xml").read_text()
+    bare = _re.sub(r"<description>.*?</description>|<content:encoded>.*?</content:encoded>", "", xml, flags=_re.S)          # nothing to read the relevance from in the feed
+    s = FakeSession(extra={feed_url: Resp(200, bare.encode(), {"Content-Type": "application/xml"})})
+    d = data_dir(tmp_path)
+    C.run_documents(cc.Paths(d), D(2026, 9, 22), fetcher=fetcher(s), roster=C.load_roster(), now=datetime(2026, 9, 22, 12, 0, tzinfo=timezone.utc))   # 22 Sep: the 21 Sep announcement is inside the window
+    assert any("/speech-halifax-partnership" in u for u in s.urls())                                                   # the speech of that day IS read (nothing else told its relevance)
+    assert not any("/media-availability" in u for u in s.urls())                                                       # an announcement is never fetched to find out what it is
+    got = [x for x in ST.load_documents(cc.Paths(d)).values() if x["currency"] == "CAD" and x["type"] == "speech"]
+    assert any(x["relevance"] == "non_document" for x in got) and any("/media-availability" not in x["url"] for x in got)
+
+
+# --- BoC webcast pages listed with the speeches: the meeting's video, or nothing ---------------------------------------------------------------
+
+def boc_speech_rows(paths):
+    return {d["url"]: d for d in ST.load_documents(paths).values() if d["currency"] == "CAD" and d["type"] == "speech"}
+
+
+def test_a_press_conference_webcast_is_attached_to_its_meeting_and_a_speech_webcast_with_no_meeting_is_a_non_document(run1):
+    import json
+    paths, _, _ = run1
+    rows = boc_speech_rows(paths)
+    sep = rows["https://www.bankofcanada.ca/multimedia/press-conference-policy-rate-announcement-september-2026/"]
+    jul = rows["https://www.bankofcanada.ca/multimedia/press-conference-monetary-policy-report-july-2026/"]
+    for row, day in ((sep, "2026-09-02"), (jul, "2026-07-15")):
+        meta = json.loads(row["meta_json"])
+        assert row["relevance"] == "non_document" and meta["attached_to"] == f"CAD:presser_video:{day}" and meta["media"] == "press_conference"
+    unveil = next(d for u, d in rows.items() if "unveiling-canadas-new-20-bank-note-speech-webcasts" in u)                # 3 Sep: a day from the 2 Sep decision, but not a press conference
+    assert unveil["relevance"] == "non_document" and "attached_to" not in json.loads(unveil["meta_json"]) and json.loads(unveil["meta_json"])["media"] == "webcast"
+    videos_of = [d for d in ST.load_documents(paths).values() if d["currency"] == "CAD" and d["type"] == "presser_video"]
+    assert sorted(d["meeting_date"].isoformat() for d in videos_of) == DAYS["CAD"] and len(videos_of) == 4              # one video per meeting: the feed did not add a second
+    sep_video = next(d for d in videos_of if d["meeting_date"].isoformat() == "2026-09-02")
+    assert sep_video["url"] == sep["url"] and json.loads(sep_video["meta_json"])["source"] == "official page"          # the release page's link came first; the feed did not overwrite it
+    assert "Speech: Halifax Partnership" in {d["title"] for d in rows.values() if d["relevance"] != "non_document"}      # a real speech is still a speech
+
+
+def test_a_press_conference_webcast_becomes_the_video_when_the_release_page_gave_none(tmp_path):
+    import json
+    import re as _re
+    extra = {}
+    for iso in DAYS["CAD"]:
+        y, m, _ = iso.split("-")
+        url = f"https://www.bankofcanada.ca/{y}/{m}/fad-press-release-{iso}/"
+        page = (Path(__file__).parent / "fixtures" / "cb_docs" / "statements" / f"CAD_{iso}.html").read_text()
+        extra[url] = Resp(200, _re.sub(r"<a [^>]*multimedia/press-conference[^>]*>.*?</a>", "", page, flags=_re.S).encode(), {"Content-Type": "text/html"})   # no video link on the page
+    d = data_dir(tmp_path)
+    C.run_documents(cc.Paths(d), TODAY, fetcher=fetcher(FakeSession(extra=extra)), roster=C.load_roster(), now=datetime(2026, 9, 20, 12, 0, tzinfo=timezone.utc))
+    videos_of = {x["meeting_date"].isoformat(): x for x in ST.load_documents(cc.Paths(d)).values() if x["currency"] == "CAD" and x["type"] == "presser_video"}
+    assert sorted(videos_of) == ["2026-07-15", "2026-09-02"]                                                            # the two conferences the feed carries
+    assert json.loads(videos_of["2026-09-02"]["meta_json"])["source"] == "bank feed" and videos_of["2026-09-02"]["format"] == "video"
+
+
+def test_a_press_conference_webcast_with_no_meeting_within_a_day_is_only_a_non_document(tmp_path):
+    import json
+    import re as _re
+    feed_url = "https://www.bankofcanada.ca/content_type/speeches/feed/"
+    xml = (Path(__file__).parent / "fixtures" / "cb_docs" / "feeds" / "boc_speeches.xml").read_text()
+    moved = xml.replace("2026-09-02T10:30:19+00:00", "2026-09-05T10:30:19+00:00")                                          # 3 days after the decision: no meeting matches
+    assert moved != xml
+    d = data_dir(tmp_path)
+    C.run_documents(cc.Paths(d), TODAY, fetcher=fetcher(FakeSession(extra={feed_url: Resp(200, moved.encode(), {"Content-Type": "application/xml"})})), roster=C.load_roster(),
+                    now=datetime(2026, 9, 20, 12, 0, tzinfo=timezone.utc))
+    rows = boc_speech_rows(cc.Paths(d))
+    row = rows["https://www.bankofcanada.ca/multimedia/press-conference-policy-rate-announcement-september-2026/"]
+    meta = json.loads(row["meta_json"])
+    assert row["relevance"] == "non_document" and "attached_to" not in meta and meta["media"] == "press_conference"
+
+
+def test_the_payload_and_the_summaries_never_see_the_recordings(run1):
+    from src.cb_summarize import run as SR
+    from src.cb_summarize.config import load as load_cfg
+    from src import cb_datasets as ds
+    paths, _, _ = run1
+    docs = sorted(ST.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    todo = SR.candidates(docs, ds.load_meetings(paths.meetings), TODAY, load_cfg())
+    assert not any(d["currency"] == "CAD" and d["type"] == "speech" and any(k in d["url"] for k in ("/media-availability", "press-conference", "webcast")) for d in todo)
+    assert not any(d["type"] == "presser_video" for d in todo)                                                          # a video is a link, never a text to summarise
+
+
+def test_webcast_kind_only_knows_the_boc_multimedia_pages():
+    k = P.webcast_kind
+    assert k("CAD", "Monetary Policy Decision Press Conference", "https://www.bankofcanada.ca/multimedia/press-conference-policy-rate-announcement-september-2026/") == "press_conference"
+    assert k("CAD", "Press Conference: Monetary Policy Report - July 2026", "https://www.bankofcanada.ca/multimedia/x/") == "press_conference"
+    assert k("CAD", "Unveiling - Speech webcasts", "https://www.bankofcanada.ca/multimedia/unveiling-speech-webcasts/") == "webcast"
+    assert k("CAD", "Speech: Halifax Partnership", "https://www.bankofcanada.ca/multimedia/speech-halifax-partnership-2026-09-21/") is None      # a speech page is a speech
+    assert k("CAD", "Media Availability: Halifax", "https://www.bankofcanada.ca/multimedia/media-availability-halifax-partnership/") is None       # that one is is_non_document's
+    assert k("CAD", "Press conference", "https://www.bankofcanada.ca/2026/09/press-conference/") is None                                        # not under /multimedia/
+    assert k("USD", "FOMC press conference", "https://www.federalreserve.gov/multimedia/press-conference") is None                              # a BoC rule only

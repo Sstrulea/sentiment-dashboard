@@ -74,6 +74,7 @@ class Paths:
         self.documents = self.dir / "documents"                  # monthly partitions documents_YYYY-MM.parquet (phase 2a)
         self.votes = self.dir / "votes.parquet"
         self.redlines = self.dir / "redlines.parquet"
+        self.summaries = self.dir / "summaries"                  # monthly partitions summaries_YYYY-MM.json + failures.json (phase 2b)
 
     def partition(self, month: str) -> Path:
         return self.quotes / f"market_quotes_{month}.parquet"
@@ -271,8 +272,8 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
         rep.merge = merge_quotes(store, final)
         if res.raw and final and any(q.asof == res.raw["asof"] for q in final):
             raws.append((sid, res.raw["asof"], res.raw["text"]))
-        if res.state and rep.dropped == 0:                          # cutoff held rows back -> re-fetch next run
-            new_state[sid] = res.state
+        if res.state and rep.dropped == 0 and (rep.merge.new or rep.merge.updated or sid not in state):   # cutoff held rows back -> re-fetch next run
+            new_state[sid] = res.state                              # advance only with new data: validators that changed alone would be a commit for nothing
         elif rep.dropped:
             rep.note = (rep.note + f" {rep.dropped} quote(s) before eod_cutoff, validators kept").strip()
 
@@ -345,8 +346,8 @@ def run_official(paths: Paths, *, only: list[str] | None = None, backfill_from: 
             continue
         rep.status, rep.note = res.status, res.note
         rep.merge = cs.merge(OFFICIAL, store, (obs_row(o) for o in res.obs))
-        if res.state and not res.failed:
-            new_state[rep.id] = res.state
+        if res.state and not res.failed and (rep.merge.new or rep.merge.updated or rep.id not in state):
+            new_state[rep.id] = res.state                           # validators advance only with new data (see run())
     cs.write(OFFICIAL, paths.dir, store, set().union(*(r.merge.months for r in reports)))
     save_state(paths, new_state)
     cals = load_calendars()
@@ -446,7 +447,8 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "documents", "projections", "calendar")
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "summaries")
+DEFAULT_STAGES = STAGES[:-1]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret)
 
 
 def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
@@ -457,7 +459,7 @@ def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Central Banks collector: market quotes, official series, decisions, "
                                              "projections, calendar check")
-    ap.add_argument("--stage", action="append", choices=STAGES, help="stage to run (repeatable); default all")
+    ap.add_argument("--stage", action="append", choices=STAGES, help="stage to run (repeatable); default: every stage except summaries")
     ap.add_argument("--source", action="append", help="market source id (repeatable); default all")
     ap.add_argument("--provider", action="append", help="official-series provider (repeatable); default all")
     ap.add_argument("--backfill", action="store_true",
@@ -465,6 +467,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--backfill-from", type=date.fromisoformat, help="explicit backfill start (YYYY-MM-DD), both datasets")
     ap.add_argument("--lookback-days", type=int, default=LOOKBACK_DAYS)
     ap.add_argument("--force-calendar-check", action="store_true", help="run the weekly meetings check now")
+    ap.add_argument("--summaries-bank", action="append", metavar="CCY", help="summaries stage: only these banks (repeatable), e.g. USD")
+    ap.add_argument("--summaries-type", action="append", metavar="TYPE", help="summaries stage: only these document types (repeatable), e.g. statement")
+    ap.add_argument("--summaries-doc", action="append", metavar="DOC_ID", help="summaries stage: only these documents (repeatable), e.g. USD:statement:2026-09-16")
+    ap.add_argument("--summaries-effort", choices=("low", "medium", "high"), help="summaries stage: the reasoning effort of this run (default: the config's)")
+    ap.add_argument("--summaries-scratch", action="store_true", help="summaries stage: a measurement - write the summaries to a scratch directory and leave data/ and state.json alone")
+    ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
     a = ap.parse_args(argv)
@@ -478,7 +486,7 @@ def main(argv: list[str] | None = None) -> int:
         _summary(md)
         return 0
 
-    stages = a.stage or list(STAGES)
+    stages = a.stage or list(DEFAULT_STAGES)
     fetch_reports: list[SourceReport] = []
     out_text, out_md = [], []
 
@@ -530,6 +538,27 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("calendar check failed")
             emit(f"calendar check: FAILED {type(e).__name__}: {e}", f"### calendar check\n\nFAILED `{type(e).__name__}: {e}`")
+    if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
+        try:
+            from .cb_summarize import run as sum_run
+            narrow = dict(banks=set(a.summaries_bank or []) or None, types=set(a.summaries_type or []) or None,
+                          only={d for v in (a.summaries_doc or []) for d in v.split(",") if d.strip()} or None)                      # (a comma separates documents)
+            if a.summaries_dry_run:
+                text = sum_run.estimate_report(sum_run.estimate(paths, today, **narrow))
+                emit(text, "### summaries (dry run)\n\n```\n" + text + "\n```")
+            else:
+                import dataclasses
+                import tempfile
+                from .cb_summarize.config import load as load_summaries_config
+                cfg = load_summaries_config()
+                if a.summaries_effort:
+                    cfg = dataclasses.replace(cfg, reasoning_effort=a.summaries_effort)
+                if a.summaries_scratch:
+                    paths.summaries = Path(tempfile.mkdtemp(prefix="cb_scratch_"))
+                emit(*dsets.summaries_report(sum_run.run_summaries(paths, today, state={} if a.summaries_scratch else load_state(paths), cfg=cfg, persist=not a.summaries_scratch, **narrow)))
+        except Exception as e:
+            log.exception("summaries stage failed")
+            emit(f"summaries: FAILED {type(e).__name__}: {e}", f"### summaries\n\nFAILED `{type(e).__name__}: {e}`")
     print("\n\n".join(out_text))
     _summary("\n\n".join(out_md))
     return exit_code(fetch_reports)

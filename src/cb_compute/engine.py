@@ -96,6 +96,9 @@ class Context:
     documents: list = field(default_factory=list)                # official texts (phase 2a): rows of data/cb/documents
     votes: dict = field(default_factory=dict)                    # (currency, meeting_date) -> votes row
     redlines: dict = field(default_factory=dict)                 # (currency, meeting_date) -> redline row
+    summaries: dict = field(default_factory=dict)                # doc_id -> summary record (phase 2b, data/cb/summaries)
+    summary_failures: dict = field(default_factory=dict)         # "doc_id|prompt_version" -> validation failure (never shown as a summary)
+    summary_no_text: dict = field(default_factory=dict)          # doc_id -> {url, reason, at}: the page has no extractable text (marked once)
     doc_warnings: list = field(default_factory=list)             # documents past their usual publication lag
     stale_after_bd: int = 2
 

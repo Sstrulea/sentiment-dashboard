@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+import json
 import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
@@ -178,7 +179,7 @@ class _Run:
         self.add(row)
         if rate_kw and before != rate_kw["rate_after"]:
             self.rep.rate_rows_changed = True
-        self.f.remember(r)
+        self.f.remember(r, content_sha=X.sha256(text))
         self.texts[(ccy, d)] = text
 
     def feed_pool(self, ccy: str) -> list:
@@ -209,7 +210,7 @@ class _Run:
         for r_ in rows[hdr + 1:]:
             if r_ and isinstance(r_[1], datetime) and r_[1].date() in self.meet.get("GBP", []):
                 out[r_[1].date()] = {name: (None if r_[j] is None else round(float(r_[j]) * 100, 4)) for j, name in cols if j < cur_end and r_[j] is not None}
-        self.f.remember(r)
+        self.f.remember(r, content_sha=X.sha256(json.dumps({k.isoformat(): v for k, v in out.items()}, sort_keys=True)))
         return out
 
     def add_votes(self, ccy: str, d: date, v: P.Votes, doc_id: str) -> None:
@@ -278,7 +279,7 @@ class _Run:
             pub = header_date(r.headers.get("Last-Modified")) or due
             self.add(self.base(ccy, typ, doc_id, title=f"{S.BANK_NAME[ccy]} {typ.replace('_', ' ')} of the {d:%d %B %Y} meeting", url=url,
                                published_date=pub if pub <= self.today else due, meeting_date=d, format=fmt, text_sha256=X.sha256(text), extraction_method=method))
-            self.f.remember(r)
+            self.f.remember(r, content_sha=X.sha256(text))
             if ccy == "AUD":                                                # votes are published in the minutes (+14 days)
                 v = P.parse_votes_rba(text)
                 if v:
@@ -341,7 +342,7 @@ class _Run:
                     text = X.to_text(paras)
                     self.add(self.base(ccy, typ, doc_id, title=f"{S.BANK_NAME[ccy]} introductory statement, {d:%d %B %Y}", url=url, published_date=d,
                                        meeting_date=d, format=fmt, text_sha256=X.sha256(text), extraction_method=method, text=text))
-                    self.f.remember(r)
+                    self.f.remember(r, content_sha=X.sha256(text))
 
     def official_videos(self, ccy: str) -> None:
         """The press-conference video from the bank's OWN pages (never the YouTube feeds): the FOMC page (Brightcove), the BoC /multimedia/ page, the RBA
@@ -382,7 +383,7 @@ class _Run:
         self.add(self.base("EUR", "presser_video", f"EUR:presser_video:{d.isoformat()}", title=f"{S.BANK_NAME['EUR']} press conference video, {d:%d %B %Y}",
                            url=f"https://www.youtube.com/watch?v={vid}", published_date=d, meeting_date=d, format="video",
                            meta={"source": "official page", "page": S.ECB_PRESS_LANDING, "player": "YouTube", "video_id": vid, "duration": None}))
-        self.f.remember(r)
+        self.f.remember(r, content_sha=X.sha256(f"{d.isoformat()}:{vid}"))
 
     # ---- speeches -----------------------------------------------------------------------------------------------------------
     def speaker_of(self, ccy: str, it: dict) -> str:
@@ -461,17 +462,34 @@ class _Run:
                 desc = first.group(1)                                          # keep what the first fetch found: no page request again
             prior = (old or {}).get("speaker") or ""                                     # a page that is not fetched twice keeps the speaker found the first time
             nameless = ccy == "JPY" and not it.get("speaker") and not prior              # the BoJ list carries no speaker: it is in the page title
-            if ((not desc and not old) or nameless) and pages < MAX_PAGES_PER_BANK and it["pub"] <= self.now:
+            media = P.webcast_kind(ccy, it["title"], it["link"])
+            attached = self.attach_press_conference(ccy, it) if media == "press_conference" else None       # the recording of a decision's press conference: the meeting's video
+            non_doc = media is not None or P.is_non_document(it["title"], it["link"])   # an announcement / a recording, not a text: no page is fetched for it
+            if not non_doc and ((not desc and not old) or nameless) and pages < MAX_PAGES_PER_BANK and it["pub"] <= self.now:
                 got, byline = self.first_paragraph(it["link"])
                 desc, it["speaker"] = desc or got, it.get("speaker") or byline
                 pages += 1
-            rel = P.monetary_relevance(it["title"], desc)
+            rel = "non_document" if non_doc else P.monetary_relevance(it["title"], desc)
             who = it.get("speaker") or prior
             name, role, voter, chair = self.role_of(who, ccy) if who else ("", "", False, False)
             self.add(self.base(ccy, typ, doc_id, title=it["title"], url=it["link"], published_date=it["pub"].date(), published_at=_ts(it["pub"]), speaker=name, role=role,
                                relevance=rel, format="pdf" if it["link"].lower().endswith(".pdf") else "html",
-                               meta={"weight": P.speaker_weight(role, voter, chair), "voter": voter, "chair": chair, "first": desc[:300], "via": "bank"}))
+                               meta={"weight": P.speaker_weight(role, voter, chair), "voter": voter, "chair": chair, "first": desc[:300], "via": "bank",
+                                     **({"attached_to": attached} if attached else {}), **({"media": media} if media else {})}))
         return items
+
+    def attach_press_conference(self, ccy: str, it: dict) -> Optional[str]:
+        """A press-conference webcast page listed with the speeches belongs to the meeting held within a day of its date: it becomes that meeting's video (unless the
+        bank's own release page already gave one). Returns the video's doc_id, or None when no meeting matches (the item is then only marked non_document)."""
+        day = it["pub"].date() if it.get("pub") else None
+        near = min((m for m in self.meet.get(ccy, []) if day is not None and abs((m - day).days) <= 1), default=None)
+        if near is None:
+            return None
+        doc_id = f"{ccy}:presser_video:{near.isoformat()}"
+        if (doc_id,) not in self.docs:
+            self.add(self.base(ccy, "presser_video", doc_id, title=f"{S.BANK_NAME[ccy]} press conference video, {near:%d %B %Y}", url=it["link"], published_date=near,
+                               meeting_date=near, format="video", meta={"source": "bank feed", "page": it["link"], "player": None, "video_id": None, "duration": None}))
+        return doc_id
 
     def bis(self, own: dict) -> None:
         """BIS 'central bankers' speeches': backfill only - an item the bank feed already has (same speaker surname + title similarity >= 0.6) is dropped."""

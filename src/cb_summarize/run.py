@@ -1,0 +1,390 @@
+"""The summaries stage: which documents, in which order, under which caps; one call, one automatic check, at most one retry with the errors as feedback;
+a summary is written only after it passed, a summary that fails twice is never written (a `validation_failed` marker is).
+
+Idempotence: a document is summarised once per (doc_id, input_sha256, prompt_version). Statements carry their text and hash in the store; the hash of a
+downloaded document (minutes, transcript, speech) is known once it has been downloaded, so a stored record of the same prompt version stops any new call.
+Everything the run needs from outside (HTTP, the model) is passed in: tests give it a recorded client and a fake session."""
+from __future__ import annotations
+
+import os
+import re
+from dataclasses import dataclass, field
+from datetime import date, datetime, timezone
+from typing import Optional
+
+from .. import cb_datasets as ds
+from ..cb_docs import parse as DP
+from ..cb_docs import sources as S
+from ..cb_docs import store as dst
+from ..cb_docs.collect import load_roster
+from ..cb_docs.http import Fetcher
+from . import changes as CH
+from . import prompts as PR
+from . import source as SRC
+from . import store as SS
+from . import turns as TURNS
+from . import verify as V
+from .client import APIError, make_client
+from .schema import OUTPUT_SCHEMA
+from .config import Config, load as load_config
+
+STATE_KEY = "summaries"
+
+
+@dataclass
+class SummariesReport:
+    enabled: bool = True
+    skipped_reason: Optional[str] = None
+    considered: int = 0
+    new: int = 0
+    unchanged: int = 0                                     # already summarised under this prompt version (or a known validation failure): no call
+    failed_validation: list = field(default_factory=list)  # (doc_id, [errors]) - written as markers, never as summaries
+    source_errors: list = field(default_factory=list)      # (doc_id, why) - the page could not be got (transient); tried again next run
+    no_text: list = field(default_factory=list)            # (doc_id, why) - marked THIS run: the page has no extractable text; never tried again
+    non_prose: list = field(default_factory=list)          # (doc_id, why) - marked THIS run: the text is a deck of tables or slides; never summarised
+    partial: list = field(default_factory=list)            # (doc_id, [dropped points], [dropped quotes]) - published with the points that still failed after the retry removed
+    docs: list = field(default_factory=list)               # one dict per document looked at: doc_id, outcome (full | full after retry | partial | pending | non_prose | no_text), attempts, tokens, cost
+    stopped: Optional[str] = None                          # why the run stopped before the end (caps, API)
+    calls: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
+    pending: int = 0                                       # documents still without a summary when the run ended
+    reasoning_tokens: int = 0                              # part of output_tokens (billed as output)
+    usage_estimated: int = 0                               # calls whose response carried no usage: the tokens were estimated from the text
+    first_pass: int = 0                                    # documents whose first output passed the check
+    retried: list = field(default_factory=list)            # (doc_id, [errors of the first attempt]) - passed only after the one retry
+    rejected: list = field(default_factory=list)           # (doc_id, the last output the check refused) - for the log: why a document failed
+    first_errors: list = field(default_factory=list)       # (doc_id, [errors of the first attempt]) of a document that failed twice
+    notes: list = field(default_factory=list)
+
+
+def candidates(docs: list, meetings: dict, today: date, cfg: Config) -> list:
+    """The documents that may be summarised, most important first: the decision statement, then the press-conference texts, then minutes / accounts /
+    opinions / deliberations, then speeches and testimony that passed the monetary-relevance filter; the last N decided meetings per bank; newest first."""
+    last = {ccy: set(SRC.meeting_dates(meetings, ccy, today, cfg.backfill_meetings)) for ccy in meetings}
+    out = []
+    for d in docs:
+        t = d["type"]
+        if t not in cfg.priority:
+            continue
+        if t in ("speech", "testimony"):
+            if d.get("relevance") != "monetary" or (today - d["published_date"]).days > cfg.speech_window_days:
+                continue
+        elif d["meeting_date"] not in last.get(d["currency"], ()):
+            continue
+        out.append(d)
+    return sorted(out, key=lambda d: (cfg.priority[d["type"]], -d["published_date"].toordinal(), d["currency"], d["doc_id"]))
+
+
+def is_done(rec: Optional[dict], doc: dict, prompt: PR.Prompt, cfg: Config) -> bool:
+    """Known to be summarised without downloading anything: same prompt version, same provider and model, and the hash the store has for the document (statements,
+    and the long documents phase 2a hashed) equals the one summarised. A document without a stored hash is taken as immutable once summarised. The idempotence
+    key is (doc_id, input_sha256, prompt_version, provider, model): another provider or model summarises everything again."""
+    if rec is None or rec["prompt_version"] != prompt.version or rec.get("provider") != cfg.provider or rec["model"] != cfg.model:
+        return False
+    expected = doc.get("text_sha256")
+    return expected is None or rec["input_sha256"] == expected
+
+
+def is_no_text(no_text: dict, doc: dict) -> bool:
+    """Marked `no_text` for THIS url (a document whose link changed is looked at again)."""
+    m = no_text.get(doc["doc_id"])
+    return m is not None and m["url"] == doc["url"]
+
+
+def failure_key(doc_id: str, prompt: PR.Prompt, cfg: Config) -> str:
+    return f"{doc_id}|{prompt.version}|{cfg.provider}|{cfg.model}"
+
+
+def failed_before(failures: dict, doc: dict, prompt: PR.Prompt, sha: Optional[str], cfg: Config) -> bool:
+    f = failures.get(failure_key(doc["doc_id"], prompt, cfg))
+    return f is not None and (sha is None or f["input_sha256"] == sha)
+
+
+def _record(doc: dict, prompt: PR.Prompt, src: SRC.Source, ok: V.Verified, changes: Optional[dict], usage: dict, cfg: Config, now: datetime) -> dict:
+    return {
+        "doc_id": doc["doc_id"], "currency": doc["currency"], "type": doc["type"], "title": doc["title"], "url": doc["url"], "format": doc["format"],
+        "meeting_date": doc["meeting_date"].isoformat() if doc["meeting_date"] else None, "published": doc["published_date"].isoformat(),
+        "provider": cfg.provider, "model": cfg.model, "prompt_version": prompt.version, "generated_at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "input_sha256": src.sha256,
+        "source": {"method": src.method, "chars": src.chars_total, "chars_sent": src.chars_sent, "paragraphs_sent": len(src.paragraphs), "truncated": src.truncated},
+        "summary": ok.points, "quotes": ok.quotes, "changes_vs_previous": changes, "numbers": ok.numbers,
+        "dropped_points": ok.dropped_points, "dropped_quotes": ok.dropped_quotes,
+        "coverage": {"paragraphs": ok.coverage, "paragraphs_sent": len(src.paragraphs), "truncated": src.truncated},
+        "usage": usage,
+    }
+
+
+TITLED_NAME = re.compile(r"\b(?:Chair(?:man|woman|person)?|Vice[- ]Chair(?:man)?|Governor|Deputy Governor|President|Mr|Ms|Mrs|Dr)\.?\s+([A-Z\u00c0-\u017f][\w\u2019'\-]+)")
+
+
+def name_words(name: str) -> tuple:
+    """The words of a person's name, lower case, surname last; initials and titles are left out."""
+    return TURNS.name_words(name)
+
+
+def people_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
+    """The people a point may attribute a statement to, besides the bank and its bodies - each as its name words (surname last): the members of the document's bank
+    (config/cb_roster.yaml), the speaker of a speech, and every name the document itself gives after a title ("Chairman Warsh", "Governor Waller")."""
+    people = [name_words(p["name"]) for p in (roster or {}).get("people", []) if p.get("currency") == doc["currency"]]
+    if doc.get("speaker"):
+        people.append(name_words(doc["speaker"]))
+    for m in TITLED_NAME.finditer(text):
+        people.append(name_words(re.sub(r"[\u2019']s$", "", m.group(1))))
+    return tuple(dict.fromkeys(g for g in people if g))
+
+
+def speakers_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
+    """Every name word of `people_of`: what a point may name as the one who says it."""
+    return tuple(sorted({w for g in people_of(doc, text, roster) for w in g}))
+
+
+def officials_of(doc: dict, roster: Optional[dict]) -> tuple:
+    """The surnames of the bank's members (and of the speaker): the turns of a press conference that are the bank's, not a journalist's."""
+    names = [p["name"] for p in (roster or {}).get("people", []) if p.get("currency") == doc["currency"]] + ([doc["speaker"]] if doc.get("speaker") else [])
+    return tuple(sorted({w for w in (DP.surname(n) for n in names) if len(w) >= 3}))
+
+
+def bank_terms(doc: dict) -> tuple:
+    """The words that name the document's own bank ("Reserve Bank of Australia") and give the speaker of the document their title ("Member of the Executive Board"): the
+    attribution of the whole document, not a claim of a point - allowed names whether or not the cited paragraphs write them."""
+    return tuple(w.lower() for w in re.findall(r"[^\W\d_]+", S.BANK_NAME[doc["currency"]] + " " + (doc.get("role") or "")) if len(w) >= 3)
+
+
+def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> tuple:
+    """(input, output) tokens estimated from the characters, for a response that carried no usage."""
+    chars_in = len(system) + sum(len(m["content"]) for m in messages)
+    return chars_in // cfg.chars_per_token, len(output) // cfg.chars_per_token
+
+
+def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source, speakers: tuple = (), trace: Optional[list] = None, people: tuple = ()) -> tuple:
+    """One document: (Verified, usage, errors_of_the_last_attempt). At most two model calls: the second only with the errors of the first as feedback. A refusal,
+    an output cut at the token limit and invalid JSON are all failed attempts (the same one retry); a response without usage is estimated, and says so. `trace`, when
+    given, receives {"attempt", "errors", "output"} for every failed attempt (the log says why a document needed its retry or failed). `people`: the name words of each
+    person a point may name (`speakers` is their union)."""
+    named = (doc.get("speaker") or "").strip()                                     # (some pages give a code - "sp-gov" - instead of a name: no speaker line then)
+    who = " ".join(x for x in ((doc.get("role") or "").strip(), named) if x) if doc["type"] in ("speech", "testimony") and " " in named else ""
+    user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs, src.tags, who)
+    messages = [{"role": "user", "content": user}]
+    usage = {"input_tokens": 0, "output_tokens": 0, "attempts": 0, "reasoning_tokens": 0}
+    errors: list = []
+    best = None                                                                    # the valid part of an attempt that could be published on its own (the one with most valid points)
+    dec = cfg.decision if doc["type"] in cfg.decision["types"] else None
+    for attempt in (1, 2):
+        resp = client.complete(prompt.system, messages, OUTPUT_SCHEMA)
+        if resp.usage_reported:
+            usage["input_tokens"] += resp.input_tokens
+            usage["output_tokens"] += resp.output_tokens
+            usage["reasoning_tokens"] += resp.reasoning_tokens
+        else:
+            i, o = estimated_tokens(cfg, prompt.system, messages, resp.text or resp.refusal)
+            usage["input_tokens"] += i
+            usage["output_tokens"] += o
+            usage["estimated"] = True
+        usage["attempts"] = attempt
+        obj: Optional[dict] = None
+        if resp.refusal or resp.stop_reason == "refusal":
+            errors = [f"the model declined to answer ({(resp.refusal or 'no reason given')[:200]}): answer with the JSON object the document supports"]
+        elif resp.stop_reason == "length":
+            errors = ["the output was cut off at the output token limit: use fewer and shorter summary points and quotes, and keep the JSON complete"]
+        elif resp.stop_reason not in ("stop",):
+            errors = [f"the response did not finish normally ({resp.stop_reason}): return the complete JSON object"]
+        else:
+            obj, errors = V.parse_output(resp.text)
+        if obj is not None:
+            res = V.verify(obj, src.paragraphs, points=cfg.summary_points, point_chars=cfg.point_chars, quotes=cfg.quotes, quote_chars=cfg.quote_chars,
+                           total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects,
+                           speakers=speakers, evidence_paragraphs=cfg.evidence_paragraphs, fragments=cfg.fragments, fragment_words=cfg.fragment_words, min_support=cfg.min_support,
+                           attribution_words=cfg.attribution_words, fragment_shared=cfg.fragment_shared, pronouns=cfg.attribution_pronouns, negations=cfg.negations,
+                           bank_terms=bank_terms(doc), labels=src.turns, people=people, speaker_verbs=cfg.speaker_verbs, allowed_names=cfg.allowed_names, decision=dec)
+            if res.ok:
+                return res, usage, []
+            errors = res.errors
+            if res.publishable(cfg.publish_min_points) and (best is None or len(res.points) >= len(best.points)):
+                best = res
+        said = resp.text or resp.refusal or "(empty)"
+        if trace is not None:
+            trace.append({"attempt": attempt, "errors": list(errors), "output": said})
+        if attempt == 1:
+            messages = [messages[0], {"role": "assistant", "content": said}, {"role": "user", "content": PR.feedback_message(errors)}]
+    if best is not None:                                                           # after the retry: the points that still fail are removed, the rest is published
+        return best, usage, best.errors
+    return None, usage, errors
+
+
+def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher] = None, env=None, now: Optional[datetime] = None, cfg: Optional[Config] = None,
+                  state: Optional[dict] = None, banks: Optional[set] = None, types: Optional[set] = None, only: Optional[set] = None,
+                  roster: Optional[dict] = None, persist: bool = True) -> SummariesReport:
+    from ..cb_collect import load_state, save_state
+    cfg = cfg or load_config()
+    env = os.environ if env is None else env
+    rep = SummariesReport()
+    if client is None:
+        key = env.get(cfg.env_key)
+        if not key:
+            rep.enabled, rep.skipped_reason = False, f"{cfg.env_key} is not set: the stage is skipped (no summary is generated or changed)"
+            return rep
+        client = make_client(cfg, key)
+    now = now or datetime.now(timezone.utc)
+    docs = sorted(dst.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    meetings = ds.load_meetings(paths.meetings)
+    redlines = {(r["currency"], r["meeting_date"]): r for r in dst.load_redlines(paths)}
+    records = SS.load(paths.summaries)
+    current = {PR.load(k).version for k in PR.KINDS}
+    failures = {k: f for k, f in SS.load_failures(paths.summaries).items()                    # a failure of an older prompt version, or of another provider / model, is history
+                if f["prompt_version"] in current and f.get("provider") == cfg.provider and f.get("model") == cfg.model}
+    fetcher = fetcher or Fetcher()
+    roster = roster if roster is not None else load_roster()
+    no_text = SS.load_no_text(paths.summaries)
+    todo = [d for d in candidates(docs, meetings, today, cfg)                # optional narrowing (--summaries-bank / --summaries-type / a doc_id list): never widens
+            if (not banks or d["currency"] in banks) and (not types or d["type"] in types) and (not only or d["doc_id"] in only)]
+    rep.considered = len(todo)
+    attempted = 0
+
+    def save() -> None:
+        SS.write(paths.summaries, records)
+        SS.write_failures(paths.summaries, failures)
+        SS.write_no_text(paths.summaries, no_text)
+
+    for doc in todo:
+        prompt = PR.for_type(doc["type"])
+        rec = records.get(doc["doc_id"])
+        if is_done(rec, doc, prompt, cfg) or failed_before(failures, doc, prompt, doc.get("text_sha256"), cfg) or is_no_text(no_text, doc):
+            rep.unchanged += 1
+            continue
+        if attempted >= cfg.max_documents:
+            rep.stopped = f"document cap reached ({cfg.max_documents} per run)"
+            break
+        try:
+            src = SRC.load(doc, fetcher, cfg.max_source_chars, officials_of(doc, roster), cfg.non_prose)
+        except SRC.SourceError as e:
+            if e.kind in ("no_text", "non_prose"):                         # got the page, there is no text (or no prose) in it: said once, not asked again
+                no_text[doc["doc_id"]] = {"url": doc["url"], "reason": str(e), "kind": e.kind, "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
+                (rep.no_text if e.kind == "no_text" else rep.non_prose).append((doc["doc_id"], str(e)))
+                rep.docs.append({"doc_id": doc["doc_id"], "outcome": e.kind, "attempts": 0, "input": 0, "output": 0, "reasoning": 0, "cost": 0.0})
+                save()
+            else:
+                rep.source_errors.append((doc["doc_id"], str(e)))
+            continue
+        if (rec is not None and rec["prompt_version"] == prompt.version and rec.get("provider") == cfg.provider and rec["model"] == cfg.model
+                and rec["input_sha256"] == src.sha256) or failed_before(failures, doc, prompt, src.sha256, cfg):
+            rep.unchanged += 1                                             # the downloaded text is the one already summarised (or already failed twice): no call
+            continue
+        est = (len(prompt.system) + sum(len(p) + 8 for p in src.paragraphs)) // cfg.chars_per_token
+        if rep.input_tokens + est > cfg.max_input_tokens:
+            rep.stopped = f"input token budget reached ({rep.input_tokens} used, {cfg.max_input_tokens} allowed per run)"
+            break
+        attempted += 1
+        try:
+            trace: list = []
+            people = tuple(dict.fromkeys(people_of(doc, src.text, roster) + TURNS.people_of(src.turns)))              # + the speakers named on the transcript's labels
+            ok, usage, errors = summarise(client, cfg, prompt, doc, src, tuple(sorted({w for g in people for w in g})), trace=trace, people=people)
+        except APIError as e:
+            rep.stopped = f"the API stopped the run ({e.kind}): {e.message[:160]}"
+            break
+        rep.calls += usage["attempts"]
+        rep.input_tokens += usage["input_tokens"]
+        rep.output_tokens += usage["output_tokens"]
+        rep.reasoning_tokens += usage["reasoning_tokens"]
+        rep.usage_estimated += usage["attempts"] if usage.get("estimated") else 0
+        if ok is None:
+            failures[failure_key(doc["doc_id"], prompt, cfg)] = {"doc_id": doc["doc_id"], "prompt_version": prompt.version, "provider": cfg.provider, "model": cfg.model,
+                                                             "input_sha256": src.sha256, "errors": errors[:6],
+                                                             "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
+            rep.failed_validation.append((doc["doc_id"], errors))
+            rep.rejected.append((doc["doc_id"], trace[-1]["output"] if trace else ""))
+            rep.first_errors.append((doc["doc_id"], trace[0]["errors"] if trace else []))
+            rep.docs.append({"doc_id": doc["doc_id"], "outcome": "pending", "attempts": usage["attempts"], "input": usage["input_tokens"], "output": usage["output_tokens"],
+                             "reasoning": usage["reasoning_tokens"], "cost": cfg.cost_usd(usage["input_tokens"], usage["output_tokens"])})
+            save()
+            continue
+        for k in [k for k in failures if k.startswith(doc["doc_id"] + "|")]:
+            del failures[k]                                                # it has a valid summary now
+        chg = CH.from_redline(redlines[(doc["currency"], doc["meeting_date"])]) if doc["type"] == "statement" and (doc["currency"], doc["meeting_date"]) in redlines else None
+        records[doc["doc_id"]] = _record(doc, prompt, src, ok, chg, usage, cfg, now)
+        rep.new += 1
+        if not ok.ok:                                                              # published with what passed: the rest was removed
+            rep.partial.append((doc["doc_id"], ok.dropped_points, ok.dropped_quotes))
+        elif trace:
+            rep.retried.append((doc["doc_id"], trace[0]["errors"]))
+        else:
+            rep.first_pass += 1
+        rep.docs.append({"doc_id": doc["doc_id"], "outcome": "partial" if not ok.ok else "full after retry" if trace else "full", "attempts": usage["attempts"], "input": usage["input_tokens"],
+                         "output": usage["output_tokens"], "reasoning": usage["reasoning_tokens"], "cost": cfg.cost_usd(usage["input_tokens"], usage["output_tokens"]),
+                         "points": len(ok.points), "dropped": len(ok.dropped_points), "quotes": len(ok.quotes), "dropped_quotes": len(ok.dropped_quotes)})
+        save()
+    rep.cost_usd = cfg.cost_usd(rep.input_tokens, rep.output_tokens)
+    rep.pending = sum(1 for d in todo if not is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"]), cfg) and not failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256"), cfg)
+                      and not is_no_text(no_text, d))
+    save()
+    state = state if state is not None else load_state(paths)
+    s = state.setdefault(STATE_KEY, {"totals": {"calls": 0, "input_tokens": 0, "output_tokens": 0, "summaries": 0}})
+    active = bool(rep.calls or rep.new or rep.failed_validation or rep.stopped or rep.no_text or rep.non_prose)
+    if active or "last_run" not in s:                     # a run that did nothing leaves state.json alone (no commit for a timestamp)
+        s["last_run"] = {"at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"), "new": rep.new, "unchanged": rep.unchanged, "failed_validation": len(rep.failed_validation),
+                     "source_errors": len(rep.source_errors), "no_text": len(rep.no_text), "calls": rep.calls, "input_tokens": rep.input_tokens, "output_tokens": rep.output_tokens,
+                     "reasoning_tokens": rep.reasoning_tokens, "usage_estimated": rep.usage_estimated, "cost_usd": rep.cost_usd, "stopped": rep.stopped, "pending": rep.pending}
+    for k, v in (("calls", rep.calls), ("input_tokens", rep.input_tokens), ("output_tokens", rep.output_tokens), ("summaries", rep.new)):
+        s["totals"][k] = s["totals"].get(k, 0) + v
+    if persist:
+        save_state(paths, state)                            # (a scratch run - a measurement - leaves state.json alone)
+    return rep
+
+
+@dataclass
+class Estimate:
+    documents: list = field(default_factory=list)           # (doc_id, type, chars_sent, input_tokens) of every document still to summarise
+    source_errors: list = field(default_factory=list)
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost_usd: float = 0.0
+    runs: int = 0                                           # how many capped runs the backlog needs
+
+
+def estimate(paths, today: date, *, fetcher: Optional[Fetcher] = None, cfg: Optional[Config] = None, banks: Optional[set] = None, types: Optional[set] = None) -> Estimate:
+    """What summarising everything still pending would cost, WITHOUT calling the model: the pending documents are downloaded (politely) and measured;
+    input = system prompt + the numbered paragraphs at `chars_per_token`, output = `estimate_output_tokens` per document; prices from the config (assumptions)."""
+    cfg = cfg or load_config()
+    docs = sorted(dst.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    records = SS.load(paths.summaries)
+    current = {PR.load(k).version for k in PR.KINDS}
+    failures = {k: f for k, f in SS.load_failures(paths.summaries).items()
+                if f["prompt_version"] in current and f.get("provider") == cfg.provider and f.get("model") == cfg.model}
+    fetcher = fetcher or Fetcher()
+    no_text = SS.load_no_text(paths.summaries)
+    est = Estimate()
+    for doc in candidates(docs, ds.load_meetings(paths.meetings), today, cfg):
+        if (banks and doc["currency"] not in banks) or (types and doc["type"] not in types):
+            continue
+        prompt = PR.for_type(doc["type"])
+        if is_done(records.get(doc["doc_id"]), doc, prompt, cfg) or failed_before(failures, doc, prompt, doc.get("text_sha256"), cfg) or is_no_text(no_text, doc):
+            continue
+        try:
+            src = SRC.load(doc, fetcher, cfg.max_source_chars, prose=cfg.non_prose)
+        except SRC.SourceError as e:
+            est.source_errors.append((doc["doc_id"], f"{e} [{'would be marked ' + e.kind if e.kind in ('no_text', 'non_prose') else 'transient'}]"))
+            continue
+        tokens = (len(prompt.system) + sum(len(p) + 8 for p in src.paragraphs)) // cfg.chars_per_token
+        est.documents.append((doc["doc_id"], doc["type"], src.chars_sent, tokens))
+        est.input_tokens += tokens
+        est.output_tokens += cfg.estimate_output_tokens
+    est.cost_usd = cfg.cost_usd(est.input_tokens, est.output_tokens)
+    est.runs = -(-len(est.documents) // cfg.max_documents) if est.documents else 0
+    return est
+
+
+def estimate_report(est: Estimate, cfg: Optional[Config] = None) -> str:
+    cfg = cfg or load_config()
+    by: dict = {}
+    for _id, typ, chars, tok in est.documents:
+        b = by.setdefault(typ, [0, 0, 0])
+        b[0] += 1
+        b[1] += chars
+        b[2] += tok
+    lines = [f"summaries dry run (no call): {len(est.documents)} documents still to summarise, {est.runs} runs at {cfg.max_documents} documents per run"]
+    lines += [f"  {t:22s} {n:3d} documents  {chars:9d} chars  ~{tok:8d} input tokens" for t, (n, chars, tok) in sorted(by.items())]
+    lines.append(f"  total input ~{est.input_tokens} tokens, output ~{est.output_tokens} tokens ({cfg.estimate_output_tokens} each): about ${est.cost_usd:.2f} at "
+                 f"${cfg.price_input}/${cfg.price_output} per million tokens (list prices of {cfg.model}, checked {cfg.price_checked})")
+    lines += [f"  SOURCE {d}: {why}" for d, why in est.source_errors]
+    return "\n".join(lines)

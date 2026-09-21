@@ -1,10 +1,13 @@
 name: cb-refresh
 # Central Banks collector -> data/cb/ (see docs/central-banks/ARCHITECTURE.md): market quotes, official rate series,
-# rate decisions, the official texts (statements, votes, redlines, minutes, speeches - phase 2a), Fed SEP projections and the weekly
+# rate decisions, the official texts (statements, votes, redlines, minutes, speeches - phase 2a), their factual summaries (phase 2b, needs the
+# OPENAI_API_KEY secret), Fed SEP projections and the weekly
 # check of meetings.yaml against the official calendar pages.
 # GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
 # Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ and the Central Banks files of public/
 # (central-banks.html, central-banks/, data/cb/) - never any other public/ file or other data/.
+# What is committed, and where, depends on the ref the run is on: on main, data/cb/ + the CB files of public/, pushed to main; on any other ref (a feature branch
+# dispatched by hand), ONLY data/cb/summaries/, pushed to THAT branch - main is never touched from a run that is not on main (explicit guard in both steps).
 on:
   schedule:
     - cron: '37 */2 * * *'
@@ -12,6 +15,32 @@ on:
     inputs:
       force_calendar_check:
         description: "Run the weekly meetings / holiday-calendar check now (it otherwise runs once a week)"
+        type: boolean
+        default: false
+      stage:
+        description: "Run only this stage (default all: every stage, then the summaries when the OPENAI_API_KEY secret exists)"
+        type: choice
+        options: [all, market, official, decisions, documents, projections, calendar, summaries]
+        default: all
+      bank:
+        description: "summaries only: restrict to this currency, e.g. USD (empty = every bank)"
+        type: string
+        default: ""
+      type:
+        description: "summaries only: restrict to this document type, e.g. statement (empty = every type)"
+        type: string
+        default: ""
+      doc:
+        description: "summaries only: restrict to these documents, e.g. USD:statement:2026-09-16 (comma-separated; empty = every document)"
+        type: string
+        default: ""
+      effort:
+        description: "summaries only: the reasoning effort of this run (empty = the config's)"
+        type: choice
+        options: ["", low, medium, high]
+        default: ""
+      scratch:
+        description: "summaries only: a measurement - write nothing (no summary, no state.json), only the log says what happened"
         type: boolean
         default: false
 
@@ -25,7 +54,7 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 15                      # the documents stage is polite (2 s per host, 400 requests at most): ~3 min on a cold start
+    timeout-minutes: 30                      # the documents stage is polite (2 s per host, 400 requests at most): ~3 min on a cold start; the summaries step may take 14
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -36,22 +65,55 @@ jobs:
 
       # All stages (market, official, decisions, documents, projections, calendar). Writes the per-source report to
       # $GITHUB_STEP_SUMMARY. Exit 0 on partial failure, non-zero only when EVERY source failed; decisions,
-      # projections and the calendar check only warn.
+      # projections and the calendar check only warn. Skipped when a dispatch asks for one stage.
       - name: Collect
+        if: ${{ !inputs.stage || inputs.stage == 'all' }}
         run: python -m src.cb_collect ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
+
+      - name: Collect one stage
+        if: ${{ inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}
+        env:
+          STAGE: ${{ inputs.stage }}
+        run: python -m src.cb_collect --stage "$STAGE" ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
+
+      # Phase 2b: factual summaries of the collected texts (src/cb_summarize, config/cb_summaries.yaml). Last of the stages, and only when the secret exists.
+      # Capped per run (documents, tokens); a failure or a timeout of this step never fails the job: the other stages are committed as usual.
+      # The secret reaches only this step (and the read-only status step, which just warns when it is missing), not the whole job.
+      - name: Check for the summaries key
+        id: key
+        env:
+          KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: echo "present=$([ -n "$KEY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Summaries
+        if: ${{ steps.key.outputs.present == 'true' && (!inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}
+        continue-on-error: true
+        timeout-minutes: 14
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BANK: ${{ inputs.bank }}
+          TYPE: ${{ inputs.type }}
+          DOC: ${{ inputs.doc }}
+          EFFORT: ${{ inputs.effort }}
+          SCRATCH: ${{ inputs.scratch && 'yes' || '' }}
+        run: python -m src.cb_collect --stage summaries ${BANK:+--summaries-bank "$BANK"} ${TYPE:+--summaries-type "$TYPE"} ${DOC:+--summaries-doc "$DOC"} ${EFFORT:+--summaries-effort "$EFFORT"} ${SCRATCH:+--summaries-scratch}
 
       - name: Freshness status
         if: always()
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python -m src.cb_collect --status
 
       # Phase 3a: data/cb -> public/data/cb/*.json + the 37 static pages (one template). Deterministic: unchanged data rewrites nothing.
       - name: Render Central Banks pages
         run: python -m src.cb_render
 
-      # Only on main: a dispatch from another ref (e.g. a feature branch) collects and reports but never pushes.
+      # On main: data/cb/ + the Central Banks files of public/, pushed to main. The guard is in the script as well as in the condition: this step never pushes from
+      # another ref.
       - name: Commit + push
         if: github.ref == 'refs/heads/main'
         run: |
+          [ "$GITHUB_REF" = "refs/heads/main" ] || { echo "refusing: this step only runs on main"; exit 1; }
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/cb/ public/central-banks.html public/central-banks/ public/data/cb/
@@ -59,6 +121,23 @@ jobs:
           git commit -m "cb: market refresh $(date -u +%FT%TZ) [ci]"
           for i in 1 2 3; do
             git pull --rebase --autostash origin main && git push origin main && exit 0
+            sleep 5
+          done
+          exit 1
+
+      # On any other branch (a dispatch by hand): ONLY the summaries, and only to the branch the run is on - never main, never the rendered pages, never the
+      # rest of data/cb/ (state.json and the collected data stay in the runner). The render step above ran for the log; its files are not added.
+      - name: Commit summaries to the branch
+        if: ${{ github.ref != 'refs/heads/main' && startsWith(github.ref, 'refs/heads/') }}
+        run: |
+          [ "$GITHUB_REF_NAME" != "main" ] || { echo "refusing: this step never pushes main"; exit 1; }
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cb/summaries/
+          git diff --cached --quiet && { echo "nothing to commit"; exit 0; }
+          git commit -m "cb: summaries $(date -u +%FT%TZ) [ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin "$GITHUB_REF_NAME" && git push origin "HEAD:refs/heads/$GITHUB_REF_NAME" && exit 0
             sleep 5
           done
           exit 1

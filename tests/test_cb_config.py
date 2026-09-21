@@ -198,7 +198,7 @@ def test_workflow_triggers_and_guards(workflow):
     assert workflow["concurrency"] == {"group": "cb-refresh", "cancel-in-progress": False}
     assert workflow["permissions"] == {"contents": "write"}
     job = workflow["jobs"]["refresh"]
-    assert job["timeout-minutes"] == 15 and job["runs-on"] == "ubuntu-latest"
+    assert job["timeout-minutes"] == 30 and job["runs-on"] == "ubuntu-latest"          # (the summaries step alone may take 14)
 
 
 CB_PUBLIC = ["public/central-banks.html", "public/central-banks/", "public/data/cb/"]          # the only public/ paths the workflow may write
@@ -293,7 +293,7 @@ def test_roster_lists_the_decision_makers_with_voter_status_and_the_chair():
     roster = load("config/cb_roster.yaml")
     people = roster["people"]
     assert len(people) >= 40 and roster["meta"]["generator"] == "scripts/cb_gen_roster.py"
-    assert {p["currency"] for p in people} <= set(BANKS) - {"NZD"}                       # RBNZ sits behind Cloudflare: no entries, and the file says so
+    assert {p["currency"] for p in people} == set(BANKS)                                  # all eight; RBNZ's are typed by hand (Cloudflare), and the file says so
     for p in people:
         assert p["name"].strip() and p["role"].strip() and isinstance(p["chair"], bool), p
     usd = [p for p in people if p["currency"] == "USD"]
@@ -308,7 +308,8 @@ def test_roster_lists_the_decision_makers_with_voter_status_and_the_chair():
     for ccy, chair in {"EUR": "Christine Lagarde", "GBP": "Andrew Bailey", "JPY": "Kazuo Ueda", "CAD": "Tiff Macklem", "AUD": "Michele Bullock", "CHF": "Martin Schlegel"}.items():
         assert [p["name"] for p in by[ccy] if p["chair"]] == [chair], ccy
     assert all(p["name"] == p["name"].strip() and not p["name"].startswith(("None", "Dr ", "Sir ", "Professor ")) for p in people)
-    assert set(roster["sources"]) == {"USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"} and all(s["url"].startswith("https://") for s in roster["sources"].values())
+    assert set(roster["sources"]) == set(BANKS) and all(s["url"].startswith("https://") for c, s in roster["sources"].items() if c != "NZD")
+    assert roster["sources"]["NZD"]["status"] == "manual" and roster["sources"]["NZD"]["url"] is None and "Summary record of meeting" in roster["sources"]["NZD"]["note"]
 
 
 def test_documents_stage_runs_after_decisions_and_before_projections():
@@ -327,3 +328,15 @@ def test_the_manual_documents_file_is_a_commented_template_and_valid_yaml():
     data = yaml.safe_load((ROOT / "data/cb/manual/documents.yaml").read_text())
     assert data in (None, {}) or isinstance(data.get("documents", []), list)
     assert "RBNZ" in (ROOT / "data/cb/manual/documents.yaml").read_text()
+
+
+def test_rbnz_roster_is_the_hand_typed_participants_list_with_only_the_roles_the_source_gives():
+    people = [p for p in load("config/cb_roster.yaml")["people"] if p["currency"] == "NZD"]
+    assert [(p["name"], p["role"], p["chair"]) for p in people] == [
+        ("Anna Breman", "Governor, Chairperson", True), ("Carl Hansen", "MPC member", False), ("Hayley Gourley", "MPC member", False),
+        ("Karen Silk", "MPC member", False), ("Paul Conway", "MPC member", False), ("Prasanna Gai", "MPC member", False)]
+    assert {p["body"] for p in people} == {"Monetary Policy Committee"} and all(set(p) == {"currency", "name", "role", "body", "voter", "chair"} for p in people)
+    manual = load("config/cb_roster_manual.yaml")["NZD"]
+    assert [(p["name"], p["role"], p["chair"]) for p in manual["people"]] == [(p["name"], p["role"], p["chair"]) for p in people] and "typed by hand" in manual["source"]   # the file the generator merged
+    note = "voter = MPC member; the decision is taken by consensus, votes are not published"
+    assert manual["voter_note"] == note and load("config/cb_roster.yaml")["sources"]["NZD"]["voter_note"] == note                # `voter` is a convention, and the file says what it means

@@ -25,8 +25,8 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 
 - Text: **doar surse oficiale**; ultimele **4 ședințe / bancă**; latență țintă **≤ 15 min** prin trigger extern (faza 4).
 - Conferința: video + transcript oficial unde există + rezumat factual. **Fără transcriere proprie în v1.**
-- AI: **doar pe text** (rezumate, citate), **fără niciun verdict de direcție**. Model: **`claude-sonnet-5`**, fixat în
-  config; cheia devine secret GitHub în faza 2.
+- AI: **doar pe text** (rezumate, citate), **fără niciun verdict de direcție**. Provider: **OpenAI**, model **`gpt-5.6-terra`** (decizia lui George, 2026-09-21;
+  inițial `claude-sonnet-5`), fixat în `config/cb_summaries.yaml`; cheia = secretul GitHub `OPENAI_API_KEY`.
 - Orice citat există **verbatim** în sursă, iar rezumatul **nu conține numere absente din sursă**. Ambele se verifică
   automat.
 
@@ -209,7 +209,7 @@ Fără calculul traiectoriilor (vine în 1B-2), fără texte / rezumate, fără 
 | 8 | surse snapshot | de acord |
 | 9 | migrarea Carry | de acord; comparația apare în `--status` din 1B-1; migrarea e un pas separat după ≥ 1 ședință cu diff 0 |
 | 10 | convenții de calcul | 100 − preț și MPT în bp; spread = mediana pe 20 de zile lucrătoare (§5.4); OIS din RBA F1 respins; AUD primar = ASX IB |
-| 11 | AI (faza 2) | `claude-sonnet-5`, fixat în config; cheia = secret GitHub în faza 2 |
+| 11 | AI (faza 2) | **actualizată 2026-09-21** — provider **OpenAI**, model **`gpt-5.6-terra`** (mijlocul familiei curente: gpt-6-astra / gpt-5.6-sol frontieră, gpt-5.6-luna mic), fixat în `config/cb_summaries.yaml`; cheia = secretul GitHub `OPENAI_API_KEY`; prețuri de listă 2 / 12 USD per MTok (standard, context scurt), sursa și data în config (https://developers.openai.com/api/docs/pricing, citit 2026-09-21). Inițial `claude-sonnet-5`; clientul Anthropic rămâne alternativă configurată și testată |
 | 12 | trigger extern (faza 4) | corectat: Vercel Cron pe Hobby rulează o dată pe zi; scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`, 3 reîncercări cu backoff, alertă la eșec |
 | 13 | minute GitHub Actions | de acord (se măsoară după prima săptămână) |
 | 14 | slug-uri URL | de acord: `/central-banks/usd` etc.; perechea `/central-banks/pair/eurusd` |
@@ -421,7 +421,11 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   (BoC, SNB); minutele / deliberările / transcrierile / discursurile se hașează și se leagă (se descarcă la cerere în 2b). Idempotență: același sha ⇒
   nicio rescriere (`Dataset` scrie o partiție doar dacă i se schimbă octeții); `first_seen_at` nu se mută niciodată.
 - **Politețe.** robots.txt respectat pe fiecare gazdă (o gazdă cu robots ilizibil e sărită); un bloc (Cloudflare, 403/429) e raportat, nu ocolit;
-  validatorii ETag / Last-Modified stau în `data/cb/state.json` și avansează **doar după ce datele au fost stocate** (`remember`). Feed-urile se citesc
+  validatorii ETag / Last-Modified stau în `data/cb/state.json` și avansează **doar după ce datele au fost stocate** (`remember`) **și doar dacă s-a schimbat
+  conținutul stocat** (hash-ul textului extras, nu al octeților: o pagină poartă un nonce): aceleași date sub validatori noi lasă `state.json` neatins, deci nu
+  se comite nimic doar pentru validatori (costul: un GET întreg în loc de 304, pe acea pagină). Sursele de piață și seriile oficiale procedează la fel (validatorii
+  avansează doar cu rânduri noi / schimbate). **ETag-ul ECB se ignoră** (serverele de margine trimit alt ETag pentru aceiași octeți): nu se stochează și nu se trimite;
+  rămâne `Last-Modified`. Feed-urile se citesc
   necondiționat (un 304 nu are elemente). O ședință de comunicat mai veche de 14 zile nu se mai cere deloc.
 - **Rata din comunicat** = sursă intermediară. Precedență nouă: **serie oficială > comunicat > BIS > FF validat > manual**; status nou `statement`.
   Fiecare bancă are propriul regex; rata e validată (interval −1…15 %, pas ≤ 100 bp, direcția coerentă cu verbul, la Fed intervalul de 25 bp). Ce nu se
@@ -434,7 +438,10 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   cu ancore pe paragrafe; `apply_redline` reface textul curent exact (testat pe perechi reale consecutive).
 - **Discursuri și mărturii**: feed-ul RSS oficial al fiecărei bănci (Fed, ECB `ecb.sp*` / `ecb.in*`, BoE, BoC, SNB; listele HTML BoJ și RBA); BIS doar
   pentru backfill și dedup — cheia e vorbitor + similaritate de titlu ≥ 0.6, **data BIS nu intră în cheie** (postarea BIS e la 13–19 zile după discurs).
-  Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge. Greutatea: Chair > votanți > restul.
+  Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge; un anunț care nu e text (BoC „Media availability”: oră, loc,
+  temă) se marchează `non_document` — rămâne în store, nu apare ca discurs și nu se rezumă niciodată. La fel paginile de **webcast** ale BoC (`/multimedia/…`) listate printre discursuri:
+  cea a unei conferințe de presă (titlu / URL cu „press conference”) se **atașează ședinței** potrivite (decizie ±1 zi) ca videoclipul ei (`meta.attached_to`; dacă pagina de comunicat
+  nu a dat deja un video, feed-ul îl dă), orice altă înregistrare, sau o conferință fără ședință potrivită, doar `non_document`; niciuna nu e discurs și niciuna nu se rezumă. Greutatea: Chair > votanți > restul.
 - **Conferința de presă**: transcrieri oficiale doar ca URL + metadate (Fed PDF, ECB HTML cu Q&A unde hash-ul a fost publicat, RBA HTML; BoC și SNB au
   declarația introductivă în text). **Videoclipul vine din paginile oficiale ale băncilor, nu din feed-urile YouTube**: pagina FOMC (player Brightcove),
   pagina `/multimedia/` a BoC (legată din comunicat), pagina de transcript a RBA („Watch video: Media conference …”), pagina Monetary Policy Report a BoE
@@ -467,5 +474,172 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   pagină ca rezumatul** (partea de după „Minutes of the Monetary Policy Committee meeting”, hașată; comunicatul se oprește la acel titlu).
 - **Roster** (`config/cb_roster.yaml`, generat din paginile oficiale de comitet): Fed (rotația 2026 / 2027, Chair), ECB (cele 6 membri ai Executive Board votează
   mereu; guvernatorii băncilor naționale au vot prin rotație, pagina orarului nu se citește: `voter: null`), BoE (9 membri, cu cei 4 externi), BoJ, BoC (6, cu
-  Deputy Governor extern), RBA (9), SNB (Governing Board, 3). Doar RBNZ lipsește (Cloudflare). Căutarea unui vorbitor se face doar printre membrii băncii lui.
+  Deputy Governor extern), RBA (9), SNB (Governing Board, 3). **RBNZ** (Cloudflare) e tastat de mână în `config/cb_roster_manual.yaml`, din lista de participanți a „Summary record of meeting” din MPS sep 2026: Anna Breman
+  (Governor, Chairperson) și membrii MPC Carl Hansen, Hayley Gourley, Karen Silk, Paul Conway, Prasanna Gai — doar rolurile pe care sursa le dă; generatorul îl
+  îmbină în `cb_roster.yaml`, cu nota „voter = MPC member; the decision is taken by consensus, votes are not published” (`voter` e o convenție, nu un rol din sursă). Căutarea unui vorbitor se face doar printre membrii băncii lui.
 - **Interviul colectiv BoE** (pooled interview) nu se colectează.
+
+
+## 15. FAZA 2b — rezumate AI, strict factuale
+
+Peste textele din 2a: comunicatul deciziei, textele conferinței, minute / accounts / summary of opinions / deliberations, discursurile trecute de filtrul de
+relevanță — ultimele 4 ședințe per bancă. **Modelul doar reformulează ce scrie în document**: fără direcție, hawkish / dovish, prognoze sau evaluări. Nu mai există
+nicio „interpretare” în cod: ce nu trece verificarea automată nu se scrie.
+
+```
+config/cb_summaries.yaml        provider + model (openai / gpt-5.6-terra; anthropic păstrat), limitele unui apel, vocabularul, plafoanele per rulare, prețurile cu sursă și dată
+src/cb_summarize/client.py      o interfață (`complete(system, messages, schema) -> Response`), un client HTTP per provider (OpenAI Responses API, Anthropic Messages), `make_client`, RecordedClient pentru teste; fără SDK / dependență nouă; cheia nu se loghează
+src/cb_summarize/schema.py      contractul de ieșire ca JSON schema strictă (structured outputs)
+src/cb_summarize/prompts/       system.md + statement / transcript / minutes / speech .md, fiecare cu `prompt_version:`; versions.json fixează sha256 al fiecărui prompt
+src/cb_summarize/source.py      textul unui document: comunicatele vin din store; restul se descarcă la nevoie (extragerea din 2a, sha identic) și NU se comit
+src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate / atribuite (pe familii de forme, vorbitori numiți, pronume), grounding pe fiecare punct (fragmente, sprijin, date / nume proprii, negație, replica vorbitorului), coverage
+src/cb_summarize/turns.py       replicile unui transcript de conferință (etichete Fed în text, paragrafe-nume RBA, întrebările ECB în bold): cine spune fiecare paragraf; nimic altceva din document nu se schimbă
+src/cb_summarize/changes.py     changes_vs_previous din redline-ul existent (cuvintele scoase / adăugate, per paragraf) — fără model, fără interpretare
+src/cb_summarize/run.py         selecția, plafoanele, apelul, reîncercarea unică, marcajul validation_failed, idempotența; `estimate()` = dry run
+src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (partiții lunare, sortate, octeți deterministe) + failures.json
+```
+
+- **Contract** (un rând per `doc_id`): `doc_id`, `model`, `prompt_version`, `generated_at`, `input_sha256`, `summary` (3–6 puncte, engleză; fiecare punct = `text` + `evidence`: `paragraphs` 1–3, `fragment` verbatim 5–40 cuvinte, `paragraph` în care e, `start` / `end`, `coverage` = partea din cuvintele punctului găsită în paragrafele citate), `quotes` (1–5, fiecare
+  `text` + `paragraph` + `start` / `end` = offset în textul sursă), `changes_vs_previous` (doar comunicate), `numbers` (fiecare număr din rezumat cu offset-ul lui în
+  sursă), `coverage` (paragrafele folosite + dacă documentul a fost tăiat), `usage` (tokeni). Nu se stochează textul sursei.
+- **Verificarea (obligatorie, înainte de scriere).** Citat: verbatim în paragraful pe care îl numește (modelul declară paragraful; offset-ul absolut îl derivă
+  verificatorul și e re-verificabil: `verify_stored` — un offset greșit se detectează); ghilimele curbe, diacritice, majuscule: exact, fără normalizare
+  Unicode. Număr: fiecare număr din puncte trebuie să existe în sursă, comparat pe valoare + unitate compatibilă, cu normalizare de separatori (`1,234`, spațiu
+  fără întrerupere / subțire), procente (`%`, `percent`, `per cent`), puncte de bază (`25 bp` = `25bp` = `25 basis points`), fracții (`3-3/4`, `1/4`, `2¼`), semne
+  minus; **fără conversie** (`1/4 percentage point` ≠ `25 basis points`) și fără număr pe care documentul nu îl scrie. Vocabular, în două trepte (`config/cb_summaries.yaml`): **mereu interzise** în puncte — hawkish, dovish, bullish, bearish, paves the way (+ paved / paving the way), chiar dacă
+  documentul le folosește; **permise doar atribuite** — likely, expect(s) / expecting, signal(s) / signalled, suggest(s) / suggested (lista din config) — dacă (1) documentul folosește *același
+  cuvânt, în orice formă flexionată* („I expect” într-un discurs permite „Waller expects”; „suggests” permite „suggested”; „like” NU permite „likely”) și (2) punctul îl atribuie
+  băncii sau unui vorbitor numit: un subiect din `attribution_subjects` (Committee, Board, Bank, SNB, minutes …) **sau numele de familie al unui vorbitor din document** — al
+  vorbitorului discursului, al membrilor băncii din roster, ori orice nume dat în text după un titlu („Chair Warsh”, „Governor Waller’s”), cu sau fără titlu — apare mai devreme în
+  aceeași propoziție („The Committee expects …”, „Waller expects real GDP to grow”), niciodată în vocea rezumatului. Motivul: comunicatele reale spun „likely”, „expects”, „suggests”
+  aproape în fiecare rând, iar prima rulare reală a arătat două fals-negative ale regulii (vezi mai jos). Potrivirea pe formă folosește reguli de sufix fără dicționar (`forms()`: -s / -es /
+  -ed / -ing / -ies, literă dublată, -e final), aplicate ambelor părți; „-ly” nu se taie la cuvintele din vocabular. Verificarea se face doar în puncte, nu în citate (un citat e
+  cuvântul băncii). **`statement-v4` / `transcript-v4` / `minutes-v4` / `speech-v4`** (`versions.json` păstrează v1–v3). Lungimi: 3–6 puncte de 20–400 caractere, ≤ 1800 în total, citate 15–500 caractere.
+  Coverage: paragrafe existente.
+- **Grounding pe fiecare punct** (v4, întărit în v5). Fiecare punct poartă `evidence`: 1–3 paragrafe citate + **1–3 fragmente** verbatim de 5–40 cuvinte (câte unul per afirmație; promptul cere o
+  afirmație principală per punct). Verificatorul cere: (a) fiecare fragment e verbatim (caractere exacte) într-un paragraf citat — dacă e într-unul necitat, mesajul spune care — și are cel puțin
+  2 cuvinte-conținut comune cu punctul (fără fragmente de umplutură; `grounding.fragment_shared_words`); (b) **≥ 85 % din cuvintele-conținut ale punctului se găsesc în paragrafele citate**
+  (`grounding.min_support`). Cuvânt-conținut = alfabetic, ≥ 3 litere, nu stopword (listă fixă în `verify.py`), nu vocabular de atribuire (`grounding.attribution_words`: states, said, noted,
+  reported … + subiectele băncii + numele băncii + numele vorbitorilor). Cuvintele se potrivesc pe forme (stem minimal, fără dependențe), se numără distinct, iar ce lipsește se listează în feedback
+  („not found: 'bonds', 'mortgage'”). Asta prinde afirmația nesusținută **fără numere și fără cuvinte interzise**. Peste pragul de 85 %, cu aceeași reîncercare unică și același `validation_failed`:
+  - **Clase stricte, tratate ca numerele** (v5): **datele, lunile, zilele săptămânii, zilele ordinale (16th), acronimele și cuvintele cu majusculă care nu încep o propoziție (persoane, instituții, locuri)**
+    dintr-un punct trebuie să apară, așa cum sunt scrise, în paragrafele citate — fără date derivate („since July” din „seven weeks ago” ⇒ respins). Se exceptează numele băncii proprii, subiectele
+    de atribuire și vorbitorii (sunt atribuirea, nu o afirmație); „U.S.” = „US”; „May” e lună doar în context. Anii și celelalte numere: verificați ca numere, **și în paragrafele citate** (nu oriunde în document).
+  - **Negația** (v5): dacă punctul are o negație (not, no, never, n't, without, neither / nor, cannot; „not only” nu e) și propoziția cea mai apropiată din paragrafele citate (cele mai multe
+    cuvinte-conținut comune; la egalitate se ia cea care se potrivește) nu are, sau invers ⇒ respins („never turn a statement into its opposite”).
+  - **Replica vorbitorului, în transcripturi** (v5): transcriptul e segmentat pe replici după etichetele din sursă (`turns.py`; Fed: etichete cu majuscule în text, tăiate la fiecare etichetă, antetul
+    de pagină scos; RBA: paragraf-nume; ECB: întrebările sunt paragrafele în bold, fără etichete). Un punct care numește un vorbitor (prima persoană numită; prenumele ajunge, numele de familie trebuie să
+    fie pe etichetă) se sprijină doar pe paragrafe din replicile lui; un punct care nu numește pe nimeni se sprijină doar pe replicile băncii — niciodată pe întrebarea unui jurnalist sau pe replica altcuiva.
+    Modelul primește paragrafele-întrebare marcate „(question)”. Hash-ul documentului rămâne cel al extragerii din 2a (doar paragrafele trimise sunt replicile).
+  - **Pronumele** (v5): he / she / they atribuie un cuvânt din vocabular („Waller says X; he expects Y”) dacă banca sau vorbitorul e numit mai devreme în același punct și pronumele e în aceeași propoziție
+    cu cuvântul; „it” nu e pe listă.
+  **Limite cunoscute:** e o verificare lexicală, nu semantică — o schimbare de subiect cu aceleași cuvinte trece; la 85 % un punct de ~10 cuvinte-conținut poate purta un cuvânt nesuținut care nu e dată / nume;
+  numele propriu la începutul propoziției nu e verificat ca nume (rămâne la pragul de 85 %); un transcript fără etichete detectabile nu are regula vorbitorului (ECB: se folosește bold-ul);
+  negația se compară pe propoziția cea mai apropiată, nu pe fiecare clauză. Se completează cu citatele verbatim și cu numerele.
+- **Publicare pe punct** (v6). Fiecare punct și fiecare citat se verifică separat (`Verified.points` / `dropped_points`, `quotes` / `dropped_quotes`; fiecare eroare a unui punct spune „summary point N”).
+  După singura reîncercare, punctele care încă pică se elimină, la fel citatele; rezumatul se publică dacă rămân **≥ 3 puncte valide** (`publish.min_points`), altfel rămâne pending cu motivele.
+  Din cele două încercări se publică cea cu mai multe puncte valide. Nu se repară nimic: se elimină. Rămân fatale (nimic nu se publică): lista de puncte care nu e listă, numărul de puncte în afara 3–6,
+  lipsa oricărui citat, mai mult de 5 citate valide, lungimea totală a punctelor valide. Numerele și acoperirea (paragrafele pe care se sprijină ce s-a publicat) urmează punctele păstrate. În înregistrare:
+  `dropped_points` (text + motive) și `dropped_quotes`; în pagină: „N points removed by verification” cu motivele în tooltip. **Comunicatele** (`decision.types`): rezumatul trebuie să păstreze un punct valid care spune
+  decizia asupra ratei (un termen de rată — target range, cash rate, Bank Rate, overnight rate … — și o acțiune asupra ei — decided, maintain, raise, hold, encourage …; lexiconul găsește propoziția de decizie în toate
+  cele 28 de comunicate reale din store); dacă punctul de decizie pică, rezumatul rămâne pending. Promptul cere ca primul punct să fie decizia.
+- **Nume permise mereu** (v6): vorbitorul documentului cu titlul lui (metadata `speaker` + `role`, sau roster-ul), banca, comitetul și organele ei (`grounding.allowed_names`: Governing Council, Monetary Policy Committee …,
+  scoase ca fraze din punct înainte să se verifice cuvintele și numele proprii — „monetary policy” din altă parte rămâne verificat). Mesajul către model are linia `Speaker: Governor Andrew Bailey` (numai cu un nume
+  real, nu cu un cod de pagină); promptul cere „Governor Bailey says …”, nu „the speaker”.
+- **Documente care nu sunt proză** (v6): un deck de tabele / slide-uri (discursul Lane, prezentarea Schnabel — 13–14 % cifre — și o pagină de titluri: 21 % propoziții) se marchează o dată `non_prose` (`no_text.json`,
+  câmpul `kind`), nu se rezumă, iar pagina arată doar linkul („not summarised”). Măsura, pe paragrafele extrase (`source.not_prose`): partea din caractere aflată în paragrafe de propoziții întregi < 50 %, cifre
+  > 8 % din caractere sau > 50 % linii scurte (< 40 caractere). Calibrată pe cele 56 de documente lungi din backlog: 3 deck-uri / pagini de titluri prinse, celelalte 53 sub prag cu margine (proză ≥ 0,78; cifre ≤ 0,03).
+- **Negația pe clauză** (v6): propoziția-sursă se împarte în clauze (`;` `:` `,` `—` `--` și but / while / whereas / although / who / which); fiecare clauză a punctului se compară cu clauza-sursă cea mai apropiată
+  (cele mai multe cuvinte-conținut comune, minim 2), la egalitate cu cea care se potrivește. Cazul real din 29 aprilie (propoziția cu voturile împotrivă, o clauză negată pentru al doilea grup) trece; negația inversată pică.
+- **Măsurătoare pre-înregistrată a raționamentului** (v6, scrisă înainte de rulări). Cele 11 documente (comunicatele 04-29, 06-17, 07-29, 09-16, transcriptul și discursul Waller din 16 sep / 3 sep, transcriptul ECB 10 sep,
+  discursul Lane, transcriptul RBA 11 aug, minutele BoE 17 sep, discursul Bailey), același cod și același prompt v6, o rulare `low` și una `medium` (workflow: `effort`, `scratch` — nu scriu nimic). **Se alege `medium`
+  numai dacă sunt îndeplinite toate trei:** (1) publică cel puțin la fel de multe documente (integral + parțial); (2) punctele eliminate + documentele care au avut nevoie de reîncercare (al doilea apel) sunt mai puține;
+  (3) costul total pe cele 11 documente ≤ 2 × cel de la `low`. Altfel rămâne `low`. **Condiția de merge**, cu varianta aleasă: (a) cele 6 documente Fed publicate, integral sau parțial, comunicatele cu punctul de decizie
+  valid; (b) din cele 11, ≥ 10 publicate sau clasificate `non_prose`; (c) nicio regulă de verificare slăbită.
+- **Rezultatul măsurătorii pre-înregistrate (2026-09-21, scratch, 11 documente, cod și prompt v6).** `low` / `medium`: publicate (integral + parțial) 10 / 10; puncte eliminate + documente cu al doilea apel
+  3 + 7 = 10 / 1 + 5 = 6; cost total 0,374 / 0,402 USD (× 1,07; limita 2×); tokeni 107 141 + 13 320 / 96 654 + 17 396 (din care raționament 2 204 / 7 291); apeluri 17 / 15. Toate cele trei criterii îndeplinite ⇒
+  **`medium`** (config `reasoning_effort`, `estimate_output_tokens` 1700 măsurat). Discursul Lane: `non_prose` în ambele rulări. Pe urmă am scos din regula negației minimul de 2 cuvinte comune (o clauză se
+  compară de la un cuvânt comun în sus, ca în regula aprobată) și am refăcut rularea pe `medium` cu codul final: aceea e evaluarea condiției de merge.
+- **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
+  `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
+  reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).
+- **Idempotență și cost.** Cheia: `(doc_id, input_sha256, prompt_version)`. Un document deja rezumat nu se rezumă a doua oară și, dacă hash-ul lui e cunoscut din 2a
+  (comunicate, minute, opinions), nici nu se mai descarcă; unul fără hash stocat (transcripturi, discursuri) se consideră imuabil după primul rezumat. Plafoane per
+  rulare în config: `max_documents` (12) și `max_input_tokens` (250 000, numărate pe consumul real din răspuns); la depășire rularea se oprește curat și raportează.
+  O eroare de API (auth, 400, rate limit / overload / server după reîncercările de transport) oprește rularea fără să scrie nimic. Ordinea: comunicat → conferință →
+  minute / accounts / opinions / deliberations → discursuri (relevanță „monetary”, ultimele 60 de zile); în fiecare rang, cele mai noi întâi.
+- **Prompturi.** `system.md` (regulile factuale, JSON-ul cerut) + un fișier per tip; `prompt_version` (`statement-v1`, `transcript-v1`, `minutes-v1`, `speech-v1`). sha256 al fiecărui
+  prompt asamblat e în `versions.json`: **modificarea unui prompt fără versiune nouă pică suita**; o versiune nouă = documentele acelui tip se rezumă din nou.
+- **Fără cheie** (`OPENAI_API_KEY`, sau cea a providerului din config): etapa se sare, nu e eroare; `--status` avertizează („WARN … the summaries stage is skipped (N candidate documents are waiting)”).
+  `--status` mai arată: rezumate stocate / candidate / în așteptare / `validation_failed` (cu motiv), ultima rulare (noi, sărite, picate, tokeni, cost estimat) și totalul.
+  `python -m src.cb_collect --stage summaries --summaries-dry-run [--summaries-bank USD --summaries-type statement]` măsoară ce a rămas și estimează costul fără apel și fără cheie.
+- **cb-refresh**: `summaries` e ultima etapă (`--stage summaries`, nu face parte dintr-o rulare simplă), într-un pas separat: `Check for the summaries key` → `Summaries`
+  (`if` pe existența secretului `OPENAI_API_KEY`, `continue-on-error: true`, `timeout-minutes: 8`) → render → commit. Secretul e vizibil doar pasului de verificare, pasului
+  `Summaries` și `--status` (care doar avertizează), nu întregului job; un eșec sau un timeout al pasului nu oprește celelalte etape. Un `workflow_dispatch` are input-urile
+  `stage` (all / market / … / summaries), `bank` și `type` (intră în shell doar prin `env`). **Commit după ref-ul rulat**: pe `main` — `data/cb/` + fișierele CB din `public/`,
+  push pe main (condiție + gardă explicită în script); pe orice alt branch — **doar `data/cb/summaries/`**, push pe *acel* branch, niciodată pe main (gardă explicită), fără
+  pagini randate și fără restul din `data/cb/` (`state.json` rămâne în runner).
+- **UI.** Sloturile „summary pending” se umplu: puncte (hover = fragmentul-sursă și paragraful, în tooltip; click / Enter = caseta cu fragmentul, linkul „open the source ↗” cu ancoră
+  text-fragment către pagina băncii și, pentru comunicate — al căror text e oricum comis —, paragrafele citate cu fragmentul evidențiat; pentru transcripturi / discursuri, care nu se comit, doar
+  numărul paragrafului, fragmentul și linkul), `changes vs previous` pliabile (cuvintele scoase / adăugate), citate cu link către pagina băncii și **ancoră text-fragment**
+  (`#:~:text=…`, doar pentru surse HTML; PDF: linkul fără ancoră), iar sub fiecare rezumat: „Factual summary, no interpretation · model · prompt_version · data”. Un rezumat
+  picat la validare nu se afișează: slotul rămâne „summary pending”, motivul în tooltip. Locuri: cardul „Latest decision”, sub fiecare document din „Documents”, rândurile de
+  discursuri, sub tabelul deciziilor (un rezumat pliabil per decizie).
+
+### Decizii de execuție (abateri mici, motivate)
+
+- **Offset-urile citatelor.** Un model nu numără fiabil caractere într-un text lung; de aceea modelul declară *paragraful* citatului (numerotat în input), iar `start` / `end`
+  absolute le derivă verificatorul din acel paragraf (`find` exact) și le stochează. Verbatim-ul și offset-ul rămân verificate; `verify_stored` re-verifică orice rezumat stocat.
+- **`changes_vs_previous`** nu e cerut modelului: se citește din redline-ul deja stocat (deterministă, fără risc de halucinație); paragraf dispărut = `paragraph: null`.
+- **`numbers`**: lista o produce verificatorul (numerele din puncte, cu locul lor în sursă), nu modelul.
+- **Sursa rezumată** e textul extras în 2a: pentru documente foarte lungi (peste `max_source_chars` = 120 000) se taie la limită de paragraf și înregistrarea spune `truncated`.
+- **Providerul și modelul** (decizia lui George: OpenAI). Alese de pe paginile oficiale, citite la 2026-09-21: modele (https://developers.openai.com/api/docs/models) — gpt-6-astra
+  „most capable model”, gpt-5.6-sol „complex professional work”, **gpt-5.6-terra „balances intelligence and cost”** (mijloc), gpt-5.6-luna „optimized for cost-sensitive workloads”;
+  prețuri (https://developers.openai.com/api/docs/pricing) pentru terra, standard, context scurt: **2,00 USD / MTok intrare, 0,20 cached, 12,00 ieșire** (context lung 4 / 18; Batch = 50%,
+  nefolosit); pagina modelului: context 1 050 000, ieșire max 128 000, structured outputs, Chat Completions și Responses. Rândurile citate sunt în config, cu sursa și data.
+  API: **Responses** (`POST /v1/responses`), promptul ca mesaj `developer`, `text.format = {type: json_schema, strict: true}` cu schema din `schema.py`, `store: false`.
+  **Temperatura: nu se trimite** — gpt-5.6-terra e model cu raționament („Temperature parameter: not applicable”, `reasoning.effort` în loc); determinismul vine din
+  `reasoning_effort: low`, din schema strictă și din verificator, singura poartă de scriere (un model care o acceptă: `temperature: 0` în config). Tokenii de raționament sunt tokeni
+  de ieșire (și se plătesc ca atare): `max_output_tokens` = 8000 îi include. Anthropic (`claude-sonnet-5`, 2 / 10 USD) rămâne configurat și testat (`provider: anthropic`), fără schemă.
+- **Schema strictă.** Contractul (`summary`, `quotes` cu paragraful declarat, `coverage`) e o JSON schema cu `additionalProperties: false` și toate câmpurile obligatorii, doar cu
+  cuvinte-cheie suportate de strict mode (fără `minItems` / `maxLength`): numărul, lungimile și paragraful le verifică verificatorul, care rămâne singura poartă de scriere.
+  Un refuz, o ieșire tăiată la limită (`status: incomplete`, `max_output_tokens`), un JSON invalid sau lipsa `usage` sunt tratate explicit: primele trei sunt încercări picate (aceeași
+  reîncercare unică, cu motivul ca feedback), a patra se estimează din text și înregistrarea spune `estimated`.
+- **Cheia de idempotență**: `(doc_id, input_sha256, prompt_version, provider, model)`; înregistrarea poartă `provider`. Un alt provider sau model rezumă din nou; un eșec de validare e ținut
+  și pe provider + model. `prompt_version` a devenit `*-v3` (vocabularul potrivit pe cuvântul exact) și apoi `*-v4` (grounding + vorbitori numiți) pentru toate tipurile (v1–v3 rămân în `versions.json`).
+- **Costul.** Dry run pe textele reale (92 de documente încă nerezumate: ~506 000 tokeni de intrare la 4 caractere / token) + prima utilizare reală (rularea CI din 2026-09-21 pe
+  branch: 8 apeluri, 26 289 tokeni de intrare, 2 999 de ieșire din care 181 de raționament, **0,0886 USD**; un comunicat Fed ≈ 1 000 intrare / 335 ieșire ≈ 0,006 USD, cu raționament 0
+  la `low`). Cu ieșirea măsurată (~400 tokeni / document): backlog ≈ **1,45 USD** (≈ 2,9 dacă fiecare document ar cheltui și reîncercarea), 8 rulări de câte 12 documente ≈ 0,2 USD fiecare;
+  lunar în regim stabil ≈ **0,4 USD** (până la ~0,6 cu reîncercări). Fără caching, fără Batch, fără regiune. Estimări din tokenii raportați, nu facturi.
+- **Prima rulare reală (2026-09-21, pe branch).** Cele 4 comunicate Fed (ultimele 4 ședințe) au trecut validarea din prima. Transcriptul conferinței din 16 sep și discursul Waller din
+  3 sep au picat de două ori (`validation_failed`, nimic scris): „likely” fără atribuire (transcript), „expects” nefolosit de document în acea formă (discursul spune „I expect”). Sunt
+  fals-negative ale regulii de vocabular, nu ale numerelor sau citatelor — rezolvate în v4 (potrivire pe formă flexionată, atribuire către un vorbitor numit).
+- **A doua rulare reală (v4, 2026-09-21, pe branch, CI).** 4 comunicate Fed: 4 / 4 la prima încercare (4 905 intrare / 2 061 ieșire, ≈ 0,0345 USD). Transcriptul din 16 sep: trecut după reîncercare
+  (14 809 / 1 390, din care 211 raționament, ≈ 0,0463 USD; motivul primei picări nu a fost înregistrat — jurnalul nu îl avea încă). Discursul Waller: prima rulare a picat de două ori („expects” neatribuit în
+  punctul 1), rularea repetată (după ce jurnalul a început să spună de ce) a trecut după reîncercare, cu aceeași cauză a primei încercări (8 877 / 1 385 și 8 851 / 1 191). Total ≈ 0,147 USD pentru 6 rezumate
+  (37 442 intrare, 6 027 ieșire, 488 raționament). Jurnalul Summaries are acum `ATTEMPTS n passed at the first attempt, m after the retry, k failed twice`, `RETRIED doc: …` (motivele primei încercări)
+  și `REJECTED OUTPUT doc: …` (ultima ieșire refuzată, o linie de cel mult 3 000 de caractere); înregistrarea stocată nu s-a schimbat.
+- **Rularea v5 (2026-09-21, pe branch, CI; nu e pe main).** Textul final al promptului *-v5, cele 6 documente USD: comunicatele 06-17 și 07-29 la prima încercare, 09-16 după o reîncercare (fragment de 3 cuvinte),
+  **04-29 picat de două ori** (negația: punctul despre voturile împotrivă nu reproduce „did not support inclusion of an easing bias” din aceeași propoziție-sursă); transcriptul din 16 sep după o reîncercare;
+  discursul Waller la prima încercare. Condiția de merge („toate 6, cel mult o reîncercare”) **nu e îndeplinită**: nimic nu s-a mutat pe main. Eșantion pe alte bănci (același prompt): transcript RBA 11 aug după
+  o reîncercare, minutele BoE 17 sep după o reîncercare, discurs BoE (Bailey) la prima încercare; transcript ECB 10 sep și discurs ECB (Lane, un deck cu tabele) picate de două ori. Pe parcurs, patru defecte reale
+  ale implementării au ieșit din rulările pe branch și au fost corectate: jurnaliștii numiți în punct (etichetele transcriptului sunt oameni), „In response to X, Warsh said …” (vorbitorul e cel dinaintea verbului,
+  nu primul numit), fragmente de 3–4 cuvinte și puncte cu 4 paragrafe / 4 fragmente (prompt + erori care spun ce să faci), Fed ca alias al băncii. Cost total al tuturor rulărilor v5 ≈ 0,69 USD
+  (193 603 intrare, 25 570 ieșire); rularea finală a celor 6 documente ≈ 0,14 USD. Rata de trecere pe cele 11 documente rulate cu textul final: 8 cu ≤ 1 reîncercare, 3 picate de două ori.
+  Cauzele picărilor rămase: negația pe propoziția cea mai apropiată când propoziția-sursă are mai multe clauze (comunicatul 04-29), un nume propriu nesuținut („Bundesbank”, transcript ECB) și un deck de tabele
+  (discursul Lane). De decis: regula negației pe domeniul negației (clauza) în loc de propoziție întreagă; nivelul de raționament (`low` acum).
+- **Ce a arătat verificarea pe texte reale.** Un punct cu două afirmații are un singur fragment: în comunicatul din 16 sep, punctul „… and that it will deliver price stability” are fragmentul
+  „Today's policy action will support a timelier return to the Committee's 2 percent goal.” (¶4), iar a doua jumătate e susținută de propoziția „The Committee will deliver price stability.” din
+  **același ¶4** (numărată la acoperire) și e și citat. Pragul de 85 % lasă să treacă un cuvânt fără suport în punct: în transcriptul din 16 sep punctul 5 spune „since July”, iar ¶22 citat spune
+  „seven weeks ago” (data e derivată de model, nu scrisă în text); în discursul Waller punctul 5 (acoperire 0,867) spune „current policy position”, cuvinte care nu sunt în ¶23 / 25 / 27 citate.
+- **`no_text`**: un document a cărui pagină s-a descărcat dar nu are text extractibil (fără container cunoscut, prea puțin text, PDF scanat) primește o singură dată marcajul
+  `no_text` (`data/cb/summaries/no_text.json`: url, motiv, data) și nu se mai reîncearcă (o eroare de descărcare, în schimb, e tranzitorie și se reia; un link schimbat se reia).
+  `--status` le listează, slotul din pagină spune „no extractable text”.
+- **`state.json` și rezumatele**: ultima rulare se scrie doar dacă rularea a făcut ceva (apeluri, rezumate noi, eșecuri, oprire, `no_text`): o rulare goală nu schimbă fișierul.
+
+### Limitări
+
+- Trei surse din dry run nu au conținut extractibil (două pagini „media availability” BoC și un discurs ECB fără container cunoscut): se raportează la fiecare rulare
+  (`SOURCE …`), nu se marchează și nu costă nimic.
+- Documentele fără hash stocat (transcripturi, discursuri) nu se re-descarcă după primul rezumat: o corectură ulterioară a paginii nu se vede.
+- Prima rulare cu cheie acoperă doar 12 documente (plafonul); backlog-ul actual (~90 de documente) se termină în ~8 rulări (16 ore la 2 ore între rulări).

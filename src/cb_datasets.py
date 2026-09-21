@@ -307,6 +307,67 @@ def documents_report(rep) -> tuple:
     return "\n".join([line] + ([f"  by type: {types}"] if types else []) + extra), md
 
 
+def _summaries_status_section(paths, today: date) -> tuple:
+    """(title, heads, rows, notes) for --status: what is stored, what is pending, what failed validation, what the last run consumed."""
+    import os
+
+    from .cb_collect import load_state
+    from .cb_docs import store as dst
+    from .cb_summarize import prompts as PR
+    from .cb_summarize import run as SR
+    from .cb_summarize import store as SS
+    from .cb_summarize.config import load as load_cfg
+    cfg = load_cfg()
+    records, failures, no_text = SS.load(paths.summaries), SS.load_failures(paths.summaries), SS.load_no_text(paths.summaries)
+    docs = sorted(dst.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    todo = SR.candidates(docs, load_meetings(paths.meetings), today, cfg)
+    pending = [d for d in todo if not SR.is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"]), cfg)
+               and not SR.failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256"), cfg) and not SR.is_no_text(no_text, d)]
+    st = load_state(paths).get("summaries", {})
+    last, tot = st.get("last_run") or {}, st.get("totals") or {}
+    rows = [[len(records), len(todo), len(pending), len(failures), last.get("new", ""), last.get("unchanged", ""), last.get("failed_validation", ""),
+             f"{last.get('input_tokens', 0)} / {last.get('output_tokens', 0)}" if last else "", f"${last['cost_usd']:.4f}" if last else ""]]
+    notes = [f"provider {cfg.provider}, model {cfg.model} (config/cb_summaries.yaml); prices checked {cfg.price_checked}"]
+    if not os.environ.get(cfg.env_key):
+        notes.append(f"WARN {cfg.env_key} is not set: the summaries stage is skipped ({len(pending)} candidate documents are waiting)")
+    for f in sorted(failures.values(), key=lambda f: f["doc_id"]):
+        notes.append(f"validation_failed {f['doc_id']} ({f['prompt_version']}, {f.get('provider', '?')} {f.get('model', '?')}): {'; '.join(f['errors'][:2])[:220]}")
+    for d, m in sorted(no_text.items()):
+        notes.append(f"{m.get('kind', 'no_text')} {d}: {m['reason']} (marked {m['at'][:10]}, {'not summarised' if m.get('kind') == 'non_prose' else 'not retried'})")
+    if last.get("stopped"):
+        notes.append(f"last run stopped: {last['stopped']}")
+    if tot:
+        cost = round(tot.get("input_tokens", 0) / 1e6 * cfg.price_input + tot.get("output_tokens", 0) / 1e6 * cfg.price_output, 4)
+        notes.append(f"all runs: {tot.get('summaries', 0)} summaries, {tot.get('calls', 0)} calls, {tot.get('input_tokens', 0)} in / {tot.get('output_tokens', 0)} out tokens, "
+                     f"about ${cost:.4f} at the list prices in config/cb_summaries.yaml (checked {cfg.price_checked}; an estimate from the reported tokens, reasoning tokens included, not a bill)")
+    return ("summaries (phase 2b)", ["stored", "candidates", "pending", "validation_failed", "last active run: new", "skipped", "failed", "tokens in / out", "est. cost"], rows, notes)
+
+
+def summaries_report(rep) -> tuple:
+    if not rep.enabled:
+        line = f"summaries: SKIPPED - {rep.skipped_reason}"
+        return line, f"### summaries\n\n{line}"
+    line = (f"summaries: {rep.new} new, {rep.unchanged} unchanged, {len(rep.failed_validation)} failed validation, {len(rep.no_text)} newly marked no_text, "
+            f"{len(rep.non_prose)} newly marked non_prose, {len(rep.source_errors)} source errors; "
+            f"{rep.calls} calls, {rep.input_tokens} input / {rep.output_tokens} output tokens ({rep.reasoning_tokens} of them reasoning), about ${rep.cost_usd:.4f}; "
+            f"{rep.pending} still pending" + (f"; usage missing in {rep.usage_estimated} call(s): tokens estimated from the text" if rep.usage_estimated else ""))
+    extra = ([f"  STOPPED {rep.stopped}"] if rep.stopped else []) + [f"  VALIDATION FAILED {d}: {'; '.join(e[:2])}" for d, e in rep.failed_validation] + \
+            [f"  NO_TEXT {d}: {why} (marked once, not retried)" for d, why in rep.no_text] + [f"  NON_PROSE {d}: {why} (marked once, not summarised)" for d, why in rep.non_prose] + \
+            [f"  SOURCE {d}: {why}" for d, why in rep.source_errors]
+    if rep.first_pass or rep.retried or rep.failed_validation or rep.partial:
+        extra = [f"  ATTEMPTS {rep.first_pass} passed at the first attempt, {len(rep.retried)} after the retry, {len(rep.partial)} published partially, "
+                 f"{len(rep.failed_validation)} failed twice"] + extra
+    extra += [f"  PARTIAL {d}: published without {len(pts)} point(s){' and ' + str(len(qs)) + ' quote(s)' if qs else ''} - " + "; ".join(f"[{p['text'][:70]}] " + " | ".join(e[:170] for e in p['errors'][:3]) for p in pts[:6]) +
+              ("; " if pts and qs else "") + "; ".join(f"[quote {q['text'][:50]}] {q['errors'][0][:120]}" for q in qs[:4]) for d, pts, qs in rep.partial]
+    extra += [f"  DOC {x['doc_id']}: {x['outcome']}; {x['attempts']} attempt(s); {x['input']} in / {x['output']} out ({x['reasoning']} reasoning); ${x['cost']:.4f}" +
+              (f"; {x['points']} points, {x['dropped']} removed" if "points" in x else "") for x in rep.docs]
+    extra += [f"  RETRIED {d}: the first attempt failed - {'; '.join(e[:3])}" for d, e in rep.retried]
+    extra += [f"  FIRST ATTEMPT {d} failed - {'; '.join(e[:6])}" for d, e in rep.first_errors]
+    extra += [f"  REJECTED OUTPUT {d}: {' '.join(text.split())[:3000]}" for d, text in rep.rejected]
+    md = f"### summaries\n\n{line}" + ("\n\n" + "\n".join(f"- {e.strip()}" for e in extra) if extra else "")
+    return "\n".join([line] + extra), md
+
+
 def projections_report(rep: ProjectionsReport) -> tuple:
     if rep.failed.get("calendar"):
         line = f"projections: FOMC calendar page failed ({rep.failed['calendar']})"
@@ -475,6 +536,7 @@ def extra_status(paths, today: date, *, banks: dict | None = None, official_cfg:
 
     from .cb_docs import collect as dcol, store as dst
     docs = dst.load_documents(paths)
+    docs_present = bool(docs)
     if docs:
         per: dict = {}
         for d in docs.values():
@@ -485,6 +547,9 @@ def extra_status(paths, today: date, *, banks: dict | None = None, official_cfg:
                  max((d["first_seen_at"] for v in t.values() for d in v)).strftime("%Y-%m-%d %H:%M")] for c, t in sorted(per.items())]
         add("official texts (phase 2a)", ["cur", "statements", "minutes etc.", "speeches", "videos", "transcripts", "last first-seen (UTC)"], rows,
             [f"WARN {w}" for w in dcol.expectations(paths, today)] + ["RBNZ: BOTWALL - manual file only (data/cb/manual/documents.yaml)"])
+
+    if paths.summaries.exists() or docs_present:
+        add(*_summaries_status_section(paths, today))
 
     prj = cs.read_table_file(paths.projections)
     if prj:
