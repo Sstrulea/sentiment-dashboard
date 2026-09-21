@@ -1,0 +1,384 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": {
+    "added_words": 240,
+    "changes": [
+     {
+      "added": "4.35",
+      "paragraph": 1,
+      "removed": "4.10"
+     },
+     {
+      "added": "Inflation",
+      "paragraph": 2,
+      "removed": "While inflation has fallen substantially since its peak in 2022, it"
+     },
+     {
+      "added": "2025, and information",
+      "paragraph": 2,
+      "removed": "2025. Information"
+     },
+     {
+      "added": "beginning of this year confirms",
+      "paragraph": 2,
+      "removed": "February meeting suggests"
+     },
+     {
+      "added": "this",
+      "paragraph": 2,
+      "removed": "the"
+     },
+     {
+      "added": "reflected",
+      "paragraph": 2,
+      "removed": "in inflation reflects"
+     },
+     {
+      "added": "and related commodity",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "which are already adding",
+      "paragraph": 2,
+      "removed": "which, if sustained, will add"
+     },
+     {
+      "added": "There are early signs that many firms experiencing cost pressures are looking to increase prices of their goods and services.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "also",
+      "paragraph": 2,
+      "removed": "already"
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "As a result, the Board judged that there is a material risk that inflation will remain above target for longer than previously anticipated."
+     },
+     {
+      "added": "The Bank has updated its forecasts to incorporate recent data and developments in the Middle East. The baseline forecast, which assumes that the conflict is resolved soon and fuel prices decline, sees underlying inflation peaking higher than was expected in February. It then declines as demand growth slows and capacity pressures ease in response to higher interest rates.",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "Financial conditions have tightened this year. Money market interest rates and government bond yields have risen, and the exchange rate has appreciated. But credit is readily available to both households and businesses.",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "materially heightened",
+      "paragraph": 5,
+      "removed": "material"
+     },
+     {
+      "added": "inflation. With",
+      "paragraph": 5,
+      "removed": "inflation and the extent to which monetary policy is restrictive. Globally,"
+     },
+     {
+      "added": "continuing, there are plausible scenarios where inflation is higher and activity lower than envisaged under the baseline forecast.",
+      "paragraph": 5,
+      "removed": "poses substantial risks in both directions."
+     },
+     {
+      "added": "would",
+      "paragraph": 5,
+      "removed": "will"
+     },
+     {
+      "added": "as these costs are passed through and",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": 5,
+      "removed": "it impairs supply capacity or"
+     },
+     {
+      "added": "But higher",
+      "paragraph": 5,
+      "removed": "Higher"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Higher capacity pressures reflect, in part, the greater momentum in demand in the latter part of 2025. Growth in private demand strengthened substantially more than was expected in mid-2025, although the composition of that growth surprised in the December quarter. Business investment was above expectations and consumption was below expectations. Meanwhile, growth in unit labour costs declined. More recently, the unemployment rate has been a little lower than expected and measures of labour underutilisation remain at low rates. Activity and prices in the housing market grew strongly over the past year, although housing price growth moderated somewhat at the start of 2026."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Financial conditions have tightened a little this year, but the extent to which monetary policy is restrictive is uncertain. Credit is readily available to both households and businesses and the effects of interest rate reductions in 2025 are yet to flow through fully to aggregate demand, prices and wages. The exchange rate, money market interest rates and government bond yields have risen over the past month. In large part, higher interest rates reflect expectations for the path of monetary policy, which have risen in Australia and most other advanced economies in response to the expected inflationary implications of the conflict in the Middle East."
+     },
+     {
+      "added": "As expected, developments in the Middle East are having an impact on inflation. Higher fuel prices are adding to inflation and there are indications that this is likely to have second-round effects on prices for goods and services more broadly. This inflation impulse is in addition to the high inflation recorded around the start of 2026, reflecting capacity pressures in the economy.",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "assessed",
+      "paragraph": 8,
+      "removed": "judged"
+     },
+     {
+      "added": "remain",
+      "paragraph": 8,
+      "removed": "have"
+     },
+     {
+      "added": "",
+      "paragraph": 8,
+      "removed": "further"
+     },
+     {
+      "added": "judged",
+      "paragraph": 8,
+      "removed": ""
+     },
+     {
+      "added": "Having raised the cash rate three times, monetary",
+      "paragraph": 9,
+      "removed": "Monetary"
+     },
+     {
+      "added": "eight",
+      "paragraph": 10,
+      "removed": "five"
+     },
+     {
+      "added": "4.35",
+      "paragraph": 10,
+      "removed": "4.10"
+     },
+     {
+      "added": "one member",
+      "paragraph": 10,
+      "removed": "four members"
+     },
+     {
+      "added": "4.10",
+      "paragraph": 10,
+      "removed": "3.85"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "A wide range of data over recent months have confirmed that inflationary pressures picked up materially in the second half of 2025. While part of the pick-up in inflation is assessed to reflect temporary factors, the Board judged that the labour market has tightened a little recently and capacity pressures are slightly greater than previously assessed. Developments in the Middle East remain highly uncertain, but under a wide range of possible scenarios could add to global and domestic inflation."
+     }
+    ],
+    "removed_words": 369,
+    "truncated": false,
+    "vs_doc_id": "AUD:statement:2026-03-17",
+    "vs_meeting": "2026-03-17"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     3,
+     8,
+     9,
+     10
+    ],
+    "paragraphs_sent": 10,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:statement:2026-05-05",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "d3af8aa1e83a95384564a8b8a48ed77a2ac42d4de9bd3200305507f6562757fd",
+   "meeting_date": "2026-05-05",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 91,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 76,
+     "text": "25 basis points"
+    },
+    {
+     "end": 108,
+     "point": 1,
+     "source_text": "4.35 per cent",
+     "start": 95,
+     "text": "4.35 per cent"
+    },
+    {
+     "end": 91,
+     "point": 5,
+     "source_text": "25 basis points",
+     "start": 76,
+     "text": "25 basis points"
+    },
+    {
+     "end": 108,
+     "point": 5,
+     "source_text": "4.35 per cent",
+     "start": 95,
+     "text": "4.35 per cent"
+    },
+    {
+     "end": 3341,
+     "point": 5,
+     "source_text": "4.10 per cent",
+     "start": 3328,
+     "text": "4.10 per cent"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-05-05",
+   "quotes": [
+    {
+     "end": 109,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At its meeting today, the Board decided to increase the cash rate target by 25 basis points to 4.35 per cent."
+    },
+    {
+     "end": 898,
+     "paragraph": 3,
+     "start": 730,
+     "text": "The baseline forecast, which assumes that the conflict is resolved soon and fuel prices decline, sees underlying inflation peaking higher than was expected in February."
+    },
+    {
+     "end": 2512,
+     "paragraph": 8,
+     "start": 2313,
+     "text": "In light of these considerations, the Board assessed that inflation is likely to remain above target for some time and that the risks remain tilted to the upside, including to inflation expectations."
+    },
+    {
+     "end": 3342,
+     "paragraph": 10,
+     "start": 3132,
+     "text": "Today’s policy decision was made by majority: eight members voted to increase the cash rate target by 25 basis points to 4.35 per cent; one member voted to leave the cash rate target unchanged at 4.10 per cent."
+    }
+   ],
+   "source": {
+    "chars": 3342,
+    "chars_sent": 3343,
+    "method": "stored",
+    "paragraphs_sent": 10,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 109,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At its meeting today, the Board decided to increase the cash rate target by 25 basis points to 4.35 per cent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Board decided to increase the cash rate target by 25 basis points to 4.35 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 441,
+        "paragraph": 2,
+        "start": 305,
+        "text": "the conflict in the Middle East has resulted in sharply higher fuel and related commodity prices, which are already adding to inflation."
+       },
+       {
+        "end": 567,
+        "paragraph": 2,
+        "start": 442,
+        "text": "There are early signs that many firms experiencing cost pressures are looking to increase prices of their goods and services."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Board states that higher fuel and related commodity prices are adding to inflation, and firms facing cost pressures are looking to increase prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 898,
+        "paragraph": 3,
+        "start": 730,
+        "text": "The baseline forecast, which assumes that the conflict is resolved soon and fuel prices decline, sees underlying inflation peaking higher than was expected in February."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Bank’s baseline forecast assumes the conflict is resolved soon and fuel prices decline, with underlying inflation peaking higher than was expected in February."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2474,
+        "paragraph": 8,
+        "start": 2347,
+        "text": "the Board assessed that inflation is likely to remain above target for some time and that the risks remain tilted to the upside"
+       },
+       {
+        "end": 2699,
+        "paragraph": 9,
+        "start": 2583,
+        "text": "The Board will be attentive to the data and the evolving assessment of the outlook and risks to guide its decisions."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "The Board assessed that inflation is likely to remain above target for some time and will be attentive to the data and the evolving assessment of the outlook and risks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3342,
+        "paragraph": 10,
+        "start": 3178,
+        "text": "eight members voted to increase the cash rate target by 25 basis points to 4.35 per cent; one member voted to leave the cash rate target unchanged at 4.10 per cent."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Eight members voted to increase the cash rate target by 25 basis points to 4.35 per cent, while one voted to leave it unchanged at 4.10 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia monetary policy statement, 05 May 2026",
+   "type": "statement",
+   "url": "https://www.rba.gov.au/media-releases/2026/mr-26-12.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2128,
+    "output_tokens": 1118,
+    "reasoning_tokens": 504
+   }
+  }
+ ],
+ "version": 1
+}

@@ -2,6 +2,696 @@
  "summaries": [
   {
    "changes_vs_previous": {
+    "added_words": 315,
+    "changes": [
+     {
+      "added": "leave",
+      "paragraph": 1,
+      "removed": "increase"
+     },
+     {
+      "added": "unchanged at",
+      "paragraph": 1,
+      "removed": "by 25 basis points to"
+     },
+     {
+      "added": "the",
+      "paragraph": 2,
+      "removed": "this"
+     },
+     {
+      "added": "The latest data show that headline and underlying inflation are still too high. Oil prices have eased in recent weeks, although energy and most related commodity prices remain higher than they were prior to",
+      "paragraph": 2,
+      "removed": "In addition,"
+     },
+     {
+      "added": "East.",
+      "paragraph": 2,
+      "removed": "East has resulted in sharply higher fuel and related commodity prices, which are already adding to inflation."
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "early"
+     },
+     {
+      "added": "some",
+      "paragraph": 2,
+      "removed": "many"
+     },
+     {
+      "added": "increasing the",
+      "paragraph": 2,
+      "removed": "looking to increase"
+     },
+     {
+      "added": "services and others are looking to do so.",
+      "paragraph": 2,
+      "removed": "services."
+     },
+     {
+      "added": "eased but remain higher than earlier in the year.",
+      "paragraph": 2,
+      "removed": "also risen."
+     },
+     {
+      "added": "year in response to three increases in the cash rate target.",
+      "paragraph": 3,
+      "removed": "year."
+     },
+     {
+      "added": "There are signs that growth in consumer spending is slowing as expected and momentum in the housing market has shifted, with housing prices falling in some capital cities. The unemployment rate was higher than expected in April, but other measures of labour market conditions have been more resilient. Growth in business investment is strong and",
+      "paragraph": 3,
+      "removed": "But"
+     },
+     {
+      "added": "continue to be",
+      "paragraph": 4,
+      "removed": "are materially"
+     },
+     {
+      "added": "Resolution of",
+      "paragraph": 4,
+      "removed": "With"
+     },
+     {
+      "added": "is at an early stage, and",
+      "paragraph": 4,
+      "removed": "continuing,"
+     },
+     {
+      "added": "May",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "forecasts. Global oil supply issues will take some time to resolve, maintaining",
+      "paragraph": 4,
+      "removed": "forecast. A longer or more severe conflict could put further"
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "prices; this would push up near-term inflation and could also increase inflation further out as these costs are passed through and if price rises get built into longer term inflation expectations. But higher"
+     },
+     {
+      "added": "inflation. At the same time, a period of",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "also",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "also"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Bank has updated its forecasts to incorporate recent data and developments in the Middle East. The baseline forecast, which assumes that the conflict is resolved soon and fuel prices decline, sees underlying inflation peaking higher than was expected in February. It then declines as demand growth slows and capacity pressures ease in response to higher interest rates."
+     },
+     {
+      "added": "",
+      "paragraph": 6,
+      "removed": "developments in"
+     },
+     {
+      "added": "disruption to global oil supply is",
+      "paragraph": 6,
+      "removed": "Middle East are"
+     },
+     {
+      "added": "have added directly",
+      "paragraph": 6,
+      "removed": "are adding"
+     },
+     {
+      "added": "passing through to the prices of other goods and services, so inflation is",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "remain high",
+      "paragraph": 6,
+      "removed": "have second-round effects on prices"
+     },
+     {
+      "added": "some time.",
+      "paragraph": 6,
+      "removed": "goods and services more broadly."
+     },
+     {
+      "added": "The Board remains focused on ensuring that inflation does not become embedded once the impulse from higher oil prices has passed through. To achieve this, growth in demand needs to slow to reduce capacity pressures and help bring inflation back to target. Following the three increases in the cash rate target since the beginning of the year, financial conditions are now tighter than they were, and there are signs that the economy is slowing as expected. But inflation is still too high and the Board judged that it was appropriate to leave the cash rate target unchanged while it assesses the response to previous interest rate rises and the impact of the oil supply disruption.",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "Monetary",
+      "paragraph": 8,
+      "removed": "Having raised the cash rate three times, monetary"
+     },
+     {
+      "added": "outcome, including increasing the cash rate target further if required.",
+      "paragraph": 8,
+      "removed": "outcome."
+     },
+     {
+      "added": "Today’s policy decision was unanimous.",
+      "paragraph": 9,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "In light of these considerations, the Board assessed that inflation is likely to remain above target for some time and that the risks remain tilted to the upside, including to inflation expectations. It was therefore judged appropriate to increase the cash rate target."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Today’s policy decision was made by majority: eight members voted to increase the cash rate target by 25 basis points to 4.35 per cent; one member voted to leave the cash rate target unchanged at 4.10 per cent."
+     }
+    ],
+    "removed_words": 249,
+    "truncated": false,
+    "vs_doc_id": "AUD:statement:2026-05-05",
+    "vs_meeting": "2026-05-05"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     6,
+     7,
+     8,
+     9
+    ],
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:statement:2026-06-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "402b450854b0958380939ae90fe6b6bf894ba20d7ceb7a1f1dca316652e6e82e",
+   "meeting_date": "2026-06-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 96,
+     "point": 1,
+     "source_text": "4.35 per cent",
+     "start": 83,
+     "text": "4.35 per cent"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-16",
+   "quotes": [
+    {
+     "end": 97,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At its meeting today, the Board decided to leave the cash rate target unchanged at 4.35 per cent."
+    },
+    {
+     "end": 2250,
+     "paragraph": 6,
+     "start": 2048,
+     "text": "Higher fuel prices have added directly to inflation and there are indications that this is passing through to the prices of other goods and services, so inflation is likely to remain high for some time."
+    },
+    {
+     "end": 3073,
+     "paragraph": 7,
+     "start": 2849,
+     "text": "But inflation is still too high and the Board judged that it was appropriate to leave the cash rate target unchanged while it assesses the response to previous interest rate rises and the impact of the oil supply disruption."
+    },
+    {
+     "end": 3644,
+     "paragraph": 8,
+     "start": 3518,
+     "text": "It will do what it considers necessary to achieve that outcome, including increasing the cash rate target further if required."
+    },
+    {
+     "end": 3683,
+     "paragraph": 9,
+     "start": 3645,
+     "text": "Today’s policy decision was unanimous."
+    }
+   ],
+   "source": {
+    "chars": 3683,
+    "chars_sent": 3684,
+    "method": "stored",
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 97,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At its meeting today, the Board decided to leave the cash rate target unchanged at 4.35 per cent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Board decided to leave the cash rate target unchanged at 4.35 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2196,
+        "paragraph": 6,
+        "start": 2048,
+        "text": "Higher fuel prices have added directly to inflation and there are indications that this is passing through to the prices of other goods and services"
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Higher fuel prices have added directly to inflation, and there are indications that this is passing through to prices of other goods and services."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3073,
+        "paragraph": 7,
+        "start": 2885,
+        "text": "the Board judged that it was appropriate to leave the cash rate target unchanged while it assesses the response to previous interest rate rises and the impact of the oil supply disruption."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Board judged it appropriate to leave the cash rate target unchanged while it assesses previous interest rate rises and the oil supply disruption."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3190,
+        "paragraph": 8,
+        "start": 3074,
+        "text": "The Board will be attentive to the data and the evolving assessment of the outlook and risks to guide its decisions."
+       },
+       {
+        "end": 3644,
+        "paragraph": 8,
+        "start": 3582,
+        "text": "including increasing the cash rate target further if required."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The Board will be attentive to the data and evolving assessment of the outlook and risks, including increasing the cash rate target further if required."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3683,
+        "paragraph": 9,
+        "start": 3645,
+        "text": "Today’s policy decision was unanimous."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Today’s policy decision was unanimous."
+    }
+   ],
+   "title": "Reserve Bank of Australia monetary policy statement, 16 June 2026",
+   "type": "statement",
+   "url": "https://www.rba.gov.au/media-releases/2026/mr-26-15.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2182,
+    "output_tokens": 903,
+    "reasoning_tokens": 405
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 398,
+    "changes": [
+     {
+      "added": "The conflict in the Middle East is now in its fourth month. The resulting increases in energy prices and disruptions in global supply chains are weighing on global economic growth and pushing up inflation. At the same time, the US administration continues to propose new tariffs and trade policy uncertainty remains elevated.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "In the United States, economic growth remains solid, supported by consumption and AI‑related investment. In the euro area, growth is subdued, with higher energy prices weighing on activity. China’s economic growth continues to be supported by strong exports.",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "Canadian financial conditions have loosened since the April Monetary Policy Report. Global equity markets have been buoyant and bond yields remain volatile. The Canadian dollar has weakened against the US dollar and other currencies.",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "In Canada, GDP edged down by 0.1% in the first quarter, weaker than expected at the time of the April MPR. Consumer spending grew 1.4% but government spending unexpectedly declined. Housing activity also declined and business investment remained weak. Exports fell while imports rose strongly as inventories were rebuilt. Employment was up in May, but looking through monthly volatility, employment in Canada is little changed since the start of the year. The unemployment rate continues to fluctuate in the 6 ½%-7% range with the most recent reading at 6.6% in May.",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "Recent data suggests that growth will resume in the second quarter but, even with some rebound, the economy is expected to remain in excess supply.",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "As expected, CPI inflation rose in April, reaching 2.8%. The increase reflects energy prices, both higher oil prices and the impact of the elimination of the consumer carbon tax falling out of the 12-month rate of inflation. So far, there has been limited evidence of broad-based pass-through of higher energy prices to other consumer prices. Measures of core inflation have moved down to around 2% and the share of CPI components growing above 3% is close to its historical average. Food price inflation moderated but remains high, and shelter inflation continued to slow. With global oil prices still elevated—roughly $10 a barrel above our April MPR assumptions—total inflation is expected to hover around 3% in the near term before easing gradually towards 2%.",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "overall backdrop,",
+      "paragraph": 8,
+      "removed": "backdrop and taking into account the current projection,"
+     },
+     {
+      "added": "Economic activity in Canada has been weak and uncertainty about US trade policy persists. The",
+      "paragraph": 8,
+      "removed": "We are closely monitoring the impact of the"
+     },
+     {
+      "added": "is ongoing",
+      "paragraph": 8,
+      "removed": ""
+     },
+     {
+      "added": "oil prices remain elevated.",
+      "paragraph": 8,
+      "removed": "how the economy is responding to US tariffs and trade policy uncertainty."
+     },
+     {
+      "added": "continuing to look",
+      "paragraph": 8,
+      "removed": "looking"
+     },
+     {
+      "added": "near-term",
+      "paragraph": 8,
+      "removed": "immediate"
+     },
+     {
+      "added": "headline inflation,",
+      "paragraph": 8,
+      "removed": "inflation"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The evolving conflict in the Middle East is causing heightened volatility and US trade policy continues to reshape global trade patterns. Both are ongoing sources of uncertainty. The Bank’s April outlook assumes tariffs remain unchanged and the global benchmark price of oil declines to US$75 per barrel by mid 2027."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Iran war has led to sharply higher energy prices and transportation disruptions, diminishing growth prospects in oil-importing countries and boosting inflation worldwide. In the United States, growth is still expected to be solid over the projection horizon, boosted by AI-related investment and consumption growth. China’s economy is being supported by robust exports. In the euro area, higher prices for oil and natural gas will weigh on economic activity."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Financial conditions have been volatile, reflecting daily developments in the Middle East and shifting market expectations for inflation and interest rates. Bond yields are modestly higher since January while equity markets, which weakened sharply at the outset of the war, have recovered. Since the start of the war, the US dollar has appreciated against most major currencies. The Canada-US exchange rate has been relatively stable."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Overall, the global economy is expected to grow by about 3% in 2026, 2027 and 2028. Projections for inflation over the next year are revised up because of the jump in energy prices."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The outlook for economic growth in Canada is little changed from the January Monetary Policy Report (MPR) projection. After a contraction in the fourth quarter of 2025, growth is forecast to have resumed in early 2026. Consumer and government spending are supporting economic activity, while tariffs and trade uncertainty are weighing on exports and business investment. Housing activity declined in the fourth quarter and is being held back by slow population growth, economic uncertainty and ongoing affordability issues. The labour market is soft, with subdued employment growth over the past year and job losses in sectors targeted by US tariffs. The unemployment rate remains in the 6½%‑7% range, reflecting both weak hiring and fewer job seekers."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Bank’s April forecast projects GDP growth of 1.2% in 2026, rising to 1.6% in 2027 and 1.7% in 2028 as growth in exports and business investment resumes along a lower trajectory. With GDP growing slightly above potential, the current excess supply in the economy is gradually absorbed. While the war in Iran may alter its composition, overall GDP growth is little changed in the updated forecast: Since Canada is a large net exporter of oil, higher oil prices increase national income even as consumers are squeezed by higher gasoline prices."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "CPI inflation climbed to 2.4% in March because of sharply higher gasoline prices. The March increase follows several months of slowing inflation data. Core inflation has been easing and held steady at just above 2% in the most recent inflation report. The proportion of components of the CPI basket rising above 3% has also declined in recent months. As expected, so far there is little evidence that oil prices have fed through more broadly to goods and services prices, but this warrants close attention in the months ahead. Near-term inflation expectations have moved up with higher gasoline prices and still-elevated food price inflation, but longer-term inflation expectations have remained anchored."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "CPI inflation will likely rise further in April to about 3%. Based on the assumption that oil prices will ease, inflation is forecast to come down to the 2% target early next year and remain around 2% over the projection horizon."
+     },
+     {
+      "added": "July 15,",
+      "paragraph": 10,
+      "removed": "June 10,"
+     },
+     {
+      "added": "at the same time.",
+      "paragraph": 10,
+      "removed": "on July 15, 2026."
+     }
+    ],
+    "removed_words": 612,
+    "truncated": false,
+    "vs_doc_id": "CAD:statement:2026-04-29",
+    "vs_meeting": "2026-04-29"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     8,
+     10
+    ],
+    "paragraphs_sent": 10,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:statement:2026-06-10",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "25ef216828f360c15d910c18ba3aabdf4a887f29f1c225d6b702a3d2a3e09dd7",
+   "meeting_date": "2026-06-10",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 72,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 67,
+     "text": "2.25%"
+    },
+    {
+     "end": 100,
+     "point": 1,
+     "source_text": "2.5%",
+     "start": 96,
+     "text": "2.5%"
+    },
+    {
+     "end": 130,
+     "point": 1,
+     "source_text": "2.20%",
+     "start": 125,
+     "text": "2.20%"
+    },
+    {
+     "end": 3127,
+     "point": 6,
+     "source_text": "15",
+     "start": 3125,
+     "text": "15"
+    },
+    {
+     "end": 3133,
+     "point": 6,
+     "source_text": "2026",
+     "start": 3129,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-10",
+   "quotes": [
+    {
+     "end": 131,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Bank of Canada today held its target for the overnight rate at 2.25%, with the Bank Rate at 2.5% and the deposit rate at 2.20%."
+    },
+    {
+     "end": 2525,
+     "paragraph": 8,
+     "start": 2462,
+     "text": "Governing Council decided to maintain the policy rate at 2.25%."
+    },
+    {
+     "end": 2615,
+     "paragraph": 8,
+     "start": 2526,
+     "text": "Economic activity in Canada has been weak and uncertainty about US trade policy persists."
+    },
+    {
+     "end": 2916,
+     "paragraph": 8,
+     "start": 2856,
+     "text": "As the outlook evolves, we stand ready to respond as needed."
+    }
+   ],
+   "source": {
+    "chars": 3189,
+    "chars_sent": 3190,
+    "method": "stored",
+    "paragraphs_sent": 10,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 131,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Bank of Canada today held its target for the overnight rate at 2.25%, with the Bank Rate at 2.5% and the deposit rate at 2.20%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Bank of Canada held its target for the overnight rate at 2.25%, with the Bank Rate at 2.5% and the deposit rate at 2.20%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2615,
+        "paragraph": 8,
+        "start": 2526,
+        "text": "Economic activity in Canada has been weak and uncertainty about US trade policy persists."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governing Council said economic activity in Canada has been weak and uncertainty about US trade policy persists."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2690,
+        "paragraph": 8,
+        "start": 2616,
+        "text": "The conflict in the Middle East is ongoing and oil prices remain elevated."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governing Council said the conflict in the Middle East is ongoing and oil prices remain elevated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2855,
+        "paragraph": 8,
+        "start": 2691,
+        "text": "Governing Council is continuing to look through the war’s near-term impact on headline inflation, but will not let higher energy prices become persistent inflation."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governing Council is continuing to look through the war’s near-term impact on headline inflation, but will not let higher energy prices become persistent inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2916,
+        "paragraph": 8,
+        "start": 2856,
+        "text": "As the outlook evolves, we stand ready to respond as needed."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The Bank stated that it stands ready to respond as needed as the outlook evolves."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3134,
+        "paragraph": 10,
+        "start": 3052,
+        "text": "The next scheduled date for announcing the overnight rate target is July 15, 2026."
+       },
+       {
+        "end": 3189,
+        "paragraph": 10,
+        "start": 3135,
+        "text": "The Bank’s next MPR will be released at the same time."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "The next scheduled date for announcing the overnight rate target is July 15, 2026, when the Bank’s next MPR will also be released."
+    }
+   ],
+   "title": "Bank of Canada monetary policy statement, 10 June 2026",
+   "type": "statement",
+   "url": "https://www.bankofcanada.ca/2026/06/fad-press-release-2026-06-10/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2164,
+    "output_tokens": 530,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": {
     "added_words": 376,
     "changes": [
      {
@@ -504,6 +1194,1006 @@
   },
   {
    "changes_vs_previous": {
+    "added_words": 307,
+    "changes": [
+     {
+      "added": "The Governing Council is committed to setting monetary policy to ensure that inflation stabilises at its 2% target in the medium term. In line with this commitment, it today decided to raise the three key ECB interest rates by 25 basis points. The war in the Middle East is generating inflation pressures, and the decision to raise rates is robust across a range of scenarios mapping out how the shock might evolve and affect the medium-term outlook for the euro area.",
+      "paragraph": 1,
+      "removed": ""
+     },
+     {
+      "added": "In the baseline of the new Eurosystem staff projections, headline inflation is expected to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028. For inflation excluding energy and food, the baseline foresees an average of 2.5% in 2026 and 2027 and 2.2% in 2028. Compared with March, staff have revised up their baseline projection for inflation in 2026 and 2027 owing to a higher path for energy prices, which, to some extent, is expected to feed into food, goods and services inflation. The baseline sees economic growth at an average of 0.8% in 2026, 1.2% in 2027 and 1.5% in 2028. This is a downward revision for 2026 and 2027, reflecting a more pronounced impact of the war on commodity markets, real incomes and confidence.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "outlook remains uncertain, with upside risks for",
+      "paragraph": 3,
+      "removed": "war in the Middle East has led to a sharp increase in energy prices, pushing up"
+     },
+     {
+      "added": "downside risks for",
+      "paragraph": 3,
+      "removed": "weighing on"
+     },
+     {
+      "added": "growth.",
+      "paragraph": 3,
+      "removed": "sentiment."
+     },
+     {
+      "added": "full",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "growth",
+      "paragraph": 3,
+      "removed": "economic activity"
+     },
+     {
+      "added": "shock, as well as",
+      "paragraph": 3,
+      "removed": "shock and"
+     },
+     {
+      "added": "This uncertainty is also reflected in",
+      "paragraph": 3,
+      "removed": "The longer"
+     },
+     {
+      "added": "broad range of outcomes for",
+      "paragraph": 3,
+      "removed": "war continues and the longer energy prices remain high, the stronger is the likely impact on broader"
+     },
+     {
+      "added": "growth in",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "updated illustrative scenarios put together by Eurosystem staff. These will be published with the staff projections on the ECB’s website.",
+      "paragraph": 3,
+      "removed": "economy."
+     },
+     {
+      "added": "With today’s decision, the",
+      "paragraph": 4,
+      "removed": "The"
+     },
+     {
+      "added": "remains well positioned to navigate the uncertainty caused by the war. It",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "the Governing Council’s",
+      "paragraph": 4,
+      "removed": "its"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Governing Council today decided to keep the three key ECB interest rates unchanged. While the incoming information has been broadly consistent with the Governing Council’s previous assessment of the inflation outlook, the upside risks to inflation and the downside risks to growth have intensified. The Governing Council is committed to setting monetary policy to ensure that inflation stabilises at the 2% target in the medium term."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Governing Council remains well positioned to navigate the current uncertainty. The euro area entered this period of surging energy prices with inflation at around the 2% target, and the economy has shown resilience over recent quarters. Longer-term inflation expectations remain well anchored, although inflation expectations over shorter horizons have moved up significantly."
+     },
+     {
+      "added": "Governing Council decided to raise the three key ECB interest rates by 25 basis points. Accordingly, the",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "be increased to 2.25%, 2.40%",
+      "paragraph": 6,
+      "removed": "remain unchanged at 2.00%, 2.15%"
+     },
+     {
+      "added": "2.65% respectively, with effect from 17 June 2026.",
+      "paragraph": 6,
+      "removed": "2.40% respectively."
+     }
+    ],
+    "removed_words": 172,
+    "truncated": false,
+    "vs_doc_id": "EUR:statement:2026-04-30",
+    "vs_meeting": "2026-04-30"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     4,
+     6,
+     8
+    ],
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:statement:2026-06-11",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'expect' of summary point 3 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee expect ...' (never in your own voice)"
+     ],
+     "text": "The new Eurosystem staff projections expect headline inflation to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "587c431680a77121e97055cd6e3c75a0fae9c2d752887149db3585439cfc040e",
+   "meeting_date": "2026-06-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 242,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 227,
+     "text": "25 basis points"
+    },
+    {
+     "end": 2644,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 2639,
+     "text": "2.25%"
+    },
+    {
+     "end": 2651,
+     "point": 1,
+     "source_text": "2.40%",
+     "start": 2646,
+     "text": "2.40%"
+    },
+    {
+     "end": 2661,
+     "point": 1,
+     "source_text": "2.65%",
+     "start": 2656,
+     "text": "2.65%"
+    },
+    {
+     "end": 580,
+     "point": 3,
+     "source_text": "2026",
+     "start": 576,
+     "text": "2026"
+    },
+    {
+     "end": 594,
+     "point": 3,
+     "source_text": "2027",
+     "start": 590,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-11",
+   "quotes": [
+    {
+     "end": 243,
+     "paragraph": 1,
+     "start": 135,
+     "text": "In line with this commitment, it today decided to raise the three key ECB interest rates by 25 basis points."
+    },
+    {
+     "end": 612,
+     "paragraph": 2,
+     "start": 469,
+     "text": "In the baseline of the new Eurosystem staff projections, headline inflation is expected to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028."
+    },
+    {
+     "end": 2379,
+     "paragraph": 4,
+     "start": 2309,
+     "text": "The Governing Council is not pre-committing to a particular rate path."
+    },
+    {
+     "end": 2951,
+     "paragraph": 8,
+     "start": 2787,
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+    }
+   ],
+   "source": {
+    "chars": 3631,
+    "chars_sent": 3632,
+    "method": "stored",
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2494,
+        "paragraph": 6,
+        "start": 2403,
+        "text": "The Governing Council decided to raise the three key ECB interest rates by 25 basis points."
+       },
+       {
+        "end": 2706,
+        "paragraph": 6,
+        "start": 2495,
+        "text": "Accordingly, the interest rates on the deposit facility, the main refinancing operations and the marginal lending facility will be increased to 2.25%, 2.40% and 2.65% respectively, with effect from 17 June 2026."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Governing Council decided to raise the three key ECB interest rates by 25 basis points, to 2.25%, 2.40% and 2.65% for the deposit facility, main refinancing operations and marginal lending facility respectively."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 468,
+        "paragraph": 1,
+        "start": 244,
+        "text": "The war in the Middle East is generating inflation pressures, and the decision to raise rates is robust across a range of scenarios mapping out how the shock might evolve and affect the medium-term outlook for the euro area."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Governing Council states that the war in the Middle East is generating inflation pressures and that the decision to raise rates is robust across a range of scenarios."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 955,
+        "paragraph": 2,
+        "start": 730,
+        "text": "Compared with March, staff have revised up their baseline projection for inflation in 2026 and 2027 owing to a higher path for energy prices, which, to some extent, is expected to feed into food, goods and services inflation."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Compared with March, staff revised up their baseline projection for inflation in 2026 and 2027 owing to a higher path for energy prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2006,
+        "paragraph": 4,
+        "start": 1854,
+        "text": "It will closely monitor the situation and follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Governing Council will closely monitor the situation and follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2951,
+        "paragraph": 8,
+        "start": 2787,
+        "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests principal payments from maturing securities."
+    }
+   ],
+   "title": "European Central Bank monetary policy statement, 11 June 2026",
+   "type": "statement",
+   "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 5454,
+    "output_tokens": 3116,
+    "reasoning_tokens": 1614
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 84,
+    "changes": [
+     {
+      "added": "June",
+      "paragraph": 1,
+      "removed": "April"
+     },
+     {
+      "added": "17 June",
+      "paragraph": 2,
+      "removed": "29 April"
+     },
+     {
+      "added": "7–2",
+      "paragraph": 2,
+      "removed": "8–1"
+     },
+     {
+      "added": "Two members",
+      "paragraph": 2,
+      "removed": "One member"
+     },
+     {
+      "added": "Global energy prices have fallen since the previous meeting in response to events",
+      "paragraph": 3,
+      "removed": "The conflict"
+     },
+     {
+      "added": "East. But they remain higher than pre-conflict and have continued to be volatile. The impact of the",
+      "paragraph": 3,
+      "removed": "East means that prospects for global"
+     },
+     {
+      "added": "shock on the UK economy remains",
+      "paragraph": 3,
+      "removed": "prices are highly"
+     },
+     {
+      "added": "is being",
+      "paragraph": 3,
+      "removed": "will be"
+     },
+     {
+      "added": "fallen",
+      "paragraph": 4,
+      "removed": "increased"
+     },
+     {
+      "added": "2.8% since the previous meeting, although it",
+      "paragraph": 4,
+      "removed": "3.3%, and"
+     },
+     {
+      "added": "expected",
+      "paragraph": 4,
+      "removed": "likely"
+     },
+     {
+      "added": "rise",
+      "paragraph": 4,
+      "removed": "be higher"
+     },
+     {
+      "added": "continue to",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "The",
+      "paragraph": 4,
+      "removed": "There is a"
+     },
+     {
+      "added": "against",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "needs",
+      "paragraph": 4,
+      "removed": "would need"
+     },
+     {
+      "added": "lean, is greater the longer higher energy prices persist.",
+      "paragraph": 4,
+      "removed": "lean against."
+     },
+     {
+      "added": "signs of",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "Interest rates faced by households and businesses remain higher than prior to",
+      "paragraph": 4,
+      "removed": "Financial conditions have tightened since"
+     },
+     {
+      "added": "conflict,",
+      "paragraph": 4,
+      "removed": "conflict began,"
+     },
+     {
+      "added": "act",
+      "paragraph": 4,
+      "removed": "help"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The April Monetary Policy Report sets out three scenarios that help to illustrate a range of possible outcomes for the UK economy."
+     }
+    ],
+    "removed_words": 62,
+    "truncated": false,
+    "vs_doc_id": "GBP:statement:2026-04-30",
+    "vs_meeting": "2026-04-30"
+   },
+   "coverage": {
+    "paragraphs": [
+     2,
+     4,
+     5,
+     6
+    ],
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:statement:2026-06-18",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'expected' of summary point 3 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee expected ...' (never in your own voice)"
+     ],
+     "text": "The Committee states that CPI inflation has fallen to 2.8% and is expected to rise later this year as higher energy prices pass through."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "a99064d9b62c374a812e0def350509a8c3790ddd90811b657617020ed6b04c56",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 134,
+     "point": 1,
+     "source_text": "7",
+     "start": 133,
+     "text": "7"
+    },
+    {
+     "end": 136,
+     "point": 1,
+     "source_text": "2",
+     "start": 135,
+     "text": "2"
+    },
+    {
+     "end": 167,
+     "point": 1,
+     "source_text": "3.75%",
+     "start": 162,
+     "text": "3.75%"
+    },
+    {
+     "end": 136,
+     "point": 3,
+     "source_text": "2",
+     "start": 135,
+     "text": "2%"
+    },
+    {
+     "end": 234,
+     "point": 4,
+     "source_text": "0.25 percentage points",
+     "start": 212,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 241,
+     "point": 4,
+     "source_text": "4%",
+     "start": 239,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-18",
+   "quotes": [
+    {
+     "end": 168,
+     "paragraph": 2,
+     "start": 35,
+     "text": "At its meeting ending on 17 June 2026, the Monetary Policy Committee (MPC) voted by a majority of 7–2 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "end": 978,
+     "paragraph": 4,
+     "start": 805,
+     "text": "CPI inflation has fallen to 2.8% since the previous meeting, although it is expected to rise later this year as the effects of higher energy prices continue to pass through."
+    },
+    {
+     "end": 1529,
+     "paragraph": 5,
+     "start": 1388,
+     "text": "Taking all the risks to the economic outlook into account, the Committee judges that it is appropriate to maintain Bank Rate at this meeting."
+    },
+    {
+     "end": 1795,
+     "paragraph": 6,
+     "start": 1661,
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    }
+   ],
+   "source": {
+    "chars": 1795,
+    "chars_sent": 1796,
+    "method": "stored",
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 167,
+        "paragraph": 2,
+        "start": 74,
+        "text": "the Monetary Policy Committee (MPC) voted by a majority of 7–2 to maintain Bank Rate at 3.75%"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Monetary Policy Committee voted by a majority of 7–2 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1529,
+        "paragraph": 5,
+        "start": 1388,
+        "text": "Taking all the risks to the economic outlook into account, the Committee judges that it is appropriate to maintain Bank Rate at this meeting."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Committee judges that it is appropriate to maintain Bank Rate, taking all the risks to the economic outlook into account."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1660,
+        "paragraph": 6,
+        "start": 1530,
+        "text": "The Committee will continue to monitor closely the situation in the Middle East and how its impact propagates through the economy."
+       },
+       {
+        "end": 1795,
+        "paragraph": 6,
+        "start": 1661,
+        "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Committee will monitor closely the situation in the Middle East and stands ready to act as necessary for CPI inflation to meet the 2% target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 242,
+        "paragraph": 2,
+        "start": 169,
+        "text": "Two members voted to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Two members voted to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England monetary policy statement, 18 June 2026",
+   "type": "statement",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4429,
+    "output_tokens": 1100,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 1608,
+    "changes": [
+     {
+      "added": "1 June 16 , 2026 Bank of Japan",
+      "paragraph": 1,
+      "removed": ""
+     },
+     {
+      "added": "Change in the Guideline for Money Market Operations",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "1. At the Monetary Policy Meeting held today, the Policy Board of the Bank of Japan decided, by a 7-1 majority vote, to set the following guideline for money market operations for the intermeeting period: [Note] The Bank will encourage the uncollateralized o vernight call rate to remain at around 1.0 percent.1 2. In accordance with the change in the guideline for money market operations, the Bank decided, by a 7-1 majority vote, to change the interest rates applied to its measures.2 [Note] (1) Interest rate applied to the complementary deposit facility The interest rate applied to the complementary deposit facility (the interest rate applied to current account balances held by financial institutions at the Bank, excluding required reserve balances) will be 1.0 percent.3 (2) Basic loan rate4 The basic loan rate applicable under the complementary lending facility will be 1.25 percent. 3. Japan's economy has recovered moderately, although some weakness has been seen in part , partly due to the impact of the situation in the Middle East (see Attachment). While higher crude oil prices have been exerting downward pressure on economic activity, the economy has generally been supported by factors such as high levels of corporate profits and an improvement in the employment and income situation. M eanwhile, the risk of a significant",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "1 The new guideline for money market operations will be effective from June 17, 2026. 2 The new interest rate applied to the complementary deposit facility and the new basic loan rate will be effective from June 17, 2026. 3 The interest rates applied to the Funds-Supplying Operation to Support Financial Institutions in Disaster Areas and the Funds-Supplying Operations to Support Financing for Climate Change Responses continue to be the interest rate applied to the complementary deposit facility. 4 The basic loan rate is stipulated in Article 15, paragraph 1, item (ii) of the Bank of Japan Act . The basic discount rate in item (i) in the same paragraph also will be 1.25 percent (discounting of bills is currently suspended).",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "2 slowdown in the economy appears to have decreased compared with a while ago. This is mainly because the eff ects of the government's various measures including those to reduce the household burden of higher energy prices will continue to provide support, and progress has been made in securing alternative sources of supply for raw materials that are highly dependent on the Middle East. Against this backdrop, Japan's economy has been developing generally in line with the baseline scenario , which expects that the economy will continue growing moderately, albeit at a decelerated rate. On the price front, the year-on-year rate of increase in the consumer price index (CPI, all items less fresh food) has recently been at a level below 2 percent due to factors such as the effects of the government's measures to reduce the household burden of higher energy prices. However, the price pass-through stemming from the rise in crude oil prices has been progressing at a relatively fast pace in business-to-business transactions, which could spread to an increase in consumer prices across a wide range of items . Against this backdrop, taking into account that medium-to long-term inflation expectations have also continued to rise, there is a risk of underlying CPI inflation deviating upward to a level above the price stability target of 2 percent. Japan's financial conditions have been accommodative. Real interest rates have been negative, mainly in the short-to medium-term zone. Firms' and other entities' demand for funds has increased. Issuance conditions for CP and corporate bonds have also remained favorable. In view of these developments in economic activity and prices as well as financial conditions, the Bank judged it appropriate to adjust the degree of monetary accommodation from the perspective of sustainable and stable achievement of the price stability target of 2 percent. Accommodative financial conditions are expected to be maintained after the change in the policy interest rate, continuing to firmly support economic activity. 4. As for the future conduct of monetary policy, given that underlying CPI inflation has been approaching 2 percent and financial conditions have been accommodative, the Bank will continue to raise the policy interest rate and adjust the degree of monetary accommodation, in response to developments in economic activity and prices as well as financial conditions. In this regard, it will consider the timing and pace of adjustment, while closely monitoring the impact of the future course of the situation in the Middle East on Japan's economic activity and prices and examining the likelihood of realizing t he baseline scenario of the outlook for economic activity and prices and the risks to the outlook. With the price stability target of 2",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "3 percent, the Bank will conduct monetary policy as appropriate from the perspective of sustainable and stable achievement of the target.",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "[Note] Voting for the action: HIMINO Ryozo, UCHIDA Shinichi, NAKAGAWA Junko, TAKATA Hajime, TAMURA Naoki, KOEDA Junko, and MASU Kazuyuki. Voting against the action: ASADA Toichiro. Absent: UEDA Kazuo. Asada Toichiro dissented, considering that, regarding the impact of the situation in the Middle East, downside risks to production and employment were greater than upside risks to prices, and it was desirable for the Bank to maintain the guideline for money market operations.",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "4 Attachment",
+      "paragraph": 8,
+      "removed": ""
+     },
+     {
+      "added": "Economic Activity and Prices in Japan: Current Situation and Outlook",
+      "paragraph": 9,
+      "removed": ""
+     },
+     {
+      "added": "1. Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East. Overseas economies have grown moderately on the whole, although some weakness has been seen in part. Exports and industrial production have continued to be more or less flat as a trend. Corporate profits have been at high levels against the backdrop of a solid increase in global AI-related demand. Under these circumstances, business fixed investment has been on a moderate increasing trend. Private consumption has been resilient against the background of an improvement in the employment and income situation, although weakness has been seen in household sentiment. On the other hand, housing investment has been on a declining trend. Public investment has continued to be more or less flat. Meanwhile, labor market conditions have remained tight. Financial conditions have been accommodative. On the price front, with moves to pass on wage increases to selling prices continuing, the year-on-year rate of increase in the consumer price index (CPI, all items less fresh food) had been above 2 percent, partly due to the effects of the rise in food prices, such as rice prices; however, the rate of increase has recently been at around 1.5 percent due to factors such as the effects of the government's measures to r educe the household burden of higher energy prices. Inflation expectations have risen moderately. 2. Japan's economic growth is likely to decelerate, since the rise in crude oil prices reflecting the impact of the situation in the Middle East is expected to push down corporate profits and households' real income through factors such as a deterioration in the terms of trade. However, the economy is expected to continue growing moderately, albeit at a decelerated rate, since it is likely to be underpinned by fac tors such as the government's various measures and accommodative financial conditions, in addition to developments such as continued high levels of profits in the corporate sector. Japan's economic growth rate is likely to rise moderately thereafter, since it is projected that the adverse effects of high crude oil prices will wane and that a virtuous cycle from income to spending will gradually intensify. The year-on-year rate of increase in the CPI (all items less fresh food) is likely to accelerate to a l evel clearly above 2 percent, as the rise in crude oil prices is expected to push up prices, mainly of energy and goods, with moves to pass on wage increases to selling prices continuing. Thereafter, with the waning of the effects of high crude oil prices, the rate of increase is expected to decline toward around 2 percent. Meanwhile, with a sense of labor shortage continuing to be strong, it is",
+      "paragraph": 10,
+      "removed": ""
+     },
+     {
+      "added": "5 projected that the mechanism in which wages and prices rise moderately in interaction with each other will be maintained, and that medium-to long-term inflation expectations will rise. In this situation, underlying CPI inflation is expected to increase gradually, coming to a level that is generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027 and remaining at around that level thereafter. [Note] 3. There are various risks to the outlook. For the time being, it is necessary to pay particular attention to the impact of the future course of the situation in the Middle East on financial and foreign exchange markets and on Japan's economic activity and prices. In addition, it is necessary to pay attention to the effects of developments in global AI-related demand and of future developments in foreign exchange rates on Japan's economic activity and prices.",
+      "paragraph": 11,
+      "removed": ""
+     },
+     {
+      "added": "[Note] Takata Hajime opposed the description regarding the outlook for prices, considering that the level of the rate of increase in the CPI, including underlying CPI inflation, already had generally reached the price stability target. Tamura Naoki opposed the description regarding the outlook for prices, considering that underlying CPI inflation already had been at a level that was generally consistent with the price stability target.",
+      "paragraph": 12,
+      "removed": ""
+     },
+     {
+      "added": "June 15: 14:00-15:57",
+      "paragraph": 13,
+      "removed": "April 27: 14:00-15:59"
+     },
+     {
+      "added": "June 16: 9:00-12:12",
+      "paragraph": 13,
+      "removed": "April 28: 9:00-11:57"
+     },
+     {
+      "added": "HIMINO Ryozo,",
+      "paragraph": 13,
+      "removed": "UEDA Kazuo,"
+     },
+     {
+      "added": "",
+      "paragraph": 13,
+      "removed": "(Governor) HIMINO Ryozo"
+     },
+     {
+      "added": "",
+      "paragraph": 13,
+      "removed": "1"
+     },
+     {
+      "added": "",
+      "paragraph": 14,
+      "removed": "1 UCHIDA was present via conference call."
+     },
+     {
+      "added": "June 15",
+      "paragraph": 14,
+      "removed": "April 27"
+     },
+     {
+      "added": "(14:00-15:57)",
+      "paragraph": 14,
+      "removed": "(14:00-15:59)"
+     },
+     {
+      "added": "(14:00-15:57) June 16",
+      "paragraph": 14,
+      "removed": "(14:00-15:59) April 28"
+     },
+     {
+      "added": "(9:00-11:38, 11:51-12:12)",
+      "paragraph": 14,
+      "removed": "(9:00-11:29, 11:38-11:57)"
+     },
+     {
+      "added": "(9:00-9:05)",
+      "paragraph": 14,
+      "removed": "(9:00-9:13)"
+     },
+     {
+      "added": "(9:06-11:38, 11:51-12:12)",
+      "paragraph": 14,
+      "removed": "(9:14-11:29, 11:38-11:57)"
+     },
+     {
+      "added": "Change in the Guideline for Money Market Operations",
+      "paragraph": 14,
+      "removed": "Statement on Monetary Policy"
+     },
+     {
+      "added": "June 16",
+      "paragraph": 14,
+      "removed": "April 28"
+     },
+     {
+      "added": "12:19",
+      "paragraph": 14,
+      "removed": "12:04 Outlook for Economic Activity and Prices (Outlook Report) The Bank's View -- Tuesday, April 28 at 12:04 Full text -- Thursday, April 30 at 14:00"
+     },
+     {
+      "added": "Wednesday, June 24",
+      "paragraph": 14,
+      "removed": "Tuesday, May 12"
+     },
+     {
+      "added": "Wednesday, August 5",
+      "paragraph": 14,
+      "removed": "Friday, June 19"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "April 28, 2026 Bank of Japan Statement on Monetary Policy At the Monetary Policy Meeting held today, the Policy Board of the Bank of Japan decided, by a 6-3 majority vote, to set the following guideline for money market operations for the intermeeting period: [Note] The Bank will encourage the uncollateralized overnight call rate to remain at around 0.75 percent. [Note] Voting for the action: UEDA Kazuo, HIMINO Ryozo, UCHIDA Shinichi, KOEDA Junko, MASU Kazuyuki, and ASADA Toichiro. Voting against the action: NAKAGAWA Junko, TAKATA Hajime, and TAMURA Naoki. Nakagawa Junko considered that, while the situation in the Middle East remained unclear, given economic developments, risks to prices were skewed to the upside under accommodative financial conditions. Takata Hajime considered that the price stability target had been more or less achieved and that risks to prices in Japan were already skewed to the upside due to the second-round effects of price rises stemming from overseas developments. Tamura Naoki considered that, with risks to prices becoming significantly skewed to the upside, the Bank should set the policy interest rate as close to the neutral rate as possible. They proposed that the Bank set the guideline for money market operations as follows: the Bank would encourage the uncollateralized overnight call rate to remain at around 1.0 percent. The proposals were defeated by majority votes."
+     }
+    ],
+    "removed_words": 290,
+    "truncated": false,
+    "vs_doc_id": "JPY:statement:2026-04-28",
+    "vs_meeting": "2026-04-28"
+   },
+   "coverage": {
+    "paragraphs": [
+     3,
+     5,
+     7
+    ],
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:statement:2026-06-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "3c68b3a0705e6adcb53fe3202a86d50ff8fc1fe7f8a279965409d9e7efab703e",
+   "meeting_date": "2026-06-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1,
+     "point": 1,
+     "source_text": "1",
+     "start": 0,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 396,
+     "point": 2,
+     "source_text": "2",
+     "start": 395,
+     "text": "2 percent"
+    },
+    {
+     "end": 1,
+     "point": 3,
+     "source_text": "1",
+     "start": 0,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 977,
+     "point": 3,
+     "source_text": "1.25 percent",
+     "start": 965,
+     "text": "1.25 percent"
+    },
+    {
+     "end": 182,
+     "point": 5,
+     "source_text": "7",
+     "start": 181,
+     "text": "7"
+    },
+    {
+     "end": 1,
+     "point": 5,
+     "source_text": "1",
+     "start": 0,
+     "text": "1"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-16",
+   "quotes": [
+    {
+     "end": 393,
+     "paragraph": 3,
+     "start": 295,
+     "text": "The Bank will encourage the uncollateralized o vernight call rate to remain at around 1.0 percent."
+    },
+    {
+     "end": 4062,
+     "paragraph": 5,
+     "start": 3787,
+     "text": "In view of these developments in economic activity and prices as well as financial conditions, the Bank judged it appropriate to adjust the degree of monetary accommodation from the perspective of sustainable and stable achievement of the price stability target of 2 percent."
+    },
+    {
+     "end": 4586,
+     "paragraph": 5,
+     "start": 4388,
+     "text": "the Bank will continue to raise the policy interest rate and adjust the degree of monetary accommodation, in response to developments in economic activity and prices as well as financial conditions."
+    },
+    {
+     "end": 5583,
+     "paragraph": 7,
+     "start": 5307,
+     "text": "Asada Toichiro dissented, considering that, regarding the impact of the situation in the Middle East, downside risks to production and employment were greater than upside risks to prices, and it was desirable for the Bank to maintain the guideline for money market operations."
+    }
+   ],
+   "source": {
+    "chars": 10868,
+    "chars_sent": 10869,
+    "method": "stored",
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 393,
+        "paragraph": 3,
+        "start": 295,
+        "text": "The Bank will encourage the uncollateralized o vernight call rate to remain at around 1.0 percent."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Policy Board decided to set the guideline for money market operations so that the uncollateralized overnight call rate remains at around 1.0 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4062,
+        "paragraph": 5,
+        "start": 3882,
+        "text": "the Bank judged it appropriate to adjust the degree of monetary accommodation from the perspective of sustainable and stable achievement of the price stability target of 2 percent."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Bank judged it appropriate to adjust the degree of monetary accommodation from the perspective of sustainable and stable achievement of the price stability target of 2 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 862,
+        "paragraph": 3,
+        "start": 642,
+        "text": "The interest rate applied to the complementary deposit facility (the interest rate applied to current account balances held by financial institutions at the Bank, excluding required reserve balances) will be 1.0 percent."
+       },
+       {
+        "end": 978,
+        "paragraph": 3,
+        "start": 885,
+        "text": "The basic loan rate applicable under the complementary lending facility will be 1.25 percent."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Bank decided to change the complementary deposit facility interest rate to 1.0 percent and the basic loan rate to 1.25 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4586,
+        "paragraph": 5,
+        "start": 4388,
+        "text": "the Bank will continue to raise the policy interest rate and adjust the degree of monetary accommodation, in response to developments in economic activity and prices as well as financial conditions."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Bank will continue to raise the policy interest rate and adjust the degree of monetary accommodation in response to developments in economic activity and prices as well as financial conditions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 287,
+        "paragraph": 3,
+        "start": 86,
+        "text": "At the Monetary Policy Meeting held today, the Policy Board of the Bank of Japan decided, by a 7-1 majority vote, to set the following guideline for money market operations for the intermeeting period:"
+       },
+       {
+        "end": 5306,
+        "paragraph": 7,
+        "start": 5244,
+        "text": "Voting against the action: ASADA Toichiro. Absent: UEDA Kazuo."
+       }
+      ],
+      "paragraphs": [
+       3,
+       7
+      ]
+     },
+     "text": "The Policy Board decided, by a 7-1 majority vote, to set the guideline for money market operations; ASADA Toichiro voted against the action and UEDA Kazuo was absent."
+    }
+   ],
+   "title": "Bank of Japan monetary policy statement, 16 June 2026",
+   "type": "statement",
+   "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260616a.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 8361,
+    "output_tokens": 2689,
+    "reasoning_tokens": 1388
+   }
+  },
+  {
+   "changes_vs_previous": {
     "added_words": 113,
     "changes": [
      {
@@ -589,8 +2279,10 @@
    },
    "currency": "USD",
    "doc_id": "USD:statement:2026-06-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
    "format": "html",
-   "generated_at": "2026-09-21T15:53:30Z",
+   "generated_at": "2026-09-21T18:08:27Z",
    "input_sha256": "b337a261d8ef06a9a61d1a868f9ca6a379fd7b71fcf19f3af1134eccf115d857",
    "meeting_date": "2026-06-17",
    "model": "gpt-5.6-terra",
@@ -631,7 +2323,7 @@
      "text": "0"
     }
    ],
-   "prompt_version": "statement-v5",
+   "prompt_version": "statement-v6",
    "provider": "openai",
    "published": "2026-06-17",
    "quotes": [
@@ -706,7 +2398,7 @@
        3
       ]
      },
-     "text": "The Committee said economic activity is expanding at a solid pace despite elevated uncertainty that owes, in part, to the conflict in the Middle East."
+     "text": "The Committee stated that economic activity is expanding at a solid pace despite elevated uncertainty that owes, in part, to the conflict in the Middle East."
     },
     {
      "evidence": {
@@ -729,7 +2421,7 @@
        3
       ]
      },
-     "text": "The Committee reported that productivity growth and capital investment are strong, while job gains have kept pace with the workforce and the unemployment rate has changed little."
+     "text": "The Committee stated that productivity growth and capital investment are strong, while job gains have kept pace with the workforce and the unemployment rate has changed little."
     },
     {
      "evidence": {
@@ -746,7 +2438,7 @@
        4
       ]
      },
-     "text": "The Committee said inflation remains elevated relative to its 2 percent goal, in part reflecting supply shocks that have driven price increases in certain sectors, including energy."
+     "text": "The Committee stated that inflation remains elevated relative to its 2 percent goal, in part reflecting supply shocks that have driven price increases in certain sectors, including energy."
     },
     {
      "evidence": {
@@ -780,7 +2472,7 @@
        1
       ]
      },
-     "text": "The Federal Open Market Committee approved the statement by a 12 – 0 vote."
+     "text": "The Federal Open Market Committee approved the statement for release by a 12 – 0 vote."
     }
    ],
    "title": "Federal Reserve monetary policy statement, 17 June 2026",
@@ -788,8 +2480,8 @@
    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
    "usage": {
     "attempts": 1,
-    "input_tokens": 1540,
-    "output_tokens": 582,
+    "input_tokens": 1673,
+    "output_tokens": 586,
     "reasoning_tokens": 0
    }
   }

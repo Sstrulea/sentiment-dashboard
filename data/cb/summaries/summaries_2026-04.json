@@ -1,0 +1,1098 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     7,
+     8,
+     9,
+     10,
+     12
+    ],
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:statement:2026-04-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "d400f31aba03d87ac2c839e7c2894e6bb91cb9cdf39da4585f84a9ff45852809",
+   "meeting_date": "2026-04-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 72,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 67,
+     "text": "2.25%"
+    },
+    {
+     "end": 2335,
+     "point": 2,
+     "source_text": "1.2%",
+     "start": 2331,
+     "text": "1.2%"
+    },
+    {
+     "end": 1414,
+     "point": 2,
+     "source_text": "2026",
+     "start": 1410,
+     "text": "2026"
+    },
+    {
+     "end": 2359,
+     "point": 2,
+     "source_text": "1.6%",
+     "start": 2355,
+     "text": "1.6%"
+    },
+    {
+     "end": 447,
+     "point": 2,
+     "source_text": "2027",
+     "start": 443,
+     "text": "2027"
+    },
+    {
+     "end": 2376,
+     "point": 2,
+     "source_text": "1.7%",
+     "start": 2372,
+     "text": "1.7%"
+    },
+    {
+     "end": 1429,
+     "point": 2,
+     "source_text": "2028",
+     "start": 1425,
+     "text": "2028"
+    },
+    {
+     "end": 2857,
+     "point": 3,
+     "source_text": "2.4%",
+     "start": 2853,
+     "text": "2.4%"
+    },
+    {
+     "end": 4463,
+     "point": 5,
+     "source_text": "10",
+     "start": 4461,
+     "text": "10"
+    },
+    {
+     "end": 1414,
+     "point": 5,
+     "source_text": "2026",
+     "start": 1410,
+     "text": "2026"
+    },
+    {
+     "end": 4518,
+     "point": 5,
+     "source_text": "15",
+     "start": 4516,
+     "text": "15"
+    },
+    {
+     "end": 1414,
+     "point": 5,
+     "source_text": "2026",
+     "start": 1410,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-29",
+   "quotes": [
+    {
+     "end": 131,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Bank of Canada today held its target for the overnight rate at 2.25%, with the Bank Rate at 2.5% and the deposit rate at 2.20%."
+    },
+    {
+     "end": 3594,
+     "paragraph": 9,
+     "start": 3534,
+     "text": "CPI inflation will likely rise further in April to about 3%."
+    },
+    {
+     "end": 4252,
+     "paragraph": 10,
+     "start": 4192,
+     "text": "As the outlook evolves, we stand ready to respond as needed."
+    }
+   ],
+   "source": {
+    "chars": 4525,
+    "chars_sent": 4526,
+    "method": "stored",
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3897,
+        "paragraph": 10,
+        "start": 3764,
+        "text": "Against this backdrop and taking into account the current projection, Governing Council decided to maintain the policy rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governing Council decided to maintain the policy rate at 2.25%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2463,
+        "paragraph": 7,
+        "start": 2282,
+        "text": "The Bank’s April forecast projects GDP growth of 1.2% in 2026, rising to 1.6% in 2027 and 1.7% in 2028 as growth in exports and business investment resumes along a lower trajectory."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Bank’s April forecast projects GDP growth of 1.2% in 2026, rising to 1.6% in 2027 and 1.7% in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2909,
+        "paragraph": 8,
+        "start": 2828,
+        "text": "CPI inflation climbed to 2.4% in March because of sharply higher gasoline prices."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The Bank reports that CPI inflation climbed to 2.4% in March because of sharply higher gasoline prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4191,
+        "paragraph": 10,
+        "start": 4048,
+        "text": "Governing Council is looking through the war’s immediate impact on inflation but will not let higher energy prices become persistent inflation."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governing Council states that it is looking through the war’s immediate impact on inflation but will not let higher energy prices become persistent inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4470,
+        "paragraph": 12,
+        "start": 4388,
+        "text": "The next scheduled date for announcing the overnight rate target is June 10, 2026."
+       },
+       {
+        "end": 4525,
+        "paragraph": 12,
+        "start": 4471,
+        "text": "The Bank’s next MPR will be released on July 15, 2026."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "The next scheduled date for announcing the overnight rate target is June 10, 2026, and the next MPR will be released on July 15, 2026."
+    }
+   ],
+   "title": "Bank of Canada monetary policy statement, 29 April 2026",
+   "type": "statement",
+   "url": "https://www.bankofcanada.ca/2026/04/fad-press-release-2026-04-29/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2426,
+    "output_tokens": 1174,
+    "reasoning_tokens": 669
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     4,
+     6,
+     8
+    ],
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:statement:2026-04-30",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "6be1d1397002066be37227488e66e8d1291e3708fa832ac2092d9469a0297c40",
+   "meeting_date": "2026-04-30",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 410,
+     "point": 1,
+     "source_text": "2%",
+     "start": 408,
+     "text": "2.00%"
+    },
+    {
+     "end": 1987,
+     "point": 1,
+     "source_text": "2.15%",
+     "start": 1982,
+     "text": "2.15%"
+    },
+    {
+     "end": 1997,
+     "point": 1,
+     "source_text": "2.40%",
+     "start": 1992,
+     "text": "2.40%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-30",
+   "quotes": [
+    {
+     "end": 2011,
+     "paragraph": 6,
+     "start": 1840,
+     "text": "The interest rates on the deposit facility, the main refinancing operations and the marginal lending facility will remain unchanged at 2.00%, 2.15% and 2.40% respectively."
+    },
+    {
+     "end": 302,
+     "paragraph": 1,
+     "start": 88,
+     "text": "While the incoming information has been broadly consistent with the Governing Council’s previous assessment of the inflation outlook, the upside risks to inflation and the downside risks to growth have intensified."
+    },
+    {
+     "end": 567,
+     "paragraph": 2,
+     "start": 438,
+     "text": "The war in the Middle East has led to a sharp increase in energy prices, pushing up inflation and weighing on economic sentiment."
+    },
+    {
+     "end": 1816,
+     "paragraph": 4,
+     "start": 1746,
+     "text": "The Governing Council is not pre-committing to a particular rate path."
+    },
+    {
+     "end": 2256,
+     "paragraph": 8,
+     "start": 2092,
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+    }
+   ],
+   "source": {
+    "chars": 2936,
+    "chars_sent": 2937,
+    "method": "stored",
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 87,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Governing Council today decided to keep the three key ECB interest rates unchanged."
+       },
+       {
+        "end": 2011,
+        "paragraph": 6,
+        "start": 1840,
+        "text": "The interest rates on the deposit facility, the main refinancing operations and the marginal lending facility will remain unchanged at 2.00%, 2.15% and 2.40% respectively."
+       }
+      ],
+      "paragraphs": [
+       1,
+       6
+      ]
+     },
+     "text": "The Governing Council decided to keep the three key ECB interest rates unchanged: the deposit facility at 2.00%, main refinancing operations at 2.15% and marginal lending facility at 2.40%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 302,
+        "paragraph": 1,
+        "start": 222,
+        "text": "the upside risks to inflation and the downside risks to growth have intensified."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Governing Council stated that upside risks to inflation and downside risks to growth have intensified."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 567,
+        "paragraph": 2,
+        "start": 438,
+        "text": "The war in the Middle East has led to a sharp increase in energy prices, pushing up inflation and weighing on economic sentiment."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Governing Council stated that the war in the Middle East has increased energy prices, pushed up inflation and weighed on economic sentiment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1463,
+        "paragraph": 4,
+        "start": 1292,
+        "text": "The Governing Council will closely monitor the situation and follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+       },
+       {
+        "end": 1816,
+        "paragraph": 4,
+        "start": 1746,
+        "text": "The Governing Council is not pre-committing to a particular rate path."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Governing Council will follow a data-dependent and meeting-by-meeting approach and is not pre-committing to a particular rate path."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2256,
+        "paragraph": 8,
+        "start": 2092,
+        "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The APP and PEPP portfolios are declining as the Eurosystem no longer reinvests principal payments from maturing securities."
+    }
+   ],
+   "title": "European Central Bank monetary policy statement, 30 April 2026",
+   "type": "statement",
+   "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260430~81b7179e6f.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4859,
+    "output_tokens": 1585,
+    "reasoning_tokens": 380
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     5,
+     6,
+     7
+    ],
+    "paragraphs_sent": 7,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:statement:2026-04-30",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'likely' of summary point 3 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee likely ...' (never in your own voice)"
+     ],
+     "text": "The Committee states that CPI inflation has increased to 3.3%, and is likely to be higher later this year as the effects of higher energy prices pass through."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "a0c2ed8f7c758244a4c8298aaaa5cc5904909f3ddebfddf9c8eda2fa683c4e25",
+   "meeting_date": "2026-04-30",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 136,
+     "point": 1,
+     "source_text": "8",
+     "start": 135,
+     "text": "8"
+    },
+    {
+     "end": 138,
+     "point": 1,
+     "source_text": "1",
+     "start": 137,
+     "text": "1"
+    },
+    {
+     "end": 169,
+     "point": 1,
+     "source_text": "3.75%",
+     "start": 164,
+     "text": "3.75%"
+    },
+    {
+     "end": 490,
+     "point": 4,
+     "source_text": "2%",
+     "start": 488,
+     "text": "2%"
+    },
+    {
+     "end": 235,
+     "point": 5,
+     "source_text": "0.25 percentage points",
+     "start": 213,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 242,
+     "point": 5,
+     "source_text": "4%",
+     "start": 240,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-30",
+   "quotes": [
+    {
+     "end": 170,
+     "paragraph": 2,
+     "start": 36,
+     "text": "At its meeting ending on 29 April 2026, the Monetary Policy Committee (MPC) voted by a majority of 8–1 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "end": 343,
+     "paragraph": 3,
+     "start": 244,
+     "text": "The conflict in the Middle East means that prospects for global energy prices are highly uncertain."
+    },
+    {
+     "end": 922,
+     "paragraph": 5,
+     "start": 790,
+     "text": "CPI inflation has increased to 3.3%, and is likely to be higher later this year as the effects of higher energy prices pass through."
+    },
+    {
+     "end": 1395,
+     "paragraph": 6,
+     "start": 1254,
+     "text": "Taking all the risks to the economic outlook into account, the Committee judges that it is appropriate to maintain Bank Rate at this meeting."
+    },
+    {
+     "end": 1661,
+     "paragraph": 7,
+     "start": 1527,
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    }
+   ],
+   "source": {
+    "chars": 1661,
+    "chars_sent": 1662,
+    "method": "stored",
+    "paragraphs_sent": 7,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 170,
+        "paragraph": 2,
+        "start": 76,
+        "text": "the Monetary Policy Committee (MPC) voted by a majority of 8–1 to maintain Bank Rate at 3.75%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Monetary Policy Committee voted by a majority of 8–1 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 343,
+        "paragraph": 3,
+        "start": 244,
+        "text": "The conflict in the Middle East means that prospects for global energy prices are highly uncertain."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The conflict in the Middle East means that prospects for global energy prices are highly uncertain."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1395,
+        "paragraph": 6,
+        "start": 1254,
+        "text": "Taking all the risks to the economic outlook into account, the Committee judges that it is appropriate to maintain Bank Rate at this meeting."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Committee judges that it is appropriate to maintain Bank Rate at this meeting, taking all the risks to the economic outlook into account."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1526,
+        "paragraph": 7,
+        "start": 1396,
+        "text": "The Committee will continue to monitor closely the situation in the Middle East and how its impact propagates through the economy."
+       },
+       {
+        "end": 1661,
+        "paragraph": 7,
+        "start": 1527,
+        "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Committee will continue to monitor closely the situation in the Middle East and stands ready to act as necessary to ensure CPI inflation remains on track to meet the 2% target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 243,
+        "paragraph": 2,
+        "start": 171,
+        "text": "One member voted to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "One member voted to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England monetary policy statement, 30 April 2026",
+   "type": "statement",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4459,
+    "output_tokens": 1620,
+    "reasoning_tokens": 361
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1
+    ],
+    "paragraphs_sent": 3,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:statement:2026-04-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "0e0e9a5f73d0e5f080d29df46eb5d9d315a8355b171bcf0d740c582adae6d376",
+   "meeting_date": "2026-04-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 154,
+     "point": 1,
+     "source_text": "6",
+     "start": 153,
+     "text": "6"
+    },
+    {
+     "end": 156,
+     "point": 1,
+     "source_text": "3",
+     "start": 155,
+     "text": "3"
+    },
+    {
+     "end": 364,
+     "point": 1,
+     "source_text": "0.75 percent",
+     "start": 352,
+     "text": "0.75 percent"
+    },
+    {
+     "end": 1371,
+     "point": 2,
+     "source_text": "1.0 percent",
+     "start": 1360,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 1371,
+     "point": 6,
+     "source_text": "1.0 percent",
+     "start": 1360,
+     "text": "1.0 percent"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-28",
+   "quotes": [
+    {
+     "end": 365,
+     "paragraph": 1,
+     "start": 267,
+     "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 0.75 percent."
+    },
+    {
+     "end": 562,
+     "paragraph": 1,
+     "start": 487,
+     "text": "Voting against the action: NAKAGAWA Junko, TAKATA Hajime, and TAMURA Naoki."
+    },
+    {
+     "end": 1419,
+     "paragraph": 1,
+     "start": 1373,
+     "text": "The proposals were defeated by majority votes."
+    }
+   ],
+   "source": {
+    "chars": 2650,
+    "chars_sent": 2651,
+    "method": "stored",
+    "paragraphs_sent": 3,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 230,
+        "paragraph": 1,
+        "start": 101,
+        "text": "the Policy Board of the Bank of Japan decided, by a 6-3 majority vote, to set the following guideline for money market operations"
+       },
+       {
+        "end": 365,
+        "paragraph": 1,
+        "start": 267,
+        "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 0.75 percent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Policy Board decided, by a 6-3 majority vote, to set the guideline for money market operations so the uncollateralized overnight call rate remains at around 0.75 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 562,
+        "paragraph": 1,
+        "start": 487,
+        "text": "Voting against the action: NAKAGAWA Junko, TAKATA Hajime, and TAMURA Naoki."
+       },
+       {
+        "end": 1372,
+        "paragraph": 1,
+        "start": 1188,
+        "text": "They proposed that the Bank set the guideline for money market operations as follows: the Bank would encourage the uncollateralized overnight call rate to remain at around 1.0 percent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Nakagawa Junko, Takata Hajime, and Tamura Naoki voted against the action and proposed an uncollateralized overnight call rate of around 1.0 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 764,
+        "paragraph": 1,
+        "start": 563,
+        "text": "Nakagawa Junko considered that, while the situation in the Middle East remained unclear, given economic developments, risks to prices were skewed to the upside under accommodative financial conditions."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Nakagawa Junko considered that risks to prices were skewed to the upside under accommodative financial conditions, while the situation in the Middle East remained unclear."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1004,
+        "paragraph": 1,
+        "start": 765,
+        "text": "Takata Hajime considered that the price stability target had been more or less achieved and that risks to prices in Japan were already skewed to the upside due to the second-round effects of price rises stemming from overseas developments."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Takata Hajime considered that the price stability target had been more or less achieved and risks to prices in Japan were already skewed to the upside."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1187,
+        "paragraph": 1,
+        "start": 1005,
+        "text": "Tamura Naoki considered that, with risks to prices becoming significantly skewed to the upside, the Bank should set the policy interest rate as close to the neutral rate as possible."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Tamura Naoki considered that risks to prices were becoming significantly skewed to the upside and the policy interest rate should be as close to the neutral rate as possible."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1419,
+        "paragraph": 1,
+        "start": 1373,
+        "text": "The proposals were defeated by majority votes."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The proposals to encourage the uncollateralized overnight call rate to remain at around 1.0 percent were defeated by majority votes."
+    }
+   ],
+   "title": "Bank of Japan monetary policy statement, 28 April 2026",
+   "type": "statement",
+   "url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260428a.pdf",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2182,
+    "output_tokens": 624,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     3,
+     5
+    ],
+    "paragraphs_sent": 5,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:statement:2026-04-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:08:27Z",
+   "input_sha256": "f69fea68d23e456dc7341a56c77cacc244301a143aea2a4b7a5f3f536c1ff899",
+   "meeting_date": "2026-04-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 685,
+     "point": 1,
+     "source_text": "3‑1/2",
+     "start": 680,
+     "text": "3-1/2"
+    },
+    {
+     "end": 702,
+     "point": 1,
+     "source_text": "3‑3/4 percent",
+     "start": 689,
+     "text": "3-3/4 percent"
+    },
+    {
+     "end": 369,
+     "point": 4,
+     "source_text": "2 percent",
+     "start": 360,
+     "text": "2 percent"
+    },
+    {
+     "end": 1931,
+     "point": 6,
+     "source_text": "1/4 percentage point",
+     "start": 1911,
+     "text": "1/4 percentage point"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-29",
+   "quotes": [
+    {
+     "end": 703,
+     "paragraph": 3,
+     "start": 574,
+     "text": "In support of its goals, the Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent."
+    },
+    {
+     "end": 280,
+     "paragraph": 1,
+     "start": 194,
+     "text": "Inflation is elevated, in part reflecting the recent increase in global energy prices."
+    },
+    {
+     "end": 498,
+     "paragraph": 2,
+     "start": 391,
+     "text": "Developments in the Middle East are contributing to a high level of uncertainty about the economic outlook."
+    },
+    {
+     "end": 2153,
+     "paragraph": 5,
+     "start": 1791,
+     "text": "Voting against this action were Stephen I. Miran, who preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting; and Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who supported maintaining the target range for the federal funds rate but did not support inclusion of an easing bias in the statement at this time."
+    }
+   ],
+   "source": {
+    "chars": 2153,
+    "chars_sent": 2154,
+    "method": "stored",
+    "paragraphs_sent": 5,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 703,
+        "paragraph": 3,
+        "start": 574,
+        "text": "In support of its goals, the Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 84,
+        "paragraph": 1,
+        "start": 0,
+        "text": "Recent indicators suggest that economic activity has been expanding at a solid pace."
+       },
+       {
+        "end": 280,
+        "paragraph": 1,
+        "start": 194,
+        "text": "Inflation is elevated, in part reflecting the recent increase in global energy prices."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The statement says recent indicators suggest economic activity has been expanding at a solid pace, job gains have remained low on average, and inflation is elevated, in part reflecting the recent increase in global energy prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 498,
+        "paragraph": 2,
+        "start": 391,
+        "text": "Developments in the Middle East are contributing to a high level of uncertainty about the economic outlook."
+       },
+       {
+        "end": 573,
+        "paragraph": 2,
+        "start": 499,
+        "text": "The Committee is attentive to the risks to both sides of its dual mandate."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Committee says developments in the Middle East are contributing to a high level of uncertainty about the economic outlook, and it is attentive to risks to both sides of its dual mandate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 913,
+        "paragraph": 3,
+        "start": 704,
+        "text": "In considering the extent and timing of additional adjustments to the target range for the federal funds rate, the Committee will carefully assess incoming data, the evolving outlook, and the balance of risks."
+       },
+       {
+        "end": 1034,
+        "paragraph": 3,
+        "start": 914,
+        "text": "The Committee is strongly committed to supporting maximum employment and returning inflation to its 2 percent objective."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee will carefully assess incoming data, the evolving outlook, and the balance of risks when considering additional target-range adjustments, and is strongly committed to supporting maximum employment and returning inflation to its 2 percent objective."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1790,
+        "paragraph": 5,
+        "start": 1580,
+        "text": "Voting for the monetary policy action were Jerome H. Powell, Chair; John C. Williams, Vice Chair; Michael S. Barr; Michelle W. Bowman; Lisa D. Cook; Philip N. Jefferson; Anna Paulson; and Christopher J. Waller."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Voting for the monetary policy action were Jerome H. Powell, John C. Williams, Michael S. Barr, Michelle W. Bowman, Lisa D. Cook, Philip N. Jefferson, Anna Paulson, and Christopher J. Waller."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1948,
+        "paragraph": 5,
+        "start": 1791,
+        "text": "Voting against this action were Stephen I. Miran, who preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting;"
+       },
+       {
+        "end": 2153,
+        "paragraph": 5,
+        "start": 1953,
+        "text": "Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who supported maintaining the target range for the federal funds rate but did not support inclusion of an easing bias in the statement at this time."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Stephen I. Miran preferred to lower the target range by 1/4 percentage point, while Beth M. Hammack, Neel Kashkari, and Lorie K. Logan supported maintaining the range but did not support inclusion of an easing bias."
+    }
+   ],
+   "title": "Federal Reserve monetary policy statement, 29 April 2026",
+   "type": "statement",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 1930,
+    "output_tokens": 1870,
+    "reasoning_tokens": 1034
+   }
+  }
+ ],
+ "version": 1
+}
