@@ -1,6 +1,175 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     6,
+     7,
+     16
+    ],
+    "paragraphs_sent": 17,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:opening_statement:2026-09-02",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "9acb4a37a9949ae0607bacbe6c463a3e2a095f2bbf3d90d06a19ee0abd116be2",
+   "meeting_date": "2026-09-02",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 750,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 745,
+     "text": "2.25%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-09-02",
+   "quotes": [
+    {
+     "end": 751,
+     "paragraph": 4,
+     "start": 626,
+     "text": "With recent data coming out largely in line with our July forecast, we decided to maintain the policy interest rate at 2.25%."
+    },
+    {
+     "end": 862,
+     "paragraph": 6,
+     "start": 781,
+     "text": "First, economic growth in Canada has picked up after stalling over the past year."
+    },
+    {
+     "end": 1183,
+     "paragraph": 7,
+     "start": 1022,
+     "text": "Second, the ongoing conflict in the Middle East is keeping energy prices higher for longer, and this has increased the upside risks to the outlook for inflation."
+    },
+    {
+     "end": 4602,
+     "paragraph": 16,
+     "start": 4446,
+     "text": "Governing Council will assess the sustainability of the economic rebound and the outlook for inflation, and is prepared to adjust monetary policy as needed."
+    }
+   ],
+   "source": {
+    "chars": 4805,
+    "chars_sent": 4806,
+    "method": "stored",
+    "paragraphs_sent": 17,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 751,
+        "paragraph": 4,
+        "start": 626,
+        "text": "With recent data coming out largely in line with our July forecast, we decided to maintain the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Governing Council decided to maintain the policy interest rate at 2.25%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 751,
+        "paragraph": 4,
+        "start": 626,
+        "text": "With recent data coming out largely in line with our July forecast, we decided to maintain the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Bank states that recent data have come out largely in line with its July forecast."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 862,
+        "paragraph": 6,
+        "start": 788,
+        "text": "economic growth in Canada has picked up after stalling over the past year."
+       },
+       {
+        "end": 1021,
+        "paragraph": 6,
+        "start": 925,
+        "text": "But uncertainty about the sustainability of the rebound has increased with new US trade actions."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Bank states that economic growth has picked up after stalling over the past year, but uncertainty about the sustainability of the rebound has increased with new US trade actions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1183,
+        "paragraph": 7,
+        "start": 1030,
+        "text": "the ongoing conflict in the Middle East is keeping energy prices higher for longer, and this has increased the upside risks to the outlook for inflation."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Bank states that the ongoing conflict in the Middle East is keeping energy prices higher for longer and has increased upside risks to the inflation outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4602,
+        "paragraph": 16,
+        "start": 4446,
+        "text": "Governing Council will assess the sustainability of the economic rebound and the outlook for inflation, and is prepared to adjust monetary policy as needed."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Governing Council will assess the sustainability of the economic rebound and the outlook for inflation, and is prepared to adjust monetary policy as needed."
+    }
+   ],
+   "title": "Bank of Canada introductory statement, 02 September 2026",
+   "type": "opening_statement",
+   "url": "https://www.bankofcanada.ca/2026/09/opening-statement-2026-09-02/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2459,
+    "output_tokens": 503,
+    "reasoning_tokens": 0
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 422,
     "changes": [
@@ -402,6 +571,289 @@
     "input_tokens": 2177,
     "output_tokens": 670,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     5,
+     7,
+     33,
+     46,
+     49,
+     58,
+     59,
+     70
+    ],
+    "paragraphs_sent": 97,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:presser_transcript:2026-09-10",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 6 has a negation but the closest clause of the paragraph(s) it cites has none: “Cancellation of debt is covered under Article 123 of the Treaty on the Functioning of the European Union.” (its clause: “Christine Lagarde said cancellation of debt is covered under Article 123 of the Treaty on the Functi”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Christine Lagarde said cancellation of debt is covered under Article 123 of the Treaty on the Functioning of the European Union and is technically not good and financially dangerous."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "4fa24b7fdf9c18b8de8a0f79a270a59386a8e47efacf0972bf51943de39db80e",
+   "meeting_date": "2026-09-10",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 466,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 451,
+     "text": "25 basis points"
+    },
+    {
+     "end": 862,
+     "point": 2,
+     "source_text": "3.0 per cent",
+     "start": 850,
+     "text": "3.0 per cent"
+    },
+    {
+     "end": 105,
+     "point": 2,
+     "source_text": "2026",
+     "start": 101,
+     "text": "2026"
+    },
+    {
+     "end": 884,
+     "point": 2,
+     "source_text": "2.5 per cent",
+     "start": 872,
+     "text": "2.5 per cent"
+    },
+    {
+     "end": 892,
+     "point": 2,
+     "source_text": "2027",
+     "start": 888,
+     "text": "2027"
+    },
+    {
+     "end": 909,
+     "point": 2,
+     "source_text": "2.1 per cent",
+     "start": 897,
+     "text": "2.1 per cent"
+    },
+    {
+     "end": 917,
+     "point": 2,
+     "source_text": "2028",
+     "start": 913,
+     "text": "2028"
+    },
+    {
+     "end": 1238,
+     "point": 2,
+     "source_text": "0.9 per cent",
+     "start": 1226,
+     "text": "0.9 per cent"
+    },
+    {
+     "end": 1261,
+     "point": 2,
+     "source_text": "1.4 per cent",
+     "start": 1249,
+     "text": "1.4 per cent"
+    },
+    {
+     "end": 1287,
+     "point": 2,
+     "source_text": "1.5 per cent",
+     "start": 1275,
+     "text": "1.5 per cent"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-09-10",
+   "quotes": [
+    {
+     "end": 467,
+     "paragraph": 4,
+     "start": 370,
+     "text": "The Governing Council today decided to raise the three key ECB interest rates by 25 basis points."
+    },
+    {
+     "end": 2372,
+     "paragraph": 7,
+     "start": 2320,
+     "text": "We are not pre-committing to a particular rate path."
+    },
+    {
+     "end": 13224,
+     "paragraph": 33,
+     "start": 13008,
+     "text": "We have not actually debated at all any kind of future path, the likelihood of this or the likelihood of that, because we are dead serious about the framework that we observe and that we want to collectively respect."
+    },
+    {
+     "end": 21115,
+     "paragraph": 59,
+     "start": 20961,
+     "text": "Because, as you know, payment infrastructure is part of our sovereignty, and he who does not control his payment infrastructure is potentially vulnerable."
+    },
+    {
+     "end": 24991,
+     "paragraph": 70,
+     "start": 24883,
+     "text": "So anything that would go against the financing of debt in that way would be a pure violation of the Treaty."
+    }
+   ],
+   "source": {
+    "chars": 33158,
+    "chars_sent": 33159,
+    "method": "html-selector",
+    "paragraphs_sent": 97,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 467,
+        "paragraph": 4,
+        "start": 370,
+        "text": "The Governing Council today decided to raise the three key ECB interest rates by 25 basis points."
+       },
+       {
+        "end": 541,
+        "paragraph": 4,
+        "start": 468,
+        "text": "The conflict in the Middle East continues to generate inflation pressures"
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Christine Lagarde said the Governing Council decided to raise the three key ECB interest rates by 25 basis points, while the Middle East conflict continues to generate inflation pressures."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 918,
+        "paragraph": 5,
+        "start": 821,
+        "text": "headline inflation averaging 3.0 per cent in 2026, 2.5 per cent in 2027 and 2.1 per cent in 2028."
+       },
+       {
+        "end": 1297,
+        "paragraph": 5,
+        "start": 1179,
+        "text": "The baseline projection for economic growth is 0.9 per cent for 2026, 1.4 per cent for 2027 and 1.5 per cent for 2028."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Christine Lagarde said the baseline sees headline inflation averaging 3.0 per cent in 2026, 2.5 per cent in 2027 and 2.1 per cent in 2028, and economic growth of 0.9 per cent, 1.4 per cent and 1.5 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 0.867,
+      "fragments": [
+       {
+        "end": 2037,
+        "paragraph": 7,
+        "start": 1919,
+        "text": "We will follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+       },
+       {
+        "end": 13007,
+        "paragraph": 33,
+        "start": 12933,
+        "text": "the entire discussions that we had today were focused on today's decision."
+       },
+       {
+        "end": 13067,
+        "paragraph": 33,
+        "start": 13008,
+        "text": "We have not actually debated at all any kind of future path"
+       }
+      ],
+      "paragraphs": [
+       7,
+       33
+      ]
+     },
+     "text": "Christine Lagarde said interest rate decisions will follow a data-dependent, meeting-by-meeting approach and that discussions focused on the current decision rather than any future path."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 17465,
+        "paragraph": 46,
+        "start": 17344,
+        "text": "It's a phenomenon, as we indicated clearly in the monetary policy statement, which is taking place across global markets."
+       },
+       {
+        "end": 18448,
+        "paragraph": 49,
+        "start": 18261,
+        "text": "it's incorporated in our projections, taken into account, and obviously we are monitoring attentively what is happening in the markets and particularly on the long end of the yield curve."
+       }
+      ],
+      "paragraphs": [
+       46,
+       49
+      ]
+     },
+     "text": "Christine Lagarde said rising global bond yields are incorporated in the ECB’s projections and that the ECB is monitoring markets, particularly the long end of the yield curve."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 20734,
+        "paragraph": 58,
+        "start": 20647,
+        "text": "we think that it's important that central bank money also has a digital shape and form."
+       },
+       {
+        "end": 21115,
+        "paragraph": 59,
+        "start": 20983,
+        "text": "payment infrastructure is part of our sovereignty, and he who does not control his payment infrastructure is potentially vulnerable."
+       }
+      ],
+      "paragraphs": [
+       58,
+       59
+      ]
+     },
+     "text": "Christine Lagarde said the digital euro is important because central bank money should have a digital form and payment infrastructure is part of sovereignty."
+    }
+   ],
+   "title": "European Central Bank press conference transcript, 10 September 2026",
+   "type": "presser_transcript",
+   "url": "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260910~6a45359cfc.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 18426,
+    "output_tokens": 1874,
+    "reasoning_tokens": 255
    }
   },
   {
@@ -2032,16 +2484,19 @@
      2,
      3,
      4,
-     21,
-     59
+     8,
+     11,
+     56
     ],
     "paragraphs_sent": 60,
     "truncated": false
    },
    "currency": "USD",
    "doc_id": "USD:presser_transcript:2026-09-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
    "format": "pdf",
-   "generated_at": "2026-09-21T15:54:56Z",
+   "generated_at": "2026-09-21T18:12:59Z",
    "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
    "meeting_date": "2026-09-16",
    "model": "gpt-5.6-terra",
@@ -2068,42 +2523,35 @@
      "text": "4 percent"
     },
     {
-     "end": 1889,
-     "point": 2,
-     "source_text": "4.1 percent",
-     "start": 1878,
-     "text": "4.1 percent"
-    },
-    {
      "end": 4412,
-     "point": 4,
+     "point": 3,
      "source_text": "2.3 percent",
      "start": 4401,
      "text": "2.3 percent"
     },
     {
      "end": 2640,
-     "point": 4,
+     "point": 3,
      "source_text": "2.4 percent",
      "start": 2629,
      "text": "2.4 percent"
     },
     {
      "end": 4489,
-     "point": 4,
+     "point": 3,
      "source_text": "3.7 percent",
      "start": 4478,
      "text": "3.7 percent"
     },
     {
      "end": 4412,
-     "point": 4,
+     "point": 3,
      "source_text": "2.3 percent",
      "start": 4401,
      "text": "2.3 percent"
     }
    ],
-   "prompt_version": "transcript-v5",
+   "prompt_version": "transcript-v6",
    "provider": "openai",
    "published": "2026-09-16",
    "quotes": [
@@ -2114,28 +2562,22 @@
      "text": "In the meeting just concluded, the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
     },
     {
-     "end": 2344,
-     "paragraph": 3,
-     "start": 2273,
-     "text": "The plain fact is that inflation is too high and has been for too long."
-    },
-    {
-     "end": 3679,
+     "end": 4449,
      "paragraph": 4,
-     "start": 3613,
-     "text": "Today, the FOMC decided that this standard has not been satisfied."
+     "start": 4346,
+     "text": "In the Summary’s median projections, real GDP rises at 2.3 percent this year and 2.4 percent next year."
     },
     {
-     "end": 11594,
-     "paragraph": 21,
-     "start": 11509,
-     "text": "All three of those things led -- lend themselves to a firm, unanimous decision today."
+     "end": 7434,
+     "paragraph": 11,
+     "start": 7378,
+     "text": "I'm not going to pre-judge any future decisions we make."
     },
     {
-     "end": 25531,
-     "paragraph": 59,
-     "start": 25445,
-     "text": "I don't believe that we need to do harm to the labor markets to achieve our objective."
+     "end": 24202,
+     "paragraph": 56,
+     "start": 24010,
+     "text": "I care so much, I think it's so important, that we established a task force that should report by the end of the year to help us think about the implications for our future policy conjuncture."
     }
    ],
    "source": {
@@ -2155,59 +2597,36 @@
         "paragraph": 2,
         "start": 124,
         "text": "the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent"
-       },
-       {
-        "end": 377,
-        "paragraph": 2,
-        "start": 286,
-        "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
        }
       ],
       "paragraphs": [
        2
       ]
      },
-     "text": "Chairman Warsh said the FOMC raised the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent and continues to maintain ample reserves."
-    },
-    {
-     "evidence": {
-      "coverage": 0.917,
-      "fragments": [
-       {
-        "end": 1951,
-        "paragraph": 3,
-        "start": 1839,
-        "text": "The jobless rate remains low at around 4.1 percent, and both job openings and weekly hours have been increasing."
-       },
-       {
-        "end": 2272,
-        "paragraph": 3,
-        "start": 2129,
-        "text": "Yet for more than five years, inflation has been running above target. So, our predominant focus is on the price-stability side of our mandate."
-       }
-      ],
-      "paragraphs": [
-       3
-      ]
-     },
-     "text": "Chairman Warsh said inflation remains elevated, while the jobless rate remains low at around 4.1 percent, and the Committee’s predominant focus is price stability."
+     "text": "Chairman Warsh said the FOMC raised the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 3776,
-        "paragraph": 4,
-        "start": 3680,
-        "text": "The committee’s unanimous vote shows our resolve to achieve price stability on a timelier basis."
+        "end": 2199,
+        "paragraph": 3,
+        "start": 2133,
+        "text": "for more than five years, inflation has been running above target."
+       },
+       {
+        "end": 2344,
+        "paragraph": 3,
+        "start": 2273,
+        "text": "The plain fact is that inflation is too high and has been for too long."
        }
       ],
       "paragraphs": [
-       4
+       3
       ]
      },
-     "text": "Chairman Warsh said the FOMC unanimously voted to achieve price stability on a timelier basis."
+     "text": "Chairman Warsh said inflation has been running above target for more than five years and is too high."
     },
     {
      "evidence": {
@@ -2230,63 +2649,80 @@
        4
       ]
      },
-     "text": "Chairman Warsh said the Summary’s median projections show real GDP rising at 2.3 percent this year and 2.4 percent next year, while total PCE inflation falls from 3.7 percent to 2.3 percent."
+     "text": "Chairman Warsh said the Summary’s median projections have real GDP rising at 2.3 percent this year and 2.4 percent next year, while total PCE inflation runs at 3.7 percent this year and falls to 2.3 percent next year."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 10822,
-        "paragraph": 21,
-        "start": 10709,
-        "text": "There's been a pretty wideranging set of data, including in the labor markets, that the economy has strengthened."
+        "end": 6246,
+        "paragraph": 8,
+        "start": 6134,
+        "text": "We cannot affect any individual price, whether it be oil prices, whether it be food stuffs at the grocery store."
        },
        {
-        "end": 11174,
-        "paragraph": 21,
-        "start": 11090,
-        "text": "My judgment some weeks ago was the inflation summer trends weren't passing the test."
-       },
-       {
-        "end": 11346,
-        "paragraph": 21,
-        "start": 11280,
-        "text": "And the third thing that's changed in seven weeks are geopolitics."
+        "end": 6343,
+        "paragraph": 8,
+        "start": 6251,
+        "text": "what we can do, and will do, is ensure that any change in relative prices don't broaden out."
        }
       ],
       "paragraphs": [
-       21
+       8
       ]
      },
-     "text": "Chairman Warsh said the economy had strengthened, inflation summer trends were not passing his test, and geopolitical judgments had changed in seven weeks."
+     "text": "Chairman Warsh said the Fed cannot affect any individual price and will ensure changes in relative prices do not broaden out."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 25531,
-        "paragraph": 59,
-        "start": 25445,
-        "text": "I don't believe that we need to do harm to the labor markets to achieve our objective."
+        "end": 7127,
+        "paragraph": 11,
+        "start": 7086,
+        "text": "I'm not in the forward guidance business."
+       },
+       {
+        "end": 7434,
+        "paragraph": 11,
+        "start": 7378,
+        "text": "I'm not going to pre-judge any future decisions we make."
        }
       ],
       "paragraphs": [
-       59
+       11
       ]
      },
-     "text": "Chairman Warsh said he does not believe that harm to labor markets is needed to achieve the objective."
+     "text": "Chairman Warsh said he was not in the forward guidance business and would not pre-judge future decisions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 24202,
+        "paragraph": 56,
+        "start": 24058,
+        "text": "we established a task force that should report by the end of the year to help us think about the implications for our future policy conjuncture."
+       }
+      ],
+      "paragraphs": [
+       56
+      ]
+     },
+     "text": "Chairman Warsh said the Federal Reserve established a task force to report by the end of the year on implications for its future policy conjuncture."
     }
    ],
    "title": "Federal Reserve press conference transcript, 16 September 2026",
    "type": "presser_transcript",
    "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260916.pdf",
    "usage": {
-    "attempts": 2,
-    "input_tokens": 15849,
-    "output_tokens": 1886,
-    "reasoning_tokens": 395
+    "attempts": 1,
+    "input_tokens": 7385,
+    "output_tokens": 1605,
+    "reasoning_tokens": 938
    }
   },
   {

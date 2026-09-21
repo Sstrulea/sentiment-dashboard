@@ -1,0 +1,425 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": {
+    "added_words": 269,
+    "changes": [
+     {
+      "added": "Inflation in recent months has been slightly lower than expected. In the medium term, however, inflationary",
+      "paragraph": 2,
+      "removed": "Inflationary"
+     },
+     {
+      "added": "last monetary policy assessment. The monetary",
+      "paragraph": 2,
+      "removed": "previous quarter. Monetary"
+     },
+     {
+      "added": "declined",
+      "paragraph": 3,
+      "removed": "increased"
+     },
+     {
+      "added": "decreased",
+      "paragraph": 3,
+      "removed": "rose"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "-0.1% in May to"
+     },
+     {
+      "added": "August",
+      "paragraph": 3,
+      "removed": "August. This increase was mainly attributable"
+     },
+     {
+      "added": "0.0% in November. Lower",
+      "paragraph": 3,
+      "removed": "higher"
+     },
+     {
+      "added": "the hotel industry, as well as for rents",
+      "paragraph": 3,
+      "removed": "tourism"
+     },
+     {
+      "added": "clothing, contributed in particular to this decline.",
+      "paragraph": 3,
+      "removed": "on imported goods."
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "has barely changed compared to June. While inflation is likely to be slightly higher in the short term,"
+     },
+     {
+      "added": "is virtually unchanged compared to the previous quarter. Although",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "is somewhat lower in the short term than in September, there is only little change in the medium term.",
+      "paragraph": 4,
+      "removed": "remains unchanged."
+     },
+     {
+      "added": "It",
+      "paragraph": 4,
+      "removed": "As in the previous quarter, it"
+     },
+     {
+      "added": "0.3%",
+      "paragraph": 4,
+      "removed": "0.5%"
+     },
+     {
+      "added": "0.6%",
+      "paragraph": 4,
+      "removed": "0.7%"
+     },
+     {
+      "added": "Global economic growth was stronger than expected in the third quarter. Although US tariffs and trade policy uncertainty weighed on the global economy, economic development in many countries has thus far remained more resilient than had been assumed. Inflation remained elevated in the US, while in the euro area it was close to target.",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "moderate",
+      "paragraph": 6,
+      "removed": "subdued"
+     },
+     {
+      "added": "Uncertainty has decreased somewhat compared to the last monetary policy assessment. That said, the baseline",
+      "paragraph": 7,
+      "removed": "The"
+     },
+     {
+      "added": "is still",
+      "paragraph": 7,
+      "removed": "remains"
+     },
+     {
+      "added": "significant risks.",
+      "paragraph": 7,
+      "removed": "high uncertainty."
+     },
+     {
+      "added": "US tariffs and trade policy uncertainty could yet weigh more heavily on global economic momentum than observed thus far. It is also possible that",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "may",
+      "paragraph": 7,
+      "removed": "could"
+     },
+     {
+      "added": "again. At",
+      "paragraph": 7,
+      "removed": "further, leading to a more pronounced slowdown in"
+     },
+     {
+      "added": "same time, however,",
+      "paragraph": 7,
+      "removed": "global economy. However,"
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "also"
+     },
+     {
+      "added": "continue to develop better",
+      "paragraph": 7,
+      "removed": "prove more resilient"
+     },
+     {
+      "added": "expected in the coming quarters.",
+      "paragraph": 7,
+      "removed": "expected."
+     },
+     {
+      "added": "Swiss GDP contracted",
+      "paragraph": 8,
+      "removed": "Economic growth in Switzerland was weak"
+     },
+     {
+      "added": "third",
+      "paragraph": 8,
+      "removed": "second"
+     },
+     {
+      "added": "The decline was due",
+      "paragraph": 8,
+      "removed": "After increasing strongly"
+     },
+     {
+      "added": "particular",
+      "paragraph": 8,
+      "removed": "the first quarter, GDP expanded by just 0.5%. The major fluctuations in the first half of the year were principally due"
+     },
+     {
+      "added": "had risen",
+      "paragraph": 8,
+      "removed": "rose"
+     },
+     {
+      "added": "had been",
+      "paragraph": 8,
+      "removed": "were"
+     },
+     {
+      "added": "forward in anticipation of possible tariffs. There was a",
+      "paragraph": 8,
+      "removed": "forward. A corresponding"
+     },
+     {
+      "added": "",
+      "paragraph": 8,
+      "removed": "occurred"
+     },
+     {
+      "added": "which continued in",
+      "paragraph": 8,
+      "removed": "while"
+     },
+     {
+      "added": "third quarter. Value added rose slightly in",
+      "paragraph": 8,
+      "removed": "services sectors supported"
+     },
+     {
+      "added": "other manufacturing industries and in services. Owing to this subdued economic development overall, unemployment",
+      "paragraph": 8,
+      "removed": "economy. Unemployment"
+     },
+     {
+      "added": "improved slightly",
+      "paragraph": 9,
+      "removed": "deteriorated"
+     },
+     {
+      "added": "the lower",
+      "paragraph": 9,
+      "removed": "significantly higher"
+     }
+    ],
+    "removed_words": 233,
+    "truncated": true,
+    "vs_doc_id": "CHF:statement:2025-09-25",
+    "vs_meeting": "2025-09-25"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     3
+    ],
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:statement:2025-12-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "382bd4aa5657869e6eb7beb7c358ea5d7a25cef79fc66d1ec6e5c3eb1e80d3a0",
+   "meeting_date": "2025-12-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 70,
+     "point": 1,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0%"
+    },
+    {
+     "end": 897,
+     "point": 3,
+     "source_text": "0.2%",
+     "start": 893,
+     "text": "0.2%"
+    },
+    {
+     "end": 70,
+     "point": 3,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0.0%"
+    },
+    {
+     "end": 271,
+     "point": 5,
+     "source_text": "0.25 percentage points",
+     "start": 249,
+     "text": "0.25 percentage points"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2025-12-11",
+   "quotes": [
+    {
+     "end": 71,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 354,
+     "paragraph": 1,
+     "start": 273,
+     "text": "The SNB remains willing to be active in the foreign exchange market as necessary."
+    },
+    {
+     "end": 420,
+     "paragraph": 2,
+     "start": 355,
+     "text": "Inflation in recent months has been slightly lower than expected."
+    },
+    {
+     "end": 799,
+     "paragraph": 2,
+     "start": 672,
+     "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+    },
+    {
+     "end": 1388,
+     "paragraph": 4,
+     "start": 1291,
+     "text": "The forecast is within the range of price stability over the entire forecast horizon (cf. chart)."
+    }
+   ],
+   "source": {
+    "chars": 3839,
+    "chars_sent": 3840,
+    "method": "stored",
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 71,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 420,
+        "paragraph": 2,
+        "start": 355,
+        "text": "Inflation in recent months has been slightly lower than expected."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB states that inflation in recent months has been slightly lower than expected."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 928,
+        "paragraph": 3,
+        "start": 875,
+        "text": "It decreased from 0.2% in August to 0.0% in November."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Inflation decreased from 0.2% in August to 0.0% in November."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 543,
+        "paragraph": 2,
+        "start": 421,
+        "text": "In the medium term, however, inflationary pressure is virtually unchanged compared to the last monetary policy assessment."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB states that medium-term inflationary pressure is virtually unchanged compared to the last monetary policy assessment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 179,
+        "paragraph": 1,
+        "start": 72,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 272,
+        "paragraph": 1,
+        "start": 180,
+        "text": "The discount for sight deposits above this threshold still stands at 0.25 percentage points."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold, with a 0.25 percentage points discount above it."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 799,
+        "paragraph": 2,
+        "start": 672,
+        "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+    }
+   ],
+   "title": "Swiss National Bank monetary policy statement, 11 December 2025",
+   "type": "statement",
+   "url": "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20251211",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2283,
+    "output_tokens": 819,
+    "reasoning_tokens": 303
+   }
+  }
+ ],
+ "version": 1
+}

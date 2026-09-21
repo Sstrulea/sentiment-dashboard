@@ -1,0 +1,183 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     2
+    ],
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:statement:2025-09-25",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "d7232b4d9299dfb2d917f04ad36a29be1ac3a621d95752a5caa375dbf0ca474d",
+   "meeting_date": "2025-09-25",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 70,
+     "point": 1,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2025-09-25",
+   "quotes": [
+    {
+     "end": 71,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 433,
+     "paragraph": 2,
+     "start": 355,
+     "text": "Inflationary pressure is virtually unchanged compared to the previous quarter."
+    },
+    {
+     "end": 685,
+     "paragraph": 2,
+     "start": 558,
+     "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+    },
+    {
+     "end": 354,
+     "paragraph": 1,
+     "start": 273,
+     "text": "The SNB remains willing to be active in the foreign exchange market as necessary."
+    }
+   ],
+   "source": {
+    "chars": 3640,
+    "chars_sent": 3641,
+    "method": "stored",
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 71,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 433,
+        "paragraph": 2,
+        "start": 355,
+        "text": "Inflationary pressure is virtually unchanged compared to the previous quarter."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB states that inflationary pressure is virtually unchanged compared to the previous quarter."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 557,
+        "paragraph": 2,
+        "start": 434,
+        "text": "Monetary policy helps to keep inflation within the range consistent with price stability and supports economic development."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB says monetary policy keeps inflation within the range consistent with price stability and supports economic development."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 685,
+        "paragraph": 2,
+        "start": 558,
+        "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 179,
+        "paragraph": 1,
+        "start": 72,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 354,
+        "paragraph": 1,
+        "start": 273,
+        "text": "The SNB remains willing to be active in the foreign exchange market as necessary."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The SNB remains willing to be active in the foreign exchange market as necessary."
+    }
+   ],
+   "title": "Swiss National Bank monetary policy statement, 25 September 2025",
+   "type": "statement",
+   "url": "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20250925",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2255,
+    "output_tokens": 450,
+    "reasoning_tokens": 0
+   }
+  }
+ ],
+ "version": 1
+}

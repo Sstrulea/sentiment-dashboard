@@ -1,0 +1,649 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     7,
+     9,
+     10
+    ],
+    "paragraphs_sent": 10,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:statement:2026-03-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "8b74bdb88d7f2726600bfe881d9388c899c9d3b36723d5bfb2a53d6e278e8428",
+   "meeting_date": "2026-03-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 91,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 76,
+     "text": "25 basis points"
+    },
+    {
+     "end": 108,
+     "point": 1,
+     "source_text": "4.10 per cent",
+     "start": 95,
+     "text": "4.10 per cent"
+    },
+    {
+     "end": 91,
+     "point": 5,
+     "source_text": "25 basis points",
+     "start": 76,
+     "text": "25 basis points"
+    },
+    {
+     "end": 108,
+     "point": 5,
+     "source_text": "4.10 per cent",
+     "start": 95,
+     "text": "4.10 per cent"
+    },
+    {
+     "end": 4165,
+     "point": 5,
+     "source_text": "3.85 per cent",
+     "start": 4152,
+     "text": "3.85 per cent"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-03-17",
+   "quotes": [
+    {
+     "end": 109,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At its meeting today, the Board decided to increase the cash rate target by 25 basis points to 4.10 per cent."
+    },
+    {
+     "end": 3446,
+     "paragraph": 8,
+     "start": 3384,
+     "text": "It was therefore appropriate to increase the cash rate target."
+    },
+    {
+     "end": 4166,
+     "paragraph": 10,
+     "start": 3955,
+     "text": "Today’s policy decision was made by majority: five members voted to increase the cash rate target by 25 basis points to 4.10 per cent; four members voted to leave the cash rate target unchanged at 3.85 per cent."
+    }
+   ],
+   "source": {
+    "chars": 4166,
+    "chars_sent": 4167,
+    "method": "stored",
+    "paragraphs_sent": 10,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 109,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At its meeting today, the Board decided to increase the cash rate target by 25 basis points to 4.10 per cent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Board decided to increase the cash rate target by 25 basis points to 4.10 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 689,
+        "paragraph": 2,
+        "start": 550,
+        "text": "As a result, the Board judged that there is a material risk that inflation will remain above target for longer than previously anticipated."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Board judged that there is a material risk that inflation will remain above target for longer than previously anticipated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3033,
+        "paragraph": 7,
+        "start": 2892,
+        "text": "the Board judged that the labour market has tightened a little recently and capacity pressures are slightly greater than previously assessed."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Board judged that the labour market has tightened a little recently and capacity pressures are slightly greater than previously assessed."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3563,
+        "paragraph": 9,
+        "start": 3447,
+        "text": "The Board will be attentive to the data and the evolving assessment of the outlook and risks to guide its decisions."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "The Board will be attentive to the data and the evolving assessment of the outlook and risks to guide its decisions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4166,
+        "paragraph": 10,
+        "start": 3955,
+        "text": "Today’s policy decision was made by majority: five members voted to increase the cash rate target by 25 basis points to 4.10 per cent; four members voted to leave the cash rate target unchanged at 3.85 per cent."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Today’s policy decision was made by majority: five members voted to increase the cash rate target by 25 basis points to 4.10 per cent; four members voted to leave it unchanged at 3.85 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia monetary policy statement, 17 March 2026",
+   "type": "statement",
+   "url": "https://www.rba.gov.au/media-releases/2026/mr-26-08.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2288,
+    "output_tokens": 792,
+    "reasoning_tokens": 295
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 359,
+    "changes": [
+     {
+      "added": "Given the conflict in the Middle East, the SNB's willingness",
+      "paragraph": 1,
+      "removed": "The SNB remains willing"
+     },
+     {
+      "added": "intervene",
+      "paragraph": 1,
+      "removed": "be active"
+     },
+     {
+      "added": "has increased. The SNB thereby counters a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland.",
+      "paragraph": 1,
+      "removed": "as necessary."
+     },
+     {
+      "added": "The conditional inflation forecast for the coming quarters is higher than",
+      "paragraph": 2,
+      "removed": "Inflation"
+     },
+     {
+      "added": "December due to the rise in energy prices. Medium-term inflationary pressure, however,",
+      "paragraph": 2,
+      "removed": "recent months"
+     },
+     {
+      "added": "remained",
+      "paragraph": 2,
+      "removed": "been slightly lower than expected. In the medium term, however, inflationary pressure is"
+     },
+     {
+      "added": "since",
+      "paragraph": 2,
+      "removed": "compared to"
+     },
+     {
+      "added": "closely",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "stability over the medium term.",
+      "paragraph": 2,
+      "removed": "stability."
+     },
+     {
+      "added": "As expected, inflation",
+      "paragraph": 3,
+      "removed": "Inflation"
+     },
+     {
+      "added": "risen",
+      "paragraph": 3,
+      "removed": "declined"
+     },
+     {
+      "added": "assessment,",
+      "paragraph": 3,
+      "removed": "assessment. It decreased"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "0.2% in August to"
+     },
+     {
+      "added": "November to 0.1%",
+      "paragraph": 3,
+      "removed": "November. Lower inflation"
+     },
+     {
+      "added": "February. This increase was driven",
+      "paragraph": 3,
+      "removed": "the hotel industry, as well as for rents and clothing, contributed"
+     },
+     {
+      "added": "by higher goods inflation.",
+      "paragraph": 3,
+      "removed": "to this decline."
+     },
+     {
+      "added": "With the rise in energy prices due to the escalation",
+      "paragraph": 4,
+      "removed": "Inflationary pressure"
+     },
+     {
+      "added": "Middle East, inflation",
+      "paragraph": 4,
+      "removed": "medium term"
+     },
+     {
+      "added": "likely",
+      "paragraph": 4,
+      "removed": "virtually unchanged compared"
+     },
+     {
+      "added": "increase more strongly in",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "coming quarters. As a result,",
+      "paragraph": 4,
+      "removed": "previous quarter. Although"
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "is somewhat lower"
+     },
+     {
+      "added": "is higher",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "December. In",
+      "paragraph": 4,
+      "removed": "September, there is only little change in"
+     },
+     {
+      "added": "term, it is slightly lower due to the stronger Swiss franc.",
+      "paragraph": 4,
+      "removed": "term."
+     },
+     {
+      "added": "0.5%",
+      "paragraph": 4,
+      "removed": "0.2%"
+     },
+     {
+      "added": "2026, 0.5%",
+      "paragraph": 4,
+      "removed": "2025, 0.3%"
+     },
+     {
+      "added": "2027",
+      "paragraph": 4,
+      "removed": "2026"
+     },
+     {
+      "added": "2028",
+      "paragraph": 4,
+      "removed": "2027"
+     },
+     {
+      "added": "solid",
+      "paragraph": 5,
+      "removed": "stronger than expected"
+     },
+     {
+      "added": "fourth",
+      "paragraph": 5,
+      "removed": "third"
+     },
+     {
+      "added": "While inflation",
+      "paragraph": 5,
+      "removed": "Although US tariffs and trade policy uncertainty weighed on the global economy, economic development in many countries has thus far remained more resilient than had been assumed. Inflation"
+     },
+     {
+      "added": "",
+      "paragraph": 5,
+      "removed": "while"
+     },
+     {
+      "added": "stayed",
+      "paragraph": 5,
+      "removed": "was"
+     },
+     {
+      "added": "the central bank's",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "Key rates were left unchanged in both currency areas.",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "With the conflict in the Middle East, the economic outlook has become considerably more uncertain. In its baseline scenario, the SNB anticipates that the increase in energy prices will raise inflation in many countries in the short term. Furthermore, global economic growth is likely to temporarily slow somewhat.",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "The global economic outlook is subject to significant risks, in particular owing to the situation in the Middle East. For instance, energy prices could rise more strongly than expected in the baseline scenario, which would considerably increase inflation and substantially constrain economic growth. Potential supply chain disruptions and heightened uncertainty could also weigh on growth. In addition to the situation in the Middle East, the trade policy outlook also remains uncertain.",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "Swiss GDP grew again in the fourth quarter, having contracted in the previous quarter. Unemployment in February was at the same level as at the time of the last monetary policy assessment.",
+      "paragraph": 8,
+      "removed": ""
+     },
+     {
+      "added": "The economic outlook for Switzerland for the coming months is uncertain. In the shorter term, growth could be rather subdued, with a certain upturn to be expected in the medium term. The SNB currently expects growth of around 1% for 2026 as a whole, followed by around 1.5% in 2027.",
+      "paragraph": 9,
+      "removed": ""
+     }
+    ],
+    "removed_words": 381,
+    "truncated": true,
+    "vs_doc_id": "CHF:statement:2025-12-11",
+    "vs_meeting": "2025-12-11"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     4,
+     9
+    ],
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:statement:2026-03-19",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "76e119bd2c4bc61a4bc192e9a3e677b8ea596ab915013d2fdd5342e4a400876d",
+   "meeting_date": "2026-03-19",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 70,
+     "point": 1,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0%"
+    },
+    {
+     "end": 1696,
+     "point": 5,
+     "source_text": "0.5%",
+     "start": 1692,
+     "text": "0.5%"
+    },
+    {
+     "end": 1705,
+     "point": 5,
+     "source_text": "2026",
+     "start": 1701,
+     "text": "2026"
+    },
+    {
+     "end": 1696,
+     "point": 5,
+     "source_text": "0.5%",
+     "start": 1692,
+     "text": "0.5%"
+    },
+    {
+     "end": 1720,
+     "point": 5,
+     "source_text": "2027",
+     "start": 1716,
+     "text": "2027"
+    },
+    {
+     "end": 1729,
+     "point": 5,
+     "source_text": "0.6%",
+     "start": 1725,
+     "text": "0.6%"
+    },
+    {
+     "end": 1738,
+     "point": 5,
+     "source_text": "2028",
+     "start": 1734,
+     "text": "2028"
+    },
+    {
+     "end": 3294,
+     "point": 6,
+     "source_text": "1%",
+     "start": 3292,
+     "text": "1%"
+    },
+    {
+     "end": 1705,
+     "point": 6,
+     "source_text": "2026",
+     "start": 1701,
+     "text": "2026"
+    },
+    {
+     "end": 3339,
+     "point": 6,
+     "source_text": "1.5%",
+     "start": 3335,
+     "text": "1.5%"
+    },
+    {
+     "end": 1720,
+     "point": 6,
+     "source_text": "2027",
+     "start": 1716,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-03-19",
+   "quotes": [
+    {
+     "end": 71,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 392,
+     "paragraph": 1,
+     "start": 273,
+     "text": "Given the conflict in the Middle East, the SNB's willingness to intervene in the foreign exchange market has increased."
+    },
+    {
+     "end": 647,
+     "paragraph": 2,
+     "start": 528,
+     "text": "The conditional inflation forecast for the coming quarters is higher than in December due to the rise in energy prices."
+    },
+    {
+     "end": 1655,
+     "paragraph": 4,
+     "start": 1558,
+     "text": "The forecast is within the range of price stability over the entire forecast horizon (cf. chart)."
+    }
+   ],
+   "source": {
+    "chars": 3711,
+    "chars_sent": 3712,
+    "method": "stored",
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 71,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 647,
+        "paragraph": 2,
+        "start": 528,
+        "text": "The conditional inflation forecast for the coming quarters is higher than in December due to the rise in energy prices."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The conditional inflation forecast for the coming quarters is higher than in December due to the rise in energy prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 767,
+        "paragraph": 2,
+        "start": 648,
+        "text": "Medium-term inflationary pressure, however, has remained virtually unchanged since the last monetary policy assessment."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Medium-term inflationary pressure has remained virtually unchanged since the last monetary policy assessment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 392,
+        "paragraph": 1,
+        "start": 273,
+        "text": "Given the conflict in the Middle East, the SNB's willingness to intervene in the foreign exchange market has increased."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Given the conflict in the Middle East, the SNB's willingness to intervene in the foreign exchange market has increased."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1751,
+        "paragraph": 4,
+        "start": 1656,
+        "text": "It puts average annual inflation at 0.5% for 2026, 0.5% for 2027 and 0.6% for 2028 (cf. table)."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The forecast puts average annual inflation at 0.5% for 2026, 0.5% for 2027 and 0.6% for 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3348,
+        "paragraph": 9,
+        "start": 3249,
+        "text": "The SNB currently expects growth of around 1% for 2026 as a whole, followed by around 1.5% in 2027."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "The SNB currently expects growth of around 1% for 2026 as a whole, followed by around 1.5% in 2027."
+    }
+   ],
+   "title": "Swiss National Bank monetary policy statement, 19 March 2026",
+   "type": "statement",
+   "url": "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260319",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2264,
+    "output_tokens": 986,
+    "reasoning_tokens": 456
+   }
+  }
+ ],
+ "version": 1
+}

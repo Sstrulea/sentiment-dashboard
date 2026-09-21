@@ -691,6 +691,290 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     7,
+     18,
+     19,
+     20,
+     22
+    ],
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:opening_statement:2026-06-18",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "89bcdead372ee622b5ef79a4ee0f18062fcbd85c7b5de3088dbb71a7b238f16a",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 334,
+     "point": 1,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    },
+    {
+     "end": 1391,
+     "point": 2,
+     "source_text": "0.6%",
+     "start": 1387,
+     "text": "0.6%"
+    },
+    {
+     "end": 334,
+     "point": 2,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    },
+    {
+     "end": 5869,
+     "point": 2,
+     "source_text": "2%",
+     "start": 5867,
+     "text": "2%"
+    },
+    {
+     "end": 1391,
+     "point": 3,
+     "source_text": "0.6%",
+     "start": 1387,
+     "text": "0.6%"
+    },
+    {
+     "end": 2331,
+     "point": 3,
+     "source_text": "2026",
+     "start": 2327,
+     "text": "2026"
+    },
+    {
+     "end": 1391,
+     "point": 3,
+     "source_text": "0.6%",
+     "start": 1387,
+     "text": "0.6%"
+    },
+    {
+     "end": 1738,
+     "point": 3,
+     "source_text": "2027",
+     "start": 1734,
+     "text": "2027"
+    },
+    {
+     "end": 2355,
+     "point": 3,
+     "source_text": "0.7%",
+     "start": 2351,
+     "text": "0.7%"
+    },
+    {
+     "end": 2364,
+     "point": 3,
+     "source_text": "2028",
+     "start": 2360,
+     "text": "2028"
+    },
+    {
+     "end": 535,
+     "point": 4,
+     "source_text": "0.25 percentage points",
+     "start": 513,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 5869,
+     "point": 6,
+     "source_text": "2%",
+     "start": 5867,
+     "text": "2"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-18",
+   "quotes": [
+    {
+     "end": 335,
+     "paragraph": 3,
+     "start": 274,
+     "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 2377,
+     "paragraph": 7,
+     "start": 2282,
+     "text": "It puts average annual inflation at 0.6% for 2026, 0.6% for 2027 and 0.7% for 2028 (cf. table)."
+    },
+    {
+     "end": 6298,
+     "paragraph": 19,
+     "start": 6233,
+     "text": "We have therefore decided to leave the SNB policy rate unchanged."
+    },
+    {
+     "end": 7172,
+     "paragraph": 20,
+     "start": 7071,
+     "text": "If necessary, we therefore have an increased willingness to intervene in the foreign exchange market."
+    },
+    {
+     "end": 7633,
+     "paragraph": 22,
+     "start": 7497,
+     "text": "It will no longer be published at the same time as the monetary policy communication, but instead two weeks later - this year on 2 July."
+    }
+   ],
+   "source": {
+    "chars": 7831,
+    "chars_sent": 7832,
+    "method": "stored",
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 335,
+        "paragraph": 3,
+        "start": 274,
+        "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5808,
+        "paragraph": 18,
+        "start": 5687,
+        "text": "At 0.6%, inflation is relatively low by international standards and lies within the range consistent with price stability"
+       },
+       {
+        "end": 6058,
+        "paragraph": 19,
+        "start": 5988,
+        "text": "There has been hardly any change in medium-term inflationary pressure."
+       }
+      ],
+      "paragraphs": [
+       18,
+       19
+      ]
+     },
+     "text": "The SNB says inflation is 0.6%, within its 0% to 2% price-stability range, and medium-term inflationary pressure has hardly changed."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2364,
+        "paragraph": 7,
+        "start": 2282,
+        "text": "It puts average annual inflation at 0.6% for 2026, 0.6% for 2027 and 0.7% for 2028"
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The SNB's forecast puts average annual inflation at 0.6% for 2026, 0.6% for 2027 and 0.7% for 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 443,
+        "paragraph": 3,
+        "start": 336,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 536,
+        "paragraph": 3,
+        "start": 444,
+        "text": "The discount for sight deposits above this threshold is unchanged at 0.25 percentage points."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB says sight deposits up to a threshold will be remunerated at the policy rate, while the discount above it remains 0.25 percentage points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7172,
+        "paragraph": 20,
+        "start": 7071,
+        "text": "If necessary, we therefore have an increased willingness to intervene in the foreign exchange market."
+       },
+       {
+        "end": 7070,
+        "paragraph": 20,
+        "start": 7021,
+        "text": "The risk of strong upward pressure thus persists."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "The SNB says it has an increased willingness to intervene in the foreign exchange market if necessary, and the risk of strong upward pressure on the Swiss franc persists."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7633,
+        "paragraph": 22,
+        "start": 7497,
+        "text": "It will no longer be published at the same time as the monetary policy communication, but instead two weeks later - this year on 2 July."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "The SNB says the Financial Stability Report will be published two weeks later, this year on 2 July."
+    }
+   ],
+   "title": "Swiss National Bank introductory statement, 18 June 2026",
+   "type": "opening_statement",
+   "url": "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260618_mslanmargpe",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3039,
+    "output_tokens": 1139,
+    "reasoning_tokens": 496
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 376,
     "changes": [
@@ -2190,6 +2474,220 @@
     "input_tokens": 8361,
     "output_tokens": 2689,
     "reasoning_tokens": 1388
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     10,
+     14,
+     62,
+     78
+    ],
+    "paragraphs_sent": 78,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:presser_transcript:2026-06-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "7e15c52195265390a851e643714661e1933c2846a042d6438bca2819cab3f35d",
+   "meeting_date": "2026-06-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1077,
+     "point": 1,
+     "source_text": "3½",
+     "start": 1075,
+     "text": "3½"
+    },
+    {
+     "end": 1091,
+     "point": 1,
+     "source_text": "3¾ percent",
+     "start": 1081,
+     "text": "3¾ percent"
+    },
+    {
+     "end": 1612,
+     "point": 3,
+     "source_text": "2 percent",
+     "start": 1603,
+     "text": "2 percent"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-06-17",
+   "quotes": [
+    {
+     "end": 1130,
+     "paragraph": 2,
+     "start": 968,
+     "text": "As you saw a few moments ago, the Committee decided to maintain the target range for the fed funds rate at 3½ to 3¾ percent, in support of the Fed’s dual mandate."
+    },
+    {
+     "end": 2573,
+     "paragraph": 3,
+     "start": 2459,
+     "text": "Absent, also, is so-called forward guidance—which we agreed was not well suited to the current policy conjuncture."
+    },
+    {
+     "end": 7775,
+     "paragraph": 10,
+     "start": 7640,
+     "text": "I see no reason until we have reestablished our commitment and ability to deliver on the 2 percent inflation objective to revisit that."
+    },
+    {
+     "end": 32893,
+     "paragraph": 62,
+     "start": 32621,
+     "text": "I do think there will be a review of official statistics, and at least as important, a view of bringing the best practices from the private sector and new analytical tools made possible by AI, so we can forge these into a fabric that gives us better real-time information."
+    },
+    {
+     "end": 38804,
+     "paragraph": 78,
+     "start": 38747,
+     "text": "the Committee thought that the labor markets were stable."
+    }
+   ],
+   "source": {
+    "chars": 39324,
+    "chars_sent": 39325,
+    "method": "pypdf",
+    "paragraphs_sent": 78,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1091,
+        "paragraph": 2,
+        "start": 998,
+        "text": "the Committee decided to maintain the target range for the fed funds rate at 3½ to 3¾ percent"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Chairman Warsh said the Committee decided to maintain the target range for the fed funds rate at 3½ to 3¾ percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3494,
+        "paragraph": 3,
+        "start": 3388,
+        "text": "I’m appointing a task force in each of five areas that are central to the broad conduct of monetary policy"
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Chairman Warsh announced task forces in five areas central to the broad conduct of monetary policy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7774,
+        "paragraph": 10,
+        "start": 7640,
+        "text": "I see no reason until we have reestablished our commitment and ability to deliver on the 2 percent inflation objective to revisit that"
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Chairman Warsh said he sees no reason to revisit the 2 percent inflation objective until the Federal Reserve has reestablished its commitment and ability to deliver on it."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9405,
+        "paragraph": 14,
+        "start": 9330,
+        "text": "We’ve dropped forward guidance. Some along the Committee I think dropped it"
+       },
+       {
+        "end": 9936,
+        "paragraph": 14,
+        "start": 9864,
+        "text": "But I can’t give any forward guidance about what we’re going to do next."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Chairman Warsh said the Committee dropped forward guidance and that he can’t give forward guidance about what it will do next."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 32812,
+        "paragraph": 62,
+        "start": 32621,
+        "text": "I do think there will be a review of official statistics, and at least as important, a view of bringing the best practices from the private sector and new analytical tools made possible by AI"
+       }
+      ],
+      "paragraphs": [
+       62
+      ]
+     },
+     "text": "Chairman Warsh said the data task force will review official statistics and private-sector practices and new analytical tools made possible by AI."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 38804,
+        "paragraph": 78,
+        "start": 38747,
+        "text": "the Committee thought that the labor markets were stable."
+       },
+       {
+        "end": 38899,
+        "paragraph": 78,
+        "start": 38805,
+        "text": "There were some people around the Committee who thought that it was trending better than that."
+       }
+      ],
+      "paragraphs": [
+       78
+      ]
+     },
+     "text": "Chairman Warsh said the Committee thought that labor markets were stable, while some people around the Committee thought they were trending better."
+    }
+   ],
+   "title": "Federal Reserve press conference transcript, 17 June 2026",
+   "type": "presser_transcript",
+   "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260617.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21743,
+    "output_tokens": 2306,
+    "reasoning_tokens": 1034
    }
   },
   {

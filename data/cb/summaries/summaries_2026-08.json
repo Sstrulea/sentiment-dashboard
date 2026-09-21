@@ -5,10 +5,10 @@
    "coverage": {
     "paragraphs": [
      6,
+     8,
      12,
-     20,
+     13,
      24,
-     52,
      84
     ],
     "paragraphs_sent": 148,
@@ -16,8 +16,10 @@
    },
    "currency": "AUD",
    "doc_id": "AUD:presser_transcript:2026-08-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
    "format": "html",
-   "generated_at": "2026-09-21T16:02:07Z",
+   "generated_at": "2026-09-21T18:12:59Z",
    "input_sha256": "81c30913a0bef198b0ebbad1c3c0d5fd26fc16129734a9af655a56868653712b",
    "meeting_date": "2026-08-11",
    "model": "gpt-5.6-terra",
@@ -31,21 +33,21 @@
     },
     {
      "end": 2169,
-     "point": 2,
+     "point": 3,
      "source_text": "2027",
      "start": 2165,
      "text": "2027"
     }
    ],
-   "prompt_version": "transcript-v5",
+   "prompt_version": "transcript-v6",
    "provider": "openai",
    "published": "2026-08-11",
    "quotes": [
     {
      "end": 211,
      "paragraph": 6,
-     "start": 120,
-     "text": "Good afternoon. Today, the Board decided to leave the cash rate unchanged at 4.35 per cent."
+     "start": 136,
+     "text": "Today, the Board decided to leave the cash rate unchanged at 4.35 per cent."
     },
     {
      "end": 2170,
@@ -54,22 +56,22 @@
      "text": "Our forecasts are for inflation to ease through next year and be back around the midpoint of the target range by the end of 2027."
     },
     {
+     "end": 2699,
+     "paragraph": 13,
+     "start": 2587,
+     "text": "The Board will raise interest rates further if that is what is required to bring inflation down in a timely way."
+    },
+    {
      "end": 5875,
      "paragraph": 24,
-     "start": 5746,
-     "text": "And before anyone asks, no, the Board did not discuss an interest rate cut at this meeting. It only discussed a raise and a stay."
+     "start": 5838,
+     "text": "It only discussed a raise and a stay."
     },
     {
-     "end": 13408,
-     "paragraph": 52,
-     "start": 13284,
-     "text": "And are we concerned? Yes, we’re concerned because the productive capacity of the economy is not growing, and you know this."
-    },
-    {
-     "end": 23767,
+     "end": 24731,
      "paragraph": 84,
-     "start": 23706,
-     "text": "We think that it’s not a massive risk to financial stability."
+     "start": 24679,
+     "text": "But we don’t think there are financial implications."
     }
    ],
    "source": {
@@ -102,6 +104,29 @@
       "coverage": 1.0,
       "fragments": [
        {
+        "end": 675,
+        "paragraph": 8,
+        "start": 567,
+        "text": "inflation remains too high, and the Board remains concerned about the upside risks to the inflation outlook."
+       },
+       {
+        "end": 779,
+        "paragraph": 8,
+        "start": 676,
+        "text": "The domestic economy continues to operate above capacity, and the labour market remains a little tight."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Bullock said inflation remains too high, the economy is above capacity and the labour market remains a little tight."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
         "end": 2170,
         "paragraph": 12,
         "start": 2041,
@@ -112,40 +137,34 @@
        12
       ]
      },
-     "text": "Michele Bullock said the forecasts are for inflation to ease through next year and be back around the midpoint of the target range by the end of 2027."
+     "text": "Bullock said the forecasts are for inflation to ease through next year and be back around the midpoint of the target range by the end of 2027."
     },
     {
      "evidence": {
-      "coverage": 0.909,
+      "coverage": 1.0,
       "fragments": [
        {
-        "end": 4034,
-        "paragraph": 20,
-        "start": 3949,
-        "text": "the Board isn’t ruling out that there might be a need for further interest rate rises"
-       },
-       {
-        "end": 4163,
-        "paragraph": 20,
-        "start": 4088,
-        "text": "inflation remaining above the target for much longer than in the forecasts."
+        "end": 2699,
+        "paragraph": 13,
+        "start": 2587,
+        "text": "The Board will raise interest rates further if that is what is required to bring inflation down in a timely way."
        }
       ],
       "paragraphs": [
-       20
+       13
       ]
      },
-     "text": "Responding to Jacob Shteyman’s question on further rate rises, Michele Bullock said the Board is not ruling out a need for further interest rate rises if inflation remains above target for much longer than forecast."
+     "text": "Bullock said the Board will raise interest rates further if required to bring inflation down in a timely way."
     },
     {
      "evidence": {
-      "coverage": 0.889,
+      "coverage": 1.0,
       "fragments": [
        {
         "end": 5837,
         "paragraph": 24,
-        "start": 5774,
-        "text": "the Board did not discuss an interest rate cut at this meeting."
+        "start": 5770,
+        "text": "no, the Board did not discuss an interest rate cut at this meeting."
        },
        {
         "end": 5875,
@@ -158,47 +177,24 @@
        24
       ]
      },
-     "text": "Responding to Michael Read’s question on housing, Michele Bullock said the Board did not discuss an interest rate cut and only discussed a raise and a stay."
+     "text": "Responding to Michael Read on housing, Bullock said the Board did not discuss an interest rate cut and only discussed a raise and a stay."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 13388,
-        "paragraph": 52,
-        "start": 13335,
-        "text": "the productive capacity of the economy is not growing"
-       },
-       {
-        "end": 13591,
-        "paragraph": 52,
-        "start": 13522,
-        "text": "we cannot grow very fast without running into inflationary pressures."
-       }
-      ],
-      "paragraphs": [
-       52
-      ]
-     },
-     "text": "Responding to Matt Cranston, Michele Bullock said the productive capacity of the economy is not growing and the economy cannot grow very fast without inflationary pressures."
-    },
-    {
-     "evidence": {
-      "coverage": 1.0,
-      "fragments": [
-       {
-        "end": 23767,
+        "end": 24731,
         "paragraph": 84,
-        "start": 23706,
-        "text": "We think that it’s not a massive risk to financial stability."
+        "start": 24679,
+        "text": "But we don’t think there are financial implications."
        }
       ],
       "paragraphs": [
        84
       ]
      },
-     "text": "Responding to Jemeema Hanson, Michele Bullock said the Bank does not think property values are a massive risk to financial stability."
+     "text": "Responding to Jemeema Hanson on financial stability, Bullock said the Bank does not think there are financial implications."
     }
    ],
    "title": "Reserve Bank of Australia press conference transcript, 11 August 2026",
@@ -206,9 +202,9 @@
    "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-08-11.html",
    "usage": {
     "attempts": 2,
-    "input_tokens": 23167,
-    "output_tokens": 1642,
-    "reasoning_tokens": 401
+    "input_tokens": 23236,
+    "output_tokens": 1288,
+    "reasoning_tokens": 181
    }
   },
   {

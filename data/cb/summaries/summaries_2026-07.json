@@ -1,6 +1,243 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     13,
+     15,
+     17,
+     19
+    ],
+    "paragraphs_sent": 20,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:opening_statement:2026-07-15",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "a6a77324c0cc4f740461d2c2be196d37649ad7287baf2ddbeeaf8eff8551f00a",
+   "meeting_date": "2026-07-15",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 212,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 207,
+     "text": "2.25%"
+    },
+    {
+     "end": 2658,
+     "point": 2,
+     "source_text": "2%",
+     "start": 2656,
+     "text": "2%"
+    },
+    {
+     "end": 2298,
+     "point": 3,
+     "source_text": "0.7%",
+     "start": 2294,
+     "text": "0.7%"
+    },
+    {
+     "end": 2306,
+     "point": 3,
+     "source_text": "2026",
+     "start": 2302,
+     "text": "2026"
+    },
+    {
+     "end": 2348,
+     "point": 3,
+     "source_text": "1.8%",
+     "start": 2344,
+     "text": "1.8%"
+    },
+    {
+     "end": 2361,
+     "point": 3,
+     "source_text": "2027",
+     "start": 2357,
+     "text": "2027"
+    },
+    {
+     "end": 2370,
+     "point": 3,
+     "source_text": "2028",
+     "start": 2366,
+     "text": "2028"
+    },
+    {
+     "end": 2658,
+     "point": 4,
+     "source_text": "2%",
+     "start": 2656,
+     "text": "2%"
+    },
+    {
+     "end": 2361,
+     "point": 4,
+     "source_text": "2027",
+     "start": 2357,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-07-15",
+   "quotes": [
+    {
+     "end": 213,
+     "paragraph": 2,
+     "start": 150,
+     "text": "Governing Council maintained the policy interest rate at 2.25%."
+    },
+    {
+     "end": 2371,
+     "paragraph": 13,
+     "start": 2270,
+     "text": "Following GDP growth of 0.7% in 2026, the economy is projected to grow by 1.8% in both 2027 and 2028."
+    },
+    {
+     "end": 3305,
+     "paragraph": 15,
+     "start": 3175,
+     "text": "Inflation is expected to stay elevated in June then ease gradually in the coming months, returning to the 2% target in early 2027."
+    },
+    {
+     "end": 4681,
+     "paragraph": 19,
+     "start": 4492,
+     "text": "Based on the MPR projection published today, Governing Council judges the current policy rate remains appropriate to sustain the economic recovery and bring inflation back to the 2% target."
+    }
+   ],
+   "source": {
+    "chars": 5077,
+    "chars_sent": 5078,
+    "method": "stored",
+    "paragraphs_sent": 20,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 213,
+        "paragraph": 2,
+        "start": 150,
+        "text": "Governing Council maintained the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Governing Council maintained the policy interest rate at 2.25%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4681,
+        "paragraph": 19,
+        "start": 4537,
+        "text": "Governing Council judges the current policy rate remains appropriate to sustain the economic recovery and bring inflation back to the 2% target."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governing Council judges the current policy rate remains appropriate to sustain the economic recovery and bring inflation back to the 2% target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2371,
+        "paragraph": 13,
+        "start": 2270,
+        "text": "Following GDP growth of 0.7% in 2026, the economy is projected to grow by 1.8% in both 2027 and 2028."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "Following GDP growth of 0.7% in 2026, the economy is projected to grow by 1.8% in both 2027 and 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3305,
+        "paragraph": 15,
+        "start": 3175,
+        "text": "Inflation is expected to stay elevated in June then ease gradually in the coming months, returning to the 2% target in early 2027."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "The statement says inflation is expected to stay elevated in June then ease gradually, returning to the 2% target in early 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3952,
+        "paragraph": 17,
+        "start": 3820,
+        "text": "The two biggest risks to the projection are still the conflict in the Middle East and our trade relationship with the United States."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "The two biggest risks to the projection are still the conflict in the Middle East and Canada’s trade relationship with the United States."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4879,
+        "paragraph": 19,
+        "start": 4718,
+        "text": "Governing Council will continue to assess the strength of the Canadian economy and the outlook for inflation and is prepared to adjust monetary policy as needed."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governing Council will continue to assess the Canadian economy and inflation outlook and is prepared to adjust monetary policy as needed."
+    }
+   ],
+   "title": "Bank of Canada introductory statement, 15 July 2026",
+   "type": "opening_statement",
+   "url": "https://www.bankofcanada.ca/2026/07/opening-statement-2026-07-15/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2548,
+    "output_tokens": 814,
+    "reasoning_tokens": 225
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 623,
     "changes": [
@@ -1324,6 +1561,246 @@
     "input_tokens": 4817,
     "output_tokens": 1957,
     "reasoning_tokens": 1125
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     9,
+     41,
+     63
+    ],
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:presser_transcript:2026-07-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:12:59Z",
+   "input_sha256": "c650d0f81426823e96a903763f881c1f094163dfcd066243b5850d526cc94b11",
+   "meeting_date": "2026-07-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 464,
+     "point": 1,
+     "source_text": "9",
+     "start": 463,
+     "text": "9"
+    },
+    {
+     "end": 469,
+     "point": 1,
+     "source_text": "3",
+     "start": 468,
+     "text": "3"
+    },
+    {
+     "end": 536,
+     "point": 1,
+     "source_text": "3½",
+     "start": 534,
+     "text": "3½"
+    },
+    {
+     "end": 550,
+     "point": 1,
+     "source_text": "3¾ percent",
+     "start": 540,
+     "text": "3¾ percent"
+    },
+    {
+     "end": 3937,
+     "point": 3,
+     "source_text": "20 percent",
+     "start": 3927,
+     "text": "20 percent"
+    },
+    {
+     "end": 2295,
+     "point": 4,
+     "source_text": "42",
+     "start": 2293,
+     "text": "42"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-07-29",
+   "quotes": [
+    {
+     "end": 551,
+     "paragraph": 2,
+     "start": 408,
+     "text": "Today, as you know, our Committee decided to vote by a 9-to-3 vote to maintain the target range for the federal funds rate at 3½ to 3¾ percent."
+    },
+    {
+     "end": 1556,
+     "paragraph": 2,
+     "start": 1458,
+     "text": "There is no soft inflation target; there is no soft implicit target—not on this Committee’s watch."
+    },
+    {
+     "end": 21290,
+     "paragraph": 41,
+     "start": 21204,
+     "text": "I do not believe that price stability and full employment is an either-or proposition."
+    },
+    {
+     "end": 33386,
+     "paragraph": 63,
+     "start": 33289,
+     "text": "The judgments we’re making will be informed by—but not at all determined by—these outside groups."
+    }
+   ],
+   "source": {
+    "chars": 39320,
+    "chars_sent": 39321,
+    "method": "pypdf",
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 551,
+        "paragraph": 2,
+        "start": 428,
+        "text": "our Committee decided to vote by a 9-to-3 vote to maintain the target range for the federal funds rate at 3½ to 3¾ percent."
+       },
+       {
+        "end": 638,
+        "paragraph": 2,
+        "start": 552,
+        "text": "The Committee is continuing its policy of making ample reserves in the banking system."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Chairman Warsh said the Committee voted 9-to-3 to maintain the target range for the federal funds rate at 3½ to 3¾ percent and is continuing its policy of making ample reserves in the banking system."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1556,
+        "paragraph": 2,
+        "start": 1458,
+        "text": "There is no soft inflation target; there is no soft implicit target—not on this Committee’s watch."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Chairman Warsh said there is no soft inflation target or soft implicit target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3938,
+        "paragraph": 3,
+        "start": 3800,
+        "text": "In the AI-related category of high-tech equipment and software, the most recent data shows four-quarter growth rates of nearly 20 percent."
+       },
+       {
+        "end": 4011,
+        "paragraph": 3,
+        "start": 3939,
+        "text": "This is helping to sustain the healthy momentum of manufacturing output."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Chairman Warsh said the most recent data showed four-quarter growth rates of nearly 20 percent in AI-related high-tech equipment and software, helping sustain healthy manufacturing output momentum."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6841,
+        "paragraph": 9,
+        "start": 6787,
+        "text": "We’re trying not to interfere with that market signal."
+       },
+       {
+        "end": 7223,
+        "paragraph": 9,
+        "start": 7115,
+        "text": "we’ve seen a material tightening, not just in nominal rates, but in real rates, too, and we’re observing it."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Chairman Warsh said the Fed is trying not to interfere with market signals and has observed a material tightening in nominal and real rates over the 42 days since the last meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21290,
+        "paragraph": 41,
+        "start": 21204,
+        "text": "I do not believe that price stability and full employment is an either-or proposition."
+       },
+       {
+        "end": 21852,
+        "paragraph": 41,
+        "start": 21790,
+        "text": "So I think the two parts of our mandate are equally important."
+       }
+      ],
+      "paragraphs": [
+       41
+      ]
+     },
+     "text": "Chairman Warsh said he does not believe price stability and full employment are an either-or proposition, and said the two parts of the mandate are equally important."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 33386,
+        "paragraph": 63,
+        "start": 33289,
+        "text": "The judgments we’re making will be informed by—but not at all determined by—these outside groups."
+       }
+      ],
+      "paragraphs": [
+       63
+      ]
+     },
+     "text": "Chairman Warsh said outside groups will inform but not determine Federal Reserve judgments."
+    }
+   ],
+   "title": "Federal Reserve press conference transcript, 29 July 2026",
+   "type": "presser_transcript",
+   "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260729.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21784,
+    "output_tokens": 2237,
+    "reasoning_tokens": 909
    }
   },
   {
