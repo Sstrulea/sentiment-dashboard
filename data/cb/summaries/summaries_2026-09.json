@@ -4,6 +4,258 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     5,
+     9,
+     12,
+     13,
+     15,
+     17,
+     26,
+     27,
+     30
+    ],
+    "paragraphs_sent": 32,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:deliberations:2026-09-02",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "d0953f91bd6e36d5af26edd8e4f76718b003139fac43b02c8de53078c79ec22d",
+   "meeting_date": "2026-09-02",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3045,
+     "point": 3,
+     "source_text": "3.3%",
+     "start": 3041,
+     "text": "3.3%"
+    },
+    {
+     "end": 4808,
+     "point": 4,
+     "source_text": "3%",
+     "start": 4806,
+     "text": "3%"
+    },
+    {
+     "end": 5763,
+     "point": 4,
+     "source_text": "2.2%",
+     "start": 5759,
+     "text": "2.2%"
+    },
+    {
+     "end": 136,
+     "point": 4,
+     "source_text": "2",
+     "start": 135,
+     "text": "2%"
+    },
+    {
+     "end": 10133,
+     "point": 6,
+     "source_text": "2.25%",
+     "start": 10128,
+     "text": "2.25%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-09-16",
+   "quotes": [
+    {
+     "end": 1313,
+     "paragraph": 5,
+     "start": 1121,
+     "text": "As a result, measures of headline inflation around the world were being pushed up, although spillovers from energy prices into the prices of other goods and services appeared limited thus far."
+    },
+    {
+     "end": 3714,
+     "paragraph": 13,
+     "start": 3594,
+     "text": "But members agreed that the labour market was still soft, with the unemployment rate around 6½% and subdued wage growth."
+    },
+    {
+     "end": 9615,
+     "paragraph": 27,
+     "start": 9420,
+     "text": "However, if higher energy prices did spill over into other components of the CPI, members agreed that it could require a monetary policy response to prevent broad-based inflation from setting in."
+    },
+    {
+     "end": 10134,
+     "paragraph": 30,
+     "start": 9975,
+     "text": "With the economy and inflation evolving broadly as forecast in the July Report, Governing Council decided to leave the policy interest rate unchanged at 2.25%."
+    }
+   ],
+   "source": {
+    "chars": 11130,
+    "chars_sent": 11131,
+    "method": "html-selector",
+    "paragraphs_sent": 32,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 1313,
+        "paragraph": 5,
+        "start": 1121,
+        "text": "As a result, measures of headline inflation around the world were being pushed up, although spillovers from energy prices into the prices of other goods and services appeared limited thus far."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Members said higher oil prices and refinery disruptions were pushing up headline inflation worldwide, while spillovers into other goods and services appeared limited thus far."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2230,
+        "paragraph": 9,
+        "start": 2157,
+        "text": "Financial conditions had tightened since the July Monetary Policy Report."
+       },
+       {
+        "end": 2503,
+        "paragraph": 9,
+        "start": 2402,
+        "text": "Canadian bond yields also rose, albeit by less than yields in several other major advanced economies."
+       },
+       {
+        "end": 2691,
+        "paragraph": 9,
+        "start": 2615,
+        "text": "The Canadian dollar had appreciated slightly amid weakness in the US dollar."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Financial conditions had tightened since the July Monetary Policy Report; Canadian bond yields rose and the Canadian dollar appreciated slightly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3090,
+        "paragraph": 12,
+        "start": 3021,
+        "text": "The economy grew by 3.3% in the quarter, slightly above expectations."
+       },
+       {
+        "end": 3714,
+        "paragraph": 13,
+        "start": 3594,
+        "text": "But members agreed that the labour market was still soft, with the unemployment rate around 6½% and subdued wage growth."
+       },
+       {
+        "end": 3798,
+        "paragraph": 13,
+        "start": 3715,
+        "text": "Taken as a whole, indicators pointed to an economy that was still in excess supply."
+       }
+      ],
+      "paragraphs": [
+       12,
+       13
+      ]
+     },
+     "text": "Members noted that gross domestic product grew by 3.3% in the second quarter, while the labour market was still soft and indicators pointed to an economy still in excess supply."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4827,
+        "paragraph": 15,
+        "start": 4725,
+        "text": "members noted that consumer price index (CPI) inflation had been hovering around 3% for several months"
+       },
+       {
+        "end": 5802,
+        "paragraph": 17,
+        "start": 5722,
+        "text": "CPI inflation excluding gasoline was 2.2% and core inflation remained around 2%."
+       }
+      ],
+      "paragraphs": [
+       15,
+       17
+      ]
+     },
+     "text": "Members noted that CPI inflation had been hovering around 3% for several months, while CPI inflation excluding gasoline was 2.2% and core inflation remained around 2%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8985,
+        "paragraph": 26,
+        "start": 8806,
+        "text": "Members shared a range of views on how new US tariffs would affect growth and whether the resulting weakness in the economy would contain the pass-through of higher energy prices."
+       },
+       {
+        "end": 9615,
+        "paragraph": 27,
+        "start": 9420,
+        "text": "However, if higher energy prices did spill over into other components of the CPI, members agreed that it could require a monetary policy response to prevent broad-based inflation from setting in."
+       }
+      ],
+      "paragraphs": [
+       26,
+       27
+      ]
+     },
+     "text": "Members shared a range of views on how new US tariffs would affect growth, and agreed that higher energy prices spilling over into other CPI components could require a monetary policy response."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10134,
+        "paragraph": 30,
+        "start": 9975,
+        "text": "With the economy and inflation evolving broadly as forecast in the July Report, Governing Council decided to leave the policy interest rate unchanged at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "Governing Council decided to leave the policy interest rate unchanged at 2.25%."
+    }
+   ],
+   "title": "Summary of Governing Council deliberations: Fixed announcement date of September&nbsp;2, 2026",
+   "type": "deliberations",
+   "url": "https://www.bankofcanada.ca/2026/09/summary-of-governing-council-deliberations-fixed-announcement-date-of-september-2-2026/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3586,
+    "output_tokens": 1991,
+    "reasoning_tokens": 1245
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      4,
      6,
      7,
@@ -1205,134 +1457,139 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
-     4,
      8,
      9,
+     12,
      16,
      19,
      20,
-     28,
+     31,
      32,
      53,
-     55
+     54,
+     55,
+     56
     ],
     "paragraphs_sent": 85,
     "truncated": false
    },
    "currency": "GBP",
    "doc_id": "GBP:minutes:2026-09-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
    "format": "html",
-   "generated_at": "2026-09-21T15:59:14Z",
+   "generated_at": "2026-09-21T18:16:49Z",
    "input_sha256": "fe508cf394ebee9ad6f3144f6f4620776550b171201b697ebe46ad6d8804d413",
    "meeting_date": "2026-09-17",
    "model": "gpt-5.6-terra",
    "numbers": [
     {
-     "end": 693,
+     "end": 4093,
      "point": 1,
-     "source_text": "36%",
-     "start": 690,
-     "text": "36%"
+     "source_text": "3.1%",
+     "start": 4089,
+     "text": "3.1%"
     },
     {
-     "end": 701,
+     "end": 4448,
      "point": 1,
-     "source_text": "78%",
-     "start": 698,
-     "text": "78%"
-    },
-    {
-     "end": 3168,
-     "point": 2,
-     "source_text": "95 basis points",
-     "start": 3153,
-     "text": "95 basis points"
-    },
-    {
-     "end": 6899,
-     "point": 3,
-     "source_text": "3¾%",
-     "start": 6896,
-     "text": "3¾%"
-    },
-    {
-     "end": 76,
-     "point": 3,
-     "source_text": "2026",
-     "start": 72,
-     "text": "2026"
+     "source_text": "3.4%",
+     "start": 4444,
+     "text": "3.4%"
     },
     {
      "end": 1463,
-     "point": 3,
+     "point": 1,
      "source_text": "4",
      "start": 1462,
      "text": "4%"
     },
     {
      "end": 3636,
-     "point": 3,
+     "point": 1,
      "source_text": "2027",
      "start": 3632,
      "text": "2027"
     },
     {
      "end": 8418,
-     "point": 4,
+     "point": 2,
      "source_text": "0.4%",
      "start": 8414,
      "text": "0.4%"
     },
     {
      "end": 76,
-     "point": 4,
+     "point": 2,
      "source_text": "2026",
      "start": 72,
      "text": "2026"
     },
     {
+     "end": 3168,
+     "point": 3,
+     "source_text": "95 basis points",
+     "start": 3153,
+     "text": "95 basis points"
+    },
+    {
      "end": 6899,
-     "point": 6,
+     "point": 5,
      "source_text": "3¾%",
      "start": 6896,
      "text": "3.75%"
     },
     {
      "end": 19290,
-     "point": 6,
+     "point": 5,
      "source_text": "0.25 percentage point",
      "start": 19269,
      "text": "0.25 percentage points"
     },
     {
      "end": 1463,
-     "point": 6,
+     "point": 5,
      "source_text": "4",
      "start": 1462,
      "text": "4%"
+    },
+    {
+     "end": 29633,
+     "point": 6,
+     "source_text": "368",
+     "start": 29630,
+     "text": "368"
+    },
+    {
+     "end": 29972,
+     "point": 6,
+     "source_text": "46",
+     "start": 29970,
+     "text": "46"
+    },
+    {
+     "end": 30071,
+     "point": 6,
+     "source_text": "2034",
+     "start": 30067,
+     "text": "2034"
     }
    ],
-   "prompt_version": "minutes-v5",
+   "prompt_version": "minutes-v6",
    "provider": "openai",
    "published": "2026-09-17",
    "quotes": [
     {
-     "end": 4251,
-     "paragraph": 12,
-     "start": 4053,
-     "text": "Twelve-month CPI inflation had been 3.1% in August, triggering the exchange of open letters between the Governor and the Chancellor of the Exchequer that was being published alongside these minutes."
+     "end": 7005,
+     "paragraph": 16,
+     "start": 6783,
+     "text": "Based on energy prices as at close of business on 14 September, CPI inflation was expected to increase to around 3¾% in 2026 Q4, compared with 3.2% at the time of the July Report, and to reach slightly above 4% in 2027 Q1."
     },
     {
-     "end": 15049,
-     "paragraph": 28,
-     "start": 14845,
-     "text": "The Committee nevertheless judged that the risk of material second-round effects had increased since July, and was likely to increase further to the extent that energy prices remained elevated for longer."
-    },
-    {
-     "end": 17895,
-     "paragraph": 32,
-     "start": 17734,
-     "text": "Taken together, the Committee judged that risks to the inflation outlook were tilted further to the upside compared with at the time of the previous MPC meeting."
+     "end": 17499,
+     "paragraph": 31,
+     "start": 17206,
+     "text": "For most members, movements in UK short-term market interest rates since the conflict had begun, which were still passing through to retail rates, were imparting a broadly sufficient degree of monetary policy restraint, and reflected appropriately the uncertainty around the inflation outlook."
     },
     {
      "end": 30858,
@@ -1360,17 +1617,54 @@
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 762,
-        "paragraph": 4,
-        "start": 625,
-        "text": "The spot prices of Brent crude and UK wholesale gas had risen by 36% and 78% respectively since the period leading up to the July Report."
+        "end": 4201,
+        "paragraph": 12,
+        "start": 4053,
+        "text": "Twelve-month CPI inflation had been 3.1% in August, triggering the exchange of open letters between the Governor and the Chancellor of the Exchequer"
+       },
+       {
+        "end": 4509,
+        "paragraph": 12,
+        "start": 4416,
+        "text": "Services inflation had been 3.4% in August, unchanged from July, but down from 4.5% in March."
+       },
+       {
+        "end": 7005,
+        "paragraph": 16,
+        "start": 6847,
+        "text": "CPI inflation was expected to increase to around 3¾% in 2026 Q4, compared with 3.2% at the time of the July Report, and to reach slightly above 4% in 2027 Q1."
        }
       ],
       "paragraphs": [
-       4
+       12,
+       16
       ]
      },
-     "text": "The Committee reported that Brent crude and UK wholesale gas spot prices had risen by 36% and 78% respectively since the period leading up to the July Report."
+     "text": "The Committee reported CPI inflation of 3.1% in August and services inflation of 3.4%, while the Committee expected CPI inflation to reach slightly above 4% in 2027 Q1."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8502,
+        "paragraph": 19,
+        "start": 8390,
+        "text": "UK GDP had increased by 0.4% in 2026 Q2, 0.1 percentage points higher than had been expected in the July Report."
+       },
+       {
+        "end": 10094,
+        "paragraph": 20,
+        "start": 9935,
+        "text": "While judgements about the overall level of slack in the economy were very uncertain, it was now judged likely that there had been some stabilisation in slack."
+       }
+      ],
+      "paragraphs": [
+       19,
+       20
+      ]
+     },
+     "text": "UK GDP had increased by 0.4% in 2026 Q2, and the Committee judged that there had likely been some stabilisation in slack."
     },
     {
      "evidence": {
@@ -1385,8 +1679,8 @@
        {
         "end": 3203,
         "paragraph": 9,
-        "start": 3093,
-        "text": "the quoted rate on two-year fixed-rate mortgages was around 95 basis points higher than prior to the conflict."
+        "start": 3080,
+        "text": "For example, the quoted rate on two-year fixed-rate mortgages was around 95 basis points higher than prior to the conflict."
        }
       ],
       "paragraphs": [
@@ -1398,54 +1692,13 @@
     },
     {
      "evidence": {
-      "coverage": 1.0,
+      "coverage": 0.947,
       "fragments": [
        {
-        "end": 7005,
-        "paragraph": 16,
-        "start": 6847,
-        "text": "CPI inflation was expected to increase to around 3¾% in 2026 Q4, compared with 3.2% at the time of the July Report, and to reach slightly above 4% in 2027 Q1."
-       }
-      ],
-      "paragraphs": [
-       16
-      ]
-     },
-     "text": "The Committee expected CPI inflation to increase to around 3¾% in 2026 Q4 and to reach slightly above 4% in 2027 Q1."
-    },
-    {
-     "evidence": {
-      "coverage": 0.9,
-      "fragments": [
-       {
-        "end": 8502,
-        "paragraph": 19,
-        "start": 8390,
-        "text": "UK GDP had increased by 0.4% in 2026 Q2, 0.1 percentage points higher than had been expected in the July Report."
-       },
-       {
-        "end": 10094,
-        "paragraph": 20,
-        "start": 10021,
-        "text": "it was now judged likely that there had been some stabilisation in slack."
-       }
-      ],
-      "paragraphs": [
-       19,
-       20
-      ]
-     },
-     "text": "UK GDP increased by 0.4% in 2026 Q2, while the Committee judged that there had likely been some stabilisation in slack despite weak labour demand."
-    },
-    {
-     "evidence": {
-      "coverage": 0.941,
-      "fragments": [
-       {
-        "end": 15049,
-        "paragraph": 28,
-        "start": 14845,
-        "text": "The Committee nevertheless judged that the risk of material second-round effects had increased since July, and was likely to increase further to the extent that energy prices remained elevated for longer."
+        "end": 17424,
+        "paragraph": 31,
+        "start": 17206,
+        "text": "For most members, movements in UK short-term market interest rates since the conflict had begun, which were still passing through to retail rates, were imparting a broadly sufficient degree of monetary policy restraint"
        },
        {
         "end": 17895,
@@ -1455,11 +1708,11 @@
        }
       ],
       "paragraphs": [
-       28,
+       31,
        32
       ]
      },
-     "text": "The Committee judged that risks to the inflation outlook were tilted further to the upside, with a growing risk of material second-round effects if energy prices remained elevated for longer."
+     "text": "The Committee judged that risks to the inflation outlook were tilted further to the upside, while most members viewed UK short-term market interest-rate movements as imparting broadly sufficient monetary policy restraint."
     },
     {
      "evidence": {
@@ -1470,6 +1723,12 @@
         "paragraph": 53,
         "start": 30211,
         "text": "Bank Rate should be maintained at 3.75%;"
+       },
+       {
+        "end": 30858,
+        "paragraph": 55,
+        "start": 30710,
+        "text": "Six members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Clare Lombardelli, Dave Ramsden and Alan Taylor) voted in favour of the first proposition."
        },
        {
         "end": 31017,
@@ -1483,7 +1742,37 @@
        55
       ]
      },
-     "text": "Six members voted in favour of maintaining Bank Rate at 3.75%, while three members preferred to increase Bank Rate by 0.25 percentage points, to 4%."
+     "text": "Six members voted to maintain Bank Rate at 3.75%; three members voted against, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30430,
+        "paragraph": 54,
+        "start": 30256,
+        "text": "The Bank of England should reduce the stock of UK government bond purchases held for monetary policy purposes, and financed by the issuance of central bank reserves, to zero."
+       },
+       {
+        "end": 30642,
+        "paragraph": 54,
+        "start": 30493,
+        "text": "the remaining stock of £368 billion of bonds held for monetary policy purposes is unwound at an annual average pace of £46 billion by the end of 2034"
+       },
+       {
+        "end": 31090,
+        "paragraph": 56,
+        "start": 31022,
+        "text": "The Committee voted unanimously in favour of the second proposition."
+       }
+      ],
+      "paragraphs": [
+       54,
+       56
+      ]
+     },
+     "text": "The Committee unanimously voted to reduce the remaining stock of £368 billion of bonds to zero at an annual average pace of £46 billion by the end of 2034."
     }
    ],
    "title": "Bank of England minutes of the 17 September 2026 meeting",
@@ -1491,9 +1780,9 @@
    "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
    "usage": {
     "attempts": 2,
-    "input_tokens": 21500,
-    "output_tokens": 2273,
-    "reasoning_tokens": 573
+    "input_tokens": 21780,
+    "output_tokens": 3555,
+    "reasoning_tokens": 1552
    }
   },
   {

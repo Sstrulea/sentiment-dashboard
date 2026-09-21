@@ -4,6 +4,250 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     4,
+     5,
+     11,
+     16,
+     17,
+     19
+    ],
+    "paragraphs_sent": 22,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:opening_statement:2026-04-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "0e1f636aa6c4d6181d8f8e757d18d57a615d6ea04b3a08e8299e5c50e3ad9cba",
+   "meeting_date": "2026-04-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 216,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 211,
+     "text": "2.25%"
+    },
+    {
+     "end": 2072,
+     "point": 4,
+     "source_text": "1.2%",
+     "start": 2068,
+     "text": "1.2%"
+    },
+    {
+     "end": 2080,
+     "point": 4,
+     "source_text": "2026",
+     "start": 2076,
+     "text": "2026"
+    },
+    {
+     "end": 2086,
+     "point": 4,
+     "source_text": "1.6%",
+     "start": 2082,
+     "text": "1.6%"
+    },
+    {
+     "end": 2094,
+     "point": 4,
+     "source_text": "2027",
+     "start": 2090,
+     "text": "2027"
+    },
+    {
+     "end": 2103,
+     "point": 4,
+     "source_text": "1.7%",
+     "start": 2099,
+     "text": "1.7%"
+    },
+    {
+     "end": 2111,
+     "point": 4,
+     "source_text": "2028",
+     "start": 2107,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-29",
+   "quotes": [
+    {
+     "end": 217,
+     "paragraph": 2,
+     "start": 150,
+     "text": "The Governing Council maintained the policy interest rate at 2.25%."
+    },
+    {
+     "end": 3754,
+     "paragraph": 16,
+     "start": 3680,
+     "text": "At our meeting this week, we decided to maintain the policy rate at 2.25%."
+    },
+    {
+     "end": 4266,
+     "paragraph": 17,
+     "start": 4180,
+     "text": "There may still be a need to adjust the policy rate depending on how the risks evolve."
+    },
+    {
+     "end": 4652,
+     "paragraph": 19,
+     "start": 4507,
+     "text": "If the United States imposes significant new trade restrictions on Canada, we may need to cut the policy rate further to support economic growth."
+    }
+   ],
+   "source": {
+    "chars": 5392,
+    "chars_sent": 5393,
+    "method": "stored",
+    "paragraphs_sent": 22,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 217,
+        "paragraph": 2,
+        "start": 150,
+        "text": "The Governing Council maintained the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Governing Council maintained the policy interest rate at 2.25%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3926,
+        "paragraph": 16,
+        "start": 3755,
+        "text": "Governing Council agreed to look through the war’s immediate impact on inflation but if energy prices stay high, we will not let their effects become persistent inflation."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Governing Council agreed to look through the war’s immediate impact on inflation but will not let energy-price effects become persistent inflation if energy prices stay high."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 446,
+        "paragraph": 4,
+        "start": 309,
+        "text": "Canada is being buffeted by global events and geopolitical uncertainties, but our economy is growing and is expected to continue to grow."
+       },
+       {
+        "end": 570,
+        "paragraph": 5,
+        "start": 455,
+        "text": "after more than a year with inflation close to the 2% target, higher global energy prices are pushing inflation up."
+       }
+      ],
+      "paragraphs": [
+       4,
+       5
+      ]
+     },
+     "text": "The Bank states that the economy is growing and is expected to continue to grow, while higher global energy prices are pushing inflation up."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2176,
+        "paragraph": 11,
+        "start": 2003,
+        "text": "In our forecast today, the Bank projects the economy will expand 1.2% in 2026, 1.6% in 2027 and 1.7% in 2028, as growth in exports and business investment gradually resumes."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "The Bank projects the economy will expand 1.2% in 2026, 1.6% in 2027 and 1.7% in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4179,
+        "paragraph": 17,
+        "start": 4033,
+        "text": "If this holds true, a policy rate close to current settings looks appropriate to support adjustment in the economy and return inflation to target."
+       },
+       {
+        "end": 4385,
+        "paragraph": 17,
+        "start": 4267,
+        "text": "But if the economy evolves broadly in line with the base case, changes in the policy rate can be expected to be small."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "The Bank states that if its baseline forecast holds true, a policy rate close to current settings looks appropriate, and changes in the policy rate can be expected to be small."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 4652,
+        "paragraph": 19,
+        "start": 4507,
+        "text": "If the United States imposes significant new trade restrictions on Canada, we may need to cut the policy rate further to support economic growth."
+       },
+       {
+        "end": 4962,
+        "paragraph": 19,
+        "start": 4829,
+        "text": "If this starts to happen, monetary policy will have more work to do—there may be a need for consecutive increases in the policy rate."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "The Bank states that significant new United States trade restrictions on Canada may require a further policy-rate cut, while ongoing generalized inflation from higher energy prices may require consecutive increases."
+    }
+   ],
+   "title": "Bank of Canada introductory statement, 29 April 2026",
+   "type": "opening_statement",
+   "url": "https://www.bankofcanada.ca/2026/04/opening-statement-2026-04-29/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2625,
+    "output_tokens": 1639,
+    "reasoning_tokens": 966
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1,
      7,
      8,
@@ -866,6 +1110,214 @@
     "input_tokens": 2182,
     "output_tokens": 624,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     5,
+     11,
+     19,
+     21,
+     97,
+     120
+    ],
+    "paragraphs_sent": 139,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:presser_transcript:2026-04-29",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 2 of summary point 2 has 44 words; allowed 5-40: “Estimates based on the consumer price index and other data indicate that total PCE prices ” - cut it to the clause that states the claim"
+     ],
+     "text": "Chair Powell said inflation had moved up and was elevated, with total PCE prices rising 3.5 percent and core PCE prices rising 3.2 percent over the 12 months ending in March."
+    },
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 6 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+     ],
+     "text": "Chair Powell said it is not so much independence, but the ability to make monetary policy without political considerations, and said it is at risk."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "da729b92a436e68b5285ce71fc99ac28faeaad6bef7e59dd6ce33f4d277c4aab",
+   "meeting_date": "2026-04-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2069,
+     "point": 1,
+     "source_text": "3.5 percent",
+     "start": 2058,
+     "text": "3½"
+    },
+    {
+     "end": 2897,
+     "point": 1,
+     "source_text": "3¾ percent",
+     "start": 2887,
+     "text": "3¾ percent"
+    },
+    {
+     "end": 7609,
+     "point": 2,
+     "source_text": "113",
+     "start": 7606,
+     "text": "113"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-04-29",
+   "quotes": [
+    {
+     "end": 2898,
+     "paragraph": 5,
+     "start": 2780,
+     "text": "At today’s meeting, the Committee decided to maintain the target range for the federal funds rate at 3½ to 3¾ percent."
+    },
+    {
+     "end": 7621,
+     "paragraph": 11,
+     "start": 7539,
+     "text": "these legal actions by the Administration are unprecedented in our 113year history"
+    },
+    {
+     "end": 11165,
+     "paragraph": 19,
+     "start": 11099,
+     "text": "we really do expect that to be happening in the next two quarters."
+    },
+    {
+     "end": 46560,
+     "paragraph": 120,
+     "start": 46511,
+     "text": "the center is moving toward a more neutral place."
+    },
+    {
+     "end": 38145,
+     "paragraph": 97,
+     "start": 38124,
+     "text": "I think it’s at risk."
+    }
+   ],
+   "source": {
+    "chars": 55519,
+    "chars_sent": 55520,
+    "method": "pypdf",
+    "paragraphs_sent": 139,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 632,
+        "paragraph": 3,
+        "start": 573,
+        "text": "Today, the FOMC decided to leave our policy rate unchanged."
+       },
+       {
+        "end": 2898,
+        "paragraph": 5,
+        "start": 2780,
+        "text": "At today’s meeting, the Committee decided to maintain the target range for the federal funds rate at 3½ to 3¾ percent."
+       }
+      ],
+      "paragraphs": [
+       3,
+       5
+      ]
+     },
+     "text": "Chair Powell said the FOMC left its policy rate unchanged and maintained the target range for the federal funds rate at 3½ to 3¾ percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7621,
+        "paragraph": 11,
+        "start": 7539,
+        "text": "these legal actions by the Administration are unprecedented in our 113year history"
+       },
+       {
+        "end": 7902,
+        "paragraph": 11,
+        "start": 7681,
+        "text": "I worry that these attacks are battering the institution and putting at risk the thing that really matters to the public—which is the ability to conduct monetary policy without taking into consideration political factors."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Chair Powell said legal actions by the Administration are unprecedented in the Fed’s 113year history and are battering the institution, putting at risk the ability to conduct monetary policy without taking into consideration political factors."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11165,
+        "paragraph": 19,
+        "start": 11099,
+        "text": "we really do expect that to be happening in the next two quarters."
+       },
+       {
+        "end": 12188,
+        "paragraph": 21,
+        "start": 12062,
+        "text": "And I think we’d want to see the back side of that and progress on tariffs before we even thought about, about reducing rates."
+       }
+      ],
+      "paragraphs": [
+       19,
+       21
+      ]
+     },
+     "text": "Chair Powell said he expects the one-time price increase from tariffs to be happening in the next two quarters, and would want to see the back side of that and progress on tariffs before reducing rates."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 46560,
+        "paragraph": 120,
+        "start": 46511,
+        "text": "the center is moving toward a more neutral place."
+       },
+       {
+        "end": 46808,
+        "paragraph": 120,
+        "start": 46729,
+        "text": "a majority of us didn’t feel like we needed to send a signal on that right now."
+       }
+      ],
+      "paragraphs": [
+       120
+      ]
+     },
+     "text": "Asked by Jennifer Schonberger about Committee guidance, Chair Powell said the center is moving toward a more neutral place and that a majority did not feel it needed to send a signal at that meeting."
+    }
+   ],
+   "title": "Federal Reserve press conference transcript, 29 April 2026",
+   "type": "presser_transcript",
+   "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260429.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 30500,
+    "output_tokens": 3285,
+    "reasoning_tokens": 1796
    }
   },
   {

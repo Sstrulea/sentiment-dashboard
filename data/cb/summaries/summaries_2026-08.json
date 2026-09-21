@@ -4,6 +4,249 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     17,
+     25,
+     36,
+     41,
+     48,
+     51
+    ],
+    "paragraphs_sent": 62,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:minutes:2026-08-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "47b4ad66f15b8496d7425d64e88cab1ee12fac3df5d2d1e568dc2b23e5a25061",
+   "meeting_date": "2026-08-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 75,
+     "point": 1,
+     "source_text": "2026",
+     "start": 71,
+     "text": "2026"
+    },
+    {
+     "end": 9887,
+     "point": 2,
+     "source_text": "3.6 per cent",
+     "start": 9875,
+     "text": "3.6 per cent"
+    },
+    {
+     "end": 16569,
+     "point": 3,
+     "source_text": "3 per cent",
+     "start": 16559,
+     "text": "3 per cent"
+    },
+    {
+     "end": 7729,
+     "point": 3,
+     "source_text": "2027",
+     "start": 7725,
+     "text": "2027"
+    },
+    {
+     "end": 16618,
+     "point": 3,
+     "source_text": "2½ per cent",
+     "start": 16607,
+     "text": "2½ per cent"
+    },
+    {
+     "end": 7729,
+     "point": 3,
+     "source_text": "2027",
+     "start": 7725,
+     "text": "2027"
+    },
+    {
+     "end": 7409,
+     "point": 4,
+     "source_text": "25 basis point",
+     "start": 7395,
+     "text": "25 basis points"
+    },
+    {
+     "end": 26250,
+     "point": 6,
+     "source_text": "4.35 per cent",
+     "start": 26237,
+     "text": "4.35 per cent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-08-25",
+   "quotes": [
+    {
+     "end": 5042,
+     "paragraph": 17,
+     "start": 4859,
+     "text": "Members noted that financial conditions in Australia had tightened in response to three increases in the cash rate in 2026 and were now judged by the staff to be somewhat restrictive."
+    },
+    {
+     "end": 9665,
+     "paragraph": 25,
+     "start": 9491,
+     "text": "Turning to the domestic economy, members noted that inflation in Australia remained well above target, even after easing unexpectedly in year-ended terms in the June quarter."
+    },
+    {
+     "end": 24667,
+     "paragraph": 47,
+     "start": 24423,
+     "text": "Having considered these various arguments, members judged it appropriate to leave the cash rate target unchanged at this meeting, while remaining alert to the upside risks to the inflation outlook and being ready to act should they materialise."
+    },
+    {
+     "end": 26251,
+     "paragraph": 51,
+     "start": 26164,
+     "text": "The Board decided unanimously to leave the cash rate target unchanged at 4.35 per cent."
+    }
+   ],
+   "source": {
+    "chars": 27779,
+    "chars_sent": 27780,
+    "method": "html-selector",
+    "paragraphs_sent": 62,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5042,
+        "paragraph": 17,
+        "start": 4859,
+        "text": "Members noted that financial conditions in Australia had tightened in response to three increases in the cash rate in 2026 and were now judged by the staff to be somewhat restrictive."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Members noted that financial conditions had tightened after three increases in the cash rate in 2026 and were judged by staff to be somewhat restrictive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9665,
+        "paragraph": 25,
+        "start": 9524,
+        "text": "members noted that inflation in Australia remained well above target, even after easing unexpectedly in year-ended terms in the June quarter."
+       },
+       {
+        "end": 9902,
+        "paragraph": 25,
+        "start": 9803,
+        "text": "underlying inflation, as measured by the trimmed mean, had increased to 3.6 per cent in the quarter"
+       }
+      ],
+      "paragraphs": [
+       25
+      ]
+     },
+     "text": "Members noted that inflation in Australia remained well above target and trimmed mean inflation had increased to 3.6 per cent in the quarter."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16631,
+        "paragraph": 36,
+        "start": 16507,
+        "text": "Trimmed mean inflation was forecast to remain above 3 per cent until mid-2027 and then reach around 2½ per cent in late 2027"
+       }
+      ],
+      "paragraphs": [
+       36
+      ]
+     },
+     "text": "Members noted that trimmed mean inflation was forecast to remain above 3 per cent until mid-2027 and reach around 2½ per cent in late 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19584,
+        "paragraph": 41,
+        "start": 19448,
+        "text": "members considered whether to raise the cash rate target by 25 basis points at this meeting or to leave it unchanged for the time being."
+       }
+      ],
+      "paragraphs": [
+       41
+      ]
+     },
+     "text": "Members considered whether to raise the cash rate target by 25 basis points or leave it unchanged for the time being."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 25181,
+        "paragraph": 48,
+        "start": 25030,
+        "text": "Several members judged that it was quite possible that the upside risks to the inflation forecast would crystallise, requiring some further tightening."
+       },
+       {
+        "end": 25250,
+        "paragraph": 48,
+        "start": 25182,
+        "text": "Other members noted the potential for downside risks to offset them."
+       }
+      ],
+      "paragraphs": [
+       48
+      ]
+     },
+     "text": "Several members judged that upside risks could require further tightening, while other members noted that downside risks could offset them."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 26251,
+        "paragraph": 51,
+        "start": 26164,
+        "text": "The Board decided unanimously to leave the cash rate target unchanged at 4.35 per cent."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "The Board decided unanimously to leave the cash rate target unchanged at 4.35 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia minutes of the 11 August 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-08-11.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 6545,
+    "output_tokens": 1147,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      6,
      8,
      12,
@@ -613,6 +856,440 @@
     "input_tokens": 2206,
     "output_tokens": 541,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     7,
+     9
+    ],
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:summary_of_opinions:2026-07-31",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 2 of summary point 5 is not verbatim in the paragraph(s) it cites [9] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Opinions included that it was appropriate to keep the policy interest rate unchanged at this meeting, while other opinions said the Bank should continue to raise the policy interest rate and adjust monetary accommodation."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "b608bde065bce7cd95c6af87ce2518ef439126603580407bf82c0abdb200751b",
+   "meeting_date": "2026-07-31",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 83,
+     "point": 2,
+     "source_text": "2026",
+     "start": 79,
+     "text": "2026"
+    },
+    {
+     "end": 710,
+     "point": 2,
+     "source_text": "2027",
+     "start": 706,
+     "text": "2027"
+    },
+    {
+     "end": 83,
+     "point": 3,
+     "source_text": "2026",
+     "start": 79,
+     "text": "2026"
+    },
+    {
+     "end": 710,
+     "point": 3,
+     "source_text": "2027",
+     "start": 706,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-08-07",
+   "quotes": [
+    {
+     "end": 417,
+     "paragraph": 4,
+     "start": 268,
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "end": 3332,
+     "paragraph": 7,
+     "start": 3155,
+     "text": "Underlying CPI inflation is likely to increase gradually, as the mechanism in which wages and prices rise moderately in interaction with each other is expected to be maintained."
+    },
+    {
+     "end": 5954,
+     "paragraph": 9,
+     "start": 5865,
+     "text": "In light of these developments, Japan's financial conditions have remained accommodative."
+    },
+    {
+     "end": 6516,
+     "paragraph": 9,
+     "start": 6343,
+     "text": "In order to carefully examine the impact of the rate hike at the previous meeting, it is appropriate for the Bank to keep the policy interest rate unchanged at this meeting."
+    }
+   ],
+   "source": {
+    "chars": 12087,
+    "chars_sent": 12088,
+    "method": "pypdf",
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 417,
+        "paragraph": 4,
+        "start": 268,
+        "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Members said Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 693,
+        "paragraph": 4,
+        "start": 517,
+        "text": "Japan's economy is expected to continue growing moderately, albeit at a decelerated rate, supported by factors such as global AI-related demand and various government measures."
+       },
+       {
+        "end": 860,
+        "paragraph": 4,
+        "start": 694,
+        "text": "From fiscal 2027 onward, Japan's economic growth rate is likely to rise moderately, since it is projected that the adverse effects of high crude oil prices will wane."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Members said fiscal 2026 growth is expected to continue moderately at a decelerated rate, and the growth rate is likely to rise moderately from fiscal 2027 onward."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 3332,
+        "paragraph": 7,
+        "start": 3155,
+        "text": "Underlying CPI inflation is likely to increase gradually, as the mechanism in which wages and prices rise moderately in interaction with each other is expected to be maintained."
+       },
+       {
+        "end": 3506,
+        "paragraph": 7,
+        "start": 3333,
+        "text": "Underlying CPI inflation is expected to come to a level that is generally cons istent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Members said underlying CPI inflation is likely to increase gradually and is expected to reach a level generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5710,
+        "paragraph": 9,
+        "start": 5494,
+        "text": "Looking at Japan's financial conditions, the short-term real interest rate -- which has a large impact on economic activity -- has been negative, and financial institutions' lending attitudes have remained proactive."
+       },
+       {
+        "end": 5864,
+        "paragraph": 9,
+        "start": 5711,
+        "text": "Meanwhile, firms' and other entities' demand for funds has increased, as shown, for example, in the acceleration in the rate of increase in bank lending."
+       },
+       {
+        "end": 5954,
+        "paragraph": 9,
+        "start": 5865,
+        "text": "In light of these developments, Japan's financial conditions have remained accommodative."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Members said Japan's financial conditions have remained accommodative, with a negative short-term real interest rate, proactive lending attitudes, and increased demand for funds."
+    }
+   ],
+   "title": "Bank of Japan summary of opinions of the 31 July 2026 meeting",
+   "type": "summary_of_opinions",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260731.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 8509,
+    "output_tokens": 2314,
+    "reasoning_tokens": 852
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     20,
+     31,
+     36,
+     38,
+     41,
+     49,
+     51
+    ],
+    "paragraphs_sent": 134,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:minutes:2026-07-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "d9036c9f63c407dcf837aa8c980a904450a7fea54154bdac71fa56d71c65d709",
+   "meeting_date": "2026-07-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1524,
+     "point": 4,
+     "source_text": "25",
+     "start": 1522,
+     "text": "25 basis points"
+    },
+    {
+     "end": 310,
+     "point": 5,
+     "source_text": "9",
+     "start": 309,
+     "text": "9"
+    },
+    {
+     "end": 30282,
+     "point": 5,
+     "source_text": "3",
+     "start": 30281,
+     "text": "3"
+    },
+    {
+     "end": 5970,
+     "point": 5,
+     "source_text": "3.5 percent",
+     "start": 5959,
+     "text": "3-1/2"
+    },
+    {
+     "end": 28609,
+     "point": 5,
+     "source_text": "3-3/4 percent",
+     "start": 28596,
+     "text": "3-3/4 percent"
+    },
+    {
+     "end": 31834,
+     "point": 6,
+     "source_text": "1/4 percentage point",
+     "start": 31814,
+     "text": "1/4 percentage point"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-08-19",
+   "quotes": [
+    {
+     "end": 15004,
+     "paragraph": 31,
+     "start": 14945,
+     "text": "Participants acknowledged that inflation remained elevated."
+    },
+    {
+     "end": 21278,
+     "paragraph": 38,
+     "start": 21080,
+     "text": "Participants generally observed that economic activity had continued to expand at a solid pace, despite elevated uncertainty, supported by strong business investment and resilient consumer spending."
+    },
+    {
+     "end": 25645,
+     "paragraph": 41,
+     "start": 25549,
+     "text": "Several participants favored an increase of 25 basis points in the target range at this meeting."
+    },
+    {
+     "end": 30887,
+     "paragraph": 49,
+     "start": 30637,
+     "text": "The Federal Open Market Committee approved the following statement for release by a 9 – 3 vote: The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent, in support of the Federal Reserve's dual mandate."
+    },
+    {
+     "end": 31851,
+     "paragraph": 51,
+     "start": 31664,
+     "text": "Voting against this action: Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting."
+    }
+   ],
+   "source": {
+    "chars": 39574,
+    "chars_sent": 39575,
+    "method": "html-selector",
+    "paragraphs_sent": 134,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15004,
+        "paragraph": 31,
+        "start": 14945,
+        "text": "Participants acknowledged that inflation remained elevated."
+       }
+      ],
+      "paragraphs": [
+       31
+      ]
+     },
+     "text": "Participants acknowledged that inflation remained elevated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18930,
+        "paragraph": 36,
+        "start": 18826,
+        "text": "Participants assessed that labor market conditions were stable, with labor demand and supply in balance."
+       },
+       {
+        "end": 21174,
+        "paragraph": 38,
+        "start": 21117,
+        "text": "economic activity had continued to expand at a solid pace"
+       }
+      ],
+      "paragraphs": [
+       36,
+       38
+      ]
+     },
+     "text": "Participants assessed that labor market conditions were stable, with labor demand and supply in balance, and observed that economic activity had continued to expand at a solid pace."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9595,
+        "paragraph": 20,
+        "start": 9402,
+        "text": "Financing conditions in domestic credit markets remained generally accommodative for larger businesses and municipalities but were somewhat restrictive for many small businesses and households."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "Financing conditions in domestic credit markets remained generally accommodative for larger businesses and municipalities but were somewhat restrictive for many small businesses and households."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 25001,
+        "paragraph": 41,
+        "start": 24909,
+        "text": "most participants supported maintaining the current target range for the federal funds rate."
+       },
+       {
+        "end": 25645,
+        "paragraph": 41,
+        "start": 25549,
+        "text": "Several participants favored an increase of 25 basis points in the target range at this meeting."
+       }
+      ],
+      "paragraphs": [
+       41
+      ]
+     },
+     "text": "Most participants supported maintaining the current target range, while several participants favored an increase of 25 basis points at this meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30836,
+        "paragraph": 49,
+        "start": 30637,
+        "text": "The Federal Open Market Committee approved the following statement for release by a 9 – 3 vote: The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent"
+       }
+      ],
+      "paragraphs": [
+       49
+      ]
+     },
+     "text": "The Committee decided by a 9 – 3 vote to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 31851,
+        "paragraph": 51,
+        "start": 31664,
+        "text": "Voting against this action: Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "Beth M. Hammack, Neel Kashkari, and Lorie K. Logan voted against the action, preferring to raise the target range by 1/4 percentage point at this meeting."
+    }
+   ],
+   "title": "Federal Reserve minutes of the 29 July 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260729.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 19148,
+    "output_tokens": 2709,
+    "reasoning_tokens": 1344
    }
   }
  ],

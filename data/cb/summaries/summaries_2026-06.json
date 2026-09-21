@@ -355,6 +355,214 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     4,
+     11,
+     13,
+     14,
+     15
+    ],
+    "paragraphs_sent": 18,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:opening_statement:2026-06-10",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "2acf4ed8531df93ff178608e0347073f972d2a9e4bb69a9dcf703b1f45ed3da3",
+   "meeting_date": "2026-06-10",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 187,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 182,
+     "text": "2.25%"
+    },
+    {
+     "end": 2559,
+     "point": 4,
+     "source_text": "3%",
+     "start": 2557,
+     "text": "3%"
+    },
+    {
+     "end": 2510,
+     "point": 4,
+     "source_text": "2%",
+     "start": 2508,
+     "text": "2%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-10",
+   "quotes": [
+    {
+     "end": 188,
+     "paragraph": 2,
+     "start": 125,
+     "text": "Governing Council maintained the policy interest rate at 2.25%."
+    },
+    {
+     "end": 3244,
+     "paragraph": 12,
+     "start": 3170,
+     "text": "At our meeting this week, we decided to maintain the policy rate at 2.25%."
+    },
+    {
+     "end": 3734,
+     "paragraph": 13,
+     "start": 3670,
+     "text": "For now, holding the policy rate unchanged balances those risks."
+    },
+    {
+     "end": 3805,
+     "paragraph": 14,
+     "start": 3735,
+     "text": "However, uncertainty is unusually elevated, and the risks could shift."
+    },
+    {
+     "end": 4231,
+     "paragraph": 15,
+     "start": 3991,
+     "text": "Alternatively, if the conflict in the Middle East continues and higher energy prices start leading to ongoing generalized inflation, monetary policy will have more work to do—there may be a need for consecutive increases in the policy rate."
+    }
+   ],
+   "source": {
+    "chars": 4861,
+    "chars_sent": 4862,
+    "method": "stored",
+    "paragraphs_sent": 18,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 188,
+        "paragraph": 2,
+        "start": 125,
+        "text": "Governing Council maintained the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Governing Council maintained the policy interest rate at 2.25%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 620,
+        "paragraph": 4,
+        "start": 553,
+        "text": "the Canadian economy has remained soft and inflation has increased."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Bank states that the Canadian economy has remained soft and inflation has increased."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3511,
+        "paragraph": 13,
+        "start": 3429,
+        "text": "Economic weakness combined with rising inflation is a dilemma for monetary policy."
+       },
+       {
+        "end": 3734,
+        "paragraph": 13,
+        "start": 3670,
+        "text": "For now, holding the policy rate unchanged balances those risks."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "The Bank states that holding the policy rate unchanged balances the risks from economic weakness and rising inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3005,
+        "paragraph": 11,
+        "start": 2909,
+        "text": "we expect CPI inflation to hover close to 3% in coming months before easing gradually toward 2%."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "The Bank expects CPI inflation to hover close to 3% in coming months before easing gradually toward 2%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3844,
+        "paragraph": 14,
+        "start": 3735,
+        "text": "However, uncertainty is unusually elevated, and the risks could shift. Monetary policy may need to be nimble."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "The Bank states that uncertainty is unusually elevated and monetary policy may need to be nimble."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3990,
+        "paragraph": 15,
+        "start": 3845,
+        "text": "If the United States imposes significant new trade restrictions on Canada, we may need to cut the policy rate further to support economic growth."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "The Bank states it may need to cut the policy rate further if the United States imposes significant new trade restrictions on Canada."
+    }
+   ],
+   "title": "Bank of Canada introductory statement, 10 June 2026",
+   "type": "opening_statement",
+   "url": "https://www.bankofcanada.ca/2026/06/opening-statement-2026-06-10/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2485,
+    "output_tokens": 1021,
+    "reasoning_tokens": 516
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 398,
     "changes": [
@@ -1474,6 +1682,327 @@
     "input_tokens": 2392,
     "output_tokens": 859,
     "reasoning_tokens": 173
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     5,
+     32,
+     34,
+     36,
+     46
+    ],
+    "paragraphs_sent": 48,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:presser_transcript:2026-06-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "383d022600264127d1699da6a243f4ceb8b9a2ada0443fd97af4315826cf2f29",
+   "meeting_date": "2026-06-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 442,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 427,
+     "text": "25 basis points"
+    },
+    {
+     "end": 780,
+     "point": 2,
+     "source_text": "3.0 per cent",
+     "start": 768,
+     "text": "3.0 per cent"
+    },
+    {
+     "end": 111,
+     "point": 2,
+     "source_text": "2026",
+     "start": 107,
+     "text": "2026"
+    },
+    {
+     "end": 802,
+     "point": 2,
+     "source_text": "2.3 per cent",
+     "start": 790,
+     "text": "2.3 per cent"
+    },
+    {
+     "end": 810,
+     "point": 2,
+     "source_text": "2027",
+     "start": 806,
+     "text": "2027"
+    },
+    {
+     "end": 827,
+     "point": 2,
+     "source_text": "2.0 per cent",
+     "start": 815,
+     "text": "2.0 per cent"
+    },
+    {
+     "end": 835,
+     "point": 2,
+     "source_text": "2028",
+     "start": 831,
+     "text": "2028"
+    },
+    {
+     "end": 1259,
+     "point": 2,
+     "source_text": "0.8 per cent",
+     "start": 1247,
+     "text": "0.8 per cent"
+    },
+    {
+     "end": 1281,
+     "point": 2,
+     "source_text": "1.2 per cent",
+     "start": 1269,
+     "text": "1.2 per cent"
+    },
+    {
+     "end": 1306,
+     "point": 2,
+     "source_text": "1.5 per cent",
+     "start": 1294,
+     "text": "1.5 per cent"
+    },
+    {
+     "end": 442,
+     "point": 3,
+     "source_text": "25 basis points",
+     "start": 427,
+     "text": "25 basis points"
+    },
+    {
+     "end": 780,
+     "point": 4,
+     "source_text": "3.0 per cent",
+     "start": 768,
+     "text": "3%"
+    },
+    {
+     "end": 5699,
+     "point": 4,
+     "source_text": "3.5 per cent",
+     "start": 5687,
+     "text": "3.5%"
+    },
+    {
+     "end": 827,
+     "point": 6,
+     "source_text": "2.0 per cent",
+     "start": 815,
+     "text": "2%"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-06-11",
+   "quotes": [
+    {
+     "end": 443,
+     "paragraph": 4,
+     "start": 335,
+     "text": "In line with this commitment, we today decided to raise the three key ECB interest rates by 25 basis points."
+    },
+    {
+     "end": 1315,
+     "paragraph": 5,
+     "start": 1196,
+     "text": "The baseline sees economic growth at an average of 0.8 per cent in 2026, 1.2 per cent in 2027 and 1.5 per cent in 2028."
+    },
+    {
+     "end": 12847,
+     "paragraph": 32,
+     "start": 12716,
+     "text": "The decision that we took today to raise by 25 basis points our three interest rates was a unanimous decision, without reservation."
+    },
+    {
+     "end": 16664,
+     "paragraph": 34,
+     "start": 16466,
+     "text": "What we are confident in though is that we are not seeing yet second round-effects, which would be largely attributable to wages, which play a significant contribution in the production of services."
+    },
+    {
+     "end": 30114,
+     "paragraph": 46,
+     "start": 30027,
+     "text": "But when you look at the longer-term expectations, they are broadly anchored at our 2%,"
+    }
+   ],
+   "source": {
+    "chars": 33711,
+    "chars_sent": 33712,
+    "method": "html-selector",
+    "paragraphs_sent": 48,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 442,
+        "paragraph": 4,
+        "start": 365,
+        "text": "we today decided to raise the three key ECB interest rates by 25 basis points"
+       },
+       {
+        "end": 333,
+        "paragraph": 4,
+        "start": 255,
+        "text": "ensure that inflation stabilises at our two per cent target in the medium term"
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Christine Lagarde said the Governing Council decided to raise the three key ECB interest rates by 25 basis points to ensure inflation stabilises at its two per cent target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 835,
+        "paragraph": 5,
+        "start": 726,
+        "text": "headline inflation is expected to average 3.0 per cent in 2026, 2.3 per cent in 2027 and 2.0 per cent in 2028"
+       },
+       {
+        "end": 1314,
+        "paragraph": 5,
+        "start": 1196,
+        "text": "The baseline sees economic growth at an average of 0.8 per cent in 2026, 1.2 per cent in 2027 and 1.5 per cent in 2028"
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Eurosystem staff baseline projects headline inflation averaging 3.0 per cent in 2026, 2.3 per cent in 2027 and 2.0 per cent in 2028, while economic growth averages 0.8 per cent, 1.2 per cent and 1.5 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12847,
+        "paragraph": 32,
+        "start": 12716,
+        "text": "The decision that we took today to raise by 25 basis points our three interest rates was a unanimous decision, without reservation."
+       },
+       {
+        "end": 12907,
+        "paragraph": 32,
+        "start": 12848,
+        "text": "We did not discuss or debate any other alternative proposal"
+       },
+       {
+        "end": 13393,
+        "paragraph": 32,
+        "start": 13338,
+        "text": "There will be no preset rate path in our considerations"
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "Christine Lagarde said the 25 basis points increase was unanimous, with no other alternative proposal discussed or debated, and that there will be no preset rate path."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16044,
+        "paragraph": 34,
+        "start": 15932,
+        "text": "On the services inflation, as you will have seen, it has moved from 3% to 3.5%, which is a significant increase."
+       },
+       {
+        "end": 16594,
+        "paragraph": 34,
+        "start": 16506,
+        "text": "we are not seeing yet second round-effects, which would be largely attributable to wages"
+       }
+      ],
+      "paragraphs": [
+       34
+      ]
+     },
+     "text": "Christine Lagarde said services inflation moved from 3% to 3.5%, while the ECB was not seeing yet second round-effects largely attributable to wages."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19047,
+        "paragraph": 36,
+        "start": 18979,
+        "text": "we have not discussed the neutral rate nor the range of neutral rate"
+       },
+       {
+        "end": 19340,
+        "paragraph": 36,
+        "start": 19270,
+        "text": "we have not debated our positioning with reference to the neutral rate"
+       }
+      ],
+      "paragraphs": [
+       36
+      ]
+     },
+     "text": "Christine Lagarde said the Governing Council had not discussed the neutral rate or its range, and had not debated its positioning with reference to the neutral rate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 29962,
+        "paragraph": 46,
+        "start": 29889,
+        "text": "short-term inflation expectations that have risen in all three categories"
+       },
+       {
+        "end": 30113,
+        "paragraph": 46,
+        "start": 30048,
+        "text": "the longer-term expectations, they are broadly anchored at our 2%"
+       }
+      ],
+      "paragraphs": [
+       46
+      ]
+     },
+     "text": "Christine Lagarde said short-term inflation expectations had risen in all three categories, while longer-term expectations were broadly anchored at the ECB’s 2%."
+    }
+   ],
+   "title": "European Central Bank press conference transcript, 11 June 2026",
+   "type": "presser_transcript",
+   "url": "https://www.ecb.europa.eu/press/press_conference/monetary-policy-statement/2026/html/ecb.is260611~372040d313.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 17931,
+    "output_tokens": 1897,
+    "reasoning_tokens": 333
    }
   },
   {

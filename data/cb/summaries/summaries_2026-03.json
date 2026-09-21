@@ -187,6 +187,223 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     6,
+     21,
+     22
+    ],
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:opening_statement:2026-03-19",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "62109fcd71d0eb1897b5959f3c20b80e601a596bcf392bbe8148c8feb4e13a89",
+   "meeting_date": "2026-03-19",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 334,
+     "point": 1,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    },
+    {
+     "end": 2016,
+     "point": 5,
+     "source_text": "0.5%",
+     "start": 2012,
+     "text": "0.5%"
+    },
+    {
+     "end": 2025,
+     "point": 5,
+     "source_text": "2026",
+     "start": 2021,
+     "text": "2026"
+    },
+    {
+     "end": 2016,
+     "point": 5,
+     "source_text": "0.5%",
+     "start": 2012,
+     "text": "0.5%"
+    },
+    {
+     "end": 2040,
+     "point": 5,
+     "source_text": "2027",
+     "start": 2036,
+     "text": "2027"
+    },
+    {
+     "end": 2049,
+     "point": 5,
+     "source_text": "0.6%",
+     "start": 2045,
+     "text": "0.6%"
+    },
+    {
+     "end": 2058,
+     "point": 5,
+     "source_text": "2028",
+     "start": 2054,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-03-19",
+   "quotes": [
+    {
+     "end": 335,
+     "paragraph": 3,
+     "start": 274,
+     "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 6573,
+     "paragraph": 21,
+     "start": 6442,
+     "text": "Our conditional inflation forecast for the coming quarters is higher than in the previous quarter due to the rise in energy prices."
+    },
+    {
+     "end": 7109,
+     "paragraph": 22,
+     "start": 7013,
+     "text": "To counter this risk, our willingness to intervene in the foreign exchange market has increased."
+    },
+    {
+     "end": 2071,
+     "paragraph": 6,
+     "start": 1976,
+     "text": "It puts average annual inflation at 0.5% for 2026, 0.5% for 2027 and 0.6% for 2028 (cf. table)."
+    }
+   ],
+   "source": {
+    "chars": 7208,
+    "chars_sent": 7209,
+    "method": "stored",
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 335,
+        "paragraph": 3,
+        "start": 274,
+        "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6573,
+        "paragraph": 21,
+        "start": 6442,
+        "text": "Our conditional inflation forecast for the coming quarters is higher than in the previous quarter due to the rise in energy prices."
+       },
+       {
+        "end": 6639,
+        "paragraph": 21,
+        "start": 6574,
+        "text": "In the medium term, inflationary pressure is virtually unchanged."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "The SNB said its conditional inflation forecast for the coming quarters was higher due to energy prices, while medium-term inflationary pressure was virtually unchanged."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 443,
+        "paragraph": 3,
+        "start": 336,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB stated that banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7012,
+        "paragraph": 22,
+        "start": 6926,
+        "text": "A rapid and excessive appreciation of the Swiss franc poses a risk to price stability."
+       },
+       {
+        "end": 7109,
+        "paragraph": 22,
+        "start": 7013,
+        "text": "To counter this risk, our willingness to intervene in the foreign exchange market has increased."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "The SNB stated that its willingness to intervene in the foreign exchange market has increased to counter the risk from a rapid and excessive Swiss franc appreciation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2071,
+        "paragraph": 6,
+        "start": 1976,
+        "text": "It puts average annual inflation at 0.5% for 2026, 0.5% for 2027 and 0.6% for 2028 (cf. table)."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The SNB's forecast puts average annual inflation at 0.5% for 2026, 0.5% for 2027 and 0.6% for 2028."
+    }
+   ],
+   "title": "Swiss National Bank introductory statement, 19 March 2026",
+   "type": "opening_statement",
+   "url": "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260319_mslanmargpe",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2941,
+    "output_tokens": 1402,
+    "reasoning_tokens": 876
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 359,
     "changes": [

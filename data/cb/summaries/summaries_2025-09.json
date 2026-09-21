@@ -4,6 +4,193 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     3,
+     18,
+     19,
+     22
+    ],
+    "paragraphs_sent": 24,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:opening_statement:2025-09-25",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "e397b6e1173fba628ad6fd4159b8aa9ba0428e1f80fbca21c84b98bafa21f21f",
+   "meeting_date": "2025-09-25",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 532,
+     "point": 1,
+     "source_text": "0%",
+     "start": 530,
+     "text": "0%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2025-09-25",
+   "quotes": [
+    {
+     "end": 533,
+     "paragraph": 3,
+     "start": 472,
+     "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 5605,
+     "paragraph": 18,
+     "start": 5423,
+     "text": "Over the entire forecast horizon, our conditional inflation forecast is within the range consistent with price stability, which we equate with an inflation rate of between 0% and 2%."
+    },
+    {
+     "end": 5713,
+     "paragraph": 19,
+     "start": 5606,
+     "text": "The US tariffs present a major challenge for affected companies and are likely to dampen economic activity."
+    },
+    {
+     "end": 6609,
+     "paragraph": 22,
+     "start": 6512,
+     "text": "To this end, we will be publishing a summary of our discussion at the monetary policy assessment."
+    }
+   ],
+   "source": {
+    "chars": 7509,
+    "chars_sent": 7510,
+    "method": "stored",
+    "paragraphs_sent": 24,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 533,
+        "paragraph": 3,
+        "start": 472,
+        "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5422,
+        "paragraph": 18,
+        "start": 5323,
+        "text": "The medium-term inflation outlook has remained virtually the same compared to the previous quarter."
+       },
+       {
+        "end": 5543,
+        "paragraph": 18,
+        "start": 5423,
+        "text": "Over the entire forecast horizon, our conditional inflation forecast is within the range consistent with price stability"
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "The SNB states that the medium-term inflation outlook remained virtually the same and its conditional inflation forecast is within the range consistent with price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 641,
+        "paragraph": 3,
+        "start": 534,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 810,
+        "paragraph": 3,
+        "start": 735,
+        "text": "We remain willing to be active in the foreign exchange market as necessary."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB says banks’ sight deposits are remunerated at the SNB policy rate up to a threshold, and it remains willing to be active in the foreign exchange market as necessary."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5713,
+        "paragraph": 19,
+        "start": 5606,
+        "text": "The US tariffs present a major challenge for affected companies and are likely to dampen economic activity."
+       },
+       {
+        "end": 5797,
+        "paragraph": 19,
+        "start": 5714,
+        "text": "Against this backdrop, our monetary policy is also supporting economic development."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "The SNB states that US tariffs present a major challenge for affected companies and are likely to dampen economic activity, while its monetary policy is supporting economic development."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6609,
+        "paragraph": 22,
+        "start": 6525,
+        "text": "we will be publishing a summary of our discussion at the monetary policy assessment."
+       },
+       {
+        "end": 6684,
+        "paragraph": 22,
+        "start": 6610,
+        "text": "The first of these will be published on our website four weeks from today."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "The SNB will publish a summary of its discussion at the monetary policy assessment, with the first published on its website four weeks from today."
+    }
+   ],
+   "title": "Swiss National Bank introductory statement, 25 September 2025",
+   "type": "opening_statement",
+   "url": "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20250925_mslanmargpe",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3011,
+    "output_tokens": 861,
+    "reasoning_tokens": 341
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1,
      2
     ],

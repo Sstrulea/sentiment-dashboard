@@ -1,6 +1,249 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     4,
+     6,
+     19
+    ],
+    "paragraphs_sent": 20,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:opening_statement:2025-12-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:16:49Z",
+   "input_sha256": "647af56a946da6bbccf1c7b227e89729c4591b84b946ea5ab0ce62fe81f5d281",
+   "meeting_date": "2025-12-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 334,
+     "point": 1,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    },
+    {
+     "end": 1199,
+     "point": 3,
+     "source_text": "0.2%",
+     "start": 1195,
+     "text": "0.2%"
+    },
+    {
+     "end": 1740,
+     "point": 3,
+     "source_text": "2025",
+     "start": 1736,
+     "text": "2025"
+    },
+    {
+     "end": 1746,
+     "point": 3,
+     "source_text": "0.3%",
+     "start": 1742,
+     "text": "0.3%"
+    },
+    {
+     "end": 1755,
+     "point": 3,
+     "source_text": "2026",
+     "start": 1751,
+     "text": "2026"
+    },
+    {
+     "end": 1764,
+     "point": 3,
+     "source_text": "0.6%",
+     "start": 1760,
+     "text": "0.6%"
+    },
+    {
+     "end": 1773,
+     "point": 3,
+     "source_text": "2027",
+     "start": 1769,
+     "text": "2027"
+    },
+    {
+     "end": 334,
+     "point": 3,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    },
+    {
+     "end": 535,
+     "point": 4,
+     "source_text": "0.25 percentage points",
+     "start": 513,
+     "text": "0.25 percentage points"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2025-12-11",
+   "quotes": [
+    {
+     "end": 335,
+     "paragraph": 3,
+     "start": 274,
+     "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 801,
+     "paragraph": 4,
+     "start": 679,
+     "text": "In the medium term, however, inflationary pressure is virtually unchanged compared to the last monetary policy assessment."
+    },
+    {
+     "end": 1786,
+     "paragraph": 6,
+     "start": 1691,
+     "text": "It puts average annual inflation at 0.2% for 2025, 0.3% for 2026 and 0.6% for 2027 (cf. table)."
+    },
+    {
+     "end": 536,
+     "paragraph": 3,
+     "start": 444,
+     "text": "The discount for sight deposits above this threshold still stands at 0.25 percentage points."
+    },
+    {
+     "end": 5594,
+     "paragraph": 19,
+     "start": 5460,
+     "text": "We will continue to monitor the situation and adjust our monetary policy if necessary, to ensure price stability over the medium term."
+    }
+   ],
+   "source": {
+    "chars": 5769,
+    "chars_sent": 5770,
+    "method": "stored",
+    "paragraphs_sent": 20,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 335,
+        "paragraph": 3,
+        "start": 274,
+        "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 678,
+        "paragraph": 4,
+        "start": 613,
+        "text": "Inflation in recent months has been slightly lower than expected."
+       },
+       {
+        "end": 801,
+        "paragraph": 4,
+        "start": 679,
+        "text": "In the medium term, however, inflationary pressure is virtually unchanged compared to the last monetary policy assessment."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The SNB states that inflation in recent months has been slightly lower than expected, while medium-term inflationary pressure is virtually unchanged compared to the last monetary policy assessment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1786,
+        "paragraph": 6,
+        "start": 1691,
+        "text": "It puts average annual inflation at 0.2% for 2025, 0.3% for 2026 and 0.6% for 2027 (cf. table)."
+       },
+       {
+        "end": 1891,
+        "paragraph": 6,
+        "start": 1787,
+        "text": "Our forecast is based on the assumption that the SNB policy rate is 0% over the entire forecast horizon."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The SNB's forecast puts average annual inflation at 0.2% for 2025, 0.3% for 2026 and 0.6% for 2027, based on the assumption that the SNB policy rate is 0% over the entire forecast horizon."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 443,
+        "paragraph": 3,
+        "start": 336,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 536,
+        "paragraph": 3,
+        "start": 444,
+        "text": "The discount for sight deposits above this threshold still stands at 0.25 percentage points."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB says banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold, with a 0.25 percentage points discount above that threshold."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5594,
+        "paragraph": 19,
+        "start": 5460,
+        "text": "We will continue to monitor the situation and adjust our monetary policy if necessary, to ensure price stability over the medium term."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "The SNB states that it will continue to monitor the situation and adjust monetary policy if necessary to ensure price stability over the medium term."
+    }
+   ],
+   "title": "Swiss National Bank introductory statement, 11 December 2025",
+   "type": "opening_statement",
+   "url": "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20251211_mslanmargpe",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2674,
+    "output_tokens": 1281,
+    "reasoning_tokens": 660
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 269,
     "changes": [
