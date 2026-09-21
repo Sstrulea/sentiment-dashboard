@@ -25,8 +25,8 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 
 - Text: **doar surse oficiale**; ultimele **4 ședințe / bancă**; latență țintă **≤ 15 min** prin trigger extern (faza 4).
 - Conferința: video + transcript oficial unde există + rezumat factual. **Fără transcriere proprie în v1.**
-- AI: **doar pe text** (rezumate, citate), **fără niciun verdict de direcție**. Model: **`claude-sonnet-5`**, fixat în
-  config; cheia devine secret GitHub în faza 2.
+- AI: **doar pe text** (rezumate, citate), **fără niciun verdict de direcție**. Provider: **OpenAI**, model **`gpt-5.6-terra`** (decizia lui George, 2026-09-21;
+  inițial `claude-sonnet-5`), fixat în `config/cb_summaries.yaml`; cheia = secretul GitHub `OPENAI_API_KEY`.
 - Orice citat există **verbatim** în sursă, iar rezumatul **nu conține numere absente din sursă**. Ambele se verifică
   automat.
 
@@ -209,7 +209,7 @@ Fără calculul traiectoriilor (vine în 1B-2), fără texte / rezumate, fără 
 | 8 | surse snapshot | de acord |
 | 9 | migrarea Carry | de acord; comparația apare în `--status` din 1B-1; migrarea e un pas separat după ≥ 1 ședință cu diff 0 |
 | 10 | convenții de calcul | 100 − preț și MPT în bp; spread = mediana pe 20 de zile lucrătoare (§5.4); OIS din RBA F1 respins; AUD primar = ASX IB |
-| 11 | AI (faza 2) | `claude-sonnet-5`, fixat în config; cheia = secret GitHub în faza 2 |
+| 11 | AI (faza 2) | **actualizată 2026-09-21** — provider **OpenAI**, model **`gpt-5.6-terra`** (mijlocul familiei curente: gpt-6-astra / gpt-5.6-sol frontieră, gpt-5.6-luna mic), fixat în `config/cb_summaries.yaml`; cheia = secretul GitHub `OPENAI_API_KEY`; prețuri de listă 2 / 12 USD per MTok (standard, context scurt), sursa și data în config (https://developers.openai.com/api/docs/pricing, citit 2026-09-21). Inițial `claude-sonnet-5`; clientul Anthropic rămâne alternativă configurată și testată |
 | 12 | trigger extern (faza 4) | corectat: Vercel Cron pe Hobby rulează o dată pe zi; scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`, 3 reîncercări cu backoff, alertă la eșec |
 | 13 | minute GitHub Actions | de acord (se măsoară după prima săptămână) |
 | 14 | slug-uri URL | de acord: `/central-banks/usd` etc.; perechea `/central-banks/pair/eurusd` |
@@ -439,7 +439,9 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
 - **Discursuri și mărturii**: feed-ul RSS oficial al fiecărei bănci (Fed, ECB `ecb.sp*` / `ecb.in*`, BoE, BoC, SNB; listele HTML BoJ și RBA); BIS doar
   pentru backfill și dedup — cheia e vorbitor + similaritate de titlu ≥ 0.6, **data BIS nu intră în cheie** (postarea BIS e la 13–19 zile după discurs).
   Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge; un anunț care nu e text (BoC „Media availability”: oră, loc,
-  temă) se marchează `non_document` — rămâne în store, nu apare ca discurs și nu se rezumă niciodată. Greutatea: Chair > votanți > restul.
+  temă) se marchează `non_document` — rămâne în store, nu apare ca discurs și nu se rezumă niciodată. La fel paginile de **webcast** ale BoC (`/multimedia/…`) listate printre discursuri:
+  cea a unei conferințe de presă (titlu / URL cu „press conference”) se **atașează ședinței** potrivite (decizie ±1 zi) ca videoclipul ei (`meta.attached_to`; dacă pagina de comunicat
+  nu a dat deja un video, feed-ul îl dă), orice altă înregistrare, sau o conferință fără ședință potrivită, doar `non_document`; niciuna nu e discurs și niciuna nu se rezumă. Greutatea: Chair > votanți > restul.
 - **Conferința de presă**: transcrieri oficiale doar ca URL + metadate (Fed PDF, ECB HTML cu Q&A unde hash-ul a fost publicat, RBA HTML; BoC și SNB au
   declarația introductivă în text). **Videoclipul vine din paginile oficiale ale băncilor, nu din feed-urile YouTube**: pagina FOMC (player Brightcove),
   pagina `/multimedia/` a BoC (legată din comunicat), pagina de transcript a RBA („Watch video: Media conference …”), pagina Monetary Policy Report a BoE
@@ -474,7 +476,7 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   mereu; guvernatorii băncilor naționale au vot prin rotație, pagina orarului nu se citește: `voter: null`), BoE (9 membri, cu cei 4 externi), BoJ, BoC (6, cu
   Deputy Governor extern), RBA (9), SNB (Governing Board, 3). **RBNZ** (Cloudflare) e tastat de mână în `config/cb_roster_manual.yaml`, din lista de participanți a „Summary record of meeting” din MPS sep 2026: Anna Breman
   (Governor, Chairperson) și membrii MPC Carl Hansen, Hayley Gourley, Karen Silk, Paul Conway, Prasanna Gai — doar rolurile pe care sursa le dă; generatorul îl
-  îmbină în `cb_roster.yaml`. Căutarea unui vorbitor se face doar printre membrii băncii lui.
+  îmbină în `cb_roster.yaml`, cu nota „voter = MPC member; the decision is taken by consensus, votes are not published” (`voter` e o convenție, nu un rol din sursă). Căutarea unui vorbitor se face doar printre membrii băncii lui.
 - **Interviul colectiv BoE** (pooled interview) nu se colectează.
 
 
@@ -485,8 +487,9 @@ relevanță — ultimele 4 ședințe per bancă. **Modelul doar reformulează ce
 nicio „interpretare” în cod: ce nu trece verificarea automată nu se scrie.
 
 ```
-config/cb_summaries.yaml        modelul (claude-sonnet-5), max_tokens, temperature 0, limitele, cuvintele blocate, plafoanele per rulare, prețurile (presupuse)
-src/cb_summarize/client.py      HTTP direct pe Messages API (requests, fără SDK / dependență nouă) + RecordedClient pentru teste; cheia nu se loghează
+config/cb_summaries.yaml        provider + model (openai / gpt-5.6-terra; anthropic păstrat), limitele unui apel, vocabularul, plafoanele per rulare, prețurile cu sursă și dată
+src/cb_summarize/client.py      o interfață (`complete(system, messages, schema) -> Response`), un client HTTP per provider (OpenAI Responses API, Anthropic Messages), `make_client`, RecordedClient pentru teste; fără SDK / dependență nouă; cheia nu se loghează
+src/cb_summarize/schema.py      contractul de ieșire ca JSON schema strictă (structured outputs)
 src/cb_summarize/prompts/       system.md + statement / transcript / minutes / speech .md, fiecare cu `prompt_version:`; versions.json fixează sha256 al fiecărui prompt
 src/cb_summarize/source.py      textul unui document: comunicatele vin din store; restul se descarcă la nevoie (extragerea din 2a, sha identic) și NU se comit
 src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate, coverage
@@ -519,12 +522,15 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   minute / accounts / opinions / deliberations → discursuri (relevanță „monetary”, ultimele 60 de zile); în fiecare rang, cele mai noi întâi.
 - **Prompturi.** `system.md` (regulile factuale, JSON-ul cerut) + un fișier per tip; `prompt_version` (`statement-v1`, `transcript-v1`, `minutes-v1`, `speech-v1`). sha256 al fiecărui
   prompt asamblat e în `versions.json`: **modificarea unui prompt fără versiune nouă pică suita**; o versiune nouă = documentele acelui tip se rezumă din nou.
-- **Fără cheie** (`ANTHROPIC_API_KEY`): etapa se sare, nu e eroare; `--status` avertizează („WARN … the summaries stage is skipped (N candidate documents are waiting)”).
+- **Fără cheie** (`OPENAI_API_KEY`, sau cea a providerului din config): etapa se sare, nu e eroare; `--status` avertizează („WARN … the summaries stage is skipped (N candidate documents are waiting)”).
   `--status` mai arată: rezumate stocate / candidate / în așteptare / `validation_failed` (cu motiv), ultima rulare (noi, sărite, picate, tokeni, cost estimat) și totalul.
   `python -m src.cb_collect --stage summaries --summaries-dry-run [--summaries-bank USD --summaries-type statement]` măsoară ce a rămas și estimează costul fără apel și fără cheie.
 - **cb-refresh**: `summaries` e ultima etapă (`--stage summaries`, nu face parte dintr-o rulare simplă), într-un pas separat: `Check for the summaries key` → `Summaries`
-  (`if` pe existența secretului, `continue-on-error: true`, `timeout-minutes: 8`) → render → commit. Secretul e vizibil doar pasului de verificare, pasului `Summaries` și
-  `--status` (care doar avertizează), nu întregului job; un eșec sau un timeout al pasului nu oprește celelalte etape.
+  (`if` pe existența secretului `OPENAI_API_KEY`, `continue-on-error: true`, `timeout-minutes: 8`) → render → commit. Secretul e vizibil doar pasului de verificare, pasului
+  `Summaries` și `--status` (care doar avertizează), nu întregului job; un eșec sau un timeout al pasului nu oprește celelalte etape. Un `workflow_dispatch` are input-urile
+  `stage` (all / market / … / summaries), `bank` și `type` (intră în shell doar prin `env`). **Commit după ref-ul rulat**: pe `main` — `data/cb/` + fișierele CB din `public/`,
+  push pe main (condiție + gardă explicită în script); pe orice alt branch — **doar `data/cb/summaries/`**, push pe *acel* branch, niciodată pe main (gardă explicită), fără
+  pagini randate și fără restul din `data/cb/` (`state.json` rămâne în runner).
 - **UI.** Sloturile „summary pending” se umplu: puncte, `changes vs previous` pliabile (cuvintele scoase / adăugate), citate cu link către pagina băncii și **ancoră text-fragment**
   (`#:~:text=…`, doar pentru surse HTML; PDF: linkul fără ancoră), iar sub fiecare rezumat: „Factual summary, no interpretation · model · prompt_version · data”. Un rezumat
   picat la validare nu se afișează: slotul rămâne „summary pending”, motivul în tooltip. Locuri: cardul „Latest decision”, sub fiecare document din „Documents”, rândurile de
@@ -537,10 +543,23 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
 - **`changes_vs_previous`** nu e cerut modelului: se citește din redline-ul deja stocat (deterministă, fără risc de halucinație); paragraf dispărut = `paragraph: null`.
 - **`numbers`**: lista o produce verificatorul (numerele din puncte, cu locul lor în sursă), nu modelul.
 - **Sursa rezumată** e textul extras în 2a: pentru documente foarte lungi (peste `max_source_chars` = 120 000) se taie la limită de paragraf și înregistrarea spune `truncated`.
-- **Prețurile** din `config/cb_summaries.yaml` sunt cele de listă ale lui claude-sonnet-5, citite pe pagina oficială (https://platform.claude.com/docs/en/about-claude/pricing) la
-  2026-09-21: **2 USD / MTok intrare, 10 USD / MTok ieșire** (prețul introductiv a devenit cel standard; creșterea la 3 / 15 din 1 sept. „will not occur”). Sursa și data sunt în
-  fișier. Fără Batch API (−50%), fără prompt caching, fără `inference_geo`. Tokenizatorul Claude 4.7+ dă ~30% mai mulți tokeni pentru același text: `chars_per_token` = 3.
-  Estimările sunt din tokenii raportați (sau din dry run), nu din facturi.
+- **Providerul și modelul** (decizia lui George: OpenAI). Alese de pe paginile oficiale, citite la 2026-09-21: modele (https://developers.openai.com/api/docs/models) — gpt-6-astra
+  „most capable model”, gpt-5.6-sol „complex professional work”, **gpt-5.6-terra „balances intelligence and cost”** (mijloc), gpt-5.6-luna „optimized for cost-sensitive workloads”;
+  prețuri (https://developers.openai.com/api/docs/pricing) pentru terra, standard, context scurt: **2,00 USD / MTok intrare, 0,20 cached, 12,00 ieșire** (context lung 4 / 18; Batch = 50%,
+  nefolosit); pagina modelului: context 1 050 000, ieșire max 128 000, structured outputs, Chat Completions și Responses. Rândurile citate sunt în config, cu sursa și data.
+  API: **Responses** (`POST /v1/responses`), promptul ca mesaj `developer`, `text.format = {type: json_schema, strict: true}` cu schema din `schema.py`, `store: false`.
+  **Temperatura: nu se trimite** — gpt-5.6-terra e model cu raționament („Temperature parameter: not applicable”, `reasoning.effort` în loc); determinismul vine din
+  `reasoning_effort: low`, din schema strictă și din verificator, singura poartă de scriere (un model care o acceptă: `temperature: 0` în config). Tokenii de raționament sunt tokeni
+  de ieșire (și se plătesc ca atare): `max_output_tokens` = 8000 îi include. Anthropic (`claude-sonnet-5`, 2 / 10 USD) rămâne configurat și testat (`provider: anthropic`), fără schemă.
+- **Schema strictă.** Contractul (`summary`, `quotes` cu paragraful declarat, `coverage`) e o JSON schema cu `additionalProperties: false` și toate câmpurile obligatorii, doar cu
+  cuvinte-cheie suportate de strict mode (fără `minItems` / `maxLength`): numărul, lungimile și paragraful le verifică verificatorul, care rămâne singura poartă de scriere.
+  Un refuz, o ieșire tăiată la limită (`status: incomplete`, `max_output_tokens`), un JSON invalid sau lipsa `usage` sunt tratate explicit: primele trei sunt încercări picate (aceeași
+  reîncercare unică, cu motivul ca feedback), a patra se estimează din text și înregistrarea spune `estimated`.
+- **Cheia de idempotență**: `(doc_id, input_sha256, prompt_version, provider, model)`; înregistrarea poartă `provider`. Un alt provider sau model rezumă din nou; un eșec de validare e ținut
+  și pe provider + model. `prompt_version` a devenit `*-v3` pentru toate tipurile (v1 și v2 rămân în `versions.json`).
+- **Costul** (estimare din dry run pe textele reale, 92 de documente încă nerezumate: ~506 000 tokeni de intrare la 4 caractere / token, ieșire presupusă 1 200 / document cu tot cu
+  raționament — înlocuită de prima utilizare reală): backlog **~2,3 USD**; o rulare de 12 documente ~0,3 USD; lunar în regim stabil ~0,6–0,7 USD (0,5–1,1 după cât raționament produce
+  `low`). Fără caching, fără Batch, fără regiune. Nu sunt facturi.
 - **`no_text`**: un document a cărui pagină s-a descărcat dar nu are text extractibil (fără container cunoscut, prea puțin text, PDF scanat) primește o singură dată marcajul
   `no_text` (`data/cb/summaries/no_text.json`: url, motiv, data) și nu se mai reîncearcă (o eroare de descărcare, în schimb, e tranzitorie și se reia; un link schimbat se reia).
   `--status` le listează, slotul din pagină spune „no extractable text”.

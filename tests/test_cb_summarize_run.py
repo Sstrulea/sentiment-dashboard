@@ -22,6 +22,7 @@ from .cb_sum_helpers import FED_KEY, GOOD_FED, MIN_V, NEXT_STMT_V, NOW, STMT_V, 
 from .test_cb_docs_collect import fetcher
 
 CFG = load_cfg()
+FKEY = R.failure_key(FED_KEY, PR.load("statement"), CFG)                 # doc_id | prompt_version | provider | model
 
 
 @pytest.fixture(scope="module")
@@ -47,17 +48,17 @@ def fed_only(paths, client, **kw):
 
 def test_without_a_key_the_stage_is_skipped_and_touches_nothing(paths):
     rep = R.run_summaries(paths, TODAY, env={}, cfg=CFG, now=NOW)
-    assert rep.enabled is False and "ANTHROPIC_API_KEY is not set" in rep.skipped_reason and rep.calls == 0 and rep.new == 0
+    assert rep.enabled is False and "OPENAI_API_KEY is not set" in rep.skipped_reason and rep.calls == 0 and rep.new == 0
     assert not paths.summaries.exists()
 
 
 def test_status_warns_that_the_key_is_missing_and_counts_what_waits(paths, monkeypatch):
     from src import cb_datasets as ds
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     title, heads, rows, notes = ds._summaries_status_section(paths, TODAY)
     assert title == "summaries (phase 2b)" and rows[0][0] == 0 and rows[0][1] > 20 and rows[0][2] == rows[0][1]
-    assert any(n.startswith("WARN ANTHROPIC_API_KEY is not set: the summaries stage is skipped") for n in notes)
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    assert any(n.startswith("WARN OPENAI_API_KEY is not set: the summaries stage is skipped") for n in notes)
+    monkeypatch.setenv("OPENAI_API_KEY", "x")
     assert not any(n.startswith("WARN") for n in ds._summaries_status_section(paths, TODAY)[3])
 
 
@@ -76,12 +77,12 @@ def test_a_good_output_is_stored_with_the_contract(paths):
     assert files == ["summaries_2026-09.json"]                                                                          # the month of the statement
     rec = SS.load(paths.summaries)[FED_KEY]
     doc = dst.load_documents(paths)[(FED_KEY,)]
-    assert rec["model"] == "claude-sonnet-5" and rec["prompt_version"] == STMT_V and rec["generated_at"] == "2026-09-21T08:00:00Z"
+    assert rec["model"] == "gpt-5.6-terra" and rec["provider"] == "openai" and rec["prompt_version"] == STMT_V and rec["generated_at"] == "2026-09-21T08:00:00Z"
     assert rec["input_sha256"] == doc["text_sha256"]
     assert len(rec["summary"]) == 3 and 1 <= len(rec["quotes"]) <= 5 and rec["coverage"]["paragraphs"] == [1, 2, 3, 4] and rec["coverage"]["truncated"] is False
     assert all(set(q) == {"paragraph", "text", "start", "end"} and doc["text"][q["start"]:q["end"]] == q["text"] for q in rec["quotes"])
     assert rec["numbers"] and all(doc["text"][n["start"]:n["end"]].strip() == n["source_text"] for n in rec["numbers"])
-    assert rec["usage"] == {"input_tokens": 1200, "output_tokens": 340, "attempts": 1}
+    assert rec["usage"] == {"input_tokens": 1200, "output_tokens": 340, "attempts": 1, "reasoning_tokens": 0}
     assert "text" not in rec and set(rec) >= {"doc_id", "model", "prompt_version", "generated_at", "input_sha256", "summary", "quotes", "changes_vs_previous", "numbers", "coverage"}
 
 
@@ -159,7 +160,7 @@ def test_two_bad_outputs_write_nothing_and_mark_validation_failed(paths, case):
     assert rep.new == 0 and rep.calls == 2 and [d for d, _ in rep.failed_validation] == [FED_KEY]
     assert SS.load(paths.summaries) == {}                                                                              # no summary, and never a repaired one
     assert not list(paths.summaries.glob("summaries_*.json"))
-    f = SS.load_failures(paths.summaries)[f"{FED_KEY}|{STMT_V}"]
+    f = SS.load_failures(paths.summaries)[FKEY]
     assert f["doc_id"] == FED_KEY and f["input_sha256"] == dst.load_documents(paths)[(FED_KEY,)]["text_sha256"] and expected in " ".join(f["errors"])
     again = fed_only(paths, RecordedClient([]))                                                                         # the same failure is not paid for again
     assert again.calls == 0 and again.unchanged == 1
@@ -182,7 +183,7 @@ def alt_prompts(tmp_path, monkeypatch, version=NEXT_STMT_V):
 
 def test_a_new_prompt_version_summarises_again_and_a_success_clears_the_old_failure(paths, tmp_path, monkeypatch):
     fed_only(paths, RecordedClient(["nope", "nope"]))
-    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|{STMT_V}"]
+    assert list(SS.load_failures(paths.summaries)) == [FKEY]
     alt_prompts(tmp_path, monkeypatch)
     rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
     assert rep.new == 1 and rep.calls == 1
@@ -354,7 +355,7 @@ def test_the_run_is_recorded_in_the_state_for_status(paths):
     assert rows[0][0] == 1 and rows[0][4] == 1 and rows[0][5] == 0                                                      # stored 1 - the last ACTIVE run: 1 new (an idle run is not logged)
     assert any("all runs: 1 summaries, 1 calls, 1500 in / 400 out tokens" in n for n in notes)
     fed_only(paths, RecordedClient(["x", "x"]), only={"USD:statement:2026-07-29"})
-    assert any(n.startswith(f"validation_failed USD:statement:2026-07-29 ({STMT_V})") for n in ds._summaries_status_section(paths, TODAY)[3])
+    assert any(n.startswith(f"validation_failed USD:statement:2026-07-29 ({STMT_V}, openai gpt-5.6-terra)") for n in ds._summaries_status_section(paths, TODAY)[3])
 
 
 # --- the dry run: what would it cost, without calling anything ------------------------------------------------------------------------------
@@ -368,7 +369,7 @@ def test_the_dry_run_measures_what_is_pending_without_calling_the_model_or_writi
     assert est.cost_usd == CFG.cost_usd(est.input_tokens, est.output_tokens) and est.runs == 1
     assert snapshot(paths.dir) == before                                                                                # not a file was written
     text = R.estimate_report(est, CFG)
-    assert "6 documents still to summarise, 1 runs at 12 documents per run" in text and "list prices of claude-sonnet-5, checked 2026-09-21" in text and "statement" in text and "minutes" in text
+    assert "6 documents still to summarise, 1 runs at 12 documents per run" in text and "list prices of gpt-5.6-terra, checked 2026-09-21" in text and "statement" in text and "minutes" in text
 
 
 def test_the_dry_run_leaves_out_what_is_already_summarised_or_failed(paths):
@@ -384,7 +385,7 @@ def test_the_backlog_is_split_into_capped_runs(paths):
 
 
 def test_the_dry_run_command_needs_no_key_and_prints_the_estimate(paths, capsys, monkeypatch):
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setattr("src.cb_summarize.run.estimate", lambda paths_, today, **kw: R.Estimate(documents=[("USD:statement:x", "statement", 900, 800)], input_tokens=800, output_tokens=700, cost_usd=0.0129, runs=1))
     rc = cc.main(["--data-dir", str(paths.dir), "--stage", "summaries", "--summaries-dry-run", "--summaries-bank", "USD"])
     out = capsys.readouterr().out
@@ -408,7 +409,7 @@ def test_a_document_of_an_older_meeting_than_the_last_four_is_not_a_candidate(pa
 
 
 def test_a_failure_of_an_older_prompt_version_is_history_and_is_dropped(paths):
-    SS.write_failures(paths.summaries, {"USD:statement:2026-06-17|statement-v0": {"doc_id": "USD:statement:2026-06-17", "prompt_version": "statement-v0", "input_sha256": "x",
+    SS.write_failures(paths.summaries, {"USD:statement:2026-06-17|statement-v0": {"doc_id": "USD:statement:2026-06-17", "prompt_version": "statement-v0", "provider": "openai", "model": "gpt-5.6-terra", "input_sha256": "x",
                                                                               "errors": ["old"], "at": "2026-01-01T00:00:00Z"}})
     rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
     assert rep.new == 1 and SS.load_failures(paths.summaries) == {}
@@ -416,7 +417,7 @@ def test_a_failure_of_an_older_prompt_version_is_history_and_is_dropped(paths):
 
 def test_a_success_clears_the_failure_of_the_same_document(paths):
     fed_only(paths, RecordedClient(["nope", "nope"]))
-    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|{STMT_V}"]
+    assert list(SS.load_failures(paths.summaries)) == [FKEY]
     docs = dst.load_documents(paths)
     d = docs[(FED_KEY,)]
     import hashlib
@@ -510,7 +511,7 @@ def test_the_status_and_the_page_say_no_text(paths, monkeypatch):
     from src.cb_compute import payload as P
     from src.cb_loader import load_context
     go(paths, RecordedClient(responder=responder_generic), session=no_layout(), types={"minutes"}, banks={"AUD"})
-    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.setenv("OPENAI_API_KEY", "x")
     notes = ds._summaries_status_section(paths, TODAY)[3]
     assert any(n.startswith(f"no_text {AUD_MINUTES}: no container of the page holds the document text (marked 2026-09-21, not retried)") for n in notes)
     ctx = load_context(paths.dir)
@@ -526,3 +527,14 @@ def test_an_announcement_is_never_a_candidate(paths):
     assert not any("/media-availability" in d["url"] for d in todo)
     forced = [dict(d, relevance="monetary") for d in docs if "/media-availability" in d["url"]]                          # even if its relevance were wrong, the marker is `non_document`
     assert all(d["relevance"] != "non_document" for d in R.candidates(docs + forced, ds.load_meetings(paths.meetings), TODAY, CFG))
+
+
+def test_the_command_line_can_narrow_the_stage_to_banks_types_and_documents(paths, monkeypatch, capsys):
+    seen = {}
+    monkeypatch.setattr("src.cb_summarize.run.run_summaries", lambda p, t, **kw: seen.update(kw) or R.SummariesReport())
+    cc.main(["--data-dir", str(paths.dir), "--stage", "summaries", "--summaries-bank", "USD", "--summaries-type", "statement", "--summaries-doc", FED_KEY,
+             "--summaries-doc", "USD:statement:2026-07-29"])
+    assert seen["banks"] == {"USD"} and seen["types"] == {"statement"} and seen["only"] == {FED_KEY, "USD:statement:2026-07-29"}
+    seen.clear()
+    cc.main(["--data-dir", str(paths.dir), "--stage", "summaries"])
+    assert seen["banks"] is None and seen["types"] is None and seen["only"] is None                                   # nothing narrowed: everything that is due

@@ -462,7 +462,9 @@ class _Run:
                 desc = first.group(1)                                          # keep what the first fetch found: no page request again
             prior = (old or {}).get("speaker") or ""                                     # a page that is not fetched twice keeps the speaker found the first time
             nameless = ccy == "JPY" and not it.get("speaker") and not prior              # the BoJ list carries no speaker: it is in the page title
-            non_doc = P.is_non_document(it["title"], it["link"])                        # an announcement (BoC "Media availability"), not a text: no page is fetched for it
+            media = P.webcast_kind(ccy, it["title"], it["link"])
+            attached = self.attach_press_conference(ccy, it) if media == "press_conference" else None       # the recording of a decision's press conference: the meeting's video
+            non_doc = media is not None or P.is_non_document(it["title"], it["link"])   # an announcement / a recording, not a text: no page is fetched for it
             if not non_doc and ((not desc and not old) or nameless) and pages < MAX_PAGES_PER_BANK and it["pub"] <= self.now:
                 got, byline = self.first_paragraph(it["link"])
                 desc, it["speaker"] = desc or got, it.get("speaker") or byline
@@ -472,8 +474,22 @@ class _Run:
             name, role, voter, chair = self.role_of(who, ccy) if who else ("", "", False, False)
             self.add(self.base(ccy, typ, doc_id, title=it["title"], url=it["link"], published_date=it["pub"].date(), published_at=_ts(it["pub"]), speaker=name, role=role,
                                relevance=rel, format="pdf" if it["link"].lower().endswith(".pdf") else "html",
-                               meta={"weight": P.speaker_weight(role, voter, chair), "voter": voter, "chair": chair, "first": desc[:300], "via": "bank"}))
+                               meta={"weight": P.speaker_weight(role, voter, chair), "voter": voter, "chair": chair, "first": desc[:300], "via": "bank",
+                                     **({"attached_to": attached} if attached else {}), **({"media": media} if media else {})}))
         return items
+
+    def attach_press_conference(self, ccy: str, it: dict) -> Optional[str]:
+        """A press-conference webcast page listed with the speeches belongs to the meeting held within a day of its date: it becomes that meeting's video (unless the
+        bank's own release page already gave one). Returns the video's doc_id, or None when no meeting matches (the item is then only marked non_document)."""
+        day = it["pub"].date() if it.get("pub") else None
+        near = min((m for m in self.meet.get(ccy, []) if day is not None and abs((m - day).days) <= 1), default=None)
+        if near is None:
+            return None
+        doc_id = f"{ccy}:presser_video:{near.isoformat()}"
+        if (doc_id,) not in self.docs:
+            self.add(self.base(ccy, "presser_video", doc_id, title=f"{S.BANK_NAME[ccy]} press conference video, {near:%d %B %Y}", url=it["link"], published_date=near,
+                               meeting_date=near, format="video", meta={"source": "bank feed", "page": it["link"], "player": None, "video_id": None, "duration": None}))
+        return doc_id
 
     def bis(self, own: dict) -> None:
         """BIS 'central bankers' speeches': backfill only - an item the bank feed already has (same speaker surname + title similarity >= 0.6) is dropped."""

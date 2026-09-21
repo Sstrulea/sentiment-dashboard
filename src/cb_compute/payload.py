@@ -388,7 +388,7 @@ def summary_json(rec: dict) -> dict:
             "points": rec["summary"], "changes": rec["changes_vs_previous"],
             "quotes": [{"text": q["text"], "paragraph": q["paragraph"], "href": rec["url"] + text_fragment(q["text"]) if html and "#" not in rec["url"] else rec["url"]}
                        for q in rec["quotes"]],
-            "model": rec["model"], "prompt_version": rec["prompt_version"], "generated": rec["generated_at"][:10], "note": SUMMARY_NOTE,
+            "provider": rec.get("provider"), "model": rec["model"], "prompt_version": rec["prompt_version"], "generated": rec["generated_at"][:10], "note": SUMMARY_NOTE,
             "truncated": bool(rec["coverage"]["truncated"]), "paragraphs_covered": rec["coverage"]["paragraphs"]}
 
 

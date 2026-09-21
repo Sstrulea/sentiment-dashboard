@@ -469,6 +469,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--force-calendar-check", action="store_true", help="run the weekly meetings check now")
     ap.add_argument("--summaries-bank", action="append", metavar="CCY", help="summaries stage: only these banks (repeatable), e.g. USD")
     ap.add_argument("--summaries-type", action="append", metavar="TYPE", help="summaries stage: only these document types (repeatable), e.g. statement")
+    ap.add_argument("--summaries-doc", action="append", metavar="DOC_ID", help="summaries stage: only these documents (repeatable), e.g. USD:statement:2026-09-16")
     ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
@@ -538,7 +539,7 @@ def main(argv: list[str] | None = None) -> int:
     if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
         try:
             from .cb_summarize import run as sum_run
-            narrow = dict(banks=set(a.summaries_bank or []) or None, types=set(a.summaries_type or []) or None)
+            narrow = dict(banks=set(a.summaries_bank or []) or None, types=set(a.summaries_type or []) or None, only=set(a.summaries_doc or []) or None)
             if a.summaries_dry_run:
                 text = sum_run.estimate_report(sum_run.estimate(paths, today, **narrow))
                 emit(text, "### summaries (dry run)\n\n```\n" + text + "\n```")

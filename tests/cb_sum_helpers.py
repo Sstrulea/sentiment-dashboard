@@ -87,3 +87,48 @@ def fresh_copy(base: Path, tmp_path: Path) -> Path:
     if (d / "summaries").exists():
         shutil.rmtree(d / "summaries")
     return d
+
+
+# --- OpenAI wire format (recorded responses of the Responses API) --------------------------------------------------------------------------------
+
+class HttpResp:
+    def __init__(self, status=200, body=None, text=""):
+        self.status_code, self._body, self.text = status, body, text
+
+    def json(self):
+        if self._body is None:
+            raise ValueError("no json")
+        return self._body
+
+
+def oai_body(text=None, *, refusal=None, status="completed", incomplete=None, usage=None, reasoning=0) -> HttpResp:
+    """A Responses API response: the output text (or a refusal), a status, and usage (None = the default counts, False = no usage at all)."""
+    content = [{"type": "refusal", "refusal": refusal}] if refusal is not None else [{"type": "output_text", "text": text, "annotations": []}]
+    body = {"id": "resp_test", "object": "response", "status": status, "incomplete_details": incomplete, "error": None,
+            "output": [{"type": "reasoning", "id": "rs_1", "summary": []}, {"type": "message", "id": "msg_1", "status": "completed", "role": "assistant", "content": content}]}
+    if usage is not False:
+        body["usage"] = usage or {"input_tokens": 1500, "input_tokens_details": {"cached_tokens": 0}, "output_tokens": 800,
+                                  "output_tokens_details": {"reasoning_tokens": reasoning}, "total_tokens": 2300}
+    return HttpResp(200, body)
+
+
+class OpenAISession:
+    """requests.Session stand-in for the OpenAI client: answers in order (a function of the request body also works), keeps every request."""
+
+    def __init__(self, *answers, responder=None):
+        self.answers, self.responder, self.posts = list(answers), responder, []
+
+    def post(self, url, json=None, headers=None, timeout=None):
+        self.posts.append({"url": url, "json": json, "headers": headers})
+        if self.responder is not None:
+            return self.responder(json)
+        a = self.answers.pop(0)
+        if isinstance(a, Exception):
+            raise a
+        return a
+
+
+def openai_client(cfg, *answers, responder=None):
+    from src.cb_summarize.client import OpenAIClient
+    s = OpenAISession(*answers, responder=responder)
+    return OpenAIClient(cfg, "sk-test", session=s, sleep=lambda x: None), s

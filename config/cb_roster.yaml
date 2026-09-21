@@ -38,6 +38,7 @@ sources:
     error: null
     note: RBNZ Monetary Policy Statement, September 2026 - Summary record of meeting, list of participants (rbnz.govt.nz is behind a Cloudflare
       challenge, so it is typed by hand)
+    voter_note: voter = MPC member; the decision is taken by consensus, votes are not published
 people:
 - currency: USD
   name: Kevin Warsh

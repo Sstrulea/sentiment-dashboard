@@ -1,19 +1,58 @@
 # Phase 2b - factual summaries of the official texts (docs/central-banks/ARCHITECTURE.md section 15).
-# The model, its limits and the per-run caps are fixed here; a prompt change is a new prompt_version (src/cb_summarize/prompts/), never an edit in place.
-model: claude-sonnet-5
-max_tokens: 3000
-temperature: 0
-api:
-  url: https://api.anthropic.com/v1/messages
-  version: "2023-06-01"
-  env_key: ANTHROPIC_API_KEY          # GitHub secret in CI, environment variable locally; missing -> the stage is skipped (a warning in --status, not an error)
-  timeout_s: 180
-  transport_retries: 2                # 429 / 5xx / timeouts only; the validation retry is separate and is exactly one
+# The provider, its model, its limits and the per-run caps are fixed here; a prompt change is a new prompt_version (src/cb_summarize/prompts/), never an edit in place.
+# The provider and its model are fixed in this file; a later change of provider is this file plus the client (src/cb_summarize/client.py: one class per provider,
+# one factory). Everything below `providers` is provider-independent. Which provider wrote a summary is stored in the record (`provider`, `model`).
+provider: openai                      # openai | anthropic
+providers:
+  openai:
+    model: gpt-5.6-terra              # the mid-range model of the current family (frontier: gpt-6-astra, gpt-5.6-sol; small: gpt-5.6-luna) - see the source block below
+    api_url: https://api.openai.com/v1/responses    # Responses API; structured outputs = text.format {type: json_schema, strict: true}
+    env_key: OPENAI_API_KEY           # GitHub secret in CI, environment variable locally; missing -> the stage is skipped (a warning in --status, not an error)
+    max_output_tokens: 8000           # a reasoning model spends part of this on reasoning tokens: a summary itself is ~1 000
+    temperature: null                 # NOT SENT: gpt-5.6-terra is a reasoning model, "Temperature parameter: not applicable" (model page, 2026-09-21). Determinism here comes
+                                      # from reasoning_effort + the strict schema + the verifier, the only gate that writes. (A model that supports it: set 0 here.)
+    reasoning_effort: low             # none | low | medium | high | xhigh | max (model page): a factual restatement does not need more
+    timeout_s: 180
+    transport_retries: 2              # 429 / 5xx / timeouts only; the validation retry is separate and is exactly one
+    chars_per_token: 4                # only to estimate the input size before a call (the response carries the real usage); the usual 4 characters of English per token
+    estimate_output_tokens: 1200      # ASSUMPTION for the dry-run estimate only: a ~700-token summary + low-effort reasoning tokens (billed as output); replaced by the first real usage
+    pricing_usd_per_mtok:             # standard tier, short context, per million tokens
+      input: 2.0
+      cached_input: 0.2               # not used here (no caching)
+      output: 12.0
+    pricing_source: https://developers.openai.com/api/docs/pricing
+    pricing_model_page: https://developers.openai.com/api/docs/models/gpt-5.6-terra
+    pricing_checked: "2026-09-21"
+    pricing_note: >-
+      Read on the official pages on 2026-09-21. models page: gpt-6-astra "most capable model", gpt-5.6-sol "complex professional work", gpt-5.6-terra "balances
+      intelligence and cost" (mid-range), gpt-5.6-luna "optimized for cost-sensitive workloads". Pricing page, gpt-5.6-terra: "Short context input $2.00 | cached input
+      $0.20 | output $12.00" (long context $4 / $18; batch = 50% of standard; not used). Model page: 1,050,000 context window, 128,000 max output tokens, structured
+      outputs supported, Chat Completions and Responses supported, temperature not applicable (reasoning effort instead). Reasoning tokens are output tokens.
+  anthropic:                          # the alternative, kept and tested (client + config): plain JSON text, no schema
+    model: claude-sonnet-5
+    api_url: https://api.anthropic.com/v1/messages
+    api_version: "2023-06-01"
+    env_key: ANTHROPIC_API_KEY
+    max_output_tokens: 3000
+    temperature: 0
+    reasoning_effort: null
+    timeout_s: 180
+    transport_retries: 2
+    chars_per_token: 3                # the tokenizer of Claude 4.7+ gives ~30% more tokens than 4 characters per token
+    estimate_output_tokens: 700
+    pricing_usd_per_mtok:
+      input: 2.0
+      cached_input: 0.2
+      output: 10.0
+    pricing_source: https://platform.claude.com/docs/en/about-claude/pricing
+    pricing_model_page: https://platform.claude.com/docs/en/about-claude/pricing
+    pricing_checked: "2026-09-21"
+    pricing_note: >-
+      Read 2026-09-21: "Claude Sonnet 5 | Base input tokens $2 / MTok | Output tokens $10 / MTok"; the $2 / $10 introductory price is now the standard price ("the
+      increase to $3 / $15 on September 1, 2026 will not occur").
 backfill_meetings: 4                  # the last N decided meetings per bank
 speech_window_days: 60                # speeches / testimony that passed the monetary-relevance filter and are this recent
 max_source_chars: 120000              # longer documents are cut at a paragraph boundary and marked truncated in the record
-chars_per_token: 3                    # only to estimate the input size before a call (the response carries the real usage); ~30% more tokens than the old 4 chars / token (newer tokenizer)
-estimate_output_tokens: 700           # ASSUMPTION for the dry-run estimate only: the typical output of one summary (3-6 points, 1-5 quotes)
 run_caps:                             # a run stops cleanly and reports when either is reached
   max_documents: 12
   max_input_tokens: 250000
@@ -86,12 +125,3 @@ attribution_subjects:                 # one of these must come earlier in the sa
   - speech
   - testimony
   - document
-# List prices in USD per million tokens, used for the cost estimate in --status and the reports (nothing else reads them). Read on the official price page
-# on 2026-09-21: "Claude Sonnet 5 | Base input tokens $2 / MTok | Output tokens $10 / MTok"; the page adds that the $2 / $10 introductory price of 2026-08-31 "is
-# now the standard price" and that the increase to $3 / $15 on 2026-09-01 "will not occur". Batch API (50% off), prompt caching and US data residency (x1.1)
-# are not used here. The page also says the tokenizer of Claude 4.7 and later produces about 30% more tokens for the same text: `chars_per_token` is 3, not 4.
-pricing_usd_per_mtok:
-  input: 2.0
-  output: 10.0
-pricing_source: https://platform.claude.com/docs/en/about-claude/pricing
-pricing_checked: "2026-09-21"

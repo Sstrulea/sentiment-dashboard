@@ -11,6 +11,6 @@ Rules
 
 The document is given as numbered paragraphs, "[1] ...", "[2] ...". The numbers are only labels: do not copy "[n]" into a quote.
 
-Output a single JSON object and nothing before or after it, exactly in this shape:
+Output a single JSON object and nothing before or after it, exactly in this shape (a strict JSON schema enforces the shape; the counts, the lengths and every rule above are checked automatically afterwards, and an output that fails is not used):
 {"summary": ["point", "point", "point"], "quotes": [{"paragraph": 1, "text": "verbatim passage"}], "coverage": [1, 2, 3]}
 with 3 to 6 summary points, 1 to 5 quotes and at least one paragraph number in coverage.

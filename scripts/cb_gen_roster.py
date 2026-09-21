@@ -196,7 +196,7 @@ def main(argv=None) -> int:
         for p in got:
             people.append({"currency": ccy, **p})
     for ccy, m in (yaml.safe_load(MANUAL.read_text()) or {}).items():             # hand-typed entries (a bank whose page the collector cannot read)
-        sources[ccy] = {"url": None, "status": "manual", "error": None, "note": m["source"]}
+        sources[ccy] = {"url": None, "status": "manual", "error": None, "note": m["source"], "voter_note": m.get("voter_note")}
         for p in m["people"]:
             people.append({"currency": ccy, "name": p["name"], "role": p["role"], "body": m["body"], "voter": {"2026": True, "2027": True}, "chair": bool(p["chair"])})
     doc = {"meta": {"generated": date.today().isoformat(), "generator": "scripts/cb_gen_roster.py", "note": "names and titles from the banks' official committee pages; "

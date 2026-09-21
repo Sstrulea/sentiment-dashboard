@@ -62,7 +62,7 @@ def test_the_latest_decision_summary_slot_is_filled_and_carries_the_content_of_t
     assert L["summary"] == {"status": "ready", "label": "summary", "doc_id": FED_KEY, "reason": None}
     s = docs(summarised, "USD")["summaries"][FED_KEY]
     assert s["points"] == GOOD_FED["summary"] and [q["text"] for q in s["quotes"]] == [q["text"] for q in GOOD_FED["quotes"]]
-    assert (s["model"], s["prompt_version"], s["generated"], s["note"]) == ("claude-sonnet-5", STMT_V, "2026-09-21", "factual summary, no interpretation")
+    assert (s["model"], s["prompt_version"], s["generated"], s["note"]) == ("gpt-5.6-terra", STMT_V, "2026-09-21", "factual summary, no interpretation")
     assert s["changes"]["vs_meeting"] == "2026-07-29" and {"paragraph": 2, "removed": "maintain", "added": "raise"} in s["changes"]["changes"]
     assert s["truncated"] is False and s["paragraphs_covered"] == [1, 2, 3, 4] and s["label"] == "Statement"
 

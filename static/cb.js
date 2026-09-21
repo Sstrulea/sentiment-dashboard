@@ -617,7 +617,7 @@
     const qs = '<div class="cb-sum-quotes">' + s.quotes.map(function (q) {
       return "<blockquote>\u201c" + esc(q.text) + "\u201d " + '<a href="' + esc(q.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">source \u00b6' + q.paragraph + " \u2197</a></blockquote>";
     }).join("") + "</div>";
-    const foot = '<div class="cb-sum-foot">' + esc(s.note.charAt(0).toUpperCase() + s.note.slice(1)) + " · " + esc(s.model) + " · " + esc(s.prompt_version) + " · generated " + fmtDate(s.generated) +
+    const foot = '<div class="cb-sum-foot">' + esc(s.note.charAt(0).toUpperCase() + s.note.slice(1)) + " · " + (s.provider ? esc(s.provider) + " " : "") + esc(s.model) + " · " + esc(s.prompt_version) + " · generated " + fmtDate(s.generated) +
       (s.truncated ? " · covers the first part of a long document only" : "") + "</div>";
     return '<div class="cb-summary">' + pts + (s.changes ? changesBlock(s.changes) : "") + qs + foot + "</div>";
   }

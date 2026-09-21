@@ -338,3 +338,5 @@ def test_rbnz_roster_is_the_hand_typed_participants_list_with_only_the_roles_the
     assert {p["body"] for p in people} == {"Monetary Policy Committee"} and all(set(p) == {"currency", "name", "role", "body", "voter", "chair"} for p in people)
     manual = load("config/cb_roster_manual.yaml")["NZD"]
     assert [(p["name"], p["role"], p["chair"]) for p in manual["people"]] == [(p["name"], p["role"], p["chair"]) for p in people] and "typed by hand" in manual["source"]   # the file the generator merged
+    note = "voter = MPC member; the decision is taken by consensus, votes are not published"
+    assert manual["voter_note"] == note and load("config/cb_roster.yaml")["sources"]["NZD"]["voter_note"] == note                # `voter` is a convention, and the file says what it means
