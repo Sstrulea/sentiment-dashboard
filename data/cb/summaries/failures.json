@@ -1,5 +1,16 @@
 {
  "failures": {
+  "EUR:presser_transcript:2026-09-10|transcript-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T15:57:49Z",
+   "doc_id": "EUR:presser_transcript:2026-09-10",
+   "errors": [
+    "summary point 6 is not supported by the paragraph(s) it cites [93]: 83% of its content words are there (85% needed); not found: 'bundesbank' - say only what those paragraphs say, or cite the paragraphs that say it"
+   ],
+   "input_sha256": "4fa24b7fdf9c18b8de8a0f79a270a59386a8e47efacf0972bf51943de39db80e",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "transcript-v5",
+   "provider": "openai"
+  },
   "USD:statement:2026-04-29|statement-v5|openai|gpt-5.6-terra": {
    "at": "2026-09-21T15:53:30Z",
    "doc_id": "USD:statement:2026-04-29",
