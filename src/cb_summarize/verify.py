@@ -239,7 +239,7 @@ def check_attributed(points: list, src: str, words: tuple, subjects: tuple, spea
             if not (forms(w, adverbs=False) & in_source):
                 errors.append(f"the word '{w}' of summary point {i} is not in the document: only a word the document itself uses (in any of its forms) may appear, and then attributed to the bank or to a named speaker")
                 continue
-            sentence_start = max([s.rfind(c, 0, m.start()) for c in ".!?;:"] + [-1]) + 1
+            sentence_start = max([b.end() for b in re.finditer(r"[.!?;:](?=\s|$)", s[:m.start()])] + [0])         # (the point of "3.1%" ends nothing)
             if subj.search(s[sentence_start:m.start()]):
                 continue
             if pron is not None and pron.search(s[sentence_start:m.start()]) and subj.search(s[:m.start()]):

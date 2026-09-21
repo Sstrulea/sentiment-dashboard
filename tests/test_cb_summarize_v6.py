@@ -570,3 +570,20 @@ def test_only_a_name_is_a_speaker_label_a_heading_a_short_sentence_and_a_slide_t
     assert not label("Thank you.") and not label("Bullock") and not label("One Two Three Four Five") and not label("Michele Bullock, Governor and more text here")
     slides = ["Growth Outlook"] * 20 + ["Inflation Path"] * 20 + [PROSE["GBP:speech:c2e9c4edbf10"][0]]
     assert SRC.not_prose(slides, CFG.non_prose) is not None                                                                # a deck of titles is still a deck (few sentences)
+
+
+def test_a_decimal_point_does_not_end_the_sentence_the_bank_is_named_in():
+    """The first backlog run removed five points because "3.3%" ended the sentence: 'The Committee states that CPI inflation has increased to 3.3%, and is likely to be
+    higher' was read as 'likely' in the summary's own voice."""
+    src = "CPI inflation has increased to 3.3%, and is likely to be higher later this year as energy prices rise; the Committee expects wages to follow."
+    pts = ["The Committee states that CPI inflation has increased to 3.3%, and is likely to be higher later this year.",
+           "The MPC states that UK CPI inflation increased to 3.1% in August and is likely to rise further over coming quarters.",
+           "The SNB expects GDP growth of just under 1.5% for 2025 and says unemployment is likely to rise."]
+    assert V.check_attributed(pts, src, CFG.attributed_words, CFG.attribution_subjects) == []
+    for own_voice in ("CPI inflation has increased to 3.3%. Inflation is likely to be higher.", "Inflation rose 3.3%; it is likely to be higher.", "CPI inflation has increased to 3.3% and is likely to be higher."):
+        errs = V.check_attributed([own_voice], src, CFG.attributed_words, CFG.attribution_subjects)
+        assert errs and "is not attributed" in errs[0], own_voice                                                          # a real sentence end, a semicolon, or no subject at all: still refused
+    assert V.check_attributed(["The Committee says inflation rose. It is likely to be higher."], src, CFG.attributed_words, CFG.attribution_subjects) != []   # a full stop followed by a space still ends it
+    assert V.check_attributed(["The Bank says inflation is 3.3%: likely to rise."], src, CFG.attributed_words, CFG.attribution_subjects) != []              # so do a colon and a semicolon
+    assert V.check_attributed(["The Bank asks what is next? It is likely to rise."], src, CFG.attributed_words, CFG.attribution_subjects) != []              # and a question mark
+    assert V.check_attributed(["The Bank says what is next! It is likely to rise."], src, CFG.attributed_words, CFG.attribution_subjects) != []              # and an exclamation mark
