@@ -82,13 +82,24 @@ def test_the_output_schema_is_strict_and_matches_what_the_verifier_reads():
     assert set(OUTPUT_SCHEMA["properties"]["quotes"]["items"]["properties"]) == {"paragraph", "text"}
     point = OUTPUT_SCHEMA["properties"]["summary"]["items"]                                                            # every point carries its evidence
     assert set(point["properties"]) == {"text", "evidence"} and point["properties"]["text"]["type"] == "string"
-    assert set(point["properties"]["evidence"]["properties"]) == {"paragraphs", "fragment"}
+    assert set(point["properties"]["evidence"]["properties"]) == {"paragraphs", "fragments"}
     assert point["properties"]["evidence"]["properties"]["paragraphs"] == {"type": "array", "items": {"type": "integer"}}
-    assert point["properties"]["evidence"]["properties"]["fragment"] == {"type": "string"}
+    assert point["properties"]["evidence"]["properties"]["fragments"] == {"type": "array", "items": {"type": "string"}}
+
+
+def test_no_list_of_the_summaries_config_holds_a_yaml_boolean():
+    """YAML 1.1 reads a bare `no` / `yes` / `on` / `off` as a boolean (and `str(False)` would slip through as the word "False"): every list must hold strings."""
+    raw = yaml.safe_load((ROOT / "config" / "cb_summaries.yaml").read_text())
+    for name in ("blocked_words", "attributed_words", "attribution_pronouns", "attribution_subjects"):
+        assert all(isinstance(w, str) for w in raw[name]), name
+    for name in ("attribution_words", "negations"):
+        assert all(isinstance(w, str) for w in raw["grounding"][name]), name
+    assert "no" in raw["grounding"]["negations"] and "False" not in CFG.negations
 
 
 def test_the_grounding_and_vocabulary_settings_are_the_approved_ones():
-    assert CFG.evidence_paragraphs == (1, 3) and CFG.fragment_words == (5, 40) and CFG.min_support == 0.85
+    assert CFG.evidence_paragraphs == (1, 3) and CFG.fragments == (1, 3) and CFG.fragment_words == (5, 40) and CFG.fragment_shared == 2 and CFG.min_support == 0.85
+    assert CFG.attribution_pronouns == ("he", "she", "they") and CFG.negations == ("not", "no", "never", "without", "neither", "nor", "cannot", "n't")
     assert {"states", "said", "noted", "reported"} <= set(CFG.attribution_words)
     assert {"likely", "expect", "expects", "expected", "expecting", "signal", "signals", "signalled", "suggest", "suggests", "suggested"} <= set(CFG.attributed_words)
     assert set(CFG.blocked_words) == {"hawkish", "dovish", "bullish", "bearish", "paves the way", "paved the way", "paving the way"}
@@ -99,7 +110,7 @@ def test_the_grounding_and_vocabulary_settings_are_the_approved_ones():
 def test_every_document_type_has_a_prompt_with_a_pinned_version():
     reg = PR.registry()
     current = {PR.load(k).version for k in PR.KINDS}
-    assert current == {"statement-v4", "transcript-v4", "minutes-v4", "speech-v4"} and current <= set(reg)
+    assert current == {"statement-v5", "transcript-v5", "minutes-v5", "speech-v5"} and current <= set(reg)
     for k in PR.KINDS:
         p = PR.load(k)
         assert p.version.startswith(k) and re.fullmatch(r"[a-z]+-v\d+", p.version) and reg[p.version] == p.sha256 == hashlib.sha256(p.system.encode()).hexdigest()
@@ -108,9 +119,9 @@ def test_every_document_type_has_a_prompt_with_a_pinned_version():
 
 def test_the_registry_keeps_the_versions_that_were_replaced_and_they_differ_from_the_current_ones():
     reg = PR.registry()
-    assert {k for k in reg if k.endswith(("-v1", "-v2", "-v3"))} == {f"{k}-v{n}" for k in PR.KINDS for n in (1, 2, 3)}   # history: a summary made under v1-v3 names a known prompt
+    assert {k for k in reg if k.endswith(("-v1", "-v2", "-v3", "-v4"))} == {f"{k}-v{n}" for k in PR.KINDS for n in (1, 2, 3, 4)}   # history: a summary made under v1-v4 names a known prompt
     for k in PR.KINDS:
-        assert len({reg[f"{k}-v1"], reg[f"{k}-v2"], reg[f"{k}-v3"], reg[PR.load(k).version]}) == 4                      # every version is another prompt
+        assert len({reg[f"{k}-v1"], reg[f"{k}-v2"], reg[f"{k}-v3"], reg[f"{k}-v4"], reg[PR.load(k).version]}) == 5                      # every version is another prompt
 
 
 def test_editing_a_prompt_without_a_new_version_is_caught(tmp_path):
@@ -128,7 +139,7 @@ def test_the_prompt_states_the_factual_rules_and_every_listed_word_of_the_config
         assert w in system, w
     for phrase in ("Factual only", "never add, subtract, round or compute", "character for character", "single JSON object", "3 to 6 summary points", "1 to 5 quotes",
                    "only when the document itself uses that word", "in any of its forms", "to the bank or to a named speaker", "never in your own voice", "a strict JSON schema enforces the shape",
-                   "Evidence for every summary point", "1 to 3 paragraph numbers", "5 to 40 words", "content words"):
+                   "Evidence for every summary point", "1 to 3 paragraph numbers", "5 to 40 words", "content words", "1 to 3 fragments"):
         assert phrase in system, phrase
     assert "hawkish" in system and "do not forecast" in system.lower() and "do not interpret" in system.lower()
     assert set(CFG.blocked_words).isdisjoint(CFG.attributed_words) and {"hawkish", "dovish", "bullish", "bearish", "paves the way"} <= set(CFG.blocked_words)

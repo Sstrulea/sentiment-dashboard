@@ -612,16 +612,26 @@
     }).join("");
     return '<details class="cb-sum-changes"><summary>Changes vs the statement of ' + fmtDate(c.vs_meeting) + " (+" + c.added_words + " / −" + c.removed_words + " words)</summary><ul>" + items + "</ul>" + (c.truncated ? '<div class="cb-sub">first changes only</div>' : "") + "</details>";
   }
-  function markFragment(para, frag) {                               // the paragraph with the evidence fragment highlighted
-    const i = frag ? para.indexOf(frag) : -1;
-    return i < 0 ? esc(para) : esc(para.slice(0, i)) + "<mark>" + esc(frag) + "</mark>" + esc(para.slice(i + frag.length));
+  function markFragments(para, frags) {                             // the paragraph with the evidence fragments highlighted
+    const spans = [];
+    frags.forEach(function (f) { const i = f ? para.indexOf(f) : -1; if (i >= 0) spans.push([i, i + f.length]); });
+    spans.sort(function (a, b) { return a[0] - b[0]; });
+    let out = "", at = 0;
+    spans.forEach(function (s) {
+      if (s[0] < at) { if (s[1] > at) { out += "<mark>" + esc(para.slice(at, s[1])) + "</mark>"; at = s[1]; } return; }
+      out += esc(para.slice(at, s[0])) + "<mark>" + esc(para.slice(s[0], s[1])) + "</mark>";
+      at = s[1];
+    });
+    return out + esc(para.slice(at));
   }
-  function pointHtml(text, ev) {                                    // a summary point; with its evidence: hover shows the source fragment, click the paragraph(s) and the link to the text
+  function pointHtml(text, ev) {                                    // a summary point; with its evidence: hover shows the source fragments, click the paragraph(s) and the link to the text
     if (!ev) return "<li>" + esc(text) + "</li>";
     const paras = ev.paragraphs.map(function (n) { return "\u00b6" + n; }).join(", ");
-    const texts = ev.texts ? ev.paragraphs.map(function (n) { return '<div class="cb-sum-para"><b>\u00b6' + n + "</b> " + markFragment(ev.texts[String(n)] || "", ev.fragment) + "</div>"; }).join("") : "";
-    return '<li class="cb-sum-point" title="Source ' + esc(paras) + ": \u201c" + esc(ev.fragment) + '\u201d (click for the source)"><span class="cb-sum-text" tabindex="0" role="button" aria-expanded="false">' + esc(text) + "</span>" +
-      '<div class="cb-sum-evidence" hidden><div class="cb-sum-frag"><b>Source ' + esc(paras) + "</b> \u201c" + esc(ev.fragment) + '\u201d <a href="' + esc(ev.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">open the source \u2197</a></div>' + texts + "</div></li>";
+    const frags = ev.fragments.map(function (f) { return f.text; });
+    const quoted = frags.map(function (f) { return "\u201c" + f + "\u201d"; }).join(" \u00b7 ");
+    const texts = ev.texts ? ev.paragraphs.map(function (n) { return '<div class="cb-sum-para"><b>\u00b6' + n + "</b> " + markFragments(ev.texts[String(n)] || "", frags) + "</div>"; }).join("") : "";
+    return '<li class="cb-sum-point" title="Source ' + esc(paras) + ": " + esc(quoted) + ' (click for the source)"><span class="cb-sum-text" tabindex="0" role="button" aria-expanded="false">' + esc(text) + "</span>" +
+      '<div class="cb-sum-evidence" hidden><div class="cb-sum-frag"><b>Source ' + esc(paras) + "</b> " + esc(quoted) + ' <a href="' + esc(ev.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">open the source \u2197</a></div>' + texts + "</div></li>";
   }
   document.addEventListener("click", function (e) {                 // one delegated handler: a point opens / closes its evidence
     const t = e.target.closest ? e.target.closest(".cb-sum-text") : null;

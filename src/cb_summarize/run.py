@@ -22,6 +22,7 @@ from . import changes as CH
 from . import prompts as PR
 from . import source as SRC
 from . import store as SS
+from . import turns as TURNS
 from . import verify as V
 from .client import APIError, make_client
 from .schema import OUTPUT_SCHEMA
@@ -113,15 +114,36 @@ def _record(doc: dict, prompt: PR.Prompt, src: SRC.Source, ok: V.Verified, chang
 TITLED_NAME = re.compile(r"\b(?:Chair(?:man|woman|person)?|Vice[- ]Chair(?:man)?|Governor|Deputy Governor|President|Mr|Ms|Mrs|Dr)\.?\s+([A-Z\u00c0-\u017f][\w\u2019'\-]+)")
 
 
-def speakers_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
-    """The surnames a point may attribute a statement to, besides the bank and its bodies: the members of the document's bank (config/cb_roster.yaml), the speaker of
-    a speech, and every name the document itself gives after a title ("Chairman Warsh", "Governor Waller")."""
-    names = {DP.surname(p["name"]) for p in (roster or {}).get("people", []) if p.get("currency") == doc["currency"]}
+def name_words(name: str) -> tuple:
+    """The words of a person's name, lower case, surname last; initials and titles are left out."""
+    return tuple(w for w in (x.lower().strip(".,") for x in re.findall(r"[^\W\d_][\w\u2019'\-]*", name)) if len(w) >= 3 and w not in TURNS.TITLE_WORDS)
+
+
+def people_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
+    """The people a point may attribute a statement to, besides the bank and its bodies - each as its name words (surname last): the members of the document's bank
+    (config/cb_roster.yaml), the speaker of a speech, and every name the document itself gives after a title ("Chairman Warsh", "Governor Waller")."""
+    people = [name_words(p["name"]) for p in (roster or {}).get("people", []) if p.get("currency") == doc["currency"]]
     if doc.get("speaker"):
-        names.add(DP.surname(doc["speaker"]))
+        people.append(name_words(doc["speaker"]))
     for m in TITLED_NAME.finditer(text):
-        names.add(re.sub(r"[\u2019']s$", "", m.group(1)).lower())
-    return tuple(sorted(n for n in names if len(n) >= 3))
+        people.append(name_words(re.sub(r"[\u2019']s$", "", m.group(1))))
+    return tuple(dict.fromkeys(g for g in people if g))
+
+
+def speakers_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
+    """Every name word of `people_of`: what a point may name as the one who says it."""
+    return tuple(sorted({w for g in people_of(doc, text, roster) for w in g}))
+
+
+def officials_of(doc: dict, roster: Optional[dict]) -> tuple:
+    """The surnames of the bank's members (and of the speaker): the turns of a press conference that are the bank's, not a journalist's."""
+    names = [p["name"] for p in (roster or {}).get("people", []) if p.get("currency") == doc["currency"]] + ([doc["speaker"]] if doc.get("speaker") else [])
+    return tuple(sorted({w for w in (DP.surname(n) for n in names) if len(w) >= 3}))
+
+
+def bank_terms(doc: dict) -> tuple:
+    """The words that name the document's own bank ("Reserve Bank of Australia"): the attribution of the whole document, not a claim of a point."""
+    return tuple(w.lower() for w in re.findall(r"[^\W\d_]+", S.BANK_NAME[doc["currency"]]) if len(w) >= 3)
 
 
 def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> tuple:
@@ -130,11 +152,12 @@ def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> t
     return chars_in // cfg.chars_per_token, len(output) // cfg.chars_per_token
 
 
-def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source, speakers: tuple = (), trace: Optional[list] = None) -> tuple:
+def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source, speakers: tuple = (), trace: Optional[list] = None, people: tuple = ()) -> tuple:
     """One document: (Verified, usage, errors_of_the_last_attempt). At most two model calls: the second only with the errors of the first as feedback. A refusal,
     an output cut at the token limit and invalid JSON are all failed attempts (the same one retry); a response without usage is estimated, and says so. `trace`, when
-    given, receives {"attempt", "errors", "output"} for every failed attempt (the log says why a document needed its retry or failed)."""
-    user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs)
+    given, receives {"attempt", "errors", "output"} for every failed attempt (the log says why a document needed its retry or failed). `people`: the name words of each
+    person a point may name (`speakers` is their union)."""
+    user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs, src.tags)
     messages = [{"role": "user", "content": user}]
     usage = {"input_tokens": 0, "output_tokens": 0, "attempts": 0, "reasoning_tokens": 0}
     errors: list = []
@@ -162,8 +185,9 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
         if obj is not None:
             res = V.verify(obj, src.paragraphs, points=cfg.summary_points, point_chars=cfg.point_chars, quotes=cfg.quotes, quote_chars=cfg.quote_chars,
                            total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects,
-                           speakers=speakers, evidence_paragraphs=cfg.evidence_paragraphs, fragment_words=cfg.fragment_words, min_support=cfg.min_support,
-                           attribution_words=cfg.attribution_words)
+                           speakers=speakers, evidence_paragraphs=cfg.evidence_paragraphs, fragments=cfg.fragments, fragment_words=cfg.fragment_words, min_support=cfg.min_support,
+                           attribution_words=cfg.attribution_words, fragment_shared=cfg.fragment_shared, pronouns=cfg.attribution_pronouns, negations=cfg.negations,
+                           bank_terms=bank_terms(doc), labels=src.turns, people=people)
             if res.ok:
                 return res, usage, []
             errors = res.errors
@@ -219,7 +243,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
             rep.stopped = f"document cap reached ({cfg.max_documents} per run)"
             break
         try:
-            src = SRC.load(doc, fetcher, cfg.max_source_chars)
+            src = SRC.load(doc, fetcher, cfg.max_source_chars, officials_of(doc, roster))
         except SRC.SourceError as e:
             if e.kind == "no_text":                                        # got the page, there is no text in it: said once, not asked again
                 no_text[doc["doc_id"]] = {"url": doc["url"], "reason": str(e), "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
@@ -239,7 +263,8 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
         attempted += 1
         try:
             trace: list = []
-            ok, usage, errors = summarise(client, cfg, prompt, doc, src, speakers_of(doc, src.text, roster), trace=trace)
+            people = people_of(doc, src.text, roster)
+            ok, usage, errors = summarise(client, cfg, prompt, doc, src, tuple(sorted({w for g in people for w in g})), trace=trace, people=people)
         except APIError as e:
             rep.stopped = f"the API stopped the run ({e.kind}): {e.message[:160]}"
             break

@@ -13,23 +13,38 @@ function cut(from, to) {
 const listeners = {};
 const ctx = { document: { addEventListener: (t, f) => { listeners[t] = f; } } };
 vm.createContext(ctx);
-vm.runInContext(cut("  function esc(s) {", "  function fmtDate") + cut("  function markFragment(", "  function summaryBlock") , ctx);
+vm.runInContext(cut("  function esc(s) {", "  function fmtDate") + cut("  function markFragments(", "  function summaryBlock"), ctx);
 
-const ev = { paragraphs: [3, 4], paragraph: 3, fragment: "Economic activity is expanding at a solid pace.", coverage: 1,
-             href: "https://bank.example/s.htm#:~:text=Economic%20activity", texts: { "3": "Economic activity is expanding at a solid pace. While <b>uncertainty</b> remains elevated.", "4": "Inflation remains elevated." } };
+const F1 = "Economic activity is expanding at a solid pace.", F2 = "Inflation remains elevated.";
+const ev = { paragraphs: [3, 4], fragments: [{ text: F1, paragraph: 3 }, { text: F2, paragraph: 4 }], coverage: 1,
+             href: "https://bank.example/s.htm#:~:text=Economic%20activity&text=Inflation%20remains", texts: { "3": "Economic activity is expanding at a solid pace. While <b>uncertainty</b> remains elevated.", "4": "Inflation remains elevated. The rest." } };
 const html = vm.runInContext("pointHtml", ctx)("The Committee says activity is expanding & inflation remains elevated.", ev);
 const fail = (m) => { console.error("FAIL: " + m + "\n" + html); process.exit(1); };
-if (!html.startsWith('<li class="cb-sum-point" title="Source ¶3, ¶4: “Economic activity is expanding at a solid pace.” (click for the source)">')) fail("the hover text is the source fragment");
+if (!html.startsWith('<li class="cb-sum-point" title="Source ¶3, ¶4: “' + F1 + '” · “' + F2 + '” (click for the source)">')) fail("the hover text has every fragment");
 if (!html.includes('class="cb-sum-text" tabindex="0" role="button" aria-expanded="false">The Committee says activity is expanding &amp; inflation remains elevated.</span>')) fail("the point is escaped and focusable");
 if (!html.includes('<div class="cb-sum-evidence" hidden>')) fail("the evidence starts hidden");
-if (!html.includes('<a href="https://bank.example/s.htm#:~:text=Economic%20activity" target="_blank" rel="noopener"')) fail("the anchor to the source text");
-if (!html.includes("<b>¶3</b> <mark>Economic activity is expanding at a solid pace.</mark> While &lt;b&gt;uncertainty&lt;/b&gt; remains elevated.")) fail("the paragraph, fragment highlighted, text escaped");
-if (!html.includes("<b>¶4</b> Inflation remains elevated.</div>") || html.split("<mark>").length !== 2) fail("the second paragraph is shown without a highlight");
+if (!html.includes('<a href="https://bank.example/s.htm#:~:text=Economic%20activity&amp;text=Inflation%20remains" target="_blank" rel="noopener"')) fail("the anchor to the source text carries every fragment");
+if (!html.includes("<b>¶3</b> <mark>" + F1 + "</mark> While &lt;b&gt;uncertainty&lt;/b&gt; remains elevated.")) fail("the paragraph, fragment highlighted, text escaped");
+if (!html.includes("<b>¶4</b> <mark>" + F2 + "</mark> The rest.</div>") || html.split("<mark>").length !== 3) fail("each paragraph highlights its own fragment");
+
+// two fragments in one paragraph, overlapping ones, and one that is not in the paragraph
+const mark = vm.runInContext("markFragments", ctx);
+if (mark("aa bb cc dd ee", ["bb cc", "dd ee"]) !== "aa <mark>bb cc</mark> <mark>dd ee</mark>") throw new Error("two fragments in one paragraph: " + mark("aa bb cc dd ee", ["bb cc", "dd ee"]));
+if (mark("aa bb cc dd ee", ["bb cc dd", "cc dd ee"]) !== "aa <mark>bb cc dd</mark><mark> ee</mark>") throw new Error("overlapping fragments: " + mark("aa bb cc dd ee", ["bb cc dd", "cc dd ee"]));
+if (mark("a <b> c", ["zz"]) !== "a &lt;b&gt; c") throw new Error("a fragment that is not there highlights nothing");
+
+// nothing of the document reaches the markup unescaped - not the point, not the fragments in the tooltip, not the paragraph
+const hostile = vm.runInContext("pointHtml", ctx)("a <i>point</i>", { paragraphs: [1], fragments: [{ text: 'say "hi" <b>now</b>', paragraph: 1 }], coverage: 1, href: 'https://x/"y', texts: { "1": 'he said "hi" <b>now</b> & left' } });
+if (hostile.includes('"hi"') && hostile.split('"hi"').length > 1 && /title="[^"]*"hi"/.test(hostile)) throw new Error("a quote in a fragment breaks out of the tooltip attribute: " + hostile);
+const title = hostile.match(/^<li class="cb-sum-point" title="([^"]*)">/);
+if (!title || !title[1].includes("say &quot;hi&quot; &lt;b&gt;now&lt;/b&gt;")) throw new Error("the tooltip does not carry the escaped fragment: " + hostile);
+if (!hostile.includes("say &quot;hi&quot; &lt;b&gt;now&lt;/b&gt;") || hostile.includes("<i>") || hostile.includes("<b>now") || !hostile.includes('href="https://x/&quot;y"')) throw new Error("unescaped markup: " + hostile);
+if (!hostile.includes("he said &quot;hi&quot; &lt;b&gt;now&lt;/b&gt; &amp; left") && !hostile.includes("<mark>say")) { /* the fragment is not in the paragraph text: the paragraph is shown as it is, escaped */ }
 
 const legacy = vm.runInContext("pointHtml", ctx)("A plain <point>", null);
 if (legacy !== "<li>A plain &lt;point&gt;</li>") fail("a point without evidence is a plain item: " + legacy);
 const noTexts = vm.runInContext("pointHtml", ctx)("p", Object.assign({}, ev, { texts: null }));
-if (noTexts.includes("cb-sum-para") || !noTexts.includes("open the source")) fail("a document whose text is not committed shows the fragment and the link only");
+if (noTexts.includes("cb-sum-para") || !noTexts.includes("open the source")) fail("a document whose text is not committed shows the fragments and the link only");
 
 // the click handler opens and closes the evidence box next to the point
 const box = { hidden: true };

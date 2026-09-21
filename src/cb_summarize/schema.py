@@ -10,7 +10,7 @@ OUTPUT_SCHEMA = {
     "additionalProperties": False,
     "required": ["summary", "quotes", "coverage"],
     "properties": {
-        "summary": {                                   # each point carries its evidence: the paragraph(s) that state it and one verbatim fragment of one of them
+        "summary": {                                   # each point carries its evidence: the paragraph(s) that state it and 1-3 verbatim fragments of them
             "type": "array",
             "items": {
                 "type": "object",
@@ -21,8 +21,8 @@ OUTPUT_SCHEMA = {
                     "evidence": {
                         "type": "object",
                         "additionalProperties": False,
-                        "required": ["paragraphs", "fragment"],
-                        "properties": {"paragraphs": {"type": "array", "items": {"type": "integer"}}, "fragment": {"type": "string"}},
+                        "required": ["paragraphs", "fragments"],
+                        "properties": {"paragraphs": {"type": "array", "items": {"type": "integer"}}, "fragments": {"type": "array", "items": {"type": "string"}}},
                     },
                 },
             },

@@ -10,6 +10,7 @@ from typing import Optional
 from ..cb_docs import extract as X
 from ..cb_docs import sources as S
 from ..cb_docs.http import Fetcher
+from . import turns as T
 
 MIN_CHARS = 600                                                           # anything shorter is a page without the document (a media advisory, a wrong container)
 
@@ -47,6 +48,8 @@ class Source:
     method: str
     truncated: bool
     chars_total: int
+    turns: Optional[list] = None         # a press-conference transcript: the speaker of each paragraph (turns.Turn or None), aligned with `paragraphs`; None: no speakers known
+    tags: Optional[list] = None          # what the model is told about a paragraph besides its text ("question"), aligned with `paragraphs`
 
     @property
     def chars_sent(self) -> int:
@@ -75,17 +78,25 @@ def cut(paragraphs: list, max_chars: int) -> tuple:
     return kept, True
 
 
-def from_paragraphs(paragraphs: list, method: str, max_chars: int, min_chars: int = MIN_CHARS) -> Source:
+def from_paragraphs(paragraphs: list, method: str, max_chars: int, min_chars: int = MIN_CHARS, transcript: Optional[dict] = None) -> Source:
+    """`transcript` ({"officials": surnames of the bank's members, "bold": the bold paragraphs}) turns the source into speaker turns (a press-conference transcript)."""
     paragraphs = [p for p in paragraphs if p.strip()]                          # the text is kept exactly as extracted (its sha is phase 2a's)
     text = X.to_text(paragraphs)
+    sha = X.sha256(text)
     if len(text) < min_chars:
         raise SourceError(f"only {len(text)} characters extracted: the container was not found or the page has no text", kind="no_text")
+    turns = None
+    if transcript is not None:
+        paragraphs, turns = T.segment(paragraphs, frozenset(transcript.get("officials") or ()), transcript.get("bold"))
+        text = X.to_text(paragraphs)                                           # the paragraphs sent are the turns; the hash stays that of the extraction
     sent, truncated = cut(paragraphs, max_chars)
-    return Source(sent, text, X.sha256(text), method, truncated, len(text))
+    kept = turns[:len(sent)] if turns is not None else None
+    return Source(sent, text, sha, method, truncated, len(text), kept, T.tags_of(kept))
 
 
-def load(doc: dict, fetcher: Optional[Fetcher], max_chars: int) -> Source:
-    """The source of one stored document row. Statements / introductory statements come from the store; the rest is downloaded (politely: robots.txt, 2 s / host)."""
+def load(doc: dict, fetcher: Optional[Fetcher], max_chars: int, officials: tuple = ()) -> Source:
+    """The source of one stored document row. Statements / introductory statements come from the store; the rest is downloaded (politely: robots.txt, 2 s / host).
+    `officials`: the surnames of the bank's members, to tell the bank's turns of a press conference from the journalists'."""
     if doc.get("text"):
         return from_paragraphs(doc["text"].split("\n"), "stored", max_chars, min_chars=1)
     if fetcher is None:
@@ -93,13 +104,15 @@ def load(doc: dict, fetcher: Optional[Fetcher], max_chars: int) -> Source:
     r = fetcher.get(doc["url"], conditional=False)
     if r.error:
         raise SourceError(f"{r.error} {doc['url']}")
+    is_transcript = doc["type"] == "presser_transcript"
     if doc["url"].lower().endswith(".pdf") or "pdf" in r.headers.get("Content-Type", "").lower():
-        return from_paragraphs(X.pdf_paragraphs(r.content), X.METHOD_PDF, max_chars)
+        return from_paragraphs(X.pdf_paragraphs(r.content), X.METHOD_PDF, max_chars, transcript={"officials": officials} if is_transcript else None)
     rule = rule_for(doc)
     for c in ([rule] if rule else GENERIC):
         got = X.html_paragraphs(r.text, c)
         if sum(len(p) for p in got) >= MIN_CHARS:
-            return from_paragraphs(got, X.METHOD_HTML, max_chars)
+            bold = X.html_bold_paragraphs(r.text, c) if is_transcript and doc["currency"] == "EUR" else None
+            return from_paragraphs(got, X.METHOD_HTML, max_chars, transcript={"officials": officials, "bold": bold} if is_transcript else None)
     raise SourceError("no container of the page holds the document text", kind="no_text")
 
 

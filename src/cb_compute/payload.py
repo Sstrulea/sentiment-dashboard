@@ -353,15 +353,24 @@ def redline_json(ctx: Context, ccy: str, meeting: date) -> Optional[dict]:
 SUMMARY_NOTE = "factual summary, no interpretation"
 
 
-def text_fragment(text: str) -> str:
-    """A URL text fragment (#:~:text=) that makes the browser scroll to and highlight the quote on the bank's own page. Short quotes are matched whole,
-    long ones by their first and last words; `-`, `,` and `&` are percent-encoded because they are the directive's own syntax."""
+def text_directive(text: str) -> str:
     from urllib.parse import quote
     enc = lambda t: quote(t, safe="").replace("-", "%2D")                            # noqa: E731
     words = text.split()
     if len(text) <= 120 or len(words) <= 10:
-        return "#:~:text=" + enc(text)
-    return "#:~:text=" + enc(" ".join(words[:5])) + "," + enc(" ".join(words[-5:]))
+        return enc(text)
+    return enc(" ".join(words[:5])) + "," + enc(" ".join(words[-5:]))
+
+
+def text_fragment(text: str) -> str:
+    """A URL text fragment (#:~:text=) that makes the browser scroll to and highlight the quote on the bank's own page. Short quotes are matched whole,
+    long ones by their first and last words; `-`, `,` and `&` are percent-encoded because they are the directive's own syntax."""
+    return "#:~:text=" + text_directive(text)
+
+
+def text_fragments(texts: list) -> str:
+    """Several passages in one link: #:~:text=a&text=b (the browser highlights each one it finds)."""
+    return "#:~:text=" + "&text=".join(text_directive(t) for t in texts)
 
 
 def summary_slot(ctx: Context, doc: Optional[dict]) -> dict:
@@ -390,9 +399,11 @@ def summary_json(rec: dict, text: Optional[str] = None) -> dict:
     for p in rec["summary"]:
         pts.append(p["text"] if isinstance(p, dict) else p)                              # (a summary made before the evidence existed has plain strings)
         ev = p.get("evidence") if isinstance(p, dict) else None
+        frs = None if ev is None else [{"text": f["text"], "paragraph": f["paragraph"]} for f in ev["fragments"]] if "fragments" in ev \
+            else [{"text": ev["fragment"], "paragraph": ev["paragraph"]}]                # (prompt v4: one fragment)
         evidence.append(None if ev is None else {
-            "paragraphs": ev["paragraphs"], "paragraph": ev["paragraph"], "fragment": ev["fragment"], "coverage": ev.get("coverage"),
-            "href": rec["url"] + text_fragment(ev["fragment"]) if html else rec["url"],
+            "paragraphs": ev["paragraphs"], "fragments": frs, "coverage": ev.get("coverage"),
+            "href": rec["url"] + text_fragments([f["text"] for f in frs]) if html else rec["url"],
             "texts": {str(n): paras[n - 1] for n in ev["paragraphs"]} if paras else None})
     return {"doc_id": rec["doc_id"], "type": rec["type"], "label": TYPE_LABEL.get(rec["type"], rec["type"]), "title": rec["title"], "url": rec["url"],
             "points": pts, "evidence": evidence, "changes": rec["changes_vs_previous"],

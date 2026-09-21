@@ -72,26 +72,31 @@ def test_every_point_carries_its_evidence_linked_to_the_source(summarised):
     assert len(s["evidence"]) == len(s["points"]) == 3
     for ev, want in zip(s["evidence"], GOOD_FED["summary"]):
         w = want["evidence"]
-        assert ev["paragraphs"] == w["paragraphs"] and ev["fragment"] == w["fragment"] and ev["coverage"] == 1.0
-        assert ev["paragraph"] in ev["paragraphs"] and w["fragment"] in FED_PARAS[ev["paragraph"] - 1]
+        assert ev["paragraphs"] == w["paragraphs"] and [f["text"] for f in ev["fragments"]] == w["fragments"] and ev["coverage"] == 1.0
+        assert all(f["paragraph"] in ev["paragraphs"] and f["text"] in FED_PARAS[f["paragraph"] - 1] and set(f) == {"text", "paragraph"} for f in ev["fragments"])
         assert ev["href"].startswith("https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm#:~:text=")
-        assert unquote(ev["href"].split("#:~:text=", 1)[1]).startswith(w["fragment"].split()[0])                     # the anchor is the fragment (first and last words for a long one)
+        directives = ev["href"].split("#:~:text=", 1)[1].split("&text=")
+        assert len(directives) == len(w["fragments"]) and all(unquote(d).startswith(f.split()[0]) for d, f in zip(directives, w["fragments"]))   # one directive per fragment
         assert ev["texts"] == {str(n): FED_PARAS[n - 1] for n in w["paragraphs"]}                                       # a statement's text is committed: the page can show the paragraph
-    assert s["evidence"][2]["paragraphs"] == [3, 4] and set(s["evidence"][2]["texts"]) == {"3", "4"}
+    assert s["evidence"][2]["paragraphs"] == [3, 4] and set(s["evidence"][2]["texts"]) == {"3", "4"} and len(s["evidence"][2]["fragments"]) == 2
 
 
 def test_the_paragraph_of_a_document_that_is_not_committed_is_not_in_the_json():
-    rec = {"doc_id": "USD:speech:x", "type": "speech", "format": "html", "title": "t", "url": "https://x/y.htm", "changes_vs_previous": None, "model": "m", "prompt_version": "speech-v4",
+    rec = {"doc_id": "USD:speech:x", "type": "speech", "format": "html", "title": "t", "url": "https://x/y.htm", "changes_vs_previous": None, "model": "m", "prompt_version": "speech-v5",
            "generated_at": "2026-09-21T08:00:00Z", "coverage": {"truncated": False, "paragraphs": [1]}, "quotes": [],
-           "summary": [{"text": "Waller expects inflation to fall.", "evidence": {"paragraphs": [2], "paragraph": 2, "fragment": "I expect inflation to fall as the labor market cools", "start": 5, "end": 57, "coverage": 1.0}}]}
+           "summary": [{"text": "Waller expects inflation to fall.", "evidence": {"paragraphs": [2], "coverage": 1.0, "fragments": [
+               {"text": "I expect inflation to fall as the labor market cools", "paragraph": 2, "start": 5, "end": 57}, {"text": "and I see the risks to employment as more important", "paragraph": 2, "start": 60, "end": 111}]}}]}
     j = P.summary_json(rec)
     ev = j["evidence"][0]
-    assert j["points"] == ["Waller expects inflation to fall."] and ev["texts"] is None and ev["paragraph"] == 2 and ev["href"] == "https://x/y.htm#:~:text=I%20expect%20inflation%20to%20fall%20as%20the%20labor%20market%20cools"
-    assert "start" not in ev and "end" not in ev                                                                        # offsets stay in the store
+    assert j["points"] == ["Waller expects inflation to fall."] and ev["texts"] is None and [f["paragraph"] for f in ev["fragments"]] == [2, 2]
+    assert ev["href"] == "https://x/y.htm#:~:text=I%20expect%20inflation%20to%20fall%20as%20the%20labor%20market%20cools&text=and%20I%20see%20the%20risks%20to%20employment%20as%20more%20important"
+    assert all(set(f) == {"text", "paragraph"} for f in ev["fragments"])                                                # offsets stay in the store
     pdf = P.summary_json(dict(rec, format="pdf", url="https://x/y.pdf"))
     assert pdf["evidence"][0]["href"] == "https://x/y.pdf"                                                              # a PDF has no text fragment
     legacy = P.summary_json(dict(rec, summary=["a point of a summary made before the evidence existed"]))
     assert legacy["points"] == ["a point of a summary made before the evidence existed"] and legacy["evidence"] == [None]
+    v4 = P.summary_json(dict(rec, summary=[{"text": "p", "evidence": {"paragraphs": [2], "paragraph": 2, "fragment": "I expect inflation to fall as the labor market cools", "start": 5, "end": 57, "coverage": 1.0}}]))
+    assert v4["evidence"][0]["fragments"] == [{"text": "I expect inflation to fall as the labor market cools", "paragraph": 2}]      # a summary of prompt v4 still shows
 
 
 def test_every_quote_links_to_the_source_with_a_text_fragment(summarised):
@@ -114,7 +119,7 @@ def test_the_text_fragment_of_a_long_quote_uses_its_first_and_last_words():
 
 
 def test_a_pdf_source_has_no_text_fragment():
-    rec = {"doc_id": "x", "type": "minutes", "format": "pdf", "title": "t", "url": "https://x/y.pdf", "summary": [{"text": "a", "evidence": {"paragraphs": [1], "paragraph": 1, "fragment": "some quoted words here and there", "start": 0, "end": 22, "coverage": 1.0}}], "changes_vs_previous": None, "model": "m",
+    rec = {"doc_id": "x", "type": "minutes", "format": "pdf", "title": "t", "url": "https://x/y.pdf", "summary": [{"text": "a", "evidence": {"paragraphs": [1], "fragments": [{"text": "some quoted words here and there", "paragraph": 1, "start": 0, "end": 22}], "coverage": 1.0}}], "changes_vs_previous": None, "model": "m",
            "prompt_version": "minutes-v1", "generated_at": "2026-09-21T08:00:00Z", "coverage": {"truncated": False, "paragraphs": [1]},
            "quotes": [{"text": "some quoted words here", "paragraph": 1, "start": 0, "end": 22}]}
     assert P.summary_json(rec)["quotes"][0]["href"] == "https://x/y.pdf"
@@ -191,7 +196,7 @@ def test_a_point_shows_its_evidence_on_hover_and_click_and_links_to_the_source_t
     assert r.returncode == 0 and "point evidence ok" in r.stdout, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
     for cls in (".cb-sum-point", ".cb-sum-evidence", ".cb-sum-para mark", ".cb-sum-frag"):
         assert cls in CSS, cls
-    for needle in ("function pointHtml", "function markFragment", "cb-sum-evidence", 'aria-expanded', "s.evidence && s.evidence[i]"):
+    for needle in ("function pointHtml", "function markFragments", "cb-sum-evidence", 'aria-expanded', "s.evidence && s.evidence[i]"):
         assert needle in JS, needle
 
 

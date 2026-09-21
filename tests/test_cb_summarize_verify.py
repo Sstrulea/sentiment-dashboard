@@ -20,7 +20,8 @@ def rules(**over):
     """The verifier's rules as the config sets them; a test overrides what it is about."""
     r = dict(points=CFG.summary_points, point_chars=CFG.point_chars, quotes=CFG.quotes, quote_chars=CFG.quote_chars, total_chars=CFG.summary_total_chars,
              blocked=CFG.blocked_words, attributed=CFG.attributed_words, subjects=CFG.attribution_subjects, evidence_paragraphs=CFG.evidence_paragraphs,
-             fragment_words=CFG.fragment_words, min_support=CFG.min_support, attribution_words=CFG.attribution_words)
+             fragments=CFG.fragments, fragment_words=CFG.fragment_words, fragment_shared=CFG.fragment_shared, min_support=CFG.min_support,
+             attribution_words=CFG.attribution_words, pronouns=CFG.attribution_pronouns, negations=CFG.negations)
     r.update(over)
     return r
 
@@ -284,8 +285,8 @@ def test_blocked_words_are_whole_words_and_a_quote_may_carry_the_banks_own_words
 
 # --- grounding: every point cites paragraphs and a verbatim fragment, and the paragraphs must SAY what the point says -----------------------------------
 
-def point(text, paragraphs, fragment):
-    return {"text": text, "evidence": {"paragraphs": paragraphs, "fragment": fragment}}
+def point(text, paragraphs, *fragments):
+    return {"text": text, "evidence": {"paragraphs": paragraphs, "fragments": list(fragments)}}
 
 
 def grounded(*pts, paras=None, speakers=(), **over):
@@ -305,26 +306,31 @@ def test_a_faithful_paraphrase_is_accepted_with_its_evidence_recorded():
     r = grounded(P_VOTE, P_RATE, para)
     assert r.ok, r.errors
     ev = r.points[2]["evidence"]
-    assert ev["paragraphs"] == [3] and ev["paragraph"] == 3 and ev["coverage"] == 1.0
+    assert ev["paragraphs"] == [3] and ev["fragments"][0]["paragraph"] == 3 and ev["coverage"] == 1.0
     src = V.source_text(PARAS)
-    assert src[ev["start"]:ev["end"]] == ev["fragment"] == "geopolitical developments, domestic spending has been resilient."
+    f = ev["fragments"][0]
+    assert src[f["start"]:f["end"]] == f["text"] == "geopolitical developments, domestic spending has been resilient."
     assert r.summary[2] == para["text"] and V.verify_stored({"summary": r.points, "quotes": r.quotes, "numbers": r.numbers}, PARAS) == []
 
 
 def test_an_unsupported_claim_without_numbers_or_forbidden_words_is_refused():
-    claim = point("The Committee will begin buying government bonds and mortgage securities at a faster pace.", [2], P_RATE["evidence"]["fragment"])   # a real fragment, a false point
+    claim = point("The Committee will begin buying government bonds and mortgage securities at a faster pace.", [2], P_RATE["evidence"]["fragments"][0])   # a real fragment, a false point
     r = grounded(P_VOTE, P_RATE, claim)
-    assert not r.ok and len(r.errors) == 1
-    e = r.errors[0]
+    assert not r.ok and len(r.errors) == 2
+    e = next(x for x in r.errors if "is not supported" in x)
     assert "summary point 3 is not supported by the paragraph(s) it cites [2]" in e and "not found:" in e and "'bonds'" in e and "'mortgage'" in e
+    assert any("evidence fragment 1 of summary point 3 has 0 content word(s) in common with the point" in x for x in r.errors)                # and the fragment is filler
+    stated = point("The Committee will begin buying government bonds at a faster pace and raise the federal funds rate.", [2], "raise the target range for the federal funds rate by 1/4 percentage point")
+    r = grounded(P_VOTE, P_RATE, stated)                                                                                 # the fragment fits, the point still claims more than the paragraph says
+    assert not r.ok and len(r.errors) == 1 and "is not supported" in r.errors[0]
 
 
 def test_the_evidence_fragment_must_be_verbatim_in_a_cited_paragraph():
-    good = P_RATE["evidence"]["fragment"]
+    good = P_RATE["evidence"]["fragments"][0]
     for altered in (good.replace("percent", "per cent"), good.replace("raise", "lower"), good.replace("target range", "target  range"), good.replace("raise", "Raise"),
                     good.replace("federal funds rate by 1/4", "federal funds rate by one quarter of a")):
         r = grounded(P_VOTE, point(GOOD_TEXTS[1], [2], altered), P_ACT)
-        assert not r.ok and any("the evidence fragment of summary point 2 is not verbatim in the paragraph(s) it cites [2]" in e and "character for character" in e for e in r.errors), altered
+        assert not r.ok and any("evidence fragment 1 of summary point 2 is not verbatim in the paragraph(s) it cites [2]" in e and "character for character" in e for e in r.errors), altered
 
 
 def test_a_fragment_from_an_uncited_paragraph_is_refused_and_says_which_paragraph_holds_it():
@@ -333,7 +339,7 @@ def test_a_fragment_from_an_uncited_paragraph_is_refused_and_says_which_paragrap
     two = point("Economic activity is expanding at a solid pace and inflation remains elevated.", [3, 4], "Economic activity is expanding at a solid pace.")
     assert grounded(P_VOTE, P_RATE, two).ok                                                                            # cited: the fragment may be in any of them
     second = grounded(P_VOTE, P_RATE, point("Today's policy action will support a timelier return to the 2 percent goal.", [3, 4], "Today's policy action will support a timelier return"))
-    assert second.ok and second.points[2]["evidence"]["paragraph"] == 4 and second.points[2]["evidence"]["paragraphs"] == [3, 4]     # the paragraph that holds it, not the first cited
+    assert second.ok and second.points[2]["evidence"]["fragments"][0]["paragraph"] == 4 and second.points[2]["evidence"]["paragraphs"] == [3, 4]     # the paragraph that holds it, not the first cited
 
 
 def test_a_fragment_may_not_run_across_two_paragraphs():
@@ -410,18 +416,23 @@ def test_the_threshold_is_inclusive_exactly_at_the_share():
 
 
 @pytest.mark.parametrize("ev, why", [
-    ({"paragraphs": [], "fragment": "Economic activity is expanding at a solid pace."}, "'evidence'"),
-    ({"paragraphs": [1, 2, 3, 4], "fragment": "Economic activity is expanding at a solid pace."}, "cites 4 paragraphs as evidence; allowed 1-3"),
-    ({"paragraphs": [9], "fragment": "Economic activity is expanding at a solid pace."}, "outside 1-4"),
-    ({"paragraphs": [0], "fragment": "Economic activity is expanding at a solid pace."}, "outside 1-4"),
-    ({"paragraphs": ["3"], "fragment": "Economic activity is expanding at a solid pace."}, "'evidence'"),
-    ({"paragraphs": [True], "fragment": "Economic activity is expanding at a solid pace."}, "'evidence'"),
-    ({"paragraphs": 3, "fragment": "Economic activity is expanding at a solid pace."}, "'evidence'"),
-    ({"paragraphs": [3], "fragment": 5}, "'evidence'"),
+    ({"paragraphs": [], "fragments": ["Economic activity is expanding at a solid pace."]}, "'evidence'"),
+    ({"paragraphs": [1, 2, 3, 4], "fragments": ["Economic activity is expanding at a solid pace."]}, "cites 4 paragraphs as evidence; allowed 1-3"),
+    ({"paragraphs": [9], "fragments": ["Economic activity is expanding at a solid pace."]}, "outside 1-4"),
+    ({"paragraphs": [0], "fragments": ["Economic activity is expanding at a solid pace."]}, "outside 1-4"),
+    ({"paragraphs": ["3"], "fragments": ["Economic activity is expanding at a solid pace."]}, "'evidence'"),
+    ({"paragraphs": [True], "fragments": ["Economic activity is expanding at a solid pace."]}, "'evidence'"),
+    ({"paragraphs": 3, "fragments": ["Economic activity is expanding at a solid pace."]}, "'evidence'"),
+    ({"paragraphs": [3], "fragments": [5]}, "'evidence'"),
+    ({"paragraphs": [3], "fragments": "Economic activity is expanding at a solid pace."}, "'evidence'"),                                                                  # a string, not a list
+    ({"paragraphs": [3], "fragment": "Economic activity is expanding at a solid pace."}, "'evidence'"),                                                                   # the single-fragment shape of prompt v4
     ({"paragraphs": [3]}, "'evidence'"),
-    ({"fragment": "Economic activity is expanding at a solid pace."}, "'evidence'"),
-    ({"paragraphs": [3], "fragment": "Economic activity is expanding"}, "has 4 words; allowed 5-40"),
-    ({"paragraphs": [3], "fragment": ""}, "has 0 words; allowed 5-40"),
+    ({"fragments": ["Economic activity is expanding at a solid pace."]}, "'evidence'"),
+    ({"paragraphs": [3], "fragments": []}, "has 0 evidence fragments; allowed 1-3"),
+    ({"paragraphs": [3, 4], "fragments": ["Economic activity is expanding at a solid pace.", "Inflation remains elevated. Today's policy action will support", "Today's policy action will support a timelier return", "The Committee will deliver price stability."]},
+     "has 4 evidence fragments; allowed 1-3"),
+    ({"paragraphs": [3], "fragments": ["Economic activity is expanding"]}, "has 4 words; allowed 5-40"),
+    ({"paragraphs": [3], "fragments": [""]}, "has 0 words; allowed 5-40"),
     (None, "'evidence'"),
     ("Economic activity is expanding at a solid pace.", "'evidence'"),
 ])
@@ -445,21 +456,21 @@ def test_the_evidence_limits_are_inclusive_and_repeated_paragraphs_count_once():
 
 
 def test_every_point_is_checked_and_each_error_names_its_point():
-    bad_a = point("The Committee will cut the discount window rate sharply.", [2], "raise the target range for the federal funds rate by 1/4 percentage point")
+    bad_a = point("The Committee will cut the discount window rate sharply for the federal funds market.", [2], "raise the target range for the federal funds rate by 1/4 percentage point")
     bad_b = point(P_ACT["text"], [3], "Economic activity is expanding at a fast pace overall")
     r = grounded(bad_a, P_RATE, bad_b)
-    assert not r.ok and any("summary point 1 is not supported" in e for e in r.errors) and any("evidence fragment of summary point 3" in e for e in r.errors)
+    assert not r.ok and any("summary point 1 is not supported" in e for e in r.errors) and any("evidence fragment 1 of summary point 3" in e for e in r.errors)
     assert not any("point 2" in e for e in r.errors)
 
 
 def test_a_number_of_a_point_must_be_in_the_paragraphs_it_cites_not_only_in_the_document():
-    right = point("The Committee decided to raise the target range to 3-3/4 to 4 percent.", [2], P_RATE["evidence"]["fragment"])
+    right = point("The Committee decided to raise the target range to 3-3/4 to 4 percent.", [2], P_RATE["evidence"]["fragments"][0])
     assert grounded(P_VOTE, right, P_ACT).ok
     wrong = point("Today's policy action will support a timelier return to the Committee's 4 percent goal.", [4], "Today's policy action will support a timelier return")   # the 4 percent is in paragraph 2
     r = grounded(P_VOTE, wrong, P_ACT)
     assert not r.ok and any("the number '4 percent' of summary point 2 is in the document but not in the paragraph(s) it cites [4]: cite the paragraph that states it" in e for e in r.errors)
     assert not any("does not appear in the document" in e for e in r.errors)                                             # one message per number: the document does have it
-    invented = point("The Committee decided to raise the target range to 4.5 percent.", [2], P_RATE["evidence"]["fragment"])
+    invented = point("The Committee decided to raise the target range to 4.5 percent.", [2], P_RATE["evidence"]["fragments"][0])
     r = grounded(P_VOTE, invented, P_ACT)
     assert not r.ok and any("'4.5 percent' of summary point 2 does not appear in the document" in e for e in r.errors) and not any("but not in the paragraph" in e for e in r.errors)
     both = point("The Committee approved the statement by a 12 – 0 vote and decided to raise the target range to 4 percent.", [1, 2], "approved the following statement for release by a 12 \u2013 0 vote:")
@@ -469,11 +480,15 @@ def test_a_number_of_a_point_must_be_in_the_paragraphs_it_cites_not_only_in_the_
 def test_a_stored_evidence_offset_that_no_longer_matches_is_detected():
     r = grounded(P_VOTE, P_RATE, P_ACT)
     assert r.ok
-    pts = [dict(p, evidence=dict(p["evidence"])) for p in r.points]
-    pts[1]["evidence"]["start"] += 2
+    pts = [dict(p, evidence=dict(p["evidence"], fragments=[dict(f) for f in p["evidence"]["fragments"]])) for p in r.points]
+    pts[1]["evidence"]["fragments"][0]["start"] += 2
     errs = V.verify_stored({"summary": pts}, PARAS)
     assert len(errs) == 1 and "point 2" in errs[0] and "evidence fragment" in errs[0]
     assert V.verify_stored({"summary": ["a legacy plain-string point"]}, PARAS) == []                                  # v3 records have none
+    legacy = {"paragraphs": [2], "paragraph": 2, "fragment": P_RATE["evidence"]["fragments"][0], "start": r.points[1]["evidence"]["fragments"][0]["start"],
+              "end": r.points[1]["evidence"]["fragments"][0]["end"]}
+    assert V.verify_stored({"summary": [{"text": "x", "evidence": legacy}]}, PARAS) == []                              # a v4 record: one fragment, its offsets in the evidence itself
+    assert len(V.verify_stored({"summary": [{"text": "x", "evidence": dict(legacy, start=legacy["start"] + 1)}]}, PARAS)) == 1
 
 
 # --- vocabulary: a named speaker of the document may be the attribution; hawkish & co stay refused ----------------------------------------------------

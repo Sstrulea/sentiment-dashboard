@@ -492,7 +492,8 @@ src/cb_summarize/client.py      o interfață (`complete(system, messages, schem
 src/cb_summarize/schema.py      contractul de ieșire ca JSON schema strictă (structured outputs)
 src/cb_summarize/prompts/       system.md + statement / transcript / minutes / speech .md, fiecare cu `prompt_version:`; versions.json fixează sha256 al fiecărui prompt
 src/cb_summarize/source.py      textul unui document: comunicatele vin din store; restul se descarcă la nevoie (extragerea din 2a, sha identic) și NU se comit
-src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate / atribuite (pe familii de forme, vorbitori numiți), grounding pe fiecare punct, coverage
+src/cb_summarize/verify.py      verificarea (pură): JSON, forma, lungimi, citate verbatim, numere, cuvinte blocate / atribuite (pe familii de forme, vorbitori numiți, pronume), grounding pe fiecare punct (fragmente, sprijin, date / nume proprii, negație, replica vorbitorului), coverage
+src/cb_summarize/turns.py       replicile unui transcript de conferință (etichete Fed în text, paragrafe-nume RBA, întrebările ECB în bold): cine spune fiecare paragraf; nimic altceva din document nu se schimbă
 src/cb_summarize/changes.py     changes_vs_previous din redline-ul existent (cuvintele scoase / adăugate, per paragraf) — fără model, fără interpretare
 src/cb_summarize/run.py         selecția, plafoanele, apelul, reîncercarea unică, marcajul validation_failed, idempotența; `estimate()` = dry run
 src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (partiții lunare, sortate, octeți deterministe) + failures.json
@@ -515,15 +516,26 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   -ed / -ing / -ies, literă dublată, -e final), aplicate ambelor părți; „-ly” nu se taie la cuvintele din vocabular. Verificarea se face doar în puncte, nu în citate (un citat e
   cuvântul băncii). **`statement-v4` / `transcript-v4` / `minutes-v4` / `speech-v4`** (`versions.json` păstrează v1–v3). Lungimi: 3–6 puncte de 20–400 caractere, ≤ 1800 în total, citate 15–500 caractere.
   Coverage: paragrafe existente.
-- **Grounding pe fiecare punct** (v4). Fiecare punct poartă `evidence`: 1–3 paragrafe citate + un fragment verbatim de 5–40 cuvinte dintr-unul dintre ele. Verificatorul cere: (a) fragmentul
-  e verbatim (caractere exacte) într-un paragraf citat — dacă e într-unul necitat, mesajul spune care; (b) **≥ 85 % din cuvintele-conținut ale punctului se găsesc în paragrafele citate**
-  (config `grounding.min_support`). Cuvânt-conținut = alfabetic, ≥ 3 litere, nu stopword (listă fixă în `verify.py`), nu vocabular de atribuire (`grounding.attribution_words`: states, said, noted,
-  reported … + subiectele băncii + numele vorbitorilor). Cuvintele se potrivesc pe forme (stem minimal, fără dependențe), se numără distinct, iar ce lipsește se listează în feedback
-  („not found: 'bonds', 'mortgage'”). Asta prinde afirmația nesusținută **fără numere și fără cuvinte interzise** (ex.: „The Committee will begin buying government bonds …” cu un fragment real).
-  Picare ⇒ aceeași reîncercare unică, cu motivul; a doua picare ⇒ `validation_failed` cu motivul. **Numerele** unui punct trebuie să fie și ele în paragrafele citate (nu doar oriunde în document). **Limite cunoscute:** e o
-  verificare lexicală, nu semantică — o negație („does not remain elevated”) sau o schimbare de subiect cu aceleași cuvinte trece; se prind doar cuvintele care nu sunt în paragrafele citate, iar
-  la 85 % un punct de ~10 cuvinte-conținut poate purta unul nesuținut (o dată, o lună, un nume); fragmentul e unul singur per punct. Un pronume („he expects”) nu e atribuire: trebuie numele
-  sau un subiect din listă în aceeași propoziție. Se completează cu citatele verbatim și cu numerele.
+- **Grounding pe fiecare punct** (v4, întărit în v5). Fiecare punct poartă `evidence`: 1–3 paragrafe citate + **1–3 fragmente** verbatim de 5–40 cuvinte (câte unul per afirmație; promptul cere o
+  afirmație principală per punct). Verificatorul cere: (a) fiecare fragment e verbatim (caractere exacte) într-un paragraf citat — dacă e într-unul necitat, mesajul spune care — și are cel puțin
+  2 cuvinte-conținut comune cu punctul (fără fragmente de umplutură; `grounding.fragment_shared_words`); (b) **≥ 85 % din cuvintele-conținut ale punctului se găsesc în paragrafele citate**
+  (`grounding.min_support`). Cuvânt-conținut = alfabetic, ≥ 3 litere, nu stopword (listă fixă în `verify.py`), nu vocabular de atribuire (`grounding.attribution_words`: states, said, noted,
+  reported … + subiectele băncii + numele băncii + numele vorbitorilor). Cuvintele se potrivesc pe forme (stem minimal, fără dependențe), se numără distinct, iar ce lipsește se listează în feedback
+  („not found: 'bonds', 'mortgage'”). Asta prinde afirmația nesusținută **fără numere și fără cuvinte interzise**. Peste pragul de 85 %, cu aceeași reîncercare unică și același `validation_failed`:
+  - **Clase stricte, tratate ca numerele** (v5): **datele, lunile, zilele săptămânii, zilele ordinale (16th), acronimele și cuvintele cu majusculă care nu încep o propoziție (persoane, instituții, locuri)**
+    dintr-un punct trebuie să apară, așa cum sunt scrise, în paragrafele citate — fără date derivate („since July” din „seven weeks ago” ⇒ respins). Se exceptează numele băncii proprii, subiectele
+    de atribuire și vorbitorii (sunt atribuirea, nu o afirmație); „U.S.” = „US”; „May” e lună doar în context. Anii și celelalte numere: verificați ca numere, **și în paragrafele citate** (nu oriunde în document).
+  - **Negația** (v5): dacă punctul are o negație (not, no, never, n't, without, neither / nor, cannot; „not only” nu e) și propoziția cea mai apropiată din paragrafele citate (cele mai multe
+    cuvinte-conținut comune; la egalitate se ia cea care se potrivește) nu are, sau invers ⇒ respins („never turn a statement into its opposite”).
+  - **Replica vorbitorului, în transcripturi** (v5): transcriptul e segmentat pe replici după etichetele din sursă (`turns.py`; Fed: etichete cu majuscule în text, tăiate la fiecare etichetă, antetul
+    de pagină scos; RBA: paragraf-nume; ECB: întrebările sunt paragrafele în bold, fără etichete). Un punct care numește un vorbitor (prima persoană numită; prenumele ajunge, numele de familie trebuie să
+    fie pe etichetă) se sprijină doar pe paragrafe din replicile lui; un punct care nu numește pe nimeni se sprijină doar pe replicile băncii — niciodată pe întrebarea unui jurnalist sau pe replica altcuiva.
+    Modelul primește paragrafele-întrebare marcate „(question)”. Hash-ul documentului rămâne cel al extragerii din 2a (doar paragrafele trimise sunt replicile).
+  - **Pronumele** (v5): he / she / they atribuie un cuvânt din vocabular („Waller says X; he expects Y”) dacă banca sau vorbitorul e numit mai devreme în același punct și pronumele e în aceeași propoziție
+    cu cuvântul; „it” nu e pe listă.
+  **Limite cunoscute:** e o verificare lexicală, nu semantică — o schimbare de subiect cu aceleași cuvinte trece; la 85 % un punct de ~10 cuvinte-conținut poate purta un cuvânt nesuținut care nu e dată / nume;
+  numele propriu la începutul propoziției nu e verificat ca nume (rămâne la pragul de 85 %); un transcript fără etichete detectabile nu are regula vorbitorului (ECB: se folosește bold-ul);
+  negația se compară pe propoziția cea mai apropiată, nu pe fiecare clauză. Se completează cu citatele verbatim și cu numerele.
 - **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
   `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
   reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).

@@ -48,6 +48,28 @@ def html_paragraphs(html: str, rule: dict) -> list:
     return [p for p in paras if not any(p.startswith(b) for b in BOILERPLATE) and not FURNITURE.match(p)]
 
 
+def html_bold_paragraphs(html: str, rule: dict) -> set:
+    """The paragraphs of the container that are set entirely in bold (<strong> / <b>): the ECB marks a journalist's question this way and has no speaker label."""
+    from ..cb_probe import _SKIP, _node_text
+    node = _pick(_dom(html), *rule["sel"])
+    out: set = set()
+
+    def walk(x) -> None:
+        if isinstance(x, str) or x.tag in _SKIP:
+            return
+        if x.tag in ("p", "li"):
+            whole = _norm(_node_text(x))
+            bold = _norm("".join(_node_text(k) for k in x.kids if not isinstance(k, str) and k.tag in ("strong", "b")))
+            if whole and bold == whole:
+                out.add(whole)
+            return
+        for k in x.kids:
+            walk(k)
+    if node is not None:
+        walk(node)
+    return out
+
+
 # ---- PDF ---------------------------------------------------------------------------------------------------------------------
 
 def normalize_pdf_text(text: str) -> str:

@@ -31,8 +31,8 @@ DROP = V.forms_of_text(" ".join(_CFG.attribution_words + _CFG.attribution_subjec
 
 
 def best_evidence(text: str, paras: list) -> dict:
-    """Evidence for a point written in a test: the paragraphs (at most 3) that cover most of its content words, and a verbatim window of 8 words from the first of
-    them, starting where the point's first content word occurs. Tests about other checks use it so that grounding does not get in their way."""
+    """Evidence for a point written in a test: the paragraphs (at most 3) that cover most of its content words, and one verbatim window of 8 words of the first of
+    them - the one that shares most content words with the point. Tests about other checks use it so that grounding does not get in their way."""
     words = V.content_words(text, DROP)
     order = sorted(range(len(paras)), key=lambda k: -len([w for w in set(words) if V.forms(w) & V.forms_of_text(paras[k])]))
     chosen = order[:1]
@@ -41,15 +41,14 @@ def best_evidence(text: str, paras: list) -> dict:
             break
         chosen.append(k)
     body = paras[chosen[0]]
-    m = re.search(r"\S+(?:\s+\S+){4,7}", body)
-    at = 0
-    for w in words:
-        hit = re.search(r"\b" + re.escape(w[:5]), body, flags=re.I)
-        if hit:
-            at = hit.start()
-            break
-    frag = re.match(r"\S+(?:\s+\S+){4,7}", body[at:]) or m
-    return {"paragraphs": [c + 1 for c in chosen], "fragment": frag.group(0) if frag else body}
+    toks = body.split()
+    best, top = " ".join(toks[:8]), -1
+    for at in range(0, max(1, len(toks) - 7)):
+        win = " ".join(toks[at:at + 8])
+        n = len([w for w in set(words) if V.forms(w) & V.forms_of_text(win)])
+        if n > top:
+            best, top = win, n
+    return {"paragraphs": [c + 1 for c in chosen], "fragments": [best]}
 
 
 def wrap_points(points: list, paras: list) -> list:
@@ -67,11 +66,11 @@ FED_PARAS = ["The Federal Open Market Committee approved the following statement
 GOOD_FED = {
     "summary": [
         {"text": "The Federal Open Market Committee approved the statement by a 12 \u2013 0 vote.",
-         "evidence": {"paragraphs": [1], "fragment": "approved the following statement for release by a 12 \u2013 0 vote:"}},
+         "evidence": {"paragraphs": [1], "fragments": ["approved the following statement for release by a 12 \u2013 0 vote:"]}},
         {"text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent.",
-         "evidence": {"paragraphs": [2], "fragment": "raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"}},
+         "evidence": {"paragraphs": [2], "fragments": ["raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"]}},
         {"text": "The Committee states that economic activity is expanding at a solid pace and that inflation remains elevated.",
-         "evidence": {"paragraphs": [3, 4], "fragment": "Economic activity is expanding at a solid pace."}},
+         "evidence": {"paragraphs": [3, 4], "fragments": ["Economic activity is expanding at a solid pace.", "Inflation remains elevated. Today's policy action will support"]}},
     ],
     "quotes": [
         {"paragraph": 2, "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"},
@@ -96,39 +95,44 @@ def variant(**changes) -> dict:
 
 
 def paragraphs_of(messages: list) -> list:
-    """The numbered paragraphs of the FIRST user message ("[n] text" lines after "Paragraphs:")."""
+    """The numbered paragraphs of the FIRST user message ("[n] text" lines after "Paragraphs:"), without the "(question)" mark of a journalist's turn."""
+    return [text for _n, _tag, text in tagged_paragraphs(messages)]
+
+
+def tagged_paragraphs(messages: list) -> list:
     body = messages[0]["content"].split("Paragraphs:\n", 1)[1]
-    return [m.group(2) for m in re.finditer(r"^\[(\d+)\] (.*)$", body, flags=re.M)]
+    return [(int(m.group(1)), m.group(2), m.group(3)) for m in re.finditer(r"^\[(\d+)\] (?:\((\w+)\) )?(.*)$", body, flags=re.M)]
 
 
 VOCAB = V.forms_of_text(" ".join(_CFG.attributed_words), adverbs=False)
 BLOCKED_RX = V.blocked_regex(_CFG.blocked_words)
+NEG_RX = V.negation_regex(_CFG.negations)
 
 
 def clean_window(body: str, size: int = 10):
-    """The first `size` words of a paragraph that use no word of the soft vocabulary and no blocked word (a real document is full of "likely" and "expects";
-    the generic output must not depend on which one it is shown). None when the paragraph has no such window."""
-    toks = body.split()
-    for at in range(0, max(1, len(toks) - size + 1)):
-        w = toks[at:at + size]
-        text = " ".join(w)
-        if len(w) >= 5 and not (V.forms_of_text(text, adverbs=False) & VOCAB) and not BLOCKED_RX.search(text):
-            return at, w
+    """The first `size` words of a sentence of the paragraph that has no negation, no word of the soft vocabulary and no blocked word (a real document is full of
+    "likely", "expects" and "not"; the generic output must not depend on which one it is shown). None when the paragraph has no such sentence."""
+    for sentence in (x.strip() for x in V._SENTENCE.split(body)):
+        toks = sentence.split()[:size]
+        text = " ".join(toks)
+        if len(toks) >= 5 and not V.has_negation(sentence, NEG_RX) and not (V.forms_of_text(text, adverbs=False) & VOCAB) and not BLOCKED_RX.search(text) \
+                and not re.search(r"[.!?;:]\s", text):
+            return text
     return None
 
 
 def generic_output(messages: list) -> str:
-    """A valid output for whatever document is shown: three points that say "The Committee says <ten words of one of its paragraphs>" (so the evidence is verbatim and
-    fully covered), the opening of the first substantial paragraph as the one quote. No direction words, no soft words."""
-    paras = paragraphs_of(messages)
-    big = [k for k, p in enumerate(paras) if len(p) >= 80 and clean_window(p)] or [k for k, p in enumerate(paras) if clean_window(p)] or list(range(len(paras)))
-    picks = [big[n % len(big)] for n in range(3)]
+    """A valid output for whatever document is shown: three points that say "The Committee says <ten words that open a sentence of one of its paragraphs>" (so the
+    evidence is verbatim and fully covered), the opening of the first substantial paragraph as the one quote. A journalist's question is never used. No direction words,
+    no soft words, no negation."""
+    paras = [(n, text) for n, tag, text in tagged_paragraphs(messages) if tag != "question"]
+    usable = [(n, text) for n, text in paras if len(text) >= 80 and clean_window(text)] or [(n, text) for n, text in paras if clean_window(text)] or paras
+    picks = [usable[k % len(usable)] for k in range(3)]
     points = []
-    for k in picks:
-        at, w = clean_window(paras[k]) or (0, paras[k].split()[:10])
-        frag = " ".join(w[:8])
-        points.append({"text": "The Committee says " + " ".join(w), "evidence": {"paragraphs": [k + 1], "fragment": frag}})
-    return dumps({"summary": points, "quotes": [{"paragraph": picks[0] + 1, "text": paras[picks[0]][:40]}], "coverage": sorted({k + 1 for k in picks})})
+    for n, body in picks:
+        win = clean_window(body) or " ".join(body.split()[:10])
+        points.append({"text": "The Committee says " + win, "evidence": {"paragraphs": [n], "fragments": [win]}})
+    return dumps({"summary": points, "quotes": [{"paragraph": picks[0][0], "text": picks[0][1][:40]}], "coverage": sorted({n for n, _ in picks})})
 
 
 def responder_generic(system: str, messages: list) -> str:

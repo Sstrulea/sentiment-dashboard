@@ -211,14 +211,16 @@ def check_quote(q, paragraphs: list, starts: list, i: int, lim: tuple) -> tuple:
     return {"paragraph": para, "text": text, "start": start, "end": start + len(text)}, []
 
 
-def check_attributed(points: list, src: str, words: tuple, subjects: tuple, speakers: tuple = ()) -> list:
+def check_attributed(points: list, src: str, words: tuple, subjects: tuple, speakers: tuple = (), pronouns: tuple = ()) -> list:
     """likely / expect(s) / signal(s) / suggest(s) (`words`): a bank writes them all the time and reporting that is not an opinion, so a summary point may use one
-    ONLY when (1) the document itself uses that word - in any of its forms: "I expect" in a speech allows "Waller expects" - and (2) the point attributes it to the
-    bank or to a named speaker - one of `subjects` ("The Committee", "The SNB", "the minutes" ...) or a name of `speakers` (the surname, with or without a title:
-    "Chair Warsh", "Waller") comes earlier in the same sentence of the point. Never in the summary's own voice."""
+    ONLY when (1) the document itself uses that word - in any of its forms: "I expect" in a speech allows "Waller expects" - and (2) the point attributes it: one of
+    `subjects` ("The Committee", "The SNB", "the minutes" ...) or a name of `speakers` (the surname, with or without a title) comes earlier in the same sentence, or
+    - a pronoun of `pronouns` (he / she / they) comes earlier in the sentence and the bank or the speaker is named earlier in the same POINT ("Waller says X; he
+    expects Y"). Never in the summary's own voice."""
     if not words:
         return []
     rx, subj = blocked_regex(words), blocked_regex(tuple(subjects) + tuple(speakers))
+    pron = blocked_regex(pronouns) if pronouns else None
     in_source = forms_of_text(src, adverbs=False)
     errors = []
     for i, s in enumerate(points, 1):
@@ -228,17 +230,148 @@ def check_attributed(points: list, src: str, words: tuple, subjects: tuple, spea
                 errors.append(f"the word '{w}' of summary point {i} is not in the document: only a word the document itself uses (in any of its forms) may appear, and then attributed to the bank or to a named speaker")
                 continue
             sentence_start = max([s.rfind(c, 0, m.start()) for c in ".!?;:"] + [-1]) + 1
-            if not subj.search(s[sentence_start:m.start()]):
-                errors.append(f"the word '{w}' of summary point {i} is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee {w} ...' (never in your own voice)")
+            if subj.search(s[sentence_start:m.start()]):
+                continue
+            if pron is not None and pron.search(s[sentence_start:m.start()]) and subj.search(s[:m.start()]):
+                continue
+            errors.append(f"the word '{w}' of summary point {i} is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee {w} ...' (never in your own voice)")
     return errors
 
 
-def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tuple, lim_words: tuple, min_share: float, drop_forms: set) -> tuple:
-    """(evidence record, errors) for one summary point {text, evidence: {paragraphs: [1-3 numbers], fragment: 5-40 words}}: the fragment is verbatim in one of the
-    cited paragraphs (its offsets are then derived), and at least `min_share` of the point's content words are found in the cited paragraphs."""
+# ---- strict classes: dates, months, days, years and proper names come from the cited paragraphs, never derived ---------------------------------------------
+
+MONTHS = frozenset("january february march april may june july august september october november december".split())
+WEEKDAYS = frozenset("monday tuesday wednesday thursday friday saturday sunday".split())
+TITLES = frozenset("chair chairman chairwoman chairperson governor president vice deputy senior mr ms mrs dr minister member".split())
+CAPITALISED = re.compile(r"(?<![^\W\d_])([A-ZÀ-ÖØ-Ý][^\W\d_]+)")
+ACRONYM = re.compile(r"(?<![^\W_])([A-Z]{2,})(?![^\W_])")
+ORDINAL = re.compile(r"(?<!\w)(\d{1,2}(?:st|nd|rd|th))(?!\w)", re.I)
+
+
+def _dots_out(text: str) -> str:
+    """An acronym is one word however it is written: "U.S." -> "US"."""
+    return re.sub(r"\b(?:[A-Za-z]\.){2,}", lambda m: m.group(0).replace(".", ""), text)
+
+
+def _starts_sentence(text: str, pos: int) -> bool:
+    return re.search(r"(?:^|[.!?:])\s*[\"“‘'(\[]?\s*$", text[:pos]) is not None
+
+
+def strict_tokens(text: str, exclude: set) -> list:
+    """The words of a point that must be in the paragraphs it cites, as written: months and weekdays (in any case; the month of "May" only where it is one), ordinal days
+    (16th), acronyms and the capitalised words that are not the first of a sentence (persons, institutions, places) - except the bank and the speakers, whose names
+    are the attribution, and words of `exclude`. Years and other numbers are checked as numbers."""
+    text = _dots_out(text)
+    out: dict = {}
+    for m in re.finditer(r"[^\W\d_]+", text):
+        low = m.group(0).lower()
+        if low == "may":                                                   # the month: "May 16" (elsewhere a capital "May" is a name, and "may" the verb)
+            after = re.match(r"\s*(\S+)", text[m.end():])
+            if after and after.group(1)[0].isdigit():
+                out.setdefault(low, m.group(0))
+        elif low in MONTHS or low in WEEKDAYS:
+            out.setdefault(low, m.group(0))
+    for m in CAPITALISED.finditer(text):
+        w = m.group(1)                                                     # (the pattern stops at an apostrophe: "Japan's" is "Japan")
+        low = w.lower()
+        if (low in MONTHS and low != "may") or low in WEEKDAYS or _starts_sentence(text, m.start()) or (low in STOPWORDS and low != "may") or (forms(w) & exclude):
+            continue
+        out.setdefault(low, w)
+    for m in ACRONYM.finditer(text):
+        if not (forms(m.group(1)) & exclude):
+            out.setdefault(m.group(1).lower(), m.group(1))
+    for m in ORDINAL.finditer(text):
+        out.setdefault(m.group(1).lower(), m.group(1))
+    return list(out.values())
+
+
+def strict_missing(text: str, cited: list, exclude: set) -> list:
+    have = forms_of_text(_dots_out(" ".join(cited)))
+    have_words = {w.lower() for w in re.findall(r"\d{1,2}(?:st|nd|rd|th)", " ".join(cited), re.I)}
+    return [w for w in strict_tokens(text, exclude) if not (forms(w) & have) and w.lower() not in have_words]
+
+
+# ---- negation: a point and its closest source sentence say the same, not the opposite -----------------------------------------------------------------------
+
+_SENTENCE = re.compile(r"(?<!\b[A-Z]\.)(?<!\bMr\.)(?<!\bMrs\.)(?<!\bDr\.)(?<!\bNo\.)(?<=[.!?])\s+(?=[A-Z“\"‘(\[])")
+
+
+def negation_regex(negations: tuple) -> re.Pattern:
+    words = [re.escape(n) for n in negations if n not in ("n't", "n’t")]
+    return re.compile(r"(?<!\w)(?:" + "|".join(words) + r")(?!\w)|n['’]t(?!\w)", re.I)
+
+
+def has_negation(text: str, rx: re.Pattern) -> bool:
+    return rx.search(re.sub(r"\bnot only\b", "", text, flags=re.I)) is not None
+
+
+def negation_error(point: str, cited: list, rx: re.Pattern, drop_forms: set, i: int) -> Optional[str]:
+    """None when the point has a negation exactly when its closest sentence of the cited paragraphs has one (the closest: the most content words of the point; on a
+    tie, one that agrees is taken)."""
+    sentences = [x.strip() for c in cited for x in _SENTENCE.split(c) if x.strip()]
+    words = list(dict.fromkeys(content_words(point, drop_forms)))
+    if not sentences or not words:
+        return None
+    scored = [(sum(1 for w in words if forms(w) & forms_of_text(x)), x) for x in sentences]
+    top = max(n for n, _ in scored)
+    if top == 0:
+        return None
+    best = [x for n, x in scored if n == top]
+    mine = has_negation(point, rx)
+    if any(has_negation(x, rx) == mine for x in best):
+        return None
+    x = best[0]
+    return (f"summary point {i} {'has a negation' if mine else 'has none'} but the closest sentence of the paragraph(s) it cites {'has none' if mine else 'has one'}: "
+            f"\u201c{x[:160]}\u201d - state it as the source does; never turn a statement into its opposite")
+
+
+# ---- speakers: in a press-conference transcript a statement rests only on its own speaker's turns ------------------------------------------------------------
+
+def named_person(text: str, groups: tuple) -> Optional[tuple]:
+    """(the name words of the person a point names first, the word that names them): by surname (the last word of a group) - or by another name word only when no
+    surname is named."""
+    def earliest(pairs):
+        best = None
+        for g, w in pairs:
+            m = re.search(r"(?<!\w)" + re.escape(w) + r"(?!\w)", text, re.I)
+            if m and (best is None or m.start() < best[0]):
+                best = (m.start(), tuple(g), w)
+        return best
+    hit = earliest((g, g[-1]) for g in groups) or earliest((g, w) for g in groups for w in g[:-1])
+    return (hit[1], hit[2]) if hit else None
+
+
+def speaker_errors(point: str, cited: list, labels: list, groups: tuple, i: int) -> list:
+    """`labels`: one turns.Turn (or None) per paragraph. A point that names a speaker may cite only that speaker's turns - the label must carry the surname the point
+    names (or, when the point names a first name only, one of the person's names); a point that names none may cite only the bank's own turns (never a journalist's
+    question, presented as the bank's word)."""
+    named = named_person(point, groups)
+    errors = []
+    for c in cited:
+        turn = labels[c - 1]
+        if named is not None:
+            who, word = named
+            matches = turn is not None and ((word in turn.words) if word == who[-1] else bool(set(who) & turn.words))
+            if not (matches or (turn is not None and turn.name == "")):                          # (the ECB's answers carry no label)
+                by = "no speaker" if turn is None else ("a journalist's question" if turn.name == "question" else f"the turn of {turn.name}")
+                errors.append(f"summary point {i} attributes the statement to {who[-1].title()}, but paragraph {c} that it cites is {by}: a statement rests only on "
+                              f"the paragraphs of its own speaker's turns")
+        elif turn is not None and not turn.official:
+            errors.append(f"summary point {i} cites paragraph {c}, {'a journalist' if turn.name == 'question' else 'the turn of ' + turn.name}, for a statement that names no speaker: "
+                          f"name the speaker of the paragraphs it cites, or cite the bank's own turns")
+    return errors
+
+
+def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tuple, lim_frags: tuple, lim_words: tuple, min_share: float, drop_forms: set, *,
+                   shared: int = 2, exclude_names: frozenset = frozenset(), rx_neg: Optional[re.Pattern] = None, labels: Optional[list] = None, groups: tuple = ()) -> tuple:
+    """(evidence record, errors) for one summary point {text, evidence: {paragraphs: [1-3 numbers], fragments: [1-3 verbatim passages of 5-40 words]}}: every
+    fragment is verbatim in one of the cited paragraphs (its offsets are then derived) and shares content words with the point; at least `min_share` of the point's
+    content words are in the cited paragraphs; its dates, months, days and proper names are there too; its negation matches its closest source sentence; and in a
+    transcript it rests on its own speaker's turns."""
     ev = point.get("evidence") if isinstance(point, dict) else None
-    shape = f"summary point {i} needs 'evidence': {{'paragraphs': [{lim_paras[0]}-{lim_paras[1]} paragraph numbers], 'fragment': '<{lim_words[0]}-{lim_words[1]} words copied verbatim from one of them>'}}"
-    if not isinstance(ev, dict) or not isinstance(ev.get("paragraphs"), list) or not isinstance(ev.get("fragment"), str):
+    shape = (f"summary point {i} needs 'evidence': {{'paragraphs': [{lim_paras[0]}-{lim_paras[1]} paragraph numbers], "
+             f"'fragments': [{lim_frags[0]}-{lim_frags[1]} passages of {lim_words[0]}-{lim_words[1]} words copied verbatim from those paragraphs]}}")
+    if not isinstance(ev, dict) or not isinstance(ev.get("paragraphs"), list) or not isinstance(ev.get("fragments"), list) or not all(isinstance(f, str) for f in ev["fragments"]):
         return None, [shape]
     cited = ev["paragraphs"]
     if not cited or not all(isinstance(c, int) and not isinstance(c, bool) for c in cited):
@@ -248,42 +381,71 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
         return None, [f"summary point {i} cites {len(cited)} paragraphs as evidence; allowed {lim_paras[0]}-{lim_paras[1]}"]
     if any(not (1 <= c <= len(paragraphs)) for c in cited):
         return None, [f"summary point {i} cites a paragraph outside 1-{len(paragraphs)} as evidence"]
-    frag = ev["fragment"]
-    n_words = len(frag.split())
-    if not (lim_words[0] <= n_words <= lim_words[1]):
-        return None, [f"the evidence fragment of summary point {i} has {n_words} words; allowed {lim_words[0]}-{lim_words[1]}"]
-    errors = []
-    where = next((c for c in cited if frag in paragraphs[c - 1]), None)
-    if where is None:
-        other = next((k + 1 for k, p in enumerate(paragraphs) if frag in p), None)
-        hint = (f" (that text is in paragraph {other}: cite it)" if other else " (that text is not in the document verbatim - copy it character for character, curly quotes included)")
-        errors.append(f"the evidence fragment of summary point {i} is not verbatim in the paragraph(s) it cites {cited}{hint}")
-    share, missing = support(point["text"], [paragraphs[c - 1] for c in cited], drop_forms)
+    frags = list(dict.fromkeys(ev["fragments"]))
+    if not (lim_frags[0] <= len(frags) <= lim_frags[1]):
+        return None, [f"summary point {i} has {len(frags)} evidence fragments; allowed {lim_frags[0]}-{lim_frags[1]}"]
+    errors, found = [], []
+    point_words = {w for w in content_words(point["text"], drop_forms)}
+    for n, frag in enumerate(frags, 1):
+        n_words = len(frag.split())
+        if not (lim_words[0] <= n_words <= lim_words[1]):
+            errors.append(f"evidence fragment {n} of summary point {i} has {n_words} words; allowed {lim_words[0]}-{lim_words[1]}")
+            continue
+        where = next((c for c in cited if frag in paragraphs[c - 1]), None)
+        if where is None:
+            other = next((k + 1 for k, p in enumerate(paragraphs) if frag in p), None)
+            hint = (f" (that text is in paragraph {other}: cite it)" if other else " (that text is not in the document verbatim - copy it character for character, curly quotes included)")
+            errors.append(f"evidence fragment {n} of summary point {i} is not verbatim in the paragraph(s) it cites {cited}{hint}")
+            continue
+        common = {w for w in point_words if forms(w) & forms_of_text(frag)}
+        if len(common) < min(shared, len(point_words)):
+            errors.append(f"evidence fragment {n} of summary point {i} has {len(common)} content word(s) in common with the point; at least {min(shared, len(point_words))} needed: "
+                          f"a fragment must be the passage that states what the point says")
+            continue
+        start = starts[where - 1] + paragraphs[where - 1].find(frag)
+        found.append({"text": frag, "paragraph": where, "start": start, "end": start + len(frag)})
+    texts = [paragraphs[c - 1] for c in cited]
+    share, missing = support(point["text"], texts, drop_forms)
     if share < min_share:
         errors.append(f"summary point {i} is not supported by the paragraph(s) it cites {cited}: {round(share * 100)}% of its content words are there ({round(min_share * 100)}% needed); "
                       f"not found: {', '.join(repr(w) for w in missing[:8])} - say only what those paragraphs say, or cite the paragraphs that say it")
+    named = strict_missing(point["text"], texts, exclude_names)
+    if named:
+        errors.append(f"summary point {i} names {', '.join(repr(w) for w in named[:8])}, which the paragraph(s) it cites {cited} do not contain: dates, months, days and proper names "
+                      f"(persons, institutions, places) must come from the cited paragraphs as written - never derive or infer them")
+    if rx_neg is not None:
+        neg = negation_error(point["text"], texts, rx_neg, drop_forms, i)
+        if neg:
+            errors.append(neg)
+    if labels is not None:
+        errors += speaker_errors(point["text"], cited, labels, groups, i)
     if errors:
         return None, errors
-    start = starts[where - 1] + paragraphs[where - 1].find(frag)
-    return {"paragraphs": cited, "fragment": frag, "paragraph": where, "start": start, "end": start + len(frag), "coverage": round(share, 3)}, []
+    return {"paragraphs": cited, "fragments": found, "coverage": round(share, 3)}, []
 
 
 def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, quotes: tuple, quote_chars: tuple, total_chars: int, blocked: tuple,
-           attributed: tuple = (), subjects: tuple = (), speakers: tuple = (), evidence_paragraphs: tuple = (1, 3), fragment_words: tuple = (5, 40),
-           min_support: float = 0.85, attribution_words: tuple = ()) -> Verified:
+           attributed: tuple = (), subjects: tuple = (), speakers: tuple = (), evidence_paragraphs: tuple = (1, 3), fragments: tuple = (1, 3), fragment_words: tuple = (5, 40),
+           min_support: float = 0.85, attribution_words: tuple = (), fragment_shared: int = 2, pronouns: tuple = (), negations: tuple = (), bank_terms: tuple = (),
+           labels: Optional[list] = None, people: tuple = ()) -> Verified:
     """Check a parsed model output against the source paragraphs. Returns the record parts (points with their evidence, quotes with offsets, numbers with source
     offsets, coverage) only when every check passed. `blocked` words are refused always; `attributed` words only unless the document uses them and the point
-    attributes them (check_attributed). Every point carries evidence (paragraphs + a verbatim fragment) and must be supported by the paragraphs it cites."""
+    attributes them (check_attributed). Every point carries evidence (paragraphs + 1-3 verbatim fragments) and must be supported by the paragraphs it cites: content
+    words, dates / months / days / proper names, negation and - in a transcript (`labels`, one turns.Turn or None per paragraph) - the speaker's own turns.
+    `people`: the name words of each speaker (a roster member: first name, surname ...); `bank_terms`: the words that name the bank itself (an attribution, not a claim)."""
     errors: list = []
     src = source_text(paragraphs)
     starts = paragraph_starts(paragraphs)
-    drop = forms_of_text(" ".join(tuple(attribution_words) + tuple(subjects) + tuple(speakers)))          # attribution vocabulary and names: not claims
+    drop = forms_of_text(" ".join(tuple(attribution_words) + tuple(subjects) + tuple(speakers) + tuple(bank_terms)))    # attribution vocabulary and names: not claims
+    exclude_names = frozenset(drop | forms_of_text(" ".join(TITLES)))
+    groups = tuple(people) or tuple((w,) for w in speakers if w.lower() not in TITLES)
+    rx_neg = negation_regex(negations) if negations else None
 
     raw = obj.get("summary")
     summary: list = []
     evidence: list = []
     if not isinstance(raw, list) or not all(isinstance(p, dict) and isinstance(p.get("text"), str) for p in raw):
-        errors.append("'summary' must be a list of points, each {'text': '...', 'evidence': {'paragraphs': [...], 'fragment': '...'}}")
+        errors.append("'summary' must be a list of points, each {'text': '...', 'evidence': {'paragraphs': [...], 'fragments': ['...']}}")
         raw = []
     else:
         summary = [p["text"] for p in raw]
@@ -295,7 +457,8 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     if sum(len(s) for s in summary) > total_chars:
         errors.append(f"the summary has {sum(len(s) for s in summary)} characters in all; allowed {total_chars}")
     for i, p in enumerate(raw, 1):
-        ev, errs = check_evidence(p, i, paragraphs, starts, evidence_paragraphs, fragment_words, min_support, drop)
+        ev, errs = check_evidence(p, i, paragraphs, starts, evidence_paragraphs, fragments, fragment_words, min_support, drop, shared=fragment_shared,
+                                  exclude_names=exclude_names, rx_neg=rx_neg, labels=labels, groups=groups)
         errors += errs
         evidence.append(ev)
 
@@ -303,7 +466,7 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     for i, s in enumerate(summary, 1):
         for m in rx.finditer(s):
             errors.append(f"summary point {i} uses the word '{m.group(0)}': no direction, forecast or evaluation - only what the document says")
-    errors += check_attributed(summary, src, attributed, subjects, speakers)
+    errors += check_attributed(summary, src, attributed, subjects, speakers, pronouns)
 
     qs = obj.get("quotes")
     checked_quotes = []
@@ -359,7 +522,9 @@ def verify_stored(record: dict, paragraphs: list) -> list:
             errs.append(f"number {i}: the source at {n['start']}-{n['end']} is not '{n['source_text']}'")
     for i, p in enumerate(record.get("summary", []), 1):
         ev = p.get("evidence") if isinstance(p, dict) else None
-        if ev and src[ev["start"]:ev["end"]] != ev["fragment"]:
-            errs.append(f"point {i}: the source at {ev['start']}-{ev['end']} is not the evidence fragment")
+        for f in ((ev.get("fragments") or [ev]) if ev else []):                     # (a summary of prompt v4 has one "fragment" with its offsets in the evidence itself)
+            text = f.get("text", f.get("fragment"))
+            if text is not None and src[f["start"]:f["end"]] != text:
+                errs.append(f"point {i}: the source at {f['start']}-{f['end']} is not the evidence fragment")
     return errs
 
