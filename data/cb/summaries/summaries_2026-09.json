@@ -269,15 +269,11 @@
    "coverage": {
     "paragraphs": [
      6,
-     11,
      12,
      15,
      17,
      21,
-     22,
-     23,
-     25,
-     27
+     22
     ],
     "paragraphs_sent": 32,
     "truncated": false
@@ -285,7 +281,7 @@
    "currency": "USD",
    "doc_id": "USD:speech:a89335cf0468",
    "format": "html",
-   "generated_at": "2026-09-21T13:59:45Z",
+   "generated_at": "2026-09-21T15:55:58Z",
    "input_sha256": "c4708270b517192d5f6ccad8133c48fd61fbbf53ee00dc4a62b3ba822dfedadc",
    "meeting_date": null,
    "model": "gpt-5.6-terra",
@@ -298,11 +294,11 @@
      "text": "1.8 percent"
     },
     {
-     "end": 459,
+     "end": 1761,
      "point": 1,
-     "source_text": "2 percent",
-     "start": 450,
-     "text": "2 percent"
+     "source_text": "3 percent",
+     "start": 1752,
+     "text": "3 percent"
     },
     {
      "end": 3917,
@@ -319,25 +315,11 @@
      "text": "4.1 percent"
     },
     {
-     "end": 5843,
+     "end": 6963,
      "point": 3,
-     "source_text": "3.7 percent",
-     "start": 5832,
-     "text": "3.7 percent"
-    },
-    {
-     "end": 5858,
-     "point": 3,
-     "source_text": "12",
-     "start": 5856,
-     "text": "12"
-    },
-    {
-     "end": 5904,
-     "point": 3,
-     "source_text": "3.3 percent",
-     "start": 5893,
-     "text": "3.3 percent"
+     "source_text": "3.05 percent",
+     "start": 6951,
+     "text": "3.05 percent"
     },
     {
      "end": 7176,
@@ -347,41 +329,41 @@
      "text": "4.76 percent"
     },
     {
-     "end": 6963,
-     "point": 3,
-     "source_text": "3.05 percent",
-     "start": 6951,
-     "text": "3.05 percent"
+     "end": 459,
+     "point": 5,
+     "source_text": "2 percent",
+     "start": 450,
+     "text": "2 percent"
     },
     {
      "end": 459,
-     "point": 4,
+     "point": 6,
      "source_text": "2 percent",
      "start": 450,
      "text": "2 percent"
     }
    ],
-   "prompt_version": "speech-v4",
+   "prompt_version": "speech-v5",
    "provider": "openai",
    "published": "2026-09-03",
    "quotes": [
     {
-     "end": 7283,
+     "end": 1459,
+     "paragraph": 6,
+     "start": 1385,
+     "text": "Real GDP grew at a 1.8 percent annual rate in the first half of this year."
+    },
+    {
+     "end": 7189,
      "paragraph": 17,
      "start": 7117,
-     "text": "Three-month inflation has fallen steadily from 4.76 percent in February. That is a considerable improvement, and the speed of this downward trajectory is encouraging."
+     "text": "Three-month inflation has fallen steadily from 4.76 percent in February."
     },
     {
      "end": 9386,
      "paragraph": 21,
      "start": 9254,
      "text": "If there is continued progress toward our 2 percent goal, then I am willing to support holding the policy rate at its current level."
-    },
-    {
-     "end": 9447,
-     "paragraph": 22,
-     "start": 9387,
-     "text": "But if inflation comes in hot, I would consider a rate hike."
     },
     {
      "end": 10961,
@@ -401,82 +383,138 @@
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 3579,
-      "fragment": "I expect real GDP to grow a bit more than 2 percent this year",
-      "paragraph": 11,
-      "paragraphs": [
-       6,
-       11
+      "fragments": [
+       {
+        "end": 1459,
+        "paragraph": 6,
+        "start": 1385,
+        "text": "Real GDP grew at a 1.8 percent annual rate in the first half of this year."
+       },
+       {
+        "end": 1788,
+        "paragraph": 6,
+        "start": 1603,
+        "text": "Overall, real private domestic final purchases, the measure of spending that best reflects the underlying strength of consumer demand, rose a strong 3 percent in the first half of 2026."
+       }
       ],
-      "start": 3518
+      "paragraphs": [
+       6
+      ]
      },
-     "text": "Governor Waller says real GDP grew at a 1.8 percent annual rate in the first half of this year, and Governor Waller expects real GDP to grow a bit more than 2 percent this year."
+     "text": "Waller says real GDP grew at a 1.8 percent annual rate in the first half of this year, while real private domestic final purchases rose 3 percent."
     },
     {
      "evidence": {
       "coverage": 0.909,
-      "end": 3939,
-      "fragment": "Job creation, though a bit volatile, has increased this year by an average of 60,000 a month through July.",
-      "paragraph": 12,
+      "fragments": [
+       {
+        "end": 3939,
+        "paragraph": 12,
+        "start": 3833,
+        "text": "Job creation, though a bit volatile, has increased this year by an average of 60,000 a month through July."
+       },
+       {
+        "end": 4276,
+        "paragraph": 12,
+        "start": 4190,
+        "text": "the unemployment rate has fallen a bit to 4.1 percent in July, a historically low rate"
+       }
+      ],
       "paragraphs": [
        12
-      ],
-      "start": 3833
+      ]
      },
-     "text": "Governor Waller says job creation has increased this year by an average of 60,000 a month through July, while the unemployment rate fell to 4.1 percent in July."
+     "text": "Waller says job creation has increased this year by an average of 60,000 a month through July, and the unemployment rate fell to 4.1 percent in July."
     },
     {
      "evidence": {
-      "coverage": 0.917,
-      "end": 7189,
-      "fragment": "Three-month inflation has fallen steadily from 4.76 percent in February.",
-      "paragraph": 17,
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6997,
+        "paragraph": 17,
+        "start": 6921,
+        "text": "Three-month core inflation is 3.05 percent for the three months through July"
+       },
+       {
+        "end": 7189,
+        "paragraph": 17,
+        "start": 7117,
+        "text": "Three-month inflation has fallen steadily from 4.76 percent in February."
+       }
+      ],
       "paragraphs": [
-       15,
        17
-      ],
-      "start": 7117
+      ]
      },
-     "text": "Governor Waller says PCE prices are up 3.7 percent in the past 12 months and core PCE inflation is 3.3 percent, while three-month core inflation fell from 4.76 percent in February to 3.05 percent through July."
+     "text": "Waller says three-month core inflation was 3.05 percent through July and had fallen steadily from 4.76 percent in February."
     },
     {
      "evidence": {
-      "coverage": 0.95,
-      "end": 9386,
-      "fragment": "If there is continued progress toward our 2 percent goal, then I am willing to support holding the policy rate at its current level.",
-      "paragraph": 21,
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6303,
+        "paragraph": 15,
+        "start": 6198,
+        "text": "I don't see elevated energy prices and tariffs now as a significant source of ongoing inflation pressure."
+       }
+      ],
       "paragraphs": [
-       21,
+       15
+      ]
+     },
+     "text": "Waller says he does not see elevated energy prices and tariffs now as a significant source of ongoing inflation pressure."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9386,
+        "paragraph": 21,
+        "start": 9254,
+        "text": "If there is continued progress toward our 2 percent goal, then I am willing to support holding the policy rate at its current level."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Waller says he is willing to support holding the policy rate at its current level if there is continued progress toward the 2 percent goal."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9447,
+        "paragraph": 22,
+        "start": 9387,
+        "text": "But if inflation comes in hot, I would consider a rate hike."
+       },
+       {
+        "end": 9769,
+        "paragraph": 22,
+        "start": 9620,
+        "text": "If there is evidence that progress toward 2 percent inflation reversed in August, a small adjustment in our stance would help ensure that it resumes."
+       }
+      ],
+      "paragraphs": [
        22
-      ],
-      "start": 9254
+      ]
      },
-     "text": "Governor Waller says that, if August data show continued progress toward the 2 percent goal, he is willing to support holding the policy rate at its current level; if inflation comes in hot, he would consider a rate hike."
-    },
-    {
-     "evidence": {
-      "coverage": 0.867,
-      "end": 12449,
-      "fragment": "The third and final type of communication is forward guidance, which specifies a path for the policy rate that is essentially independent of incoming data.",
-      "paragraph": 27,
-      "paragraphs": [
-       23,
-       25,
-       27
-      ],
-      "start": 12294
-     },
-     "text": "Governor Waller says he communicates his current policy position, his reaction function for how future data would shape decisions, and forward guidance when it is truly needed."
+     "text": "Waller says he would consider a rate hike if inflation comes in hot and would support tighter policy if progress toward 2 percent inflation reversed in August."
     }
    ],
    "title": "Waller, The Economic Outlook and Some Comments on My Policy Communication",
    "type": "speech",
    "url": "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm",
    "usage": {
-    "attempts": 2,
-    "input_tokens": 8851,
-    "output_tokens": 1191,
-    "reasoning_tokens": 65
+    "attempts": 1,
+    "input_tokens": 4561,
+    "output_tokens": 915,
+    "reasoning_tokens": 273
    }
   },
   {
