@@ -389,18 +389,19 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
         return None, [shape]
     cited = list(dict.fromkeys(cited))
     if not (lim_paras[0] <= len(cited) <= lim_paras[1]):
-        return None, [f"summary point {i} cites {len(cited)} paragraphs as evidence; allowed {lim_paras[0]}-{lim_paras[1]}"]
+        return None, [f"summary point {i} cites {len(cited)} paragraphs as evidence; allowed {lim_paras[0]}-{lim_paras[1]}: keep the {lim_paras[1]} that carry the claim, or split the point in two"]
     if any(not (1 <= c <= len(paragraphs)) for c in cited):
         return None, [f"summary point {i} cites a paragraph outside 1-{len(paragraphs)} as evidence"]
     frags = list(dict.fromkeys(ev["fragments"]))
     if not (lim_frags[0] <= len(frags) <= lim_frags[1]):
-        return None, [f"summary point {i} has {len(frags)} evidence fragments; allowed {lim_frags[0]}-{lim_frags[1]}"]
+        return None, [f"summary point {i} has {len(frags)} evidence fragments; allowed {lim_frags[0]}-{lim_frags[1]}: keep the {lim_frags[1]} that state its claims, or split the point in two"]
     errors, found = [], []
     point_words = {w for w in content_words(point["text"], drop_forms)}
     for n, frag in enumerate(frags, 1):
         n_words = len(frag.split())
         if not (lim_words[0] <= n_words <= lim_words[1]):
-            errors.append(f"evidence fragment {n} of summary point {i} has {n_words} words; allowed {lim_words[0]}-{lim_words[1]}")
+            errors.append(f"evidence fragment {n} of summary point {i} has {n_words} words; allowed {lim_words[0]}-{lim_words[1]}: \u201c{frag[:90]}\u201d - "
+                          + ("extend it with the words next to it in the same sentence: a fragment is a whole clause" if n_words < lim_words[0] else "cut it to the clause that states the claim"))
             continue
         where = next((c for c in cited if frag in paragraphs[c - 1]), None)
         if where is None:

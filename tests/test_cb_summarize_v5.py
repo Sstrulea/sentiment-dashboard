@@ -725,3 +725,26 @@ def test_the_run_gives_the_check_the_speaker_verbs_of_the_config():
     silent = dataclasses.replace(CFG, speaker_verbs=())
     ok, usage, errs = R.summarise(RecordedClient([out, out]), silent, PR.load("transcript"), doc, src, speakers, people=people)
     assert ok is None and any("attributes the statement to Warsh, but paragraph %d" % Q_PARA in e for e in errs)          # without the verb: the first person named
+
+
+def test_the_errors_about_counts_say_what_to_do_and_show_the_fragment():
+    short = point(P_ACT["text"], [3], "Economic activity is expanding")
+    r = grounded(P_VOTE, P_RATE, short)
+    assert any("evidence fragment 1 of summary point 3 has 4 words; allowed 5-40: “Economic activity is expanding” - extend it with the words next to it in the same sentence: a fragment is a whole clause" in e for e in r.errors)
+    long = point(P_ACT["text"], [3], " ".join(PARAS[2].split()[:41]))
+    r = grounded(P_VOTE, P_RATE, long)
+    assert any("has 41 words; allowed 5-40" in e and "cut it to the clause that states the claim" in e for e in r.errors)
+    r = grounded(P_VOTE, P_RATE, point(P_ACT["text"], [1, 2, 3, 4], "Economic activity is expanding at a solid pace."))
+    assert any("cites 4 paragraphs as evidence; allowed 1-3: keep the 3 that carry the claim, or split the point in two" in e for e in r.errors)
+    frs = ["Economic activity is expanding at a solid pace.", "Inflation remains elevated. Today's policy action will support", "Today's policy action will support a timelier return", "The Committee will deliver price stability."]
+    r = grounded(P_VOTE, P_RATE, point(P_ACT["text"], [3, 4], *frs))
+    assert any("has 4 evidence fragments; allowed 1-3: keep the 3 that state its claims, or split the point in two" in e for e in r.errors)
+
+
+def test_the_prompt_tells_the_model_to_count_words_and_to_split_a_point_that_needs_more_than_three_of_anything():
+    from src.cb_summarize import prompts as PR
+    for kind in PR.KINDS:
+        system = PR.load(kind).system
+        for phrase in ("Count the words: a fragment of 4 words or fewer is refused", "the whole clause or sentence that states the claim", "more than 3 paragraph numbers or more than 3 fragments",
+                       "make it two points"):
+            assert phrase in system, (kind, phrase)
