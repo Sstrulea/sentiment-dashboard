@@ -520,8 +520,10 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   (config `grounding.min_support`). Cuvânt-conținut = alfabetic, ≥ 3 litere, nu stopword (listă fixă în `verify.py`), nu vocabular de atribuire (`grounding.attribution_words`: states, said, noted,
   reported … + subiectele băncii + numele vorbitorilor). Cuvintele se potrivesc pe forme (stem minimal, fără dependențe), se numără distinct, iar ce lipsește se listează în feedback
   („not found: 'bonds', 'mortgage'”). Asta prinde afirmația nesusținută **fără numere și fără cuvinte interzise** (ex.: „The Committee will begin buying government bonds …” cu un fragment real).
-  Picare ⇒ aceeași reîncercare unică, cu motivul; a doua picare ⇒ `validation_failed` cu motivul. **Limite cunoscute:** e o verificare lexicală, nu semantică — o negație („does not remain
-  elevated”) sau o schimbare de subiect cu aceleași cuvinte trece; se prind doar cuvintele care nu sunt în paragrafele citate. Se completează cu citatele verbatim și cu numerele.
+  Picare ⇒ aceeași reîncercare unică, cu motivul; a doua picare ⇒ `validation_failed` cu motivul. **Numerele** unui punct trebuie să fie și ele în paragrafele citate (nu doar oriunde în document). **Limite cunoscute:** e o
+  verificare lexicală, nu semantică — o negație („does not remain elevated”) sau o schimbare de subiect cu aceleași cuvinte trece; se prind doar cuvintele care nu sunt în paragrafele citate, iar
+  la 85 % un punct de ~10 cuvinte-conținut poate purta unul nesuținut (o dată, o lună, un nume); fragmentul e unul singur per punct. Un pronume („he expects”) nu e atribuire: trebuie numele
+  sau un subiect din listă în aceeași propoziție. Se completează cu citatele verbatim și cu numerele.
 - **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
   `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
   reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).
@@ -575,7 +577,16 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   lunar în regim stabil ≈ **0,4 USD** (până la ~0,6 cu reîncercări). Fără caching, fără Batch, fără regiune. Estimări din tokenii raportați, nu facturi.
 - **Prima rulare reală (2026-09-21, pe branch).** Cele 4 comunicate Fed (ultimele 4 ședințe) au trecut validarea din prima. Transcriptul conferinței din 16 sep și discursul Waller din
   3 sep au picat de două ori (`validation_failed`, nimic scris): „likely” fără atribuire (transcript), „expects” nefolosit de document în acea formă (discursul spune „I expect”). Sunt
-  fals-negative posibile ale regulii de vocabular, nu ale numerelor sau citatelor — de decis: potrivirea cuvântului pe formă flexionată (expect / expects) și atribuirea către un vorbitor numit.
+  fals-negative ale regulii de vocabular, nu ale numerelor sau citatelor — rezolvate în v4 (potrivire pe formă flexionată, atribuire către un vorbitor numit).
+- **A doua rulare reală (v4, 2026-09-21, pe branch, CI).** 4 comunicate Fed: 4 / 4 la prima încercare (4 905 intrare / 2 061 ieșire, ≈ 0,0345 USD). Transcriptul din 16 sep: trecut după reîncercare
+  (14 809 / 1 390, din care 211 raționament, ≈ 0,0463 USD; motivul primei picări nu a fost înregistrat — jurnalul nu îl avea încă). Discursul Waller: prima rulare a picat de două ori („expects” neatribuit în
+  punctul 1), rularea repetată (după ce jurnalul a început să spună de ce) a trecut după reîncercare, cu aceeași cauză a primei încercări (8 877 / 1 385 și 8 851 / 1 191). Total ≈ 0,147 USD pentru 6 rezumate
+  (37 442 intrare, 6 027 ieșire, 488 raționament). Jurnalul Summaries are acum `ATTEMPTS n passed at the first attempt, m after the retry, k failed twice`, `RETRIED doc: …` (motivele primei încercări)
+  și `REJECTED OUTPUT doc: …` (ultima ieșire refuzată, o linie de cel mult 3 000 de caractere); înregistrarea stocată nu s-a schimbat.
+- **Ce a arătat verificarea pe texte reale.** Un punct cu două afirmații are un singur fragment: în comunicatul din 16 sep, punctul „… and that it will deliver price stability” are fragmentul
+  „Today's policy action will support a timelier return to the Committee's 2 percent goal.” (¶4), iar a doua jumătate e susținută de propoziția „The Committee will deliver price stability.” din
+  **același ¶4** (numărată la acoperire) și e și citat. Pragul de 85 % lasă să treacă un cuvânt fără suport în punct: în transcriptul din 16 sep punctul 5 spune „since July”, iar ¶22 citat spune
+  „seven weeks ago” (data e derivată de model, nu scrisă în text); în discursul Waller punctul 5 (acoperire 0,867) spune „current policy position”, cuvinte care nu sunt în ¶23 / 25 / 27 citate.
 - **`no_text`**: un document a cărui pagină s-a descărcat dar nu are text extractibil (fără container cunoscut, prea puțin text, PDF scanat) primește o singură dată marcajul
   `no_text` (`data/cb/summaries/no_text.json`: url, motiv, data) și nu se mai reîncearcă (o eroare de descărcare, în schimb, e tranzitorie și se reia; un link schimbat se reia).
   `--status` le listează, slotul din pagină spune „no extractable text”.
