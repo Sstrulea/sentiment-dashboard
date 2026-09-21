@@ -74,7 +74,7 @@
       "etag": "\"myra-cf35dcba\""
     },
     "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html": {
-      "etag": "\"myra-a95b3c1c\""
+      "etag": "\"myra-a981a6b9\""
     },
     "https://www.ecb.europa.eu/press/press_conference/html/index.en.html": {
       "etag": "\"myra-ba49e7f5\""
@@ -107,7 +107,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Thu, 17 Sep 2026 23:00:50 GMT"
+    "last_modified": "Sun, 20 Sep 2026 23:04:06 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -129,6 +129,6 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Thu, 17 Sep 2026 23:00:50 GMT"
+    "last_modified": "Sun, 20 Sep 2026 23:04:06 GMT"
   }
 }
