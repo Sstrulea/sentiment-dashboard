@@ -4,6 +4,632 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     13,
+     15,
+     26,
+     41,
+     54,
+     61
+    ],
+    "paragraphs_sent": 103,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:9ccfdb49a461",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 1 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+     ],
+     "text": "Chief Communications Officer Cray says the statement after the decision is for the markets, while the press conference is directed towards the media and through them to the public."
+    },
+    {
+     "errors": [
+      "summary point 2 cites 4 paragraphs as evidence; allowed 1-3: keep the 3 that carry the claim, or split the point in two"
+     ],
+     "text": "Chief Communications Officer Cray says the Board makes decisions for the mandate, not for the market, and tries to say after each data print how it is seeing it."
+    },
+    {
+     "errors": [
+      "summary point 3 has a negation but the closest clause of the paragraph(s) it cites has none: “Sally Cray Chief Communications Officer” (its clause: “Chief Communications Officer Cray says Board members are not full-time”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Chief Communications Officer Cray says Board members are not full-time, do not have staff or their own forecasts, and all have a different view and change their view."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:39:57Z",
+   "input_sha256": "c93b3ff96cc299405b306ed8a2290eb21b2025cf9cce6849235fcaf5f6f30182",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-07-30",
+   "quotes": [
+    {
+     "end": 4436,
+     "paragraph": 15,
+     "start": 4279,
+     "text": "It’s designed as a piece of comms for the market to understand what the Board discussed, why they made the decision and what do they think about the outlook."
+    },
+    {
+     "end": 10180,
+     "paragraph": 26,
+     "start": 10095,
+     "text": "So when they make decisions, they make decisions for the mandate, not for the market."
+    },
+    {
+     "end": 15620,
+     "paragraph": 41,
+     "start": 15576,
+     "text": "But in this case, this is a Board statement."
+    },
+    {
+     "end": 23596,
+     "paragraph": 54,
+     "start": 23453,
+     "text": "Host events ourselves, invite market participants to come into our office, or online with Slido to ask questions if you’re not based in Sydney."
+    },
+    {
+     "end": 25347,
+     "paragraph": 61,
+     "start": 25241,
+     "text": "But it’ll be worse when it’s a deep fake saying, “get your money out of the bank, get it out now, go now”."
+    }
+   ],
+   "source": {
+    "chars": 37143,
+    "chars_sent": 37144,
+    "method": "html-selector",
+    "paragraphs_sent": 103,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15666,
+        "paragraph": 41,
+        "start": 15624,
+        "text": "the language is workshopped in the meeting"
+       },
+       {
+        "end": 15877,
+        "paragraph": 41,
+        "start": 15842,
+        "text": "it reflects Board member’s position"
+       }
+      ],
+      "paragraphs": [
+       2,
+       13,
+       41
+      ]
+     },
+     "text": "Chief Communications Officer Cray says the statement’s language is workshopped in the meeting and reflects Board member’s position."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23404,
+        "paragraph": 54,
+        "start": 23346,
+        "text": "we had really great feedback about that session with Chris"
+       },
+       {
+        "end": 23565,
+        "paragraph": 54,
+        "start": 23453,
+        "text": "Host events ourselves, invite market participants to come into our office, or online with Slido to ask questions"
+       }
+      ],
+      "paragraphs": [
+       2,
+       13,
+       54
+      ]
+     },
+     "text": "Chief Communications Officer Cray says the RBA had really great feedback about Chris’s session and will host events for market participants at its office or online with Slido."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 25449,
+        "paragraph": 61,
+        "start": 25400,
+        "text": "deepfakes are getting harder and harder to detect"
+       }
+      ],
+      "paragraphs": [
+       2,
+       13,
+       61
+      ]
+     },
+     "text": "Chief Communications Officer Cray says deepfakes are getting harder and harder to detect."
+    }
+   ],
+   "title": "Panel Participation at the Barrenjoey 4th Annual Australia Economics Forum",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-so-2026-07-30.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21375,
+    "output_tokens": 2880,
+    "reasoning_tokens": 1509
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     15,
+     16,
+     21,
+     27,
+     28,
+     31,
+     41,
+     42,
+     54,
+     59,
+     81,
+     89
+    ],
+    "paragraphs_sent": 109,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:c3defa245de9",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:39:57Z",
+   "input_sha256": "607839b405491c3f2027ddde901f5607d6aac83f9b23cf43a2878822d1f236dd",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 4851,
+     "point": 2,
+     "source_text": "4 per cent",
+     "start": 4841,
+     "text": "4 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-07-28",
+   "quotes": [
+    {
+     "end": 2268,
+     "paragraph": 16,
+     "start": 2138,
+     "text": "That is why we tightened monetary policy earlier this year and why we remain focused on returning inflation sustainably to target."
+    },
+    {
+     "end": 3149,
+     "paragraph": 21,
+     "start": 3095,
+     "text": "Inflation has since increased and is now above target."
+    },
+    {
+     "end": 8873,
+     "paragraph": 42,
+     "start": 8731,
+     "text": "Overall, we continue to assess that some further easing in labour market conditions will likely be required to bring inflation back to target."
+    },
+    {
+     "end": 18008,
+     "paragraph": 85,
+     "start": 17859,
+     "text": "This does mean that some further easing in the growth of demand is likely to be required if we’re to bring inflation back down sustainably to target."
+    },
+    {
+     "end": 18792,
+     "paragraph": 89,
+     "start": 18671,
+     "text": "The Board is prepared to act as required to achieve its mandate, including by increasing the cash rate further if needed."
+    }
+   ],
+   "source": {
+    "chars": 22668,
+    "chars_sent": 22669,
+    "method": "html-selector",
+    "paragraphs_sent": 109,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2137,
+        "paragraph": 15,
+        "start": 2023,
+        "text": "With inflation and capacity pressures already elevated, recent shocks have added further to the inflation impulse."
+       },
+       {
+        "end": 2268,
+        "paragraph": 16,
+        "start": 2138,
+        "text": "That is why we tightened monetary policy earlier this year and why we remain focused on returning inflation sustainably to target."
+       }
+      ],
+      "paragraphs": [
+       15,
+       16
+      ]
+     },
+     "text": "Governor Bullock says that, with inflation and capacity pressures already elevated, recent shocks added to the inflation impulse, and monetary policy was tightened earlier this year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3149,
+        "paragraph": 21,
+        "start": 3095,
+        "text": "Inflation has since increased and is now above target."
+       },
+       {
+        "end": 4869,
+        "paragraph": 27,
+        "start": 4792,
+        "text": "headline inflation remained well above target at 4 per cent in May (Graph 1)."
+       },
+       {
+        "end": 5067,
+        "paragraph": 28,
+        "start": 4888,
+        "text": "underlying inflation – a better guide to the inflation impulse that abstracts from more volatile prices – has evolved broadly as we expected back in May. But it is still too high."
+       }
+      ],
+      "paragraphs": [
+       21,
+       27,
+       28
+      ]
+     },
+     "text": "Governor Bullock says inflation has increased and is above target, headline inflation was 4 per cent in May, and underlying inflation is still too high."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5795,
+        "paragraph": 31,
+        "start": 5621,
+        "text": "Demand growth appears to be moderating broadly as expected in the May baseline forecasts, helping bring aggregate demand closer into line with the economy’s supply potential."
+       },
+       {
+        "end": 8403,
+        "paragraph": 41,
+        "start": 8251,
+        "text": "The labour market has also eased a bit more than expected over recent months, moving it a little closer to balance relative to its tight starting point."
+       },
+       {
+        "end": 8873,
+        "paragraph": 42,
+        "start": 8731,
+        "text": "Overall, we continue to assess that some further easing in labour market conditions will likely be required to bring inflation back to target."
+       }
+      ],
+      "paragraphs": [
+       31,
+       41,
+       42
+      ]
+     },
+     "text": "Governor Bullock says demand growth appears to be moderating, labour market conditions have eased, and some further easing will likely be required to bring inflation back to target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11889,
+        "paragraph": 54,
+        "start": 11770,
+        "text": "Collectively, these adverse shocks have constrained global growth and contributed to higher inflation at the same time."
+       },
+       {
+        "end": 12979,
+        "paragraph": 59,
+        "start": 12784,
+        "text": "When the growth of potential supply is constrained, inflation is higher for any given level of demand, sharpening the trade-off between our dual objectives of price stability and full employment."
+       }
+      ],
+      "paragraphs": [
+       54,
+       59
+      ]
+     },
+     "text": "Governor Bullock says adverse supply shocks have constrained global growth and contributed to higher inflation, while constrained potential supply sharpens the trade-off between price stability and full employment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17164,
+        "paragraph": 81,
+        "start": 17088,
+        "text": "The Board remains focused on delivering price stability and full employment."
+       },
+       {
+        "end": 18792,
+        "paragraph": 89,
+        "start": 18671,
+        "text": "The Board is prepared to act as required to achieve its mandate, including by increasing the cash rate further if needed."
+       }
+      ],
+      "paragraphs": [
+       81,
+       89
+      ]
+     },
+     "text": "Governor Bullock says the Board remains focused on price stability and full employment, and is prepared to increase the cash rate further if needed to achieve its mandate."
+    }
+   ],
+   "title": "Monetary Policy in an Era of Shocks",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-gov-2026-07-28.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 13081,
+    "output_tokens": 2061,
+    "reasoning_tokens": 663
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     13,
+     14,
+     22,
+     23,
+     28,
+     29,
+     33,
+     39,
+     40,
+     50
+    ],
+    "paragraphs_sent": 93,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:dd2e0825dfaa",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:39:57Z",
+   "input_sha256": "ee1b575c30115b6da7aa5c1c05546196f9edb6a843339a25456282a996da5661",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 13116,
+     "point": 4,
+     "source_text": "4.4 per cent",
+     "start": 13104,
+     "text": "4.4 per cent"
+    },
+    {
+     "end": 13178,
+     "point": 4,
+     "source_text": "4.2 per cent",
+     "start": 13166,
+     "text": "4.2 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-07-30",
+   "quotes": [
+    {
+     "end": 2761,
+     "paragraph": 14,
+     "start": 2679,
+     "text": "In terms of the trimmed mean, it was a small undershoot on what we were expecting."
+    },
+    {
+     "end": 6247,
+     "paragraph": 23,
+     "start": 6154,
+     "text": "So what we’re thinking a lot about food prices, but also coming through global supply chains."
+    },
+    {
+     "end": 17706,
+     "paragraph": 38,
+     "start": 17562,
+     "text": "We don’t mechanically respond to falling house prices but the housing market is really, really important, and it’s clearly very emotive as well."
+    },
+    {
+     "end": 20085,
+     "paragraph": 40,
+     "start": 20003,
+     "text": "At the moment, there are absolutely no signs in the system of any systemic stress."
+    },
+    {
+     "end": 26775,
+     "paragraph": 50,
+     "start": 26650,
+     "text": "So that lift in investment, we’ve seen it match pretty much one for one actually on the import side in the national accounts."
+    }
+   ],
+   "source": {
+    "chars": 50021,
+    "chars_sent": 50022,
+    "method": "html-selector",
+    "paragraphs_sent": 93,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2244,
+        "paragraph": 13,
+        "start": 2155,
+        "text": "we obviously got a downside surprise relative to our May forecast for headline inflation."
+       },
+       {
+        "end": 2761,
+        "paragraph": 14,
+        "start": 2679,
+        "text": "In terms of the trimmed mean, it was a small undershoot on what we were expecting."
+       }
+      ],
+      "paragraphs": [
+       13,
+       14
+      ]
+     },
+     "text": "There was a downside surprise relative to the May forecast for headline inflation, while the trimmed mean was a small undershoot."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5240,
+        "paragraph": 22,
+        "start": 5132,
+        "text": "in terms of our baseline forecasting assumption, we use the futures curve and we’ll be doing that this time."
+       },
+       {
+        "end": 7274,
+        "paragraph": 23,
+        "start": 7138,
+        "text": "that uncertainty and that volatility and what that does, both in terms of firms’ pricing and their pricing decisions, but also activity."
+       }
+      ],
+      "paragraphs": [
+       22,
+       23
+      ]
+     },
+     "text": "For baseline forecasting, we use the futures curve, and we are thinking about uncertainty and volatility’s effects on firms’ pricing decisions and activity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9820,
+        "paragraph": 28,
+        "start": 9777,
+        "text": "we think we have got a positive output gap."
+       },
+       {
+        "end": 10297,
+        "paragraph": 29,
+        "start": 10212,
+        "text": "obviously we have the FWC decision as well. We’ll factor that into our wage forecasts"
+       }
+      ],
+      "paragraphs": [
+       28,
+       29
+      ]
+     },
+     "text": "We think we have got a positive output gap, and we’ll factor the FWC decision into our wage forecasts."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13179,
+        "paragraph": 33,
+        "start": 13089,
+        "text": "It’s obviously 4.4 per cent for the quarter. We thought it would be close to 4.2 per cent."
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "The unemployment rate is 4.4 per cent for the quarter, and it was thought it would be close to 4.2 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18204,
+        "paragraph": 39,
+        "start": 18131,
+        "text": "we don’t just mechanically respond to what happens in the housing market."
+       },
+       {
+        "end": 20085,
+        "paragraph": 40,
+        "start": 20003,
+        "text": "At the moment, there are absolutely no signs in the system of any systemic stress."
+       }
+      ],
+      "paragraphs": [
+       39,
+       40
+      ]
+     },
+     "text": "We don’t just mechanically respond to what happens in the housing market, and there are absolutely no signs in the system of any systemic stress."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 26551,
+        "paragraph": 50,
+        "start": 26481,
+        "text": "A lot of the actual equipment that’s put inside the sheds is imported."
+       },
+       {
+        "end": 26999,
+        "paragraph": 50,
+        "start": 26849,
+        "text": "someone’s got to be there to actually, A, build the shed in the first place, and that’s local activity, and B, install the stuff, also local activity."
+       }
+      ],
+      "paragraphs": [
+       50
+      ]
+     },
+     "text": "A lot of the actual equipment put inside data center sheds is imported, while building the shed and installing the equipment are local activity."
+    }
+   ],
+   "title": "Fireside Chat at the Barrenjoey 4th Annual Australia Economics Forum",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-ag-2026-07-30.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 26764,
+    "output_tokens": 3280,
+    "reasoning_tokens": 1791
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      5,
      11,
      13,
