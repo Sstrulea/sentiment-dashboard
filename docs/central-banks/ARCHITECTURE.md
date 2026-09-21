@@ -557,9 +557,13 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   reîncercare unică, cu motivul ca feedback), a patra se estimează din text și înregistrarea spune `estimated`.
 - **Cheia de idempotență**: `(doc_id, input_sha256, prompt_version, provider, model)`; înregistrarea poartă `provider`. Un alt provider sau model rezumă din nou; un eșec de validare e ținut
   și pe provider + model. `prompt_version` a devenit `*-v3` pentru toate tipurile (v1 și v2 rămân în `versions.json`).
-- **Costul** (estimare din dry run pe textele reale, 92 de documente încă nerezumate: ~506 000 tokeni de intrare la 4 caractere / token, ieșire presupusă 1 200 / document cu tot cu
-  raționament — înlocuită de prima utilizare reală): backlog **~2,3 USD**; o rulare de 12 documente ~0,3 USD; lunar în regim stabil ~0,6–0,7 USD (0,5–1,1 după cât raționament produce
-  `low`). Fără caching, fără Batch, fără regiune. Nu sunt facturi.
+- **Costul.** Dry run pe textele reale (92 de documente încă nerezumate: ~506 000 tokeni de intrare la 4 caractere / token) + prima utilizare reală (rularea CI din 2026-09-21 pe
+  branch: 8 apeluri, 26 289 tokeni de intrare, 2 999 de ieșire din care 181 de raționament, **0,0886 USD**; un comunicat Fed ≈ 1 000 intrare / 335 ieșire ≈ 0,006 USD, cu raționament 0
+  la `low`). Cu ieșirea măsurată (~400 tokeni / document): backlog ≈ **1,45 USD** (≈ 2,9 dacă fiecare document ar cheltui și reîncercarea), 8 rulări de câte 12 documente ≈ 0,2 USD fiecare;
+  lunar în regim stabil ≈ **0,4 USD** (până la ~0,6 cu reîncercări). Fără caching, fără Batch, fără regiune. Estimări din tokenii raportați, nu facturi.
+- **Prima rulare reală (2026-09-21, pe branch).** Cele 4 comunicate Fed (ultimele 4 ședințe) au trecut validarea din prima. Transcriptul conferinței din 16 sep și discursul Waller din
+  3 sep au picat de două ori (`validation_failed`, nimic scris): „likely” fără atribuire (transcript), „expects” nefolosit de document în acea formă (discursul spune „I expect”). Sunt
+  fals-negative posibile ale regulii de vocabular, nu ale numerelor sau citatelor — de decis: potrivirea cuvântului pe formă flexionată (expect / expects) și atribuirea către un vorbitor numit.
 - **`no_text`**: un document a cărui pagină s-a descărcat dar nu are text extractibil (fără container cunoscut, prea puțin text, PDF scanat) primește o singură dată marcajul
   `no_text` (`data/cb/summaries/no_text.json`: url, motiv, data) și nu se mai reîncearcă (o eroare de descărcare, în schimb, e tranzitorie și se reia; un link schimbat se reia).
   `--status` le listează, slotul din pagină spune „no extractable text”.

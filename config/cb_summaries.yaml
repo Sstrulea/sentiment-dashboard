@@ -15,7 +15,8 @@ providers:
     timeout_s: 180
     transport_retries: 2              # 429 / 5xx / timeouts only; the validation retry is separate and is exactly one
     chars_per_token: 4                # only to estimate the input size before a call (the response carries the real usage); the usual 4 characters of English per token
-    estimate_output_tokens: 1200      # ASSUMPTION for the dry-run estimate only: a ~700-token summary + low-effort reasoning tokens (billed as output); replaced by the first real usage
+    estimate_output_tokens: 400       # for the dry-run estimate only. MEASURED on the first real runs (2026-09-21, effort low): 335 output tokens per statement summary (4 calls), ~430 per attempt on a
+                                      # transcript and ~400 on a speech, reasoning tokens included (0 / 73 / 108 in all) - the median is rounded up
     pricing_usd_per_mtok:             # standard tier, short context, per million tokens
       input: 2.0
       cached_input: 0.2               # not used here (no caching)
