@@ -73,12 +73,21 @@ def _is_prose(p: str) -> bool:
     return len(p.split()) >= 12 and letters / max(1, len(p.replace(" ", ""))) >= 0.75 and re.search(r"[a-z]{2,}[^.!?]*[.!?](?:\s|$)", p) is not None
 
 
+_LABEL = re.compile(r"^[A-Z][\w\u2019'\-.]*(?: [A-Z][\w\u2019'\-.]*){1,3}$")
+
+
+def _is_speaker_label(p: str) -> bool:
+    """A short paragraph that only names a speaker ("Michele Bullock", "Jacob Shteyman"): the RBA's transcripts have one before every turn. Not a heading of the page."""
+    return len(p) < 40 and _LABEL.match(p) is not None and not ({w.lower() for w in p.split()} & T.NOT_A_NAME)
+
+
 def prose_metrics(paragraphs: list) -> dict:
-    """How much of the text is prose: the share of the characters in paragraphs of full sentences, the digits among the characters, the share of very short paragraphs."""
+    """How much of the text is prose: the share of the characters in paragraphs of full sentences, the digits among the characters, the share of very short paragraphs
+    (a speaker label of a transcript is not a short line of a slide)."""
     total = sum(len(p) for p in paragraphs) or 1
     chars = sum(len(p.replace(" ", "")) for p in paragraphs) or 1
     return {"prose_share": sum(len(p) for p in paragraphs if _is_prose(p)) / total, "digit_ratio": sum(c.isdigit() for p in paragraphs for c in p) / chars,
-            "short_share": sum(1 for p in paragraphs if len(p) < 40) / max(1, len(paragraphs))}
+            "short_share": sum(1 for p in paragraphs if len(p) < 40 and not _is_speaker_label(p)) / max(1, len(paragraphs))}
 
 
 def not_prose(paragraphs: list, limits: dict) -> Optional[str]:
