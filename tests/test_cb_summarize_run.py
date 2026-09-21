@@ -18,7 +18,7 @@ from src.cb_summarize.client import APIError, RecordedClient, Response
 from src.cb_summarize.config import load as load_cfg
 
 from .cb_docs_helpers import FakeSession
-from .cb_sum_helpers import FED_KEY, GOOD_FED, NOW, TODAY, collected_dir, dumps, fresh_copy, responder_generic, variant
+from .cb_sum_helpers import FED_KEY, GOOD_FED, MIN_V, NEXT_STMT_V, NOW, STMT_V, TODAY, collected_dir, dumps, fresh_copy, responder_generic, variant
 from .test_cb_docs_collect import fetcher
 
 CFG = load_cfg()
@@ -76,7 +76,7 @@ def test_a_good_output_is_stored_with_the_contract(paths):
     assert files == ["summaries_2026-09.json"]                                                                          # the month of the statement
     rec = SS.load(paths.summaries)[FED_KEY]
     doc = dst.load_documents(paths)[(FED_KEY,)]
-    assert rec["model"] == "claude-sonnet-5" and rec["prompt_version"] == "statement-v1" and rec["generated_at"] == "2026-09-21T08:00:00Z"
+    assert rec["model"] == "claude-sonnet-5" and rec["prompt_version"] == STMT_V and rec["generated_at"] == "2026-09-21T08:00:00Z"
     assert rec["input_sha256"] == doc["text_sha256"]
     assert len(rec["summary"]) == 3 and 1 <= len(rec["quotes"]) <= 5 and rec["coverage"]["paragraphs"] == [1, 2, 3, 4] and rec["coverage"]["truncated"] is False
     assert all(set(q) == {"paragraph", "text", "start", "end"} and doc["text"][q["start"]:q["end"]] == q["text"] for q in rec["quotes"])
@@ -132,6 +132,8 @@ BAD = {
     "invented number": (dumps(variant(summary=[GOOD_FED["summary"][0], "The Committee raised the target range to 4.5 percent.", GOOD_FED["summary"][2]])),
                         "'4.5 percent' of summary point 2 does not appear in the document"),
     "direction word": (dumps(variant(summary=GOOD_FED["summary"][:2] + ["The move is hawkish, the Committee says."])), "uses the word 'hawkish'"),
+    "soft word not in the document": (dumps(variant(summary=GOOD_FED["summary"][:2] + ["The Committee signals a further increase in the target range."])),
+                                      "the word 'signals' of summary point 3 is not in the document"),
     "too long": (dumps(variant(summary=GOOD_FED["summary"][:2] + ["The Committee " + "states that inflation remains elevated " * 30])), "characters; allowed 20-400"),
     "invalid json": ('Here is the summary: {"summary": [', "the output is not valid JSON"),
 }
@@ -157,7 +159,7 @@ def test_two_bad_outputs_write_nothing_and_mark_validation_failed(paths, case):
     assert rep.new == 0 and rep.calls == 2 and [d for d, _ in rep.failed_validation] == [FED_KEY]
     assert SS.load(paths.summaries) == {}                                                                              # no summary, and never a repaired one
     assert not list(paths.summaries.glob("summaries_*.json"))
-    f = SS.load_failures(paths.summaries)[f"{FED_KEY}|statement-v1"]
+    f = SS.load_failures(paths.summaries)[f"{FED_KEY}|{STMT_V}"]
     assert f["doc_id"] == FED_KEY and f["input_sha256"] == dst.load_documents(paths)[(FED_KEY,)]["text_sha256"] and expected in " ".join(f["errors"])
     again = fed_only(paths, RecordedClient([]))                                                                         # the same failure is not paid for again
     assert again.calls == 0 and again.unchanged == 1
@@ -171,20 +173,20 @@ def test_a_failed_document_does_not_stop_the_others(paths):
     assert list(SS.load(paths.summaries)) == [FED_KEY] and len(SS.load_failures(paths.summaries)) == 7
 
 
-def alt_prompts(tmp_path, monkeypatch, version="statement-v2"):
+def alt_prompts(tmp_path, monkeypatch, version=NEXT_STMT_V):
     alt = tmp_path / "prompts_alt"
     shutil.copytree(PR.DIR, alt)
-    (alt / "statement.md").write_text((alt / "statement.md").read_text().replace("statement-v1", version))
+    (alt / "statement.md").write_text((alt / "statement.md").read_text().replace(STMT_V, version))
     monkeypatch.setattr(PR, "DIR", alt)
 
 
 def test_a_new_prompt_version_summarises_again_and_a_success_clears_the_old_failure(paths, tmp_path, monkeypatch):
     fed_only(paths, RecordedClient(["nope", "nope"]))
-    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|statement-v1"]
+    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|{STMT_V}"]
     alt_prompts(tmp_path, monkeypatch)
     rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
     assert rep.new == 1 and rep.calls == 1
-    assert SS.load(paths.summaries)[FED_KEY]["prompt_version"] == "statement-v2" and SS.load_failures(paths.summaries) == {}
+    assert SS.load(paths.summaries)[FED_KEY]["prompt_version"] == NEXT_STMT_V and SS.load_failures(paths.summaries) == {}
 
 
 # --- idempotence ---------------------------------------------------------------------------------------------------------------------------
@@ -216,13 +218,13 @@ def test_a_new_prompt_version_costs_one_call_per_document_of_that_kind_only(path
     cfg = dataclasses.replace(CFG, max_documents=50)
     rep1 = go(paths, RecordedClient(responder=responder_generic), cfg=cfg, types={"statement", "minutes"}, banks={"USD", "AUD"})
     assert rep1.new == 14 and rep1.stopped is None                                                                      # 8 statements + 6 minutes (2 FOMC + 4 RBA in the fixtures)
-    alt_prompts(tmp_path, monkeypatch, "statement-v2")
+    alt_prompts(tmp_path, monkeypatch)
     c = RecordedClient(responder=responder_generic)
     rep2 = go(paths, c, cfg=cfg, types={"statement", "minutes"}, banks={"USD", "AUD"})
     statements = [r for r in SS.load(paths.summaries).values() if r["type"] == "statement"]
     assert rep2.new == len(statements) == len(c.calls) == 8 and rep2.unchanged == 6                                     # the minutes are still summarised under minutes-v1
-    assert {r["prompt_version"] for r in statements} == {"statement-v2"}
-    assert {r["prompt_version"] for r in SS.load(paths.summaries).values() if r["type"] == "minutes"} == {"minutes-v1"}
+    assert {r["prompt_version"] for r in statements} == {NEXT_STMT_V}
+    assert {r["prompt_version"] for r in SS.load(paths.summaries).values() if r["type"] == "minutes"} == {MIN_V}
 
 
 # --- caps ----------------------------------------------------------------------------------------------------------------------------------
@@ -343,13 +345,16 @@ def test_the_run_is_recorded_in_the_state_for_status(paths):
     fed_only(paths, RecordedClient([dumps(GOOD_FED)], tokens=(1500, 400)))
     st = cc.load_state(paths)["summaries"]
     assert st["last_run"]["new"] == 1 and st["last_run"]["input_tokens"] == 1500 and st["totals"] == {"calls": 1, "input_tokens": 1500, "output_tokens": 400, "summaries": 1}
-    fed_only(paths, RecordedClient([]))
+    import hashlib
+    before = hashlib.sha256(paths.state.read_bytes()).hexdigest()
+    R.run_summaries(paths, TODAY, client=RecordedClient([]), fetcher=fetcher(FakeSession()), env={}, now=NOW.replace(hour=9), cfg=CFG, only={FED_KEY})   # a later run, nothing to do
+    assert hashlib.sha256(paths.state.read_bytes()).hexdigest() == before                                               # a run that did nothing leaves state.json alone (no commit for a timestamp)
     assert cc.load_state(paths)["summaries"]["totals"]["summaries"] == 1
     title, heads, rows, notes = ds._summaries_status_section(paths, TODAY)
-    assert rows[0][0] == 1 and rows[0][4] == 0 and rows[0][5] == 1                                                      # stored 1 - the last run: 0 new, 1 skipped
+    assert rows[0][0] == 1 and rows[0][4] == 1 and rows[0][5] == 0                                                      # stored 1 - the last ACTIVE run: 1 new (an idle run is not logged)
     assert any("all runs: 1 summaries, 1 calls, 1500 in / 400 out tokens" in n for n in notes)
     fed_only(paths, RecordedClient(["x", "x"]), only={"USD:statement:2026-07-29"})
-    assert any(n.startswith("validation_failed USD:statement:2026-07-29 (statement-v1)") for n in ds._summaries_status_section(paths, TODAY)[3])
+    assert any(n.startswith(f"validation_failed USD:statement:2026-07-29 ({STMT_V})") for n in ds._summaries_status_section(paths, TODAY)[3])
 
 
 # --- the dry run: what would it cost, without calling anything ------------------------------------------------------------------------------
@@ -363,7 +368,7 @@ def test_the_dry_run_measures_what_is_pending_without_calling_the_model_or_writi
     assert est.cost_usd == CFG.cost_usd(est.input_tokens, est.output_tokens) and est.runs == 1
     assert snapshot(paths.dir) == before                                                                                # not a file was written
     text = R.estimate_report(est, CFG)
-    assert "6 documents still to summarise, 1 runs at 12 documents per run" in text and "assumed prices" in text and "statement" in text and "minutes" in text
+    assert "6 documents still to summarise, 1 runs at 12 documents per run" in text and "list prices of claude-sonnet-5, checked 2026-09-21" in text and "statement" in text and "minutes" in text
 
 
 def test_the_dry_run_leaves_out_what_is_already_summarised_or_failed(paths):
@@ -411,7 +416,7 @@ def test_a_failure_of_an_older_prompt_version_is_history_and_is_dropped(paths):
 
 def test_a_success_clears_the_failure_of_the_same_document(paths):
     fed_only(paths, RecordedClient(["nope", "nope"]))
-    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|statement-v1"]
+    assert list(SS.load_failures(paths.summaries)) == [f"{FED_KEY}|{STMT_V}"]
     docs = dst.load_documents(paths)
     d = docs[(FED_KEY,)]
     import hashlib
@@ -435,3 +440,89 @@ def test_changes_vs_previous_lists_added_changed_and_dropped_paragraphs():
     assert (ch["vs_meeting"], ch["vs_doc_id"], ch["added_words"], ch["removed_words"], ch["truncated"]) == ("2026-07-29", "USD:statement:2026-07-29", 12, 3, False)
     many = dict(row, ops_json=json.dumps([{"p": i, "prev": None, "kind": "added", "ops": [["+", f"p{i}"]]} for i in range(CH.MAX_ITEMS + 5)]))
     assert len(CH.from_redline(many)["changes"]) == CH.MAX_ITEMS and CH.from_redline(many)["truncated"] is True
+
+
+# --- no extractable text: marked once, never retried; a media availability is never a candidate ---------------------------------------------------
+
+AUD_MINUTES = "AUD:minutes:2026-08-11"
+AUD_URL = "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-08-11.html"
+
+
+def no_layout(session_extra=None):
+    from .cb_docs_helpers import Resp
+    return FakeSession(extra={AUD_URL: Resp(200, b"<html><body><div id=\"other\"><p>The layout changed.</p></div></body></html>", {"Content-Type": "text/html"}), **(session_extra or {})})
+
+
+def test_a_page_without_extractable_text_is_marked_no_text_once_and_not_fetched_again(paths):
+    rep = go(paths, RecordedClient(responder=responder_generic), session=no_layout(), types={"minutes"}, banks={"AUD"})
+    assert [d for d, _ in rep.no_text] == [AUD_MINUTES] and "no container of the page holds the document text" in rep.no_text[0][1] and rep.source_errors == []
+    marks = SS.load_no_text(paths.summaries)
+    assert set(marks) == {AUD_MINUTES} and marks[AUD_MINUTES]["url"] == AUD_URL and marks[AUD_MINUTES]["at"] == "2026-09-21T08:00:00Z"
+    assert rep.new == 3 and SS.load_failures(paths.summaries) == {} and AUD_MINUTES not in SS.load(paths.summaries)      # the other three are summarised
+    before = (paths.summaries / "no_text.json").read_bytes()
+    s2 = FakeSession()
+    again = go(paths, RecordedClient([]), session=s2, types={"minutes"}, banks={"AUD"})
+    assert again.no_text == [] and again.calls == 0 and not any(AUD_URL == u for u in s2.urls())                        # not fetched, not asked
+    assert (paths.summaries / "no_text.json").read_bytes() == before
+
+
+def test_a_page_too_short_to_be_a_document_is_no_text_too(paths):
+    from .cb_docs_helpers import Resp
+    short = Resp(200, b"<html><body><div id=\"content\"><p>Media availability: the Governor will speak at 11:20.</p></div></body></html>", {"Content-Type": "text/html"})
+    rep = go(paths, RecordedClient(responder=responder_generic), session=FakeSession(extra={AUD_URL: short}), types={"minutes"}, banks={"AUD"})
+    assert [d for d, _ in rep.no_text] == [AUD_MINUTES] and "no container of the page holds the document text" in rep.no_text[0][1]      # 90 characters are no minutes
+
+
+def test_a_pdf_with_too_little_text_is_no_text_too(paths):
+    rep = go(paths, RecordedClient(responder=responder_generic), types={"minutes"}, banks={"JPY"})                    # the fixture keeps only the cover page of the BoJ minutes
+    marks = SS.load_no_text(paths.summaries)
+    assert rep.new == 0 and sorted(marks) == ["JPY:minutes:2026-04-28", "JPY:minutes:2026-06-16"]
+    assert all("characters extracted" in m["reason"] and m["url"].endswith(".pdf") for m in marks.values())
+
+
+def test_a_failed_download_is_not_no_text(paths):
+    from .cb_docs_helpers import Resp
+    rep = go(paths, RecordedClient(responder=responder_generic), session=FakeSession(extra={AUD_URL: Resp(503)}), types={"minutes"}, banks={"AUD"})
+    assert rep.no_text == [] and [d for d, _ in rep.source_errors] == [AUD_MINUTES] and not (paths.summaries / "no_text.json").exists()
+
+
+def test_a_document_whose_link_changed_is_looked_at_again(paths):
+    go(paths, RecordedClient(responder=responder_generic), session=no_layout(), types={"minutes"}, banks={"AUD"})
+    docs = dst.load_documents(paths)
+    docs[(AUD_MINUTES,)]["url"] = AUD_URL + "?v=2"
+    dst.write_documents(paths, docs)
+    s = FakeSession(extra={AUD_URL + "?v=2": no_layout().extra[AUD_URL]})
+    rep = go(paths, RecordedClient([]), session=s, types={"minutes"}, banks={"AUD"})
+    assert AUD_URL + "?v=2" in s.urls() and [d for d, _ in rep.no_text] == [AUD_MINUTES]                                # asked again, marked again for the new url
+    assert SS.load_no_text(paths.summaries)[AUD_MINUTES]["url"].endswith("?v=2")
+
+
+def test_the_dry_run_skips_marked_documents_and_says_which_errors_would_be_marked(paths):
+    go(paths, RecordedClient(responder=responder_generic), session=no_layout(), types={"minutes"}, banks={"AUD"})
+    est = R.estimate(paths, TODAY, fetcher=fetcher(FakeSession()), cfg=CFG, banks={"AUD"}, types={"minutes"})
+    assert est.documents == [] and est.source_errors == []                                                             # marked: not even measured
+    fresh = R.estimate(paths, TODAY, fetcher=fetcher(no_layout()), cfg=CFG, banks={"USD"}, types={"minutes"})
+    assert fresh.source_errors == [] and len(fresh.documents) == 2
+
+
+def test_the_status_and_the_page_say_no_text(paths, monkeypatch):
+    from src import cb_datasets as ds
+    from src.cb_compute import payload as P
+    from src.cb_loader import load_context
+    go(paths, RecordedClient(responder=responder_generic), session=no_layout(), types={"minutes"}, banks={"AUD"})
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    notes = ds._summaries_status_section(paths, TODAY)[3]
+    assert any(n.startswith(f"no_text {AUD_MINUTES}: no container of the page holds the document text (marked 2026-09-21, not retried)") for n in notes)
+    ctx = load_context(paths.dir)
+    slot = P.summary_slot(ctx, next(d for d in ctx.documents if d["doc_id"] == AUD_MINUTES))
+    assert slot == {"status": "pending", "label": "summary pending", "doc_id": AUD_MINUTES, "reason": "no extractable text: the page was fetched and holds none (marked once, not retried)"}
+
+
+def test_an_announcement_is_never_a_candidate(paths):
+    from src import cb_datasets as ds
+    docs = sorted(dst.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
+    assert any("/media-availability" in d["url"] and d["relevance"] == "non_document" for d in docs)                    # there are some in the real feed fixture
+    todo = R.candidates(docs, ds.load_meetings(paths.meetings), TODAY, CFG)
+    assert not any("/media-availability" in d["url"] for d in todo)
+    forced = [dict(d, relevance="monetary") for d in docs if "/media-availability" in d["url"]]                          # even if its relevance were wrong, the marker is `non_document`
+    assert all(d["relevance"] != "non_document" for d in R.candidates(docs + forced, ds.load_meetings(paths.meetings), TODAY, CFG))

@@ -33,8 +33,12 @@ class Config:
     quote_chars: tuple
     summary_total_chars: int
     blocked_words: tuple
+    attributed_words: tuple
+    attribution_subjects: tuple
     price_input: float
     price_output: float
+    price_source: str
+    price_checked: str
 
     def cost_usd(self, input_tokens: int, output_tokens: int) -> float:
         return round(input_tokens / 1e6 * self.price_input + output_tokens / 1e6 * self.price_output, 4)
@@ -49,8 +53,10 @@ def load(path=None) -> Config:
         speech_window_days=int(raw["speech_window_days"]), max_source_chars=int(raw["max_source_chars"]), chars_per_token=int(raw["chars_per_token"]), estimate_output_tokens=int(raw["estimate_output_tokens"]),
         max_documents=int(caps["max_documents"]), max_input_tokens=int(caps["max_input_tokens"]), priority=dict(raw["priority"]),
         summary_points=tuple(lim["summary_points"]), point_chars=tuple(lim["point_chars"]), quotes=tuple(lim["quotes"]), quote_chars=tuple(lim["quote_chars"]),
-        summary_total_chars=int(lim["summary_total_chars"]), blocked_words=tuple(str(w) for w in raw["blocked_words"]),
-        price_input=float(price["input"]), price_output=float(price["output"]))
+        summary_total_chars=int(lim["summary_total_chars"]), blocked_words=tuple(str(w) for w in raw["blocked_words"]), attributed_words=tuple(str(w) for w in raw["attributed_words"]),
+        attribution_subjects=tuple(str(w) for w in raw["attribution_subjects"]),
+        price_input=float(price["input"]), price_output=float(price["output"]), price_source=str(raw["pricing_source"]),
+        price_checked=str(raw["pricing_checked"]))
     if cfg.max_tokens <= 0 or cfg.max_documents <= 0 or cfg.max_input_tokens <= 0:
         raise ValueError("cb_summaries.yaml: max_tokens / run_caps must be positive")
     return cfg

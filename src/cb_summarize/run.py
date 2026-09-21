@@ -34,7 +34,8 @@ class SummariesReport:
     new: int = 0
     unchanged: int = 0                                     # already summarised under this prompt version (or a known validation failure): no call
     failed_validation: list = field(default_factory=list)  # (doc_id, [errors]) - written as markers, never as summaries
-    source_errors: list = field(default_factory=list)      # (doc_id, why) - the document could not be downloaded / extracted; tried again next run
+    source_errors: list = field(default_factory=list)      # (doc_id, why) - the page could not be got (transient); tried again next run
+    no_text: list = field(default_factory=list)            # (doc_id, why) - marked THIS run: the page has no extractable text; never tried again
     stopped: Optional[str] = None                          # why the run stopped before the end (caps, API)
     calls: int = 0
     input_tokens: int = 0
@@ -71,6 +72,12 @@ def is_done(rec: Optional[dict], doc: dict, prompt: PR.Prompt) -> bool:
     return expected is None or rec["input_sha256"] == expected
 
 
+def is_no_text(no_text: dict, doc: dict) -> bool:
+    """Marked `no_text` for THIS url (a document whose link changed is looked at again)."""
+    m = no_text.get(doc["doc_id"])
+    return m is not None and m["url"] == doc["url"]
+
+
 def failed_before(failures: dict, doc: dict, prompt: PR.Prompt, sha: Optional[str]) -> bool:
     f = failures.get(f"{doc['doc_id']}|{prompt.version}")
     return f is not None and (sha is None or f["input_sha256"] == sha)
@@ -103,7 +110,7 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
         obj, errors = V.parse_output(resp.text)
         if obj is not None:
             res = V.verify(obj, src.paragraphs, points=cfg.summary_points, point_chars=cfg.point_chars, quotes=cfg.quotes, quote_chars=cfg.quote_chars,
-                           total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words)
+                           total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects)
             if res.ok:
                 return res, usage, []
             errors = res.errors
@@ -132,6 +139,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
     current = {PR.load(k).version for k in PR.KINDS}
     failures = {k: f for k, f in SS.load_failures(paths.summaries).items() if f["prompt_version"] in current}     # a failure of an older prompt version is history, not a status
     fetcher = fetcher or Fetcher()
+    no_text = SS.load_no_text(paths.summaries)
     todo = [d for d in candidates(docs, meetings, today, cfg)                # optional narrowing (--summaries-bank / --summaries-type / a doc_id list): never widens
             if (not banks or d["currency"] in banks) and (not types or d["type"] in types) and (not only or d["doc_id"] in only)]
     rep.considered = len(todo)
@@ -140,11 +148,12 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
     def save() -> None:
         SS.write(paths.summaries, records)
         SS.write_failures(paths.summaries, failures)
+        SS.write_no_text(paths.summaries, no_text)
 
     for doc in todo:
         prompt = PR.for_type(doc["type"])
         rec = records.get(doc["doc_id"])
-        if is_done(rec, doc, prompt) or failed_before(failures, doc, prompt, doc.get("text_sha256")):
+        if is_done(rec, doc, prompt) or failed_before(failures, doc, prompt, doc.get("text_sha256")) or is_no_text(no_text, doc):
             rep.unchanged += 1
             continue
         if attempted >= cfg.max_documents:
@@ -153,7 +162,12 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
         try:
             src = SRC.load(doc, fetcher, cfg.max_source_chars)
         except SRC.SourceError as e:
-            rep.source_errors.append((doc["doc_id"], str(e)))
+            if e.kind == "no_text":                                        # got the page, there is no text in it: said once, not asked again
+                no_text[doc["doc_id"]] = {"url": doc["url"], "reason": str(e), "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
+                rep.no_text.append((doc["doc_id"], str(e)))
+                save()
+            else:
+                rep.source_errors.append((doc["doc_id"], str(e)))
             continue
         if (rec is not None and rec["prompt_version"] == prompt.version and rec["input_sha256"] == src.sha256) or failed_before(failures, doc, prompt, src.sha256):
             rep.unchanged += 1                                             # the downloaded text is the one already summarised (or already failed twice): no call
@@ -184,12 +198,15 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
         rep.new += 1
         save()
     rep.cost_usd = cfg.cost_usd(rep.input_tokens, rep.output_tokens)
-    rep.pending = sum(1 for d in todo if not is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"])) and not failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256")))
+    rep.pending = sum(1 for d in todo if not is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"])) and not failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256"))
+                      and not is_no_text(no_text, d))
     save()
     state = state if state is not None else load_state(paths)
     s = state.setdefault(STATE_KEY, {"totals": {"calls": 0, "input_tokens": 0, "output_tokens": 0, "summaries": 0}})
-    s["last_run"] = {"at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"), "new": rep.new, "unchanged": rep.unchanged, "failed_validation": len(rep.failed_validation),
-                     "source_errors": len(rep.source_errors), "calls": rep.calls, "input_tokens": rep.input_tokens, "output_tokens": rep.output_tokens,
+    active = bool(rep.calls or rep.new or rep.failed_validation or rep.stopped or rep.no_text)
+    if active or "last_run" not in s:                     # a run that did nothing leaves state.json alone (no commit for a timestamp)
+        s["last_run"] = {"at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"), "new": rep.new, "unchanged": rep.unchanged, "failed_validation": len(rep.failed_validation),
+                     "source_errors": len(rep.source_errors), "no_text": len(rep.no_text), "calls": rep.calls, "input_tokens": rep.input_tokens, "output_tokens": rep.output_tokens,
                      "cost_usd": rep.cost_usd, "stopped": rep.stopped, "pending": rep.pending}
     for k, v in (("calls", rep.calls), ("input_tokens", rep.input_tokens), ("output_tokens", rep.output_tokens), ("summaries", rep.new)):
         s["totals"][k] = s["totals"].get(k, 0) + v
@@ -216,17 +233,18 @@ def estimate(paths, today: date, *, fetcher: Optional[Fetcher] = None, cfg: Opti
     current = {PR.load(k).version for k in PR.KINDS}
     failures = {k: f for k, f in SS.load_failures(paths.summaries).items() if f["prompt_version"] in current}
     fetcher = fetcher or Fetcher()
+    no_text = SS.load_no_text(paths.summaries)
     est = Estimate()
     for doc in candidates(docs, ds.load_meetings(paths.meetings), today, cfg):
         if (banks and doc["currency"] not in banks) or (types and doc["type"] not in types):
             continue
         prompt = PR.for_type(doc["type"])
-        if is_done(records.get(doc["doc_id"]), doc, prompt) or failed_before(failures, doc, prompt, doc.get("text_sha256")):
+        if is_done(records.get(doc["doc_id"]), doc, prompt) or failed_before(failures, doc, prompt, doc.get("text_sha256")) or is_no_text(no_text, doc):
             continue
         try:
             src = SRC.load(doc, fetcher, cfg.max_source_chars)
         except SRC.SourceError as e:
-            est.source_errors.append((doc["doc_id"], str(e)))
+            est.source_errors.append((doc["doc_id"], f"{e} [{'would be marked no_text' if e.kind == 'no_text' else 'transient'}]"))
             continue
         tokens = (len(prompt.system) + sum(len(p) + 8 for p in src.paragraphs)) // cfg.chars_per_token
         est.documents.append((doc["doc_id"], doc["type"], src.chars_sent, tokens))
@@ -248,6 +266,6 @@ def estimate_report(est: Estimate, cfg: Optional[Config] = None) -> str:
     lines = [f"summaries dry run (no call): {len(est.documents)} documents still to summarise, {est.runs} runs at {cfg.max_documents} documents per run"]
     lines += [f"  {t:22s} {n:3d} documents  {chars:9d} chars  ~{tok:8d} input tokens" for t, (n, chars, tok) in sorted(by.items())]
     lines.append(f"  total input ~{est.input_tokens} tokens, output ~{est.output_tokens} tokens ({cfg.estimate_output_tokens} each): about ${est.cost_usd:.2f} at "
-                 f"${cfg.price_input}/${cfg.price_output} per million tokens (assumed prices)")
+                 f"${cfg.price_input}/${cfg.price_output} per million tokens (list prices of {cfg.model}, checked {cfg.price_checked})")
     lines += [f"  SOURCE {d}: {why}" for d, why in est.source_errors]
     return "\n".join(lines)

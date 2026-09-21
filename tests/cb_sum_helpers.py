@@ -19,6 +19,11 @@ NOW = datetime(2026, 9, 21, 8, 0, tzinfo=timezone.utc)
 
 FED_KEY = "USD:statement:2026-09-16"
 
+from src.cb_summarize import prompts as _PR                          # noqa: E402  (the versions in force: a new prompt version must not need a test edit)
+STMT_V = _PR.load("statement").version
+MIN_V = _PR.load("minutes").version
+NEXT_STMT_V = "statement-v" + str(int(STMT_V.rsplit("v", 1)[1]) + 1)
+
 GOOD_FED = {
     "summary": [
         "The Federal Open Market Committee approved the statement by a 12 – 0 vote.",

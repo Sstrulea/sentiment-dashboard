@@ -18,6 +18,7 @@ USER_AGENT = "Mozilla/5.0 (compatible; CbDocsBot/1.0; +https://github.com/Sstrul
 MIN_INTERVAL_S = 2.0                # per host
 TIMEOUT_S = 25
 MAX_REQUESTS = 400                  # per run: a runaway loop cannot hammer a bank
+UNSTABLE_ETAG_HOSTS = ("www.ecb.europa.eu",)              # its edge servers send a different ETag ("myra-...") for the same bytes: the ETag is never stored nor sent
 BLOCKED = {401, 403, 429, 451, 503}
 
 
@@ -57,6 +58,9 @@ class Fetcher:
                  max_requests: int = MAX_REQUESTS) -> None:
         self.session = session or requests.Session()
         self.validators = validators if validators is not None else {}
+        for url, v in self.validators.items():                              # an ETag stored before this rule existed: dropped once
+            if self._unstable(url):
+                v.pop("etag", None)
         self._sleep, self._clock, self.ua, self.min_interval, self.max_requests = sleep, clock, user_agent, min_interval, max_requests
         self._last: dict = {}
         self._robots: dict = {}
@@ -106,7 +110,7 @@ class Fetcher:
             self.log.append((url, "network", str(e)[:120]))
             return Fetched(url, error="network")
         out = Fetched(url, r.status_code, r.content, dict(r.headers))
-        out.validators = {k: v for k, v in (("etag", r.headers.get("ETag")), ("last_modified", r.headers.get("Last-Modified"))) if v}
+        out.validators = {k: v for k, v in (("etag", None if self._unstable(url) else r.headers.get("ETag")), ("last_modified", r.headers.get("Last-Modified"))) if v}
         if r.status_code == 304:
             out.not_modified = True
         elif r.status_code in BLOCKED:
@@ -123,7 +127,7 @@ class Fetcher:
         h = {}
         v = self.validators.get(url) if conditional else None
         if v:
-            if v.get("etag"):
+            if v.get("etag") and not self._unstable(url):
                 h["If-None-Match"] = v["etag"]
             if v.get("last_modified"):
                 h["If-Modified-Since"] = v["last_modified"]
@@ -148,7 +152,21 @@ class Fetcher:
             out.error = f"http {r.status_code}"
         return out
 
-    def remember(self, fetched: Fetched) -> None:
-        """Call AFTER the data this response produced is stored: only then do the validators advance."""
-        if fetched.validators:
-            self.validators[fetched.url] = fetched.validators
+    @staticmethod
+    def _unstable(url: str) -> bool:
+        return urlsplit(url).netloc in UNSTABLE_ETAG_HOSTS
+
+    def remember(self, fetched: Fetched, content_sha: Optional[str] = None) -> None:
+        """Call AFTER the data this response produced is stored: only then do the validators advance - and only when the stored CONTENT changed.
+        `content_sha` is the hash of what was stored (the extracted text, not the raw bytes: a page carries a nonce or a timestamp that changes every
+        time). The same content under new validators (an ETag that jitters, a Last-Modified that is bumped) leaves the state untouched: no state.json
+        change, so no commit made only for validators. The cost is a full GET instead of a 304 on the next run, on that page only."""
+        if not fetched.validators:
+            return
+        old = self.validators.get(fetched.url)
+        if old is not None and content_sha is not None and old.get("sha256") == content_sha:
+            return
+        v = dict(fetched.validators)
+        if content_sha is not None:
+            v["sha256"] = content_sha
+        self.validators[fetched.url] = v

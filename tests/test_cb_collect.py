@@ -242,6 +242,22 @@ def test_stored_validators_are_passed_back_and_304_adds_nothing(env):
     assert sha(paths.state) == h
 
 
+def test_validators_that_changed_alone_leave_state_json_untouched_and_new_data_advances_them(env):
+    paths, register = env
+    served = {"days": [17], "state": {"etag": "v1", "last_modified": "Thu"}}
+    register("a", lambda s, since, st: FetchResult("ok", [q(s, D(d), 3.5) for d in served["days"]], state=dict(served["state"])))
+    cc.run(paths, cfg=cfg_for("a"), now=clock())
+    assert cc.load_state(paths) == {"a": {"etag": "v1", "last_modified": "Thu"}}
+    h = sha(paths.state)
+    served["state"] = {"etag": "v2", "last_modified": "Fri"}                                                           # the server changed its validators, not the data
+    reps = cc.run(paths, cfg=cfg_for("a"), now=clock(NOW + timedelta(hours=2)))
+    assert reps[0].merge.new == 0 and reps[0].merge.updated == 0
+    assert sha(paths.state) == h and cc.load_state(paths)["a"]["etag"] == "v1"                                        # no state.json change: no commit made only for validators
+    served["days"], served["state"] = [17, 18], {"etag": "v3", "last_modified": "Sat"}
+    reps = cc.run(paths, cfg=cfg_for("a"), now=clock(NOW + timedelta(hours=4)))
+    assert reps[0].merge.new == 1 and cc.load_state(paths)["a"] == {"etag": "v3", "last_modified": "Sat"}              # new data: the validators go with it
+
+
 def test_backfill_ignores_validators_and_covers_only_official_history_sources(env):
     paths, register = env
     for sid in ("mpt", "snap"):

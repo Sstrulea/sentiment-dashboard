@@ -23,7 +23,7 @@ def test_the_model_and_its_limits_are_fixed_in_the_config():
     assert (CFG.model, CFG.temperature, CFG.max_tokens) == ("claude-sonnet-5", 0.0, raw["max_tokens"]) and CFG.max_tokens >= 2000
     assert CFG.env_key == "ANTHROPIC_API_KEY" and CFG.api_url.startswith("https://api.anthropic.com/") and CFG.backfill_meetings == 4
     assert CFG.summary_points == (3, 6) and CFG.quotes == (1, 5) and CFG.max_documents > 0 and CFG.max_input_tokens > 0
-    assert set(CFG.blocked_words) >= {"hawkish", "dovish", "bullish", "bearish", "likely", "expects to", "signals", "suggests", "paves the way"}
+    assert set(CFG.blocked_words) == {"hawkish", "dovish", "bullish", "bearish", "paves the way", "paved the way", "paving the way"}
     assert set(CFG.priority) == set(PR.KIND_OF_TYPE) and CFG.priority["statement"] < CFG.priority["presser_transcript"] < CFG.priority["minutes"] < CFG.priority["speech"]
     assert CFG.priority["opening_statement"] == CFG.priority["presser_transcript"]
 
@@ -41,18 +41,30 @@ def test_no_dependency_was_added_for_the_api():
 def test_cost_estimate_uses_the_configured_prices():
     assert CFG.cost_usd(1_000_000, 0) == CFG.price_input and CFG.cost_usd(0, 1_000_000) == CFG.price_output
     assert CFG.cost_usd(2000, 500) == round(2000 / 1e6 * CFG.price_input + 500 / 1e6 * CFG.price_output, 4)
-    assert "ASSUMPTION" in CONFIG_PATH.read_text()                                                                     # the prices are declared an assumption, in the file
+    assert (CFG.price_input, CFG.price_output) == (2.0, 10.0)                                                          # the official list price of claude-sonnet-5 (Sonnet 5: $2 / $10 per MTok)
+    assert CFG.price_source == "https://platform.claude.com/docs/en/about-claude/pricing" and CFG.price_checked == "2026-09-21"   # where and when it was read
+    assert "$2 / MTok" in CONFIG_PATH.read_text() and "will not occur" in CONFIG_PATH.read_text()                       # the file quotes the rows it took them from
+    assert CFG.chars_per_token == 3                                                                                    # the newer tokenizer: ~30% more tokens than 4 chars / token
 
 
 # --- prompts -----------------------------------------------------------------------------------------------------------------------------
 
 def test_every_document_type_has_a_prompt_with_a_pinned_version():
     reg = PR.registry()
-    assert set(reg) == {PR.load(k).version for k in PR.KINDS} == {"statement-v1", "transcript-v1", "minutes-v1", "speech-v1"}
+    current = {PR.load(k).version for k in PR.KINDS}
+    assert current == {"statement-v2", "transcript-v2", "minutes-v2", "speech-v2"} and current <= set(reg)
     for k in PR.KINDS:
         p = PR.load(k)
         assert p.version.startswith(k) and re.fullmatch(r"[a-z]+-v\d+", p.version) and reg[p.version] == p.sha256 == hashlib.sha256(p.system.encode()).hexdigest()
     assert {PR.for_type(t).kind for t in CFG.priority} == set(PR.KINDS)
+
+
+def test_the_registry_keeps_the_versions_that_were_replaced_and_they_differ_from_the_current_ones():
+    reg = PR.registry()
+    old = {k: v for k, v in reg.items() if k.endswith("-v1")}
+    assert set(old) == {"statement-v1", "transcript-v1", "minutes-v1", "speech-v1"}                                     # history: a summary made under v1 still names a known prompt
+    for k in PR.KINDS:
+        assert reg[f"{k}-v1"] != reg[PR.load(k).version]                                                                # the prompt did change with the version
 
 
 def test_editing_a_prompt_without_a_new_version_is_caught(tmp_path):
@@ -64,13 +76,16 @@ def test_editing_a_prompt_without_a_new_version_is_caught(tmp_path):
     assert stale == list(PR.KINDS)                                                                                     # the shared text is part of every prompt: every version must move
 
 
-def test_the_prompt_states_the_factual_rules_and_every_blocked_word_of_the_config():
+def test_the_prompt_states_the_factual_rules_and_every_listed_word_of_the_config():
     system = PR.load("statement").system
-    for w in CFG.blocked_words:
+    for w in CFG.blocked_words + CFG.attributed_words:
         assert w in system, w
-    for phrase in ("Factual only", "never add, subtract, round or compute", "character for character", "single JSON object", "3 to 6 summary points", "1 to 5 quotes"):
-        assert phrase in system
+    for phrase in ("Factual only", "never add, subtract, round or compute", "character for character", "single JSON object", "3 to 6 summary points", "1 to 5 quotes",
+                   "only when the document itself uses that same word", "attribute it to the bank", "never in your own voice"):
+        assert phrase in system, phrase
     assert "hawkish" in system and "do not forecast" in system.lower() and "do not interpret" in system.lower()
+    assert set(CFG.blocked_words).isdisjoint(CFG.attributed_words) and {"hawkish", "dovish", "bullish", "bearish", "paves the way"} <= set(CFG.blocked_words)
+    assert {"likely", "expects", "signals", "suggests"} <= set(CFG.attributed_words) and {"Committee", "Board", "Bank", "SNB"} <= set(CFG.attribution_subjects)
 
 
 def test_the_user_message_numbers_the_paragraphs():

@@ -65,3 +65,20 @@ class FakeSession:
 
     def urls(self, method: str = "GET") -> list:
         return [u for m, u, _ in self.calls if m == method and not u.endswith("/robots.txt")]
+
+
+class JitterSession(FakeSession):
+    """The same documents, but every response carries a NEW ETag and never honours If-None-Match - what an edge network with several servers does
+    (the ECB's "myra-..." ETags): the bytes are the same, the validators are not."""
+
+    def __init__(self, *a, **kw) -> None:
+        super().__init__(*a, **kw)
+        self.n = 0
+
+    def get(self, url, headers=None, timeout=None, allow_redirects=True):
+        r = super().get(url, headers={k: v for k, v in (headers or {}).items() if k != "If-None-Match"}, timeout=timeout, allow_redirects=allow_redirects)
+        if url.endswith("/robots.txt") or r.status_code != 200 or url in self.extra:            # an `extra` response is served as given
+            return r
+        self.n += 1
+        r.headers = dict(r.headers, ETag=f'"jitter-{self.n}"', **{"Last-Modified": "Mon, 01 Jun 2026 08:00:00 GMT"})
+        return r

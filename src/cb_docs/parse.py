@@ -378,6 +378,15 @@ NON_MONETARY_RX = re.compile(r"payments?|stablecoin|crypto|digital (?:euro|curre
                              r"cash (?:usage|access)|banknote|museum|history of|award|ceremony|tribute|farewell|opening remarks at the conference", re.I)
 
 
+NON_DOCUMENT_RX = re.compile(r"^\s*media availability\b", re.I)
+
+
+def is_non_document(title: str, url: str = "") -> bool:
+    """A feed item that is an announcement, not a text: the BoC's "Media availability: <Governor speaks at ...>" pages (a time, a place, a topic - no speech).
+    Kept in the store but marked `non_document`: not shown as a speech, never summarised."""
+    return bool(NON_DOCUMENT_RX.match(title)) or "/media-availability" in url
+
+
 def monetary_relevance(title: str, first_paragraph: str = "") -> str:
     """'monetary' when the title or the opening paragraph speaks about policy / inflation / the outlook, else 'other' (kept, marked)."""
     t = f"{title} {first_paragraph[:600]}"

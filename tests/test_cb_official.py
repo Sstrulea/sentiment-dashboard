@@ -307,3 +307,21 @@ def test_committed_official_series_partitions_are_well_formed():
             assert (r["series_id"], r["date"]) not in seen
             seen.add((r["series_id"], r["date"]))
     assert min(d_ for _, d_ in seen) >= D(2025, 9, 1)
+
+
+def test_official_validators_that_changed_alone_leave_state_json_untouched(tmp_path, monkeypatch):
+    router(monkeypatch)
+    paths = cc.Paths(tmp_path / "cb")
+    cc.run_official(paths, now=lambda: NOW, backfill_from=D(2025, 9, 1))
+    assert cc.load_state(paths)["official:rba"]["last_modified"] == "Thu, 17 Sep 2026 23:00:50 GMT"
+    h = sha(paths.state)
+    body = (FIX / "rba_f1_cut.csv").read_bytes()
+    router(monkeypatch, {"f1-data.csv": Resp(200, body, {"Last-Modified": "Fri, 18 Sep 2026 23:00:50 GMT"})})     # the file was touched, not changed
+    reps = cc.run_official(paths, now=lambda: NOW + timedelta(hours=2), lookback_days=10 ** 4)
+    assert all(r.merge.new == 0 and r.merge.updated == 0 for r in reps)
+    assert sha(paths.state) == h and cc.load_state(paths)["official:rba"]["last_modified"] == "Thu, 17 Sep 2026 23:00:50 GMT"      # no state.json change: nothing to commit
+    revised = body.decode().replace("17-Sep-2026,4.35,", "17-Sep-2026,4.40,", 1).encode()                                       # a revised value: real new content
+    router(monkeypatch, {"f1-data.csv": Resp(200, revised, {"Last-Modified": "Sat, 19 Sep 2026 23:00:50 GMT"})})
+    reps = cc.run_official(paths, now=lambda: NOW + timedelta(hours=4), lookback_days=10 ** 4)
+    assert any(r.merge.updated or r.merge.new for r in reps if r.id == "official:rba")
+    assert cc.load_state(paths)["official:rba"]["last_modified"] == "Sat, 19 Sep 2026 23:00:50 GMT"                                  # new data: the validator goes with it

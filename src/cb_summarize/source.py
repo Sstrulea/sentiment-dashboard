@@ -31,7 +31,12 @@ RULES = {                                                                  # (cu
 
 
 class SourceError(Exception):
-    pass
+    """kind "fetch": the page could not be got (robots, a block, HTTP, network) - transient, tried again on the next run. kind "no_text": the page was
+    got but holds no extractable text (no known container, too little text, a scanned PDF) - marked once and not tried again (see run.py)."""
+
+    def __init__(self, message: str, kind: str = "fetch") -> None:
+        super().__init__(message)
+        self.kind = kind
 
 
 @dataclass
@@ -74,7 +79,7 @@ def from_paragraphs(paragraphs: list, method: str, max_chars: int, min_chars: in
     paragraphs = [p for p in paragraphs if p.strip()]                          # the text is kept exactly as extracted (its sha is phase 2a's)
     text = X.to_text(paragraphs)
     if len(text) < min_chars:
-        raise SourceError(f"only {len(text)} characters extracted: the container was not found or the page has no text")
+        raise SourceError(f"only {len(text)} characters extracted: the container was not found or the page has no text", kind="no_text")
     sent, truncated = cut(paragraphs, max_chars)
     return Source(sent, text, X.sha256(text), method, truncated, len(text))
 
@@ -95,7 +100,7 @@ def load(doc: dict, fetcher: Optional[Fetcher], max_chars: int) -> Source:
         got = X.html_paragraphs(r.text, c)
         if sum(len(p) for p in got) >= MIN_CHARS:
             return from_paragraphs(got, X.METHOD_HTML, max_chars)
-    raise SourceError("no container of the page holds the document text")
+    raise SourceError("no container of the page holds the document text", kind="no_text")
 
 
 def meeting_dates(meetings: dict, ccy: str, today: date, n: int) -> list:

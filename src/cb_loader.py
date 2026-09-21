@@ -53,7 +53,7 @@ def load_context(data_dir: Path | str | None = None) -> Context:
         documents=sorted(dst.load_documents(paths).values(), key=lambda r: (r["currency"], r["published_date"], r["doc_id"])),
         votes={(r["currency"], r["meeting_date"]): r for r in dst.load_votes(paths)},
         redlines={(r["currency"], r["meeting_date"]): r for r in dst.load_redlines(paths)},
-        summaries=sm.load(paths.summaries), summary_failures=sm.load_failures(paths.summaries),
+        summaries=sm.load(paths.summaries), summary_failures=sm.load_failures(paths.summaries), summary_no_text=sm.load_no_text(paths.summaries),
 
         stale_after_bd=int(sources_cfg["meta"].get("stale_after_bd", 2)))
 

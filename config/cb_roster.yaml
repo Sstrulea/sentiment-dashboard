@@ -2,7 +2,7 @@ meta:
   generated: '2026-09-21'
   generator: scripts/cb_gen_roster.py
   note: 'names and titles from the banks'' official committee pages; `voter`: FOMC rotation 2026 / 2027; the other decision bodies vote as a whole
-    (true), the ECB Governing Council rotates (null); RBNZ is behind a Cloudflare challenge (no entries)'
+    (true), the ECB Governing Council rotates (null); RBNZ is behind a Cloudflare challenge: its entries are typed by hand in config/cb_roster_manual.yaml'
 sources:
   USD:
     url: https://www.federalreserve.gov/monetarypolicy/fomc.htm
@@ -32,6 +32,12 @@ sources:
     url: https://www.snb.ch/en/the-snb/organisation/supervisory-management-boards
     status: 200
     error: null
+  NZD:
+    url: null
+    status: manual
+    error: null
+    note: RBNZ Monetary Policy Statement, September 2026 - Summary record of meeting, list of participants (rbnz.govt.nz is behind a Cloudflare
+      challenge, so it is typed by hand)
 people:
 - currency: USD
   name: Kevin Warsh
@@ -686,6 +692,54 @@ people:
   name: Petra Tschudin
   role: Member
   body: Governing Board
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: NZD
+  name: Anna Breman
+  role: Governor, Chairperson
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: true
+- currency: NZD
+  name: Carl Hansen
+  role: MPC member
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: NZD
+  name: Hayley Gourley
+  role: MPC member
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: NZD
+  name: Karen Silk
+  role: MPC member
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: NZD
+  name: Paul Conway
+  role: MPC member
+  body: Monetary Policy Committee
+  voter:
+    '2026': true
+    '2027': true
+  chair: false
+- currency: NZD
+  name: Prasanna Gai
+  role: MPC member
+  body: Monetary Policy Committee
   voter:
     '2026': true
     '2027': true

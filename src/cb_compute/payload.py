@@ -371,6 +371,9 @@ def summary_slot(ctx: Context, doc: Optional[dict]) -> dict:
         return {"status": "pending", "label": "summary pending", "doc_id": None, "reason": "the document is not collected"}
     if doc["doc_id"] in ctx.summaries:
         return {"status": "ready", "label": "summary", "doc_id": doc["doc_id"], "reason": None}
+    if doc["doc_id"] in ctx.summary_no_text and ctx.summary_no_text[doc["doc_id"]]["url"] == doc["url"]:
+        return {"status": "pending", "label": "summary pending", "doc_id": doc["doc_id"],
+                "reason": "no extractable text: the page was fetched and holds none (marked once, not retried)"}
     fail = next((f for k, f in sorted(ctx.summary_failures.items()) if k.startswith(doc["doc_id"] + "|")), None)
     if fail:
         return {"status": "pending", "label": "summary pending", "doc_id": doc["doc_id"],
@@ -418,7 +421,8 @@ def documents_json(ctx: Context, ccy: str, asof: date, meetings: list) -> dict:
     import json as _json
     cutoff = asof - timedelta(days=SPEECH_WINDOW_DAYS)
     speeches = []
-    for d in sorted((d for d in mine if d["type"] in ("speech", "testimony") and d["published_date"] >= cutoff), key=lambda d: (d["published_date"], d["doc_id"]), reverse=True):
+    for d in sorted((d for d in mine if d["type"] in ("speech", "testimony") and d["published_date"] >= cutoff and d["relevance"] != "non_document"),
+                    key=lambda d: (d["published_date"], d["doc_id"]), reverse=True):                     # a "media availability" is an announcement, not a speech
         meta = _json.loads(d["meta_json"]) if d["meta_json"] else {}
         speeches.append({"doc_id": d["doc_id"], "type": d["type"], "speaker": d["speaker"] or None, "role": d["role"] or None, "title": d["title"], "url": d["url"],
                          "published": iso(d["published_date"]), "relevance": d["relevance"], "weight": meta.get("weight", 3), "voter": bool(meta.get("voter")),

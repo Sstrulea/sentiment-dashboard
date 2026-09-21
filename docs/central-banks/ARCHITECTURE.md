@@ -421,7 +421,11 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   (BoC, SNB); minutele / deliberările / transcrierile / discursurile se hașează și se leagă (se descarcă la cerere în 2b). Idempotență: același sha ⇒
   nicio rescriere (`Dataset` scrie o partiție doar dacă i se schimbă octeții); `first_seen_at` nu se mută niciodată.
 - **Politețe.** robots.txt respectat pe fiecare gazdă (o gazdă cu robots ilizibil e sărită); un bloc (Cloudflare, 403/429) e raportat, nu ocolit;
-  validatorii ETag / Last-Modified stau în `data/cb/state.json` și avansează **doar după ce datele au fost stocate** (`remember`). Feed-urile se citesc
+  validatorii ETag / Last-Modified stau în `data/cb/state.json` și avansează **doar după ce datele au fost stocate** (`remember`) **și doar dacă s-a schimbat
+  conținutul stocat** (hash-ul textului extras, nu al octeților: o pagină poartă un nonce): aceleași date sub validatori noi lasă `state.json` neatins, deci nu
+  se comite nimic doar pentru validatori (costul: un GET întreg în loc de 304, pe acea pagină). Sursele de piață și seriile oficiale procedează la fel (validatorii
+  avansează doar cu rânduri noi / schimbate). **ETag-ul ECB se ignoră** (serverele de margine trimit alt ETag pentru aceiași octeți): nu se stochează și nu se trimite;
+  rămâne `Last-Modified`. Feed-urile se citesc
   necondiționat (un 304 nu are elemente). O ședință de comunicat mai veche de 14 zile nu se mai cere deloc.
 - **Rata din comunicat** = sursă intermediară. Precedență nouă: **serie oficială > comunicat > BIS > FF validat > manual**; status nou `statement`.
   Fiecare bancă are propriul regex; rata e validată (interval −1…15 %, pas ≤ 100 bp, direcția coerentă cu verbul, la Fed intervalul de 25 bp). Ce nu se
@@ -434,7 +438,8 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   cu ancore pe paragrafe; `apply_redline` reface textul curent exact (testat pe perechi reale consecutive).
 - **Discursuri și mărturii**: feed-ul RSS oficial al fiecărei bănci (Fed, ECB `ecb.sp*` / `ecb.in*`, BoE, BoC, SNB; listele HTML BoJ și RBA); BIS doar
   pentru backfill și dedup — cheia e vorbitor + similaritate de titlu ≥ 0.6, **data BIS nu intră în cheie** (postarea BIS e la 13–19 zile după discurs).
-  Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge. Greutatea: Chair > votanți > restul.
+  Filtrul de relevanță monetară pe titlu și primul paragraf **marchează** (`monetary` / `other`), nu șterge; un anunț care nu e text (BoC „Media availability”: oră, loc,
+  temă) se marchează `non_document` — rămâne în store, nu apare ca discurs și nu se rezumă niciodată. Greutatea: Chair > votanți > restul.
 - **Conferința de presă**: transcrieri oficiale doar ca URL + metadate (Fed PDF, ECB HTML cu Q&A unde hash-ul a fost publicat, RBA HTML; BoC și SNB au
   declarația introductivă în text). **Videoclipul vine din paginile oficiale ale băncilor, nu din feed-urile YouTube**: pagina FOMC (player Brightcove),
   pagina `/multimedia/` a BoC (legată din comunicat), pagina de transcript a RBA („Watch video: Media conference …”), pagina Monetary Policy Report a BoE
@@ -467,7 +472,9 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   pagină ca rezumatul** (partea de după „Minutes of the Monetary Policy Committee meeting”, hașată; comunicatul se oprește la acel titlu).
 - **Roster** (`config/cb_roster.yaml`, generat din paginile oficiale de comitet): Fed (rotația 2026 / 2027, Chair), ECB (cele 6 membri ai Executive Board votează
   mereu; guvernatorii băncilor naționale au vot prin rotație, pagina orarului nu se citește: `voter: null`), BoE (9 membri, cu cei 4 externi), BoJ, BoC (6, cu
-  Deputy Governor extern), RBA (9), SNB (Governing Board, 3). Doar RBNZ lipsește (Cloudflare). Căutarea unui vorbitor se face doar printre membrii băncii lui.
+  Deputy Governor extern), RBA (9), SNB (Governing Board, 3). **RBNZ** (Cloudflare) e tastat de mână în `config/cb_roster_manual.yaml`, din lista de participanți a „Summary record of meeting” din MPS sep 2026: Anna Breman
+  (Governor, Chairperson) și membrii MPC Carl Hansen, Hayley Gourley, Karen Silk, Paul Conway, Prasanna Gai — doar rolurile pe care sursa le dă; generatorul îl
+  îmbină în `cb_roster.yaml`. Căutarea unui vorbitor se face doar printre membrii băncii lui.
 - **Interviul colectiv BoE** (pooled interview) nu se colectează.
 
 
@@ -495,8 +502,12 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   verificatorul și e re-verificabil: `verify_stored` — un offset greșit se detectează); ghilimele curbe, diacritice, majuscule: exact, fără normalizare
   Unicode. Număr: fiecare număr din puncte trebuie să existe în sursă, comparat pe valoare + unitate compatibilă, cu normalizare de separatori (`1,234`, spațiu
   fără întrerupere / subțire), procente (`%`, `percent`, `per cent`), puncte de bază (`25 bp` = `25bp` = `25 basis points`), fracții (`3-3/4`, `1/4`, `2¼`), semne
-  minus; **fără conversie** (`1/4 percentage point` ≠ `25 basis points`) și fără număr pe care documentul nu îl scrie. Cuvinte blocate (hawkish, dovish, bullish,
-  bearish, likely, expects to, signals, suggests, paves the way + variantele lor) — doar în puncte, nu în citate (un citat e cuvântul băncii). Lungimi: 3–6 puncte de
+  minus; **fără conversie** (`1/4 percentage point` ≠ `25 basis points`) și fără număr pe care documentul nu îl scrie. Vocabular, în două trepte (`config/cb_summaries.yaml`): **mereu interzise** în puncte — hawkish, dovish, bullish, bearish, paves the way (+ paved / paving the way), chiar dacă
+  documentul le folosește; **permise doar atribuite** — likely, expects, signals, suggests (+ variantele) — dacă (1) documentul folosește *același cuvânt* și (2) punctul îl
+  atribuie băncii: un subiect din lista `attribution_subjects` (Committee, Board, Bank, SNB, minutes, statement …) apare mai devreme în aceeași propoziție („The Committee expects …”,
+  „The Board says inflation is likely to remain high”), niciodată în vocea rezumatului. Motivul: comunicatele reale spun „likely”, „expects”, „suggests” aproape în fiecare
+  rând (SNB „currently expects growth of around 1%”, RBA „inflation is likely to remain high”), iar interdicția simplă dădea fals-negative. Verificarea se face doar în puncte,
+  nu în citate (un citat e cuvântul băncii). Regula a schimbat promptul: **`statement-v2` / `transcript-v2` / `minutes-v2` / `speech-v2`** (`versions.json` păstrează și v1). Lungimi: 3–6 puncte de
   20–400 caractere, ≤ 1800 în total, citate 15–500 caractere. Coverage: paragrafe existente.
 - **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
   `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
@@ -526,8 +537,14 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
 - **`changes_vs_previous`** nu e cerut modelului: se citește din redline-ul deja stocat (deterministă, fără risc de halucinație); paragraf dispărut = `paragraph: null`.
 - **`numbers`**: lista o produce verificatorul (numerele din puncte, cu locul lor în sursă), nu modelul.
 - **Sursa rezumată** e textul extras în 2a: pentru documente foarte lungi (peste `max_source_chars` = 120 000) se taie la limită de paragraf și înregistrarea spune `truncated`.
-- **Prețurile** din `config/cb_summaries.yaml` (3 / 15 USD per milion de tokeni) sunt o *presupunere* declarată în fișier, folosită doar la estimare; nu s-a putut face o rulare
-  reală în această sesiune (fără cheie): estimarea vine din dry run pe textele reale, nu din facturi.
+- **Prețurile** din `config/cb_summaries.yaml` sunt cele de listă ale lui claude-sonnet-5, citite pe pagina oficială (https://platform.claude.com/docs/en/about-claude/pricing) la
+  2026-09-21: **2 USD / MTok intrare, 10 USD / MTok ieșire** (prețul introductiv a devenit cel standard; creșterea la 3 / 15 din 1 sept. „will not occur”). Sursa și data sunt în
+  fișier. Fără Batch API (−50%), fără prompt caching, fără `inference_geo`. Tokenizatorul Claude 4.7+ dă ~30% mai mulți tokeni pentru același text: `chars_per_token` = 3.
+  Estimările sunt din tokenii raportați (sau din dry run), nu din facturi.
+- **`no_text`**: un document a cărui pagină s-a descărcat dar nu are text extractibil (fără container cunoscut, prea puțin text, PDF scanat) primește o singură dată marcajul
+  `no_text` (`data/cb/summaries/no_text.json`: url, motiv, data) și nu se mai reîncearcă (o eroare de descărcare, în schimb, e tranzitorie și se reia; un link schimbat se reia).
+  `--status` le listează, slotul din pagină spune „no extractable text”.
+- **`state.json` și rezumatele**: ultima rulare se scrie doar dacă rularea a făcut ceva (apeluri, rezumate noi, eșecuri, oprire, `no_text`): o rulare goală nu schimbă fișierul.
 
 ### Limitări
 

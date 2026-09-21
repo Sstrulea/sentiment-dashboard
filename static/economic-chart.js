@@ -577,7 +577,8 @@
     const c = (inst.indicator_cells || {})[key] || { v: null, stale: false };
     const v = c.v;
     if (v === null || v === undefined) {
-      return '<td class="econ-cell cell-na" title="not available for this instrument">—</td>';
+      // A pair whose RATE EXP (2Y) value is n/a (NZDCHF: no 2Y yield on one leg) still has its central-bank page: the link stays on the dash.
+      return '<td class="econ-cell cell-na" title="not available for this instrument">' + cbLink(inst, key, "—") + "</td>";
     }
     const tip = contribTip(findContribution(inst, key));
     const mark = transformMismatchMark(c);
@@ -1457,4 +1458,7 @@
   } else {
     boot();
   }
+
+  // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
+  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, cbHref: cbHref };
 })();

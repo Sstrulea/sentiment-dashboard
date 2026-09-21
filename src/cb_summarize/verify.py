@@ -141,9 +141,32 @@ def check_quote(q, paragraphs: list, starts: list, i: int, lim: tuple) -> tuple:
     return {"paragraph": para, "text": text, "start": start, "end": start + len(text)}, []
 
 
-def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, quotes: tuple, quote_chars: tuple, total_chars: int, blocked: tuple) -> Verified:
+def check_attributed(points: list, src: str, words: tuple, subjects: tuple) -> list:
+    """likely / expects / signals / suggests (`words`): a bank writes them all the time and reporting that is not an opinion, so a summary point may use one
+    ONLY when (1) the document itself uses that same word and (2) the point attributes it to the bank - one of `subjects` ("The Committee", "The SNB", "the
+    minutes" ...) comes earlier in the same sentence of the point ("The Committee expects ..."). Never in the summary's own voice."""
+    if not words:
+        return []
+    rx, subj = blocked_regex(words), blocked_regex(subjects)
+    in_source = {m.group(0).lower() for m in rx.finditer(src)}
+    errors = []
+    for i, s in enumerate(points, 1):
+        for m in rx.finditer(s):
+            w = m.group(0)
+            if w.lower() not in in_source:
+                errors.append(f"the word '{w}' of summary point {i} is not in the document: only a word the document itself uses may appear, and then attributed to the bank")
+                continue
+            sentence_start = max([s.rfind(c, 0, m.start()) for c in ".!?;:"] + [-1]) + 1
+            if not subj.search(s[sentence_start:m.start()]):
+                errors.append(f"the word '{w}' of summary point {i} is not attributed to the bank: write who says it, e.g. 'The Committee {w} ...' (never in your own voice)")
+    return errors
+
+
+def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, quotes: tuple, quote_chars: tuple, total_chars: int, blocked: tuple,
+           attributed: tuple = (), subjects: tuple = ()) -> Verified:
     """Check a parsed model output against the source paragraphs. Returns the record parts (summary, quotes with offsets, numbers with source offsets,
-    coverage) only when every check passed."""
+    coverage) only when every check passed. `blocked` words are refused always; `attributed` words only unless the document uses them and the point
+    attributes them (check_attributed)."""
     errors: list = []
     src = source_text(paragraphs)
     starts = paragraph_starts(paragraphs)
@@ -164,6 +187,7 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     for i, s in enumerate(summary, 1):
         for m in rx.finditer(s):
             errors.append(f"summary point {i} uses the word '{m.group(0)}': no direction, forecast or evaluation - only what the document says")
+    errors += check_attributed(summary, src, attributed, subjects)
 
     qs = obj.get("quotes")
     checked_quotes = []

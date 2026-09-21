@@ -12,7 +12,7 @@ api:
 backfill_meetings: 4                  # the last N decided meetings per bank
 speech_window_days: 60                # speeches / testimony that passed the monetary-relevance filter and are this recent
 max_source_chars: 120000              # longer documents are cut at a paragraph boundary and marked truncated in the record
-chars_per_token: 4                    # only to estimate the input size before a call (the response carries the real usage)
+chars_per_token: 3                    # only to estimate the input size before a call (the response carries the real usage); ~30% more tokens than the old 4 chars / token (newer tokenizer)
 estimate_output_tokens: 700           # ASSUMPTION for the dry-run estimate only: the typical output of one summary (3-6 points, 1-5 quotes)
 run_caps:                             # a run stops cleanly and reports when either is reached
   max_documents: 12
@@ -33,13 +33,17 @@ limits:                               # the automatic check before anything is w
   quotes: [1, 5]
   quote_chars: [15, 500]
   summary_total_chars: 1800
-blocked_words:                        # direction / forecast / evaluation vocabulary: never in a summary point (a quote is the bank's own words, it is not checked)
+blocked_words:                        # direction / evaluation vocabulary: never in a summary point, whatever the document says (a quote is the bank's own words: not checked)
   - hawkish
   - dovish
   - bullish
   - bearish
-  - likely
-  - expects to
+  - paves the way
+  - paved the way
+  - paving the way
+attributed_words:                     # allowed in a summary point ONLY when the document itself uses the same word AND the point attributes it to the bank
+  - likely                            # ("The Committee expects ..."): banks write "expects", "is likely", "suggests" all the time, and reporting that is not an opinion
+  - expects
   - signals
   - signal
   - signalled
@@ -50,11 +54,44 @@ blocked_words:                        # direction / forecast / evaluation vocabu
   - suggest
   - suggested
   - suggesting
-  - paves the way
-  - paved the way
-  - paving the way
-# ASSUMPTION - list prices in USD per million tokens used ONLY for the cost estimate in --status and the report; set them from the current
-# Anthropic price list for the configured model. Nothing else reads them.
+attribution_subjects:                 # one of these must come earlier in the same sentence of the point (the bank, its body or its officers, or its own document)
+  - Committee
+  - Board
+  - Bank
+  - Council
+  - Governor
+  - Chair
+  - Chairman
+  - Chairperson
+  - President
+  - Vice-President
+  - members
+  - participants
+  - speaker
+  - Federal Reserve
+  - FOMC
+  - ECB
+  - RBA
+  - RBNZ
+  - SNB
+  - BoJ
+  - BoE
+  - BoC
+  - MPC
+  - statement
+  - minutes
+  - account
+  - summary
+  - transcript
+  - speech
+  - testimony
+  - document
+# List prices in USD per million tokens, used for the cost estimate in --status and the reports (nothing else reads them). Read on the official price page
+# on 2026-09-21: "Claude Sonnet 5 | Base input tokens $2 / MTok | Output tokens $10 / MTok"; the page adds that the $2 / $10 introductory price of 2026-08-31 "is
+# now the standard price" and that the increase to $3 / $15 on 2026-09-01 "will not occur". Batch API (50% off), prompt caching and US data residency (x1.1)
+# are not used here. The page also says the tokenizer of Claude 4.7 and later produces about 30% more tokens for the same text: `chars_per_token` is 3, not 4.
 pricing_usd_per_mtok:
-  input: 3.0
-  output: 15.0
+  input: 2.0
+  output: 10.0
+pricing_source: https://platform.claude.com/docs/en/about-claude/pricing
+pricing_checked: "2026-09-21"

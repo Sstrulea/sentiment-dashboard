@@ -5,7 +5,7 @@
 Fed: the FOMC page (members, alternates, and the rotation table -> voters of 2026 / 2027). Other banks: the pages of the decision-making body
 (Governing Council, MPC, Policy Board, Monetary Policy Board, Governing Board): the names with their titles; every member of a body that
 votes as a whole (BoE MPC, BoJ Policy Board, RBA MPB, BoC Governing Council, RBNZ MPC, SNB Governing Board) counts as a voter; the ECB
-Governing Council has rotating voting rights: `voter` is null. RBNZ is behind a Cloudflare challenge: no automatic entry (empty list).
+Governing Council has rotating voting rights: `voter` is null. RBNZ is behind a Cloudflare challenge: its entries are typed by hand in config/cb_roster_manual.yaml (merged here).
 Polite HTTP (robots.txt, rate limit) through src/cb_docs/http.py.
 """
 from __future__ import annotations
@@ -31,6 +31,7 @@ PAGES = {
     "AUD": ("https://www.rba.gov.au/about-rba/boards/monetary-policy-board.html", "Monetary Policy Board"),
     "CHF": ("https://www.snb.ch/en/the-snb/organisation/supervisory-management-boards", "Governing Board"),
 }
+MANUAL = Path(__file__).resolve().parent.parent / "config" / "cb_roster_manual.yaml"
 ROLE_RX = re.compile(r"([A-Z][\w'’\-\.]+(?: [A-Z][\w'’\-\.]+){1,3}),? (?P<role>Governor|Deputy Governor|Senior Deputy Governor|Chair(?:man)?|Vice[- ]Chair(?:man)?|"
                      r"President|Vice-President|Chief Economist|Executive Director)\b")
 NAME = r"[A-Z][a-z]+(?: [A-Z]\.)?(?: (?:[A-Z][a-z]+|[A-Z][a-z]+-[A-Z][a-z]+))+"
@@ -194,9 +195,13 @@ def main(argv=None) -> int:
                else boc(text) if ccy == "CAD" else snb(text) if ccy == "CHF" else generic(text, body, True))
         for p in got:
             people.append({"currency": ccy, **p})
+    for ccy, m in (yaml.safe_load(MANUAL.read_text()) or {}).items():             # hand-typed entries (a bank whose page the collector cannot read)
+        sources[ccy] = {"url": None, "status": "manual", "error": None, "note": m["source"]}
+        for p in m["people"]:
+            people.append({"currency": ccy, "name": p["name"], "role": p["role"], "body": m["body"], "voter": {"2026": True, "2027": True}, "chair": bool(p["chair"])})
     doc = {"meta": {"generated": date.today().isoformat(), "generator": "scripts/cb_gen_roster.py", "note": "names and titles from the banks' official committee pages; "
                     "`voter`: FOMC rotation 2026 / 2027; the other decision bodies vote as a whole (true), the ECB Governing Council rotates (null); "
-                    "RBNZ is behind a Cloudflare challenge (no entries)"}, "sources": sources, "people": people}
+                    "RBNZ is behind a Cloudflare challenge: its entries are typed by hand in config/cb_roster_manual.yaml"}, "sources": sources, "people": people}
     Path(a.out).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True, width=140))
     print(f"{len(people)} people from {sum(1 for s in sources.values() if not s['error'])} pages -> {a.out}")
     return 0

@@ -272,8 +272,8 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
         rep.merge = merge_quotes(store, final)
         if res.raw and final and any(q.asof == res.raw["asof"] for q in final):
             raws.append((sid, res.raw["asof"], res.raw["text"]))
-        if res.state and rep.dropped == 0:                          # cutoff held rows back -> re-fetch next run
-            new_state[sid] = res.state
+        if res.state and rep.dropped == 0 and (rep.merge.new or rep.merge.updated or sid not in state):   # cutoff held rows back -> re-fetch next run
+            new_state[sid] = res.state                              # advance only with new data: validators that changed alone would be a commit for nothing
         elif rep.dropped:
             rep.note = (rep.note + f" {rep.dropped} quote(s) before eod_cutoff, validators kept").strip()
 
@@ -346,8 +346,8 @@ def run_official(paths: Paths, *, only: list[str] | None = None, backfill_from: 
             continue
         rep.status, rep.note = res.status, res.note
         rep.merge = cs.merge(OFFICIAL, store, (obs_row(o) for o in res.obs))
-        if res.state and not res.failed:
-            new_state[rep.id] = res.state
+        if res.state and not res.failed and (rep.merge.new or rep.merge.updated or rep.id not in state):
+            new_state[rep.id] = res.state                           # validators advance only with new data (see run())
     cs.write(OFFICIAL, paths.dir, store, set().union(*(r.merge.months for r in reports)))
     save_state(paths, new_state)
     cals = load_calendars()

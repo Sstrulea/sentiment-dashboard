@@ -18,7 +18,7 @@ PARAS = statement_paras("USD", "2026-09-16")
 
 def check(obj, paras=None):
     return V.verify(obj, paras or PARAS, points=CFG.summary_points, point_chars=CFG.point_chars, quotes=CFG.quotes, quote_chars=CFG.quote_chars,
-                    total_chars=CFG.summary_total_chars, blocked=CFG.blocked_words)
+                    total_chars=CFG.summary_total_chars, blocked=CFG.blocked_words, attributed=CFG.attributed_words, subjects=CFG.attribution_subjects)
 
 
 def with_summary(*points):
@@ -142,12 +142,94 @@ def test_the_same_value_in_another_form_is_accepted():
     assert r.ok, r.errors
 
 
-# --- direction / forecast / evaluation vocabulary ---------------------------------------------------------------------------------
+# --- direction / evaluation vocabulary: refused always; likely / expects / signals / suggests: only the bank's own word, attributed --------------------
 
 @pytest.mark.parametrize("word", list(CFG.blocked_words))
-def test_every_blocked_word_is_refused_in_a_summary_point(word):
+def test_every_always_blocked_word_is_refused_in_a_summary_point(word):
     r = check(with_summary(GOOD_FED["summary"][0], GOOD_FED["summary"][1], f"The statement was described as {word.upper()} in its tone."))
     assert not r.ok and any("summary point 3" in e and "no direction, forecast or evaluation" in e for e in r.errors)
+
+
+@pytest.mark.parametrize("word", ["hawkish", "dovish", "bullish", "bearish", "paves the way"])
+def test_the_always_blocked_words_stay_refused_even_when_the_document_uses_them_and_the_point_attributes_them(word):
+    paras = [f"Some members described the stance as {word} in their discussion of the outlook for the year ahead."]
+    r = V.verify({"summary": ["The minutes record the views of members on the stance.", f"The minutes say some members described the stance as {word}.", "The discussion covered the outlook."],
+                  "quotes": [{"paragraph": 1, "text": f"Some members described the stance as {word}"}], "coverage": [1]}, paras,
+                 points=(3, 6), point_chars=(20, 400), quotes=(1, 5), quote_chars=(15, 500), total_chars=1800, blocked=CFG.blocked_words,
+                 attributed=CFG.attributed_words, subjects=CFG.attribution_subjects)
+    assert not r.ok and any(f"uses the word '{word}'" in e for e in r.errors)
+
+
+def real_paragraphs(ccy: str, day: str) -> list:
+    return statement_paras(ccy, day)
+
+
+def with_real(paras, *points, quote_of):
+    """A valid output around `points` for a real document, quoting the paragraph that holds `quote_of`."""
+    i = next(k for k, p in enumerate(paras) if quote_of in p)
+    return check({"summary": list(points), "quotes": [{"paragraph": i + 1, "text": quote_of}], "coverage": [i + 1]}, paras)
+
+
+def test_the_banks_own_word_is_allowed_when_the_point_attributes_it_real_statements():
+    snb = real_paragraphs("CHF", "2026-06-18")                                                                         # "the SNB currently expects growth of around 1%"
+    r = with_real(snb, "The SNB states the decision it took and its reasons in the statement.", "The SNB says it currently expects growth of around 1% for 2026 as a whole.",
+                  "The SNB describes global growth as likely to be more moderate in the short term.", quote_of="the SNB currently expects growth of around 1%")
+    assert r.ok, r.errors
+    aud = real_paragraphs("AUD", "2026-08-11")                                                                         # "inflation is likely to remain high for some time"
+    r = with_real(aud, "The Board decided on the cash rate at its meeting.", "The Board states that inflation is likely to remain high for some time.",
+                  "The Board describes the inflation impulse in its statement.", quote_of="inflation is likely to remain high for some time")
+    assert r.ok, r.errors
+    cad = real_paragraphs("CAD", "2026-06-10")                                                                         # "Recent data suggests that growth will resume"
+    r = with_real(cad, "The Bank says recent data suggests that growth will resume in the second quarter.", "The Bank held the policy rate at its announcement.",
+                  "The Bank describes the state of the economy.", quote_of="Recent data suggests that growth will resume in the second quarter")
+    assert r.ok, r.errors
+    boj = real_paragraphs("JPY", "2026-09-18")
+    r = with_real(boj, "The Board's statement says Japan's economy is expected to continue growing moderately.", "The Board sets out the policy interest rate decision.",
+                  "The statement says the CPI is likely to accelerate to a level above 2 percent.", quote_of="Japan's economy is expected to continue growing moderately")
+    assert r.ok, r.errors
+
+
+def test_the_word_case_does_not_matter_but_the_form_of_the_word_does():
+    aud = real_paragraphs("AUD", "2026-08-11")
+    assert with_real(aud, "The Board decided on the cash rate.", "The Board says inflation is LIKELY to remain high for some time.", "The Board describes inflation.",
+                     quote_of="inflation is likely to remain high for some time").ok
+    r = with_real(real_paragraphs("CAD", "2026-06-10"), "The Bank held the policy rate.", "The Bank suggested that growth will resume in the second quarter.", "The Bank describes the economy.",
+                  quote_of="Recent data suggests that growth will resume in the second quarter")
+    assert not r.ok and any("the word 'suggested' of summary point 2 is not in the document" in e for e in r.errors)      # the document says "suggests", not "suggested"
+
+
+def test_a_soft_word_the_document_does_not_use_is_refused_even_when_attributed():
+    r = check(with_summary(GOOD_FED["summary"][0], GOOD_FED["summary"][1], "The Committee signals a further increase in the target range."))
+    assert not r.ok and any("the word 'signals' of summary point 3 is not in the document" in e and "attributed to the bank" in e for e in r.errors)
+    r = check(with_summary(GOOD_FED["summary"][0], GOOD_FED["summary"][1], "The Committee expects inflation to return to 2 percent."))
+    assert not r.ok and any("the word 'expects' of summary point 3 is not in the document" in e for e in r.errors)     # the Fed statement of 16 Sep does not say it
+
+
+def test_a_soft_word_in_the_summarys_own_voice_is_refused_even_when_the_document_uses_it():
+    aud = real_paragraphs("AUD", "2026-08-11")
+    for own_voice in ("Inflation is likely to remain high for some time.",
+                      "The Board held the cash rate. Inflation is likely to remain high for some time.",                # the subject is in ANOTHER sentence
+                      "The Board held the cash rate; inflation is likely to remain high for some time.",                # ... or before a semicolon
+                      "Growth data suggests that inflation is likely to remain high."):
+        r = with_real(aud, "The Board decided on the cash rate.", own_voice, "The Board describes inflation.", quote_of="inflation is likely to remain high for some time")
+        assert not r.ok and any("is not attributed to the bank" in e and "never in your own voice" in e for e in r.errors), own_voice
+
+
+def test_the_attribution_must_come_before_the_word_in_the_same_sentence():
+    aud = real_paragraphs("AUD", "2026-08-11")
+    ok = with_real(aud, "The Board decided on the cash rate.", "The Board judged that, with the labour market tight, inflation is likely to remain high.", "The Board describes inflation.",
+                   quote_of="inflation is likely to remain high for some time")
+    assert ok.ok, ok.errors                                                                                            # the subject may be several words before
+    late = with_real(aud, "The Board decided on the cash rate.", "Inflation is likely to remain high, the Board says.", "The Board describes inflation.",
+                     quote_of="inflation is likely to remain high for some time")
+    assert not late.ok and any("is not attributed" in e for e in late.errors)                                          # "the Board" comes AFTER the word
+
+
+def test_one_error_per_offending_word_and_the_feedback_names_the_point():
+    aud = real_paragraphs("AUD", "2026-08-11")
+    r = with_real(aud, "Inflation is likely to remain high.", "It suggests policy is on hold.", "The Board describes inflation.", quote_of="inflation is likely to remain high for some time")
+    words = [e for e in r.errors if "is not" in e]
+    assert len(words) == 2 and "'likely' of summary point 1" in words[0] and "'suggests' of summary point 2" in words[1] and "not in the document" in words[1]
 
 
 def test_blocked_words_are_whole_words_and_a_quote_may_carry_the_banks_own_words():

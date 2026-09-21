@@ -7,6 +7,7 @@ from pathlib import Path
 
 VERSION = 1
 FAILURES = "failures.json"
+NO_TEXT = "no_text.json"
 
 
 def dump(obj) -> str:
@@ -66,6 +67,28 @@ def write_failures(directory: Path, failures: dict) -> bool:
         return False
     directory.mkdir(parents=True, exist_ok=True)
     text = dump({"version": VERSION, "failures": failures})
+    if p.exists() and p.read_text() == text:
+        return False
+    p.write_text(text)
+    return True
+
+
+def load_no_text(directory: Path) -> dict:
+    """doc_id -> {url, reason, at}: documents whose page was fetched but holds no extractable text. Marked once, never tried again."""
+    p = Path(directory) / NO_TEXT
+    return json.loads(p.read_text()).get("no_text", {}) if p.exists() else {}
+
+
+def write_no_text(directory: Path, marks: dict) -> bool:
+    directory = Path(directory)
+    p = directory / NO_TEXT
+    if not marks:
+        if p.exists():
+            p.unlink()
+            return True
+        return False
+    directory.mkdir(parents=True, exist_ok=True)
+    text = dump({"version": VERSION, "no_text": marks})
     if p.exists() and p.read_text() == text:
         return False
     p.write_text(text)

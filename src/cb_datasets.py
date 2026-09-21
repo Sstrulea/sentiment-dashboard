@@ -318,11 +318,11 @@ def _summaries_status_section(paths, today: date) -> tuple:
     from .cb_summarize import store as SS
     from .cb_summarize.config import load as load_cfg
     cfg = load_cfg()
-    records, failures = SS.load(paths.summaries), SS.load_failures(paths.summaries)
+    records, failures, no_text = SS.load(paths.summaries), SS.load_failures(paths.summaries), SS.load_no_text(paths.summaries)
     docs = sorted(dst.load_documents(paths).values(), key=lambda d: (d["currency"], d["published_date"], d["doc_id"]))
     todo = SR.candidates(docs, load_meetings(paths.meetings), today, cfg)
     pending = [d for d in todo if not SR.is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"]))
-               and not SR.failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256"))]
+               and not SR.failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256")) and not SR.is_no_text(no_text, d)]
     st = load_state(paths).get("summaries", {})
     last, tot = st.get("last_run") or {}, st.get("totals") or {}
     rows = [[len(records), len(todo), len(pending), len(failures), last.get("new", ""), last.get("unchanged", ""), last.get("failed_validation", ""),
@@ -332,23 +332,25 @@ def _summaries_status_section(paths, today: date) -> tuple:
         notes.append(f"WARN {cfg.env_key} is not set: the summaries stage is skipped ({len(pending)} candidate documents are waiting)")
     for f in sorted(failures.values(), key=lambda f: f["doc_id"]):
         notes.append(f"validation_failed {f['doc_id']} ({f['prompt_version']}): {'; '.join(f['errors'][:2])[:220]}")
+    for d, m in sorted(no_text.items()):
+        notes.append(f"no_text {d}: {m['reason']} (marked {m['at'][:10]}, not retried)")
     if last.get("stopped"):
         notes.append(f"last run stopped: {last['stopped']}")
     if tot:
         cost = round(tot.get("input_tokens", 0) / 1e6 * cfg.price_input + tot.get("output_tokens", 0) / 1e6 * cfg.price_output, 4)
         notes.append(f"all runs: {tot.get('summaries', 0)} summaries, {tot.get('calls', 0)} calls, {tot.get('input_tokens', 0)} in / {tot.get('output_tokens', 0)} out tokens, "
-                     f"about ${cost:.4f} at the configured prices (config/cb_summaries.yaml: an assumption, not a bill)")
-    return ("summaries (phase 2b)", ["stored", "candidates", "pending", "validation_failed", "last: new", "skipped", "failed", "tokens in / out", "est. cost"], rows, notes)
+                     f"about ${cost:.4f} at the list prices in config/cb_summaries.yaml (checked {cfg.price_checked}; an estimate from the reported tokens, not a bill)")
+    return ("summaries (phase 2b)", ["stored", "candidates", "pending", "validation_failed", "last active run: new", "skipped", "failed", "tokens in / out", "est. cost"], rows, notes)
 
 
 def summaries_report(rep) -> tuple:
     if not rep.enabled:
         line = f"summaries: SKIPPED - {rep.skipped_reason}"
         return line, f"### summaries\n\n{line}"
-    line = (f"summaries: {rep.new} new, {rep.unchanged} unchanged, {len(rep.failed_validation)} failed validation, {len(rep.source_errors)} source errors; "
+    line = (f"summaries: {rep.new} new, {rep.unchanged} unchanged, {len(rep.failed_validation)} failed validation, {len(rep.no_text)} newly marked no_text, {len(rep.source_errors)} source errors; "
             f"{rep.calls} calls, {rep.input_tokens} input / {rep.output_tokens} output tokens, about ${rep.cost_usd:.4f}; {rep.pending} still pending")
     extra = ([f"  STOPPED {rep.stopped}"] if rep.stopped else []) + [f"  VALIDATION FAILED {d}: {'; '.join(e[:2])}" for d, e in rep.failed_validation] + \
-            [f"  SOURCE {d}: {why}" for d, why in rep.source_errors]
+            [f"  NO_TEXT {d}: {why} (marked once, not retried)" for d, why in rep.no_text] + [f"  SOURCE {d}: {why}" for d, why in rep.source_errors]
     md = f"### summaries\n\n{line}" + ("\n\n" + "\n".join(f"- {e.strip()}" for e in extra) if extra else "")
     return "\n".join([line] + extra), md
 

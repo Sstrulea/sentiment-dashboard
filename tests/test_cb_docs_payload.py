@@ -134,3 +134,8 @@ def test_a_meeting_without_a_video_says_why_per_bank(built):
     assert "pooled broadcast interview" in latest("GBP")["presser_video"]["na"]                                        # 17 Sep: no MPR press conference
     assert all(latest(c)["presser_video"]["na"].endswith("(a link can be added in data/cb/manual/documents.yaml)") for c in ("JPY", "CHF", "GBP"))
     assert latest("USD")["presser_video"]["available"] and latest("USD")["presser_video"]["url"].endswith("fomcpresconf20260916.htm")
+
+
+def test_a_non_document_is_not_listed_as_a_speech(built):
+    speeches = docs(built, "CAD")["speeches"]
+    assert speeches and not any("/media-availability" in x["url"] for x in speeches) and all(x["relevance"] in ("monetary", "other") for x in speeches)
