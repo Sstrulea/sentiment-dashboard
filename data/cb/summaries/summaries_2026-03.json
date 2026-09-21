@@ -207,6 +207,185 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     7,
+     14,
+     18,
+     22,
+     54
+    ],
+    "paragraphs_sent": 115,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:presser_transcript:2026-03-17",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 5 has none but the closest clause of the paragraph(s) it cites has one: “it doesn’t say anything about the forward path at the moment.” (its clause: “Asked by Cecile Lefort about the forward path”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Asked by Cecile Lefort about the forward path, Bullock said it does not say anything about the forward path at the moment and she cannot give commitments one way or the other."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "87e8f4c20ee98b83b034f50f0b017c793243e4bbdba80faa9ea01f4dcd286a61",
+   "meeting_date": "2026-03-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 230,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 215,
+     "text": "25 basis points"
+    },
+    {
+     "end": 246,
+     "point": 1,
+     "source_text": "4.1 per cent",
+     "start": 234,
+     "text": "4.1 per cent"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-03-17",
+   "quotes": [
+    {
+     "end": 247,
+     "paragraph": 7,
+     "start": 152,
+     "text": "Today as you know, the Board decided to raise the cash rate by 25 basis points to 4.1 per cent."
+    },
+    {
+     "end": 4979,
+     "paragraph": 14,
+     "start": 4908,
+     "text": "So the issue wasn’t the direction, the issue was really the timing and."
+    },
+    {
+     "end": 6390,
+     "paragraph": 18,
+     "start": 6306,
+     "text": "We don’t want to see a recession or a large rise in unemployment if we can avoid it."
+    },
+    {
+     "end": 18347,
+     "paragraph": 54,
+     "start": 18274,
+     "text": "Yeah, look, it doesn’t say anything about the forward path at the moment."
+    }
+   ],
+   "source": {
+    "chars": 39749,
+    "chars_sent": 39750,
+    "method": "html-selector",
+    "paragraphs_sent": 115,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.875,
+      "fragments": [
+       {
+        "end": 247,
+        "paragraph": 7,
+        "start": 152,
+        "text": "Today as you know, the Board decided to raise the cash rate by 25 basis points to 4.1 per cent."
+       },
+       {
+        "end": 364,
+        "paragraph": 7,
+        "start": 248,
+        "text": "The data we’ve seen since the February meeting has shown that the economy grew faster than its potential growth rate"
+       },
+       {
+        "end": 532,
+        "paragraph": 7,
+        "start": 400,
+        "text": "The labour market has tightened a little recently, rather than being stable as we’d expected, and underlying inflation remains high."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Michele Bullock said the Board raised the cash rate by 25 basis points to 4.1 per cent, after data showed faster growth, a tighter labour market and high underlying inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 4979,
+        "paragraph": 14,
+        "start": 4908,
+        "text": "So the issue wasn’t the direction, the issue was really the timing and."
+       },
+       {
+        "end": 5294,
+        "paragraph": 14,
+        "start": 5174,
+        "text": "So I’d say they put more weight on the uncertainty and wanting a little bit more information and certainty before moving"
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Asked by Patrick Commins about reasons for holding, Bullock said the issue was not direction but timing, with those voting to hold putting more weight on uncertainty and additional information."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6390,
+        "paragraph": 18,
+        "start": 6306,
+        "text": "We don’t want to see a recession or a large rise in unemployment if we can avoid it."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "Asked by Lea Jurkovic about the employment mandate, Bullock said the Board does not want a recession or a large rise in unemployment if it can avoid it."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 7798,
+        "paragraph": 22,
+        "start": 7693,
+        "text": "this hit with fuel prices and this additional rise in mortgage rates is going to be hard for some people."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "Asked by John Rolfe about household costs, Bullock said the additional rise in mortgage rates is going to be hard for some people."
+    }
+   ],
+   "title": "Reserve Bank of Australia press conference transcript, 17 March 2026",
+   "type": "presser_transcript",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-03-17.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21706,
+    "output_tokens": 3151,
+    "reasoning_tokens": 1998
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1,
      2,
      7,

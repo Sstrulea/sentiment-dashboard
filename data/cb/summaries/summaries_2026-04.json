@@ -1169,6 +1169,240 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     3,
+     5,
+     7
+    ],
+    "paragraphs_sent": 7,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:statement:2026-04-30",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "a0c2ed8f7c758244a4c8298aaaa5cc5904909f3ddebfddf9c8eda2fa683c4e25",
+   "meeting_date": "2026-04-30",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 169,
+     "point": 1,
+     "source_text": "3.75%",
+     "start": 164,
+     "text": "3.75%"
+    },
+    {
+     "end": 825,
+     "point": 3,
+     "source_text": "3.3%",
+     "start": 821,
+     "text": "3.3%"
+    },
+    {
+     "end": 490,
+     "point": 5,
+     "source_text": "2%",
+     "start": 488,
+     "text": "2%"
+    },
+    {
+     "end": 136,
+     "point": 6,
+     "source_text": "8",
+     "start": 135,
+     "text": "8"
+    },
+    {
+     "end": 138,
+     "point": 6,
+     "source_text": "1",
+     "start": 137,
+     "text": "1"
+    },
+    {
+     "end": 235,
+     "point": 6,
+     "source_text": "0.25 percentage points",
+     "start": 213,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 242,
+     "point": 6,
+     "source_text": "4%",
+     "start": 240,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-04-30",
+   "quotes": [
+    {
+     "end": 170,
+     "paragraph": 2,
+     "start": 36,
+     "text": "At its meeting ending on 29 April 2026, the Monetary Policy Committee (MPC) voted by a majority of 8–1 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "end": 922,
+     "paragraph": 5,
+     "start": 790,
+     "text": "CPI inflation has increased to 3.3%, and is likely to be higher later this year as the effects of higher energy prices pass through."
+    },
+    {
+     "end": 1661,
+     "paragraph": 7,
+     "start": 1527,
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    }
+   ],
+   "source": {
+    "chars": 1661,
+    "chars_sent": 1662,
+    "method": "stored",
+    "paragraphs_sent": 7,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 170,
+        "paragraph": 2,
+        "start": 76,
+        "text": "the Monetary Policy Committee (MPC) voted by a majority of 8–1 to maintain Bank Rate at 3.75%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The MPC voted to maintain Bank Rate at 3.75%."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 343,
+        "paragraph": 3,
+        "start": 244,
+        "text": "The conflict in the Middle East means that prospects for global energy prices are highly uncertain."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee states that the conflict in the Middle East makes prospects for global energy prices highly uncertain."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 922,
+        "paragraph": 5,
+        "start": 790,
+        "text": "CPI inflation has increased to 3.3%, and is likely to be higher later this year as the effects of higher energy prices pass through."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "CPI inflation has increased to 3.3%, and the Committee states that it is likely to be higher later this year as higher energy prices pass through."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1039,
+        "paragraph": 5,
+        "start": 923,
+        "text": "There is a risk of material second-round effects in price and wage-setting, which policy would need to lean against."
+       },
+       {
+        "end": 1144,
+        "paragraph": 5,
+        "start": 1040,
+        "text": "But the labour market continues to loosen, and a weakening economy could contain inflationary pressures."
+       },
+       {
+        "end": 1253,
+        "paragraph": 5,
+        "start": 1145,
+        "text": "Financial conditions have tightened since the conflict began, which will help to reduce inflation over time."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Committee reports a risk of material second-round effects in price and wage-setting, while the labour market continues to loosen and financial conditions have tightened since the conflict began."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1526,
+        "paragraph": 7,
+        "start": 1396,
+        "text": "The Committee will continue to monitor closely the situation in the Middle East and how its impact propagates through the economy."
+       },
+       {
+        "end": 1661,
+        "paragraph": 7,
+        "start": 1527,
+        "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Committee will monitor closely the situation in the Middle East and stands ready to act as necessary to ensure CPI inflation remains on track to meet the 2% target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 243,
+        "paragraph": 2,
+        "start": 171,
+        "text": "One member voted to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The MPC voted by a majority of 8–1, with one member voting to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England monetary policy statement, 30 April 2026",
+   "type": "statement",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4456,
+    "output_tokens": 1741,
+    "reasoning_tokens": 511
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1
     ],
     "paragraphs_sent": 3,

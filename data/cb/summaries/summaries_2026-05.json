@@ -1,6 +1,489 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     15,
+     18,
+     24,
+     27,
+     50,
+     52,
+     56
+    ],
+    "paragraphs_sent": 66,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:minutes:2026-05-05",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "3f4b00f6d0315303cd7f3041277df3e98cb867195c4211b92c90a0551bde3fdc",
+   "meeting_date": "2026-05-05",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 10465,
+     "point": 3,
+     "source_text": "4.6 per cent",
+     "start": 10453,
+     "text": "4.6 per cent"
+    },
+    {
+     "end": 10543,
+     "point": 3,
+     "source_text": "0.8 percentage points",
+     "start": 10522,
+     "text": "0.8 percentage points"
+    },
+    {
+     "end": 18942,
+     "point": 4,
+     "source_text": "25 basis points",
+     "start": 18927,
+     "text": "25 basis points"
+    },
+    {
+     "end": 28143,
+     "point": 6,
+     "source_text": "4.35 per cent",
+     "start": 28130,
+     "text": "4.35 per cent"
+    },
+    {
+     "end": 25010,
+     "point": 6,
+     "source_text": "4.1 per cent",
+     "start": 24998,
+     "text": "4.10 per cent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-05-19",
+   "quotes": [
+    {
+     "end": 4709,
+     "paragraph": 15,
+     "start": 4579,
+     "text": "Members noted that banks had largely passed on the February and March cash rate increases to advertised lending and deposit rates."
+    },
+    {
+     "end": 8970,
+     "paragraph": 24,
+     "start": 8859,
+     "text": "Underlying inflation had remained high in the March quarter, though marginally lower than forecast in February."
+    },
+    {
+     "end": 24652,
+     "paragraph": 50,
+     "start": 24489,
+     "text": "Having considered these various arguments, most members judged that the case to raise the cash rate target by 25 basis points at this meeting was the stronger one."
+    },
+    {
+     "end": 28250,
+     "paragraph": 56,
+     "start": 28066,
+     "text": "The Board resolved by majority to raise the cash rate target to 4.35 per cent. Eight members voted in favour; one member voted to leave the cash rate target unchanged at 4.10 per cent."
+    }
+   ],
+   "source": {
+    "chars": 30155,
+    "chars_sent": 30156,
+    "method": "html-selector",
+    "paragraphs_sent": 66,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4837,
+        "paragraph": 15,
+        "start": 4710,
+        "text": "Taken together with other developments, this meant financial conditions in Australia had tightened over the course of the year."
+       },
+       {
+        "end": 7051,
+        "paragraph": 18,
+        "start": 6914,
+        "text": "These observations led members to conclude that it remained unclear how restrictive financial conditions were at the time of the meeting."
+       }
+      ],
+      "paragraphs": [
+       15,
+       18
+      ]
+     },
+     "text": "Members said financial conditions in Australia had tightened over the year, while it remained unclear how restrictive they were at the meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8970,
+        "paragraph": 24,
+        "start": 8859,
+        "text": "Underlying inflation had remained high in the March quarter, though marginally lower than forecast in February."
+       },
+       {
+        "end": 9435,
+        "paragraph": 24,
+        "start": 9360,
+        "text": "aggregate conditions were still a little tight relative to full employment."
+       },
+       {
+        "end": 9677,
+        "paragraph": 24,
+        "start": 9581,
+        "text": "consumption growth having a little less momentum at the start of 2026 than had been anticipated."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Members reported that underlying inflation remained high in the March quarter, labour market conditions were still a little tight, and consumption growth had less momentum than anticipated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10558,
+        "paragraph": 27,
+        "start": 10382,
+        "text": "Monthly headline inflation had increased significantly in March, to be 4.6 per cent in year-ended terms; higher fuel prices had contributed 0.8 percentage points to this total."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Members noted that March year-ended headline inflation was 4.6 per cent, with higher fuel prices contributing 0.8 percentage points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 24652,
+        "paragraph": 50,
+        "start": 24532,
+        "text": "most members judged that the case to raise the cash rate target by 25 basis points at this meeting was the stronger one."
+       },
+       {
+        "end": 24778,
+        "paragraph": 50,
+        "start": 24674,
+        "text": "underlying inflation was projected to be above target for an extended period across a range of scenarios"
+       }
+      ],
+      "paragraphs": [
+       50
+      ]
+     },
+     "text": "Most members judged that raising the cash rate target by 25 basis points was stronger, as underlying inflation was projected to be above target for an extended period."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 25935,
+        "paragraph": 52,
+        "start": 25846,
+        "text": "one member placed more weight on the arguments for leaving the cash rate target unchanged"
+       },
+       {
+        "end": 26047,
+        "paragraph": 52,
+        "start": 25950,
+        "text": "capacity pressures prevailing before the conflict were somewhat less than the staff had assessed."
+       },
+       {
+        "end": 26156,
+        "paragraph": 52,
+        "start": 26048,
+        "text": "This member also assessed the risk of a prolonged conflict that weighed more heavily on demand to be higher."
+       }
+      ],
+      "paragraphs": [
+       52
+      ]
+     },
+     "text": "One member favoured leaving the cash rate target unchanged, assessing lower capacity pressures and a higher risk that a prolonged conflict would weigh more heavily on demand."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 28144,
+        "paragraph": 56,
+        "start": 28066,
+        "text": "The Board resolved by majority to raise the cash rate target to 4.35 per cent."
+       },
+       {
+        "end": 28250,
+        "paragraph": 56,
+        "start": 28145,
+        "text": "Eight members voted in favour; one member voted to leave the cash rate target unchanged at 4.10 per cent."
+       }
+      ],
+      "paragraphs": [
+       56
+      ]
+     },
+     "text": "The Board resolved by majority to raise the cash rate target to 4.35 per cent; eight members voted in favour and one voted to leave it unchanged at 4.10 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia minutes of the 05 May 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-05-05.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7029,
+    "output_tokens": 791,
+    "reasoning_tokens": 65
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
+     8,
+     11,
+     23,
+     47,
+     97
+    ],
+    "paragraphs_sent": 133,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:presser_transcript:2026-05-05",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 3 is not verbatim in the paragraph(s) it cites [11] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Michele Bullock said the Board judges the cash rate to be a bit restrictive, remains focused on returning inflation to target and will be driven by incoming data."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "6fdd148b6e4e22d52595ff5afb43b486561a56828cbc1d51ad5d56bc729a686a",
+   "meeting_date": "2026-05-05",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 222,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 207,
+     "text": "25 basis points"
+    },
+    {
+     "end": 307,
+     "point": 1,
+     "source_text": "75 basis points",
+     "start": 292,
+     "text": "75 basis points"
+    },
+    {
+     "end": 6947,
+     "point": 3,
+     "source_text": "1.3 per cent",
+     "start": 6935,
+     "text": "1.3 per cent"
+    },
+    {
+     "end": 16667,
+     "point": 4,
+     "source_text": "4.8 per cent",
+     "start": 16655,
+     "text": "4.8 per cent"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-05-05",
+   "quotes": [
+    {
+     "end": 223,
+     "paragraph": 7,
+     "start": 143,
+     "text": "Today, as you know, the Board decided to raise the cash rate by 25 basis points."
+    },
+    {
+     "end": 3118,
+     "paragraph": 11,
+     "start": 3059,
+     "text": "The Board remains focused on returning inflation to target."
+    },
+    {
+     "end": 7574,
+     "paragraph": 23,
+     "start": 7425,
+     "text": "At the moment, we think in our baseline scenario that that’s not going to happen, that growth is going to be anaemic but the economy will still grow."
+    },
+    {
+     "end": 16668,
+     "paragraph": 47,
+     "start": 16625,
+     "text": "I think our forecast is about 4.8 per cent."
+    },
+    {
+     "end": 31519,
+     "paragraph": 97,
+     "start": 31408,
+     "text": "the one sort of put more weight on those downside scenarios, those downside risks and worries, than the others."
+    }
+   ],
+   "source": {
+    "chars": 42302,
+    "chars_sent": 42303,
+    "method": "html-selector",
+    "paragraphs_sent": 133,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 223,
+        "paragraph": 7,
+        "start": 143,
+        "text": "Today, as you know, the Board decided to raise the cash rate by 25 basis points."
+       },
+       {
+        "end": 308,
+        "paragraph": 7,
+        "start": 224,
+        "text": "Since the start of the year the cash rate has now been increased by 75 basis points."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Michele Bullock said the Board raised the cash rate by 25 basis points, bringing increases since the start of the year to 75 basis points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 643,
+        "paragraph": 8,
+        "start": 547,
+        "text": "Inflation in Australia was already too high before the recent conflict in the Middle East began."
+       },
+       {
+        "end": 823,
+        "paragraph": 8,
+        "start": 644,
+        "text": "The most recent data have confirmed that some of the increase in inflation was being generated by economy-wide capacity pressures including ongoing tightness in the labour market."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Michele Bullock said inflation was already too high before the Middle East conflict, and recent data confirmed economy-wide capacity pressures including labour-market tightness."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6948,
+        "paragraph": 23,
+        "start": 6855,
+        "text": "if you look at our forecasts you’ll see that we have growth going down to about 1.3 per cent."
+       },
+       {
+        "end": 7574,
+        "paragraph": 23,
+        "start": 7425,
+        "text": "At the moment, we think in our baseline scenario that that’s not going to happen, that growth is going to be anaemic but the economy will still grow."
+       }
+      ],
+      "paragraphs": [
+       23
+      ]
+     },
+     "text": "Asked by David Chau about recession risks, Michele Bullock said the forecasts have growth going down to about 1.3 per cent and the baseline has anaemic growth while the economy still grows."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16624,
+        "paragraph": 47,
+        "start": 16533,
+        "text": "we’re going to see over the next three to six months, inflation will peak probably in June."
+       },
+       {
+        "end": 16701,
+        "paragraph": 47,
+        "start": 16625,
+        "text": "I think our forecast is about 4.8 per cent. It will then start to come down."
+       }
+      ],
+      "paragraphs": [
+       47
+      ]
+     },
+     "text": "Asked by Chris Kohler about households, Michele Bullock said inflation will peak probably in June at about 4.8 per cent, then start to come down according to the baseline."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30694,
+        "paragraph": 97,
+        "start": 30600,
+        "text": "they put more weight on the risks that the oil shock was going to have a big impact on demand."
+       },
+       {
+        "end": 31519,
+        "paragraph": 97,
+        "start": 31408,
+        "text": "the one sort of put more weight on those downside scenarios, those downside risks and worries, than the others."
+       }
+      ],
+      "paragraphs": [
+       97
+      ]
+     },
+     "text": "Asked by Millie Muroi about the vote, Michele Bullock said the one member put more weight on downside scenarios and concerns that the oil shock would have a big impact on demand."
+    }
+   ],
+   "title": "Reserve Bank of Australia press conference transcript, 05 May 2026",
+   "type": "presser_transcript",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-05-05.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 22923,
+    "output_tokens": 1600,
+    "reasoning_tokens": 118
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 240,
     "changes": [
@@ -736,6 +1219,197 @@
     "input_tokens": 4061,
     "output_tokens": 2139,
     "reasoning_tokens": 1490
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     17,
+     27,
+     40,
+     42,
+     47,
+     51,
+     56
+    ],
+    "paragraphs_sent": 147,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:minutes:2026-04-29",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 6 is not verbatim in the paragraph(s) it cites [56, 58] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "The Committee decided to maintain the target range at 3-1/2 to 3-3/4 percent; Stephen I. Miran preferred a 1/4 percentage point reduction, while Beth M. Hammack, Neel Kashkari, and Lorie K. Logan did not support inclusion of an easing bias."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "be6e2780c12655db3496ea8fdb3fa8fd31f1141163b11513d1ed2e35421c122d",
+   "meeting_date": "2026-04-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 643,
+     "point": 3,
+     "source_text": "2",
+     "start": 642,
+     "text": "2 percent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-05-20",
+   "quotes": [
+    {
+     "end": 8260,
+     "paragraph": 17,
+     "start": 8101,
+     "text": "The information available at the time of the meeting indicated that inflation remained elevated and had moved higher, led by a sharp increase in energy prices."
+    },
+    {
+     "end": 23510,
+     "paragraph": 42,
+     "start": 23420,
+     "text": "Participants generally expected labor market conditions to remain stable in the near term."
+    },
+    {
+     "end": 32812,
+     "paragraph": 51,
+     "start": 32667,
+     "text": "In support of the Committee's goals, almost all members agreed to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent."
+    },
+    {
+     "end": 36008,
+     "paragraph": 56,
+     "start": 35879,
+     "text": "In support of its goals, the Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent."
+    }
+   ],
+   "source": {
+    "chars": 46051,
+    "chars_sent": 46052,
+    "method": "html-selector",
+    "paragraphs_sent": 147,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8260,
+        "paragraph": 17,
+        "start": 8169,
+        "text": "inflation remained elevated and had moved higher, led by a sharp increase in energy prices."
+       },
+       {
+        "end": 8359,
+        "paragraph": 17,
+        "start": 8261,
+        "text": "Labor market conditions had stabilized, and real gross domestic product (GDP) continued to expand."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Staff reported that inflation remained elevated and had moved higher, labor market conditions had stabilized, and real gross domestic product (GDP) continued to expand."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 13872,
+        "paragraph": 27,
+        "start": 13684,
+        "text": "Financing conditions in domestic credit markets remained somewhat restrictive for small businesses and households but were generally accommodative for larger businesses and municipalities."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Staff reported that financing conditions remained somewhat restrictive for small businesses and households but were generally accommodative for larger businesses and municipalities."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 20943,
+        "paragraph": 40,
+        "start": 20818,
+        "text": "Participants anticipated that high energy prices would continue to put upward pressure on overall inflation in the near term."
+       },
+       {
+        "end": 22489,
+        "paragraph": 40,
+        "start": 22315,
+        "text": "The vast majority of participants noted an increased risk that inflation would take longer to return to the Committee's 2 percent objective than they had previously expected."
+       }
+      ],
+      "paragraphs": [
+       40
+      ]
+     },
+     "text": "Participants anticipated that high energy prices would continue to put upward pressure on overall inflation in the near term, and the vast majority noted increased risk that inflation would take longer to return to 2 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23510,
+        "paragraph": 42,
+        "start": 23420,
+        "text": "Participants generally expected labor market conditions to remain stable in the near term."
+       },
+       {
+        "end": 23640,
+        "paragraph": 42,
+        "start": 23511,
+        "text": "Most participants judged, however, that risks to the employment side of the Committee's dual mandate were tilted to the downside."
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "Participants generally expected labor market conditions to remain stable in the near term, though most judged risks to the employment side of the dual mandate were tilted to the downside."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 29919,
+        "paragraph": 47,
+        "start": 29643,
+        "text": "participants generally judged that the continued elevated inflation readings together with uncertainty related to the duration and economic implications of the Middle East conflict could necessitate maintaining the current policy stance for longer than previously anticipated."
+       }
+      ],
+      "paragraphs": [
+       47
+      ]
+     },
+     "text": "Participants generally judged that elevated inflation readings and uncertainty related to the Middle East conflict could necessitate maintaining the current policy stance for longer than previously anticipated."
+    }
+   ],
+   "title": "Federal Reserve minutes of the 29 April 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260429.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21628,
+    "output_tokens": 2732,
+    "reasoning_tokens": 1157
    }
   }
  ],

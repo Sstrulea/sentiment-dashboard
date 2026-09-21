@@ -3376,6 +3376,417 @@
    }
   },
   {
+   "changes_vs_previous": {
+    "added_words": 160,
+    "changes": [
+     {
+      "added": "September",
+      "paragraph": 1,
+      "removed": "July"
+     },
+     {
+      "added": "16 September",
+      "paragraph": 2,
+      "removed": "29 July"
+     },
+     {
+      "added": "Protracted conflict",
+      "paragraph": 3,
+      "removed": "In response to events"
+     },
+     {
+      "added": "East has contributed to further increases in",
+      "paragraph": 3,
+      "removed": "East,"
+     },
+     {
+      "added": "since the previous meeting, which remain more",
+      "paragraph": 3,
+      "removed": "have remained"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "The impact of the energy shock on the"
+     },
+     {
+      "added": "CPI inflation increased to 3.1% in August and is likely to rise further over coming quarters.",
+      "paragraph": 3,
+      "removed": "economy remains uncertain."
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "cannot influence energy prices but"
+     },
+     {
+      "added": "inflation comes down to 2% sustainably as",
+      "paragraph": 3,
+      "removed": "that"
+     },
+     {
+      "added": "economy adjusts",
+      "paragraph": 3,
+      "removed": "economic adjustment"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "them occurs in a way that achieves"
+     },
+     {
+      "added": "energy shock.",
+      "paragraph": 3,
+      "removed": "2% inflation target sustainably."
+     },
+     {
+      "added": "shock",
+      "paragraph": 3,
+      "removed": "shock,"
+     },
+     {
+      "added": "economy.",
+      "paragraph": 3,
+      "removed": "economy including via financial conditions."
+     },
+     {
+      "added": "There",
+      "paragraph": 4,
+      "removed": "CPI inflation"
+     },
+     {
+      "added": "been little evidence so far",
+      "paragraph": 4,
+      "removed": "fallen to 2.6% since the previous meeting, although it is expected to rise later this year as the effects of higher energy prices continue to pass through. The risk"
+     },
+     {
+      "added": "wage-setting. However, the risk of such effects,",
+      "paragraph": 4,
+      "removed": "wage-setting,"
+     },
+     {
+      "added": "persist or are more volatile. Activity has been slightly stronger than expected, although soft",
+      "paragraph": 4,
+      "removed": "persist. There is little evidence so far to suggest such effects, and there have continued to be clear signs of underlying disinflation in recent data. Loose"
+     },
+     {
+      "added": "the",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "since",
+      "paragraph": 4,
+      "removed": "than prior to"
+     },
+     {
+      "added": "conflict began,",
+      "paragraph": 4,
+      "removed": "conflict,"
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "also"
+     },
+     {
+      "added": "Overall, the",
+      "paragraph": 4,
+      "removed": "The"
+     },
+     {
+      "added": "upside, and more so than at",
+      "paragraph": 4,
+      "removed": "upside relative to"
+     },
+     {
+      "added": "time of",
+      "paragraph": 4,
+      "removed": "central projection in"
+     },
+     {
+      "added": "although",
+      "paragraph": 4,
+      "removed": "but"
+     },
+     {
+      "added": "At this meeting, the MPC also voted unanimously to reduce the stock of UK government bond purchases held for monetary policy purposes, and financed by the issuance of central bank reserves, to zero. This will be conducted through a multi-year plan, such that the remaining stock is unwound at an annual average pace of £46 billion by the end of 2034, through annual sales of £20 billion alongside maturing gilts.",
+      "paragraph": 6,
+      "removed": ""
+     }
+    ],
+    "removed_words": 117,
+    "truncated": false,
+    "vs_doc_id": "GBP:statement:2026-07-30",
+    "vs_meeting": "2026-07-30"
+   },
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:statement:2026-09-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "c827332c370ec10889c03780a9bb22b68fffd73fe8056c621938bf0f3adf03f7",
+   "meeting_date": "2026-09-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 177,
+     "point": 1,
+     "source_text": "3.75%",
+     "start": 172,
+     "text": "3.75%"
+    },
+    {
+     "end": 485,
+     "point": 2,
+     "source_text": "3.1%",
+     "start": 481,
+     "text": "3.1%"
+    },
+    {
+     "end": 613,
+     "point": 4,
+     "source_text": "2%",
+     "start": 611,
+     "text": "2%"
+    },
+    {
+     "end": 144,
+     "point": 5,
+     "source_text": "6",
+     "start": 143,
+     "text": "6"
+    },
+    {
+     "end": 146,
+     "point": 5,
+     "source_text": "3",
+     "start": 145,
+     "text": "3"
+    },
+    {
+     "end": 246,
+     "point": 5,
+     "source_text": "0.25 percentage points",
+     "start": 224,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 253,
+     "point": 5,
+     "source_text": "4%",
+     "start": 251,
+     "text": "4%"
+    },
+    {
+     "end": 2075,
+     "point": 6,
+     "source_text": "46",
+     "start": 2073,
+     "text": "46"
+    },
+    {
+     "end": 2102,
+     "point": 6,
+     "source_text": "2034",
+     "start": 2098,
+     "text": "2034"
+    },
+    {
+     "end": 2131,
+     "point": 6,
+     "source_text": "20",
+     "start": 2129,
+     "text": "20"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-09-17",
+   "quotes": [
+    {
+     "end": 178,
+     "paragraph": 2,
+     "start": 40,
+     "text": "At its meeting ending on 16 September 2026, the Monetary Policy Committee (MPC) voted by a majority of 6–3 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "end": 547,
+     "paragraph": 3,
+     "start": 451,
+     "text": "UK CPI inflation increased to 3.1% in August and is likely to rise further over coming quarters."
+    },
+    {
+     "end": 1534,
+     "paragraph": 4,
+     "start": 1271,
+     "text": "Overall, the Committee judges that the risks to the inflation outlook are tilted to the upside, and more so than at the time of the July Monetary Policy Report, although there remains scope for the outlook to change materially as events in the Middle East unfold."
+    },
+    {
+     "end": 1752,
+     "paragraph": 5,
+     "start": 1618,
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    },
+    {
+     "end": 2165,
+     "paragraph": 6,
+     "start": 1952,
+     "text": "This will be conducted through a multi-year plan, such that the remaining stock is unwound at an annual average pace of £46 billion by the end of 2034, through annual sales of £20 billion alongside maturing gilts."
+    }
+   ],
+   "source": {
+    "chars": 2165,
+    "chars_sent": 2166,
+    "method": "stored",
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 178,
+        "paragraph": 2,
+        "start": 84,
+        "text": "the Monetary Policy Committee (MPC) voted by a majority of 6–3 to maintain Bank Rate at 3.75%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The MPC voted to maintain Bank Rate at 3.75%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 392,
+        "paragraph": 3,
+        "start": 255,
+        "text": "Protracted conflict in the Middle East has contributed to further increases in crude and refined energy prices since the previous meeting"
+       },
+       {
+        "end": 547,
+        "paragraph": 3,
+        "start": 451,
+        "text": "UK CPI inflation increased to 3.1% in August and is likely to rise further over coming quarters."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Bank states that Middle East conflict has contributed to further increases in crude and refined energy prices, while UK CPI inflation increased to 3.1% in August and is likely to rise further over coming quarters."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 904,
+        "paragraph": 4,
+        "start": 807,
+        "text": "There has been little evidence so far of material second-round effects in price and wage-setting."
+       },
+       {
+        "end": 1430,
+        "paragraph": 4,
+        "start": 1271,
+        "text": "Overall, the Committee judges that the risks to the inflation outlook are tilted to the upside, and more so than at the time of the July Monetary Policy Report"
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Committee reports little evidence of material second-round effects in price and wage-setting and judges that risks to the inflation outlook are tilted to the upside."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1752,
+        "paragraph": 5,
+        "start": 1618,
+        "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 254,
+        "paragraph": 2,
+        "start": 179,
+        "text": "Three members voted to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The vote was 6–3, with three members voting to increase Bank Rate by 0.25 percentage points, to 4%."
+    },
+    {
+     "evidence": {
+      "coverage": 0.957,
+      "fragments": [
+       {
+        "end": 1951,
+        "paragraph": 6,
+        "start": 1753,
+        "text": "At this meeting, the MPC also voted unanimously to reduce the stock of UK government bond purchases held for monetary policy purposes, and financed by the issuance of central bank reserves, to zero."
+       },
+       {
+        "end": 2165,
+        "paragraph": 6,
+        "start": 1952,
+        "text": "This will be conducted through a multi-year plan, such that the remaining stock is unwound at an annual average pace of £46 billion by the end of 2034, through annual sales of £20 billion alongside maturing gilts."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The MPC unanimously voted to reduce the stock of UK government bond purchases held for monetary policy purposes to zero through a multi-year plan, unwinding the remaining stock at an annual average pace of £46 billion by the end of 2034 through annual sales of £20 billion."
+    }
+   ],
+   "title": "Bank of England monetary policy statement, 17 September 2026",
+   "type": "statement",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 1956,
+    "output_tokens": 2342,
+    "reasoning_tokens": 1542
+   }
+  },
+  {
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [

@@ -209,6 +209,231 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     7,
+     8,
+     10,
+     30,
+     38
+    ],
+    "paragraphs_sent": 123,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:presser_transcript:2026-06-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "68bed8d18d23b6a3fb74e6fbae1e12be6a8b629f192b637f8490b3db20e052db",
+   "meeting_date": "2026-06-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 229,
+     "point": 1,
+     "source_text": "4.35 per cent",
+     "start": 216,
+     "text": "4.35 per cent"
+    },
+    {
+     "end": 282,
+     "point": 1,
+     "source_text": "75 basis points",
+     "start": 267,
+     "text": "75 basis points"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-06-16",
+   "quotes": [
+    {
+     "end": 230,
+     "paragraph": 6,
+     "start": 134,
+     "text": "So as you know today the Board decided to leave the cash rate target unchanged at 4.35 per cent."
+    },
+    {
+     "end": 534,
+     "paragraph": 7,
+     "start": 478,
+     "text": "I want to be very clear that inflation remains too high."
+    },
+    {
+     "end": 1531,
+     "paragraph": 8,
+     "start": 1374,
+     "text": "But this could take some time and an orderly resolution is still not assured, meaning there are still upside risks to inflation and downside risks to growth."
+    },
+    {
+     "end": 2301,
+     "paragraph": 10,
+     "start": 2176,
+     "text": "Today’s decision does not rule out further tightening in monetary policy if that is what is required to bring inflation down."
+    },
+    {
+     "end": 8991,
+     "paragraph": 30,
+     "start": 8909,
+     "text": "So, no, we’re not forecasting that the economy is going to shrink in this quarter."
+    }
+   ],
+   "source": {
+    "chars": 33611,
+    "chars_sent": 33612,
+    "method": "html-selector",
+    "paragraphs_sent": 123,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 230,
+        "paragraph": 6,
+        "start": 155,
+        "text": "the Board decided to leave the cash rate target unchanged at 4.35 per cent."
+       },
+       {
+        "end": 311,
+        "paragraph": 6,
+        "start": 231,
+        "text": "The cash rate has been increased by 75 basis points since the start of the year."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Michele Bullock said the Board left the cash rate target unchanged at 4.35 per cent, after increasing it by 75 basis points since the start of the year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 534,
+        "paragraph": 7,
+        "start": 478,
+        "text": "I want to be very clear that inflation remains too high."
+       },
+       {
+        "end": 880,
+        "paragraph": 7,
+        "start": 827,
+        "text": "spending and investment have not softened materially."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Michele Bullock said inflation remains too high and spending and investment have not softened materially."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1373,
+        "paragraph": 8,
+        "start": 1249,
+        "text": "If the conflict does end and the Strait of Hormuz is reopened, this should support the flow of commodities and lower prices."
+       },
+       {
+        "end": 1531,
+        "paragraph": 8,
+        "start": 1408,
+        "text": "an orderly resolution is still not assured, meaning there are still upside risks to inflation and downside risks to growth."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Michele Bullock said an end to the Middle East conflict and reopening of the Strait of Hormuz should support commodity flows and lower prices, but an orderly resolution is still not assured."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2301,
+        "paragraph": 10,
+        "start": 2176,
+        "text": "Today’s decision does not rule out further tightening in monetary policy if that is what is required to bring inflation down."
+       },
+       {
+        "end": 2415,
+        "paragraph": 10,
+        "start": 2326,
+        "text": "the Board will be focused on the data and what that suggests about the outlook and risks."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Michele Bullock said the decision does not rule out further tightening if required to bring inflation down, and the Board will focus on the data, outlook and risks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8657,
+        "paragraph": 30,
+        "start": 8585,
+        "text": "We are not forecasting that the economy is going to shrink this quarter."
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "Michele Bullock said the RBA is not forecasting that the economy is going to shrink this quarter."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10771,
+        "paragraph": 38,
+        "start": 10647,
+        "text": "I wouldn’t say it’s material, Cecile. I think the outcome was higher than we had forecast and had factored into our forecast"
+       },
+       {
+        "end": 10868,
+        "paragraph": 38,
+        "start": 10803,
+        "text": "This is the wage rises for the people at the very lowest incomes."
+       }
+      ],
+      "paragraphs": [
+       38
+      ]
+     },
+     "text": "Michele Bullock said the outcome was higher than forecast but would not be material, and described the wage rises as for people at the very lowest incomes."
+    }
+   ],
+   "title": "Reserve Bank of Australia press conference transcript, 16 June 2026",
+   "type": "presser_transcript",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-06-16.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 19493,
+    "output_tokens": 1791,
+    "reasoning_tokens": 428
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 315,
     "changes": [
@@ -2409,6 +2634,359 @@
    }
   },
   {
+   "changes_vs_previous": {
+    "added_words": 307,
+    "changes": [
+     {
+      "added": "The Governing Council is committed to setting monetary policy to ensure that inflation stabilises at its 2% target in the medium term. In line with this commitment, it today decided to raise the three key ECB interest rates by 25 basis points. The war in the Middle East is generating inflation pressures, and the decision to raise rates is robust across a range of scenarios mapping out how the shock might evolve and affect the medium-term outlook for the euro area.",
+      "paragraph": 1,
+      "removed": ""
+     },
+     {
+      "added": "In the baseline of the new Eurosystem staff projections, headline inflation is expected to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028. For inflation excluding energy and food, the baseline foresees an average of 2.5% in 2026 and 2027 and 2.2% in 2028. Compared with March, staff have revised up their baseline projection for inflation in 2026 and 2027 owing to a higher path for energy prices, which, to some extent, is expected to feed into food, goods and services inflation. The baseline sees economic growth at an average of 0.8% in 2026, 1.2% in 2027 and 1.5% in 2028. This is a downward revision for 2026 and 2027, reflecting a more pronounced impact of the war on commodity markets, real incomes and confidence.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "outlook remains uncertain, with upside risks for",
+      "paragraph": 3,
+      "removed": "war in the Middle East has led to a sharp increase in energy prices, pushing up"
+     },
+     {
+      "added": "downside risks for",
+      "paragraph": 3,
+      "removed": "weighing on"
+     },
+     {
+      "added": "growth.",
+      "paragraph": 3,
+      "removed": "sentiment."
+     },
+     {
+      "added": "full",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "growth",
+      "paragraph": 3,
+      "removed": "economic activity"
+     },
+     {
+      "added": "shock, as well as",
+      "paragraph": 3,
+      "removed": "shock and"
+     },
+     {
+      "added": "This uncertainty is also reflected in",
+      "paragraph": 3,
+      "removed": "The longer"
+     },
+     {
+      "added": "broad range of outcomes for",
+      "paragraph": 3,
+      "removed": "war continues and the longer energy prices remain high, the stronger is the likely impact on broader"
+     },
+     {
+      "added": "growth in",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "updated illustrative scenarios put together by Eurosystem staff. These will be published with the staff projections on the ECB’s website.",
+      "paragraph": 3,
+      "removed": "economy."
+     },
+     {
+      "added": "With today’s decision, the",
+      "paragraph": 4,
+      "removed": "The"
+     },
+     {
+      "added": "remains well positioned to navigate the uncertainty caused by the war. It",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "the Governing Council’s",
+      "paragraph": 4,
+      "removed": "its"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Governing Council today decided to keep the three key ECB interest rates unchanged. While the incoming information has been broadly consistent with the Governing Council’s previous assessment of the inflation outlook, the upside risks to inflation and the downside risks to growth have intensified. The Governing Council is committed to setting monetary policy to ensure that inflation stabilises at the 2% target in the medium term."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Governing Council remains well positioned to navigate the current uncertainty. The euro area entered this period of surging energy prices with inflation at around the 2% target, and the economy has shown resilience over recent quarters. Longer-term inflation expectations remain well anchored, although inflation expectations over shorter horizons have moved up significantly."
+     },
+     {
+      "added": "Governing Council decided to raise the three key ECB interest rates by 25 basis points. Accordingly, the",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "be increased to 2.25%, 2.40%",
+      "paragraph": 6,
+      "removed": "remain unchanged at 2.00%, 2.15%"
+     },
+     {
+      "added": "2.65% respectively, with effect from 17 June 2026.",
+      "paragraph": 6,
+      "removed": "2.40% respectively."
+     }
+    ],
+    "removed_words": 172,
+    "truncated": false,
+    "vs_doc_id": "EUR:statement:2026-04-30",
+    "vs_meeting": "2026-04-30"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     4,
+     6,
+     8
+    ],
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:statement:2026-06-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "587c431680a77121e97055cd6e3c75a0fae9c2d752887149db3585439cfc040e",
+   "meeting_date": "2026-06-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 242,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 227,
+     "text": "25 basis points"
+    },
+    {
+     "end": 2644,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 2639,
+     "text": "2.25%"
+    },
+    {
+     "end": 2651,
+     "point": 1,
+     "source_text": "2.40%",
+     "start": 2646,
+     "text": "2.40%"
+    },
+    {
+     "end": 2661,
+     "point": 1,
+     "source_text": "2.65%",
+     "start": 2656,
+     "text": "2.65%"
+    },
+    {
+     "end": 572,
+     "point": 3,
+     "source_text": "3.0%",
+     "start": 568,
+     "text": "3.0%"
+    },
+    {
+     "end": 580,
+     "point": 3,
+     "source_text": "2026",
+     "start": 576,
+     "text": "2026"
+    },
+    {
+     "end": 586,
+     "point": 3,
+     "source_text": "2.3%",
+     "start": 582,
+     "text": "2.3%"
+    },
+    {
+     "end": 594,
+     "point": 3,
+     "source_text": "2027",
+     "start": 590,
+     "text": "2027"
+    },
+    {
+     "end": 107,
+     "point": 3,
+     "source_text": "2%",
+     "start": 105,
+     "text": "2.0%"
+    },
+    {
+     "end": 611,
+     "point": 3,
+     "source_text": "2028",
+     "start": 607,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-11",
+   "quotes": [
+    {
+     "end": 243,
+     "paragraph": 1,
+     "start": 135,
+     "text": "In line with this commitment, it today decided to raise the three key ECB interest rates by 25 basis points."
+    },
+    {
+     "end": 612,
+     "paragraph": 2,
+     "start": 469,
+     "text": "In the baseline of the new Eurosystem staff projections, headline inflation is expected to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028."
+    },
+    {
+     "end": 2379,
+     "paragraph": 4,
+     "start": 2309,
+     "text": "The Governing Council is not pre-committing to a particular rate path."
+    },
+    {
+     "end": 2706,
+     "paragraph": 6,
+     "start": 2495,
+     "text": "Accordingly, the interest rates on the deposit facility, the main refinancing operations and the marginal lending facility will be increased to 2.25%, 2.40% and 2.65% respectively, with effect from 17 June 2026."
+    },
+    {
+     "end": 2951,
+     "paragraph": 8,
+     "start": 2787,
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+    }
+   ],
+   "source": {
+    "chars": 3631,
+    "chars_sent": 3632,
+    "method": "stored",
+    "paragraphs_sent": 11,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2494,
+        "paragraph": 6,
+        "start": 2403,
+        "text": "The Governing Council decided to raise the three key ECB interest rates by 25 basis points."
+       },
+       {
+        "end": 2674,
+        "paragraph": 6,
+        "start": 2508,
+        "text": "the interest rates on the deposit facility, the main refinancing operations and the marginal lending facility will be increased to 2.25%, 2.40% and 2.65% respectively"
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Governing Council decided to raise the three key ECB interest rates by 25 basis points, increasing the deposit facility, main refinancing operations and marginal lending facility rates to 2.25%, 2.40% and 2.65% respectively."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 468,
+        "paragraph": 1,
+        "start": 244,
+        "text": "The war in the Middle East is generating inflation pressures, and the decision to raise rates is robust across a range of scenarios mapping out how the shock might evolve and affect the medium-term outlook for the euro area."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Governing Council states that the war in the Middle East is generating inflation pressures and that the rate increase is robust across scenarios for the shock's evolution and medium-term euro area outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 0.857,
+      "fragments": [
+       {
+        "end": 612,
+        "paragraph": 2,
+        "start": 526,
+        "text": "headline inflation is expected to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "In the baseline, Eurosystem staff project headline inflation to average 3.0% in 2026, 2.3% in 2027 and 2.0% in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2006,
+        "paragraph": 4,
+        "start": 1854,
+        "text": "It will closely monitor the situation and follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+       },
+       {
+        "end": 2379,
+        "paragraph": 4,
+        "start": 2309,
+        "text": "The Governing Council is not pre-committing to a particular rate path."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Governing Council says it will follow a data-dependent and meeting-by-meeting approach, and is not pre-committing to a particular rate path."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2951,
+        "paragraph": 8,
+        "start": 2787,
+        "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests principal payments from maturing securities."
+    }
+   ],
+   "title": "European Central Bank monetary policy statement, 11 June 2026",
+   "type": "statement",
+   "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2291,
+    "output_tokens": 714,
+    "reasoning_tokens": 0
+   }
+  },
+  {
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
@@ -2659,6 +3237,346 @@
     "input_tokens": 17154,
     "output_tokens": 1970,
     "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 84,
+    "changes": [
+     {
+      "added": "June",
+      "paragraph": 1,
+      "removed": "April"
+     },
+     {
+      "added": "17 June",
+      "paragraph": 2,
+      "removed": "29 April"
+     },
+     {
+      "added": "7–2",
+      "paragraph": 2,
+      "removed": "8–1"
+     },
+     {
+      "added": "Two members",
+      "paragraph": 2,
+      "removed": "One member"
+     },
+     {
+      "added": "Global energy prices have fallen since the previous meeting in response to events",
+      "paragraph": 3,
+      "removed": "The conflict"
+     },
+     {
+      "added": "East. But they remain higher than pre-conflict and have continued to be volatile. The impact of the",
+      "paragraph": 3,
+      "removed": "East means that prospects for global"
+     },
+     {
+      "added": "shock on the UK economy remains",
+      "paragraph": 3,
+      "removed": "prices are highly"
+     },
+     {
+      "added": "is being",
+      "paragraph": 3,
+      "removed": "will be"
+     },
+     {
+      "added": "fallen",
+      "paragraph": 4,
+      "removed": "increased"
+     },
+     {
+      "added": "2.8% since the previous meeting, although it",
+      "paragraph": 4,
+      "removed": "3.3%, and"
+     },
+     {
+      "added": "expected",
+      "paragraph": 4,
+      "removed": "likely"
+     },
+     {
+      "added": "rise",
+      "paragraph": 4,
+      "removed": "be higher"
+     },
+     {
+      "added": "continue to",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "The",
+      "paragraph": 4,
+      "removed": "There is a"
+     },
+     {
+      "added": "against",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "needs",
+      "paragraph": 4,
+      "removed": "would need"
+     },
+     {
+      "added": "lean, is greater the longer higher energy prices persist.",
+      "paragraph": 4,
+      "removed": "lean against."
+     },
+     {
+      "added": "signs of",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "Interest rates faced by households and businesses remain higher than prior to",
+      "paragraph": 4,
+      "removed": "Financial conditions have tightened since"
+     },
+     {
+      "added": "conflict,",
+      "paragraph": 4,
+      "removed": "conflict began,"
+     },
+     {
+      "added": "act",
+      "paragraph": 4,
+      "removed": "help"
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The April Monetary Policy Report sets out three scenarios that help to illustrate a range of possible outcomes for the UK economy."
+     }
+    ],
+    "removed_words": 62,
+    "truncated": false,
+    "vs_doc_id": "GBP:statement:2026-04-30",
+    "vs_meeting": "2026-04-30"
+   },
+   "coverage": {
+    "paragraphs": [
+     2,
+     4,
+     5,
+     6
+    ],
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:statement:2026-06-18",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:29:48Z",
+   "input_sha256": "a99064d9b62c374a812e0def350509a8c3790ddd90811b657617020ed6b04c56",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 134,
+     "point": 1,
+     "source_text": "7",
+     "start": 133,
+     "text": "7"
+    },
+    {
+     "end": 136,
+     "point": 1,
+     "source_text": "2",
+     "start": 135,
+     "text": "2"
+    },
+    {
+     "end": 167,
+     "point": 1,
+     "source_text": "3.75%",
+     "start": 162,
+     "text": "3.75%"
+    },
+    {
+     "end": 837,
+     "point": 3,
+     "source_text": "2.8%",
+     "start": 833,
+     "text": "2.8%"
+    },
+    {
+     "end": 136,
+     "point": 5,
+     "source_text": "2",
+     "start": 135,
+     "text": "2%"
+    },
+    {
+     "end": 234,
+     "point": 6,
+     "source_text": "0.25 percentage points",
+     "start": 212,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 241,
+     "point": 6,
+     "source_text": "4%",
+     "start": 239,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-18",
+   "quotes": [
+    {
+     "end": 168,
+     "paragraph": 2,
+     "start": 35,
+     "text": "At its meeting ending on 17 June 2026, the Monetary Policy Committee (MPC) voted by a majority of 7–2 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "end": 978,
+     "paragraph": 4,
+     "start": 805,
+     "text": "CPI inflation has fallen to 2.8% since the previous meeting, although it is expected to rise later this year as the effects of higher energy prices continue to pass through."
+    },
+    {
+     "end": 1529,
+     "paragraph": 5,
+     "start": 1388,
+     "text": "Taking all the risks to the economic outlook into account, the Committee judges that it is appropriate to maintain Bank Rate at this meeting."
+    },
+    {
+     "end": 1795,
+     "paragraph": 6,
+     "start": 1661,
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    }
+   ],
+   "source": {
+    "chars": 1795,
+    "chars_sent": 1796,
+    "method": "stored",
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 167,
+        "paragraph": 2,
+        "start": 74,
+        "text": "the Monetary Policy Committee (MPC) voted by a majority of 7–2 to maintain Bank Rate at 3.75%"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Monetary Policy Committee voted by a majority of 7–2 to maintain Bank Rate at 3.75%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1529,
+        "paragraph": 5,
+        "start": 1388,
+        "text": "Taking all the risks to the economic outlook into account, the Committee judges that it is appropriate to maintain Bank Rate at this meeting."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Committee judges that, taking all the risks to the economic outlook into account, it is appropriate to maintain Bank Rate at this meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 978,
+        "paragraph": 4,
+        "start": 805,
+        "text": "CPI inflation has fallen to 2.8% since the previous meeting, although it is expected to rise later this year as the effects of higher energy prices continue to pass through."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "CPI inflation has fallen to 2.8% since the previous meeting, although the Committee expects it to rise later this year as higher energy prices continue to pass through."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1660,
+        "paragraph": 6,
+        "start": 1530,
+        "text": "The Committee will continue to monitor closely the situation in the Middle East and how its impact propagates through the economy."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Committee will continue to monitor closely the situation in the Middle East and how its impact propagates through the economy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1795,
+        "paragraph": 6,
+        "start": 1661,
+        "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 242,
+        "paragraph": 2,
+        "start": 169,
+        "text": "Two members voted to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Two members voted to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England monetary policy statement, 18 June 2026",
+   "type": "statement",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 1880,
+    "output_tokens": 599,
+    "reasoning_tokens": 0
    }
   },
   {
