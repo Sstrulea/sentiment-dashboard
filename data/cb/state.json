@@ -21,7 +21,7 @@
     },
     "latest": {
       "etag": null,
-      "last_modified": "Fri, 18 Sep 2026 12:58:26 GMT"
+      "last_modified": "Mon, 21 Sep 2026 11:09:59 GMT"
     }
   },
   "http_validators": {
@@ -74,7 +74,7 @@
       "etag": "\"myra-cf35dcba\""
     },
     "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html": {
-      "etag": "\"myra-a981a6b9\""
+      "etag": "\"myra-a9b6e8a5\""
     },
     "https://www.ecb.europa.eu/press/press_conference/html/index.en.html": {
       "etag": "\"myra-ba49e7f5\""
