@@ -51,4 +51,5 @@ def user_message(doc_type: str, bank: str, url: str, paragraphs: list, tags: Opt
 
 def feedback_message(errors: list) -> str:
     return ("Your previous output failed the automatic check for these reasons:\n" + "\n".join(f"- {e}" for e in errors) +
-            "\n\nReturn a corrected JSON object in the same shape, with nothing before or after it. Change only what the reasons require; keep every rule.")
+            "\n\nReturn a corrected JSON object in the same shape, with nothing before or after it. Change only what the reasons require; keep every rule - in particular "
+            "3 to 6 points, each citing at most 3 paragraphs and giving at most 3 fragments of 5 to 40 words, copied character for character.")

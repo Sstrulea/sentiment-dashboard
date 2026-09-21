@@ -355,6 +355,7 @@ def summaries_report(rep) -> tuple:
     if rep.first_pass or rep.retried or rep.failed_validation:
         extra = [f"  ATTEMPTS {rep.first_pass} passed at the first attempt, {len(rep.retried)} after the retry, {len(rep.failed_validation)} failed twice"] + extra
     extra += [f"  RETRIED {d}: the first attempt failed - {'; '.join(e[:3])}" for d, e in rep.retried]
+    extra += [f"  FIRST ATTEMPT {d} failed - {'; '.join(e[:6])}" for d, e in rep.first_errors]
     extra += [f"  REJECTED OUTPUT {d}: {' '.join(text.split())[:3000]}" for d, text in rep.rejected]
     md = f"### summaries\n\n{line}" + ("\n\n" + "\n".join(f"- {e.strip()}" for e in extra) if extra else "")
     return "\n".join([line] + extra), md

@@ -699,6 +699,7 @@ def test_a_failed_document_puts_the_refused_output_in_the_log(paths):
     assert rep.rejected == [(FED_KEY, other)]                                                                           # the LAST output the check refused
     line, md = ds.summaries_report(rep)
     assert "  ATTEMPTS 0 passed at the first attempt, 0 after the retry, 1 failed twice" in line
+    assert f"  FIRST ATTEMPT {FED_KEY} failed - " in line and "summary point 3 is not supported by the paragraph(s) it cites [2]" in line.split("FIRST ATTEMPT")[1].split("\n")[0]
     assert f"  REJECTED OUTPUT {FED_KEY}: " in line and "government bonds and corporate debt" in line
     long = ds.summaries_report(dataclasses.replace(rep, rejected=[(FED_KEY, "word " * 2000)]))[0]
     assert len(max(long.splitlines(), key=len)) < 3100                                                                  # one bounded line per document
@@ -738,3 +739,21 @@ def test_the_run_hands_the_officials_and_the_people_of_the_banks_roster_to_the_s
     go(paths, RecordedClient(responder=responder_generic), cfg=dataclasses.replace(CFG, max_documents=60, max_input_tokens=10**7), types={"speech"}, banks={"JPY"})
     assert seen_officials and all("ueda" in o and "himino" in o and "waller" not in o for o in seen_officials.values())                 # the surnames of the bank's members
     assert seen_people and all(("kazuo", "ueda") in p and all(isinstance(g, tuple) and g == tuple(w.lower() for w in g) for g in p) for p in seen_people.values())   # first name, surname last
+
+
+def test_the_feedback_of_the_retry_repeats_the_hard_limits():
+    m = PR.feedback_message(["a", "b"])
+    assert m.startswith("Your previous output failed the automatic check for these reasons:\n- a\n- b\n") and "at most 3 paragraphs and giving at most 3 fragments of 5 to 40 words" in m
+    assert "3 to 6 points" in m and m.endswith("copied character for character.")
+
+
+def test_the_first_attempt_of_a_document_that_failed_twice_is_not_the_last_one(paths):
+    from src import cb_datasets as ds
+    bad, expected = BAD["unsupported claim"]
+    rep = fed_only(paths, RecordedClient([bad, "not json at all"]))
+    assert rep.new == 0 and [d for d, _ in rep.failed_validation] == [FED_KEY]
+    (doc_id, first), = rep.first_errors
+    assert doc_id == FED_KEY and any(expected in e for e in first) and not any("valid JSON" in e for e in first)                 # attempt 1: the unsupported claim
+    assert "the output is not valid JSON" in " ".join(rep.failed_validation[0][1]) and rep.rejected == [(FED_KEY, "not json at all")]     # attempt 2: its own reason and its own output
+    line = ds.summaries_report(rep)[0]
+    assert "  FIRST ATTEMPT %s failed - " % FED_KEY in line and "not supported by the paragraph(s) it cites [2]" in line.split("FIRST ATTEMPT")[1].split("\n")[0]

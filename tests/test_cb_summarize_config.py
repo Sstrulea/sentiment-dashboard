@@ -143,7 +143,7 @@ def test_the_prompt_states_the_factual_rules_and_every_listed_word_of_the_config
         assert phrase in system, phrase
     assert "hawkish" in system and "do not forecast" in system.lower() and "do not interpret" in system.lower()
     assert set(CFG.blocked_words).isdisjoint(CFG.attributed_words) and {"hawkish", "dovish", "bullish", "bearish", "paves the way"} <= set(CFG.blocked_words)
-    assert {"likely", "expects", "signals", "suggests"} <= set(CFG.attributed_words) and {"Committee", "Board", "Bank", "SNB"} <= set(CFG.attribution_subjects)
+    assert {"likely", "expects", "signals", "suggests"} <= set(CFG.attributed_words) and {"Committee", "Board", "Bank", "SNB", "Fed", "FOMC", "ECB"} <= set(CFG.attribution_subjects)
 
 
 def test_the_user_message_numbers_the_paragraphs():

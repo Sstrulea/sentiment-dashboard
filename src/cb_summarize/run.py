@@ -52,6 +52,7 @@ class SummariesReport:
     first_pass: int = 0                                    # documents whose first output passed the check
     retried: list = field(default_factory=list)            # (doc_id, [errors of the first attempt]) - passed only after the one retry
     rejected: list = field(default_factory=list)           # (doc_id, the last output the check refused) - for the log: why a document failed
+    first_errors: list = field(default_factory=list)       # (doc_id, [errors of the first attempt]) of a document that failed twice
     notes: list = field(default_factory=list)
 
 
@@ -116,7 +117,7 @@ TITLED_NAME = re.compile(r"\b(?:Chair(?:man|woman|person)?|Vice[- ]Chair(?:man)?
 
 def name_words(name: str) -> tuple:
     """The words of a person's name, lower case, surname last; initials and titles are left out."""
-    return tuple(w for w in (x.lower().strip(".,") for x in re.findall(r"[^\W\d_][\w\u2019'\-]*", name)) if len(w) >= 3 and w not in TURNS.TITLE_WORDS)
+    return TURNS.name_words(name)
 
 
 def people_of(doc: dict, text: str, roster: Optional[dict]) -> tuple:
@@ -263,7 +264,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
         attempted += 1
         try:
             trace: list = []
-            people = people_of(doc, src.text, roster)
+            people = tuple(dict.fromkeys(people_of(doc, src.text, roster) + TURNS.people_of(src.turns)))              # + the speakers named on the transcript's labels
             ok, usage, errors = summarise(client, cfg, prompt, doc, src, tuple(sorted({w for g in people for w in g})), trace=trace, people=people)
         except APIError as e:
             rep.stopped = f"the API stopped the run ({e.kind}): {e.message[:160]}"
@@ -279,6 +280,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
                                                              "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
             rep.failed_validation.append((doc["doc_id"], errors))
             rep.rejected.append((doc["doc_id"], trace[-1]["output"] if trace else ""))
+            rep.first_errors.append((doc["doc_id"], trace[0]["errors"] if trace else []))
             save()
             continue
         for k in [k for k in failures if k.startswith(doc["doc_id"] + "|")]:

@@ -146,6 +146,7 @@ attribution_subjects:                 # one of these must come earlier in the sa
   - participants
   - speaker
   - Federal Reserve
+  - Fed
   - FOMC
   - ECB
   - RBA

@@ -244,8 +244,10 @@ def test_what_is_not_a_date_or_a_name_is_not_refused_and_a_name_the_paragraph_ha
 def test_the_speakers_and_the_banks_own_names_are_the_attribution_not_a_claim():
     pt = point("Kevin Warsh said the Federal Reserve made the decision made today, a sober decision.", [3], "The decision we made today was a sober decision, serious decision, responsible decision")
     assert transcript(SOBER, NOT_FG, pt).ok                                                                             # Kevin, Warsh, Federal, Reserve: not in the paragraph, and not needed there
-    r = transcript(SOBER, NOT_FG, point("Warsh said the Fed made the decision made today, a sober decision.", [3], "The decision we made today was a sober decision, serious decision, responsible decision"))
-    assert not r.ok and any("names 'Fed'" in e for e in r.errors)                                                       # an alias that is not in the list is a name like any other
+    alias = point("Warsh said the Fed made the decision made today, a sober decision.", [3], "The decision we made today was a sober decision, serious decision, responsible decision")
+    assert transcript(SOBER, NOT_FG, alias).ok                                                                          # "the Fed" too (config: attribution_subjects)
+    r = transcript(SOBER, NOT_FG, point("Warsh said the Treasury made the decision made today, a sober decision.", [3], "The decision we made today was a sober decision, serious decision, responsible decision"))
+    assert not r.ok and any("names 'Treasury'" in e for e in r.errors)                                                  # any other institution is a name like any other; "the Fed" is the bank's own alias
 
 
 # --- 4. a negation is the source's negation ------------------------------------------------------------------------------------------------------
@@ -613,3 +615,46 @@ def test_the_people_of_the_roster_reach_the_check_a_first_name_names_the_person_
     assert ok is not None and ok.ok, errs                                                                               # "Kevin" is Warsh (CHAIRMAN WARSH on the label)
     ok, usage, errs = R.summarise(RecordedClient([dumps(out), dumps(out)]), CFG, PR.load("transcript"), doc, src, ("kevin", "warsh"))
     assert ok is None and any("attributes the statement to Kevin, but paragraph 3 that it cites is the turn of CHAIRMAN WARSH" in e for e in errs)   # without the people: two unknown names
+
+
+def test_the_speakers_on_the_labels_of_a_transcript_are_people_a_point_may_name():
+    people = T.people_of(TURNS)
+    assert ("warsh",) in people and ("jennifer", "schonberger") in people and ("michelle", "smith") in people and ("edward", "lawrence") in people
+    assert all(w == tuple(x.lower() for x in w) and all(len(x) >= 3 for x in w) for w in people) and len(people) == len(set(people))
+    assert T.people_of(None) == () and T.people_of([None, T.Turn("question", False), T.Turn("", True)]) == ()
+    assert T.name_words("CHAIRMAN WARSH") == ("warsh",) and T.name_words("Daniel O’Leary") == ("daniel", "o’leary") and T.name_words("Michelle W. Bowman") == ("michelle", "bowman")
+
+
+def test_a_journalist_named_in_a_point_is_the_owner_of_her_turn_in_a_run(tmp_path, monkeypatch):
+    """The run adds the speakers of the labels to the people of the roster: 'Jennifer Schonberger said ...' rests on her own turn."""
+    import dataclasses
+
+    from src import cb_collect as cc
+    from src.cb_summarize import run as R
+    from src.cb_summarize import store as SS
+    from src.cb_summarize.client import RecordedClient
+
+    from .cb_docs_helpers import FakeSession
+    from .cb_sum_helpers import NOW, TODAY, collected_dir, dumps, fresh_copy
+    from .test_cb_docs_collect import fetcher
+    base = collected_dir(tmp_path_factory_of(tmp_path))
+    paths = cc.Paths(fresh_copy(base, tmp_path))
+    monkeypatch.setattr(SRC, "load", lambda doc, f, max_chars, officials=(): SRC.from_paragraphs(EXCERPT, "pypdf", max_chars, transcript={"officials": list(officials)}))
+    asked = point("Jennifer Schonberger said inflation has run up mostly from higher energy prices and tariffs, which rate hikes cannot fix.", [Q_PARA],
+                  "Inflation has run up mostly from higher energy prices and tariffs, which some say are supply shocks")
+    out = {"summary": [SOBER, NOT_FG, asked], "quotes": [{"paragraph": 3, "text": "I'm not going to pre-judge any future decisions we make."}], "coverage": [3, Q_PARA]}
+    doc_id = "USD:presser_transcript:2026-09-16"
+    cfg = dataclasses.replace(R.load_config(), max_documents=5)
+    rep = R.run_summaries(paths, TODAY, client=RecordedClient([dumps(out)]), fetcher=fetcher(FakeSession()), env={}, now=NOW, cfg=cfg, only={doc_id})
+    assert (rep.new, rep.calls, rep.failed_validation) == (1, 1, []), (rep.failed_validation, rep.rejected)
+    rec = SS.load(paths.summaries)[doc_id]
+    assert rec["summary"][2]["text"].startswith("Jennifer Schonberger said") and rec["input_sha256"] == X.sha256(X.to_text(EXCERPT))          # the hash is that of the extraction
+
+
+def tmp_path_factory_of(tmp_path):
+    class F:
+        def mktemp(self, name):
+            d = tmp_path / name
+            d.mkdir()
+            return d
+    return F()

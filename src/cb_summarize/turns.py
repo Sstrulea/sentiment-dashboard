@@ -32,6 +32,16 @@ FED_LABEL = re.compile(r"(?:^|(?<=[.?!”\"’)] ))([A-Z][A-Z’'\-]+(?: [A-Z][A
 PAGE_NOISE = re.compile(r"^Page \d+ of \d+$")
 
 
+def name_words(name: str) -> tuple:
+    """The words of a person's name, lower case, in the order written (the surname is the last); initials and titles are left out."""
+    return tuple(w for w in (x.lower().strip(".,’'") for x in re.findall(r"[^\W\d_][\w’'\-]*", name)) if len(w) >= 3 and w not in TITLE_WORDS)
+
+
+def people_of(turns: Optional[list]) -> tuple:
+    """The people who speak in a transcript, from its labels - each as name words, surname last: a journalist a point names is the owner of the turns under their name."""
+    return tuple(dict.fromkeys(w for w in (name_words(t.name) for t in (turns or []) if t is not None and t.name != "question") if w))
+
+
 def is_official(name: str, officials: frozenset) -> bool:
     words = {w.lower().strip(".,’'") for w in re.findall(r"[^\W\d_][\w’'\-]*", name)}
     return bool(words & officials) or bool(words & TITLE_WORDS)
