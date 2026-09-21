@@ -1,4 +1,19 @@
 {
- "failures": {},
+ "failures": {
+  "USD:presser_transcript:2026-09-16|transcript-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T15:49:12Z",
+   "doc_id": "USD:presser_transcript:2026-09-16",
+   "errors": [
+    "evidence fragment 2 of summary point 2 has 4 words; allowed 5-40",
+    "evidence fragment 1 of summary point 5 has 4 words; allowed 5-40",
+    "summary point 5 is not supported by the paragraph(s) it cites [21]: 77% of its content words are there (85% needed); not found: 'prior', 'meeting', 'cited' - say only what those paragraphs say, or cite the paragraphs that say it",
+    "summary point 5 attributes the statement to Rugaber, but paragraph 21 that it cites is the turn of CHAIRMAN WARSH: a statement rests only on the paragraphs of its own speaker's turns"
+   ],
+   "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "transcript-v5",
+   "provider": "openai"
+  }
+ },
  "version": 1
 }
