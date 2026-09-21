@@ -1,6 +1,217 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     7,
+     10,
+     16,
+     22,
+     43
+    ],
+    "paragraphs_sent": 46,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:presser_transcript:2026-09-16",
+   "format": "pdf",
+   "generated_at": "2026-09-21T13:51:51Z",
+   "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
+   "meeting_date": "2026-09-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 293,
+     "point": 1,
+     "source_text": "¼ percentage point",
+     "start": 275,
+     "text": "¼ percentage point"
+    },
+    {
+     "end": 299,
+     "point": 1,
+     "source_text": "3¾",
+     "start": 297,
+     "text": "3¾"
+    },
+    {
+     "end": 312,
+     "point": 1,
+     "source_text": "4 percent",
+     "start": 303,
+     "text": "4 percent"
+    },
+    {
+     "end": 958,
+     "point": 2,
+     "source_text": "2 percent",
+     "start": 949,
+     "text": "2 percent"
+    },
+    {
+     "end": 4646,
+     "point": 3,
+     "source_text": "2.3 percent",
+     "start": 4635,
+     "text": "2.3 percent"
+    },
+    {
+     "end": 2796,
+     "point": 3,
+     "source_text": "2.4 percent",
+     "start": 2785,
+     "text": "2.4 percent"
+    },
+    {
+     "end": 4723,
+     "point": 3,
+     "source_text": "3.7 percent",
+     "start": 4712,
+     "text": "3.7 percent"
+    },
+    {
+     "end": 4646,
+     "point": 3,
+     "source_text": "2.3 percent",
+     "start": 4635,
+     "text": "2.3 percent"
+    }
+   ],
+   "prompt_version": "transcript-v4",
+   "provider": "openai",
+   "published": "2026-09-16",
+   "quotes": [
+    {
+     "end": 363,
+     "paragraph": 4,
+     "start": 171,
+     "text": "In the meeting just concluded, the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
+    },
+    {
+     "end": 2500,
+     "paragraph": 7,
+     "start": 2429,
+     "text": "The plain fact is that inflation is too high and has been for too long."
+    },
+    {
+     "end": 4010,
+     "paragraph": 10,
+     "start": 3914,
+     "text": "The committee’s unanimous vote shows our resolve to achieve price stability on a timelier basis."
+    },
+    {
+     "end": 7824,
+     "paragraph": 16,
+     "start": 7768,
+     "text": "I'm not going to pre-judge any future decisions we make."
+    },
+    {
+     "end": 25299,
+     "paragraph": 43,
+     "start": 25107,
+     "text": "I care so much, I think it's so important, that we established a task force that should report by the end of the year to help us think about the implications for our future policy conjuncture."
+    }
+   ],
+   "source": {
+    "chars": 27246,
+    "chars_sent": 27247,
+    "method": "pypdf",
+    "paragraphs_sent": 46,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "end": 312,
+      "fragment": "decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent",
+      "paragraph": 4,
+      "paragraphs": [
+       4
+      ],
+      "start": 211
+     },
+     "text": "Chairman Warsh said the FOMC raised the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent and is maintaining ample reserves."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "end": 605,
+      "fragment": "economic activity is expanding at a solid pace. While uncertainty remains elevated",
+      "paragraph": 4,
+      "paragraphs": [
+       4
+      ],
+      "start": 523
+     },
+     "text": "Warsh said economic activity is expanding at a solid pace, but inflation remains elevated, and said the action would support a timelier return to the Committee’s 2 percent goal."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "end": 4682,
+      "fragment": "real GDP rises at 2.3 percent this year and 2.4 percent next year",
+      "paragraph": 10,
+      "paragraphs": [
+       10
+      ],
+      "start": 4617
+     },
+     "text": "Warsh said the Committee’s median projections show real GDP rising at 2.3 percent this year and 2.4 percent next year, while total PCE inflation falls from 3.7 percent to 2.3 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "end": 7517,
+      "fragment": "I'm not in the forward guidance business.",
+      "paragraph": 16,
+      "paragraphs": [
+       16
+      ],
+      "start": 7476
+     },
+     "text": "Warsh said he was not in the forward guidance business and would not pre-judge any future decisions."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "end": 11417,
+      "fragment": "the economy has strengthened. You might have heard me say that in Jackson Hole",
+      "paragraph": 22,
+      "paragraphs": [
+       22
+      ],
+      "start": 11339
+     },
+     "text": "Warsh said the Committee’s judgment had changed since July because the economy had strengthened, inflation information had not changed his view, and geopolitics had changed."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "end": 25224,
+      "fragment": "we established a task force that should report by the end of the year",
+      "paragraph": 43,
+      "paragraphs": [
+       43
+      ],
+      "start": 25155
+     },
+     "text": "Warsh said the Federal Reserve established a task force to report by the end of the year to help it think about implications for its future policy conjuncture."
+    }
+   ],
+   "title": "Federal Reserve press conference transcript, 16 September 2026",
+   "type": "presser_transcript",
+   "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260916.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 14809,
+    "output_tokens": 1390,
+    "reasoning_tokens": 211
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 35,
     "changes": [
