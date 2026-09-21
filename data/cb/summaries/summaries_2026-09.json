@@ -883,6 +883,253 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     6,
+     10,
+     12,
+     13,
+     16
+    ],
+    "paragraphs_sent": 17,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:bf96d0030044",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "9acb4a37a9949ae0607bacbe6c463a3e2a095f2bbf3d90d06a19ee0abd116be2",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 750,
+     "point": 1,
+     "source_text": "2.25%",
+     "start": 745,
+     "text": "2.25%"
+    },
+    {
+     "end": 1458,
+     "point": 3,
+     "source_text": "3.3%",
+     "start": 1454,
+     "text": "3.3%"
+    },
+    {
+     "end": 1915,
+     "point": 3,
+     "source_text": "6.4%",
+     "start": 1911,
+     "text": "6.4%"
+    },
+    {
+     "end": 2567,
+     "point": 4,
+     "source_text": "5%",
+     "start": 2565,
+     "text": "5%"
+    },
+    {
+     "end": 2906,
+     "point": 5,
+     "source_text": "3%",
+     "start": 2904,
+     "text": "3%"
+    },
+    {
+     "end": 3192,
+     "point": 5,
+     "source_text": "2.2%",
+     "start": 3188,
+     "text": "2.2%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-02",
+   "quotes": [
+    {
+     "end": 751,
+     "paragraph": 4,
+     "start": 626,
+     "text": "With recent data coming out largely in line with our July forecast, we decided to maintain the policy interest rate at 2.25%."
+    },
+    {
+     "end": 862,
+     "paragraph": 6,
+     "start": 781,
+     "text": "First, economic growth in Canada has picked up after stalling over the past year."
+    },
+    {
+     "end": 2363,
+     "paragraph": 12,
+     "start": 2238,
+     "text": "However, new US tariffs and increased trade uncertainty pose risks to the sustainability of the rebound in economic activity."
+    },
+    {
+     "end": 2977,
+     "paragraph": 13,
+     "start": 2867,
+     "text": "CPI inflation has remained at around 3% in recent months, mainly because of persistently high gasoline prices."
+    },
+    {
+     "end": 4602,
+     "paragraph": 16,
+     "start": 4446,
+     "text": "Governing Council will assess the sustainability of the economic rebound and the outlook for inflation, and is prepared to adjust monetary policy as needed."
+    }
+   ],
+   "source": {
+    "chars": 4805,
+    "chars_sent": 4806,
+    "method": "html-selector",
+    "paragraphs_sent": 17,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 751,
+        "paragraph": 4,
+        "start": 626,
+        "text": "With recent data coming out largely in line with our July forecast, we decided to maintain the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Governor Macklem says the Governing Council maintained the policy interest rate at 2.25% after recent data came out largely in line with its July forecast."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 862,
+        "paragraph": 6,
+        "start": 788,
+        "text": "economic growth in Canada has picked up after stalling over the past year."
+       },
+       {
+        "end": 1021,
+        "paragraph": 6,
+        "start": 929,
+        "text": "uncertainty about the sustainability of the rebound has increased with new US trade actions."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Macklem says economic growth in Canada has picked up after stalling over the past year, while new US trade actions have increased uncertainty about the rebound’s sustainability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1507,
+        "paragraph": 10,
+        "start": 1391,
+        "text": "the economy strengthened in the second quarter, with GDP up by 3.3% following very weak growth in the first quarter."
+       },
+       {
+        "end": 1924,
+        "paragraph": 10,
+        "start": 1874,
+        "text": "the unemployment rate edging down to 6.4% in July."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governor Macklem says GDP was up by 3.3% in the second quarter, and the unemployment rate edged down to 6.4% in July."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2363,
+        "paragraph": 12,
+        "start": 2247,
+        "text": "new US tariffs and increased trade uncertainty pose risks to the sustainability of the rebound in economic activity."
+       },
+       {
+        "end": 2600,
+        "paragraph": 12,
+        "start": 2531,
+        "text": "Affected products represent about 5% of exports to the United States."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Governor Macklem says new US tariffs and trade uncertainty pose risks to the sustainability of the rebound, and affected products represent about 5% of exports to the United States."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2977,
+        "paragraph": 13,
+        "start": 2867,
+        "text": "CPI inflation has remained at around 3% in recent months, mainly because of persistently high gasoline prices."
+       },
+       {
+        "end": 3258,
+        "paragraph": 13,
+        "start": 3144,
+        "text": "Excluding gasoline, inflation in Canada was 2.2% in July and measures of core inflation have remained close to 2%."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "Governor Macklem says CPI inflation has remained at around 3% mainly because of persistently high gasoline prices, while excluding gasoline inflation was 2.2% in July."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4602,
+        "paragraph": 16,
+        "start": 4446,
+        "text": "Governing Council will assess the sustainability of the economic rebound and the outlook for inflation, and is prepared to adjust monetary policy as needed."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Governor Macklem says the Governing Council will assess the sustainability of the economic rebound and the inflation outlook, and is prepared to adjust monetary policy as needed."
+    }
+   ],
+   "title": "Monetary Policy Decision Press Conference Opening Statement",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/09/opening-statement-2026-09-02/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2455,
+    "output_tokens": 968,
+    "reasoning_tokens": 274
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 422,
     "changes": [
@@ -1567,6 +1814,194 @@
     "input_tokens": 18426,
     "output_tokens": 1874,
     "reasoning_tokens": 255
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     12,
+     20,
+     24,
+     26,
+     29,
+     42,
+     43
+    ],
+    "paragraphs_sent": 45,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:087cb53029ce",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "8b9847845ad848b3b80721599c0d624078bfe1edb06296b378a1d6c19e54a7e3",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-01",
+   "quotes": [
+    {
+     "end": 5254,
+     "paragraph": 20,
+     "start": 5069,
+     "text": "For example, recent evidence from the Consumer Expectations Survey shows that geopolitical risk can significantly worsen household sentiment and spending intentions in the euro area.[7]"
+    },
+    {
+     "end": 7649,
+     "paragraph": 26,
+     "start": 7558,
+     "text": "The broader lesson is that surveys do not replace aggregate, administrative or market data."
+    },
+    {
+     "end": 8553,
+     "paragraph": 29,
+     "start": 8361,
+     "text": "One important finding in Michael’s research is that, for broad audiences, communication about the target and objective can be more effective than communication about technical instruments.[13]"
+    },
+    {
+     "end": 12820,
+     "paragraph": 43,
+     "start": 12625,
+     "text": "Survey fatigue and the potential rise of inauthentic responses, including AI-related risks, mean that strict quality assurance is needed and the burden on respondents has to be managed carefully."
+    }
+   ],
+   "source": {
+    "chars": 13096,
+    "chars_sent": 13097,
+    "method": "html-selector",
+    "paragraphs_sent": 45,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3252,
+        "paragraph": 12,
+        "start": 3073,
+        "text": "Most people do not continuously process the full range of macroeconomic data. Their attention is selective, their information is incomplete and their beliefs are widely dispersed."
+       },
+       {
+        "end": 3405,
+        "paragraph": 12,
+        "start": 3253,
+        "text": "This dispersion is not simply noise: it reflects differences in income, wealth, housing, financial literacy, lived experience and trust in institutions."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says households have selective attention, incomplete information and widely dispersed beliefs that reflect differences in income, wealth, housing, financial literacy, lived experience and trust in institutions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5251,
+        "paragraph": 20,
+        "start": 5082,
+        "text": "recent evidence from the Consumer Expectations Survey shows that geopolitical risk can significantly worsen household sentiment and spending intentions in the euro area."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says Consumer Expectations Survey evidence shows that geopolitical risk can significantly worsen household sentiment and spending intentions in the euro area."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6892,
+        "paragraph": 24,
+        "start": 6725,
+        "text": "Analysis based on the Consumer Expectations Survey shows how mortgage repricing feeds into consumption with long and uneven lags across household groups and countries."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says Consumer Expectations Survey analysis shows mortgage repricing feeds into consumption with long and uneven lags across household groups and countries."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7775,
+        "paragraph": 26,
+        "start": 7558,
+        "text": "The broader lesson is that surveys do not replace aggregate, administrative or market data. They complement them by measuring perceptions, uncertainty and intended behaviour that other sources cannot observe directly."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says surveys do not replace aggregate, administrative or market data, but complement them by measuring perceptions, uncertainty and intended behaviour that other sources cannot observe directly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8549,
+        "paragraph": 29,
+        "start": 8414,
+        "text": "for broad audiences, communication about the target and objective can be more effective than communication about technical instruments."
+       }
+      ],
+      "paragraphs": [
+       29
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says communication about the target and objective can be more effective for broad audiences than communication about technical instruments."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12348,
+        "paragraph": 42,
+        "start": 12301,
+        "text": "High-quality surveys need to remain a priority."
+       },
+       {
+        "end": 12820,
+        "paragraph": 43,
+        "start": 12625,
+        "text": "Survey fatigue and the potential rise of inauthentic responses, including AI-related risks, mean that strict quality assurance is needed and the burden on respondents has to be managed carefully."
+       }
+      ],
+      "paragraphs": [
+       42,
+       43
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says high-quality surveys need to remain a priority, and strict quality assurance is needed to manage survey fatigue and potential AI-related risks."
+    }
+   ],
+   "title": "Boris Vujčić: Listening to households: expectations, behaviour and monetary policy",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260901~bb28f33f54.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3914,
+    "output_tokens": 1709,
+    "reasoning_tokens": 1034
    }
   },
   {
@@ -2731,6 +3166,8 @@
    "coverage": {
     "paragraphs": [
      35,
+     36,
+     38,
      44,
      46,
      47,
@@ -2742,21 +3179,23 @@
    },
    "currency": "GBP",
    "doc_id": "GBP:speech:c2e9c4edbf10",
+   "dropped_points": [],
+   "dropped_quotes": [],
    "format": "html",
-   "generated_at": "2026-09-21T16:03:19Z",
+   "generated_at": "2026-09-21T18:33:38Z",
    "input_sha256": "47784415482d164d7817c0111feff3d6dc04009c2f3c8f66aa7ad1e17abb11c3",
    "meeting_date": null,
    "model": "gpt-5.6-terra",
    "numbers": [],
-   "prompt_version": "speech-v5",
+   "prompt_version": "speech-v6",
    "provider": "openai",
    "published": "2026-09-04",
    "quotes": [
     {
-     "end": 10227,
-     "paragraph": 35,
-     "start": 10149,
-     "text": "The modern central bank is therefore the product of a long historical process."
+     "end": 10648,
+     "paragraph": 36,
+     "start": 10536,
+     "text": "Their essential purpose is to safeguard the stability of money including the resilience of the financial system."
     },
     {
      "end": 14110,
@@ -2765,16 +3204,16 @@
      "text": "In the Bank of England’s case, Parliament defines the objectives, establishes the powers, and retains the authority to amend the framework within which we operate."
     },
     {
-     "end": 17082,
+     "end": 17254,
      "paragraph": 51,
-     "start": 17033,
-     "text": "Central banks cannot take legitimacy for granted."
+     "start": 17167,
+     "text": "They must remain accountable to elected representatives for their statutory objectives."
     },
     {
-     "end": 18199,
+     "end": 18286,
      "paragraph": 54,
-     "start": 18133,
-     "text": "Central bank independence does not mean detachment from democracy."
+     "start": 18200,
+     "text": "It means insulation from short-term political pressures within a democratic framework."
     }
    ],
    "source": {
@@ -2787,7 +3226,7 @@
    "summary": [
     {
      "evidence": {
-      "coverage": 0.923,
+      "coverage": 1.0,
       "fragments": [
        {
         "end": 10341,
@@ -2796,28 +3235,46 @@
         "text": "On one hand lies the Montesquieu tradition, concerned with limiting arbitrary power through institutional checks."
        },
        {
-        "end": 10481,
-        "paragraph": 35,
-        "start": 10342,
-        "text": "On the other lies the tradition of Locke and Hume, concerned with establishing money and credit as public goods upon which society depends."
+        "end": 10535,
+        "paragraph": 36,
+        "start": 10482,
+        "text": "Modern central banks bring these traditions together."
        }
       ],
       "paragraphs": [
-       35
+       35,
+       36
       ]
      },
-     "text": "The speaker says modern central banks combine institutional checks on arbitrary power with money and credit as public goods upon which society depends."
+     "text": "Governor Andrew Bailey says modern central banks bring together traditions of institutional checks and of money and credit as public goods."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 13946,
-        "paragraph": 44,
-        "start": 13751,
-        "text": "Modern independent central banks are not independent of democratic government in the important sense that their authority originates in legislation or the like enacted by elected representatives."
+        "end": 11215,
+        "paragraph": 38,
+        "start": 11165,
+        "text": "Monetary and financial stability is one such good."
        },
+       {
+        "end": 11437,
+        "paragraph": 38,
+        "start": 11354,
+        "text": "The value of money is something upon which every household and every business rely."
+       }
+      ],
+      "paragraphs": [
+       38
+      ]
+     },
+     "text": "Governor Andrew Bailey says monetary and financial stability is a public good, and every household and every business rely on the value of money."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
        {
         "end": 14110,
         "paragraph": 44,
@@ -2829,11 +3286,11 @@
        44
       ]
      },
-     "text": "The speaker says modern independent central banks are not independent of democratic government, and Parliament defines the Bank of England’s objectives and establishes its powers."
+     "text": "Governor Andrew Bailey says Parliament defines the Bank of England’s objectives, establishes its powers, and retains authority to amend its operating framework."
     },
     {
      "evidence": {
-      "coverage": 0.875,
+      "coverage": 0.889,
       "fragments": [
        {
         "end": 14966,
@@ -2853,7 +3310,7 @@
        47
       ]
      },
-     "text": "The speaker says critics argue central banks are too close to financial interests, while financial interests argue that regulation has gone too far."
+     "text": "Governor Andrew Bailey says central banks face claims that they are too close to financial interests, while financial interests argue that regulation has gone too far."
     },
     {
      "evidence": {
@@ -2862,31 +3319,37 @@
        {
         "end": 17125,
         "paragraph": 51,
-        "start": 17033,
-        "text": "Central banks cannot take legitimacy for granted. They must explain their decisions clearly."
+        "start": 17083,
+        "text": "They must explain their decisions clearly."
+       },
+       {
+        "end": 17166,
+        "paragraph": 51,
+        "start": 17126,
+        "text": "They must engage openly with the public."
        },
        {
         "end": 17254,
         "paragraph": 51,
-        "start": 17126,
-        "text": "They must engage openly with the public. They must remain accountable to elected representatives for their statutory objectives."
+        "start": 17167,
+        "text": "They must remain accountable to elected representatives for their statutory objectives."
        }
       ],
       "paragraphs": [
        51
       ]
      },
-     "text": "The speaker says central banks must explain decisions clearly, engage openly with the public, and remain accountable to elected representatives for their statutory objectives."
+     "text": "Governor Andrew Bailey says central banks must explain decisions clearly, engage openly with the public, and remain accountable to elected representatives for statutory objectives."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 18286,
+        "end": 18199,
         "paragraph": 54,
-        "start": 18200,
-        "text": "It means insulation from short-term political pressures within a democratic framework."
+        "start": 18133,
+        "text": "Central bank independence does not mean detachment from democracy."
        },
        {
         "end": 18389,
@@ -2899,7 +3362,7 @@
        54
       ]
      },
-     "text": "The speaker says central bank independence means insulation from short-term political pressures within a democratic framework, and its legitimacy derives from a parliamentary delegation."
+     "text": "Governor Andrew Bailey says central bank independence does not mean detachment from democracy, and its legitimacy derives from a parliamentary delegation."
     }
    ],
    "title": "The institutional form of independent central banks: from history to contemporary challenges - speech by Andrew Bailey",
@@ -2907,9 +3370,9 @@
    "url": "https://www.bankofengland.co.uk/speech/2026/september/andrew-bailey-keynote-speech-at-lse-trium-anniversary-conference",
    "usage": {
     "attempts": 1,
-    "input_tokens": 6428,
-    "output_tokens": 982,
-    "reasoning_tokens": 432
+    "input_tokens": 6545,
+    "output_tokens": 1608,
+    "reasoning_tokens": 1034
    }
   },
   {
@@ -3540,6 +4003,230 @@
     "input_tokens": 14428,
     "output_tokens": 1589,
     "reasoning_tokens": 162
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     12,
+     28,
+     53,
+     61,
+     66
+    ],
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:speech:9971da7bb2f2",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'likely' of summary point 2 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee likely ...' (never in your own voice)"
+     ],
+     "text": "Member Hajime Takata says that the year-on-year rate of increase in the PPI rose to 7.2 percent, as of the July 2026 index, and that producer-price rises will likely spread to consumer prices through the second half of fiscal 2026."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "f22f08c960db2d5e45e79c155684534ea009d530b81568210102aecd4bdbc002",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 929,
+     "point": 2,
+     "source_text": "1",
+     "start": 928,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 175,
+     "point": 2,
+     "source_text": "2026",
+     "start": 171,
+     "text": "2026"
+    },
+    {
+     "end": 16970,
+     "point": 2,
+     "source_text": "1.25 percent",
+     "start": 16958,
+     "text": "1.25 percent"
+    },
+    {
+     "end": 175,
+     "point": 3,
+     "source_text": "2026",
+     "start": 171,
+     "text": "2026"
+    },
+    {
+     "end": 6369,
+     "point": 5,
+     "source_text": "2027",
+     "start": 6365,
+     "text": "2027"
+    },
+    {
+     "end": 169,
+     "point": 5,
+     "source_text": "2",
+     "start": 168,
+     "text": "2"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-02",
+   "quotes": [
+    {
+     "end": 4128,
+     "paragraph": 12,
+     "start": 4053,
+     "text": "In reality, however, Japan's economy has not shown marked slowdowns so far."
+    },
+    {
+     "end": 16971,
+     "paragraph": 28,
+     "start": 16882,
+     "text": "At the July MPM, I proposed that the Bank raise the policy interest rate to 1.25 percent."
+    },
+    {
+     "end": 32747,
+     "paragraph": 53,
+     "start": 32465,
+     "text": "I believe, however, that 2026 represents a regime change where rate hikes will not be carried out at a fixed pace but will instead be conducted in a nimble and data-dependent manner in response to the domestic price and economic environment, particularly reflecting overseas trends."
+    },
+    {
+     "end": 41015,
+     "paragraph": 66,
+     "start": 40813,
+     "text": "In the interim assessment of the reduction plan conducted at the June 2026 MPM, the Bank decided to halt the reduction from April 2027 and conduct purchases of about 2 trillion yen per month (Chart 27)."
+    }
+   ],
+   "source": {
+    "chars": 46550,
+    "chars_sent": 46551,
+    "method": "html-selector",
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4128,
+        "paragraph": 12,
+        "start": 4053,
+        "text": "In reality, however, Japan's economy has not shown marked slowdowns so far."
+       },
+       {
+        "end": 4255,
+        "paragraph": 12,
+        "start": 4129,
+        "text": "With wage increases catching up with higher prices, the year-on-year rate of change in real wages has recently turned positive"
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Member Hajime Takata says that Japan's economy has not shown marked slowdowns so far, and that the year-on-year rate of change in real wages has recently turned positive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16881,
+        "paragraph": 28,
+        "start": 16761,
+        "text": "The Bank decided to raise the policy interest rate to around 1.0 percent at the June 2026 Monetary Policy Meeting (MPM)."
+       },
+       {
+        "end": 16971,
+        "paragraph": 28,
+        "start": 16882,
+        "text": "At the July MPM, I proposed that the Bank raise the policy interest rate to 1.25 percent."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Member Hajime Takata says that the Bank decided to raise the policy interest rate to around 1.0 percent at the June 2026 MPM, and that he proposed raising it to 1.25 percent at the July MPM."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 32578,
+        "paragraph": 53,
+        "start": 32465,
+        "text": "I believe, however, that 2026 represents a regime change where rate hikes will not be carried out at a fixed pace"
+       },
+       {
+        "end": 32705,
+        "paragraph": 53,
+        "start": 32579,
+        "text": "but will instead be conducted in a nimble and data-dependent manner in response to the domestic price and economic environment"
+       }
+      ],
+      "paragraphs": [
+       53
+      ]
+     },
+     "text": "Member Hajime Takata believes that 2026 represents a regime change where rate hikes will not be carried out at a fixed pace but will instead be conducted in a nimble and data-dependent manner."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 38822,
+        "paragraph": 61,
+        "start": 38655,
+        "text": "the Bank needs to conduct rate hikes nimbly after gauging the degree of accommodation in domestic financial conditions, in addition to examining developments overseas."
+       }
+      ],
+      "paragraphs": [
+       61
+      ]
+     },
+     "text": "Member Hajime Takata believes that the Bank needs to conduct rate hikes nimbly after gauging the degree of accommodation in domestic financial conditions and examining developments overseas."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 41003,
+        "paragraph": 66,
+        "start": 40893,
+        "text": "the Bank decided to halt the reduction from April 2027 and conduct purchases of about 2 trillion yen per month"
+       }
+      ],
+      "paragraphs": [
+       66
+      ]
+     },
+     "text": "Member Hajime Takata says that the Bank decided to halt the reduction in JGB purchases from April 2027 and conduct purchases of about 2 trillion yen per month."
+    }
+   ],
+   "title": "\"Economic Activity, Prices, and Monetary Policy in Japan\" (Speech at a Meeting with Local Leaders in Sapporo)",
+   "type": "speech",
+   "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko260902a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 23361,
+    "output_tokens": 2336,
+    "reasoning_tokens": 704
    }
   },
   {
@@ -4224,18 +4911,20 @@
     "paragraphs": [
      6,
      12,
-     15,
      17,
      21,
-     22
+     22,
+     25
     ],
     "paragraphs_sent": 32,
     "truncated": false
    },
    "currency": "USD",
    "doc_id": "USD:speech:a89335cf0468",
+   "dropped_points": [],
+   "dropped_quotes": [],
    "format": "html",
-   "generated_at": "2026-09-21T15:55:58Z",
+   "generated_at": "2026-09-21T18:33:38Z",
    "input_sha256": "c4708270b517192d5f6ccad8133c48fd61fbbf53ee00dc4a62b3ba822dfedadc",
    "meeting_date": null,
    "model": "gpt-5.6-terra",
@@ -4284,20 +4973,20 @@
     },
     {
      "end": 459,
-     "point": 5,
+     "point": 4,
      "source_text": "2 percent",
      "start": 450,
      "text": "2 percent"
     },
     {
      "end": 459,
-     "point": 6,
+     "point": 5,
      "source_text": "2 percent",
      "start": 450,
      "text": "2 percent"
     }
    ],
-   "prompt_version": "speech-v5",
+   "prompt_version": "speech-v6",
    "provider": "openai",
    "published": "2026-09-03",
    "quotes": [
@@ -4318,6 +5007,12 @@
      "paragraph": 21,
      "start": 9254,
      "text": "If there is continued progress toward our 2 percent goal, then I am willing to support holding the policy rate at its current level."
+    },
+    {
+     "end": 9447,
+     "paragraph": 22,
+     "start": 9387,
+     "text": "But if inflation comes in hot, I would consider a rate hike."
     },
     {
      "end": 10961,
@@ -4355,7 +5050,7 @@
        6
       ]
      },
-     "text": "Waller says real GDP grew at a 1.8 percent annual rate in the first half of this year, while real private domestic final purchases rose 3 percent."
+     "text": "Governor Christopher J. Waller says real GDP grew at a 1.8 percent annual rate in the first half of this year, while real private domestic final purchases rose 3 percent."
     },
     {
      "evidence": {
@@ -4378,17 +5073,17 @@
        12
       ]
      },
-     "text": "Waller says job creation has increased this year by an average of 60,000 a month through July, and the unemployment rate fell to 4.1 percent in July."
+     "text": "Governor Christopher J. Waller says job creation has increased this year by an average of 60,000 a month through July, and the unemployment rate fell to 4.1 percent in July."
     },
     {
      "evidence": {
       "coverage": 1.0,
       "fragments": [
        {
-        "end": 6997,
+        "end": 7067,
         "paragraph": 17,
         "start": 6921,
-        "text": "Three-month core inflation is 3.05 percent for the three months through July"
+        "text": "Three-month core inflation is 3.05 percent for the three months through July, a level that is still not consistent with the FOMC's 2 percent goal."
        },
        {
         "end": 7189,
@@ -4401,24 +5096,7 @@
        17
       ]
      },
-     "text": "Waller says three-month core inflation was 3.05 percent through July and had fallen steadily from 4.76 percent in February."
-    },
-    {
-     "evidence": {
-      "coverage": 1.0,
-      "fragments": [
-       {
-        "end": 6303,
-        "paragraph": 15,
-        "start": 6198,
-        "text": "I don't see elevated energy prices and tariffs now as a significant source of ongoing inflation pressure."
-       }
-      ],
-      "paragraphs": [
-       15
-      ]
-     },
-     "text": "Waller says he does not see elevated energy prices and tariffs now as a significant source of ongoing inflation pressure."
+     "text": "Governor Christopher J. Waller says three-month core inflation is 3.05 percent through July and has fallen steadily from 4.76 percent in February."
     },
     {
      "evidence": {
@@ -4435,7 +5113,7 @@
        21
       ]
      },
-     "text": "Waller says he is willing to support holding the policy rate at its current level if there is continued progress toward the 2 percent goal."
+     "text": "Governor Christopher J. Waller says he is willing to support holding the policy rate at its current level if there is continued progress toward the 2 percent goal."
     },
     {
      "evidence": {
@@ -4458,17 +5136,257 @@
        22
       ]
      },
-     "text": "Waller says he would consider a rate hike if inflation comes in hot and would support tighter policy if progress toward 2 percent inflation reversed in August."
+     "text": "Governor Christopher J. Waller says he would consider a rate hike if inflation comes in hot, and would support tighter policy if progress toward 2 percent inflation reversed in August."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10698,
+        "paragraph": 25,
+        "start": 10523,
+        "text": "The second way in which I communicate is to explain how future economic data will shape my future monetary policy decisions—in short, I try to describe my \"reaction function.\""
+       }
+      ],
+      "paragraphs": [
+       25
+      ]
+     },
+     "text": "Governor Christopher J. Waller says his reaction function explains how future economic data will shape his future monetary policy decisions."
     }
    ],
    "title": "Waller, The Economic Outlook and Some Comments on My Policy Communication",
    "type": "speech",
    "url": "https://www.federalreserve.gov/newsevents/speech/waller20260903a.htm",
    "usage": {
-    "attempts": 1,
-    "input_tokens": 4561,
-    "output_tokens": 915,
-    "reasoning_tokens": 273
+    "attempts": 2,
+    "input_tokens": 10351,
+    "output_tokens": 2202,
+    "reasoning_tokens": 702
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
+     8,
+     9,
+     15,
+     17,
+     19,
+     25,
+     27
+    ],
+    "paragraphs_sent": 56,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:c2ec2c18dd9c",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "7ac8823920bd9a7cfbe18a9c747da5b05ac534c9a2fd64afe26789f97184f7c4",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 6574,
+     "point": 3,
+     "source_text": "75 percent",
+     "start": 6564,
+     "text": "75 percent"
+    },
+    {
+     "end": 6698,
+     "point": 3,
+     "source_text": "60 percent",
+     "start": 6688,
+     "text": "60 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-01",
+   "quotes": [
+    {
+     "end": 2646,
+     "paragraph": 9,
+     "start": 2528,
+     "text": "However, if inflation appears not to be moderating sufficiently, then I think we should act decisively to raise rates."
+    },
+    {
+     "end": 6731,
+     "paragraph": 15,
+     "start": 6489,
+     "text": "As an example, the SHED found that, among people with no criminal records, 75 percent report doing okay financially or living comfortably, while for those convicted and once incarcerated the rate is 60 percent doing at least okay financially."
+    },
+    {
+     "end": 9766,
+     "paragraph": 19,
+     "start": 9555,
+     "text": "Lending is a key input in supporting entrepreneurs with a criminal record, and it is most effective when paired with the training and networks that help a business succeed once its credit needs have been funded."
+    },
+    {
+     "end": 13182,
+     "paragraph": 25,
+     "start": 13050,
+     "text": "We also need data that show the creditworthiness of these individuals and their businesses to support credit underwriting decisions."
+    },
+    {
+     "end": 14199,
+     "paragraph": 27,
+     "start": 14066,
+     "text": "AI-powered cash flow underwriting or alternative financial data underwriting can help consumers access credit and financial products."
+    }
+   ],
+   "source": {
+    "chars": 24073,
+    "chars_sent": 24074,
+    "method": "html-selector",
+    "paragraphs_sent": 56,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1433,
+        "paragraph": 7,
+        "start": 1372,
+        "text": "The labor market is stable, with relatively low unemployment."
+       },
+       {
+        "end": 1578,
+        "paragraph": 7,
+        "start": 1434,
+        "text": "The economy has been growing solidly, powered in part by the boom in AI-related business investment and the buildout of AI-related capabilities."
+       },
+       {
+        "end": 1712,
+        "paragraph": 7,
+        "start": 1659,
+        "text": "Consumer spending to date has been largely resilient."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Barr says the labor market is stable, the economy has been growing solidly, and consumer spending has been largely resilient."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1777,
+        "paragraph": 8,
+        "start": 1713,
+        "text": "But inflation remains too high—and has been for over five years."
+       },
+       {
+        "end": 2646,
+        "paragraph": 9,
+        "start": 2528,
+        "text": "However, if inflation appears not to be moderating sufficiently, then I think we should act decisively to raise rates."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "Governor Barr says inflation remains too high and that he would raise rates if it appears not to be moderating sufficiently."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6731,
+        "paragraph": 15,
+        "start": 6489,
+        "text": "As an example, the SHED found that, among people with no criminal records, 75 percent report doing okay financially or living comfortably, while for those convicted and once incarcerated the rate is 60 percent doing at least okay financially."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Governor Barr reports that the SHED found 75 percent report doing okay financially or living comfortably, while the rate is 60 percent doing at least okay financially for those convicted and once incarcerated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7970,
+        "paragraph": 17,
+        "start": 7876,
+        "text": "Entrepreneurship is another path to better economic outcomes for those with a criminal record."
+       },
+       {
+        "end": 9766,
+        "paragraph": 19,
+        "start": 9555,
+        "text": "Lending is a key input in supporting entrepreneurs with a criminal record, and it is most effective when paired with the training and networks that help a business succeed once its credit needs have been funded."
+       }
+      ],
+      "paragraphs": [
+       17,
+       19
+      ]
+     },
+     "text": "Governor Barr says entrepreneurship is another path to better economic outcomes for those with a criminal record, and lending is most effective when paired with training and networks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13182,
+        "paragraph": 25,
+        "start": 13050,
+        "text": "We also need data that show the creditworthiness of these individuals and their businesses to support credit underwriting decisions."
+       }
+      ],
+      "paragraphs": [
+       25
+      ]
+     },
+     "text": "Governor Barr says data showing the creditworthiness of these individuals and their businesses are needed to support credit underwriting decisions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14199,
+        "paragraph": 27,
+        "start": 14066,
+        "text": "AI-powered cash flow underwriting or alternative financial data underwriting can help consumers access credit and financial products."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Governor Barr says AI-powered cash flow underwriting or alternative financial data underwriting can help consumers access credit and financial products."
+    }
+   ],
+   "title": "Barr, Unlocking Opportunities for Workers and Entrepreneurs with a Criminal Record",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/barr20260901a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 13690,
+    "output_tokens": 3399,
+    "reasoning_tokens": 1980
    }
   },
   {

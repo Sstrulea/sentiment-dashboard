@@ -35,6 +35,12 @@
    "kind": "non_prose",
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260914~0ffd556bc8.en.pdf"
+  },
+  "EUR:speech:b3344232334c": {
+   "at": "2026-09-21T18:33:38Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260817-ai-and-monetary-policy"
   }
  },
  "version": 1

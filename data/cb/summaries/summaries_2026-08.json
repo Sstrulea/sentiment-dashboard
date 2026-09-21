@@ -451,6 +451,444 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     7,
+     14,
+     21,
+     26,
+     27,
+     30,
+     33
+    ],
+    "paragraphs_sent": 41,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:12d91c243351",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "6f01f4dc4bac6459ff8701fc595bb44b0bea775bd0479401d8e2fe9089758afc",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-08-13",
+   "quotes": [
+    {
+     "end": 416,
+     "paragraph": 7,
+     "start": 285,
+     "text": "The Monetary Policy Board sets the level of the cash rate that it judges will achieve low and stable inflation and full employment."
+    },
+    {
+     "end": 2240,
+     "paragraph": 14,
+     "start": 2162,
+     "text": "Lending and deposit rates have increased in line with the cash rate (Graph 1)."
+    },
+    {
+     "end": 6854,
+     "paragraph": 27,
+     "start": 6741,
+     "text": "By itself, this AI activity means that policy rates need to be higher than otherwise, at least in the short run.4"
+    },
+    {
+     "end": 8042,
+     "paragraph": 30,
+     "start": 7894,
+     "text": "In conclusion, the evidence suggests that monetary policy in Australia is somewhat restrictive and that the tightening earlier this year is working."
+    }
+   ],
+   "source": {
+    "chars": 11129,
+    "chars_sent": 11130,
+    "method": "html-selector",
+    "paragraphs_sent": 41,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 112,
+        "paragraph": 2,
+        "start": 56,
+        "text": "Christopher Kent* Assistant Governor (Financial Markets)"
+       },
+       {
+        "end": 416,
+        "paragraph": 7,
+        "start": 285,
+        "text": "The Monetary Policy Board sets the level of the cash rate that it judges will achieve low and stable inflation and full employment."
+       }
+      ],
+      "paragraphs": [
+       2,
+       7
+      ]
+     },
+     "text": "Assistant Governor Kent says the Monetary Policy Board sets the cash rate level it judges will achieve low and stable inflation and full employment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 112,
+        "paragraph": 2,
+        "start": 56,
+        "text": "Christopher Kent* Assistant Governor (Financial Markets)"
+       },
+       {
+        "end": 2088,
+        "paragraph": 14,
+        "start": 2007,
+        "text": "the three cash rate increases earlier this year are having their intended effects"
+       },
+       {
+        "end": 2581,
+        "paragraph": 14,
+        "start": 2498,
+        "text": "housing credit growth, which moves closely with housing prices, has started to slow"
+       }
+      ],
+      "paragraphs": [
+       2,
+       14
+      ]
+     },
+     "text": "Assistant Governor Kent says the three cash rate increases earlier this year are having their intended effects, while housing credit growth has started to slow."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 112,
+        "paragraph": 2,
+        "start": 56,
+        "text": "Christopher Kent* Assistant Governor (Financial Markets)"
+       },
+       {
+        "end": 5191,
+        "paragraph": 21,
+        "start": 5090,
+        "text": "Housing prices have declined in Sydney and Melbourne, with declines becoming increasingly broad-based"
+       },
+       {
+        "end": 5329,
+        "paragraph": 21,
+        "start": 5203,
+        "text": "Growth of new housing loans has fallen significantly and forward indicators such as auction clearance rates have also declined"
+       }
+      ],
+      "paragraphs": [
+       2,
+       21
+      ]
+     },
+     "text": "Assistant Governor Kent says housing prices have declined in Sydney and Melbourne, while growth of new housing loans has fallen significantly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 112,
+        "paragraph": 2,
+        "start": 56,
+        "text": "Christopher Kent* Assistant Governor (Financial Markets)"
+       },
+       {
+        "end": 6549,
+        "paragraph": 26,
+        "start": 6423,
+        "text": "Substantial investment in data centres and AI-related infrastructure has helped to support growth in aggregate demand of late."
+       },
+       {
+        "end": 6853,
+        "paragraph": 27,
+        "start": 6741,
+        "text": "By itself, this AI activity means that policy rates need to be higher than otherwise, at least in the short run."
+       }
+      ],
+      "paragraphs": [
+       2,
+       26,
+       27
+      ]
+     },
+     "text": "Assistant Governor Kent says substantial AI-related investment has supported aggregate demand growth and, by itself, means policy rates need to be higher than otherwise in the short run."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 112,
+        "paragraph": 2,
+        "start": 56,
+        "text": "Christopher Kent* Assistant Governor (Financial Markets)"
+       },
+       {
+        "end": 8042,
+        "paragraph": 30,
+        "start": 7909,
+        "text": "the evidence suggests that monetary policy in Australia is somewhat restrictive and that the tightening earlier this year is working."
+       }
+      ],
+      "paragraphs": [
+       2,
+       30
+      ]
+     },
+     "text": "Assistant Governor Kent says the evidence suggests that monetary policy in Australia is somewhat restrictive and that the tightening earlier this year is working."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 112,
+        "paragraph": 2,
+        "start": 56,
+        "text": "Christopher Kent* Assistant Governor (Financial Markets)"
+       },
+       {
+        "end": 9414,
+        "paragraph": 33,
+        "start": 9276,
+        "text": "it will be carefully considering the wide range of factors that influence financial conditions and the restrictiveness of monetary policy."
+       }
+      ],
+      "paragraphs": [
+       2,
+       33
+      ]
+     },
+     "text": "Assistant Governor Kent says the Board will carefully consider factors influencing financial conditions and the restrictiveness of monetary policy as it updates its economic outlook assessment."
+    }
+   ],
+   "title": "The Restrictive Stance of Monetary Policy",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-ag-2026-08-13.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 8484,
+    "output_tokens": 2408,
+    "reasoning_tokens": 1158
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     8,
+     12,
+     13,
+     24,
+     52
+    ],
+    "paragraphs_sent": 148,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:d96c3ac241bb",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "81c30913a0bef198b0ebbad1c3c0d5fd26fc16129734a9af655a56868653712b",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 210,
+     "point": 1,
+     "source_text": "4.35 per cent",
+     "start": 197,
+     "text": "4.35 per cent"
+    },
+    {
+     "end": 2169,
+     "point": 3,
+     "source_text": "2027",
+     "start": 2165,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-08-11",
+   "quotes": [
+    {
+     "end": 211,
+     "paragraph": 6,
+     "start": 120,
+     "text": "Good afternoon. Today, the Board decided to leave the cash rate unchanged at 4.35 per cent."
+    },
+    {
+     "end": 2170,
+     "paragraph": 12,
+     "start": 2041,
+     "text": "Our forecasts are for inflation to ease through next year and be back around the midpoint of the target range by the end of 2027."
+    },
+    {
+     "end": 2699,
+     "paragraph": 13,
+     "start": 2587,
+     "text": "The Board will raise interest rates further if that is what is required to bring inflation down in a timely way."
+    },
+    {
+     "end": 5875,
+     "paragraph": 24,
+     "start": 5746,
+     "text": "And before anyone asks, no, the Board did not discuss an interest rate cut at this meeting. It only discussed a raise and a stay."
+    }
+   ],
+   "source": {
+    "chars": 43008,
+    "chars_sent": 43009,
+    "method": "html-selector",
+    "paragraphs_sent": 148,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 211,
+        "paragraph": 6,
+        "start": 136,
+        "text": "Today, the Board decided to leave the cash rate unchanged at 4.35 per cent."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Bullock says the Board decided to leave the cash rate unchanged at 4.35 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 675,
+        "paragraph": 8,
+        "start": 567,
+        "text": "inflation remains too high, and the Board remains concerned about the upside risks to the inflation outlook."
+       },
+       {
+        "end": 779,
+        "paragraph": 8,
+        "start": 676,
+        "text": "The domestic economy continues to operate above capacity, and the labour market remains a little tight."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governor Bullock says inflation remains too high, the domestic economy operates above capacity, and the labour market remains a little tight."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2170,
+        "paragraph": 12,
+        "start": 2041,
+        "text": "Our forecasts are for inflation to ease through next year and be back around the midpoint of the target range by the end of 2027."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Governor Bullock says the forecasts are for inflation to ease through next year and be back around the midpoint of the target range by the end of 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2699,
+        "paragraph": 13,
+        "start": 2587,
+        "text": "The Board will raise interest rates further if that is what is required to bring inflation down in a timely way."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "Governor Bullock says the Board will raise interest rates further if that is required to bring inflation down in a timely way."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5875,
+        "paragraph": 24,
+        "start": 5774,
+        "text": "the Board did not discuss an interest rate cut at this meeting. It only discussed a raise and a stay."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Governor Bullock says the Board did not discuss an interest rate cut at this meeting and only discussed a raise and a stay."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13388,
+        "paragraph": 52,
+        "start": 13335,
+        "text": "the productive capacity of the economy is not growing"
+       },
+       {
+        "end": 13724,
+        "paragraph": 52,
+        "start": 13653,
+        "text": "we just have to set monetary policy to deliver low and stable inflation"
+       }
+      ],
+      "paragraphs": [
+       52
+      ]
+     },
+     "text": "Governor Bullock says the productive capacity of the economy is not growing and monetary policy must deliver low and stable inflation."
+    }
+   ],
+   "title": "Monetary Policy Decision",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-08-11.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 11043,
+    "output_tokens": 1512,
+    "reasoning_tokens": 952
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 222,
     "changes": [
@@ -862,6 +1300,218 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     9,
+     21,
+     25,
+     27,
+     28,
+     32,
+     52,
+     53
+    ],
+    "paragraphs_sent": 64,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:speech:4c262942341c",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 5 has 47 words; allowed 5-40: “This illustrates that the sectoral CCyB has been used to serve two distinct objectives: fi” - cut it to the clause that states the claim"
+     ],
+     "text": "Vice Chairman Antoine Martin says the sectoral CCyB has served two distinct objectives, and this double role can be problematic."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "b535c3cd735f5123e17a88bbd5a420d13653bde5e8046731e056baaba60d1667",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 10730,
+     "point": 5,
+     "source_text": "2.5%",
+     "start": 10726,
+     "text": "2.5%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-08-26",
+   "quotes": [
+    {
+     "end": 7425,
+     "paragraph": 25,
+     "start": 7392,
+     "text": "Price stability takes precedence."
+    },
+    {
+     "end": 8803,
+     "paragraph": 27,
+     "start": 8766,
+     "text": "The SNB sets its policy rate ‘clean’."
+    },
+    {
+     "end": 9636,
+     "paragraph": 28,
+     "start": 9486,
+     "text": "If vulnerabilities materialise, the CCyB is released, freeing up capital that banks can use to absorb losses and continue lending to the real economy."
+    },
+    {
+     "end": 12079,
+     "paragraph": 32,
+     "start": 11858,
+     "text": "This double role can be problematic and strengthen the case for a separate releasable capital buffer specifically designed to absorb the impact of shocks unrelated to vulnerabilities on the credit and real estate markets."
+    },
+    {
+     "end": 21989,
+     "paragraph": 53,
+     "start": 21922,
+     "text": "This is not to say that the CCyB should be increased at the moment."
+    }
+   ],
+   "source": {
+    "chars": 25793,
+    "chars_sent": 25794,
+    "method": "html-selector",
+    "paragraphs_sent": 64,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1796,
+        "paragraph": 9,
+        "start": 1713,
+        "text": "The National Bank Act specifies that the SNB is required to ensure price stability."
+       },
+       {
+        "end": 1633,
+        "paragraph": 9,
+        "start": 1517,
+        "text": "The SNB has a monetary policy mandate and is also tasked with contributing to the stability of the financial system."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Vice Chairman Antoine Martin says the SNB is required to ensure price stability and is also tasked with contributing to the stability of the financial system."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5715,
+        "paragraph": 21,
+        "start": 5642,
+        "text": "Price stability provides an important foundation for financial stability."
+       },
+       {
+        "end": 6153,
+        "paragraph": 21,
+        "start": 6064,
+        "text": "Yet low and stable inflation does not preclude the build-up of financial vulnerabilities."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Vice Chairman Antoine Martin says price stability provides an important foundation for financial stability, yet low and stable inflation does not preclude the build-up of financial vulnerabilities."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7425,
+        "paragraph": 25,
+        "start": 7261,
+        "text": "The legislator has set out a clear priority for the SNB’s monetary policy mandate and the central bank’s financial stability task: Price stability takes precedence."
+       },
+       {
+        "end": 8899,
+        "paragraph": 27,
+        "start": 8766,
+        "text": "The SNB sets its policy rate ‘clean’. In Switzerland, vulnerabilities in the financial sector are tackled with macroprudential tools."
+       }
+      ],
+      "paragraphs": [
+       25,
+       27
+      ]
+     },
+     "text": "Vice Chairman Antoine Martin says price stability takes precedence, and the SNB sets its policy rate ‘clean’ while tackling financial-sector vulnerabilities with macroprudential tools."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9407,
+        "paragraph": 28,
+        "start": 9238,
+        "text": "The idea behind the CCyB is that banks gradually build up capital as vulnerabilities in credit and real estate markets increase, thereby strengthening banks’ resilience."
+       },
+       {
+        "end": 9636,
+        "paragraph": 28,
+        "start": 9486,
+        "text": "If vulnerabilities materialise, the CCyB is released, freeing up capital that banks can use to absorb losses and continue lending to the real economy."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Vice Chairman Antoine Martin says the CCyB requires banks to build up capital as credit and real estate market vulnerabilities increase, and it is released if vulnerabilities materialise."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21772,
+        "paragraph": 52,
+        "start": 21707,
+        "text": "Currently, the sectoral CCyB stands at its legal maximum of 2.5%."
+       },
+       {
+        "end": 22054,
+        "paragraph": 53,
+        "start": 21922,
+        "text": "This is not to say that the CCyB should be increased at the moment. Let me be clear, our assessment is that it currently should not."
+       }
+      ],
+      "paragraphs": [
+       52,
+       53
+      ]
+     },
+     "text": "Vice Chairman Antoine Martin says the sectoral CCyB stands at its legal maximum of 2.5%, and the SNB’s assessment is that it currently should not be increased."
+    }
+   ],
+   "title": "2026-08-26 - Antoine Martin: Monetary policy and financial stability at the SNB: the role of macroprudential tools",
+   "type": "speech",
+   "url": "https://www.snb.ch/en/publications/communication/speeches/2026/ref_20260826_anmar",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 13815,
+    "output_tokens": 3060,
+    "reasoning_tokens": 1520
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      23,
      27,
      32,
@@ -1115,6 +1765,233 @@
     "input_tokens": 38385,
     "output_tokens": 2480,
     "reasoning_tokens": 1032
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     38,
+     42,
+     48,
+     57,
+     65,
+     66
+    ],
+    "paragraphs_sent": 98,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:speech:301fc703e54b",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "aa8df382c919c986050e565dea7f7df90d78b59bdb7dadb6b3fe0fdbfca1bb76",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 563,
+     "point": 1,
+     "source_text": "1",
+     "start": 562,
+     "text": "1 percent"
+    },
+    {
+     "end": 11690,
+     "point": 1,
+     "source_text": "31",
+     "start": 11688,
+     "text": "31"
+    },
+    {
+     "end": 1496,
+     "point": 4,
+     "source_text": "2",
+     "start": 1495,
+     "text": "2 percent"
+    },
+    {
+     "end": 162,
+     "point": 4,
+     "source_text": "2026",
+     "start": 158,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-08-27",
+   "quotes": [
+    {
+     "end": 11724,
+     "paragraph": 38,
+     "start": 11572,
+     "text": "At the Monetary Policy Meeting in June, the Bank raised the policy rate to 1 percent, reaching the highest level in 31 years (Chart 6 [top-left panel])."
+    },
+    {
+     "end": 15798,
+     "paragraph": 48,
+     "start": 15704,
+     "text": "Japan's economy is thus expected to continue growing moderately, albeit at a decelerated rate."
+    },
+    {
+     "end": 18540,
+     "paragraph": 57,
+     "start": 18399,
+     "text": "Taking these factors into account, it is expected that CPI inflation will move up and stay above 2 percent in the second half of fiscal 2026."
+    },
+    {
+     "end": 22016,
+     "paragraph": 65,
+     "start": 21699,
+     "text": "Given that underlying inflation has been approaching 2 percent and financial conditions have been accommodative, I believe the Bank should continue to raise the policy interest rate and adjust the degree of monetary accommodation in accordance with developments in economic activity, prices, and financial conditions."
+    }
+   ],
+   "source": {
+    "chars": 34655,
+    "chars_sent": 34656,
+    "method": "html-selector",
+    "paragraphs_sent": 98,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11696,
+        "paragraph": 38,
+        "start": 11572,
+        "text": "At the Monetary Policy Meeting in June, the Bank raised the policy rate to 1 percent, reaching the highest level in 31 years"
+       }
+      ],
+      "paragraphs": [
+       38
+      ]
+     },
+     "text": "Deputy Governor Himino says the Bank raised the policy rate to 1 percent at the June Monetary Policy Meeting, the highest level in 31 years."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13059,
+        "paragraph": 42,
+        "start": 12975,
+        "text": "Real interest rates remain negative, particularly in the short- to medium-term range"
+       },
+       {
+        "end": 13270,
+        "paragraph": 42,
+        "start": 13089,
+        "text": "Financial institutions maintain an aggressive lending stance (Chart 6 [bottom-left panel]), and the growth rate of banks' loan balances is picking up (Chart 6 [bottom-right panel])."
+       },
+       {
+        "end": 13340,
+        "paragraph": 42,
+        "start": 13271,
+        "text": "These indicators show that financial conditions remain accommodative."
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "Deputy Governor Himino says financial conditions remain accommodative, with negative real interest rates, an aggressive lending stance, and picking-up growth in banks' loan balances."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15798,
+        "paragraph": 48,
+        "start": 15704,
+        "text": "Japan's economy is thus expected to continue growing moderately, albeit at a decelerated rate."
+       }
+      ],
+      "paragraphs": [
+       48
+      ]
+     },
+     "text": "Deputy Governor Himino says Japan's economy is expected to continue growing moderately, albeit at a decelerated rate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18540,
+        "paragraph": 57,
+        "start": 18434,
+        "text": "it is expected that CPI inflation will move up and stay above 2 percent in the second half of fiscal 2026."
+       }
+      ],
+      "paragraphs": [
+       57
+      ]
+     },
+     "text": "Deputy Governor Himino says CPI inflation is expected to move up and stay above 2 percent in the second half of fiscal 2026."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21928,
+        "paragraph": 65,
+        "start": 21812,
+        "text": "I believe the Bank should continue to raise the policy interest rate and adjust the degree of monetary accommodation"
+       },
+       {
+        "end": 22016,
+        "paragraph": 65,
+        "start": 21929,
+        "text": "in accordance with developments in economic activity, prices, and financial conditions."
+       }
+      ],
+      "paragraphs": [
+       65
+      ]
+     },
+     "text": "Deputy Governor Himino says the Bank should continue to raise the policy interest rate and adjust monetary accommodation in accordance with economic activity, prices, and financial conditions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22120,
+        "paragraph": 66,
+        "start": 22017,
+        "text": "The timing and pace of adjustment should be chosen by examining the likelihood of the baseline scenario"
+       },
+       {
+        "end": 22352,
+        "paragraph": 66,
+        "start": 22215,
+        "text": "including the impact of the situation in the Middle East, the expansion in AI-related demand, and developments in foreign exchange rates."
+       }
+      ],
+      "paragraphs": [
+       66
+      ]
+     },
+     "text": "Deputy Governor Himino says the timing and pace of adjustment should be chosen by examining the baseline scenario's likelihood and risks including the Middle East, AI-related demand, and foreign exchange rates."
+    }
+   ],
+   "title": "\"Japan's Economy and Monetary Policy\" (Speech at a Meeting with Local Leaders in Saitama)",
+   "type": "speech",
+   "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko260827a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 17558,
+    "output_tokens": 1604,
+    "reasoning_tokens": 230
    }
   },
   {
@@ -1549,6 +2426,505 @@
     "input_tokens": 19148,
     "output_tokens": 2709,
     "reasoning_tokens": 1344
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     24,
+     29,
+     30,
+     33,
+     34,
+     50,
+     57,
+     68
+    ],
+    "paragraphs_sent": 101,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:410eea679c47",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "c77017989ae2c1de57d6d0d8db9b3d173c22081447423e37038e6097a9fd57ea",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 11758,
+     "point": 4,
+     "source_text": "2 percent",
+     "start": 11749,
+     "text": "2 percent"
+    },
+    {
+     "end": 17443,
+     "point": 6,
+     "source_text": "12",
+     "start": 17441,
+     "text": "12"
+    },
+    {
+     "end": 17502,
+     "point": 6,
+     "source_text": "3.7 percent",
+     "start": 17491,
+     "text": "3.7 percent"
+    },
+    {
+     "end": 16486,
+     "point": 6,
+     "source_text": "4.1 percent",
+     "start": 16475,
+     "text": "4.1 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-08-28",
+   "quotes": [
+    {
+     "end": 4023,
+     "paragraph": 24,
+     "start": 3861,
+     "text": "We recognize that AI is a new variable—potentially a new factor of production—that will have consequences for both the economy and the conduct of monetary policy."
+    },
+    {
+     "end": 6535,
+     "paragraph": 34,
+     "start": 6453,
+     "text": "In normal times, the role of forward guidance should be limited and circumscribed."
+    },
+    {
+     "end": 12048,
+     "paragraph": 50,
+     "start": 12003,
+     "text": "It is the Fed's job to deliver stable prices."
+    },
+    {
+     "end": 17801,
+     "paragraph": 68,
+     "start": 17753,
+     "text": "Inflation is running above our 2 percent target."
+    }
+   ],
+   "source": {
+    "chars": 27343,
+    "chars_sent": 27344,
+    "method": "html-selector",
+    "paragraphs_sent": 101,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4023,
+        "paragraph": 24,
+        "start": 3861,
+        "text": "We recognize that AI is a new variable—potentially a new factor of production—that will have consequences for both the economy and the conduct of monetary policy."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Chair Warsh says AI is potentially a new factor of production that will have consequences for the economy and monetary policy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5179,
+        "paragraph": 29,
+        "start": 5082,
+        "text": "We will be thinking through these matters with the help of a task force on productivity and jobs."
+       },
+       {
+        "end": 5414,
+        "paragraph": 30,
+        "start": 5301,
+        "text": "their recommendations will come later and have no bearing on decisions we make in the current policy conjuncture."
+       }
+      ],
+      "paragraphs": [
+       29,
+       30
+      ]
+     },
+     "text": "Chair Warsh says task-force recommendations will come later and have no bearing on decisions in the current policy conjuncture."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6452,
+        "paragraph": 33,
+        "start": 6397,
+        "text": "I believe that the practice has overstayed its welcome."
+       },
+       {
+        "end": 6535,
+        "paragraph": 34,
+        "start": 6453,
+        "text": "In normal times, the role of forward guidance should be limited and circumscribed."
+       }
+      ],
+      "paragraphs": [
+       33,
+       34
+      ]
+     },
+     "text": "Chair Warsh says forward guidance as a regular practice has overstayed its welcome, and its role in normal times should be limited and circumscribed."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11856,
+        "paragraph": 50,
+        "start": 11710,
+        "text": "The Fed's price-stability objective of 2 percent, as measured by the personal consumption expenditures (PCE) price index, is a firm, fixed target."
+       },
+       {
+        "end": 12048,
+        "paragraph": 50,
+        "start": 12003,
+        "text": "It is the Fed's job to deliver stable prices."
+       }
+      ],
+      "paragraphs": [
+       50
+      ]
+     },
+     "text": "Chair Warsh says the 2 percent PCE price-stability objective is a firm, fixed target, and it is the Fed's job to deliver stable prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14136,
+        "paragraph": 57,
+        "start": 14037,
+        "text": "today I am impressed by the overall performance of the economy, which appears to have strengthened."
+       },
+       {
+        "end": 14285,
+        "paragraph": 57,
+        "start": 14221,
+        "text": "both Main Street and Wall Street have been remarkably resilient."
+       }
+      ],
+      "paragraphs": [
+       57
+      ]
+     },
+     "text": "Chair Warsh says the overall performance of the economy appears to have strengthened, and Main Street and Wall Street have been remarkably resilient."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17546,
+        "paragraph": 68,
+        "start": 17395,
+        "text": "The Fed's preferred measure of inflation, the 12-month change in the PCE price index, stands at 3.7 percent, while the six-month change is 4.1 percent."
+       },
+       {
+        "end": 17863,
+        "paragraph": 68,
+        "start": 17802,
+        "text": "So the Fed's predominant focus right now should be on prices."
+       }
+      ],
+      "paragraphs": [
+       68
+      ]
+     },
+     "text": "Chair Warsh says the 12-month change in the PCE price index stands at 3.7 percent, the six-month change is 4.1 percent, and the Fed's predominant focus should be on prices."
+    }
+   ],
+   "title": "Warsh, In Our Time",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/warsh20260828a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7557,
+    "output_tokens": 1155,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     7,
+     12,
+     16,
+     19,
+     26
+    ],
+    "paragraphs_sent": 36,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:604fbf455ecf",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 5 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+     ],
+     "text": "Governor Lisa D. Cook says the introduction of AI, decades-long structural changes, and high inflation experienced over the past five years are reasons for weak sentiment."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:33:38Z",
+   "input_sha256": "8d8fd72f75c6eb3ff86071d436b3593d6970ef817e1ad9b67381ca0d4690315d",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2103,
+     "point": 2,
+     "source_text": "3.7 percent",
+     "start": 2092,
+     "text": "3.7 percent"
+    },
+    {
+     "end": 2113,
+     "point": 2,
+     "source_text": "12",
+     "start": 2111,
+     "text": "12"
+    },
+    {
+     "end": 2392,
+     "point": 2,
+     "source_text": "3.3 percent",
+     "start": 2381,
+     "text": "3.3 percent"
+    },
+    {
+     "end": 8134,
+     "point": 4,
+     "source_text": "4.4 percent",
+     "start": 8123,
+     "text": "4.4 percent"
+    },
+    {
+     "end": 8767,
+     "point": 4,
+     "source_text": "2025",
+     "start": 8763,
+     "text": "2025"
+    },
+    {
+     "end": 8815,
+     "point": 4,
+     "source_text": "65",
+     "start": 8813,
+     "text": "65"
+    },
+    {
+     "end": 8846,
+     "point": 4,
+     "source_text": "3.2 percent",
+     "start": 8835,
+     "text": "3.2 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-08-05",
+   "quotes": [
+    {
+     "end": 1341,
+     "paragraph": 6,
+     "start": 1266,
+     "text": "I view the U.S. economy as remaining resilient and growing at a solid pace."
+    },
+    {
+     "end": 1680,
+     "paragraph": 7,
+     "start": 1658,
+     "text": "Inflation is too high."
+    },
+    {
+     "end": 5271,
+     "paragraph": 12,
+     "start": 5210,
+     "text": "As such, I am prepared to act by raising rates, if necessary."
+    },
+    {
+     "end": 6916,
+     "paragraph": 16,
+     "start": 6841,
+     "text": "If I do not see signs of continued disinflation soon, I am prepared to act."
+    },
+    {
+     "end": 12876,
+     "paragraph": 26,
+     "start": 12737,
+     "text": "As a monetary policymaker, I believe that the best thing we can do in our roles is to ensure that inflation returns to and stays at target."
+    }
+   ],
+   "source": {
+    "chars": 14947,
+    "chars_sent": 14948,
+    "method": "html-selector",
+    "paragraphs_sent": 36,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1341,
+        "paragraph": 6,
+        "start": 1266,
+        "text": "I view the U.S. economy as remaining resilient and growing at a solid pace."
+       },
+       {
+        "end": 1486,
+        "paragraph": 6,
+        "start": 1342,
+        "text": "Inflation continues to be stubbornly high and has exceeded the Federal Open Market Committee's (FOMC) 2 percent target for more than five years."
+       },
+       {
+        "end": 1573,
+        "paragraph": 6,
+        "start": 1487,
+        "text": "Meanwhile, the labor market appears to be stable, in a low-hire, low-fire environment."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Lisa D. Cook says the U.S. economy remains resilient and grows at a solid pace, while inflation is stubbornly high and the labor market is stable in a low-hire, low-fire environment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2134,
+        "paragraph": 7,
+        "start": 2031,
+        "text": "The personal consumption expenditures price (PCE) index rose 3.7 percent in the 12 months through June."
+       },
+       {
+        "end": 2414,
+        "paragraph": 7,
+        "start": 2326,
+        "text": "Core prices, which exclude food and energy costs, rose 3.3 percent over the same period."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Lisa D. Cook reports that the PCE index rose 3.7 percent in the 12 months through June, while core prices rose 3.3 percent over the same period."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6840,
+        "paragraph": 16,
+        "start": 6731,
+        "text": "For these three reasons, I felt it was appropriate not to change rates while we see how these factors evolve."
+       },
+       {
+        "end": 6916,
+        "paragraph": 16,
+        "start": 6841,
+        "text": "If I do not see signs of continued disinflation soon, I am prepared to act."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Governor Lisa D. Cook says she felt it was appropriate not to change rates while the factors evolve and is prepared to act if she does not see signs of continued disinflation soon."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8179,
+        "paragraph": 19,
+        "start": 8079,
+        "text": "The unemployment rate is low in Alaska—just 4.4 percent according to the Bureau of Labor Statistics."
+       },
+       {
+        "end": 8768,
+        "paragraph": 19,
+        "start": 8679,
+        "text": "Alaska's working-age population, those aged between 18 and 64, declined slightly in 2025."
+       },
+       {
+        "end": 8857,
+        "paragraph": 19,
+        "start": 8769,
+        "text": "Simultaneously, the number of Alaskans aged 65 or older increased 3.2 percent last year."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governor Lisa D. Cook says Alaska's unemployment rate is 4.4 percent, its working-age population declined slightly in 2025, and the number of Alaskans aged 65 or older increased 3.2 percent last year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12706,
+        "paragraph": 26,
+        "start": 12612,
+        "text": "They require a varied and broad policy approach, largely outside the scope of monetary policy."
+       },
+       {
+        "end": 12876,
+        "paragraph": 26,
+        "start": 12737,
+        "text": "As a monetary policymaker, I believe that the best thing we can do in our roles is to ensure that inflation returns to and stays at target."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Governor Lisa D. Cook says the reasons for low sentiment require a varied and broad policy approach, largely outside monetary policy, and that monetary policymakers should ensure inflation returns to and stays at target."
+    }
+   ],
+   "title": "Cook, Outlook for the U.S. and Alaskan Economies",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/cook20260805a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10136,
+    "output_tokens": 3383,
+    "reasoning_tokens": 1746
    }
   }
  ],
