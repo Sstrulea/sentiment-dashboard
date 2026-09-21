@@ -4050,6 +4050,274 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     12,
+     16,
+     28,
+     53,
+     66,
+     70
+    ],
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:speech:9971da7bb2f2",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:35:33Z",
+   "input_sha256": "f22f08c960db2d5e45e79c155684534ea009d530b81568210102aecd4bdbc002",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 7308,
+     "point": 2,
+     "source_text": "7.2 percent",
+     "start": 7297,
+     "text": "7.2 percent"
+    },
+    {
+     "end": 175,
+     "point": 2,
+     "source_text": "2026",
+     "start": 171,
+     "text": "2026"
+    },
+    {
+     "end": 929,
+     "point": 3,
+     "source_text": "1",
+     "start": 928,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 175,
+     "point": 3,
+     "source_text": "2026",
+     "start": 171,
+     "text": "2026"
+    },
+    {
+     "end": 16970,
+     "point": 3,
+     "source_text": "1.25 percent",
+     "start": 16958,
+     "text": "1.25 percent"
+    },
+    {
+     "end": 175,
+     "point": 4,
+     "source_text": "2026",
+     "start": 171,
+     "text": "2026"
+    },
+    {
+     "end": 175,
+     "point": 5,
+     "source_text": "2026",
+     "start": 171,
+     "text": "2026"
+    },
+    {
+     "end": 6369,
+     "point": 5,
+     "source_text": "2027",
+     "start": 6365,
+     "text": "2027"
+    },
+    {
+     "end": 169,
+     "point": 5,
+     "source_text": "2",
+     "start": 168,
+     "text": "2"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-02",
+   "quotes": [
+    {
+     "end": 7448,
+     "paragraph": 16,
+     "start": 7208,
+     "text": "The year-on-year rate of increase in the producer price index (PPI) has already risen to 7.2 percent, as of the July 2026 index, and there are upside risks to prices, with more firms passing upstream price increases on downstream (Chart 6)."
+    },
+    {
+     "end": 16971,
+     "paragraph": 28,
+     "start": 16882,
+     "text": "At the July MPM, I proposed that the Bank raise the policy interest rate to 1.25 percent."
+    },
+    {
+     "end": 32747,
+     "paragraph": 53,
+     "start": 32465,
+     "text": "I believe, however, that 2026 represents a regime change where rate hikes will not be carried out at a fixed pace but will instead be conducted in a nimble and data-dependent manner in response to the domestic price and economic environment, particularly reflecting overseas trends."
+    },
+    {
+     "end": 41015,
+     "paragraph": 66,
+     "start": 40813,
+     "text": "In the interim assessment of the reduction plan conducted at the June 2026 MPM, the Bank decided to halt the reduction from April 2027 and conduct purchases of about 2 trillion yen per month (Chart 27)."
+    },
+    {
+     "end": 44737,
+     "paragraph": 70,
+     "start": 44617,
+     "text": "Needless to say, the reduction in the Bank's JGB purchases does not aim at giving consideration to the fiscal situation."
+    }
+   ],
+   "source": {
+    "chars": 46550,
+    "chars_sent": 46551,
+    "method": "html-selector",
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4128,
+        "paragraph": 12,
+        "start": 4053,
+        "text": "In reality, however, Japan's economy has not shown marked slowdowns so far."
+       },
+       {
+        "end": 4255,
+        "paragraph": 12,
+        "start": 4129,
+        "text": "With wage increases catching up with higher prices, the year-on-year rate of change in real wages has recently turned positive"
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Member Takata says Japan's economy has not shown marked slowdowns so far, and the year-on-year rate of change in real wages has recently turned positive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7373,
+        "paragraph": 16,
+        "start": 7208,
+        "text": "The year-on-year rate of increase in the producer price index (PPI) has already risen to 7.2 percent, as of the July 2026 index, and there are upside risks to prices"
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Member Takata says the year-on-year rate of increase in the producer price index had risen to 7.2 percent in the July 2026 index, with upside risks to prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16881,
+        "paragraph": 28,
+        "start": 16761,
+        "text": "The Bank decided to raise the policy interest rate to around 1.0 percent at the June 2026 Monetary Policy Meeting (MPM)."
+       },
+       {
+        "end": 16971,
+        "paragraph": 28,
+        "start": 16882,
+        "text": "At the July MPM, I proposed that the Bank raise the policy interest rate to 1.25 percent."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Member Takata says the Bank raised the policy interest rate to around 1.0 percent at the June 2026 Monetary Policy Meeting, and he proposed raising it to 1.25 percent at the July MPM."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 32578,
+        "paragraph": 53,
+        "start": 32465,
+        "text": "I believe, however, that 2026 represents a regime change where rate hikes will not be carried out at a fixed pace"
+       },
+       {
+        "end": 32705,
+        "paragraph": 53,
+        "start": 32579,
+        "text": "but will instead be conducted in a nimble and data-dependent manner in response to the domestic price and economic environment"
+       }
+      ],
+      "paragraphs": [
+       53
+      ]
+     },
+     "text": "Member Takata believes that 2026 represents a regime change where rate hikes will not be carried out at a fixed pace but will instead be conducted in a nimble and data-dependent manner."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 41003,
+        "paragraph": 66,
+        "start": 40813,
+        "text": "In the interim assessment of the reduction plan conducted at the June 2026 MPM, the Bank decided to halt the reduction from April 2027 and conduct purchases of about 2 trillion yen per month"
+       }
+      ],
+      "paragraphs": [
+       66
+      ]
+     },
+     "text": "Member Takata says the Bank decided at the June 2026 MPM to halt the reduction in JGB purchases from April 2027 and conduct purchases of about 2 trillion yen per month."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 44737,
+        "paragraph": 70,
+        "start": 44617,
+        "text": "Needless to say, the reduction in the Bank's JGB purchases does not aim at giving consideration to the fiscal situation."
+       },
+       {
+        "end": 45296,
+        "paragraph": 70,
+        "start": 45181,
+        "text": "in exceptional circumstances, such as a rapid rise in long-term interest rates, the Bank will make nimble responses"
+       }
+      ],
+      "paragraphs": [
+       70
+      ]
+     },
+     "text": "Member Takata says the reduction in the Bank's JGB purchases does not aim at giving consideration to the fiscal situation, and that the Bank will make nimble responses in exceptional circumstances."
+    }
+   ],
+   "title": "\"Economic Activity, Prices, and Monetary Policy in Japan\" (Speech at a Meeting with Local Leaders in Sapporo)",
+   "type": "speech",
+   "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko260902a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 23263,
+    "output_tokens": 3681,
+    "reasoning_tokens": 1938
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 1849,
     "changes": [

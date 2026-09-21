@@ -1,0 +1,269 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     3,
+     8,
+     13,
+     30,
+     34,
+     36
+    ],
+    "paragraphs_sent": 36,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:deliberations:2025-09-25",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T19:35:33Z",
+   "input_sha256": "7f959ed1490e4c74d4ab432d7183bc8d3319e50ed9f289399f86ee6bdbef24c9",
+   "meeting_date": "2025-09-25",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 39,
+     "point": 1,
+     "source_text": "23",
+     "start": 37,
+     "text": "23"
+    },
+    {
+     "end": 46,
+     "point": 1,
+     "source_text": "24",
+     "start": 44,
+     "text": "24"
+    },
+    {
+     "end": 61,
+     "point": 1,
+     "source_text": "2025",
+     "start": 57,
+     "text": "2025"
+    },
+    {
+     "end": 162,
+     "point": 1,
+     "source_text": "0%",
+     "start": 160,
+     "text": "0%"
+    },
+    {
+     "end": 61,
+     "point": 2,
+     "source_text": "2025",
+     "start": 57,
+     "text": "2025"
+    },
+    {
+     "end": 9777,
+     "point": 4,
+     "source_text": "1%",
+     "start": 9775,
+     "text": "1%"
+    },
+    {
+     "end": 9786,
+     "point": 4,
+     "source_text": "1.5%",
+     "start": 9782,
+     "text": "1.5%"
+    },
+    {
+     "end": 61,
+     "point": 4,
+     "source_text": "2025",
+     "start": 57,
+     "text": "2025"
+    },
+    {
+     "end": 12464,
+     "point": 5,
+     "source_text": "2026",
+     "start": 12460,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2025-10-23",
+   "quotes": [
+    {
+     "end": 163,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At the monetary policy assessment of 23 and 24 September 2025, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 4235,
+     "paragraph": 13,
+     "start": 4063,
+     "text": "The discussion that followed led to the assessment that, taking all available indicators into account, monetary policy is currently continuing to have a stimulative effect."
+    },
+    {
+     "end": 9752,
+     "paragraph": 30,
+     "start": 9664,
+     "text": "The economic outlook deteriorated with the significant increase in US tariffs in August."
+    },
+    {
+     "end": 13725,
+     "paragraph": 36,
+     "start": 13642,
+     "text": "The Governing Board therefore decided to leave the SNB policy rate unchanged at 0%."
+    }
+   ],
+   "source": {
+    "chars": 14259,
+    "chars_sent": 14260,
+    "method": "html-selector",
+    "paragraphs_sent": 36,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 163,
+        "paragraph": 1,
+        "start": 63,
+        "text": "the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+       },
+       {
+        "end": 726,
+        "paragraph": 3,
+        "start": 544,
+        "text": "The decision was taken by Martin Schlegel (Chairman of the Governing Board), Antoine Martin (Vice Chairman of the Governing Board) and Petra Tschudin (Member of the Governing Board)."
+       }
+      ],
+      "paragraphs": [
+       1,
+       3
+      ]
+     },
+     "text": "At the monetary policy assessment of 23 and 24 September 2025, the Governing Board decided to leave the SNB policy rate unchanged at 0%; the decision was taken by Martin Schlegel, Antoine Martin and Petra Tschudin."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2018,
+        "paragraph": 8,
+        "start": 1913,
+        "text": "Overall, the financial market situation was characterised by low volatility in the third quarter of 2025."
+       },
+       {
+        "end": 2600,
+        "paragraph": 8,
+        "start": 2489,
+        "text": "The markets expected the SNB to leave its policy rate unchanged at the monetary policy assessment in September."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The financial market situation was characterised by low volatility in the third quarter of 2025, and markets expected the SNB to leave its policy rate unchanged in September."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 4235,
+        "paragraph": 13,
+        "start": 4063,
+        "text": "The discussion that followed led to the assessment that, taking all available indicators into account, monetary policy is currently continuing to have a stimulative effect."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "The discussion assessed that monetary policy was currently continuing to have a stimulative effect, taking all available indicators into account."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9752,
+        "paragraph": 30,
+        "start": 9664,
+        "text": "The economic outlook deteriorated with the significant increase in US tariffs in August."
+       },
+       {
+        "end": 9825,
+        "paragraph": 30,
+        "start": 9753,
+        "text": "GDP growth of between 1% and 1.5% is still expected for 2025 as a whole."
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "The SNB states that the economic outlook deteriorated with the significant increase in US tariffs in August, while GDP growth of between 1% and 1.5% is still expected for 2025 as a whole."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12077,
+        "paragraph": 34,
+        "start": 11922,
+        "text": "The conditional inflation forecast is within the range of price stability over the entire forecast period, rising slightly through to the forecast horizon."
+       },
+       {
+        "end": 12491,
+        "paragraph": 34,
+        "start": 12439,
+        "text": "The GDP forecast for 2026 has been lowered somewhat."
+       }
+      ],
+      "paragraphs": [
+       34
+      ]
+     },
+     "text": "The Economic Affairs division summarised that the conditional inflation forecast was within the range of price stability over the entire forecast period, while the GDP forecast for 2026 had been lowered somewhat."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13542,
+        "paragraph": 36,
+        "start": 13428,
+        "text": "Against this backdrop, the Governing Board concluded that a further easing of monetary policy was not appropriate."
+       }
+      ],
+      "paragraphs": [
+       36
+      ]
+     },
+     "text": "The Governing Board concluded that a further easing of monetary policy was not appropriate."
+    }
+   ],
+   "title": "Swiss National Bank deliberations of the 25 September 2025 meeting",
+   "type": "deliberations",
+   "url": "https://www.snb.ch/en/publications/communication/summaries/zus_20251023",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 9107,
+    "output_tokens": 2750,
+    "reasoning_tokens": 1318
+   }
+  }
+ ],
+ "version": 1
+}
