@@ -299,6 +299,192 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     35,
+     44,
+     46,
+     47,
+     51,
+     54
+    ],
+    "paragraphs_sent": 90,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:c2e9c4edbf10",
+   "format": "html",
+   "generated_at": "2026-09-21T16:03:19Z",
+   "input_sha256": "47784415482d164d7817c0111feff3d6dc04009c2f3c8f66aa7ad1e17abb11c3",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v5",
+   "provider": "openai",
+   "published": "2026-09-04",
+   "quotes": [
+    {
+     "end": 10227,
+     "paragraph": 35,
+     "start": 10149,
+     "text": "The modern central bank is therefore the product of a long historical process."
+    },
+    {
+     "end": 14110,
+     "paragraph": 44,
+     "start": 13947,
+     "text": "In the Bank of England’s case, Parliament defines the objectives, establishes the powers, and retains the authority to amend the framework within which we operate."
+    },
+    {
+     "end": 17082,
+     "paragraph": 51,
+     "start": 17033,
+     "text": "Central banks cannot take legitimacy for granted."
+    },
+    {
+     "end": 18199,
+     "paragraph": 54,
+     "start": 18133,
+     "text": "Central bank independence does not mean detachment from democracy."
+    }
+   ],
+   "source": {
+    "chars": 24294,
+    "chars_sent": 24295,
+    "method": "html-selector",
+    "paragraphs_sent": 90,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 10341,
+        "paragraph": 35,
+        "start": 10228,
+        "text": "On one hand lies the Montesquieu tradition, concerned with limiting arbitrary power through institutional checks."
+       },
+       {
+        "end": 10481,
+        "paragraph": 35,
+        "start": 10342,
+        "text": "On the other lies the tradition of Locke and Hume, concerned with establishing money and credit as public goods upon which society depends."
+       }
+      ],
+      "paragraphs": [
+       35
+      ]
+     },
+     "text": "The speaker says modern central banks combine institutional checks on arbitrary power with money and credit as public goods upon which society depends."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13946,
+        "paragraph": 44,
+        "start": 13751,
+        "text": "Modern independent central banks are not independent of democratic government in the important sense that their authority originates in legislation or the like enacted by elected representatives."
+       },
+       {
+        "end": 14110,
+        "paragraph": 44,
+        "start": 13947,
+        "text": "In the Bank of England’s case, Parliament defines the objectives, establishes the powers, and retains the authority to amend the framework within which we operate."
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "The speaker says modern independent central banks are not independent of democratic government, and Parliament defines the Bank of England’s objectives and establishes its powers."
+    },
+    {
+     "evidence": {
+      "coverage": 0.875,
+      "fragments": [
+       {
+        "end": 14966,
+        "paragraph": 46,
+        "start": 14871,
+        "text": "One version of the criticism is that the central bank remains too close to financial interests."
+       },
+       {
+        "end": 15399,
+        "paragraph": 47,
+        "start": 15236,
+        "text": "The irony is that central banks can, and today do, face an opposite accusation from the financial interests themselves, who argue that regulation has gone too far."
+       }
+      ],
+      "paragraphs": [
+       46,
+       47
+      ]
+     },
+     "text": "The speaker says critics argue central banks are too close to financial interests, while financial interests argue that regulation has gone too far."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17125,
+        "paragraph": 51,
+        "start": 17033,
+        "text": "Central banks cannot take legitimacy for granted. They must explain their decisions clearly."
+       },
+       {
+        "end": 17254,
+        "paragraph": 51,
+        "start": 17126,
+        "text": "They must engage openly with the public. They must remain accountable to elected representatives for their statutory objectives."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "The speaker says central banks must explain decisions clearly, engage openly with the public, and remain accountable to elected representatives for their statutory objectives."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18286,
+        "paragraph": 54,
+        "start": 18200,
+        "text": "It means insulation from short-term political pressures within a democratic framework."
+       },
+       {
+        "end": 18389,
+        "paragraph": 54,
+        "start": 18287,
+        "text": "Its legitimacy derives from a parliamentary delegation and accountability goes with that independence."
+       }
+      ],
+      "paragraphs": [
+       54
+      ]
+     },
+     "text": "The speaker says central bank independence means insulation from short-term political pressures within a democratic framework, and its legitimacy derives from a parliamentary delegation."
+    }
+   ],
+   "title": "The institutional form of independent central banks: from history to contemporary challenges - speech by Andrew Bailey",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/september/andrew-bailey-keynote-speech-at-lse-trium-anniversary-conference",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 6428,
+    "output_tokens": 982,
+    "reasoning_tokens": 432
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      3,
      4,
