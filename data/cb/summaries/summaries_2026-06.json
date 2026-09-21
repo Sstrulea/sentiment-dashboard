@@ -1,0 +1,187 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": {
+    "added_words": 113,
+    "changes": [
+     {
+      "added": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:",
+      "paragraph": 1,
+      "removed": ""
+     },
+     {
+      "added": "The",
+      "paragraph": 2,
+      "removed": "In support of its goals, the"
+     },
+     {
+      "added": "3-1/2",
+      "paragraph": 2,
+      "removed": "3‑1/2"
+     },
+     {
+      "added": "3-3/4 percent, in support of",
+      "paragraph": 2,
+      "removed": "3‑3/4 percent. In considering"
+     },
+     {
+      "added": "Federal Reserve's dual mandate.",
+      "paragraph": 2,
+      "removed": "extent and timing of additional adjustments to the target range for the federal funds rate, the Committee will carefully assess incoming data, the evolving outlook, and the balance of risks."
+     },
+     {
+      "added": "reaffirmed",
+      "paragraph": 2,
+      "removed": "is strongly committed to supporting maximum employment and returning inflation to"
+     },
+     {
+      "added": "policy of maintaining ample reserves in the banking system.",
+      "paragraph": 2,
+      "removed": "2 percent objective."
+     },
+     {
+      "added": "Economic activity is expanding at a solid pace despite elevated uncertainty that owes, in part, to the conflict in the Middle East. Productivity growth and capital investment are strong. Job gains have kept pace with the workforce, and the unemployment rate has changed little.",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "Inflation remains elevated relative to the Committee's 2 percent goal, in part reflecting supply shocks that have driven price increases in certain sectors, including energy. The Committee will deliver price stability.",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Recent indicators suggest that economic activity has been expanding at a solid pace. Job gains have remained low, on average, and the unemployment rate has been little changed in recent months. Inflation is elevated, in part reflecting the recent increase in global energy prices."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Committee seeks to achieve maximum employment and inflation at the rate of 2 percent over the longer run. Developments in the Middle East are contributing to a high level of uncertainty about the economic outlook. The Committee is attentive to the risks to both sides of its dual mandate."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "In assessing the appropriate stance of monetary policy, the Committee will continue to monitor the implications of incoming information for the economic outlook. The Committee would be prepared to adjust the stance of monetary policy as appropriate if risks emerge that could impede the attainment of the Committee's goals. The Committee's assessments will take into account a wide range of information, including readings on labor market conditions, inflation pressures and inflation expectations, and financial and international developments."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Voting for the monetary policy action were Jerome H. Powell, Chair; John C. Williams, Vice Chair; Michael S. Barr; Michelle W. Bowman; Lisa D. Cook; Philip N. Jefferson; Anna Paulson; and Christopher J. Waller. Voting against this action were Stephen I. Miran, who preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting; and Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who supported maintaining the target range for the federal funds rate but did not support inclusion of an easing bias in the statement at this time."
+     }
+    ],
+    "removed_words": 323,
+    "truncated": false,
+    "vs_doc_id": "USD:statement:2026-04-29",
+    "vs_meeting": "2026-04-29"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     3,
+     4
+    ],
+    "paragraphs_sent": 4,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:statement:2026-06-17",
+   "format": "html",
+   "generated_at": "2026-09-21T10:54:03Z",
+   "input_sha256": "b337a261d8ef06a9a61d1a868f9ca6a379fd7b71fcf19f3af1134eccf115d857",
+   "meeting_date": "2026-06-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 183,
+     "point": 1,
+     "source_text": "3-1/2",
+     "start": 178,
+     "text": "3-1/2"
+    },
+    {
+     "end": 200,
+     "point": 1,
+     "source_text": "3-3/4 percent",
+     "start": 187,
+     "text": "3-3/4 percent"
+    },
+    {
+     "end": 683,
+     "point": 3,
+     "source_text": "2 percent",
+     "start": 674,
+     "text": "2 percent"
+    },
+    {
+     "end": 86,
+     "point": 5,
+     "source_text": "12",
+     "start": 84,
+     "text": "12"
+    },
+    {
+     "end": 90,
+     "point": 5,
+     "source_text": "0",
+     "start": 89,
+     "text": "0"
+    }
+   ],
+   "prompt_version": "statement-v3",
+   "provider": "openai",
+   "published": "2026-06-17",
+   "quotes": [
+    {
+     "end": 251,
+     "paragraph": 2,
+     "start": 97,
+     "text": "The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent, in support of the Federal Reserve's dual mandate."
+    },
+    {
+     "end": 472,
+     "paragraph": 3,
+     "start": 341,
+     "text": "Economic activity is expanding at a solid pace despite elevated uncertainty that owes, in part, to the conflict in the Middle East."
+    },
+    {
+     "end": 793,
+     "paragraph": 4,
+     "start": 619,
+     "text": "Inflation remains elevated relative to the Committee's 2 percent goal, in part reflecting supply shocks that have driven price increases in certain sectors, including energy."
+    },
+    {
+     "end": 96,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:"
+    }
+   ],
+   "source": {
+    "chars": 837,
+    "chars_sent": 838,
+    "method": "stored",
+    "paragraphs_sent": 4,
+    "truncated": false
+   },
+   "summary": [
+    "The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent.",
+    "The Committee stated that economic activity is expanding at a solid pace despite elevated uncertainty partly owing to the conflict in the Middle East.",
+    "The Committee stated that inflation remains elevated relative to its 2 percent goal, partly reflecting supply shocks and price increases in certain sectors, including energy.",
+    "The Committee reaffirmed its policy of maintaining ample reserves in the banking system.",
+    "The Federal Open Market Committee approved the statement by a 12 – 0 vote."
+   ],
+   "title": "Federal Reserve monetary policy statement, 17 June 2026",
+   "type": "statement",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 929,
+    "output_tokens": 285,
+    "reasoning_tokens": 0
+   }
+  }
+ ],
+ "version": 1
+}
