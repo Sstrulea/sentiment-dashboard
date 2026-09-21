@@ -548,3 +548,25 @@ def test_a_share_of_digits_exactly_at_the_limit_is_still_prose():
     assert m["digit_ratio"] == 0.08 and m["prose_share"] == 1.0
     assert SRC.not_prose([p], {"prose_share_min": 0.5, "digit_ratio_max": 0.08, "short_share_max": 0.5}) is None
     assert SRC.not_prose([p], {"prose_share_min": 0.5, "digit_ratio_max": 0.0799, "short_share_max": 0.5}) is not None
+
+
+RBA = json.loads((FIX / "rba_transcript_excerpt.json").read_text())
+
+
+def test_a_press_conference_with_a_speaker_label_before_every_turn_is_prose_not_a_deck():
+    """The RBA's transcripts alternate a name paragraph ("Michele Bullock") and the turn: half the paragraphs are short. Three of the four transcripts were marked
+    non_prose on the first backlog run (50-52% short lines) - they are the bank's Q&A."""
+    shorts = sum(1 for p in RBA if len(p) < 40)
+    assert shorts / len(RBA) > 0.5                                                                                        # by the plain count the excerpt is over the limit ...
+    assert SRC.not_prose(RBA, CFG.non_prose) is None                                                                       # ... the labels are not short lines of a slide
+    assert SRC.prose_metrics(RBA)["short_share"] < 0.15
+    assert all(SRC._is_speaker_label(p) for p in RBA if p in ("Michele Bullock", "Jacob Shteyman", "Michael Read") if p in RBA)
+
+
+def test_only_a_name_is_a_speaker_label_a_heading_a_short_sentence_and_a_slide_title_are_not():
+    label = SRC._is_speaker_label
+    assert label("Michele Bullock") and label("Daniel O\u2019Leary") and label("Jean Claude Van Damme")
+    assert not label("Monetary Policy Board Statement") and not label("Audio 43.5MB") and not label("Available as: Audio , Audio (with interpretation)")
+    assert not label("Thank you.") and not label("Bullock") and not label("One Two Three Four Five") and not label("Michele Bullock, Governor and more text here")
+    slides = ["Growth Outlook"] * 20 + ["Inflation Path"] * 20 + [PROSE["GBP:speech:c2e9c4edbf10"][0]]
+    assert SRC.not_prose(slides, CFG.non_prose) is not None                                                                # a deck of titles is still a deck (few sentences)
