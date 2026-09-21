@@ -413,8 +413,9 @@ body.dark .theme-toggle .moon { display: none; }
 }
 
 /* Narrow screens: brand + theme toggle on the first row, the eight links on a second row that scrolls sideways
-   (before this the single row was ~700 px wide and stretched the whole page on a 390 px phone). */
-@media (max-width: 640px) {
+   (before this the single row was ~870 px wide and stretched the whole page on a phone; 900 px = the width the single row needs, so a tablet
+   between 641 and 866 px does not overflow either). */
+@media (max-width: 900px) {
   .nav-container {
     flex-wrap: wrap;
     min-height: 0;
@@ -1949,3 +1950,15 @@ tr.cb-dim td { opacity: 0.55; }
 .cb-chip-chair { background: var(--accent); color: #fff; }
 body.dark .cb-chip-chair { color: #0d0f12; }
 .cb-chip-voter { background: var(--info-bg); color: var(--info-fg); }
+
+/* Filter rows on narrow screens: the chips wrap onto further lines instead of scrolling inside a row that cannot shrink (a nowrap chip row is as wide as
+   all its chips together, which stretched /economic, /carry and the COT page to 590-710 px on a 390 px phone). Same specificity as the rules it
+   overrides (.cat-chips in the 768 px blocks, .econ-controls .cat-chips), and last in the file. 768 px = where those nowrap rules start. */
+@media (max-width: 768px) {
+  .controls, .cat-filter, .cat-chips, .econ-controls .cat-chips, .retail-controls .cat-chips {
+    flex-wrap: wrap;
+    min-width: 0;
+    overflow-x: visible;
+  }
+  .cat-filter-actions { border-left: 0; padding-left: 0; margin-left: 0; }
+}
