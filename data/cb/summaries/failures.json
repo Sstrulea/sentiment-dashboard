@@ -1,0 +1,16 @@
+{
+ "failures": {
+  "USD:statement:2026-04-29|statement-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T15:53:30Z",
+   "doc_id": "USD:statement:2026-04-29",
+   "errors": [
+    "summary point 5 has none but the closest sentence of the paragraph(s) it cites has one: “Voting against this action were Stephen I. Miran, who preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting; an” - state it as the source does; never turn a statement into its opposite"
+   ],
+   "input_sha256": "f69fea68d23e456dc7341a56c77cacc244301a143aea2a4b7a5f3f536c1ff899",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "statement-v5",
+   "provider": "openai"
+  }
+ },
+ "version": 1
+}
