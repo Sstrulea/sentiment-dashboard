@@ -4,6 +4,301 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     4,
+     8,
+     9,
+     16,
+     19,
+     20,
+     28,
+     32,
+     53,
+     55
+    ],
+    "paragraphs_sent": 85,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:minutes:2026-09-17",
+   "format": "html",
+   "generated_at": "2026-09-21T15:59:14Z",
+   "input_sha256": "fe508cf394ebee9ad6f3144f6f4620776550b171201b697ebe46ad6d8804d413",
+   "meeting_date": "2026-09-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 693,
+     "point": 1,
+     "source_text": "36%",
+     "start": 690,
+     "text": "36%"
+    },
+    {
+     "end": 701,
+     "point": 1,
+     "source_text": "78%",
+     "start": 698,
+     "text": "78%"
+    },
+    {
+     "end": 3168,
+     "point": 2,
+     "source_text": "95 basis points",
+     "start": 3153,
+     "text": "95 basis points"
+    },
+    {
+     "end": 6899,
+     "point": 3,
+     "source_text": "3¾%",
+     "start": 6896,
+     "text": "3¾%"
+    },
+    {
+     "end": 76,
+     "point": 3,
+     "source_text": "2026",
+     "start": 72,
+     "text": "2026"
+    },
+    {
+     "end": 1463,
+     "point": 3,
+     "source_text": "4",
+     "start": 1462,
+     "text": "4%"
+    },
+    {
+     "end": 3636,
+     "point": 3,
+     "source_text": "2027",
+     "start": 3632,
+     "text": "2027"
+    },
+    {
+     "end": 8418,
+     "point": 4,
+     "source_text": "0.4%",
+     "start": 8414,
+     "text": "0.4%"
+    },
+    {
+     "end": 76,
+     "point": 4,
+     "source_text": "2026",
+     "start": 72,
+     "text": "2026"
+    },
+    {
+     "end": 6899,
+     "point": 6,
+     "source_text": "3¾%",
+     "start": 6896,
+     "text": "3.75%"
+    },
+    {
+     "end": 19290,
+     "point": 6,
+     "source_text": "0.25 percentage point",
+     "start": 19269,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 1463,
+     "point": 6,
+     "source_text": "4",
+     "start": 1462,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "minutes-v5",
+   "provider": "openai",
+   "published": "2026-09-17",
+   "quotes": [
+    {
+     "end": 4251,
+     "paragraph": 12,
+     "start": 4053,
+     "text": "Twelve-month CPI inflation had been 3.1% in August, triggering the exchange of open letters between the Governor and the Chancellor of the Exchequer that was being published alongside these minutes."
+    },
+    {
+     "end": 15049,
+     "paragraph": 28,
+     "start": 14845,
+     "text": "The Committee nevertheless judged that the risk of material second-round effects had increased since July, and was likely to increase further to the extent that energy prices remained elevated for longer."
+    },
+    {
+     "end": 17895,
+     "paragraph": 32,
+     "start": 17734,
+     "text": "Taken together, the Committee judged that risks to the inflation outlook were tilted further to the upside compared with at the time of the previous MPC meeting."
+    },
+    {
+     "end": 30858,
+     "paragraph": 55,
+     "start": 30710,
+     "text": "Six members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Clare Lombardelli, Dave Ramsden and Alan Taylor) voted in favour of the first proposition."
+    },
+    {
+     "end": 31090,
+     "paragraph": 56,
+     "start": 31022,
+     "text": "The Committee voted unanimously in favour of the second proposition."
+    }
+   ],
+   "source": {
+    "chars": 45020,
+    "chars_sent": 45021,
+    "method": "html-selector",
+    "paragraphs_sent": 85,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 762,
+        "paragraph": 4,
+        "start": 625,
+        "text": "The spot prices of Brent crude and UK wholesale gas had risen by 36% and 78% respectively since the period leading up to the July Report."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Committee reported that Brent crude and UK wholesale gas spot prices had risen by 36% and 78% respectively since the period leading up to the July Report."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2621,
+        "paragraph": 8,
+        "start": 2485,
+        "text": "UK financial conditions had tightened further since the July Report, driven by increases in short-term overnight index swap (OIS) rates."
+       },
+       {
+        "end": 3203,
+        "paragraph": 9,
+        "start": 3093,
+        "text": "the quoted rate on two-year fixed-rate mortgages was around 95 basis points higher than prior to the conflict."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "UK financial conditions had tightened further since the July Report, and the quoted rate on two-year fixed-rate mortgages was around 95 basis points higher than prior to the conflict."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7005,
+        "paragraph": 16,
+        "start": 6847,
+        "text": "CPI inflation was expected to increase to around 3¾% in 2026 Q4, compared with 3.2% at the time of the July Report, and to reach slightly above 4% in 2027 Q1."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "The Committee expected CPI inflation to increase to around 3¾% in 2026 Q4 and to reach slightly above 4% in 2027 Q1."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 8502,
+        "paragraph": 19,
+        "start": 8390,
+        "text": "UK GDP had increased by 0.4% in 2026 Q2, 0.1 percentage points higher than had been expected in the July Report."
+       },
+       {
+        "end": 10094,
+        "paragraph": 20,
+        "start": 10021,
+        "text": "it was now judged likely that there had been some stabilisation in slack."
+       }
+      ],
+      "paragraphs": [
+       19,
+       20
+      ]
+     },
+     "text": "UK GDP increased by 0.4% in 2026 Q2, while the Committee judged that there had likely been some stabilisation in slack despite weak labour demand."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 15049,
+        "paragraph": 28,
+        "start": 14845,
+        "text": "The Committee nevertheless judged that the risk of material second-round effects had increased since July, and was likely to increase further to the extent that energy prices remained elevated for longer."
+       },
+       {
+        "end": 17895,
+        "paragraph": 32,
+        "start": 17734,
+        "text": "Taken together, the Committee judged that risks to the inflation outlook were tilted further to the upside compared with at the time of the previous MPC meeting."
+       }
+      ],
+      "paragraphs": [
+       28,
+       32
+      ]
+     },
+     "text": "The Committee judged that risks to the inflation outlook were tilted further to the upside, with a growing risk of material second-round effects if energy prices remained elevated for longer."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30251,
+        "paragraph": 53,
+        "start": 30211,
+        "text": "Bank Rate should be maintained at 3.75%;"
+       },
+       {
+        "end": 31017,
+        "paragraph": 55,
+        "start": 30859,
+        "text": "Three members (Megan Greene, Catherine L Mann and Huw Pill) voted against this proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       53,
+       55
+      ]
+     },
+     "text": "Six members voted in favour of maintaining Bank Rate at 3.75%, while three members preferred to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England minutes of the 17 September 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21500,
+    "output_tokens": 2273,
+    "reasoning_tokens": 573
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      3,
      4,
