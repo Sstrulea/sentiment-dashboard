@@ -12,6 +12,17 @@
    "model": "gpt-5.6-terra",
    "prompt_version": "transcript-v5",
    "provider": "openai"
+  },
+  "USD:speech:a89335cf0468|speech-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T15:31:18Z",
+   "doc_id": "USD:speech:a89335cf0468",
+   "errors": [
+    "summary point 6 cites 4 paragraphs as evidence; allowed 1-3"
+   ],
+   "input_sha256": "c4708270b517192d5f6ccad8133c48fd61fbbf53ee00dc4a62b3ba822dfedadc",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "speech-v5",
+   "provider": "openai"
   }
  },
  "version": 1
