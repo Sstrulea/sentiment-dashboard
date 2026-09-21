@@ -1,0 +1,16 @@
+{
+ "failures": {
+  "USD:presser_transcript:2026-09-16|transcript-v3|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T10:55:58Z",
+   "doc_id": "USD:presser_transcript:2026-09-16",
+   "errors": [
+    "the word 'likely' of summary point 3 is not attributed to the bank: write who says it, e.g. 'The Committee likely ...' (never in your own voice)"
+   ],
+   "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "transcript-v3",
+   "provider": "openai"
+  }
+ },
+ "version": 1
+}
