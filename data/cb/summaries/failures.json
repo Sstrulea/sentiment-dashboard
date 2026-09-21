@@ -1,0 +1,18 @@
+{
+ "failures": {
+  "USD:presser_transcript:2026-09-16|transcript-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T15:29:32Z",
+   "doc_id": "USD:presser_transcript:2026-09-16",
+   "errors": [
+    "summary point 3 cites paragraph 7, the turn of RICHARD ESCOBEDO, for a statement that names no speaker: name the speaker of the paragraphs it cites, or cite the bank's own turns",
+    "summary point 4 has none but the closest sentence of the paragraph(s) it cites has one: “Is there anything different in today's assessment of the economic conditions that would suggest that the typical pattern does not apply, and I guess second to t” - state it as the source does; never turn a statement into its opposite",
+    "summary point 4 cites paragraph 10, the turn of COLBY SMITH, for a statement that names no speaker: name the speaker of the paragraphs it cites, or cite the bank's own turns"
+   ],
+   "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "transcript-v5",
+   "provider": "openai"
+  }
+ },
+ "version": 1
+}
