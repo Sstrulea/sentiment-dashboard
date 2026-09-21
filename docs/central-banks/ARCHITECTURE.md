@@ -595,6 +595,15 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   punctul 1), rularea repetată (după ce jurnalul a început să spună de ce) a trecut după reîncercare, cu aceeași cauză a primei încercări (8 877 / 1 385 și 8 851 / 1 191). Total ≈ 0,147 USD pentru 6 rezumate
   (37 442 intrare, 6 027 ieșire, 488 raționament). Jurnalul Summaries are acum `ATTEMPTS n passed at the first attempt, m after the retry, k failed twice`, `RETRIED doc: …` (motivele primei încercări)
   și `REJECTED OUTPUT doc: …` (ultima ieșire refuzată, o linie de cel mult 3 000 de caractere); înregistrarea stocată nu s-a schimbat.
+- **Rularea v5 (2026-09-21, pe branch, CI; nu e pe main).** Textul final al promptului *-v5, cele 6 documente USD: comunicatele 06-17 și 07-29 la prima încercare, 09-16 după o reîncercare (fragment de 3 cuvinte),
+  **04-29 picat de două ori** (negația: punctul despre voturile împotrivă nu reproduce „did not support inclusion of an easing bias” din aceeași propoziție-sursă); transcriptul din 16 sep după o reîncercare;
+  discursul Waller la prima încercare. Condiția de merge („toate 6, cel mult o reîncercare”) **nu e îndeplinită**: nimic nu s-a mutat pe main. Eșantion pe alte bănci (același prompt): transcript RBA 11 aug după
+  o reîncercare, minutele BoE 17 sep după o reîncercare, discurs BoE (Bailey) la prima încercare; transcript ECB 10 sep și discurs ECB (Lane, un deck cu tabele) picate de două ori. Pe parcurs, patru defecte reale
+  ale implementării au ieșit din rulările pe branch și au fost corectate: jurnaliștii numiți în punct (etichetele transcriptului sunt oameni), „In response to X, Warsh said …” (vorbitorul e cel dinaintea verbului,
+  nu primul numit), fragmente de 3–4 cuvinte și puncte cu 4 paragrafe / 4 fragmente (prompt + erori care spun ce să faci), Fed ca alias al băncii. Cost total al tuturor rulărilor v5 ≈ 0,69 USD
+  (193 603 intrare, 25 570 ieșire); rularea finală a celor 6 documente ≈ 0,14 USD. Rata de trecere pe cele 11 documente rulate cu textul final: 8 cu ≤ 1 reîncercare, 3 picate de două ori.
+  Cauzele picărilor rămase: negația pe propoziția cea mai apropiată când propoziția-sursă are mai multe clauze (comunicatul 04-29), un nume propriu nesuținut („Bundesbank”, transcript ECB) și un deck de tabele
+  (discursul Lane). De decis: regula negației pe domeniul negației (clauza) în loc de propoziție întreagă; nivelul de raționament (`low` acum).
 - **Ce a arătat verificarea pe texte reale.** Un punct cu două afirmații are un singur fragment: în comunicatul din 16 sep, punctul „… and that it will deliver price stability” are fragmentul
   „Today's policy action will support a timelier return to the Committee's 2 percent goal.” (¶4), iar a doua jumătate e susținută de propoziția „The Committee will deliver price stability.” din
   **același ¶4** (numărată la acoperire) și e și citat. Pragul de 85 % lasă să treacă un cuvânt fără suport în punct: în transcriptul din 16 sep punctul 5 spune „since July”, iar ¶22 citat spune
