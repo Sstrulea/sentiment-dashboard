@@ -221,12 +221,38 @@ def check_quote(q, paragraphs: list, starts: list, i: int, lim: tuple) -> tuple:
     return {"paragraph": para, "text": text, "start": start, "end": start + len(text)}, []
 
 
-def check_attributed(points: list, src: str, words: tuple, subjects: tuple, speakers: tuple = (), pronouns: tuple = ()) -> list:
+_HARD_CUT = re.compile(r"[;:]\s+|\s*[\u2014\u2013]\s*|\s+--\s+")                                    # what ends a clause for "who is the subject" (a comma does not: "In the baseline of the staff projections, inflation is expected ...")
+_SUBJECT_START = re.compile(r"[,;:\u2014\u2013]|(?<!\w)(?:that|whether|which|who|while|but|and|although|whereas|as|if|because|since|when|after|before|then)(?!\w)", re.I)
+
+
+def mirrors_the_source(prefix: str, word: str, cited: list) -> bool:
+    """The soft word is the source's own, with the source's own subject: the noun phrase that governs it in the point (what stands between the last "that" / "while" /
+    "and" / comma ... and the word: "the staff", "companies", "the Economic Affairs division", "GDP growth") is found in ONE clause of the cited paragraphs - a sentence cut
+    at ; : and dashes - together with a form of the word. A subject that is not there, or is in another clause, does not count."""
+    last = None
+    for b in _SUBJECT_START.finditer(prefix):
+        last = b
+    need = list(dict.fromkeys(content_words(prefix[last.end():] if last else prefix, set())))
+    if not need:
+        return False
+    fw = forms(word, adverbs=False)
+    for paragraph in cited:
+        for sentence in _SENTENCE.split(paragraph):
+            for clause in _HARD_CUT.split(sentence):
+                if fw & forms_of_text(clause, adverbs=False):
+                    have = forms_of_text(clause)
+                    if all(forms(x) & have for x in need):
+                        return True
+    return False
+
+
+def check_attributed(points: list, src: str, words: tuple, subjects: tuple, speakers: tuple = (), pronouns: tuple = (), cited: Optional[list] = None) -> list:
     """likely / expect(s) / signal(s) / suggest(s) (`words`): a bank writes them all the time and reporting that is not an opinion, so a summary point may use one
     ONLY when (1) the document itself uses that word - in any of its forms: "I expect" in a speech allows "Waller expects" - and (2) the point attributes it: one of
     `subjects` ("The Committee", "The SNB", "the minutes" ...) or a name of `speakers` (the surname, with or without a title) comes earlier in the same sentence, or
     - a pronoun of `pronouns` (he / she / they) comes earlier in the sentence and the bank or the speaker is named earlier in the same POINT ("Waller says X; he
-    expects Y"). Never in the summary's own voice."""
+    expects Y"), or - `cited`, one list of paragraph texts per point - the subject of the word in the point is the source's own subject of it (mirrors_the_source: "The Economic
+    Affairs division expects ..." where the paragraph says the division expects). Never in the summary's own voice."""
     if not words:
         return []
     rx, subj = blocked_regex(words), blocked_regex(tuple(subjects) + tuple(speakers))
@@ -243,6 +269,8 @@ def check_attributed(points: list, src: str, words: tuple, subjects: tuple, spea
             if subj.search(s[sentence_start:m.start()]):
                 continue
             if pron is not None and pron.search(s[sentence_start:m.start()]) and subj.search(s[:m.start()]):
+                continue
+            if cited and i <= len(cited) and cited[i - 1] and mirrors_the_source(s[sentence_start:m.start()], w, cited[i - 1]):
                 continue
             errors.append(f"the word '{w}' of summary point {i} is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee {w} ...' (never in your own voice)")
     return errors
@@ -526,7 +554,8 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     for i, s_ in enumerate(summary, 1):
         for m in rx.finditer(s_):
             errors.append(f"summary point {i} uses the word '{m.group(0)}': no direction, forecast or evaluation - only what the document says")
-    errors += check_attributed(summary, src, attributed, subjects, speakers, pronouns)
+    errors += check_attributed(summary, src, attributed, subjects, speakers, pronouns,
+                               [[paragraphs[c - 1] for c in ev["paragraphs"]] if ev else [] for ev in evidence])          # (a point whose evidence failed has no source to mirror)
 
     qs = obj.get("quotes")
     checked_quotes: list = []
