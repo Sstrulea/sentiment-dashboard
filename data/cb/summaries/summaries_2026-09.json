@@ -4,201 +4,254 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     3,
      4,
-     7,
-     10,
-     16,
-     22,
-     43
+     21,
+     59
     ],
-    "paragraphs_sent": 46,
+    "paragraphs_sent": 60,
     "truncated": false
    },
    "currency": "USD",
    "doc_id": "USD:presser_transcript:2026-09-16",
    "format": "pdf",
-   "generated_at": "2026-09-21T13:51:51Z",
+   "generated_at": "2026-09-21T15:54:56Z",
    "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
    "meeting_date": "2026-09-16",
    "model": "gpt-5.6-terra",
    "numbers": [
     {
-     "end": 293,
+     "end": 215,
      "point": 1,
      "source_text": "¼ percentage point",
-     "start": 275,
+     "start": 197,
      "text": "¼ percentage point"
     },
     {
-     "end": 299,
+     "end": 221,
      "point": 1,
      "source_text": "3¾",
-     "start": 297,
+     "start": 219,
      "text": "3¾"
     },
     {
-     "end": 312,
+     "end": 234,
      "point": 1,
      "source_text": "4 percent",
-     "start": 303,
+     "start": 225,
      "text": "4 percent"
     },
     {
-     "end": 958,
+     "end": 1889,
      "point": 2,
-     "source_text": "2 percent",
-     "start": 949,
-     "text": "2 percent"
+     "source_text": "4.1 percent",
+     "start": 1878,
+     "text": "4.1 percent"
     },
     {
-     "end": 4646,
-     "point": 3,
+     "end": 4412,
+     "point": 4,
      "source_text": "2.3 percent",
-     "start": 4635,
+     "start": 4401,
      "text": "2.3 percent"
     },
     {
-     "end": 2796,
-     "point": 3,
+     "end": 2640,
+     "point": 4,
      "source_text": "2.4 percent",
-     "start": 2785,
+     "start": 2629,
      "text": "2.4 percent"
     },
     {
-     "end": 4723,
-     "point": 3,
+     "end": 4489,
+     "point": 4,
      "source_text": "3.7 percent",
-     "start": 4712,
+     "start": 4478,
      "text": "3.7 percent"
     },
     {
-     "end": 4646,
-     "point": 3,
+     "end": 4412,
+     "point": 4,
      "source_text": "2.3 percent",
-     "start": 4635,
+     "start": 4401,
      "text": "2.3 percent"
     }
    ],
-   "prompt_version": "transcript-v4",
+   "prompt_version": "transcript-v5",
    "provider": "openai",
    "published": "2026-09-16",
    "quotes": [
     {
-     "end": 363,
-     "paragraph": 4,
-     "start": 171,
+     "end": 285,
+     "paragraph": 2,
+     "start": 93,
      "text": "In the meeting just concluded, the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
     },
     {
-     "end": 2500,
-     "paragraph": 7,
-     "start": 2429,
+     "end": 2344,
+     "paragraph": 3,
+     "start": 2273,
      "text": "The plain fact is that inflation is too high and has been for too long."
     },
     {
-     "end": 4010,
-     "paragraph": 10,
-     "start": 3914,
-     "text": "The committee’s unanimous vote shows our resolve to achieve price stability on a timelier basis."
+     "end": 3679,
+     "paragraph": 4,
+     "start": 3613,
+     "text": "Today, the FOMC decided that this standard has not been satisfied."
     },
     {
-     "end": 7824,
-     "paragraph": 16,
-     "start": 7768,
-     "text": "I'm not going to pre-judge any future decisions we make."
+     "end": 11594,
+     "paragraph": 21,
+     "start": 11509,
+     "text": "All three of those things led -- lend themselves to a firm, unanimous decision today."
     },
     {
-     "end": 25299,
-     "paragraph": 43,
-     "start": 25107,
-     "text": "I care so much, I think it's so important, that we established a task force that should report by the end of the year to help us think about the implications for our future policy conjuncture."
+     "end": 25531,
+     "paragraph": 59,
+     "start": 25445,
+     "text": "I don't believe that we need to do harm to the labor markets to achieve our objective."
     }
    ],
    "source": {
-    "chars": 27246,
-    "chars_sent": 27247,
+    "chars": 26070,
+    "chars_sent": 26071,
     "method": "pypdf",
-    "paragraphs_sent": 46,
+    "paragraphs_sent": 60,
     "truncated": false
    },
    "summary": [
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 312,
-      "fragment": "decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent",
-      "paragraph": 4,
+      "fragments": [
+       {
+        "end": 234,
+        "paragraph": 2,
+        "start": 124,
+        "text": "the FOMC decided to raise the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent"
+       },
+       {
+        "end": 377,
+        "paragraph": 2,
+        "start": 286,
+        "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Chairman Warsh said the FOMC raised the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent and continues to maintain ample reserves."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 1951,
+        "paragraph": 3,
+        "start": 1839,
+        "text": "The jobless rate remains low at around 4.1 percent, and both job openings and weekly hours have been increasing."
+       },
+       {
+        "end": 2272,
+        "paragraph": 3,
+        "start": 2129,
+        "text": "Yet for more than five years, inflation has been running above target. So, our predominant focus is on the price-stability side of our mandate."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Chairman Warsh said inflation remains elevated, while the jobless rate remains low at around 4.1 percent, and the Committee’s predominant focus is price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3776,
+        "paragraph": 4,
+        "start": 3680,
+        "text": "The committee’s unanimous vote shows our resolve to achieve price stability on a timelier basis."
+       }
+      ],
       "paragraphs": [
        4
-      ],
-      "start": 211
+      ]
      },
-     "text": "Chairman Warsh said the FOMC raised the target range for the federal funds rate by ¼ percentage point to 3¾ to 4 percent and is maintaining ample reserves."
+     "text": "Chairman Warsh said the FOMC unanimously voted to achieve price stability on a timelier basis."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 605,
-      "fragment": "economic activity is expanding at a solid pace. While uncertainty remains elevated",
-      "paragraph": 4,
+      "fragments": [
+       {
+        "end": 4449,
+        "paragraph": 4,
+        "start": 4346,
+        "text": "In the Summary’s median projections, real GDP rises at 2.3 percent this year and 2.4 percent next year."
+       },
+       {
+        "end": 4535,
+        "paragraph": 4,
+        "start": 4450,
+        "text": "Total PCE inflation runs at 3.7 percent this year and falls to 2.3 percent next year."
+       }
+      ],
       "paragraphs": [
        4
-      ],
-      "start": 523
+      ]
      },
-     "text": "Warsh said economic activity is expanding at a solid pace, but inflation remains elevated, and said the action would support a timelier return to the Committee’s 2 percent goal."
+     "text": "Chairman Warsh said the Summary’s median projections show real GDP rising at 2.3 percent this year and 2.4 percent next year, while total PCE inflation falls from 3.7 percent to 2.3 percent."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 4682,
-      "fragment": "real GDP rises at 2.3 percent this year and 2.4 percent next year",
-      "paragraph": 10,
-      "paragraphs": [
-       10
+      "fragments": [
+       {
+        "end": 10822,
+        "paragraph": 21,
+        "start": 10709,
+        "text": "There's been a pretty wideranging set of data, including in the labor markets, that the economy has strengthened."
+       },
+       {
+        "end": 11174,
+        "paragraph": 21,
+        "start": 11090,
+        "text": "My judgment some weeks ago was the inflation summer trends weren't passing the test."
+       },
+       {
+        "end": 11346,
+        "paragraph": 21,
+        "start": 11280,
+        "text": "And the third thing that's changed in seven weeks are geopolitics."
+       }
       ],
-      "start": 4617
+      "paragraphs": [
+       21
+      ]
      },
-     "text": "Warsh said the Committee’s median projections show real GDP rising at 2.3 percent this year and 2.4 percent next year, while total PCE inflation falls from 3.7 percent to 2.3 percent."
+     "text": "Chairman Warsh said the economy had strengthened, inflation summer trends were not passing his test, and geopolitical judgments had changed in seven weeks."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 7517,
-      "fragment": "I'm not in the forward guidance business.",
-      "paragraph": 16,
-      "paragraphs": [
-       16
+      "fragments": [
+       {
+        "end": 25531,
+        "paragraph": 59,
+        "start": 25445,
+        "text": "I don't believe that we need to do harm to the labor markets to achieve our objective."
+       }
       ],
-      "start": 7476
-     },
-     "text": "Warsh said he was not in the forward guidance business and would not pre-judge any future decisions."
-    },
-    {
-     "evidence": {
-      "coverage": 0.889,
-      "end": 11417,
-      "fragment": "the economy has strengthened. You might have heard me say that in Jackson Hole",
-      "paragraph": 22,
       "paragraphs": [
-       22
-      ],
-      "start": 11339
+       59
+      ]
      },
-     "text": "Warsh said the Committee’s judgment had changed since July because the economy had strengthened, inflation information had not changed his view, and geopolitics had changed."
-    },
-    {
-     "evidence": {
-      "coverage": 1.0,
-      "end": 25224,
-      "fragment": "we established a task force that should report by the end of the year",
-      "paragraph": 43,
-      "paragraphs": [
-       43
-      ],
-      "start": 25155
-     },
-     "text": "Warsh said the Federal Reserve established a task force to report by the end of the year to help it think about implications for its future policy conjuncture."
+     "text": "Chairman Warsh said he does not believe that harm to labor markets is needed to achieve the objective."
     }
    ],
    "title": "Federal Reserve press conference transcript, 16 September 2026",
@@ -206,9 +259,9 @@
    "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20260916.pdf",
    "usage": {
     "attempts": 2,
-    "input_tokens": 14809,
-    "output_tokens": 1390,
-    "reasoning_tokens": 211
+    "input_tokens": 15849,
+    "output_tokens": 1886,
+    "reasoning_tokens": 395
    }
   },
   {
