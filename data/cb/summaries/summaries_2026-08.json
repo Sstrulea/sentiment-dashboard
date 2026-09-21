@@ -862,6 +862,265 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     23,
+     27,
+     32,
+     52,
+     72,
+     84,
+     85
+    ],
+    "paragraphs_sent": 90,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:minutes:2026-06-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "64835b9b7ae70d9a74870cddcc8739861d5c3203ed18389030e5fc833f81fbc3",
+   "meeting_date": "2026-06-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 5310,
+     "point": 1,
+     "source_text": "7",
+     "start": 5309,
+     "text": "7"
+    },
+    {
+     "end": 529,
+     "point": 1,
+     "source_text": "1",
+     "start": 528,
+     "text": "1"
+    },
+    {
+     "end": 529,
+     "point": 1,
+     "source_text": "1",
+     "start": 528,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 680,
+     "point": 3,
+     "source_text": "2",
+     "start": 679,
+     "text": "2 percent"
+    },
+    {
+     "end": 5310,
+     "point": 5,
+     "source_text": "7",
+     "start": 5309,
+     "text": "7"
+    },
+    {
+     "end": 529,
+     "point": 5,
+     "source_text": "1",
+     "start": 528,
+     "text": "1"
+    },
+    {
+     "end": 44826,
+     "point": 5,
+     "source_text": "200",
+     "start": 44823,
+     "text": "200"
+    },
+    {
+     "end": 28613,
+     "point": 5,
+     "source_text": "2027",
+     "start": 28609,
+     "text": "2027"
+    },
+    {
+     "end": 680,
+     "point": 5,
+     "source_text": "2",
+     "start": 679,
+     "text": "2"
+    },
+    {
+     "end": 28613,
+     "point": 5,
+     "source_text": "2027",
+     "start": 28609,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-08-04",
+   "quotes": [
+    {
+     "end": 73931,
+     "paragraph": 72,
+     "start": 73834,
+     "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 1.0 percent."
+    },
+    {
+     "end": 28660,
+     "paragraph": 27,
+     "start": 28362,
+     "text": "On this basis, most members shared the recognition that underlying CPI inflation was expected to increase gradually, coming to a level that was generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027 and remaining at around that level thereafter."
+    },
+    {
+     "end": 79129,
+     "paragraph": 76,
+     "start": 78853,
+     "text": "Asada Toichiro dissented, considering that, regarding the impact of the situation in the Middle East, downside risks to production and employment were greater than upside risks to prices, and it was desirable for the Bank to maintain the guideline for money market operations."
+    },
+    {
+     "end": 84442,
+     "paragraph": 84,
+     "start": 84333,
+     "text": "From April 2027, the amount of its monthly purchases of JGBs will be about 2 trillion yen (see Attachment 4)."
+    }
+   ],
+   "source": {
+    "chars": 86942,
+    "chars_sent": 86943,
+    "method": "pypdf",
+    "paragraphs_sent": 90,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 73931,
+        "paragraph": 72,
+        "start": 73834,
+        "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 1.0 percent."
+       }
+      ],
+      "paragraphs": [
+       72
+      ]
+     },
+     "text": "The Policy Board decided by a 7-1 majority vote to encourage the uncollateralized overnight call rate to remain at around 1.0 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18243,
+        "paragraph": 23,
+        "start": 18066,
+        "text": "members shared the view that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the impact of the situation in the Middle East"
+       }
+      ],
+      "paragraphs": [
+       23
+      ]
+     },
+     "text": "Members shared the view that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 27746,
+        "paragraph": 27,
+        "start": 27615,
+        "text": "the yearon-year rate of increase in the CPI (all items less fresh food) was likely to accelerate to a level clearly above 2 percent"
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Members shared the recognition that the CPI inflation rate was likely to accelerate to a level clearly above 2 percent as crude oil prices pushed up energy and goods prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 37895,
+        "paragraph": 32,
+        "start": 37822,
+        "text": "Members agreed that financial conditions in Japan had been accommodative."
+       },
+       {
+        "end": 37999,
+        "paragraph": 32,
+        "start": 37896,
+        "text": "Many members noted that real interest rates had been negative, mainly in the short-to medium-term zone."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "Members agreed that financial conditions in Japan had been accommodative, with negative real interest rates, increased demand for funds, and favorable CP and corporate-bond issuance conditions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 84332,
+        "paragraph": 84,
+        "start": 84172,
+        "text": "The Bank will reduce the planned amount of its monthly purchases of JGBs by, in principle, about 200 billion yen each calendar quarter until January-March 2027."
+       },
+       {
+        "end": 84422,
+        "paragraph": 84,
+        "start": 84333,
+        "text": "From April 2027, the amount of its monthly purchases of JGBs will be about 2 trillion yen"
+       }
+      ],
+      "paragraphs": [
+       84,
+       85
+      ]
+     },
+     "text": "The Policy Board decided by a 7-1 majority vote to reduce monthly JGB purchases by about 200 billion yen each calendar quarter until January-March 2027 and purchase about 2 trillion yen per month from April 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 68357,
+        "paragraph": 52,
+        "start": 68171,
+        "text": "Asada Toichiro dissented, considering that, regarding the impact of the situation in the Middle East, downside risks to production and employment were greater than upside risks to prices"
+       }
+      ],
+      "paragraphs": [
+       52
+      ]
+     },
+     "text": "Asada Toichiro dissented from the money-market guideline, considering downside risks to production and employment greater than upside risks to prices."
+    }
+   ],
+   "title": "Bank of Japan minutes of the 16 June 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260616.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 38385,
+    "output_tokens": 2480,
+    "reasoning_tokens": 1032
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      4,
      7,
      9

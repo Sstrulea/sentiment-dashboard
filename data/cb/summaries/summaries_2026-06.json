@@ -1,6 +1,214 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     10,
+     17,
+     18,
+     22,
+     32,
+     35,
+     43
+    ],
+    "paragraphs_sent": 49,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:minutes:2026-06-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "f40243bfd9b2c8677d49e1c54ec41fa7aa5af73f7183bdea3f1f24032c0b932f",
+   "meeting_date": "2026-06-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 19632,
+     "point": 6,
+     "source_text": "4.35 per cent",
+     "start": 19619,
+     "text": "4.35 per cent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-06-30",
+   "quotes": [
+    {
+     "end": 888,
+     "paragraph": 10,
+     "start": 717,
+     "text": "Members observed that financial conditions abroad had eased somewhat since the previous meeting, in response to progress towards resolving the conflict in the Middle East."
+    },
+    {
+     "end": 7686,
+     "paragraph": 22,
+     "start": 7449,
+     "text": "Members observed that the latest domestic data for the March quarter had confirmed that capacity pressures remained elevated in that period, albeit at a slightly lower level than previously assessed, and inflation was still above target."
+    },
+    {
+     "end": 16158,
+     "paragraph": 35,
+     "start": 15984,
+     "text": "In light of these observations, members agreed that leaving the cash rate target unchanged at this meeting would best balance the Board’s inflation and employment objectives."
+    },
+    {
+     "end": 19633,
+     "paragraph": 43,
+     "start": 19546,
+     "text": "The Board decided unanimously to leave the cash rate target unchanged at 4.35 per cent."
+    }
+   ],
+   "source": {
+    "chars": 20674,
+    "chars_sent": 20675,
+    "method": "html-selector",
+    "paragraphs_sent": 49,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 888,
+        "paragraph": 10,
+        "start": 717,
+        "text": "Members observed that financial conditions abroad had eased somewhat since the previous meeting, in response to progress towards resolving the conflict in the Middle East."
+       },
+       {
+        "end": 1038,
+        "paragraph": 10,
+        "start": 889,
+        "text": "Expectations for central bank policy rates had generally declined, oil prices had fallen significantly and equity prices had risen in many countries."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Members observed that financial conditions abroad had eased somewhat since the previous meeting, with lower policy rate expectations, significantly lower oil prices and higher equity prices in many countries."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4622,
+        "paragraph": 17,
+        "start": 4542,
+        "text": "Members agreed that financial conditions were now probably somewhat restrictive."
+       },
+       {
+        "end": 5704,
+        "paragraph": 18,
+        "start": 5571,
+        "text": "These generally showed that the tightening in monetary policy was starting to be transmitted to the economy through various channels."
+       }
+      ],
+      "paragraphs": [
+       17,
+       18
+      ]
+     },
+     "text": "Members agreed that financial conditions were probably somewhat restrictive, and broader indicators showed that monetary policy tightening was starting to be transmitted through various channels."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7686,
+        "paragraph": 22,
+        "start": 7449,
+        "text": "Members observed that the latest domestic data for the March quarter had confirmed that capacity pressures remained elevated in that period, albeit at a slightly lower level than previously assessed, and inflation was still above target."
+       },
+       {
+        "end": 7806,
+        "paragraph": 22,
+        "start": 7687,
+        "text": "Indicators of economic activity since March had been mixed but appeared to show the economy easing broadly as expected."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "Members observed that capacity pressures remained elevated and inflation was still above target, while indicators of activity since March appeared to show the economy easing broadly as expected."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14795,
+        "paragraph": 32,
+        "start": 14617,
+        "text": "members noted that information received since the previous meeting had supported the view that the economy was operating with excess demand and widespread inflationary pressures."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "Members noted that information since the previous meeting supported the view that the economy was operating with excess demand and widespread inflationary pressures."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16158,
+        "paragraph": 35,
+        "start": 16016,
+        "text": "members agreed that leaving the cash rate target unchanged at this meeting would best balance the Board’s inflation and employment objectives."
+       },
+       {
+        "end": 16627,
+        "paragraph": 35,
+        "start": 16491,
+        "text": "members agreed that monetary policy needed to remain restrictive to unwind current excess demand through a period of below-trend growth."
+       }
+      ],
+      "paragraphs": [
+       35
+      ]
+     },
+     "text": "Members agreed that leaving the cash rate target unchanged would best balance the Board’s inflation and employment objectives, and that monetary policy needed to remain restrictive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19633,
+        "paragraph": 43,
+        "start": 19546,
+        "text": "The Board decided unanimously to leave the cash rate target unchanged at 4.35 per cent."
+       }
+      ],
+      "paragraphs": [
+       43
+      ]
+     },
+     "text": "The Board decided unanimously to leave the cash rate target unchanged at 4.35 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia minutes of the 16 June 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-06-16.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5221,
+    "output_tokens": 1188,
+    "reasoning_tokens": 516
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 315,
     "changes": [
@@ -352,6 +560,201 @@
     "input_tokens": 2182,
     "output_tokens": 903,
     "reasoning_tokens": 405
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
+     11,
+     17,
+     18,
+     22,
+     28
+    ],
+    "paragraphs_sent": 30,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:deliberations:2026-06-10",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "056092085edee4cbb6512e08a7113fd25eb92af024959ec69a071af85e2d7244",
+   "meeting_date": "2026-06-10",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 6823,
+     "point": 4,
+     "source_text": "2.8%",
+     "start": 6819,
+     "text": "2.8%"
+    },
+    {
+     "end": 10104,
+     "point": 6,
+     "source_text": "2¼%",
+     "start": 10101,
+     "text": "2¼%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-06-24",
+   "quotes": [
+    {
+     "end": 1713,
+     "paragraph": 7,
+     "start": 1590,
+     "text": "Members agreed that the longer the war dragged on, the greater the risk of higher global inflation and slower world growth."
+    },
+    {
+     "end": 6390,
+     "paragraph": 17,
+     "start": 6267,
+     "text": "Members agreed that the economy was weak; it was still operating in excess supply and there was slack in the labour market."
+    },
+    {
+     "end": 8403,
+     "paragraph": 22,
+     "start": 8159,
+     "text": "The economy was weak and continued to operate below its potential, but lowering interest rates to support growth would increase the risk that inflation remains high and, in turn, becomes embedded in pricing behaviour and inflation expectations."
+    },
+    {
+     "end": 10166,
+     "paragraph": 28,
+     "start": 10017,
+     "text": "Governing Council members agreed that holding the policy interest rate unchanged at 2¼% at the June rate decision balances the risks described above."
+    }
+   ],
+   "source": {
+    "chars": 11228,
+    "chars_sent": 11229,
+    "method": "html-selector",
+    "paragraphs_sent": 30,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1713,
+        "paragraph": 7,
+        "start": 1590,
+        "text": "Members agreed that the longer the war dragged on, the greater the risk of higher global inflation and slower world growth."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Members agreed that the longer the war dragged on, the greater the risk of higher global inflation and slower world growth."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3696,
+        "paragraph": 11,
+        "start": 3585,
+        "text": "In Canada, financial conditions had loosened, with strength in equity markets and little change in bond yields."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Members noted that financial conditions in Canada had loosened, with strength in equity markets and little change in bond yields."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6390,
+        "paragraph": 17,
+        "start": 6267,
+        "text": "Members agreed that the economy was weak; it was still operating in excess supply and there was slack in the labour market."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Members agreed that the economy was weak, was operating in excess supply and had slack in the labour market."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6833,
+        "paragraph": 18,
+        "start": 6735,
+        "text": "The Bank had anticipated CPI inflation would rise to around 3%, and it increased to 2.8% in April."
+       },
+       {
+        "end": 7119,
+        "paragraph": 18,
+        "start": 7014,
+        "text": "Members were of the view that, outside of energy prices, inflationary pressures were generally contained."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "CPI inflation increased to 2.8% in April, while members viewed inflationary pressures outside energy prices as generally contained."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8403,
+        "paragraph": 22,
+        "start": 8159,
+        "text": "The economy was weak and continued to operate below its potential, but lowering interest rates to support growth would increase the risk that inflation remains high and, in turn, becomes embedded in pricing behaviour and inflation expectations."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "Members agreed that lowering interest rates to support growth would increase the risk that inflation remains high and becomes embedded in pricing behaviour and inflation expectations."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10166,
+        "paragraph": 28,
+        "start": 10017,
+        "text": "Governing Council members agreed that holding the policy interest rate unchanged at 2¼% at the June rate decision balances the risks described above."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Governing Council members agreed that holding the policy interest rate unchanged at 2¼% at the June rate decision balances the risks described above."
+    }
+   ],
+   "title": "Summary of Governing Council deliberations: Fixed announcement date of June 10, 2026",
+   "type": "deliberations",
+   "url": "https://www.bankofcanada.ca/2026/06/summary-of-governing-council-deliberations-fixed-announcement-date-of-june-10-2026/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3665,
+    "output_tokens": 1493,
+    "reasoning_tokens": 888
    }
   },
   {
@@ -2326,6 +2729,259 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     7,
+     11,
+     12,
+     29,
+     30,
+     32,
+     34,
+     39,
+     40
+    ],
+    "paragraphs_sent": 68,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:minutes:2026-06-18",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "d174fd4006b47ee55ddeb82df24ff5beddc263d0670a2ac18ff837824864dbff",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3065,
+     "point": 1,
+     "source_text": "70 basis points",
+     "start": 3050,
+     "text": "70 basis points"
+    },
+    {
+     "end": 1082,
+     "point": 2,
+     "source_text": "3",
+     "start": 1081,
+     "text": "3%"
+    },
+    {
+     "end": 71,
+     "point": 2,
+     "source_text": "2026",
+     "start": 67,
+     "text": "2026"
+    },
+    {
+     "end": 5555,
+     "point": 2,
+     "source_text": "3¼%",
+     "start": 5552,
+     "text": "3¼%"
+    },
+    {
+     "end": 4850,
+     "point": 2,
+     "source_text": "2.8%",
+     "start": 4846,
+     "text": "2.8%"
+    },
+    {
+     "end": 19165,
+     "point": 5,
+     "source_text": "3.75%",
+     "start": 19160,
+     "text": "3.75%"
+    },
+    {
+     "end": 20130,
+     "point": 5,
+     "source_text": "0.25 percentage point",
+     "start": 20109,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 1896,
+     "point": 5,
+     "source_text": "4",
+     "start": 1895,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-06-18",
+   "quotes": [
+    {
+     "end": 538,
+     "paragraph": 4,
+     "start": 462,
+     "text": "But they remained higher than pre-conflict and had continued to be volatile."
+    },
+    {
+     "end": 5562,
+     "paragraph": 12,
+     "start": 5457,
+     "text": "CPI inflation was now expected to be a little under 3% in 2026 Q3 and pick up to a little over 3¼% in Q4."
+    },
+    {
+     "end": 15670,
+     "paragraph": 30,
+     "start": 15451,
+     "text": "Clear evidence of signs of second-round effects would only ever emerge with a lag, and the Committee therefore agreed that it was too early to conclude one way or the other from the initial tentative and mixed evidence."
+    },
+    {
+     "end": 21119,
+     "paragraph": 40,
+     "start": 20982,
+     "text": "Two members (Megan Greene and Huw Pill) voted against the proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "source": {
+    "chars": 33851,
+    "chars_sent": 33852,
+    "method": "html-selector",
+    "paragraphs_sent": 68,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 461,
+        "paragraph": 4,
+        "start": 361,
+        "text": "Global energy prices had fallen since the previous meeting in response to events in the Middle East."
+       },
+       {
+        "end": 3092,
+        "paragraph": 7,
+        "start": 3006,
+        "text": "UK two-year OIS rates were currently around 70 basis points above their pre-war level."
+       }
+      ],
+      "paragraphs": [
+       4,
+       7
+      ]
+     },
+     "text": "Global energy prices had fallen but remained higher than pre-conflict, while UK two-year OIS rates were around 70 basis points above their pre-war level."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4909,
+        "paragraph": 11,
+        "start": 4810,
+        "text": "Twelve-month CPI inflation had been 2.8% in May, unchanged from April, but down from 3.3% in March."
+       },
+       {
+        "end": 5562,
+        "paragraph": 12,
+        "start": 5457,
+        "text": "CPI inflation was now expected to be a little under 3% in 2026 Q3 and pick up to a little over 3¼% in Q4."
+       }
+      ],
+      "paragraphs": [
+       11,
+       12
+      ]
+     },
+     "text": "The Committee stated that CPI inflation was expected to be a little under 3% in 2026 Q3 and a little over 3¼% in Q4, after twelve-month CPI inflation had been 2.8% in May."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14973,
+        "paragraph": 29,
+        "start": 14872,
+        "text": "Members broadly agreed that a margin of slack had continued to emerge including in the labour market."
+       },
+       {
+        "end": 15670,
+        "paragraph": 30,
+        "start": 15538,
+        "text": "the Committee therefore agreed that it was too early to conclude one way or the other from the initial tentative and mixed evidence."
+       }
+      ],
+      "paragraphs": [
+       29,
+       30
+      ]
+     },
+     "text": "Members broadly agreed that a margin of slack had continued to emerge, while the Committee agreed it was too early to conclude one way or the other from the initial tentative and mixed evidence on second-round effects."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16995,
+        "paragraph": 32,
+        "start": 16844,
+        "text": "members agreed that financial conditions had tightened materially since before the conflict, which was already imparting some restraint to the economy."
+       },
+       {
+        "end": 18862,
+        "paragraph": 34,
+        "start": 18695,
+        "text": "Most members judged that this tightening provided insurance against inflation risks, while preserving optionality to adjust course as more conclusive evidence emerged."
+       }
+      ],
+      "paragraphs": [
+       32,
+       34
+      ]
+     },
+     "text": "Members agreed that financial conditions had tightened materially since before the conflict, and most members judged that this tightening provided insurance against inflation risks while preserving optionality to adjust course."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 20814,
+        "paragraph": 39,
+        "start": 20774,
+        "text": "Bank Rate should be maintained at 3.75%."
+       },
+       {
+        "end": 21119,
+        "paragraph": 40,
+        "start": 20982,
+        "text": "Two members (Megan Greene and Huw Pill) voted against the proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       39,
+       40
+      ]
+     },
+     "text": "The Committee maintained Bank Rate at 3.75% by seven votes to two, with two members preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England minutes of the 18 June 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/june-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 17154,
+    "output_tokens": 1970,
+    "reasoning_tokens": 516
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 84,
     "changes": [
@@ -2635,6 +3291,257 @@
     "input_tokens": 4429,
     "output_tokens": 1100,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     24,
+     25,
+     31,
+     38,
+     39,
+     42,
+     54,
+     56,
+     67,
+     68,
+     69
+    ],
+    "paragraphs_sent": 69,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:minutes:2026-04-28",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 3 is not verbatim in the paragraph(s) it cites [29, 31] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Members shared the recognition that fiscal 2026 growth was likely to decelerate, while the CPI increase was likely to be in the range of 2.5-3.0 percent."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "6f24a3f8dad15e10569fa77b7cf542e0cd1a9b084b3ccaa9efec8b1ae51d2f59",
+   "meeting_date": "2026-04-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3972,
+     "point": 3,
+     "source_text": "0.75 percent",
+     "start": 3960,
+     "text": "0.75 percent"
+    },
+    {
+     "end": 525,
+     "point": 3,
+     "source_text": "1",
+     "start": 524,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 1942,
+     "point": 4,
+     "source_text": "6",
+     "start": 1941,
+     "text": "6"
+    },
+    {
+     "end": 690,
+     "point": 4,
+     "source_text": "3",
+     "start": 689,
+     "text": "3"
+    },
+    {
+     "end": 3972,
+     "point": 4,
+     "source_text": "0.75 percent",
+     "start": 3960,
+     "text": "0.75 percent"
+    },
+    {
+     "end": 525,
+     "point": 4,
+     "source_text": "1",
+     "start": 524,
+     "text": "1.0 percent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-06-17",
+   "quotes": [
+    {
+     "end": 20186,
+     "paragraph": 24,
+     "start": 20113,
+     "text": "Members agreed that financial conditions in Japan had been accommodative."
+    },
+    {
+     "end": 35816,
+     "paragraph": 31,
+     "start": 35595,
+     "text": "They continued that, thereafter, with the waning of the effects of high crude oil prices, the rate of increase was expected to decline to the range of 2.0-2.5 percent in fiscal 2027 and to around 2 percent in fiscal 2028."
+    },
+    {
+     "end": 51388,
+     "paragraph": 38,
+     "start": 51111,
+     "text": "With respect to the guideline for money market operations for the intermeeting period, many members shared the view that it was appropriate for the Bank to maintain the guideline that it would encourage the uncollateralized overnight call rate to remain at around 0.75 percent."
+    },
+    {
+     "end": 66585,
+     "paragraph": 54,
+     "start": 66478,
+     "text": "The chairman's policy proposal on the guideline for money market operations was decided by a majority vote."
+    },
+    {
+     "end": 66963,
+     "paragraph": 56,
+     "start": 66909,
+     "text": "The Policy Board decided the text by a unanimous vote."
+    }
+   ],
+   "source": {
+    "chars": 71280,
+    "chars_sent": 71281,
+    "method": "pypdf",
+    "paragraphs_sent": 69,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22024,
+        "paragraph": 25,
+        "start": 21875,
+        "text": "Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the impact of the situation in the Middle East."
+       }
+      ],
+      "paragraphs": [
+       25
+      ]
+     },
+     "text": "Members agreed that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 20186,
+        "paragraph": 24,
+        "start": 20113,
+        "text": "Members agreed that financial conditions in Japan had been accommodative."
+       },
+       {
+        "end": 20416,
+        "paragraph": 24,
+        "start": 20289,
+        "text": "real interest rates in the short - to medium-term zone, which affect economic activity substantially, remained clearly negative"
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Members agreed that financial conditions in Japan had been accommodative, while a few members noted that short- to medium-term real interest rates remained clearly negative."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 51387,
+        "paragraph": 38,
+        "start": 51198,
+        "text": "many members shared the view that it was appropriate for the Bank to maintain the guideline that it would encourage the uncollateralized overnight call rate to remain at around 0.75 percent"
+       },
+       {
+        "end": 53436,
+        "paragraph": 38,
+        "start": 53298,
+        "text": "some members expressed the view that it was desirable for the Bank to raise the policy interest rate to around 1.0 percent at this meeting"
+       }
+      ],
+      "paragraphs": [
+       38
+      ]
+     },
+     "text": "Many members shared the view that maintaining the guideline at around 0.75 percent was appropriate, while some members expressed the view that raising the policy interest rate to around 1.0 percent was desirable."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 70120,
+        "paragraph": 67,
+        "start": 69962,
+        "text": "the Policy Board of the Bank of Japan decided, by a 6-3 majority vote, to set the following guideline for money market operations for the intermeeting period:"
+       },
+       {
+        "end": 70226,
+        "paragraph": 68,
+        "start": 70128,
+        "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 0.75 percent."
+       },
+       {
+        "end": 71280,
+        "paragraph": 69,
+        "start": 71049,
+        "text": "They proposed that the Bank set the guideline for money market operations as follows: the Bank would encourage the uncollateralized overnight call rate to remain at around 1.0 percent. The proposals were defeated by majority votes."
+       }
+      ],
+      "paragraphs": [
+       67,
+       68,
+       69
+      ]
+     },
+     "text": "The Policy Board decided, by a 6-3 majority vote, to encourage the uncollateralized overnight call rate to remain at around 0.75 percent, and the 1.0 percent proposals were defeated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 55148,
+        "paragraph": 39,
+        "start": 55025,
+        "text": "it was appropriate that the Bank continue to raise the policy interest rate and adjust the degree of monetary accommodation"
+       },
+       {
+        "end": 62815,
+        "paragraph": 42,
+        "start": 62730,
+        "text": "members shared the view that the descriptions presented by the staff were appropriate"
+       }
+      ],
+      "paragraphs": [
+       39,
+       42
+      ]
+     },
+     "text": "Members shared the view that the Bank would continue to raise the policy interest rate and adjust monetary accommodation in response to economic activity, prices, and financial conditions."
+    }
+   ],
+   "title": "Bank of Japan minutes of the 28 April 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260428.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 31821,
+    "output_tokens": 2021,
+    "reasoning_tokens": 270
    }
   },
   {
@@ -3003,6 +3910,203 @@
     "input_tokens": 8361,
     "output_tokens": 2689,
     "reasoning_tokens": 1388
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     7,
+     9,
+     10,
+     11
+    ],
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:summary_of_opinions:2026-06-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "431edf43496a3d5fb2f2219e130c2119d35a2dc1cd2038d47211b4d60ecaaca8",
+   "meeting_date": "2026-06-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 84,
+     "point": 2,
+     "source_text": "2026",
+     "start": 80,
+     "text": "2026"
+    },
+    {
+     "end": 3185,
+     "point": 2,
+     "source_text": "2027",
+     "start": 3181,
+     "text": "2027"
+    },
+    {
+     "end": 3185,
+     "point": 5,
+     "source_text": "2027",
+     "start": 3181,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-06-23",
+   "quotes": [
+    {
+     "end": 416,
+     "paragraph": 4,
+     "start": 267,
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "end": 3186,
+     "paragraph": 7,
+     "start": 3014,
+     "text": "Underlying CPI inflation is expected to come to a level that is generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+    },
+    {
+     "end": 7043,
+     "paragraph": 9,
+     "start": 6982,
+     "text": "The Bank should therefore hold the rate steady at this point."
+    },
+    {
+     "end": 7539,
+     "paragraph": 10,
+     "start": 7433,
+     "text": "Financial conditions are expected to remain accommodative after the policy interest rate hike at this MPM."
+    },
+    {
+     "end": 11044,
+     "paragraph": 11,
+     "start": 10973,
+     "text": "there is no reason at all to halt the reduction of its purchase amount."
+    }
+   ],
+   "source": {
+    "chars": 13555,
+    "chars_sent": 13556,
+    "method": "pypdf",
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 416,
+        "paragraph": 4,
+        "start": 267,
+        "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 3186,
+        "paragraph": 7,
+        "start": 3014,
+        "text": "Underlying CPI inflation is expected to come to a level that is generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Members stated that underlying CPI inflation is expected to reach a level generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5986,
+        "paragraph": 9,
+        "start": 5873,
+        "text": "it is appropriate for the Bank to raise the policy interest rate and adjust the degree of monetary accommodation."
+       },
+       {
+        "end": 7043,
+        "paragraph": 9,
+        "start": 6982,
+        "text": "The Bank should therefore hold the rate steady at this point."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Opinions stated that raising the policy interest rate was appropriate, while another stated that the Bank should hold the rate steady at this point."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7539,
+        "paragraph": 10,
+        "start": 7433,
+        "text": "Financial conditions are expected to remain accommodative after the policy interest rate hike at this MPM."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Members stated that financial conditions are expected to remain accommodative after the policy interest rate hike at this MPM."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 9251,
+        "paragraph": 10,
+        "start": 9157,
+        "text": "it is appropriate to halt the reduction of the Bank's purchase amount of JGBs from April 2027."
+       },
+       {
+        "end": 11044,
+        "paragraph": 11,
+        "start": 10973,
+        "text": "there is no reason at all to halt the reduction of its purchase amount."
+       }
+      ],
+      "paragraphs": [
+       10,
+       11
+      ]
+     },
+     "text": "Opinions stated that it was appropriate to halt the reduction of the Bank's JGB purchase amount from April 2027, while another stated there was no reason at all to halt the reduction."
+    }
+   ],
+   "title": "Bank of Japan summary of opinions of the 16 June 2026 meeting",
+   "type": "summary_of_opinions",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260616.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 8933,
+    "output_tokens": 1903,
+    "reasoning_tokens": 793
    }
   },
   {

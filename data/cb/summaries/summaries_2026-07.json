@@ -4,6 +4,269 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     5,
+     11,
+     13,
+     14,
+     20,
+     36,
+     44
+    ],
+    "paragraphs_sent": 46,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:deliberations:2026-07-15",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "8eeca63474b70a80d37b43b94f0affdb138bf7deda350e95627553242b17cbcd",
+   "meeting_date": "2026-07-15",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 131,
+     "point": 1,
+     "source_text": "2026",
+     "start": 127,
+     "text": "2026"
+    },
+    {
+     "end": 131,
+     "point": 2,
+     "source_text": "2026",
+     "start": 127,
+     "text": "2026"
+    },
+    {
+     "end": 6681,
+     "point": 4,
+     "source_text": "3.2%",
+     "start": 6677,
+     "text": "3.2%"
+    },
+    {
+     "end": 6727,
+     "point": 4,
+     "source_text": "2.2%",
+     "start": 6723,
+     "text": "2.2%"
+    },
+    {
+     "end": 6628,
+     "point": 4,
+     "source_text": "2%",
+     "start": 6626,
+     "text": "2%"
+    },
+    {
+     "end": 6628,
+     "point": 6,
+     "source_text": "2%",
+     "start": 6626,
+     "text": "2%"
+    },
+    {
+     "end": 3269,
+     "point": 6,
+     "source_text": "2027",
+     "start": 3265,
+     "text": "2027"
+    },
+    {
+     "end": 12358,
+     "point": 6,
+     "source_text": "2¼%",
+     "start": 12355,
+     "text": "2¼%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-07-29",
+   "quotes": [
+    {
+     "end": 4145,
+     "paragraph": 13,
+     "start": 4105,
+     "text": "They noted that the economy had stalled."
+    },
+    {
+     "end": 6689,
+     "paragraph": 20,
+     "start": 6589,
+     "text": "Inflation, which had been around the 2% target for more than a year and a half, rose to 3.2% in May."
+    },
+    {
+     "end": 10874,
+     "paragraph": 36,
+     "start": 10750,
+     "text": "But there was a range of views among Governing Council members about the sustainability of the rebound beyond the near term."
+    },
+    {
+     "end": 12359,
+     "paragraph": 44,
+     "start": 12155,
+     "text": "With growth expected to strengthen in the second half of the year and inflation projected to ease toward the 2% target by early 2027, Governing Council decided to maintain the policy interest rate at 2¼%."
+    }
+   ],
+   "source": {
+    "chars": 13298,
+    "chars_sent": 13299,
+    "method": "html-selector",
+    "paragraphs_sent": 46,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1077,
+        "paragraph": 5,
+        "start": 884,
+        "text": "Global growth took a hit from the war in the Middle East and the spike in oil prices, but growth was expected to recover in the second half of 2026 as oil prices declined from their April peak."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Members said global growth took a hit from the war in the Middle East and the spike in oil prices, but was expected to recover in the second half of 2026 as oil prices declined."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 4145,
+        "paragraph": 13,
+        "start": 4105,
+        "text": "They noted that the economy had stalled."
+       },
+       {
+        "end": 4571,
+        "paragraph": 14,
+        "start": 4388,
+        "text": "More recent indicators showed signs that the economy was recovering in the second quarter of 2026 and that growth was broadening from its reliance on consumer and government spending."
+       }
+      ],
+      "paragraphs": [
+       13,
+       14
+      ]
+     },
+     "text": "Members noted that the Canadian economy had stalled, while more recent indicators showed recovery in the second quarter of 2026 and growth broadening from consumer and government spending."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3556,
+        "paragraph": 11,
+        "start": 3380,
+        "text": "Global oil prices had declined substantially from their peak of around US$120 per barrel in April but subsequently rose again in July as hostilities resumed in the Middle East."
+       },
+       {
+        "end": 3795,
+        "paragraph": 11,
+        "start": 3654,
+        "text": "Global equity markets rose as investors focused less on the Middle East conflict and more on continued strong earnings in AI-related sectors."
+       },
+       {
+        "end": 3991,
+        "paragraph": 11,
+        "start": 3894,
+        "text": "This widening bond-yield differential had contributed to the depreciation of the Canadian dollar."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Members said global oil prices rose again in July, global equity markets rose, and the widening bond-yield differential contributed to the depreciation of the Canadian dollar."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6689,
+        "paragraph": 20,
+        "start": 6589,
+        "text": "Inflation, which had been around the 2% target for more than a year and a half, rose to 3.2% in May."
+       },
+       {
+        "end": 6777,
+        "paragraph": 20,
+        "start": 6690,
+        "text": "Inflation excluding gasoline was 2.2%, and core measures of inflation stayed around 2%."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "Members reported that inflation rose to 3.2% in May, while inflation excluding gasoline was 2.2% and core measures stayed around 2%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10874,
+        "paragraph": 36,
+        "start": 10750,
+        "text": "But there was a range of views among Governing Council members about the sustainability of the rebound beyond the near term."
+       },
+       {
+        "end": 11003,
+        "paragraph": 36,
+        "start": 10875,
+        "text": "Members agreed they would need to monitor the data closely for signs that growth was broadening as projected in the July Report."
+       }
+      ],
+      "paragraphs": [
+       36
+      ]
+     },
+     "text": "Members had a range of views about the sustainability of the rebound beyond the near term and agreed to monitor data for signs that growth was broadening as projected in the July Report."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12359,
+        "paragraph": 44,
+        "start": 12155,
+        "text": "With growth expected to strengthen in the second half of the year and inflation projected to ease toward the 2% target by early 2027, Governing Council decided to maintain the policy interest rate at 2¼%."
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "Governing Council expected growth to strengthen in the second half of the year and inflation to ease toward the 2% target by early 2027, and decided to maintain the policy interest rate at 2¼%."
+    }
+   ],
+   "title": "Summary of Governing Council deliberations: Fixed announcement date of July&nbsp;15, 2026",
+   "type": "deliberations",
+   "url": "https://www.bankofcanada.ca/2026/07/summary-of-governing-council-deliberations-fixed-announcement-date-of-july-15-2026/",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 9077,
+    "output_tokens": 2083,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      13,
      15,
@@ -660,6 +923,182 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     3,
+     15,
+     27,
+     32,
+     42
+    ],
+    "paragraphs_sent": 42,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:deliberations:2026-06-18",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'expected' of summary point 4 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee expected ...' (never in your own voice)",
+      "the word 'likely' of summary point 4 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee likely ...' (never in your own voice)"
+     ],
+     "text": "The Economic Affairs division stated that GDP growth of around 1% is expected for 2026 and around 1.5% for 2027, and inflation is likely to remain within the range consistent with price stability."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "4ff12ebad9f1a08800e8c2322510be531004f2358fdbecedd06e37d321475dac",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 157,
+     "point": 1,
+     "source_text": "0%",
+     "start": 155,
+     "text": "0%"
+    },
+    {
+     "end": 11946,
+     "point": 3,
+     "source_text": "0.6%",
+     "start": 11942,
+     "text": "0.6%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-07-16",
+   "quotes": [
+    {
+     "end": 158,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At the monetary policy assessment of 16 and 17 June 2026, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 4837,
+     "paragraph": 15,
+     "start": 4701,
+     "text": "With the depreciation of the Swiss franc since the monetary policy assessment in March, monetary conditions have become somewhat easier."
+    },
+    {
+     "end": 13638,
+     "paragraph": 32,
+     "start": 13568,
+     "text": "GDP growth of around 1% is expected for 2026 and around 1.5% for 2027."
+    },
+    {
+     "end": 17809,
+     "paragraph": 42,
+     "start": 17726,
+     "text": "The Governing Board therefore decided to leave the SNB policy rate unchanged at 0%."
+    }
+   ],
+   "source": {
+    "chars": 18151,
+    "chars_sent": 18152,
+    "method": "html-selector",
+    "paragraphs_sent": 42,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 158,
+        "paragraph": 1,
+        "start": 58,
+        "text": "the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+       },
+       {
+        "end": 716,
+        "paragraph": 3,
+        "start": 534,
+        "text": "The decision was taken by Martin Schlegel (Chairman of the Governing Board), Antoine Martin (Vice Chairman of the Governing Board) and Petra Tschudin (Member of the Governing Board)."
+       }
+      ],
+      "paragraphs": [
+       1,
+       3
+      ]
+     },
+     "text": "The Governing Board decided to leave the SNB policy rate unchanged at 0%, and the decision was taken by Martin Schlegel, Antoine Martin and Petra Tschudin."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 4837,
+        "paragraph": 15,
+        "start": 4701,
+        "text": "With the depreciation of the Swiss franc since the monetary policy assessment in March, monetary conditions have become somewhat easier."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "The Governing Board and Alternate Members said monetary conditions had become somewhat easier following the Swiss franc’s depreciation since the March assessment."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 11954,
+        "paragraph": 27,
+        "start": 11854,
+        "text": "Inflation has risen as expected since the last monetary policy assessment, and stood at 0.6% in May."
+       },
+       {
+        "end": 12072,
+        "paragraph": 27,
+        "start": 11955,
+        "text": "The increase was attributable to imported inflation, stemming from a significant increase in prices for oil products."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "The Economic Affairs division reported that inflation stood at 0.6% in May, with the increase attributable to imported inflation from higher prices for oil products."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17482,
+        "paragraph": 42,
+        "start": 17346,
+        "text": "In the current situation, the Governing Board's view is that monetary conditions are appropriate and price stability is not jeopardised."
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "The Governing Board’s view was that monetary conditions are appropriate and price stability is not jeopardised."
+    }
+   ],
+   "title": "Swiss National Bank deliberations of the 18 June 2026 meeting",
+   "type": "deliberations",
+   "url": "https://www.snb.ch/en/publications/communication/summaries/zus_20260716",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10454,
+    "output_tokens": 2232,
+    "reasoning_tokens": 983
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 114,
     "changes": [
@@ -897,6 +1336,224 @@
     "input_tokens": 4805,
     "output_tokens": 1869,
     "reasoning_tokens": 650
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     5,
+     7,
+     8,
+     12,
+     13,
+     14,
+     20,
+     21
+    ],
+    "paragraphs_sent": 51,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:minutes:2026-07-30",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "9dab5f8c6fa9512ed85a1e6094a470da70543c32e0607c90804d737ac85a6ce2",
+   "meeting_date": "2026-07-30",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 10242,
+     "point": 6,
+     "source_text": "3.75%",
+     "start": 10237,
+     "text": "3.75%"
+    },
+    {
+     "end": 9443,
+     "point": 6,
+     "source_text": "0.25 percentage point",
+     "start": 9422,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 1876,
+     "point": 6,
+     "source_text": "4",
+     "start": 1875,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-07-30",
+   "quotes": [
+    {
+     "end": 1428,
+     "paragraph": 5,
+     "start": 1318,
+     "text": "Inflation was expected to rise further this year from the direct and indirect effects of higher energy prices."
+    },
+    {
+     "end": 4111,
+     "paragraph": 8,
+     "start": 3918,
+     "text": "All members agreed that the likelihood of material second-round effects was the key uncertainty surrounding the appropriate policy response to bring inflation back to target in the medium term."
+    },
+    {
+     "end": 6641,
+     "paragraph": 12,
+     "start": 6411,
+     "text": "Taking all of the risks into account, the MPC judged that the risk of strong inflationary pressures was greater than the risk of weak inflationary pressures, although there remained a high degree of uncertainty around the outlook."
+    },
+    {
+     "end": 10390,
+     "paragraph": 21,
+     "start": 10248,
+     "text": "Six members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Clare Lombardelli, Dave Ramsden and Alan Taylor) voted in favour of the proposition."
+    }
+   ],
+   "source": {
+    "chars": 22743,
+    "chars_sent": 22744,
+    "method": "html-selector",
+    "paragraphs_sent": 51,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 948,
+        "paragraph": 5,
+        "start": 793,
+        "text": "The conflict in the Middle East, and its impact on energy prices and the UK economy, remained the dominant source of uncertainty for the inflation outlook."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Committee said the Middle East conflict and its impact on energy prices and the UK economy remained the dominant uncertainty for the inflation outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3007,
+        "paragraph": 7,
+        "start": 2926,
+        "text": "all members acknowledged that there had been sustained disinflation pre-conflict."
+       },
+       {
+        "end": 3272,
+        "paragraph": 7,
+        "start": 3165,
+        "text": "Abating domestic inflationary pressures had been supported by slowing wage growth and a soft labour market."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "All members acknowledged sustained disinflation before the conflict, with abating domestic inflationary pressures supported by slowing wage growth and a soft labour market."
+    },
+    {
+     "evidence": {
+      "coverage": 0.875,
+      "fragments": [
+       {
+        "end": 4111,
+        "paragraph": 8,
+        "start": 3918,
+        "text": "All members agreed that the likelihood of material second-round effects was the key uncertainty surrounding the appropriate policy response to bring inflation back to target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "All members agreed that the likelihood of material second-round effects was the key uncertainty around the appropriate policy response to return inflation to target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6641,
+        "paragraph": 12,
+        "start": 6411,
+        "text": "Taking all of the risks into account, the MPC judged that the risk of strong inflationary pressures was greater than the risk of weak inflationary pressures, although there remained a high degree of uncertainty around the outlook."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "The MPC judged that the risk of strong inflationary pressures was greater than the risk of weak inflationary pressures, with high uncertainty around the outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7825,
+        "paragraph": 13,
+        "start": 7599,
+        "text": "There were two dimensions in considering the appropriate policy stance: the level of current monetary policy restrictiveness, and the degree to which policy should guard pre-emptively against the possibility of worse outcomes."
+       },
+       {
+        "end": 8207,
+        "paragraph": 14,
+        "start": 8039,
+        "text": "members noted that financial conditions had tightened materially compared with prior to the conflict, which had increased financing costs faced by households and firms."
+       }
+      ],
+      "paragraphs": [
+       13,
+       14
+      ]
+     },
+     "text": "Members said the appropriate policy stance involved current monetary policy restrictiveness and guarding pre-emptively against worse outcomes, while financial conditions had tightened materially."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10243,
+        "paragraph": 20,
+        "start": 10203,
+        "text": "Bank Rate should be maintained at 3.75%."
+       },
+       {
+        "end": 10548,
+        "paragraph": 21,
+        "start": 10391,
+        "text": "Three members (Megan Greene, Catherine L Mann and Huw Pill) voted against the proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       20,
+       21
+      ]
+     },
+     "text": "Six members voted to maintain Bank Rate at 3.75%, while three voted against and preferred to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England minutes of the 30 July 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 12584,
+    "output_tokens": 2656,
+    "reasoning_tokens": 1210
    }
   },
   {
@@ -1561,6 +2218,230 @@
     "input_tokens": 4817,
     "output_tokens": 1957,
     "reasoning_tokens": 1125
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     12,
+     22,
+     28,
+     35,
+     43,
+     45
+    ],
+    "paragraphs_sent": 115,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:minutes:2026-06-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:22:27Z",
+   "input_sha256": "d9443ecbaa76f6362b672af03602e88bd4ec3b67e64b2dfc80e401fc2154a04a",
+   "meeting_date": "2026-06-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2218,
+     "point": 3,
+     "source_text": "2 percent",
+     "start": 2209,
+     "text": "2 percent"
+    },
+    {
+     "end": 26358,
+     "point": 5,
+     "source_text": "3-1/2",
+     "start": 26353,
+     "text": "3-1/2"
+    },
+    {
+     "end": 26375,
+     "point": 5,
+     "source_text": "3-3/4 percent",
+     "start": 26362,
+     "text": "3-3/4 percent"
+    },
+    {
+     "end": 6338,
+     "point": 5,
+     "source_text": "12",
+     "start": 6336,
+     "text": "12"
+    },
+    {
+     "end": 28402,
+     "point": 5,
+     "source_text": "0",
+     "start": 28401,
+     "text": "0"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-07-08",
+   "quotes": [
+    {
+     "end": 6169,
+     "paragraph": 12,
+     "start": 5987,
+     "text": "The information available at the time of the meeting indicated that inflation remained elevated and had moved higher, partly reflecting the effects of energy and other supply shocks."
+    },
+    {
+     "end": 12209,
+     "paragraph": 22,
+     "start": 12021,
+     "text": "Financing conditions in domestic credit markets remained generally accommodative for larger businesses and municipalities but somewhat restrictive for many small businesses and households."
+    },
+    {
+     "end": 22851,
+     "paragraph": 35,
+     "start": 22701,
+     "text": "In their consideration of monetary policy at this meeting, all participants supported maintaining the current target range for the federal funds rate."
+    },
+    {
+     "end": 28563,
+     "paragraph": 43,
+     "start": 28312,
+     "text": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote: The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent, in support of the Federal Reserve's dual mandate."
+    }
+   ],
+   "source": {
+    "chars": 36158,
+    "chars_sent": 36159,
+    "method": "html-selector",
+    "paragraphs_sent": 115,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6169,
+        "paragraph": 12,
+        "start": 6055,
+        "text": "inflation remained elevated and had moved higher, partly reflecting the effects of energy and other supply shocks."
+       },
+       {
+        "end": 6285,
+        "paragraph": 12,
+        "start": 6170,
+        "text": "Labor market conditions remained stable, and real gross domestic product (GDP) continued to expand at a solid pace."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "The staff reported that inflation remained elevated and had moved higher, labor market conditions remained stable, and real GDP continued to expand at a solid pace."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 12209,
+        "paragraph": 22,
+        "start": 12021,
+        "text": "Financing conditions in domestic credit markets remained generally accommodative for larger businesses and municipalities but somewhat restrictive for many small businesses and households."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "The staff reported that financing conditions were generally accommodative for larger businesses and municipalities but somewhat restrictive for many small businesses and households."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15806,
+        "paragraph": 28,
+        "start": 15669,
+        "text": "Participants generally noted that inflation had increased further and remained well above the Committee's 2 percent longer-run objective."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Participants generally noted that inflation had increased further and remained well above the Committee's 2 percent longer-run objective."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22851,
+        "paragraph": 35,
+        "start": 22760,
+        "text": "all participants supported maintaining the current target range for the federal funds rate."
+       },
+       {
+        "end": 23701,
+        "paragraph": 35,
+        "start": 23454,
+        "text": "A few participants commented that, in light of these developments, there was a case for raising the target range for the federal funds rate, but those participants indicated that they supported maintaining the current target range at this meeting."
+       },
+       {
+        "end": 23794,
+        "paragraph": 35,
+        "start": 23702,
+        "text": "Several participants remarked that they did not see the current policy stance as restrictive"
+       }
+      ],
+      "paragraphs": [
+       35
+      ]
+     },
+     "text": "All participants supported maintaining the current target range, though a few saw a case for raising it and several did not see the stance as restrictive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 28512,
+        "paragraph": 43,
+        "start": 28409,
+        "text": "The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent"
+       },
+       {
+        "end": 28408,
+        "paragraph": 43,
+        "start": 28312,
+        "text": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:"
+       },
+       {
+        "end": 29485,
+        "paragraph": 45,
+        "start": 29385,
+        "text": "Voting against this action: None. Consistent with the Committee's decision to leave the target range"
+       }
+      ],
+      "paragraphs": [
+       43,
+       45
+      ]
+     },
+     "text": "The Committee decided to maintain the federal funds rate target range at 3-1/2 to 3-3/4 percent by a 12 – 0 vote; voting against this action: None."
+    }
+   ],
+   "title": "Federal Reserve minutes of the 17 June 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260617.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 17791,
+    "output_tokens": 1842,
+    "reasoning_tokens": 544
    }
   },
   {
