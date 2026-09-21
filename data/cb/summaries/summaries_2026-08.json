@@ -210,6 +210,414 @@
     "output_tokens": 1642,
     "reasoning_tokens": 401
    }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 222,
+    "changes": [
+     {
+      "added": "While the impact of the Middle East conflict on inflation has so far been less than expected,",
+      "paragraph": 2,
+      "removed": "The latest data show that"
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "and underlying"
+     },
+     {
+      "added": "is",
+      "paragraph": 2,
+      "removed": "are"
+     },
+     {
+      "added": "Trimmed mean inflation also remains elevated and is little changed from the March quarter.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "prices have eased in recent weeks, although energy"
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "conflict in the"
+     },
+     {
+      "added": "East conflict. Some",
+      "paragraph": 2,
+      "removed": "East. There are signs that some"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "this year"
+     },
+     {
+      "added": "target this year.",
+      "paragraph": 3,
+      "removed": "target."
+     },
+     {
+      "added": "consumer spending growth is slowing gradually as expected, while",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "business debt and investment",
+      "paragraph": 3,
+      "removed": "consumer spending"
+     },
+     {
+      "added": "strong. Momentum",
+      "paragraph": 3,
+      "removed": "slowing as expected and momentum"
+     },
+     {
+      "added": "cities and new housing loans declining noticeably. Labour market conditions have eased by a little more",
+      "paragraph": 3,
+      "removed": "cities. The unemployment rate was higher"
+     },
+     {
+      "added": "recent months. Labour",
+      "paragraph": 3,
+      "removed": "April, but other measures of labour"
+     },
+     {
+      "added": "leading indicators point to only limited easing",
+      "paragraph": 3,
+      "removed": "conditions have been more resilient. Growth"
+     },
+     {
+      "added": "the near term.",
+      "paragraph": 3,
+      "removed": "business investment is strong and credit is readily available to both households and businesses."
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "conflict in the"
+     },
+     {
+      "added": "conflict remains uncertain,",
+      "paragraph": 4,
+      "removed": "is at an early stage,"
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "plausible"
+     },
+     {
+      "added": "forecast.",
+      "paragraph": 4,
+      "removed": "envisaged under the May baseline forecasts."
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "issues"
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "some"
+     },
+     {
+      "added": "recover,",
+      "paragraph": 4,
+      "removed": "resolve,"
+     },
+     {
+      "added": "inflation, in which case domestic inflationary pressures could be higher than expected. A",
+      "paragraph": 4,
+      "removed": "inflation. At the same time, a"
+     },
+     {
+      "added": "overseas and in Australia. So far, growth",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "has been stronger than expected, as the boost from AI-related investment has outweighed the adverse effects of the Middle East conflict. In Australia, historically weak productivity growth continues to constrain potential growth.",
+      "paragraph": 4,
+      "removed": "and in Australia."
+     },
+     {
+      "added": "The",
+      "paragraph": 6,
+      "removed": "As expected, the"
+     },
+     {
+      "added": "adding",
+      "paragraph": 6,
+      "removed": "having an impact on inflation. Higher fuel prices have added"
+     },
+     {
+      "added": "higher fuel prices are being passed",
+      "paragraph": 6,
+      "removed": "this is passing"
+     },
+     {
+      "added": "",
+      "paragraph": 6,
+      "removed": "the"
+     },
+     {
+      "added": "effect",
+      "paragraph": 6,
+      "removed": "high inflation recorded around the start"
+     },
+     {
+      "added": "",
+      "paragraph": 6,
+      "removed": "2026, reflecting"
+     },
+     {
+      "added": "high",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "embedded.",
+      "paragraph": 7,
+      "removed": "embedded once the impulse from higher oil prices has passed through."
+     },
+     {
+      "added": "aggregate",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "remain subdued",
+      "paragraph": 7,
+      "removed": "slow"
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "help"
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "the"
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "there are signs that"
+     },
+     {
+      "added": "appears to be",
+      "paragraph": 7,
+      "removed": "is"
+     }
+    ],
+    "removed_words": 207,
+    "truncated": true,
+    "vs_doc_id": "AUD:statement:2026-06-16",
+    "vs_meeting": "2026-06-16"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     6,
+     7,
+     9
+    ],
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:statement:2026-08-11",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:04:11Z",
+   "input_sha256": "c466c669c706ee054bc72055e0908f330b78848406193e6d5c60c27a804bd060",
+   "meeting_date": "2026-08-11",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 96,
+     "point": 1,
+     "source_text": "4.35 per cent",
+     "start": 83,
+     "text": "4.35 per cent"
+    },
+    {
+     "end": 3156,
+     "point": 3,
+     "source_text": "2027",
+     "start": 3152,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-08-11",
+   "quotes": [
+    {
+     "end": 97,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At its meeting today, the Board decided to leave the cash rate target unchanged at 4.35 per cent."
+    },
+    {
+     "end": 2541,
+     "paragraph": 6,
+     "start": 2307,
+     "text": "The disruption to global oil supply is adding directly to inflation and there are indications that higher fuel prices are being passed through to prices of other goods and services, so inflation is likely to remain high for some time."
+    },
+    {
+     "end": 3203,
+     "paragraph": 7,
+     "start": 3069,
+     "text": "It is not expected to return to around the midpoint of the target range until late 2027 and there are upside risks to this projection."
+    },
+    {
+     "end": 3863,
+     "paragraph": 9,
+     "start": 3825,
+     "text": "Today’s policy decision was unanimous."
+    }
+   ],
+   "source": {
+    "chars": 3863,
+    "chars_sent": 3864,
+    "method": "stored",
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 97,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At its meeting today, the Board decided to leave the cash rate target unchanged at 4.35 per cent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Board decided to leave the cash rate target unchanged at 4.35 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2487,
+        "paragraph": 6,
+        "start": 2307,
+        "text": "The disruption to global oil supply is adding directly to inflation and there are indications that higher fuel prices are being passed through to prices of other goods and services"
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Board states that disruption to global oil supply is adding directly to inflation and higher fuel prices are being passed through to other goods and services."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2541,
+        "paragraph": 6,
+        "start": 2489,
+        "text": "so inflation is likely to remain high for some time."
+       },
+       {
+        "end": 3156,
+        "paragraph": 7,
+        "start": 3069,
+        "text": "It is not expected to return to around the midpoint of the target range until late 2027"
+       }
+      ],
+      "paragraphs": [
+       6,
+       7
+      ]
+     },
+     "text": "The Board says inflation is likely to remain high for some time and is not expected to return to around the midpoint of the target range until late 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3035,
+        "paragraph": 7,
+        "start": 2932,
+        "text": "financial conditions are now tighter than they were, and the economy appears to be slowing as expected."
+       },
+       {
+        "end": 3068,
+        "paragraph": 7,
+        "start": 3036,
+        "text": "But inflation is still too high."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Board states that financial conditions are tighter, the economy appears to be slowing as expected, but inflation is still too high."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3548,
+        "paragraph": 7,
+        "start": 3365,
+        "text": "The Board will continue to do what it considers necessary to bring inflation sustainably back to target, including increasing the cash rate target further if upside risks materialise."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Board will continue to do what it considers necessary to bring inflation sustainably back to target, including increasing the cash rate target further if upside risks materialise."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3863,
+        "paragraph": 9,
+        "start": 3825,
+        "text": "Today’s policy decision was unanimous."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Today’s policy decision was unanimous."
+    }
+   ],
+   "title": "Reserve Bank of Australia monetary policy statement, 11 August 2026",
+   "type": "statement",
+   "url": "https://www.rba.gov.au/media-releases/2026/mr-26-19.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2206,
+    "output_tokens": 541,
+    "reasoning_tokens": 0
+   }
   }
  ],
  "version": 1

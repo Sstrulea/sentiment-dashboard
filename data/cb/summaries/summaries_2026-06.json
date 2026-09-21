@@ -2,6 +2,508 @@
  "summaries": [
   {
    "changes_vs_previous": {
+    "added_words": 376,
+    "changes": [
+     {
+      "added": "is unchanged",
+      "paragraph": 1,
+      "removed": "still stands"
+     },
+     {
+      "added": "If necessary,",
+      "paragraph": 1,
+      "removed": "Given"
+     },
+     {
+      "added": "SNB has an increased",
+      "paragraph": 1,
+      "removed": "conflict in the Middle East, the SNB's"
+     },
+     {
+      "added": "market.",
+      "paragraph": 1,
+      "removed": "market has increased."
+     },
+     {
+      "added": "Inflation has risen in recent months as a result of",
+      "paragraph": 2,
+      "removed": "The conditional inflation forecast for the coming quarters is"
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "than in December due to the rise in"
+     },
+     {
+      "added": "is",
+      "paragraph": 2,
+      "removed": "has remained"
+     },
+     {
+      "added": "compared with",
+      "paragraph": 2,
+      "removed": "since"
+     },
+     {
+      "added": "SNB's",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "is appropriate",
+      "paragraph": 2,
+      "removed": "helps"
+     },
+     {
+      "added": "it",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "closely"
+     },
+     {
+      "added": "stability.",
+      "paragraph": 2,
+      "removed": "stability over the medium term."
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "slightly"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "0.0% in November to"
+     },
+     {
+      "added": "February to 0.6% in May.",
+      "paragraph": 3,
+      "removed": "February."
+     },
+     {
+      "added": "mainly attributable to higher prices for oil products. The other goods and services made little contribution to the rise",
+      "paragraph": 3,
+      "removed": "driven"
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "particular by higher goods"
+     },
+     {
+      "added": "According to the conditional inflation forecast, inflation will initially continue to increase slightly in the coming quarters, before declining again somewhat in the first half of 2027. This decrease is due to the impact of higher energy prices being likely to ease over time. Energy prices will be largely influenced by the further development of the situation in the Middle East.",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "The forecast in the shorter term is slightly higher compared with the last monetary policy assessment. This is due to",
+      "paragraph": 5,
+      "removed": "With"
+     },
+     {
+      "added": "raw material",
+      "paragraph": 5,
+      "removed": "energy"
+     },
+     {
+      "added": "and higher",
+      "paragraph": 5,
+      "removed": "due to the escalation in the Middle East,"
+     },
+     {
+      "added": "abroad.",
+      "paragraph": 5,
+      "removed": "is likely to increase more strongly in the coming quarters. As a result, the conditional inflation forecast in the short term is higher than in December."
+     },
+     {
+      "added": "the inflation forecast",
+      "paragraph": 5,
+      "removed": "it"
+     },
+     {
+      "added": "practically unchanged.",
+      "paragraph": 5,
+      "removed": "slightly lower due to the stronger Swiss franc."
+     },
+     {
+      "added": "0.6%",
+      "paragraph": 5,
+      "removed": "0.5%"
+     },
+     {
+      "added": "0.6%",
+      "paragraph": 5,
+      "removed": "0.5%"
+     },
+     {
+      "added": "0.7%",
+      "paragraph": 5,
+      "removed": "0.6%"
+     },
+     {
+      "added": "overall",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "first",
+      "paragraph": 6,
+      "removed": "fourth"
+     },
+     {
+      "added": "However, due to the escalation",
+      "paragraph": 6,
+      "removed": "While inflation remained elevated"
+     },
+     {
+      "added": "Middle East and the increase in energy prices, economic momentum slowed somewhat. Inflation has risen significantly in many countries as a result of higher energy prices. Key interest rates have been raised",
+      "paragraph": 6,
+      "removed": "US,"
+     },
+     {
+      "added": "area, while they have remained",
+      "paragraph": 6,
+      "removed": "area it stayed close to the central bank's target. Key rates were left"
+     },
+     {
+      "added": "the US.",
+      "paragraph": 6,
+      "removed": "both currency areas."
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "With the conflict in the Middle East, the economic outlook has become considerably more uncertain."
+     },
+     {
+      "added": "inflation worldwide will remain elevated over",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "coming quarters due to",
+      "paragraph": 7,
+      "removed": "increase in energy prices will raise inflation in many countries in"
+     },
+     {
+      "added": "higher raw material prices. In addition,",
+      "paragraph": 7,
+      "removed": "short term. Furthermore,"
+     },
+     {
+      "added": "be more moderate in the short term than in the previous quarters. However, growth is likely to pick up again in the medium term.",
+      "paragraph": 7,
+      "removed": "temporarily slow somewhat."
+     },
+     {
+      "added": "baseline scenario remains",
+      "paragraph": 8,
+      "removed": "global economic outlook is"
+     }
+    ],
+    "removed_words": 267,
+    "truncated": true,
+    "vs_doc_id": "CHF:statement:2026-03-19",
+    "vs_meeting": "2026-03-19"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     5,
+     10
+    ],
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:statement:2026-06-18",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:04:11Z",
+   "input_sha256": "23c08becbcbc854add595c7cea81b587f91b30a2b1d5264904442f32e927ca7a",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 70,
+     "point": 1,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0%"
+    },
+    {
+     "end": 271,
+     "point": 3,
+     "source_text": "0.25 percentage points",
+     "start": 249,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 1075,
+     "point": 5,
+     "source_text": "0.6%",
+     "start": 1071,
+     "text": "0.6%"
+    },
+    {
+     "end": 2015,
+     "point": 5,
+     "source_text": "2026",
+     "start": 2011,
+     "text": "2026"
+    },
+    {
+     "end": 1075,
+     "point": 5,
+     "source_text": "0.6%",
+     "start": 1071,
+     "text": "0.6%"
+    },
+    {
+     "end": 1422,
+     "point": 5,
+     "source_text": "2027",
+     "start": 1418,
+     "text": "2027"
+    },
+    {
+     "end": 2039,
+     "point": 5,
+     "source_text": "0.7%",
+     "start": 2035,
+     "text": "0.7%"
+    },
+    {
+     "end": 2048,
+     "point": 5,
+     "source_text": "2028",
+     "start": 2044,
+     "text": "2028"
+    },
+    {
+     "end": 70,
+     "point": 5,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0%"
+    },
+    {
+     "end": 2015,
+     "point": 6,
+     "source_text": "2026",
+     "start": 2011,
+     "text": "2026"
+    },
+    {
+     "end": 3832,
+     "point": 6,
+     "source_text": "1%",
+     "start": 3830,
+     "text": "1%"
+    },
+    {
+     "end": 1422,
+     "point": 6,
+     "source_text": "2027",
+     "start": 1418,
+     "text": "2027"
+    },
+    {
+     "end": 3875,
+     "point": 6,
+     "source_text": "1.5%",
+     "start": 3871,
+     "text": "1.5%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-06-18",
+   "quotes": [
+    {
+     "end": 71,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 969,
+     "paragraph": 2,
+     "start": 842,
+     "text": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+    },
+    {
+     "end": 1965,
+     "paragraph": 5,
+     "start": 1868,
+     "text": "The forecast is within the range of price stability over the entire forecast horizon (cf. chart)."
+    },
+    {
+     "end": 3833,
+     "paragraph": 10,
+     "start": 3766,
+     "text": "For 2026 as a whole, the SNB currently expects growth of around 1%."
+    }
+   ],
+   "source": {
+    "chars": 4402,
+    "chars_sent": 4403,
+    "method": "stored",
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 71,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 695,
+        "paragraph": 2,
+        "start": 578,
+        "text": "Medium-term inflationary pressure, however, is virtually unchanged compared with the last monetary policy assessment."
+       },
+       {
+        "end": 803,
+        "paragraph": 2,
+        "start": 696,
+        "text": "The SNB's monetary policy is appropriate to keep inflation within the range consistent with price stability"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB states that medium-term inflationary pressure is virtually unchanged and that its monetary policy is appropriate to keep inflation within the range consistent with price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 179,
+        "paragraph": 1,
+        "start": 72,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 272,
+        "paragraph": 1,
+        "start": 180,
+        "text": "The discount for sight deposits above this threshold is unchanged at 0.25 percentage points."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold, and the discount above the threshold is unchanged at 0.25 percentage points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 368,
+        "paragraph": 1,
+        "start": 273,
+        "text": "If necessary, the SNB has an increased willingness to intervene in the foreign exchange market."
+       },
+       {
+        "end": 503,
+        "paragraph": 1,
+        "start": 369,
+        "text": "The SNB thereby counters a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The SNB states that, if necessary, it has an increased willingness to intervene in the foreign exchange market to counter a rapid and excessive appreciation of the Swiss franc."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 2061,
+        "paragraph": 5,
+        "start": 1966,
+        "text": "It puts average annual inflation at 0.6% for 2026, 0.6% for 2027 and 0.7% for 2028 (cf. table)."
+       },
+       {
+        "end": 2166,
+        "paragraph": 5,
+        "start": 2062,
+        "text": "The forecast is based on the assumption that the SNB policy rate is 0% over the entire forecast horizon."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The conditional inflation forecast puts average annual inflation at 0.6% for 2026, 0.6% for 2027 and 0.7% for 2028, based on an SNB policy rate of 0% over the entire forecast horizon."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3833,
+        "paragraph": 10,
+        "start": 3766,
+        "text": "For 2026 as a whole, the SNB currently expects growth of around 1%."
+       },
+       {
+        "end": 3876,
+        "paragraph": 10,
+        "start": 3834,
+        "text": "For 2027, the SNB anticipates around 1.5%."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "For 2026 as a whole, the SNB currently expects growth of around 1%, and for 2027, the SNB anticipates around 1.5%."
+    }
+   ],
+   "title": "Swiss National Bank monetary policy statement, 18 June 2026",
+   "type": "statement",
+   "url": "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260618",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2392,
+    "output_tokens": 859,
+    "reasoning_tokens": 173
+   }
+  },
+  {
+   "changes_vs_previous": {
     "added_words": 113,
     "changes": [
      {

@@ -64,21 +64,11 @@
       "etag": "\"w178520-1786088042745\"",
       "last_modified": "Fri, 07 Aug 2026 07:34:02 GMT"
     },
-    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260430~81b7179e6f.en.html": {
-      "etag": "\"myra-fec55310\""
-    },
-    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html": {
-      "etag": "\"myra-7dab9d74\""
-    },
-    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html": {
-      "etag": "\"myra-cf35dcba\""
-    },
-    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html": {
-      "etag": "\"myra-a9b6e8a5\""
-    },
-    "https://www.ecb.europa.eu/press/press_conference/html/index.en.html": {
-      "etag": "\"myra-ba49e7f5\""
-    },
+    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260430~81b7179e6f.en.html": {},
+    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html": {},
+    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html": {},
+    "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html": {},
+    "https://www.ecb.europa.eu/press/press_conference/html/index.en.html": {},
     "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260429.htm": {
       "last_modified": "Wed, 20 May 2026 18:00:12 GMT"
     },
@@ -130,5 +120,29 @@
   "rba_bank_bills": {
     "etag": null,
     "last_modified": "Sun, 20 Sep 2026 23:04:06 GMT"
+  },
+  "summaries": {
+    "last_run": {
+      "at": "2026-09-21T18:04:11Z",
+      "calls": 16,
+      "cost_usd": 0.2545,
+      "failed_validation": 0,
+      "input_tokens": 37856,
+      "new": 12,
+      "no_text": 0,
+      "output_tokens": 14897,
+      "pending": 82,
+      "reasoning_tokens": 5190,
+      "source_errors": 0,
+      "stopped": "document cap reached (12 per run)",
+      "unchanged": 0,
+      "usage_estimated": 0
+    },
+    "totals": {
+      "calls": 16,
+      "input_tokens": 37856,
+      "output_tokens": 14897,
+      "summaries": 12
+    }
   }
 }
