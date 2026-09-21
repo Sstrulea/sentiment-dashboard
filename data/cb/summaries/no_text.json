@@ -17,6 +17,24 @@
    "kind": "non_prose",
    "reason": "52% of the lines are short: a deck of tables or slides, not prose",
    "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-06-16.html"
+  },
+  "CAD:speech:6866cca1ce87": {
+   "at": "2026-09-21T18:28:22Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bankofcanada.ca/multimedia/speech-halifax-partnership-2026-09-21/"
+  },
+  "EUR:speech:320dbc76f248": {
+   "at": "2026-09-21T18:28:22Z",
+   "kind": "non_prose",
+   "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260911~a4d6526f00.en.pdf"
+  },
+  "EUR:speech:419f8df75f1f": {
+   "at": "2026-09-21T18:28:22Z",
+   "kind": "non_prose",
+   "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260914~0ffd556bc8.en.pdf"
   }
  },
  "version": 1

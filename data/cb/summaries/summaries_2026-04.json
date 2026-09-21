@@ -491,6 +491,242 @@
    "coverage": {
     "paragraphs": [
      1,
+     3,
+     8,
+     12,
+     13,
+     14,
+     35,
+     41
+    ],
+    "paragraphs_sent": 41,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:deliberations:2026-03-19",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "eb97442233582eda88dec6a845ce930d093fff14943be5ee8553ce9c2f28a147",
+   "meeting_date": "2026-03-19",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 158,
+     "point": 1,
+     "source_text": "0%",
+     "start": 156,
+     "text": "0%"
+    },
+    {
+     "end": 158,
+     "point": 5,
+     "source_text": "0%",
+     "start": 156,
+     "text": "0%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-04-16",
+   "quotes": [
+    {
+     "end": 159,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At the monetary policy assessment of 17 and 18 March 2026, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 4830,
+     "paragraph": 14,
+     "start": 4655,
+     "text": "There are no signs of a credit crunch, and monetary policy transmission is working well, as evident in the increase in excess liquidity and in lending conditions, for example."
+    },
+    {
+     "end": 11386,
+     "paragraph": 32,
+     "start": 11316,
+     "text": "GDP growth of around 1% is expected for 2026 and around 1.5% for 2027."
+    },
+    {
+     "end": 13178,
+     "paragraph": 35,
+     "start": 13093,
+     "text": "The forecast is within the range of price stability over the entire forecast horizon."
+    },
+    {
+     "end": 15842,
+     "paragraph": 41,
+     "start": 15769,
+     "text": "The Governing Board decided to leave the SNB policy rate unchanged at 0%."
+    }
+   ],
+   "source": {
+    "chars": 16146,
+    "chars_sent": 16147,
+    "method": "html-selector",
+    "paragraphs_sent": 41,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 159,
+        "paragraph": 1,
+        "start": 59,
+        "text": "the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+       },
+       {
+        "end": 15842,
+        "paragraph": 41,
+        "start": 15769,
+        "text": "The Governing Board decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1,
+       41
+      ]
+     },
+     "text": "The Governing Board decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 685,
+        "paragraph": 3,
+        "start": 536,
+        "text": "The decision was taken by Martin Schlegel (Chairman of the Governing Board), Antoine Martin (Vice Chairman of the Governing Board) and Petra Tschudin"
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The decision was taken by Martin Schlegel, Antoine Martin and Petra Tschudin."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2042,
+        "paragraph": 8,
+        "start": 1905,
+        "text": "Since the last monetary policy assessment in December 2025, the financial market situation has been characterised by elevated volatility."
+       },
+       {
+        "end": 2386,
+        "paragraph": 8,
+        "start": 2271,
+        "text": "With the escalation in the Middle East, energy prices surged, which led to a global rise in inflation expectations."
+       },
+       {
+        "end": 2494,
+        "paragraph": 8,
+        "start": 2387,
+        "text": "The markets did not expect an adjustment to the SNB policy rate at the monetary policy assessment in March."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The document reports elevated financial market volatility, surging energy prices and that markets did not expect an adjustment to the SNB policy rate in March."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 3872,
+        "paragraph": 12,
+        "start": 3795,
+        "text": "The Swiss franc appreciated significantly against the euro and the US dollar."
+       },
+       {
+        "end": 4407,
+        "paragraph": 13,
+        "start": 4284,
+        "text": "With the appreciation of the Swiss franc since the monetary policy assessment in December, monetary conditions are tighter."
+       },
+       {
+        "end": 4454,
+        "paragraph": 14,
+        "start": 4408,
+        "text": "Monetary policy remains expansionary, however."
+       }
+      ],
+      "paragraphs": [
+       12,
+       13,
+       14
+      ]
+     },
+     "text": "The Swiss franc appreciated significantly against the euro and the US dollar, making monetary conditions tighter, while monetary policy remained expansionary."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13092,
+        "paragraph": 35,
+        "start": 12963,
+        "text": "The Governing Board discussed the conditional inflation forecast, which assumes that the SNB policy rate remains unchanged at 0%."
+       },
+       {
+        "end": 13178,
+        "paragraph": 35,
+        "start": 13093,
+        "text": "The forecast is within the range of price stability over the entire forecast horizon."
+       }
+      ],
+      "paragraphs": [
+       35
+      ]
+     },
+     "text": "The conditional inflation forecast assumes the SNB policy rate remains unchanged at 0% and is within the range of price stability over the entire forecast horizon."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16090,
+        "paragraph": 41,
+        "start": 15932,
+        "text": "the SNB's willingness to intervene in the foreign exchange market should remain high in order to counter a rapid and excessive appreciation of the Swiss franc"
+       }
+      ],
+      "paragraphs": [
+       41
+      ]
+     },
+     "text": "The Governing Board said its willingness to intervene in the foreign exchange market should remain high to counter rapid and excessive Swiss franc appreciation."
+    }
+   ],
+   "title": "Swiss National Bank deliberations of the 19 March 2026 meeting",
+   "type": "deliberations",
+   "url": "https://www.snb.ch/en/publications/communication/summaries/zus_20260416",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 9765,
+    "output_tokens": 1400,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
      2,
      4,
      6,
@@ -681,6 +917,252 @@
     "input_tokens": 4859,
     "output_tokens": 1585,
     "reasoning_tokens": 380
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     9,
+     15,
+     16,
+     19,
+     21,
+     22
+    ],
+    "paragraphs_sent": 50,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:minutes:2026-04-30",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "7701999d1122bbca26b89a0b8eb4c3fc3ee5a7f0ac1a02f5699414cf8019c349",
+   "meeting_date": "2026-04-30",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1450,
+     "point": 1,
+     "source_text": "3.3%",
+     "start": 1446,
+     "text": "3.3%"
+    },
+    {
+     "end": 1572,
+     "point": 1,
+     "source_text": "3.1%",
+     "start": 1568,
+     "text": "3.1%"
+    },
+    {
+     "end": 72,
+     "point": 1,
+     "source_text": "2026",
+     "start": 68,
+     "text": "2026"
+    },
+    {
+     "end": 1450,
+     "point": 1,
+     "source_text": "3.3%",
+     "start": 1446,
+     "text": "3.3%"
+    },
+    {
+     "end": 9436,
+     "point": 5,
+     "source_text": "3.75%",
+     "start": 9431,
+     "text": "3.75%"
+    },
+    {
+     "end": 9714,
+     "point": 5,
+     "source_text": "0.25 percentage points",
+     "start": 9692,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 1280,
+     "point": 5,
+     "source_text": "4",
+     "start": 1279,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-04-30",
+   "quotes": [
+    {
+     "end": 1629,
+     "paragraph": 6,
+     "start": 1461,
+     "text": "Based on the energy futures curves in the 15 days to 22 April, Bank staff expected inflation to decline to 3.1% on average in 2026 Q2, before rising back to 3.3% in Q3."
+    },
+    {
+     "end": 3347,
+     "paragraph": 9,
+     "start": 3204,
+     "text": "The MPC judged that, while there were likely to be some second-round effects, continued weakness in activity would limit the strength of these."
+    },
+    {
+     "end": 7581,
+     "paragraph": 15,
+     "start": 7338,
+     "text": "All members noted that financial conditions had tightened materially since the onset of the conflict which would help feed through to lower inflationary pressures over time, particularly while further evidence accumulated in the coming months."
+    },
+    {
+     "end": 9722,
+     "paragraph": 22,
+     "start": 9616,
+     "text": "Huw Pill voted against the proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "source": {
+    "chars": 21547,
+    "chars_sent": 21548,
+    "method": "html-selector",
+    "paragraphs_sent": 50,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1460,
+        "paragraph": 6,
+        "start": 1407,
+        "text": "with CPI inflation having increased to 3.3% in March."
+       },
+       {
+        "end": 1629,
+        "paragraph": 6,
+        "start": 1524,
+        "text": "Bank staff expected inflation to decline to 3.1% on average in 2026 Q2, before rising back to 3.3% in Q3."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Committee reported CPI inflation had increased to 3.3% in March, with Bank staff expecting inflation to decline to 3.1% on average in 2026 Q2 before rising back to 3.3% in Q3."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3347,
+        "paragraph": 9,
+        "start": 3204,
+        "text": "The MPC judged that, while there were likely to be some second-round effects, continued weakness in activity would limit the strength of these."
+       },
+       {
+        "end": 4181,
+        "paragraph": 9,
+        "start": 4069,
+        "text": "Some other members saw downside risks to the outlook for demand, which could further limit second-round effects."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "The MPC judged that continued weakness in activity would limit the strength of likely second-round effects, and some members saw downside risks to the outlook for demand."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7438,
+        "paragraph": 15,
+        "start": 7338,
+        "text": "All members noted that financial conditions had tightened materially since the onset of the conflict"
+       },
+       {
+        "end": 7730,
+        "paragraph": 16,
+        "start": 7601,
+        "text": "the median expectation in the April Market Participants Survey was for Bank Rate to be maintained at its current level this year."
+       }
+      ],
+      "paragraphs": [
+       15,
+       16
+      ]
+     },
+     "text": "All members noted that financial conditions had tightened materially since the onset of the conflict, while the April Market Participants Survey median expectation was for Bank Rate to be maintained at its current level this year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8551,
+        "paragraph": 19,
+        "start": 8329,
+        "text": "Taking all the risks to the economic outlook into account, and recognising that the tightening in financial conditions would help to reduce inflation over time, most members preferred to maintain Bank Rate at this meeting."
+       },
+       {
+        "end": 9327,
+        "paragraph": 19,
+        "start": 9159,
+        "text": "One member judged that an increase in Bank Rate at this meeting was warranted, given the clear upward shift in risks to the lasting achievement of the inflation target."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Most members preferred to maintain Bank Rate at this meeting, while one member judged an increase in Bank Rate was warranted given the clear upward shift in risks to the lasting achievement of the inflation target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9437,
+        "paragraph": 21,
+        "start": 9397,
+        "text": "Bank Rate should be maintained at 3.75%."
+       },
+       {
+        "end": 9615,
+        "paragraph": 22,
+        "start": 9442,
+        "text": "Eight members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Megan Greene, Clare Lombardelli, Catherine L Mann, Dave Ramsden, Alan Taylor) voted in favour of the proposition."
+       },
+       {
+        "end": 9722,
+        "paragraph": 22,
+        "start": 9616,
+        "text": "Huw Pill voted against the proposition, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       21,
+       22
+      ]
+     },
+     "text": "Eight members voted to maintain Bank Rate at 3.75%; Huw Pill voted against, preferring to increase Bank Rate by 0.25 percentage points, to 4%."
+    }
+   ],
+   "title": "Bank of England minutes of the 30 April 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5698,
+    "output_tokens": 2428,
+    "reasoning_tokens": 1662
    }
   },
   {

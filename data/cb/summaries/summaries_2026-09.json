@@ -4,6 +4,213 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     14,
+     15,
+     21,
+     28,
+     33,
+     42
+    ],
+    "paragraphs_sent": 44,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:180dd1f8a6c9",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "c25e5980a349a54d0c00e9881eec8cabb842dec5fd956ac8c915936fec599de2",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1358,
+     "point": 1,
+     "source_text": "75 basis points",
+     "start": 1343,
+     "text": "75 basis points"
+    },
+    {
+     "end": 3962,
+     "point": 2,
+     "source_text": "2027",
+     "start": 3958,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-18",
+   "quotes": [
+    {
+     "end": 3646,
+     "paragraph": 14,
+     "start": 3624,
+     "text": "Inflation is too high."
+    },
+    {
+     "end": 3963,
+     "paragraph": 15,
+     "start": 3774,
+     "text": "Our latest forecasts – which were published in the August Statement on Monetary Policy – suggested that inflation will not return to around the midpoint of the target range until late 2027."
+    },
+    {
+     "end": 6427,
+     "paragraph": 21,
+     "start": 6304,
+     "text": "A period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+    },
+    {
+     "end": 9830,
+     "paragraph": 28,
+     "start": 9633,
+     "text": "With card surcharging set to be removed from 1 October, we are monitoring the payments industry’s implementation and working with industry stakeholders to support merchant awareness of the changes."
+    },
+    {
+     "end": 12585,
+     "paragraph": 33,
+     "start": 12510,
+     "text": "Cash remains a critical part of an inclusive and resilient payments system."
+    }
+   ],
+   "source": {
+    "chars": 16017,
+    "chars_sent": 16018,
+    "method": "html-selector",
+    "paragraphs_sent": 44,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3622,
+        "paragraph": 14,
+        "start": 3515,
+        "text": "the Monetary Policy Board has increased the cash rate by 75 basis points this year to help reduce inflation"
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Governor Bullock says the Monetary Policy Board has increased the cash rate by 75 basis points this year to help reduce inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3962,
+        "paragraph": 15,
+        "start": 3878,
+        "text": "inflation will not return to around the midpoint of the target range until late 2027"
+       },
+       {
+        "end": 4073,
+        "paragraph": 15,
+        "start": 4005,
+        "text": "we assessed that the risks to that outlook were skewed to the upside"
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Governor Bullock says the latest forecasts suggested that inflation will not return to around the midpoint of the target range until late 2027, with risks skewed to the upside."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6427,
+        "paragraph": 21,
+        "start": 6304,
+        "text": "A period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Governor Bullock says a period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9561,
+        "paragraph": 28,
+        "start": 9411,
+        "text": "a package of reforms to remove card surcharging, reduce interchange fee caps and improve transparency of payment costs would be in the public interest"
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Governor Bullock says the Payments System Board concluded that reforms to remove card surcharging, reduce interchange fee caps and improve transparency would be in the public interest."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12585,
+        "paragraph": 33,
+        "start": 12510,
+        "text": "Cash remains a critical part of an inclusive and resilient payments system."
+       },
+       {
+        "end": 12909,
+        "paragraph": 33,
+        "start": 12753,
+        "text": "The RBA remains committed to supporting the Australian Government’s objective that cash remains available for as long as Australians want or need to use it."
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "Governor Bullock says cash remains a critical part of an inclusive and resilient payments system, and the RBA supports the Australian Government’s objective that cash remains available."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 15333,
+        "paragraph": 42,
+        "start": 15213,
+        "text": "Since then, we have completed the remaining recommendations, publishing a framework for additional monetary policy tools"
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "Governor Bullock says the RBA has completed the remaining recommendations of the RBA Review, including publishing a framework for additional monetary policy tools."
+    }
+   ],
+   "title": "Opening Statement to the House of Representatives Standing Committee on Economics",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-gov-2026-09-18.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4514,
+    "output_tokens": 1121,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      5,
      9,
      12,
@@ -419,6 +626,260 @@
     "input_tokens": 2459,
     "output_tokens": 503,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     18,
+     21,
+     22,
+     36,
+     38,
+     43,
+     44,
+     61,
+     62
+    ],
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:3bdee0d0f907",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "e231376da21dee9af936be9f047eeec4c20afe8d2034417799c2b590b78a542b",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 4085,
+     "point": 2,
+     "source_text": "14½%",
+     "start": 4081,
+     "text": "14½%"
+    },
+    {
+     "end": 2391,
+     "point": 2,
+     "source_text": "2025",
+     "start": 2387,
+     "text": "2025"
+    },
+    {
+     "end": 9133,
+     "point": 4,
+     "source_text": "5%",
+     "start": 9131,
+     "text": "5%"
+    },
+    {
+     "end": 9879,
+     "point": 4,
+     "source_text": "1%",
+     "start": 9877,
+     "text": "1%"
+    },
+    {
+     "end": 10922,
+     "point": 5,
+     "source_text": "3%",
+     "start": 10920,
+     "text": "3%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-21",
+   "quotes": [
+    {
+     "end": 4154,
+     "paragraph": 18,
+     "start": 4057,
+     "text": "Non-energy exports rose 14½% in the second quarter—reaching their highest level since early 2025."
+    },
+    {
+     "end": 10985,
+     "paragraph": 43,
+     "start": 10886,
+     "text": "CPI inflation has remained around 3% in recent months, largely because of these higher fuel prices."
+    },
+    {
+     "end": 16707,
+     "paragraph": 61,
+     "start": 16626,
+     "text": "Earlier this month, Governing Council decided to leave the policy rate unchanged."
+    },
+    {
+     "end": 17423,
+     "paragraph": 62,
+     "start": 17316,
+     "text": "Our beacon is our 2% inflation target, and we are committed to keeping inflation close to target over time."
+    }
+   ],
+   "source": {
+    "chars": 19226,
+    "chars_sent": 19227,
+    "method": "html-selector",
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 549,
+        "paragraph": 4,
+        "start": 455,
+        "text": "there’s mounting evidence that Canadian businesses and households are adapting to those forces"
+       },
+       {
+        "end": 878,
+        "paragraph": 4,
+        "start": 779,
+        "text": "Exports, investment and growth all picked up, and conditions in the labour market began to improve."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Governor Macklem says there is mounting evidence that Canadian businesses and households are adapting, and exports, investment and growth all picked up."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4154,
+        "paragraph": 18,
+        "start": 4057,
+        "text": "Non-energy exports rose 14½% in the second quarter—reaching their highest level since early 2025."
+       },
+       {
+        "end": 4477,
+        "paragraph": 18,
+        "start": 4353,
+        "text": "Businesses are reducing their exposure to tariffs. They’re adjusting supply chains and they’re changing sourcing strategies."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "Governor Macklem says non-energy exports rose 14½% in the second quarter to their highest level since early 2025, as businesses reduced tariff exposure and adjusted supply chains."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5448,
+        "paragraph": 21,
+        "start": 5379,
+        "text": "They’re using AI to automate routine tasks and work more efficiently."
+       },
+       {
+        "end": 5835,
+        "paragraph": 22,
+        "start": 5667,
+        "text": "Statistics Canada reported in the spring of 2026 that almost one in five Canadian businesses had used AI to produce goods or deliver services in the previous 12 months."
+       }
+      ],
+      "paragraphs": [
+       21,
+       22
+      ]
+     },
+     "text": "Governor Macklem says businesses are using AI to automate routine tasks and work more efficiently, while adoption is spreading quickly among Canadian businesses."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9255,
+        "paragraph": 36,
+        "start": 9093,
+        "text": "The affected products represent about 5% of Canada’s goods exports to the United States, and federal government support programs should mitigate some of the harm."
+       },
+       {
+        "end": 9880,
+        "paragraph": 38,
+        "start": 9776,
+        "text": "If these new tariffs remain in place, growth could be roughly halved in the fourth quarter, to below 1%."
+       }
+      ],
+      "paragraphs": [
+       36,
+       38
+      ]
+     },
+     "text": "Governor Macklem says the affected products represent about 5% of Canada’s goods exports to the United States, and growth could be roughly halved in the fourth quarter, to below 1%, if new US tariffs remain in place."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10985,
+        "paragraph": 43,
+        "start": 10886,
+        "text": "CPI inflation has remained around 3% in recent months, largely because of these higher fuel prices."
+       },
+       {
+        "end": 11337,
+        "paragraph": 44,
+        "start": 11209,
+        "text": "we haven’t seen a lot of evidence that these higher costs are spreading to other goods and services. But we’re watching closely."
+       }
+      ],
+      "paragraphs": [
+       43,
+       44
+      ]
+     },
+     "text": "Governor Macklem says CPI inflation has remained around 3% in recent months largely because of higher fuel prices, and the Bank has not seen a lot of evidence that these higher costs are spreading to other goods and services."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 16707,
+        "paragraph": 61,
+        "start": 16626,
+        "text": "Earlier this month, Governing Council decided to leave the policy rate unchanged."
+       },
+       {
+        "end": 17499,
+        "paragraph": 62,
+        "start": 17424,
+        "text": "As these risks evolve, we are prepared to adjust monetary policy as needed."
+       }
+      ],
+      "paragraphs": [
+       61,
+       62
+      ]
+     },
+     "text": "Governor Macklem says Governing Council left the policy rate unchanged earlier this month and is prepared to adjust monetary policy as needed as risks evolve."
+    }
+   ],
+   "title": "Navigating uncertainty and adapting to change",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/09/navigating-uncertainty-and-adapting-to-change/",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 11502,
+    "output_tokens": 2061,
+    "reasoning_tokens": 634
    }
   },
   {
@@ -1106,6 +1567,486 @@
     "input_tokens": 18426,
     "output_tokens": 1874,
     "reasoning_tokens": 255
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     15,
+     16,
+     19,
+     21,
+     51,
+     62,
+     66
+    ],
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:85f2aef43dea",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "4dedc60c89bcf2eb02d995bfc15b30d6bcf37d2c86d58fdd22d9f4c1466e0e5c",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2156,
+     "point": 1,
+     "source_text": "10%",
+     "start": 2153,
+     "text": "10%"
+    },
+    {
+     "end": 148,
+     "point": 1,
+     "source_text": "2026",
+     "start": 144,
+     "text": "2026"
+    },
+    {
+     "end": 2460,
+     "point": 1,
+     "source_text": "50%",
+     "start": 2457,
+     "text": "50%"
+    },
+    {
+     "end": 3219,
+     "point": 2,
+     "source_text": "25",
+     "start": 3217,
+     "text": "25"
+    },
+    {
+     "end": 2463,
+     "point": 3,
+     "source_text": "4",
+     "start": 2462,
+     "text": "4%"
+    },
+    {
+     "end": 11598,
+     "point": 5,
+     "source_text": "600",
+     "start": 11595,
+     "text": "600"
+    },
+    {
+     "end": 12343,
+     "point": 6,
+     "source_text": "1.4",
+     "start": 12340,
+     "text": "1.4"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-14",
+   "quotes": [
+    {
+     "end": 3610,
+     "paragraph": 21,
+     "start": 3445,
+     "text": "ECB estimates suggest that, if adopted quickly, AI could lift the level of productivity by up to 4% over a decade, which would be transformative for public finances."
+    },
+    {
+     "end": 8176,
+     "paragraph": 45,
+     "start": 8083,
+     "text": "Either it holds back on adopting, because it cannot protect its data, and forgoes the growth."
+    },
+    {
+     "end": 9263,
+     "paragraph": 51,
+     "start": 9191,
+     "text": "None of this is a reason to delay building on this side of the Atlantic."
+    },
+    {
+     "end": 12688,
+     "paragraph": 67,
+     "start": 12628,
+     "text": "But Europe must first be able to deploy its savings at home."
+    },
+    {
+     "end": 13280,
+     "paragraph": 72,
+     "start": 13251,
+     "text": "I believe AI is that project."
+    }
+   ],
+   "source": {
+    "chars": 13593,
+    "chars_sent": 13594,
+    "method": "html-selector",
+    "paragraphs_sent": 74,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2190,
+        "paragraph": 15,
+        "start": 2118,
+        "text": "Euro area firms will devote around 10% of total investment to AI in 2026"
+       },
+       {
+        "end": 2460,
+        "paragraph": 16,
+        "start": 2365,
+        "text": "The share of euro area workers using AI on the job has doubled in two years and now exceeds 50%"
+       }
+      ],
+      "paragraphs": [
+       15,
+       16
+      ]
+     },
+     "text": "President Lagarde says euro area firms will devote around 10% of total investment to AI in 2026, and the share of workers using AI on the job now exceeds 50%."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 3298,
+        "paragraph": 19,
+        "start": 3132,
+        "text": "With a workforce that will shrink by more than a million people a year over the next 25 years, there is no way to pay for all this without faster productivity growth."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "President Lagarde says a workforce that will shrink by more than a million people a year over the next 25 years requires faster productivity growth."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3558,
+        "paragraph": 21,
+        "start": 3445,
+        "text": "ECB estimates suggest that, if adopted quickly, AI could lift the level of productivity by up to 4% over a decade"
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "President Lagarde says ECB estimates suggest that, if adopted quickly, AI could lift the level of productivity by up to 4% over a decade."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9426,
+        "paragraph": 51,
+        "start": 9264,
+        "text": "Europe already has too little data centre capacity to meet its own demand, and on current trends, that gap is projected to grow more than sixfold within a decade."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "President Lagarde says Europe already has too little data centre capacity to meet its own demand, and the gap is projected to grow more than sixfold within a decade."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11623,
+        "paragraph": 62,
+        "start": 11508,
+        "text": "The cost of closing Europe’s data centre gap over the next decade could be as high as €600 billion, chips included."
+       }
+      ],
+      "paragraphs": [
+       62
+      ]
+     },
+     "text": "President Lagarde says the cost of closing Europe’s data centre gap over the next decade could be as high as €600 billion, chips included."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12360,
+        "paragraph": 66,
+        "start": 12274,
+        "text": "In each case the money is there: European households save around €1.4 trillion a year."
+       },
+       {
+        "end": 12429,
+        "paragraph": 66,
+        "start": 12365,
+        "text": "What is missing are the markets that channel it to our own uses."
+       }
+      ],
+      "paragraphs": [
+       66
+      ]
+     },
+     "text": "President Lagarde says European households save around €1.4 trillion a year, and what is missing are the markets that channel it to our own uses."
+    }
+   ],
+   "title": "Christine Lagarde: A new age of capital: growth, sovereignty and AI",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260914_2~a3f0efbee4.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10005,
+    "output_tokens": 1271,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     9,
+     15,
+     16,
+     20,
+     22,
+     41,
+     43
+    ],
+    "paragraphs_sent": 76,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:c721ebbe3a39",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "3754c8b9729e0e2517ed901fa1c369109bda28a424b2fdef7cb03fd52347628a",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1037,
+     "point": 1,
+     "source_text": "10%",
+     "start": 1034,
+     "text": "10%"
+    },
+    {
+     "end": 5636,
+     "point": 3,
+     "source_text": "1.2",
+     "start": 5633,
+     "text": "1.2"
+    },
+    {
+     "end": 5741,
+     "point": 3,
+     "source_text": "2030",
+     "start": 5737,
+     "text": "2030"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-08",
+   "quotes": [
+    {
+     "end": 943,
+     "paragraph": 3,
+     "start": 752,
+     "text": "European banks are indeed in a strong position: not only do they now have more capital, more liquidity and better risk management frameworks, their profitability has also improved remarkably."
+    },
+    {
+     "end": 3256,
+     "paragraph": 9,
+     "start": 3136,
+     "text": "the main constraint to the long-term competitiveness of European banks is persisting fragmentation along national lines."
+    },
+    {
+     "end": 8218,
+     "paragraph": 20,
+     "start": 8132,
+     "text": "We do not see any evidence that current capital requirements have constrained lending."
+    },
+    {
+     "end": 16989,
+     "paragraph": 41,
+     "start": 16930,
+     "text": "Crucially, simplification is not about lowering resilience."
+    },
+    {
+     "end": 6517,
+     "paragraph": 16,
+     "start": 6279,
+     "text": "To break the current deadlock, we need synchronised progress on the core elements of the banking union – most importantly, concrete steps towards establishing a European deposit insurance scheme, with a clear timetable for implementation."
+    }
+   ],
+   "source": {
+    "chars": 30789,
+    "chars_sent": 30790,
+    "method": "html-selector",
+    "paragraphs_sent": 76,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 943,
+        "paragraph": 3,
+        "start": 752,
+        "text": "European banks are indeed in a strong position: not only do they now have more capital, more liquidity and better risk management frameworks, their profitability has also improved remarkably."
+       },
+       {
+        "end": 1150,
+        "paragraph": 3,
+        "start": 957,
+        "text": "banks’ return on equity has recovered significantly and stabilised at around 10%, reaching some of the highest levels observed since the establishment of the Single Supervisory Mechanism (SSM)."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Frank Elderson says European banks have more capital, more liquidity and better risk management frameworks, while return on equity has stabilised at around 10%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3256,
+        "paragraph": 9,
+        "start": 3045,
+        "text": "the ECB – alongside many other stakeholders in the debate – has reached a clear diagnosis: the main constraint to the long-term competitiveness of European banks is persisting fragmentation along national lines."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Frank Elderson says the ECB’s diagnosis is that persisting fragmentation along national lines is the main constraint to European banks’ long-term competitiveness."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 5691,
+        "paragraph": 15,
+        "start": 5562,
+        "text": "consider that based on an analysis by the ECB, the EU requires around €1.2 trillion to meet its green, digital and defence goals."
+       },
+       {
+        "end": 5742,
+        "paragraph": 15,
+        "start": 5692,
+        "text": "Not just in total, ‒ every single year until 2030."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Frank Elderson says an ECB analysis finds that the EU requires around €1.2 trillion every single year until 2030 to meet its green, digital and defence goals."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6278,
+        "paragraph": 16,
+        "start": 6196,
+        "text": "with capital and liquidity able to flow freely within cross‑border banking groups."
+       },
+       {
+        "end": 6517,
+        "paragraph": 16,
+        "start": 6279,
+        "text": "To break the current deadlock, we need synchronised progress on the core elements of the banking union – most importantly, concrete steps towards establishing a European deposit insurance scheme, with a clear timetable for implementation."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Frank Elderson says banking needs capital and liquidity to flow freely within cross-border groups and concrete steps towards a European deposit insurance scheme with a clear timetable."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8218,
+        "paragraph": 20,
+        "start": 8132,
+        "text": "We do not see any evidence that current capital requirements have constrained lending."
+       },
+       {
+        "end": 9170,
+        "paragraph": 22,
+        "start": 8965,
+        "text": "Lowering prudential requirements would not therefore automatically deliver gains in competitiveness or unlock lending volumes as some expect and could also be used by banks to increase shareholder payouts."
+       }
+      ],
+      "paragraphs": [
+       20,
+       22
+      ]
+     },
+     "text": "Frank Elderson says he sees no evidence that current capital requirements have constrained lending, and that lowering prudential requirements would not automatically unlock lending volumes."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17092,
+        "paragraph": 41,
+        "start": 16930,
+        "text": "Crucially, simplification is not about lowering resilience. It is about achieving the same prudential outcomes with a framework that is easier and more efficient."
+       },
+       {
+        "end": 17835,
+        "paragraph": 43,
+        "start": 17747,
+        "text": "Simplification is also not a mechanism for raising – or lowering – capital requirements."
+       }
+      ],
+      "paragraphs": [
+       41,
+       43
+      ]
+     },
+     "text": "Frank Elderson says simplification is not about lowering resilience or capital requirements, but about achieving the same prudential outcomes with a clearer and more efficient framework."
+    }
+   ],
+   "title": "Frank Elderson: Fireside chat",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260908~3652aa828f.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7210,
+    "output_tokens": 2130,
+    "reasoning_tokens": 1356
    }
   },
   {
@@ -2336,6 +3277,269 @@
     "input_tokens": 4810,
     "output_tokens": 2142,
     "reasoning_tokens": 686
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     10,
+     23,
+     25,
+     44,
+     59,
+     66,
+     68
+    ],
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:speech:014bd82c6e73",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "4b7639fdd4be19330435c049353f5408fc116a1bf3838c29f948b8763501c487",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 5980,
+     "point": 2,
+     "source_text": "3",
+     "start": 5979,
+     "text": "3 percent"
+    },
+    {
+     "end": 1392,
+     "point": 3,
+     "source_text": "1",
+     "start": 1391,
+     "text": "1"
+    },
+    {
+     "end": 3724,
+     "point": 3,
+     "source_text": "2",
+     "start": 3723,
+     "text": "2"
+    },
+    {
+     "end": 3724,
+     "point": 4,
+     "source_text": "2",
+     "start": 3723,
+     "text": "2 percent"
+    },
+    {
+     "end": 3724,
+     "point": 4,
+     "source_text": "2",
+     "start": 3723,
+     "text": "2 percent"
+    },
+    {
+     "end": 24638,
+     "point": 6,
+     "source_text": "2027",
+     "start": 24634,
+     "text": "2027"
+    },
+    {
+     "end": 3724,
+     "point": 6,
+     "source_text": "2",
+     "start": 3723,
+     "text": "2"
+    },
+    {
+     "end": 25071,
+     "point": 6,
+     "source_text": "24",
+     "start": 25069,
+     "text": "24"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-10",
+   "quotes": [
+    {
+     "end": 16149,
+     "paragraph": 44,
+     "start": 15998,
+     "text": "I therefore believe the negative real interest rate situation should be addressed as soon as possible, since Japan's economy is no longer in deflation."
+    },
+    {
+     "end": 22068,
+     "paragraph": 59,
+     "start": 21929,
+     "text": "That said, my impression is that, although the underlying inflation rate remains below 2 percent, it is very close to the 2 percent target."
+    },
+    {
+     "end": 23890,
+     "paragraph": 66,
+     "start": 23637,
+     "text": "Given that the underlying inflation rate is very close to 2 percent, as I explained earlier, and that financial conditions have been accommodative, the Bank will continue to raise the policy interest rate and adjust the degree of monetary accommodation."
+    },
+    {
+     "end": 25094,
+     "paragraph": 68,
+     "start": 24884,
+     "text": "The Bank's annual JGB purchases amounted to as much as 135 trillion yen at their peak four years ago but, from fiscal 2027, the level will be about 2 trillion yen per month, or roughly 24 trillion yen annually."
+    }
+   ],
+   "source": {
+    "chars": 26567,
+    "chars_sent": 26568,
+    "method": "html-selector",
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 991,
+        "paragraph": 10,
+        "start": 890,
+        "text": "The supply of crude oil and other materials has tightened due to the closure of the Strait of Hormuz."
+       },
+       {
+        "end": 1074,
+        "paragraph": 10,
+        "start": 992,
+        "text": "This could induce both a rise in inflation and a deceleration in economic activity"
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Member Kazuyuki Masu says the Iran situation has tightened supplies of crude oil and other materials and could induce a rise in inflation and a deceleration in economic activity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6133,
+        "paragraph": 23,
+        "start": 6082,
+        "text": "Recent data show a growth rate of around 3 percent."
+       },
+       {
+        "end": 7438,
+        "paragraph": 25,
+        "start": 7355,
+        "text": "the year-on-year rate of change in real wages has finally turned positive in Japan."
+       }
+      ],
+      "paragraphs": [
+       23,
+       25
+      ]
+     },
+     "text": "Member Kazuyuki Masu says recent data show wage growth of around 3 percent, and the year-on-year rate of change in real wages has finally turned positive in Japan."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15685,
+        "paragraph": 44,
+        "start": 15618,
+        "text": "the 1-year to around 2-year real interest rates are still negative."
+       },
+       {
+        "end": 16099,
+        "paragraph": 44,
+        "start": 15998,
+        "text": "I therefore believe the negative real interest rate situation should be addressed as soon as possible"
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "Member Kazuyuki Masu says 1-year to around 2-year real interest rates are still negative and believes the negative real interest rate situation should be addressed as soon as possible."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22068,
+        "paragraph": 59,
+        "start": 21963,
+        "text": "although the underlying inflation rate remains below 2 percent, it is very close to the 2 percent target."
+       }
+      ],
+      "paragraphs": [
+       59
+      ]
+     },
+     "text": "Member Kazuyuki Masu says his impression is that underlying inflation remains below 2 percent but is very close to the 2 percent target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23890,
+        "paragraph": 66,
+        "start": 23785,
+        "text": "the Bank will continue to raise the policy interest rate and adjust the degree of monetary accommodation."
+       },
+       {
+        "end": 23941,
+        "paragraph": 66,
+        "start": 23891,
+        "text": "It will consider the timing and pace of adjustment"
+       }
+      ],
+      "paragraphs": [
+       66
+      ]
+     },
+     "text": "Member Kazuyuki Masu says the Bank will continue to raise the policy interest rate and adjust monetary accommodation while considering the timing and pace of adjustment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 24639,
+        "paragraph": 68,
+        "start": 24546,
+        "text": "the Bank will keep its amount of JGB purchases constant for the time being, from fiscal 2027."
+       },
+       {
+        "end": 25094,
+        "paragraph": 68,
+        "start": 24990,
+        "text": "from fiscal 2027, the level will be about 2 trillion yen per month, or roughly 24 trillion yen annually."
+       }
+      ],
+      "paragraphs": [
+       68
+      ]
+     },
+     "text": "Member Kazuyuki Masu says the Bank will keep its JGB purchase amount constant from fiscal 2027, at about 2 trillion yen per month or roughly 24 trillion yen annually."
+    }
+   ],
+   "title": "\"Economic Activity, Prices, and Monetary Policy in Japan\" (Speech at a Meeting with Local Leaders in Fukui)",
+   "type": "speech",
+   "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko260910a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 14428,
+    "output_tokens": 1589,
+    "reasoning_tokens": 162
    }
   },
   {

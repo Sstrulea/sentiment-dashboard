@@ -1,0 +1,254 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     3,
+     8,
+     13,
+     17,
+     23,
+     29,
+     30,
+     35,
+     36
+    ],
+    "paragraphs_sent": 36,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:deliberations:2025-09-25",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'expecting' of summary point 3 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee expecting ...' (never in your own voice)"
+     ],
+     "text": "The company talks showed that companies were expecting solid growth in the third quarter, but newly announced US tariffs overshadowed positive tendencies and the business outlook deteriorated."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "7f959ed1490e4c74d4ab432d7183bc8d3319e50ed9f289399f86ee6bdbef24c9",
+   "meeting_date": "2025-09-25",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 61,
+     "point": 1,
+     "source_text": "2025",
+     "start": 57,
+     "text": "2025"
+    },
+    {
+     "end": 61,
+     "point": 2,
+     "source_text": "2025",
+     "start": 57,
+     "text": "2025"
+    },
+    {
+     "end": 162,
+     "point": 5,
+     "source_text": "0%",
+     "start": 160,
+     "text": "0%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2025-10-23",
+   "quotes": [
+    {
+     "end": 2018,
+     "paragraph": 8,
+     "start": 1913,
+     "text": "Overall, the financial market situation was characterised by low volatility in the third quarter of 2025."
+    },
+    {
+     "end": 7264,
+     "paragraph": 23,
+     "start": 7119,
+     "text": "However, these positive tendencies were being overshadowed by the newly announced US tariffs. Correspondingly, the business outlook deteriorated."
+    },
+    {
+     "end": 9752,
+     "paragraph": 30,
+     "start": 9664,
+     "text": "The economic outlook deteriorated with the significant increase in US tariffs in August."
+    },
+    {
+     "end": 13044,
+     "paragraph": 35,
+     "start": 12924,
+     "text": "From the facts presented, the Governing Board concluded that monetary policy is currently having an expansionary effect."
+    },
+    {
+     "end": 13725,
+     "paragraph": 36,
+     "start": 13642,
+     "text": "The Governing Board therefore decided to leave the SNB policy rate unchanged at 0%."
+    }
+   ],
+   "source": {
+    "chars": 14259,
+    "chars_sent": 14260,
+    "method": "html-selector",
+    "paragraphs_sent": 36,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 2018,
+        "paragraph": 8,
+        "start": 1913,
+        "text": "Overall, the financial market situation was characterised by low volatility in the third quarter of 2025."
+       },
+       {
+        "end": 4235,
+        "paragraph": 13,
+        "start": 4063,
+        "text": "The discussion that followed led to the assessment that, taking all available indicators into account, monetary policy is currently continuing to have a stimulative effect."
+       }
+      ],
+      "paragraphs": [
+       8,
+       13
+      ]
+     },
+     "text": "Financial markets were characterised by low volatility in the third quarter of 2025, and the assessment found that monetary policy was continuing to have a stimulative effect."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4564,
+        "paragraph": 17,
+        "start": 4499,
+        "text": "Global economic growth slowed somewhat in the first half of 2025."
+       },
+       {
+        "end": 4635,
+        "paragraph": 17,
+        "start": 4565,
+        "text": "In the US, in particular, developments were less dynamic than in 2024."
+       },
+       {
+        "end": 4732,
+        "paragraph": 17,
+        "start": 4636,
+        "text": "In the euro area, economic momentum remained subdued. China, by contrast, recorded solid growth."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Global economic growth slowed somewhat in the first half of 2025, with less dynamic developments in the US, subdued momentum in the euro area and solid growth in China."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9407,
+        "paragraph": 29,
+        "start": 9345,
+        "text": "Economic growth in Switzerland was weak in the second quarter."
+       },
+       {
+        "end": 9663,
+        "paragraph": 29,
+        "start": 9615,
+        "text": "Unemployment had risen further in recent months."
+       },
+       {
+        "end": 9752,
+        "paragraph": 30,
+        "start": 9664,
+        "text": "The economic outlook deteriorated with the significant increase in US tariffs in August."
+       }
+      ],
+      "paragraphs": [
+       29,
+       30
+      ]
+     },
+     "text": "Economic growth in Switzerland was weak in the second quarter, unemployment had risen further, and the economic outlook deteriorated with the significant increase in US tariffs in August."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13044,
+        "paragraph": 35,
+        "start": 12924,
+        "text": "From the facts presented, the Governing Board concluded that monetary policy is currently having an expansionary effect."
+       },
+       {
+        "end": 13542,
+        "paragraph": 36,
+        "start": 13428,
+        "text": "Against this backdrop, the Governing Board concluded that a further easing of monetary policy was not appropriate."
+       }
+      ],
+      "paragraphs": [
+       35,
+       36
+      ]
+     },
+     "text": "The Governing Board concluded that monetary policy was having an expansionary effect and that further easing was not appropriate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 163,
+        "paragraph": 1,
+        "start": 63,
+        "text": "the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+       },
+       {
+        "end": 726,
+        "paragraph": 3,
+        "start": 544,
+        "text": "The decision was taken by Martin Schlegel (Chairman of the Governing Board), Antoine Martin (Vice Chairman of the Governing Board) and Petra Tschudin (Member of the Governing Board)."
+       },
+       {
+        "end": 13725,
+        "paragraph": 36,
+        "start": 13642,
+        "text": "The Governing Board therefore decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1,
+       3,
+       36
+      ]
+     },
+     "text": "The Governing Board decided to leave the SNB policy rate unchanged at 0%, and the decision was taken by Martin Schlegel, Antoine Martin and Petra Tschudin."
+    }
+   ],
+   "title": "Swiss National Bank deliberations of the 25 September 2025 meeting",
+   "type": "deliberations",
+   "url": "https://www.snb.ch/en/publications/communication/summaries/zus_20251023",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 9094,
+    "output_tokens": 2040,
+    "reasoning_tokens": 516
+   }
+  }
+ ],
+ "version": 1
+}

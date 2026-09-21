@@ -580,6 +580,365 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     10,
+     12,
+     16,
+     26,
+     31
+    ],
+    "paragraphs_sent": 35,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:deliberations:2026-04-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "c8e4b4f2cbdd31aa05afc97724f0ed27e757230b7eca786fb14226be584797cf",
+   "meeting_date": "2026-04-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3313,
+     "point": 2,
+     "source_text": "2025",
+     "start": 3309,
+     "text": "2025"
+    },
+    {
+     "end": 132,
+     "point": 2,
+     "source_text": "2026",
+     "start": 128,
+     "text": "2026"
+    },
+    {
+     "end": 5516,
+     "point": 3,
+     "source_text": "2.4%",
+     "start": 5512,
+     "text": "2.4%"
+    },
+    {
+     "end": 11794,
+     "point": 5,
+     "source_text": "2.25%",
+     "start": 11789,
+     "text": "2.25%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-05-13",
+   "quotes": [
+    {
+     "end": 2913,
+     "paragraph": 10,
+     "start": 2712,
+     "text": "Members noted that financial vulnerabilities—including private credit market stress and the disruptive impacts of AI on software companies—had not materially affected financial conditions more broadly."
+    },
+    {
+     "end": 5557,
+     "paragraph": 16,
+     "start": 5448,
+     "text": "However, in March, consumer price index (CPI) inflation rose to 2.4% because of the spike in gasoline prices."
+    },
+    {
+     "end": 9613,
+     "paragraph": 26,
+     "start": 9392,
+     "text": "Given this starting point, and with the policy interest rate on the stimulative end of the range for the neutral rate of interest, members agreed they could look through the initial inflation shock from higher oil prices."
+    },
+    {
+     "end": 11795,
+     "paragraph": 31,
+     "start": 11657,
+     "text": "They agreed that the current degree of policy support was appropriate and therefore decided to maintain the policy interest rate at 2.25%."
+    }
+   ],
+   "source": {
+    "chars": 13445,
+    "chars_sent": 13446,
+    "method": "html-selector",
+    "paragraphs_sent": 35,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2913,
+        "paragraph": 10,
+        "start": 2712,
+        "text": "Members noted that financial vulnerabilities—including private credit market stress and the disruptive impacts of AI on software companies—had not materially affected financial conditions more broadly."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Members noted that financial vulnerabilities had not materially affected financial conditions more broadly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3430,
+        "paragraph": 12,
+        "start": 3266,
+        "text": "After contracting in the fourth quarter of 2025 owing to a very large drawdown in inventories, members expected growth to have resumed in the first quarter of 2026."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "After contracting in the fourth quarter of 2025, members expected growth to have resumed in the first quarter of 2026."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5557,
+        "paragraph": 16,
+        "start": 5448,
+        "text": "However, in March, consumer price index (CPI) inflation rose to 2.4% because of the spike in gasoline prices."
+       },
+       {
+        "end": 5708,
+        "paragraph": 16,
+        "start": 5609,
+        "text": "CPI-trim and CPI-median had been easing and pointed to downward momentum in inflationary pressures."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "CPI inflation rose to 2.4% in March because of the spike in gasoline prices, while CPI-trim and CPI-median had been easing."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 9613,
+        "paragraph": 26,
+        "start": 9392,
+        "text": "Given this starting point, and with the policy interest rate on the stimulative end of the range for the neutral rate of interest, members agreed they could look through the initial inflation shock from higher oil prices."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Members agreed they could look through the initial inflation shock from higher oil prices, given the starting point and the policy interest rate's position."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 11795,
+        "paragraph": 31,
+        "start": 11657,
+        "text": "They agreed that the current degree of policy support was appropriate and therefore decided to maintain the policy interest rate at 2.25%."
+       }
+      ],
+      "paragraphs": [
+       31
+      ]
+     },
+     "text": "Governing Council decided to maintain the policy interest rate at 2.25%, judging the current degree of policy support appropriate."
+    }
+   ],
+   "title": "Summary of Governing Council deliberations: Fixed announcement date of April&nbsp;29, 2026",
+   "type": "deliberations",
+   "url": "https://www.bankofcanada.ca/2026/05/summary-of-governing-council-deliberations-fixed-announcement-date-of-april-29-2026/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4046,
+    "output_tokens": 1086,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     7,
+     9,
+     10,
+     11
+    ],
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:summary_of_opinions:2026-04-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "a40574c7dfe187fb484aa9e176346af9580228be01fcb0e070741375d48b7b31",
+   "meeting_date": "2026-04-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-05-11",
+   "quotes": [
+    {
+     "end": 415,
+     "paragraph": 4,
+     "start": 264,
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part , partly due to the impact of the situation in the Middle East ."
+    },
+    {
+     "end": 3170,
+     "paragraph": 7,
+     "start": 2993,
+     "text": "Underlying CPI inflation is likely to increase gradually, as the mechanism in which wages and prices rise moderately in interaction with each other is expected to be maintained."
+    },
+    {
+     "end": 6876,
+     "paragraph": 9,
+     "start": 6536,
+     "text": "Given that underlying CPI inflation has been approaching 2 percent and real interest rates are at significantly low levels, it is appropriate that the Bank continue to raise the policy interest rate and adjust the degree of monetary accommodation, in response to developments in economic activity and prices as well as financial conditions."
+    },
+    {
+     "end": 7430,
+     "paragraph": 10,
+     "start": 7287,
+     "text": "It is difficult to foresee the impact of the situation in the Middle East, and the Bank needs to adopt a wait-and-see approach at this meeting."
+    },
+    {
+     "end": 10830,
+     "paragraph": 11,
+     "start": 10642,
+     "text": "The policy interest rate is still some way from the neutral interest rate, and it will be necessary for the Bank to continue to raise the policy interest rate at intervals of a few months."
+    }
+   ],
+   "source": {
+    "chars": 13277,
+    "chars_sent": 13278,
+    "method": "pypdf",
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 415,
+        "paragraph": 4,
+        "start": 264,
+        "text": "Japan's economy has recovered moderately, although some weakness has been seen in part , partly due to the impact of the situation in the Middle East ."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3170,
+        "paragraph": 7,
+        "start": 2993,
+        "text": "Underlying CPI inflation is likely to increase gradually, as the mechanism in which wages and prices rise moderately in interaction with each other is expected to be maintained."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The summary states that underlying CPI inflation is likely to increase gradually as the mechanism of wages and prices rising moderately is expected to be maintained."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6782,
+        "paragraph": 9,
+        "start": 6536,
+        "text": "Given that underlying CPI inflation has been approaching 2 percent and real interest rates are at significantly low levels, it is appropriate that the Bank continue to raise the policy interest rate and adjust the degree of monetary accommodation"
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Opinions described real interest rates as significantly low and said it was appropriate for the Bank to continue raising the policy interest rate and adjust monetary accommodation."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 7430,
+        "paragraph": 10,
+        "start": 7287,
+        "text": "It is difficult to foresee the impact of the situation in the Middle East, and the Bank needs to adopt a wait-and-see approach at this meeting."
+       },
+       {
+        "end": 7595,
+        "paragraph": 10,
+        "start": 7522,
+        "text": "the Bank should maintain the current policy interest rate at this meeting"
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "The summary also includes views that the Bank should maintain the current policy interest rate at this meeting and adopt a wait-and-see approach."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 10830,
+        "paragraph": 11,
+        "start": 10642,
+        "text": "The policy interest rate is still some way from the neutral interest rate, and it will be necessary for the Bank to continue to raise the policy interest rate at intervals of a few months."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Opinions said the policy interest rate was still some way from the neutral interest rate and that the Bank would need to continue raising it at intervals of a few months."
+    }
+   ],
+   "title": "Bank of Japan summary of opinions of the 28 April 2026 meeting",
+   "type": "summary_of_opinions",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260428.pdf",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4061,
+    "output_tokens": 2139,
+    "reasoning_tokens": 1490
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      17,
      40,
      42,

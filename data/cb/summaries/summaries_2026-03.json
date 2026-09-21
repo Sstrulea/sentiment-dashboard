@@ -4,6 +4,209 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     10,
+     14,
+     42,
+     55,
+     57,
+     61
+    ],
+    "paragraphs_sent": 66,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:minutes:2026-03-17",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-21T18:28:22Z",
+   "input_sha256": "fc7831cbe3377885591c1074e8b1cd2930f928f699614386811c7d89b4e410bb",
+   "meeting_date": "2026-03-17",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 33031,
+     "point": 5,
+     "source_text": "4.10 per cent",
+     "start": 33018,
+     "text": "4.10 per cent"
+    },
+    {
+     "end": 33138,
+     "point": 5,
+     "source_text": "3.85 per cent",
+     "start": 33125,
+     "text": "3.85 per cent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-03-31",
+   "quotes": [
+    {
+     "end": 1174,
+     "paragraph": 10,
+     "start": 1013,
+     "text": "Global prices for oil and other forms of energy had risen sharply, short-term inflation expectations had picked up and financial market volatility had increased."
+    },
+    {
+     "end": 4139,
+     "paragraph": 14,
+     "start": 4009,
+     "text": "Accordingly, the extent to which overall financial conditions were restrictive at that time remained a matter of some uncertainty."
+    },
+    {
+     "end": 20696,
+     "paragraph": 42,
+     "start": 20489,
+     "text": "Members noted that inflation remained too high, the economy was operating with excess demand and the staff’s assessment was that the extent of excess demand had increased slightly since the previous meeting."
+    },
+    {
+     "end": 33139,
+     "paragraph": 61,
+     "start": 32961,
+     "text": "The Board resolved by majority to raise the cash rate to 4.10 per cent. Five members voted in favour; four members voted to leave the cash rate target unchanged at 3.85 per cent."
+    }
+   ],
+   "source": {
+    "chars": 33423,
+    "chars_sent": 33424,
+    "method": "html-selector",
+    "paragraphs_sent": 66,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.944,
+      "fragments": [
+       {
+        "end": 1174,
+        "paragraph": 10,
+        "start": 1013,
+        "text": "Global prices for oil and other forms of energy had risen sharply, short-term inflation expectations had picked up and financial market volatility had increased."
+       },
+       {
+        "end": 1687,
+        "paragraph": 10,
+        "start": 1569,
+        "text": "Members noted that, despite the pronounced volatility, financial markets had so far continued to function effectively."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Members said the Middle East conflict had raised global energy prices, short-term inflation expectations and financial market volatility, while financial markets had continued to function effectively."
+    },
+    {
+     "evidence": {
+      "coverage": 0.857,
+      "fragments": [
+       {
+        "end": 3863,
+        "paragraph": 14,
+        "start": 3730,
+        "text": "While financial conditions had tightened in prior months, and particularly since the start of the current conflict in the Middle East"
+       },
+       {
+        "end": 4139,
+        "paragraph": 14,
+        "start": 4009,
+        "text": "Accordingly, the extent to which overall financial conditions were restrictive at that time remained a matter of some uncertainty."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Members said financial conditions had tightened, but the extent to which they were restrictive remained uncertain."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 20696,
+        "paragraph": 42,
+        "start": 20489,
+        "text": "Members noted that inflation remained too high, the economy was operating with excess demand and the staff’s assessment was that the extent of excess demand had increased slightly since the previous meeting."
+       },
+       {
+        "end": 20824,
+        "paragraph": 42,
+        "start": 20697,
+        "text": "Labour market conditions were assessed to have tightened a little further relative to the level consistent with full employment"
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "Members noted that inflation remained too high, excess demand had increased slightly and labour market conditions had tightened a little further relative to full employment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 29028,
+        "paragraph": 55,
+        "start": 28876,
+        "text": "Having considered these arguments, a majority of members judged that the case to raise the cash rate target at the current meeting was the stronger one."
+       },
+       {
+        "end": 30956,
+        "paragraph": 57,
+        "start": 30834,
+        "text": "A minority of members judged that the case to leave monetary policy unchanged at the current meeting was the stronger one."
+       }
+      ],
+      "paragraphs": [
+       55,
+       57
+      ]
+     },
+     "text": "A majority judged the case to raise the cash rate target at the current meeting was stronger, while a minority judged the case to leave monetary policy unchanged was stronger."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 33032,
+        "paragraph": 61,
+        "start": 32961,
+        "text": "The Board resolved by majority to raise the cash rate to 4.10 per cent."
+       },
+       {
+        "end": 33139,
+        "paragraph": 61,
+        "start": 33033,
+        "text": "Five members voted in favour; four members voted to leave the cash rate target unchanged at 3.85 per cent."
+       }
+      ],
+      "paragraphs": [
+       61
+      ]
+     },
+     "text": "The Board resolved by majority to raise the cash rate to 4.10 per cent; five members voted in favour and four voted to leave the target unchanged at 3.85 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia minutes of the 17 March 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-03-17.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7480,
+    "output_tokens": 1170,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1,
      2,
      7,
