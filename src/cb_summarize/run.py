@@ -48,6 +48,9 @@ class SummariesReport:
     pending: int = 0                                       # documents still without a summary when the run ended
     reasoning_tokens: int = 0                              # part of output_tokens (billed as output)
     usage_estimated: int = 0                               # calls whose response carried no usage: the tokens were estimated from the text
+    first_pass: int = 0                                    # documents whose first output passed the check
+    retried: list = field(default_factory=list)            # (doc_id, [errors of the first attempt]) - passed only after the one retry
+    rejected: list = field(default_factory=list)           # (doc_id, the last output the check refused) - for the log: why a document failed
     notes: list = field(default_factory=list)
 
 
@@ -127,9 +130,10 @@ def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> t
     return chars_in // cfg.chars_per_token, len(output) // cfg.chars_per_token
 
 
-def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source, speakers: tuple = ()) -> tuple:
+def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source, speakers: tuple = (), trace: Optional[list] = None) -> tuple:
     """One document: (Verified, usage, errors_of_the_last_attempt). At most two model calls: the second only with the errors of the first as feedback. A refusal,
-    an output cut at the token limit and invalid JSON are all failed attempts (the same one retry); a response without usage is estimated, and says so."""
+    an output cut at the token limit and invalid JSON are all failed attempts (the same one retry); a response without usage is estimated, and says so. `trace`, when
+    given, receives {"attempt", "errors", "output"} for every failed attempt (the log says why a document needed its retry or failed)."""
     user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs)
     messages = [{"role": "user", "content": user}]
     usage = {"input_tokens": 0, "output_tokens": 0, "attempts": 0, "reasoning_tokens": 0}
@@ -163,8 +167,10 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
             if res.ok:
                 return res, usage, []
             errors = res.errors
+        said = resp.text or resp.refusal or "(empty)"
+        if trace is not None:
+            trace.append({"attempt": attempt, "errors": list(errors), "output": said})
         if attempt == 1:
-            said = resp.text or resp.refusal or "(empty)"
             messages = [messages[0], {"role": "assistant", "content": said}, {"role": "user", "content": PR.feedback_message(errors)}]
     return None, usage, errors
 
@@ -232,7 +238,8 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
             break
         attempted += 1
         try:
-            ok, usage, errors = summarise(client, cfg, prompt, doc, src, speakers_of(doc, src.text, roster))
+            trace: list = []
+            ok, usage, errors = summarise(client, cfg, prompt, doc, src, speakers_of(doc, src.text, roster), trace=trace)
         except APIError as e:
             rep.stopped = f"the API stopped the run ({e.kind}): {e.message[:160]}"
             break
@@ -246,6 +253,7 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
                                                              "input_sha256": src.sha256, "errors": errors[:6],
                                                              "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
             rep.failed_validation.append((doc["doc_id"], errors))
+            rep.rejected.append((doc["doc_id"], trace[-1]["output"] if trace else ""))
             save()
             continue
         for k in [k for k in failures if k.startswith(doc["doc_id"] + "|")]:
@@ -253,6 +261,10 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
         chg = CH.from_redline(redlines[(doc["currency"], doc["meeting_date"])]) if doc["type"] == "statement" and (doc["currency"], doc["meeting_date"]) in redlines else None
         records[doc["doc_id"]] = _record(doc, prompt, src, ok, chg, usage, cfg, now)
         rep.new += 1
+        if trace:
+            rep.retried.append((doc["doc_id"], trace[0]["errors"]))
+        else:
+            rep.first_pass += 1
         save()
     rep.cost_usd = cfg.cost_usd(rep.input_tokens, rep.output_tokens)
     rep.pending = sum(1 for d in todo if not is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"]), cfg) and not failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256"), cfg)

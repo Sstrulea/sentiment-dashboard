@@ -633,12 +633,48 @@ def test_the_run_gives_each_document_the_speakers_of_its_own_bank_and_its_own_sp
     seen = {}
     real = R.summarise
 
-    def spy(client, cfg, prompt, doc, src, speakers=()):
+    def spy(client, cfg, prompt, doc, src, speakers=(), trace=None):
         seen[doc["doc_id"]] = speakers
-        return real(client, cfg, prompt, doc, src, speakers=speakers)
+        return real(client, cfg, prompt, doc, src, speakers=speakers, trace=trace)
     monkeypatch.setattr(R, "summarise", spy)
     go(paths, RecordedClient(responder=responder_generic), cfg=dataclasses.replace(CFG, max_documents=60, max_input_tokens=10**7), types={"speech"}, banks={"JPY"})
     assert seen and all("ueda" in sp and "masu" in sp for sp in seen.values())                                          # the roster of the bank
     docs = dst.load_documents(paths)
     takata = next(k for k in seen if docs[(k,)]["speaker"] == "Hajime Takata")
     assert "takata" in seen[takata] and not {"waller", "powell", "warsh"} & set(seen[takata])                          # no member of another bank
+
+
+# --- what the log says: first attempt, retry, failure and why ------------------------------------------------------------------------------------
+
+def test_a_first_attempt_that_passes_is_counted_and_has_nothing_to_explain(paths):
+    from src import cb_datasets as ds
+    rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
+    assert (rep.first_pass, rep.retried, rep.rejected) == (1, [], [])
+    line, md = ds.summaries_report(rep)
+    assert "  ATTEMPTS 1 passed at the first attempt, 0 after the retry, 0 failed twice" in line and "RETRIED" not in line and "REJECTED" not in line
+
+
+def test_a_retry_that_passes_says_what_the_first_attempt_got_wrong(paths):
+    from src import cb_datasets as ds
+    bad, expected = BAD["unsupported claim"]
+    rep = fed_only(paths, RecordedClient([bad, dumps(GOOD_FED)]))
+    assert rep.new == 1 and rep.first_pass == 0 and rep.rejected == [] and len(rep.retried) == 1
+    doc_id, errors = rep.retried[0]
+    assert doc_id == FED_KEY and expected in errors[0]
+    line, md = ds.summaries_report(rep)
+    assert "  ATTEMPTS 0 passed at the first attempt, 1 after the retry, 0 failed twice" in line
+    assert f"  RETRIED {FED_KEY}: the first attempt failed - summary point 3 is not supported by the paragraph(s) it cites [2]" in line and "REJECTED" not in line
+
+
+def test_a_failed_document_puts_the_refused_output_in_the_log(paths):
+    from src import cb_datasets as ds
+    bad, expected = BAD["unsupported claim"]
+    other = bad.replace("mortgage securities", "corporate debt")
+    rep = fed_only(paths, RecordedClient([bad, other]))
+    assert rep.new == 0 and rep.first_pass == 0 and rep.retried == [] and [d for d, _ in rep.failed_validation] == [FED_KEY]
+    assert rep.rejected == [(FED_KEY, other)]                                                                           # the LAST output the check refused
+    line, md = ds.summaries_report(rep)
+    assert "  ATTEMPTS 0 passed at the first attempt, 0 after the retry, 1 failed twice" in line
+    assert f"  REJECTED OUTPUT {FED_KEY}: " in line and "government bonds and corporate debt" in line
+    long = ds.summaries_report(dataclasses.replace(rep, rejected=[(FED_KEY, "word " * 2000)]))[0]
+    assert len(max(long.splitlines(), key=len)) < 3100                                                                  # one bounded line per document
