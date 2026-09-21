@@ -11,6 +11,20 @@
    "prompt_version": "transcript-v5",
    "provider": "openai"
   },
+  "EUR:speech:320dbc76f248|speech-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T16:00:29Z",
+   "doc_id": "EUR:speech:320dbc76f248",
+   "errors": [
+    "summary point 2 is not supported by the paragraph(s) it cites [1, 2]: 83% of its content words are there (85% needed); not found: 'list' - say only what those paragraphs say, or cite the paragraphs that say it",
+    "evidence fragment 2 of summary point 3 is not verbatim in the paragraph(s) it cites [1, 8] (that text is not in the document verbatim - copy it character for character, curly quotes included)",
+    "summary point 3 is not supported by the paragraph(s) it cites [1, 8]: 83% of its content words are there (85% needed); not found: 'list' - say only what those paragraphs say, or cite the paragraphs that say it",
+    "evidence fragment 2 of summary point 4 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+   ],
+   "input_sha256": "91175a55d506999bafc4f27caa5c18bea772c1b293e080909c68f26c8249aec0",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "speech-v5",
+   "provider": "openai"
+  },
   "USD:statement:2026-04-29|statement-v5|openai|gpt-5.6-terra": {
    "at": "2026-09-21T15:53:30Z",
    "doc_id": "USD:statement:2026-04-29",
