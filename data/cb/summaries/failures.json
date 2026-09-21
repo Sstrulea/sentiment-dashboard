@@ -1,4 +1,17 @@
 {
- "failures": {},
+ "failures": {
+  "USD:presser_transcript:2026-09-16|transcript-v5|openai|gpt-5.6-terra": {
+   "at": "2026-09-21T15:38:47Z",
+   "doc_id": "USD:presser_transcript:2026-09-16",
+   "errors": [
+    "summary point 4 attributes the statement to Smith, but paragraph 11 that it cites is the turn of CHAIRMAN WARSH: a statement rests only on the paragraphs of its own speaker's turns",
+    "summary point 5 attributes the statement to Escobedo, but paragraph 8 that it cites is the turn of CHAIRMAN WARSH: a statement rests only on the paragraphs of its own speaker's turns"
+   ],
+   "input_sha256": "35470df8f1a7a8c8610f6c1ff32de48475a780a6cb6bb79b134e1a75812def25",
+   "model": "gpt-5.6-terra",
+   "prompt_version": "transcript-v5",
+   "provider": "openai"
+  }
+ },
  "version": 1
 }
