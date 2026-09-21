@@ -1,23 +1,5 @@
 {
  "no_text": {
-  "AUD:presser_transcript:2026-03-17": {
-   "at": "2026-09-21T18:16:49Z",
-   "kind": "non_prose",
-   "reason": "50% of the lines are short: a deck of tables or slides, not prose",
-   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-03-17.html"
-  },
-  "AUD:presser_transcript:2026-05-05": {
-   "at": "2026-09-21T18:16:49Z",
-   "kind": "non_prose",
-   "reason": "52% of the lines are short: a deck of tables or slides, not prose",
-   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-05-05.html"
-  },
-  "AUD:presser_transcript:2026-06-16": {
-   "at": "2026-09-21T18:16:49Z",
-   "kind": "non_prose",
-   "reason": "52% of the lines are short: a deck of tables or slides, not prose",
-   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-06-16.html"
-  },
   "CAD:speech:6866cca1ce87": {
    "at": "2026-09-21T18:28:22Z",
    "kind": "no_text",
