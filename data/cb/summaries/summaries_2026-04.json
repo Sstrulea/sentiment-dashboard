@@ -15,7 +15,7 @@
    "currency": "USD",
    "doc_id": "USD:statement:2026-04-29",
    "format": "html",
-   "generated_at": "2026-09-21T13:50:33Z",
+   "generated_at": "2026-09-21T15:27:20Z",
    "input_sha256": "f69fea68d23e456dc7341a56c77cacc244301a143aea2a4b7a5f3f536c1ff899",
    "meeting_date": "2026-04-29",
    "model": "gpt-5.6-terra",
@@ -42,7 +42,7 @@
      "text": "1/4 percentage point"
     }
    ],
-   "prompt_version": "statement-v4",
+   "prompt_version": "statement-v5",
    "provider": "openai",
    "published": "2026-04-29",
    "quotes": [
@@ -82,80 +82,111 @@
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 702,
-      "fragment": "decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent",
-      "paragraph": 3,
+      "fragments": [
+       {
+        "end": 702,
+        "paragraph": 3,
+        "start": 599,
+        "text": "the Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent"
+       }
+      ],
       "paragraphs": [
        3
-      ],
-      "start": 613
+      ]
      },
      "text": "The Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 112,
-      "fragment": "economic activity has been expanding at a solid pace. Job gains have remained low",
-      "paragraph": 1,
+      "fragments": [
+       {
+        "end": 83,
+        "paragraph": 1,
+        "start": 31,
+        "text": "economic activity has been expanding at a solid pace"
+       },
+       {
+        "end": 124,
+        "paragraph": 1,
+        "start": 85,
+        "text": "Job gains have remained low, on average"
+       },
+       {
+        "end": 279,
+        "paragraph": 1,
+        "start": 194,
+        "text": "Inflation is elevated, in part reflecting the recent increase in global energy prices"
+       }
+      ],
       "paragraphs": [
        1
-      ],
-      "start": 31
+      ]
      },
-     "text": "The Committee stated that economic activity has been expanding at a solid pace, job gains have remained low, and inflation is elevated."
+     "text": "The Committee stated that economic activity has been expanding at a solid pace, job gains have remained low on average, and inflation is elevated in part reflecting recent global energy prices."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 470,
-      "fragment": "Developments in the Middle East are contributing to a high level of uncertainty",
-      "paragraph": 2,
+      "fragments": [
+       {
+        "end": 497,
+        "paragraph": 2,
+        "start": 391,
+        "text": "Developments in the Middle East are contributing to a high level of uncertainty about the economic outlook"
+       },
+       {
+        "end": 572,
+        "paragraph": 2,
+        "start": 499,
+        "text": "The Committee is attentive to the risks to both sides of its dual mandate"
+       }
+      ],
       "paragraphs": [
        2
-      ],
-      "start": 391
+      ]
      },
-     "text": "The Committee stated that developments in the Middle East are contributing to a high level of uncertainty about the economic outlook."
+     "text": "The Committee stated that developments in the Middle East are contributing to high uncertainty about the economic outlook and that it is attentive to risks to both sides of its dual mandate."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 912,
-      "fragment": "will carefully assess incoming data, the evolving outlook, and the balance of risks",
-      "paragraph": 3,
+      "fragments": [
+       {
+        "end": 912,
+        "paragraph": 3,
+        "start": 815,
+        "text": "the Committee will carefully assess incoming data, the evolving outlook, and the balance of risks"
+       }
+      ],
       "paragraphs": [
        3
-      ],
-      "start": 829
+      ]
      },
-     "text": "The Committee will carefully assess incoming data, the evolving outlook, and the balance of risks when considering additional target-range adjustments."
+     "text": "The Committee will carefully assess incoming data, the evolving outlook, and the balance of risks when considering additional adjustments to the target range."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 1931,
-      "fragment": "preferred to lower the target range for the federal funds rate by 1/4 percentage point",
-      "paragraph": 5,
+      "fragments": [
+       {
+        "end": 1947,
+        "paragraph": 5,
+        "start": 1823,
+        "text": "Stephen I. Miran, who preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting"
+       },
+       {
+        "end": 2122,
+        "paragraph": 5,
+        "start": 1953,
+        "text": "Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who supported maintaining the target range for the federal funds rate but did not support inclusion of an easing bias"
+       }
+      ],
       "paragraphs": [
        5
-      ],
-      "start": 1845
+      ]
      },
      "text": "Stephen I. Miran preferred to lower the target range by 1/4 percentage point, while Beth M. Hammack, Neel Kashkari, and Lorie K. Logan did not support inclusion of an easing bias."
-    },
-    {
-     "evidence": {
-      "coverage": 1.0,
-      "end": 1676,
-      "fragment": "Voting for the monetary policy action were Jerome H. Powell, Chair; John C. Williams, Vice Chair",
-      "paragraph": 5,
-      "paragraphs": [
-       5
-      ],
-      "start": 1580
-     },
-     "text": "Jerome H. Powell, John C. Williams, Michael S. Barr, Michelle W. Bowman, Lisa D. Cook, Philip N. Jefferson, Anna Paulson, and Christopher J. Waller voted for the action."
     }
    ],
    "title": "Federal Reserve monetary policy statement, 29 April 2026",
@@ -163,8 +194,8 @@
    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
    "usage": {
     "attempts": 1,
-    "input_tokens": 1406,
-    "output_tokens": 592,
+    "input_tokens": 1725,
+    "output_tokens": 632,
     "reasoning_tokens": 0
    }
   }

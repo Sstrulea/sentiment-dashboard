@@ -44,7 +44,7 @@
    "currency": "USD",
    "doc_id": "USD:statement:2026-07-29",
    "format": "html",
-   "generated_at": "2026-09-21T13:50:33Z",
+   "generated_at": "2026-09-21T15:27:20Z",
    "input_sha256": "4e562ad9f77c6ff2d347f69dafec3603e0e222941fae5876f00d6773742988d3",
    "meeting_date": "2026-07-29",
    "model": "gpt-5.6-terra",
@@ -92,7 +92,7 @@
      "text": "1/4 percentage point"
     }
    ],
-   "prompt_version": "statement-v4",
+   "prompt_version": "statement-v5",
    "provider": "openai",
    "published": "2026-07-29",
    "quotes": [
@@ -132,81 +132,123 @@
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 199,
-      "fragment": "decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent",
-      "paragraph": 2,
+      "fragments": [
+       {
+        "end": 199,
+        "paragraph": 2,
+        "start": 110,
+        "text": "decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent"
+       }
+      ],
       "paragraphs": [
        2
-      ],
-      "start": 110
+      ]
      },
      "text": "The Committee decided to maintain the target range for the federal funds rate at 3-1/2 to 3-3/4 percent."
     },
     {
      "evidence": {
       "coverage": 0.923,
-      "end": 454,
-      "fragment": "Economic activity is expanding at a solid pace despite elevated uncertainty that owes, in part, to the conflict",
-      "paragraph": 3,
+      "fragments": [
+       {
+        "end": 474,
+        "paragraph": 3,
+        "start": 343,
+        "text": "Economic activity is expanding at a solid pace despite elevated uncertainty that owes, in part, to the conflict in the Middle East."
+       }
+      ],
       "paragraphs": [
        3
-      ],
-      "start": 343
+      ]
      },
-     "text": "The Committee said economic activity is expanding at a solid pace despite elevated uncertainty related in part to the conflict in the Middle East."
+     "text": "The Committee stated that economic activity is expanding at a solid pace despite elevated uncertainty tied in part to the conflict in the Middle East."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 573,
-      "fragment": "Productivity growth and capital investment are strong. Job gains have kept pace with the workforce",
-      "paragraph": 3,
+      "fragments": [
+       {
+        "end": 529,
+        "paragraph": 3,
+        "start": 475,
+        "text": "Productivity growth and capital investment are strong."
+       },
+       {
+        "end": 620,
+        "paragraph": 3,
+        "start": 530,
+        "text": "Job gains have kept pace with the workforce, and the unemployment rate has changed little."
+       }
+      ],
       "paragraphs": [
        3
-      ],
-      "start": 475
+      ]
      },
-     "text": "The Committee said productivity growth and capital investment are strong, while job gains have kept pace with the workforce and unemployment has changed little."
+     "text": "The Committee reported strong productivity growth and capital investment, while job gains have kept pace with the workforce and the unemployment rate has changed little."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 724,
-      "fragment": "Inflation remains elevated relative to the Committee's 2 percent goal, in part reflecting supply shocks",
-      "paragraph": 4,
+      "fragments": [
+       {
+        "end": 690,
+        "paragraph": 4,
+        "start": 621,
+        "text": "Inflation remains elevated relative to the Committee's 2 percent goal"
+       },
+       {
+        "end": 795,
+        "paragraph": 4,
+        "start": 711,
+        "text": "supply shocks that have driven price increases in certain sectors, including energy."
+       }
+      ],
       "paragraphs": [
        4
-      ],
-      "start": 621
+      ]
      },
-     "text": "The Committee said inflation remains elevated relative to its 2 percent goal, partly reflecting supply shocks and price increases in sectors including energy."
+     "text": "The Committee stated that inflation remains elevated relative to its 2 percent goal, partly reflecting supply shocks that have driven price increases in certain sectors, including energy."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 342,
-      "fragment": "The Committee is continuing its policy of maintaining ample reserves in the banking system.",
-      "paragraph": 2,
+      "fragments": [
+       {
+        "end": 342,
+        "paragraph": 2,
+        "start": 251,
+        "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+       }
+      ],
       "paragraphs": [
        2
-      ],
-      "start": 251
+      ]
      },
      "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 937,
-      "fragment": "Voting against the monetary policy action were Beth M. Hammack, Neel Kashkari, and Lorie K. Logan",
-      "paragraph": 5,
+      "fragments": [
+       {
+        "end": 95,
+        "paragraph": 1,
+        "start": 34,
+        "text": "approved the following statement for release by a 9 – 3 vote:"
+       },
+       {
+        "end": 1029,
+        "paragraph": 5,
+        "start": 840,
+        "text": "Voting against the monetary policy action were Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who preferred to raise the target range for the federal funds rate by 1/4 percentage point"
+       }
+      ],
       "paragraphs": [
        1,
        5
-      ],
-      "start": 840
+      ]
      },
-     "text": "The statement was approved by a 9 – 3 vote; Beth M. Hammack, Neel Kashkari, and Lorie K. Logan preferred to raise the target range by 1/4 percentage point."
+     "text": "The monetary policy action was approved by a 9 – 3 vote; Beth M. Hammack, Neel Kashkari, and Lorie K. Logan preferred to raise the target range by 1/4 percentage point."
     }
    ],
    "title": "Federal Reserve monetary policy statement, 29 July 2026",
@@ -214,8 +256,8 @@
    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
    "usage": {
     "attempts": 1,
-    "input_tokens": 1200,
-    "output_tokens": 573,
+    "input_tokens": 1519,
+    "output_tokens": 654,
     "reasoning_tokens": 0
    }
   }

@@ -514,7 +514,7 @@
    "currency": "USD",
    "doc_id": "USD:statement:2026-09-16",
    "format": "html",
-   "generated_at": "2026-09-21T13:50:33Z",
+   "generated_at": "2026-09-21T15:27:20Z",
    "input_sha256": "fc27d85fa8d02c2afe3ef5e54416802aac2fa1d2b926b26424f0fbf70842367b",
    "meeting_date": "2026-09-16",
    "model": "gpt-5.6-terra",
@@ -562,7 +562,7 @@
      "text": "0"
     }
    ],
-   "prompt_version": "statement-v4",
+   "prompt_version": "statement-v5",
    "provider": "openai",
    "published": "2026-09-16",
    "quotes": [
@@ -585,10 +585,16 @@
      "text": "Inflation remains elevated."
     },
     {
-     "end": 843,
+     "end": 799,
      "paragraph": 4,
-     "start": 800,
-     "text": "The Committee will deliver price stability."
+     "start": 712,
+     "text": "Today's policy action will support a timelier return to the Committee's 2 percent goal."
+    },
+    {
+     "end": 96,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Federal Open Market Committee approved the following statement for release by a 12 – 0 vote:"
     }
    ],
    "source": {
@@ -602,90 +608,138 @@
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 217,
-      "fragment": "raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent",
-      "paragraph": 2,
+      "fragments": [
+       {
+        "end": 217,
+        "paragraph": 2,
+        "start": 111,
+        "text": "decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent"
+       }
+      ],
       "paragraphs": [
        2
-      ],
-      "start": 122
+      ]
      },
      "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 443,
-      "fragment": "Economic activity is expanding at a solid pace. While uncertainty remains elevated",
-      "paragraph": 3,
+      "fragments": [
+       {
+        "end": 408,
+        "paragraph": 3,
+        "start": 361,
+        "text": "Economic activity is expanding at a solid pace."
+       },
+       {
+        "end": 488,
+        "paragraph": 3,
+        "start": 409,
+        "text": "While uncertainty remains elevated owing, in part, to geopolitical developments"
+       }
+      ],
       "paragraphs": [
        3
-      ],
-      "start": 361
+      ]
      },
-     "text": "The Committee said economic activity is expanding at a solid pace, domestic spending has been resilient, and productivity growth and capital investment are strong."
+     "text": "The Committee states that economic activity is expanding at a solid pace, while uncertainty remains elevated owing, in part, to geopolitical developments."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 683,
-      "fragment": "Job gains have kept pace with the workforce, and the unemployment rate has changed little.",
-      "paragraph": 3,
+      "fragments": [
+       {
+        "end": 527,
+        "paragraph": 3,
+        "start": 490,
+        "text": "domestic spending has been resilient."
+       },
+       {
+        "end": 592,
+        "paragraph": 3,
+        "start": 528,
+        "text": "Productivity growth is strong, and capital investment is robust."
+       }
+      ],
       "paragraphs": [
-       3,
+       3
+      ]
+     },
+     "text": "The Committee reports that domestic spending has been resilient, productivity growth is strong, and capital investment is robust."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 683,
+        "paragraph": 3,
+        "start": 593,
+        "text": "Job gains have kept pace with the workforce, and the unemployment rate has changed little."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee states that job gains have kept pace with the workforce, and the unemployment rate has changed little."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 733,
+        "paragraph": 4,
+        "start": 684,
+        "text": "Inflation remains elevated. Today's policy action"
+       },
+       {
+        "end": 799,
+        "paragraph": 4,
+        "start": 712,
+        "text": "Today's policy action will support a timelier return to the Committee's 2 percent goal."
+       }
+      ],
+      "paragraphs": [
        4
-      ],
-      "start": 593
+      ]
      },
-     "text": "The Committee said job gains have kept pace with the workforce, the unemployment rate has changed little, and inflation remains elevated."
+     "text": "The Committee states that inflation remains elevated and that today's policy action will support a timelier return to the Committee's 2 percent goal."
     },
     {
      "evidence": {
       "coverage": 1.0,
-      "end": 359,
-      "fragment": "continuing its policy of maintaining ample reserves in the banking system",
-      "paragraph": 2,
+      "fragments": [
+       {
+        "end": 96,
+        "paragraph": 1,
+        "start": 34,
+        "text": "approved the following statement for release by a 12 – 0 vote:"
+       },
+       {
+        "end": 360,
+        "paragraph": 2,
+        "start": 286,
+        "text": "continuing its policy of maintaining ample reserves in the banking system."
+       }
+      ],
       "paragraphs": [
+       1,
        2
-      ],
-      "start": 286
+      ]
      },
-     "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
-    },
-    {
-     "evidence": {
-      "coverage": 1.0,
-      "end": 799,
-      "fragment": "Today's policy action will support a timelier return to the Committee's 2 percent goal.",
-      "paragraph": 4,
-      "paragraphs": [
-       4
-      ],
-      "start": 712
-     },
-     "text": "The Committee stated that today's policy action will support a timelier return to its 2 percent goal and that it will deliver price stability."
-    },
-    {
-     "evidence": {
-      "coverage": 1.0,
-      "end": 95,
-      "fragment": "approved the following statement for release by a 12 – 0 vote",
-      "paragraph": 1,
-      "paragraphs": [
-       1
-      ],
-      "start": 34
-     },
-     "text": "The Federal Open Market Committee approved the statement by a 12 – 0 vote."
+     "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system, and the statement was approved by a 12 – 0 vote."
     }
    ],
    "title": "Federal Reserve monetary policy statement, 16 September 2026",
    "type": "statement",
    "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
    "usage": {
-    "attempts": 1,
-    "input_tokens": 1150,
-    "output_tokens": 447,
+    "attempts": 2,
+    "input_tokens": 3548,
+    "output_tokens": 1102,
     "reasoning_tokens": 0
    }
   }
