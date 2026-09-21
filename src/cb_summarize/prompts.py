@@ -43,10 +43,12 @@ def registry(directory: Optional[Path] = None) -> dict:
     return json.loads(((directory or DIR) / "versions.json").read_text())
 
 
-def user_message(doc_type: str, bank: str, url: str, paragraphs: list, tags: Optional[list] = None) -> str:
-    """The numbered paragraphs; `tags` (a press-conference transcript) marks a journalist's question: "[12] (question) ..."."""
+def user_message(doc_type: str, bank: str, url: str, paragraphs: list, tags: Optional[list] = None, speaker: str = "") -> str:
+    """The numbered paragraphs; `tags` (a press-conference transcript) marks a journalist's question: "[12] (question) ..."; `speaker` ("Governor Andrew Bailey") is the
+    speaker of a speech or a testimony as the bank's metadata gives them."""
     body = "\n".join(f"[{i}] " + (f"({tags[i - 1]}) " if tags and tags[i - 1] else "") + p for i, p in enumerate(paragraphs, 1))
-    return f"Document: {LABEL[doc_type]}\nBank: {bank}\nSource: {url}\n\nParagraphs:\n{body}\n"
+    who = f"Speaker: {speaker}\n" if speaker else ""
+    return f"Document: {LABEL[doc_type]}\nBank: {bank}\n{who}Source: {url}\n\nParagraphs:\n{body}\n"
 
 
 def feedback_message(errors: list) -> str:

@@ -381,6 +381,9 @@ def summary_slot(ctx: Context, doc: Optional[dict]) -> dict:
     if doc["doc_id"] in ctx.summaries:
         return {"status": "ready", "label": "summary", "doc_id": doc["doc_id"], "reason": None}
     if doc["doc_id"] in ctx.summary_no_text and ctx.summary_no_text[doc["doc_id"]]["url"] == doc["url"]:
+        mark = ctx.summary_no_text[doc["doc_id"]]
+        if mark.get("kind") == "non_prose":                                       # a deck of tables or slides: not summarised, the page shows the link only
+            return {"status": "pending", "label": "not summarised", "doc_id": doc["doc_id"], "reason": f"not prose: {mark['reason']} (marked once, not summarised)"}
         return {"status": "pending", "label": "summary pending", "doc_id": doc["doc_id"],
                 "reason": "no extractable text: the page was fetched and holds none (marked once, not retried)"}
     fail = next((f for k, f in sorted(ctx.summary_failures.items()) if k.startswith(doc["doc_id"] + "|")), None)
@@ -407,6 +410,7 @@ def summary_json(rec: dict, text: Optional[str] = None) -> dict:
             "texts": {str(n): paras[n - 1] for n in ev["paragraphs"]} if paras else None})
     return {"doc_id": rec["doc_id"], "type": rec["type"], "label": TYPE_LABEL.get(rec["type"], rec["type"]), "title": rec["title"], "url": rec["url"],
             "points": pts, "evidence": evidence, "changes": rec["changes_vs_previous"],
+            "dropped": [{"text": d["text"], "reason": (d["errors"] or [""])[0]} for d in rec.get("dropped_points") or []],
             "quotes": [{"text": q["text"], "paragraph": q["paragraph"], "href": rec["url"] + text_fragment(q["text"]) if html else rec["url"]} for q in rec["quotes"]],
             "provider": rec.get("provider"), "model": rec["model"], "prompt_version": rec["prompt_version"], "generated": rec["generated_at"][:10], "note": SUMMARY_NOTE,
             "truncated": bool(rec["coverage"]["truncated"]), "paragraphs_covered": rec["coverage"]["paragraphs"]}

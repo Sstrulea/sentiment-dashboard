@@ -333,7 +333,7 @@ def _summaries_status_section(paths, today: date) -> tuple:
     for f in sorted(failures.values(), key=lambda f: f["doc_id"]):
         notes.append(f"validation_failed {f['doc_id']} ({f['prompt_version']}, {f.get('provider', '?')} {f.get('model', '?')}): {'; '.join(f['errors'][:2])[:220]}")
     for d, m in sorted(no_text.items()):
-        notes.append(f"no_text {d}: {m['reason']} (marked {m['at'][:10]}, not retried)")
+        notes.append(f"{m.get('kind', 'no_text')} {d}: {m['reason']} (marked {m['at'][:10]}, {'not summarised' if m.get('kind') == 'non_prose' else 'not retried'})")
     if last.get("stopped"):
         notes.append(f"last run stopped: {last['stopped']}")
     if tot:
@@ -347,13 +347,20 @@ def summaries_report(rep) -> tuple:
     if not rep.enabled:
         line = f"summaries: SKIPPED - {rep.skipped_reason}"
         return line, f"### summaries\n\n{line}"
-    line = (f"summaries: {rep.new} new, {rep.unchanged} unchanged, {len(rep.failed_validation)} failed validation, {len(rep.no_text)} newly marked no_text, {len(rep.source_errors)} source errors; "
+    line = (f"summaries: {rep.new} new, {rep.unchanged} unchanged, {len(rep.failed_validation)} failed validation, {len(rep.no_text)} newly marked no_text, "
+            f"{len(rep.non_prose)} newly marked non_prose, {len(rep.source_errors)} source errors; "
             f"{rep.calls} calls, {rep.input_tokens} input / {rep.output_tokens} output tokens ({rep.reasoning_tokens} of them reasoning), about ${rep.cost_usd:.4f}; "
             f"{rep.pending} still pending" + (f"; usage missing in {rep.usage_estimated} call(s): tokens estimated from the text" if rep.usage_estimated else ""))
     extra = ([f"  STOPPED {rep.stopped}"] if rep.stopped else []) + [f"  VALIDATION FAILED {d}: {'; '.join(e[:2])}" for d, e in rep.failed_validation] + \
-            [f"  NO_TEXT {d}: {why} (marked once, not retried)" for d, why in rep.no_text] + [f"  SOURCE {d}: {why}" for d, why in rep.source_errors]
-    if rep.first_pass or rep.retried or rep.failed_validation:
-        extra = [f"  ATTEMPTS {rep.first_pass} passed at the first attempt, {len(rep.retried)} after the retry, {len(rep.failed_validation)} failed twice"] + extra
+            [f"  NO_TEXT {d}: {why} (marked once, not retried)" for d, why in rep.no_text] + [f"  NON_PROSE {d}: {why} (marked once, not summarised)" for d, why in rep.non_prose] + \
+            [f"  SOURCE {d}: {why}" for d, why in rep.source_errors]
+    if rep.first_pass or rep.retried or rep.failed_validation or rep.partial:
+        extra = [f"  ATTEMPTS {rep.first_pass} passed at the first attempt, {len(rep.retried)} after the retry, {len(rep.partial)} published partially, "
+                 f"{len(rep.failed_validation)} failed twice"] + extra
+    extra += [f"  PARTIAL {d}: published without {len(pts)} point(s){' and ' + str(len(qs)) + ' quote(s)' if qs else ''} - " + "; ".join(f"[{p['text'][:70]}] " + " | ".join(e[:170] for e in p['errors'][:3]) for p in pts[:6]) +
+              ("; " if pts and qs else "") + "; ".join(f"[quote {q['text'][:50]}] {q['errors'][0][:120]}" for q in qs[:4]) for d, pts, qs in rep.partial]
+    extra += [f"  DOC {x['doc_id']}: {x['outcome']}; {x['attempts']} attempt(s); {x['input']} in / {x['output']} out ({x['reasoning']} reasoning); ${x['cost']:.4f}" +
+              (f"; {x['points']} points, {x['dropped']} removed" if "points" in x else "") for x in rep.docs]
     extra += [f"  RETRIED {d}: the first attempt failed - {'; '.join(e[:3])}" for d, e in rep.retried]
     extra += [f"  FIRST ATTEMPT {d} failed - {'; '.join(e[:6])}" for d, e in rep.first_errors]
     extra += [f"  REJECTED OUTPUT {d}: {' '.join(text.split())[:3000]}" for d, text in rep.rejected]

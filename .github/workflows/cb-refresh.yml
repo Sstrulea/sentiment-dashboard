@@ -31,9 +31,18 @@ on:
         type: string
         default: ""
       doc:
-        description: "summaries only: restrict to this one document, e.g. USD:statement:2026-09-16 (empty = every document)"
+        description: "summaries only: restrict to these documents, e.g. USD:statement:2026-09-16 (comma-separated; empty = every document)"
         type: string
         default: ""
+      effort:
+        description: "summaries only: the reasoning effort of this run (empty = the config's)"
+        type: choice
+        options: ["", low, medium, high]
+        default: ""
+      scratch:
+        description: "summaries only: a measurement - write nothing (no summary, no state.json), only the log says what happened"
+        type: boolean
+        default: false
 
 concurrency:
   group: cb-refresh
@@ -45,7 +54,7 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 15                      # the documents stage is polite (2 s per host, 400 requests at most): ~3 min on a cold start
+    timeout-minutes: 30                      # the documents stage is polite (2 s per host, 400 requests at most): ~3 min on a cold start; the summaries step may take 14
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -79,13 +88,15 @@ jobs:
       - name: Summaries
         if: ${{ steps.key.outputs.present == 'true' && (!inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}
         continue-on-error: true
-        timeout-minutes: 8
+        timeout-minutes: 14
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           BANK: ${{ inputs.bank }}
           TYPE: ${{ inputs.type }}
           DOC: ${{ inputs.doc }}
-        run: python -m src.cb_collect --stage summaries ${BANK:+--summaries-bank "$BANK"} ${TYPE:+--summaries-type "$TYPE"} ${DOC:+--summaries-doc "$DOC"}
+          EFFORT: ${{ inputs.effort }}
+          SCRATCH: ${{ inputs.scratch && 'yes' || '' }}
+        run: python -m src.cb_collect --stage summaries ${BANK:+--summaries-bank "$BANK"} ${TYPE:+--summaries-type "$TYPE"} ${DOC:+--summaries-doc "$DOC"} ${EFFORT:+--summaries-effort "$EFFORT"} ${SCRATCH:+--summaries-scratch}
 
       - name: Freshness status
         if: always()

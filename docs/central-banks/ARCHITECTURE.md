@@ -536,6 +536,26 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   **Limite cunoscute:** e o verificare lexicală, nu semantică — o schimbare de subiect cu aceleași cuvinte trece; la 85 % un punct de ~10 cuvinte-conținut poate purta un cuvânt nesuținut care nu e dată / nume;
   numele propriu la începutul propoziției nu e verificat ca nume (rămâne la pragul de 85 %); un transcript fără etichete detectabile nu are regula vorbitorului (ECB: se folosește bold-ul);
   negația se compară pe propoziția cea mai apropiată, nu pe fiecare clauză. Se completează cu citatele verbatim și cu numerele.
+- **Publicare pe punct** (v6). Fiecare punct și fiecare citat se verifică separat (`Verified.points` / `dropped_points`, `quotes` / `dropped_quotes`; fiecare eroare a unui punct spune „summary point N”).
+  După singura reîncercare, punctele care încă pică se elimină, la fel citatele; rezumatul se publică dacă rămân **≥ 3 puncte valide** (`publish.min_points`), altfel rămâne pending cu motivele.
+  Din cele două încercări se publică cea cu mai multe puncte valide. Nu se repară nimic: se elimină. Rămân fatale (nimic nu se publică): lista de puncte care nu e listă, numărul de puncte în afara 3–6,
+  lipsa oricărui citat, mai mult de 5 citate valide, lungimea totală a punctelor valide. Numerele și acoperirea (paragrafele pe care se sprijină ce s-a publicat) urmează punctele păstrate. În înregistrare:
+  `dropped_points` (text + motive) și `dropped_quotes`; în pagină: „N points removed by verification” cu motivele în tooltip. **Comunicatele** (`decision.types`): rezumatul trebuie să păstreze un punct valid care spune
+  decizia asupra ratei (un termen de rată — target range, cash rate, Bank Rate, overnight rate … — și o acțiune asupra ei — decided, maintain, raise, hold, encourage …; lexiconul găsește propoziția de decizie în toate
+  cele 28 de comunicate reale din store); dacă punctul de decizie pică, rezumatul rămâne pending. Promptul cere ca primul punct să fie decizia.
+- **Nume permise mereu** (v6): vorbitorul documentului cu titlul lui (metadata `speaker` + `role`, sau roster-ul), banca, comitetul și organele ei (`grounding.allowed_names`: Governing Council, Monetary Policy Committee …,
+  scoase ca fraze din punct înainte să se verifice cuvintele și numele proprii — „monetary policy” din altă parte rămâne verificat). Mesajul către model are linia `Speaker: Governor Andrew Bailey` (numai cu un nume
+  real, nu cu un cod de pagină); promptul cere „Governor Bailey says …”, nu „the speaker”.
+- **Documente care nu sunt proză** (v6): un deck de tabele / slide-uri (discursul Lane, prezentarea Schnabel — 13–14 % cifre — și o pagină de titluri: 21 % propoziții) se marchează o dată `non_prose` (`no_text.json`,
+  câmpul `kind`), nu se rezumă, iar pagina arată doar linkul („not summarised”). Măsura, pe paragrafele extrase (`source.not_prose`): partea din caractere aflată în paragrafe de propoziții întregi < 50 %, cifre
+  > 8 % din caractere sau > 50 % linii scurte (< 40 caractere). Calibrată pe cele 56 de documente lungi din backlog: 3 deck-uri / pagini de titluri prinse, celelalte 53 sub prag cu margine (proză ≥ 0,78; cifre ≤ 0,03).
+- **Negația pe clauză** (v6): propoziția-sursă se împarte în clauze (`;` `:` `,` `—` `--` și but / while / whereas / although / who / which); fiecare clauză a punctului se compară cu clauza-sursă cea mai apropiată
+  (cele mai multe cuvinte-conținut comune, minim 2), la egalitate cu cea care se potrivește. Cazul real din 29 aprilie (propoziția cu voturile împotrivă, o clauză negată pentru al doilea grup) trece; negația inversată pică.
+- **Măsurătoare pre-înregistrată a raționamentului** (v6, scrisă înainte de rulări). Cele 11 documente (comunicatele 04-29, 06-17, 07-29, 09-16, transcriptul și discursul Waller din 16 sep / 3 sep, transcriptul ECB 10 sep,
+  discursul Lane, transcriptul RBA 11 aug, minutele BoE 17 sep, discursul Bailey), același cod și același prompt v6, o rulare `low` și una `medium` (workflow: `effort`, `scratch` — nu scriu nimic). **Se alege `medium`
+  numai dacă sunt îndeplinite toate trei:** (1) publică cel puțin la fel de multe documente (integral + parțial); (2) punctele eliminate + documentele care au avut nevoie de reîncercare (al doilea apel) sunt mai puține;
+  (3) costul total pe cele 11 documente ≤ 2 × cel de la `low`. Altfel rămâne `low`. **Condiția de merge**, cu varianta aleasă: (a) cele 6 documente Fed publicate, integral sau parțial, comunicatele cu punctul de decizie
+  valid; (b) din cele 11, ≥ 10 publicate sau clasificate `non_prose`; (c) nicio regulă de verificare slăbită.
 - **Reîncercare.** O verificare picată ⇒ **un singur** apel nou, cu ieșirea anterioară și erorile ca feedback; a doua picare ⇒ nu se scrie nimic, `failures.json` primește
   `validation_failed` (motivele), iar documentul nu se mai plătește încă o dată până la un `prompt_version` nou sau un `input_sha256` nou. Textul modelului nu e
   reparat niciodată de cod (singura atingere: un singur gard ```` ```json ```` în jurul JSON-ului se scoate — e formatare, nu conținut).

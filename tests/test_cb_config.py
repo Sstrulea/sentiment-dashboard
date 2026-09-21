@@ -198,7 +198,7 @@ def test_workflow_triggers_and_guards(workflow):
     assert workflow["concurrency"] == {"group": "cb-refresh", "cancel-in-progress": False}
     assert workflow["permissions"] == {"contents": "write"}
     job = workflow["jobs"]["refresh"]
-    assert job["timeout-minutes"] == 15 and job["runs-on"] == "ubuntu-latest"
+    assert job["timeout-minutes"] == 30 and job["runs-on"] == "ubuntu-latest"          # (the summaries step alone may take 14)
 
 
 CB_PUBLIC = ["public/central-banks.html", "public/central-banks/", "public/data/cb/"]          # the only public/ paths the workflow may write

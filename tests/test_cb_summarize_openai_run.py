@@ -85,7 +85,7 @@ def test_a_bad_first_output_gets_one_retry_with_the_errors_and_a_good_second_is_
     assert SS.load(paths.summaries)[FED_KEY]["usage"] == {"input_tokens": 3000, "output_tokens": 1600, "attempts": 2, "reasoning_tokens": 300}        # both attempts are paid (the reasoning tokens of the good one)
 
 
-@pytest.mark.parametrize("case", sorted(BAD))
+@pytest.mark.parametrize("case", sorted(k for k in BAD if k != "invented quote"))                                                # (an invented quote alone: the summary is published without it)
 def test_two_bad_outputs_write_nothing_and_mark_validation_failed(paths, case):
     bad, expected = BAD[case]
     client, s = openai_client(CFG, oai_body(bad), oai_body(bad))

@@ -256,11 +256,11 @@ def test_an_inverted_negation_is_refused():
     inverted = point("Warsh said he is in the forward guidance business.", [3], "This won't surprise you, I'm not in the forward guidance business.")
     r = transcript(SOBER, STRONG, inverted)
     assert not r.ok and len(r.errors) == 1
-    assert "summary point 3 has none but the closest sentence of the paragraph(s) it cites has one" in r.errors[0] and "I'm not in the forward guidance business" in r.errors[0]
+    assert "summary point 3 has none but the closest clause of the paragraph(s) it cites has one" in r.errors[0] and "I'm not in the forward guidance business" in r.errors[0]
     assert "never turn a statement into its opposite" in r.errors[0]
     added = point("Warsh said the economy has not strengthened.", [13], "There's been a pretty wideranging set of data, including in the labor markets, that the economy has strengthened.")
     r = transcript(SOBER, NOT_FG, added)
-    assert not r.ok and any("summary point 3 has a negation but the closest sentence of the paragraph(s) it cites has none" in e for e in r.errors)
+    assert not r.ok and any("summary point 3 has a negation but the closest clause of the paragraph(s) it cites has none" in e for e in r.errors)
 
 
 @pytest.mark.parametrize("word", ["not", "no", "never", "without", "neither", "nor", "cannot", "isn't", "isn’t"])
@@ -290,7 +290,7 @@ def test_the_closest_sentence_decides_not_a_sentence_elsewhere_in_the_paragraph(
 def test_the_negation_check_runs_on_a_real_statement_point():
     neg = point("The Committee said economic activity is not expanding at a solid pace.", [3], "Economic activity is expanding at a solid pace.")
     r = grounded(P_VOTE, P_RATE, neg)
-    assert not r.ok and any("has a negation but the closest sentence" in e for e in r.errors)
+    assert not r.ok and any("has a negation but the closest clause" in e for e in r.errors)
 
 
 # --- 1. a pronoun is an attribution once the bank or the speaker is named in the point ----------------------------------------------------------------
@@ -395,7 +395,7 @@ def test_the_output_schema_and_the_prompt_ask_for_fragments():
     for phrase in ("1 to 3 fragments", "ONE main claim per point", "give a second fragment", "shares no content words", "Dates, months, days of the week", "seven weeks ago",
                    "Keep negations as the source has them", "(question)", "only on the turns of the person", "a pronoun - he, she, they"):
         assert phrase in system, phrase
-    assert PR.load("transcript").version == "transcript-v5" and {PR.load(k).version for k in PR.KINDS} == {f"{k}-v5" for k in PR.KINDS}
+    assert PR.load("transcript").version == "transcript-v6" and {PR.load(k).version for k in PR.KINDS} == {f"{k}-v6" for k in PR.KINDS}
 
 
 def test_the_good_fed_output_still_passes_with_its_two_fragments():
@@ -639,7 +639,7 @@ def test_a_journalist_named_in_a_point_is_the_owner_of_her_turn_in_a_run(tmp_pat
     from .test_cb_docs_collect import fetcher
     base = collected_dir(tmp_path_factory_of(tmp_path))
     paths = cc.Paths(fresh_copy(base, tmp_path))
-    monkeypatch.setattr(SRC, "load", lambda doc, f, max_chars, officials=(): SRC.from_paragraphs(EXCERPT, "pypdf", max_chars, transcript={"officials": list(officials)}))
+    monkeypatch.setattr(SRC, "load", lambda doc, f, max_chars, officials=(), prose=None: SRC.from_paragraphs(EXCERPT, "pypdf", max_chars, transcript={"officials": list(officials)}))
     asked = point("Jennifer Schonberger said inflation has run up mostly from higher energy prices and tariffs, which rate hikes cannot fix.", [Q_PARA],
                   "Inflation has run up mostly from higher energy prices and tariffs, which some say are supply shocks")
     out = {"summary": [SOBER, NOT_FG, asked], "quotes": [{"paragraph": 3, "text": "I'm not going to pre-judge any future decisions we make."}], "coverage": [3, Q_PARA]}
@@ -748,3 +748,56 @@ def test_the_prompt_tells_the_model_to_count_words_and_to_split_a_point_that_nee
         for phrase in ("Count the words: a fragment of 4 words or fewer is refused", "the whole clause or sentence that states the claim", "more than 3 paragraph numbers or more than 3 fragments",
                        "make it two points"):
             assert phrase in system, (kind, phrase)
+
+
+# --- the negation is compared clause by clause --------------------------------------------------------------------------------------------------------------
+
+def paras_0429():
+    from .cb_docs_helpers import statement_paras
+    return statement_paras("USD", "2026-04-29")
+
+
+VOTE_F1 = "Voting against this action were Stephen I. Miran, who preferred to lower the target range for the federal funds rate by 1/4 percentage point at this meeting;"
+VOTE_F2 = "and Beth M. Hammack, Neel Kashkari, and Lorie K. Logan, who supported maintaining the target range for the federal funds rate but did not support inclusion of an easing bias in the statement at this time."
+
+
+def test_the_real_statement_of_29_april_passes_its_voting_point_has_no_negation_and_the_clause_of_the_second_group_has_one():
+    paras = paras_0429()
+    vote_at = next(i for i, p in enumerate(paras, 1) if "Voting against this action" in p)
+    assert VOTE_F1 in paras[vote_at - 1] and VOTE_F2 in paras[vote_at - 1]
+    rx = V.negation_regex(CFG.negations)
+    text = "Voting against this action were Stephen I. Miran, who preferred to lower the target range by 1/4 percentage point, and Beth M. Hammack, Neel Kashkari, and Lorie K. Logan."
+    assert V.negation_error(text, [paras[vote_at - 1]], rx, set(), 5) is None                                            # the round that failed twice on CI: it passes now
+    # ... in the whole check, with the two other real points of that output
+    decision_at = next(i for i, p in enumerate(paras, 1) if "decided to maintain the target range" in p)
+    middle_at = next(i for i, p in enumerate(paras, 1) if "Developments in the Middle East" in p)
+    pts = [point("The Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent.", [decision_at],
+                 "the Committee decided to maintain the target range for the federal funds rate at 3‑1/2 to 3‑3/4 percent."),
+           point("The Committee stated that developments in the Middle East are contributing to a high level of uncertainty about the economic outlook.", [middle_at],
+                 "Developments in the Middle East are contributing to a high level of uncertainty about the economic outlook."),
+           point(text, [vote_at], VOTE_F1, VOTE_F2)]
+    r = V.verify({"summary": pts, "quotes": [{"paragraph": middle_at, "text": "Developments in the Middle East are contributing to a high level of uncertainty"}], "coverage": [decision_at, middle_at, vote_at]},
+                 paras, speakers=("miran", "hammack", "kashkari", "logan", "stephen", "beth", "neel", "lorie"), **rules())
+    assert r.ok, r.errors
+    # the clause of the second group: its negation is compared with that clause alone
+    assert V.negation_error("Hammack, Kashkari and Logan did not support inclusion of an easing bias in the statement at this time.", [paras[vote_at - 1]], rx, set(), 5) is None
+    inverted = V.negation_error("Beth M. Hammack, Neel Kashkari, and Lorie K. Logan supported inclusion of an easing bias in the statement at this time.", [paras[vote_at - 1]], rx, set(), 5)
+    assert inverted is not None and "summary point 5 has none but the closest clause of the paragraph(s) it cites has one" in inverted and "did not support inclusion of an easing bias" in inverted
+
+
+def test_a_clause_is_cut_at_punctuation_dashes_and_the_words_that_open_a_subordinate_clause():
+    assert V.clauses_of("A rose; B fell: C stood, D lay — E ran – F sat -- G hid") == ["A rose", "B fell", "C stood", "D lay", "E ran", "F sat", "G hid"]
+    assert V.clauses_of("Growth slowed but jobs grew while prices rose whereas wages fell although output held") == ["Growth slowed", "jobs grew", "prices rose", "wages fell", "output held"]
+    assert V.clauses_of("Members who preferred a cut, which failed") == ["Members", "preferred a cut", "which failed"]
+    assert V.clauses_of("The rate rose to 1,234 basis points in 3:30 trading") == ["The rate rose to 1,234 basis points in 3:30 trading"]           # a comma or a colon inside a number is not a cut
+    assert V.clauses_of("") == [] and V.clauses_of("Whichever way it goes") == ["Whichever way it goes"]                                           # a word only opens a clause as a whole word
+
+
+def test_a_point_of_two_clauses_is_checked_clause_by_clause():
+    rx = V.negation_regex(CFG.negations)
+    cited = ["Growth is strong across the sectors of the economy, and inflation is not falling fast in the services sector this quarter."]
+    assert V.negation_error("Growth is strong across the sectors of the economy, and inflation is not falling fast in the services sector.", cited, rx, set(), 1) is None
+    r = V.negation_error("Growth is strong across the sectors of the economy, and inflation is falling fast in the services sector.", cited, rx, set(), 1)
+    assert r is not None and "has none but the closest clause" in r and "(its clause: “and inflation is falling fast in the services sector.”)" in r
+    assert V.negation_error("Growth is not strong across the sectors of the economy.", cited, rx, set(), 1) is not None
+    assert V.negation_error("Weather is fine.", cited, rx, set(), 1) is None and V.negation_error("Growth", cited, rx, set(), 1) is None

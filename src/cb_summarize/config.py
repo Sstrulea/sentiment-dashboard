@@ -47,6 +47,10 @@ class Config:
     min_support: float
     attribution_words: tuple
     negations: tuple
+    allowed_names: tuple
+    publish_min_points: int
+    decision: dict
+    non_prose: dict
     speaker_verbs: tuple
     attribution_pronouns: tuple
     price_input: float
@@ -80,7 +84,10 @@ def load(path=None, provider: Optional[str] = None) -> Config:
         attributed_words=tuple(str(w) for w in raw["attributed_words"]), attribution_subjects=tuple(str(w) for w in raw["attribution_subjects"]),
         evidence_paragraphs=tuple(raw["grounding"]["evidence_paragraphs"]), fragments=tuple(raw["grounding"]["fragments"]), fragment_words=tuple(raw["grounding"]["fragment_words"]),
         fragment_shared=int(raw["grounding"]["fragment_shared_words"]), min_support=float(raw["grounding"]["min_support"]),
-        attribution_words=tuple(str(w) for w in raw["grounding"]["attribution_words"]), negations=tuple(str(w) for w in raw["grounding"]["negations"]), speaker_verbs=tuple(str(w) for w in raw["grounding"]["speaker_verbs"]),
+        attribution_words=tuple(str(w) for w in raw["grounding"]["attribution_words"]), negations=tuple(str(w) for w in raw["grounding"]["negations"]),
+        allowed_names=tuple(str(w) for w in raw["grounding"]["allowed_names"]), publish_min_points=int(raw["publish"]["min_points"]),
+        decision={"types": tuple(raw["decision"]["types"]), "rate_terms": tuple(str(w) for w in raw["decision"]["rate_terms"]), "action_terms": tuple(str(w) for w in raw["decision"]["action_terms"])},
+        non_prose={k: float(v) for k, v in raw["non_prose"].items()}, speaker_verbs=tuple(str(w) for w in raw["grounding"]["speaker_verbs"]),
         attribution_pronouns=tuple(str(w) for w in raw["attribution_pronouns"]),
         price_input=float(price["input"]), price_cached_input=float(price["cached_input"]), price_output=float(price["output"]), price_source=str(p["pricing_source"]),
         price_model_page=str(p["pricing_model_page"]), price_checked=str(p["pricing_checked"]), price_note=" ".join(str(p["pricing_note"]).split()))

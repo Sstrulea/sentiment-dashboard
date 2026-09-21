@@ -1939,6 +1939,7 @@ td.cb-num .cb-sep { color: inherit; opacity: 0.7; }
 .cb-sum-evidence { margin: 4px 0 8px; padding: 6px 8px; border-left: 2px solid var(--accent); background: var(--surface-alt); font-size: 12px; }
 .cb-sum-frag a { white-space: nowrap; }
 .cb-sum-para { margin-top: 4px; color: var(--muted); }
+.cb-sum-dropped { margin: 0 0 6px 18px; font-size: 12px; color: var(--muted); cursor: help; }
 .cb-sum-para mark { background: color-mix(in srgb, var(--accent) 28%, transparent); color: var(--fg); padding: 0 1px; }
 .cb-sum-quotes blockquote { margin: 6px 0; padding: 2px 0 2px 10px; border-left: 2px solid var(--border); color: var(--text); font-size: 12px; }
 .cb-sum-quotes a { white-space: nowrap; font-size: 11px; }

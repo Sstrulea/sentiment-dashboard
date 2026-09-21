@@ -168,13 +168,23 @@ def support(text: str, cited: list, drop_forms: set) -> tuple:
 
 @dataclass
 class Verified:
+    """The result of a check. `ok`: every check passed. Otherwise `errors` are all the reasons; `points` / `quotes` / `numbers` hold what did pass (each point on its own),
+    `dropped_points` / `dropped_quotes` what did not and why, and `fatal` the reasons no removal can cure (the shape of the output, the number of points, ...)."""
     ok: bool
     errors: list = field(default_factory=list)
-    summary: list = field(default_factory=list)          # the text of each point
-    points: list = field(default_factory=list)           # each point with its checked evidence: {"text", "evidence": {paragraphs, fragment, paragraph, start, end, coverage}}
+    summary: list = field(default_factory=list)          # the text of each valid point
+    points: list = field(default_factory=list)           # each valid point with its checked evidence: {"text", "evidence": {paragraphs, fragments: [{text, paragraph, start, end}], coverage}}
     quotes: list = field(default_factory=list)
     numbers: list = field(default_factory=list)
     coverage: list = field(default_factory=list)
+    dropped_points: list = field(default_factory=list)   # [{"text", "errors"}] - a point that did not pass, with the reasons
+    dropped_quotes: list = field(default_factory=list)   # [{"text", "errors"}]
+    fatal: list = field(default_factory=list)
+    decision: Optional[bool] = None                      # a decision statement: a valid point states the decision on the policy rate (None: not asked)
+
+    def publishable(self, min_points: int) -> bool:
+        """The valid part may be published on its own: nothing fatal, at least `min_points` valid points and, for a decision statement, the decision point."""
+        return not self.fatal and len(self.points) >= min_points and self.decision is not False
 
 
 def paragraph_starts(paragraphs: list) -> list:
@@ -305,24 +315,35 @@ def has_negation(text: str, rx: re.Pattern) -> bool:
     return rx.search(re.sub(r"\bnot only\b", "", text, flags=re.I)) is not None
 
 
+_CLAUSE = re.compile(r"(?:[;:]\s+|,\s+|\s*[\u2014\u2013]\s*|\s+--\s+)|\s+(?:but|while|whereas|although|who|which)\s+", re.I)
+
+
+def clauses_of(sentence: str) -> list:
+    """The clauses of a sentence: cut at ; : , - dashes and at but / while / whereas / although / who / which."""
+    return [c.strip() for c in _CLAUSE.split(sentence) if c and c.strip()]
+
+
 def negation_error(point: str, cited: list, rx: re.Pattern, drop_forms: set, i: int) -> Optional[str]:
-    """None when the point has a negation exactly when its closest sentence of the cited paragraphs has one (the closest: the most content words of the point; on a
-    tie, one that agrees is taken)."""
-    sentences = [x.strip() for c in cited for x in _SENTENCE.split(c) if x.strip()]
-    words = list(dict.fromkeys(content_words(point, drop_forms)))
-    if not sentences or not words:
+    """None when every clause of the point has a negation exactly when the clause of the cited paragraphs that is closest to it has one. The sentences of the cited
+    paragraphs are cut in clauses; the closest clause is the one with the most content words of the point's clause (at least 2, or all of them when it has fewer; on a
+    tie, one that agrees is taken). A negation elsewhere in a long sentence is another clause's business."""
+    units = [c for p in cited for x in _SENTENCE.split(p) if x.strip() for c in clauses_of(x)]
+    if not units:
         return None
-    scored = [(sum(1 for w in words if forms(w) & forms_of_text(x)), x) for x in sentences]
-    top = max(n for n, _ in scored)
-    if top == 0:
-        return None
-    best = [x for n, x in scored if n == top]
-    mine = has_negation(point, rx)
-    if any(has_negation(x, rx) == mine for x in best):
-        return None
-    x = best[0]
-    return (f"summary point {i} {'has a negation' if mine else 'has none'} but the closest sentence of the paragraph(s) it cites {'has none' if mine else 'has one'}: "
-            f"\u201c{x[:160]}\u201d - state it as the source does; never turn a statement into its opposite")
+    for mine_text in clauses_of(point):
+        words = list(dict.fromkeys(content_words(mine_text, drop_forms)))
+        if not words:
+            continue
+        scored = [(sum(1 for w in words if forms(w) & forms_of_text(x)), x) for x in units]
+        top = max(n for n, _ in scored)
+        if top < min(2, len(words)):
+            continue
+        best = [x for n, x in scored if n == top]
+        mine = has_negation(mine_text, rx)
+        if not any(has_negation(x, rx) == mine for x in best):
+            return (f"summary point {i} {'has a negation' if mine else 'has none'} but the closest clause of the paragraph(s) it cites {'has none' if mine else 'has one'}: "
+                    f"\u201c{best[0][:160]}\u201d (its clause: \u201c{mine_text[:100]}\u201d) - state it as the source does; never turn a statement into its opposite")
+    return None
 
 
 # ---- speakers: in a press-conference transcript a statement rests only on its own speaker's turns ------------------------------------------------------------
@@ -374,7 +395,8 @@ def speaker_errors(point: str, cited: list, labels: list, groups: tuple, i: int,
 
 
 def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tuple, lim_frags: tuple, lim_words: tuple, min_share: float, drop_forms: set, *,
-                   shared: int = 2, exclude_names: frozenset = frozenset(), rx_neg: Optional[re.Pattern] = None, labels: Optional[list] = None, groups: tuple = (), verbs: tuple = ()) -> tuple:
+                   shared: int = 2, exclude_names: frozenset = frozenset(), rx_neg: Optional[re.Pattern] = None, labels: Optional[list] = None, groups: tuple = (), verbs: tuple = (),
+                   allowed_rx: Optional[re.Pattern] = None) -> tuple:
     """(evidence record, errors) for one summary point {text, evidence: {paragraphs: [1-3 numbers], fragments: [1-3 verbatim passages of 5-40 words]}}: every
     fragment is verbatim in one of the cited paragraphs (its offsets are then derived) and shares content words with the point; at least `min_share` of the point's
     content words are in the cited paragraphs; its dates, months, days and proper names are there too; its negation matches its closest source sentence; and in a
@@ -396,7 +418,8 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
     if not (lim_frags[0] <= len(frags) <= lim_frags[1]):
         return None, [f"summary point {i} has {len(frags)} evidence fragments; allowed {lim_frags[0]}-{lim_frags[1]}: keep the {lim_frags[1]} that state its claims, or split the point in two"]
     errors, found = [], []
-    point_words = {w for w in content_words(point["text"], drop_forms)}
+    said = point["text"] if allowed_rx is None else allowed_rx.sub(" ", point["text"])                                # ("the Monetary Policy Committee": the bank's own body is a name, not a claim)
+    point_words = {w for w in content_words(said, drop_forms)}
     for n, frag in enumerate(frags, 1):
         n_words = len(frag.split())
         if not (lim_words[0] <= n_words <= lim_words[1]):
@@ -417,11 +440,11 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
         start = starts[where - 1] + paragraphs[where - 1].find(frag)
         found.append({"text": frag, "paragraph": where, "start": start, "end": start + len(frag)})
     texts = [paragraphs[c - 1] for c in cited]
-    share, missing = support(point["text"], texts, drop_forms)
+    share, missing = support(said, texts, drop_forms)
     if share < min_share:
         errors.append(f"summary point {i} is not supported by the paragraph(s) it cites {cited}: {round(share * 100)}% of its content words are there ({round(min_share * 100)}% needed); "
                       f"not found: {', '.join(repr(w) for w in missing[:8])} - say only what those paragraphs say, or cite the paragraphs that say it")
-    named = strict_missing(point["text"], texts, exclude_names)
+    named = strict_missing(said, texts, exclude_names)
     if named:
         errors.append(f"summary point {i} names {', '.join(repr(w) for w in named[:8])}, which the paragraph(s) it cites {cited} do not contain: dates, months, days and proper names "
                       f"(persons, institutions, places) must come from the cited paragraphs as written - never derive or infer them")
@@ -436,20 +459,44 @@ def check_evidence(point, i: int, paragraphs: list, starts: list, lim_paras: tup
     return {"paragraphs": cited, "fragments": found, "coverage": round(share, 3)}, []
 
 
+def point_of(error: str) -> Optional[int]:
+    """The summary point an error is about (every error of a point says "summary point N"); None for the errors that are about the output as a whole."""
+    m = re.search(r"summary point (\d+)", error)
+    return int(m.group(1)) if m else None
+
+
+def quote_of(error: str) -> Optional[int]:
+    m = re.match(r"quote (\d+)", error)
+    return int(m.group(1)) if m else None
+
+
+def decision_regex(terms: tuple) -> re.Pattern:
+    return blocked_regex(tuple(terms))
+
+
+def states_decision(text: str, rate_rx: re.Pattern, action_forms: set) -> bool:
+    """A point states the decision on the policy rate: it names the rate (the target range, the cash rate, Bank Rate ...) and an action on it (decided, raised, maintained ...)."""
+    return rate_rx.search(text) is not None and bool(forms_of_text(text, adverbs=False) & action_forms)
+
+
 def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, quotes: tuple, quote_chars: tuple, total_chars: int, blocked: tuple,
            attributed: tuple = (), subjects: tuple = (), speakers: tuple = (), evidence_paragraphs: tuple = (1, 3), fragments: tuple = (1, 3), fragment_words: tuple = (5, 40),
            min_support: float = 0.85, attribution_words: tuple = (), fragment_shared: int = 2, pronouns: tuple = (), negations: tuple = (), bank_terms: tuple = (),
-           labels: Optional[list] = None, people: tuple = (), speaker_verbs: tuple = ()) -> Verified:
-    """Check a parsed model output against the source paragraphs. Returns the record parts (points with their evidence, quotes with offsets, numbers with source
-    offsets, coverage) only when every check passed. `blocked` words are refused always; `attributed` words only unless the document uses them and the point
-    attributes them (check_attributed). Every point carries evidence (paragraphs + 1-3 verbatim fragments) and must be supported by the paragraphs it cites: content
-    words, dates / months / days / proper names, negation and - in a transcript (`labels`, one turns.Turn or None per paragraph) - the speaker's own turns.
-    `people`: the name words of each speaker (a roster member: first name, surname ...); `bank_terms`: the words that name the bank itself (an attribution, not a claim)."""
+           labels: Optional[list] = None, people: tuple = (), speaker_verbs: tuple = (), allowed_names: tuple = (), decision: Optional[dict] = None) -> Verified:
+    """Check a parsed model output against the source paragraphs. Every point and every quote is checked on its own; the result says which passed (with their record
+    parts: evidence, offsets, numbers, coverage) and which did not (with the reasons), so that the caller may publish the valid part. `blocked` words are refused always;
+    `attributed` words only unless the document uses them and the point attributes them (check_attributed). Every point carries evidence (paragraphs + 1-3 verbatim
+    fragments) and must be supported by the paragraphs it cites: content words, dates / months / days / proper names, negation and - in a transcript (`labels`, one
+    turns.Turn or None per paragraph) - the speaker's own turns. `people`: the name words of each speaker; `bank_terms`: the words that name the bank (and the speaker's
+    title): attribution, not claims; `allowed_names`: names that need not be in the cited paragraphs (the bank's bodies). `decision` ({rate_terms, action_terms}): a decision
+    statement must state the decision on the policy rate in one point."""
     errors: list = []
+    fatal: list = []
     src = source_text(paragraphs)
     starts = paragraph_starts(paragraphs)
     drop = forms_of_text(" ".join(tuple(attribution_words) + tuple(speaker_verbs) + tuple(subjects) + tuple(speakers) + tuple(bank_terms)))    # attribution vocabulary and names: not claims
     exclude_names = frozenset(drop | forms_of_text(" ".join(TITLES)))
+    allowed_rx = blocked_regex(tuple(allowed_names)) if allowed_names else None
     groups = tuple(people) or tuple((w,) for w in speakers if w.lower() not in TITLES)
     rx_neg = negation_regex(negations) if negations else None
 
@@ -457,48 +504,58 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     summary: list = []
     evidence: list = []
     if not isinstance(raw, list) or not all(isinstance(p, dict) and isinstance(p.get("text"), str) for p in raw):
-        errors.append("'summary' must be a list of points, each {'text': '...', 'evidence': {'paragraphs': [...], 'fragments': ['...']}}")
+        e = "'summary' must be a list of points, each {'text': '...', 'evidence': {'paragraphs': [...], 'fragments': ['...']}}"
+        errors.append(e)
+        fatal.append(e)
         raw = []
     else:
         summary = [p["text"] for p in raw]
         if not (points[0] <= len(summary) <= points[1]):
-            errors.append(f"'summary' has {len(summary)} points; allowed {points[0]}-{points[1]}")
-    for i, s in enumerate(summary, 1):
-        if not (point_chars[0] <= len(s.strip()) <= point_chars[1]):
-            errors.append(f"summary point {i} has {len(s.strip())} characters; allowed {point_chars[0]}-{point_chars[1]}")
-    if sum(len(s) for s in summary) > total_chars:
-        errors.append(f"the summary has {sum(len(s) for s in summary)} characters in all; allowed {total_chars}")
+            e = f"'summary' has {len(summary)} points; allowed {points[0]}-{points[1]}"
+            errors.append(e)
+            fatal.append(e)
+    for i, s_ in enumerate(summary, 1):
+        if not (point_chars[0] <= len(s_.strip()) <= point_chars[1]):
+            errors.append(f"summary point {i} has {len(s_.strip())} characters; allowed {point_chars[0]}-{point_chars[1]}")
     for i, p in enumerate(raw, 1):
         ev, errs = check_evidence(p, i, paragraphs, starts, evidence_paragraphs, fragments, fragment_words, min_support, drop, shared=fragment_shared,
-                                  exclude_names=exclude_names, rx_neg=rx_neg, labels=labels, groups=groups, verbs=tuple(speaker_verbs) + tuple(attribution_words) + tuple(attributed))
+                                  exclude_names=exclude_names, rx_neg=rx_neg, labels=labels, groups=groups, verbs=tuple(speaker_verbs) + tuple(attribution_words) + tuple(attributed), allowed_rx=allowed_rx)
         errors += errs
         evidence.append(ev)
 
     rx = blocked_regex(blocked)
-    for i, s in enumerate(summary, 1):
-        for m in rx.finditer(s):
+    for i, s_ in enumerate(summary, 1):
+        for m in rx.finditer(s_):
             errors.append(f"summary point {i} uses the word '{m.group(0)}': no direction, forecast or evaluation - only what the document says")
     errors += check_attributed(summary, src, attributed, subjects, speakers, pronouns)
 
     qs = obj.get("quotes")
-    checked_quotes = []
+    checked_quotes: list = []
+    dropped_quotes: list = []
     if not isinstance(qs, list):
-        errors.append("'quotes' must be a list")
+        e = "'quotes' must be a list"
+        errors.append(e)
+        fatal.append(e)
     else:
-        if not (quotes[0] <= len(qs) <= quotes[1]):
-            errors.append(f"'quotes' has {len(qs)} items; allowed {quotes[0]}-{quotes[1]}")
         for i, q in enumerate(qs, 1):
             rec, errs = check_quote(q, paragraphs, starts, i, quote_chars)
             errors += errs
             if rec:
                 checked_quotes.append(rec)
+            else:
+                dropped_quotes.append({"text": q.get("text") if isinstance(q, dict) and isinstance(q.get("text"), str) else str(q)[:200], "errors": errs})
+        if not (quotes[0] <= len(qs) <= quotes[1]):
+            e = f"'quotes' has {len(qs)} items; allowed {quotes[0]}-{quotes[1]}"
+            errors.append(e)
+            if len(qs) < quotes[0] or len(checked_quotes) > quotes[1]:
+                fatal.append(e)                                                    # no quote at all, or too many valid ones: removing the invalid ones does not cure it
 
     src_numbers = numbers_of(src)
     found = []
-    for i, s in enumerate(summary, 1):
+    for i, s_ in enumerate(summary, 1):
         ev = evidence[i - 1] if i <= len(evidence) else None
         cited_numbers = numbers_of("\n".join(paragraphs[c - 1] for c in ev["paragraphs"])) if ev else None
-        for n in numbers_of(s):
+        for n in numbers_of(s_):
             hit = find_number(n, src_numbers)
             if hit is None:
                 errors.append(f"the number '{n.text}' of summary point {i} does not appear in the document (state numbers exactly as the document writes them; never convert or compute)")
@@ -506,6 +563,23 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
                 errors.append(f"the number '{n.text}' of summary point {i} is in the document but not in the paragraph(s) it cites {ev['paragraphs']}: cite the paragraph that states it")
             else:
                 found.append({"point": i, "text": n.text, "source_text": src[hit.start:hit.end].strip(), "start": hit.start, "end": hit.end})
+
+    bad = {point_of(e) for e in errors if point_of(e) is not None}
+    keep = [i for i in range(1, len(summary) + 1) if i not in bad and i <= len(evidence) and evidence[i - 1] is not None]
+    dropped_points = [{"text": summary[i - 1].strip(), "errors": [e for e in errors if point_of(e) == i]} for i in range(1, len(summary) + 1) if i not in keep]
+    if sum(len(summary[i - 1]) for i in keep) > total_chars:
+        e = f"the summary has {sum(len(summary[i - 1]) for i in keep)} characters in all; allowed {total_chars}"
+        errors.append(e)
+        fatal.append(e)
+    elif sum(len(x) for x in summary) > total_chars:
+        errors.append(f"the summary has {sum(len(x) for x in summary)} characters in all; allowed {total_chars}")
+
+    states = None
+    if decision:
+        rate_rx, action = decision_regex(decision["rate_terms"]), forms_of_text(" ".join(decision["action_terms"]), adverbs=False)
+        if not any(states_decision(t, rate_rx, action) for t in summary):
+            errors.append("a decision statement summary must state the decision on the policy rate in one point: what was decided about the rate (the target range, the cash rate, Bank Rate ...) and the level")
+        states = any(states_decision(summary[i - 1], rate_rx, action) for i in keep)
 
     cov = obj.get("coverage")
     coverage: list = []
@@ -516,10 +590,12 @@ def verify(obj: dict, paragraphs: list, *, points: tuple, point_chars: tuple, qu
     else:
         coverage = sorted(set(cov))
 
+    new_index = {i: n for n, i in enumerate(keep, 1)}
+    pts = [{"text": summary[i - 1].strip(), "evidence": evidence[i - 1]} for i in keep]
+    numbers = [dict(n, point=new_index[n["point"]]) for n in found if n["point"] in new_index]
     if errors:
-        return Verified(False, errors)
-    pts = [{"text": t.strip(), "evidence": ev} for t, ev in zip(summary, evidence)]
-    return Verified(True, [], [t.strip() for t in summary], pts, checked_quotes, found, coverage)
+        coverage = sorted({c for i in keep for c in evidence[i - 1]["paragraphs"]} | {q["paragraph"] for q in checked_quotes})        # what is published is what it draws on
+    return Verified(not errors, errors, [p["text"] for p in pts], pts, checked_quotes, numbers, coverage, dropped_points, dropped_quotes, fatal, states)
 
 
 def verify_stored(record: dict, paragraphs: list) -> list:

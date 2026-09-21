@@ -121,6 +121,20 @@ def clean_window(body: str, size: int = 10):
     return None
 
 
+DECISION_RX = V.decision_regex(_CFG.decision["rate_terms"])
+DECISION_ACTION = V.forms_of_text(" ".join(_CFG.decision["action_terms"]), adverbs=False)
+
+
+def decision_sentence(paras: list):
+    """(paragraph number, sentence) of the first sentence that states the decision on the policy rate (no negation, no soft word, at most 40 words), or None."""
+    for n, text in paras:
+        for sentence in (x.strip() for x in V._SENTENCE.split(text)):
+            if (V.states_decision(sentence, DECISION_RX, DECISION_ACTION) and len(sentence.split()) <= 40 and not V.has_negation(sentence, NEG_RX)
+                    and not (V.forms_of_text(sentence, adverbs=False) & VOCAB) and not BLOCKED_RX.search(sentence)):
+                return n, sentence
+    return None
+
+
 def generic_output(messages: list) -> str:
     """A valid output for whatever document is shown: three points that say "The Committee says <ten words that open a sentence of one of its paragraphs>" (so the
     evidence is verbatim and fully covered), the opening of the first substantial paragraph as the one quote. A journalist's question is never used. No direction words,
@@ -128,11 +142,18 @@ def generic_output(messages: list) -> str:
     paras = [(n, text) for n, tag, text in tagged_paragraphs(messages) if tag != "question"]
     usable = [(n, text) for n, text in paras if len(text) >= 80 and clean_window(text)] or [(n, text) for n, text in paras if clean_window(text)] or paras
     picks = [usable[k % len(usable)] for k in range(3)]
-    points = []
+    points, cited = [], []
+    if "Document: Monetary policy decision statement" in messages[0]["content"]:                              # a decision statement: its first point states the decision
+        found = decision_sentence(paras)
+        if found:
+            points.append({"text": "The Committee says " + found[1], "evidence": {"paragraphs": [found[0]], "fragments": [found[1]]}})
+            cited.append(found[0])
+            picks = picks[:2]
     for n, body in picks:
         win = clean_window(body) or " ".join(body.split()[:10])
         points.append({"text": "The Committee says " + win, "evidence": {"paragraphs": [n], "fragments": [win]}})
-    return dumps({"summary": points, "quotes": [{"paragraph": picks[0][0], "text": picks[0][1][:40]}], "coverage": sorted({n for n, _ in picks})})
+        cited.append(n)
+    return dumps({"summary": points, "quotes": [{"paragraph": picks[0][0], "text": picks[0][1][:40]}], "coverage": sorted(set(cited))})
 
 
 def responder_generic(system: str, messages: list) -> str:

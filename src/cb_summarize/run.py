@@ -41,6 +41,9 @@ class SummariesReport:
     failed_validation: list = field(default_factory=list)  # (doc_id, [errors]) - written as markers, never as summaries
     source_errors: list = field(default_factory=list)      # (doc_id, why) - the page could not be got (transient); tried again next run
     no_text: list = field(default_factory=list)            # (doc_id, why) - marked THIS run: the page has no extractable text; never tried again
+    non_prose: list = field(default_factory=list)          # (doc_id, why) - marked THIS run: the text is a deck of tables or slides; never summarised
+    partial: list = field(default_factory=list)            # (doc_id, [dropped points], [dropped quotes]) - published with the points that still failed after the retry removed
+    docs: list = field(default_factory=list)               # one dict per document looked at: doc_id, outcome (full | full after retry | partial | pending | non_prose | no_text), attempts, tokens, cost
     stopped: Optional[str] = None                          # why the run stopped before the end (caps, API)
     calls: int = 0
     input_tokens: int = 0
@@ -107,6 +110,7 @@ def _record(doc: dict, prompt: PR.Prompt, src: SRC.Source, ok: V.Verified, chang
         "input_sha256": src.sha256,
         "source": {"method": src.method, "chars": src.chars_total, "chars_sent": src.chars_sent, "paragraphs_sent": len(src.paragraphs), "truncated": src.truncated},
         "summary": ok.points, "quotes": ok.quotes, "changes_vs_previous": changes, "numbers": ok.numbers,
+        "dropped_points": ok.dropped_points, "dropped_quotes": ok.dropped_quotes,
         "coverage": {"paragraphs": ok.coverage, "paragraphs_sent": len(src.paragraphs), "truncated": src.truncated},
         "usage": usage,
     }
@@ -143,8 +147,9 @@ def officials_of(doc: dict, roster: Optional[dict]) -> tuple:
 
 
 def bank_terms(doc: dict) -> tuple:
-    """The words that name the document's own bank ("Reserve Bank of Australia"): the attribution of the whole document, not a claim of a point."""
-    return tuple(w.lower() for w in re.findall(r"[^\W\d_]+", S.BANK_NAME[doc["currency"]]) if len(w) >= 3)
+    """The words that name the document's own bank ("Reserve Bank of Australia") and give the speaker of the document their title ("Member of the Executive Board"): the
+    attribution of the whole document, not a claim of a point - allowed names whether or not the cited paragraphs write them."""
+    return tuple(w.lower() for w in re.findall(r"[^\W\d_]+", S.BANK_NAME[doc["currency"]] + " " + (doc.get("role") or "")) if len(w) >= 3)
 
 
 def estimated_tokens(cfg: Config, system: str, messages: list, output: str) -> tuple:
@@ -158,10 +163,14 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
     an output cut at the token limit and invalid JSON are all failed attempts (the same one retry); a response without usage is estimated, and says so. `trace`, when
     given, receives {"attempt", "errors", "output"} for every failed attempt (the log says why a document needed its retry or failed). `people`: the name words of each
     person a point may name (`speakers` is their union)."""
-    user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs, src.tags)
+    named = (doc.get("speaker") or "").strip()                                     # (some pages give a code - "sp-gov" - instead of a name: no speaker line then)
+    who = " ".join(x for x in ((doc.get("role") or "").strip(), named) if x) if doc["type"] in ("speech", "testimony") and " " in named else ""
+    user = PR.user_message(doc["type"], S.BANK_NAME[doc["currency"]], doc["url"], src.paragraphs, src.tags, who)
     messages = [{"role": "user", "content": user}]
     usage = {"input_tokens": 0, "output_tokens": 0, "attempts": 0, "reasoning_tokens": 0}
     errors: list = []
+    best = None                                                                    # the valid part of an attempt that could be published on its own (the one with most valid points)
+    dec = cfg.decision if doc["type"] in cfg.decision["types"] else None
     for attempt in (1, 2):
         resp = client.complete(prompt.system, messages, OUTPUT_SCHEMA)
         if resp.usage_reported:
@@ -188,21 +197,25 @@ def summarise(client, cfg: Config, prompt: PR.Prompt, doc: dict, src: SRC.Source
                            total_chars=cfg.summary_total_chars, blocked=cfg.blocked_words, attributed=cfg.attributed_words, subjects=cfg.attribution_subjects,
                            speakers=speakers, evidence_paragraphs=cfg.evidence_paragraphs, fragments=cfg.fragments, fragment_words=cfg.fragment_words, min_support=cfg.min_support,
                            attribution_words=cfg.attribution_words, fragment_shared=cfg.fragment_shared, pronouns=cfg.attribution_pronouns, negations=cfg.negations,
-                           bank_terms=bank_terms(doc), labels=src.turns, people=people, speaker_verbs=cfg.speaker_verbs)
+                           bank_terms=bank_terms(doc), labels=src.turns, people=people, speaker_verbs=cfg.speaker_verbs, allowed_names=cfg.allowed_names, decision=dec)
             if res.ok:
                 return res, usage, []
             errors = res.errors
+            if res.publishable(cfg.publish_min_points) and (best is None or len(res.points) >= len(best.points)):
+                best = res
         said = resp.text or resp.refusal or "(empty)"
         if trace is not None:
             trace.append({"attempt": attempt, "errors": list(errors), "output": said})
         if attempt == 1:
             messages = [messages[0], {"role": "assistant", "content": said}, {"role": "user", "content": PR.feedback_message(errors)}]
+    if best is not None:                                                           # after the retry: the points that still fail are removed, the rest is published
+        return best, usage, best.errors
     return None, usage, errors
 
 
 def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher] = None, env=None, now: Optional[datetime] = None, cfg: Optional[Config] = None,
                   state: Optional[dict] = None, banks: Optional[set] = None, types: Optional[set] = None, only: Optional[set] = None,
-                  roster: Optional[dict] = None) -> SummariesReport:
+                  roster: Optional[dict] = None, persist: bool = True) -> SummariesReport:
     from ..cb_collect import load_state, save_state
     cfg = cfg or load_config()
     env = os.environ if env is None else env
@@ -244,11 +257,12 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
             rep.stopped = f"document cap reached ({cfg.max_documents} per run)"
             break
         try:
-            src = SRC.load(doc, fetcher, cfg.max_source_chars, officials_of(doc, roster))
+            src = SRC.load(doc, fetcher, cfg.max_source_chars, officials_of(doc, roster), cfg.non_prose)
         except SRC.SourceError as e:
-            if e.kind == "no_text":                                        # got the page, there is no text in it: said once, not asked again
-                no_text[doc["doc_id"]] = {"url": doc["url"], "reason": str(e), "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
-                rep.no_text.append((doc["doc_id"], str(e)))
+            if e.kind in ("no_text", "non_prose"):                         # got the page, there is no text (or no prose) in it: said once, not asked again
+                no_text[doc["doc_id"]] = {"url": doc["url"], "reason": str(e), "kind": e.kind, "at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z")}
+                (rep.no_text if e.kind == "no_text" else rep.non_prose).append((doc["doc_id"], str(e)))
+                rep.docs.append({"doc_id": doc["doc_id"], "outcome": e.kind, "attempts": 0, "input": 0, "output": 0, "reasoning": 0, "cost": 0.0})
                 save()
             else:
                 rep.source_errors.append((doc["doc_id"], str(e)))
@@ -281,6 +295,8 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
             rep.failed_validation.append((doc["doc_id"], errors))
             rep.rejected.append((doc["doc_id"], trace[-1]["output"] if trace else ""))
             rep.first_errors.append((doc["doc_id"], trace[0]["errors"] if trace else []))
+            rep.docs.append({"doc_id": doc["doc_id"], "outcome": "pending", "attempts": usage["attempts"], "input": usage["input_tokens"], "output": usage["output_tokens"],
+                             "reasoning": usage["reasoning_tokens"], "cost": cfg.cost_usd(usage["input_tokens"], usage["output_tokens"])})
             save()
             continue
         for k in [k for k in failures if k.startswith(doc["doc_id"] + "|")]:
@@ -288,10 +304,15 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
         chg = CH.from_redline(redlines[(doc["currency"], doc["meeting_date"])]) if doc["type"] == "statement" and (doc["currency"], doc["meeting_date"]) in redlines else None
         records[doc["doc_id"]] = _record(doc, prompt, src, ok, chg, usage, cfg, now)
         rep.new += 1
-        if trace:
+        if not ok.ok:                                                              # published with what passed: the rest was removed
+            rep.partial.append((doc["doc_id"], ok.dropped_points, ok.dropped_quotes))
+        elif trace:
             rep.retried.append((doc["doc_id"], trace[0]["errors"]))
         else:
             rep.first_pass += 1
+        rep.docs.append({"doc_id": doc["doc_id"], "outcome": "partial" if not ok.ok else "full after retry" if trace else "full", "attempts": usage["attempts"], "input": usage["input_tokens"],
+                         "output": usage["output_tokens"], "reasoning": usage["reasoning_tokens"], "cost": cfg.cost_usd(usage["input_tokens"], usage["output_tokens"]),
+                         "points": len(ok.points), "dropped": len(ok.dropped_points), "quotes": len(ok.quotes), "dropped_quotes": len(ok.dropped_quotes)})
         save()
     rep.cost_usd = cfg.cost_usd(rep.input_tokens, rep.output_tokens)
     rep.pending = sum(1 for d in todo if not is_done(records.get(d["doc_id"]), d, PR.for_type(d["type"]), cfg) and not failed_before(failures, d, PR.for_type(d["type"]), d.get("text_sha256"), cfg)
@@ -299,14 +320,15 @@ def run_summaries(paths, today: date, *, client=None, fetcher: Optional[Fetcher]
     save()
     state = state if state is not None else load_state(paths)
     s = state.setdefault(STATE_KEY, {"totals": {"calls": 0, "input_tokens": 0, "output_tokens": 0, "summaries": 0}})
-    active = bool(rep.calls or rep.new or rep.failed_validation or rep.stopped or rep.no_text)
+    active = bool(rep.calls or rep.new or rep.failed_validation or rep.stopped or rep.no_text or rep.non_prose)
     if active or "last_run" not in s:                     # a run that did nothing leaves state.json alone (no commit for a timestamp)
         s["last_run"] = {"at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"), "new": rep.new, "unchanged": rep.unchanged, "failed_validation": len(rep.failed_validation),
                      "source_errors": len(rep.source_errors), "no_text": len(rep.no_text), "calls": rep.calls, "input_tokens": rep.input_tokens, "output_tokens": rep.output_tokens,
                      "reasoning_tokens": rep.reasoning_tokens, "usage_estimated": rep.usage_estimated, "cost_usd": rep.cost_usd, "stopped": rep.stopped, "pending": rep.pending}
     for k, v in (("calls", rep.calls), ("input_tokens", rep.input_tokens), ("output_tokens", rep.output_tokens), ("summaries", rep.new)):
         s["totals"][k] = s["totals"].get(k, 0) + v
-    save_state(paths, state)
+    if persist:
+        save_state(paths, state)                            # (a scratch run - a measurement - leaves state.json alone)
     return rep
 
 
@@ -339,9 +361,9 @@ def estimate(paths, today: date, *, fetcher: Optional[Fetcher] = None, cfg: Opti
         if is_done(records.get(doc["doc_id"]), doc, prompt, cfg) or failed_before(failures, doc, prompt, doc.get("text_sha256"), cfg) or is_no_text(no_text, doc):
             continue
         try:
-            src = SRC.load(doc, fetcher, cfg.max_source_chars)
+            src = SRC.load(doc, fetcher, cfg.max_source_chars, prose=cfg.non_prose)
         except SRC.SourceError as e:
-            est.source_errors.append((doc["doc_id"], f"{e} [{'would be marked no_text' if e.kind == 'no_text' else 'transient'}]"))
+            est.source_errors.append((doc["doc_id"], f"{e} [{'would be marked ' + e.kind if e.kind in ('no_text', 'non_prose') else 'transient'}]"))
             continue
         tokens = (len(prompt.system) + sum(len(p) + 8 for p in src.paragraphs)) // cfg.chars_per_token
         est.documents.append((doc["doc_id"], doc["type"], src.chars_sent, tokens))

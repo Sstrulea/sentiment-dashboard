@@ -73,6 +73,48 @@ limits:                               # the automatic check before anything is w
   quotes: [1, 5]
   quote_chars: [15, 500]
   summary_total_chars: 1800
+publish:                              # each point and each quote is checked on its own; after the one retry the ones that still fail are removed
+  min_points: 3                       # ... and the summary is published when at least this many valid points remain (else it stays pending)
+decision:                             # a decision statement (these types) must keep a valid point that states the decision on the policy rate, else it stays pending
+  types: [statement]
+  rate_terms:                         # the rate (a phrase or a word: whole words)
+    - target range
+    - policy rate
+    - cash rate
+    - funds rate
+    - Bank Rate
+    - overnight rate
+    - call rate
+    - interest rate
+    - interest rates
+    - policy interest rate
+    - deposit facility rate
+    - refinancing rate
+    - official cash rate
+    - OCR
+    - guideline
+  action_terms:                       # ... and an action on it (forms are matched: raise / raised / raising)
+    - decided
+    - decision
+    - maintain
+    - keep
+    - kept
+    - hold
+    - held
+    - leave
+    - left
+    - unchanged
+    - raise
+    - lower
+    - cut
+    - reduce
+    - increase
+    - set
+    - encourage
+non_prose:                            # a source that is a deck of tables or slides, not text: marked non_prose, not summarised (the UI shows the link)
+  prose_share_min: 0.5                # share of the characters that sit in paragraphs of full sentences
+  digit_ratio_max: 0.08               # digits / characters
+  short_share_max: 0.5                # share of paragraphs shorter than 40 characters
 grounding:                            # every summary point carries evidence; the verifier checks it (the only gate that writes)
   evidence_paragraphs: [1, 3]         # a point cites 1-3 paragraphs
   fragments: [1, 3]                   # ... and 1-3 fragments (one per claim of the point), each of 5-40 words, verbatim, from one of them
@@ -111,6 +153,18 @@ grounding:                            # every summary point carries evidence; th
     - agreed
     - wants
     - wanted
+  allowed_names:                      # names that need not be in the cited paragraphs: the bank's own bodies (with the bank, the committee and the speaker of the document with their title)
+    - Governing Council
+    - Governing Board
+    - Executive Board
+    - Monetary Policy Committee
+    - Monetary Policy Board
+    - Monetary Policy Meeting
+    - Policy Board
+    - Board of Governors
+    - Federal Open Market Committee
+    - Open Market Committee
+    - Monetary Authority
   negations:                          # a point has a negation exactly when its closest source sentence has one ("not only" is not one)
     - not
     - "no"

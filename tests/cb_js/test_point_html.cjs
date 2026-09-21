@@ -14,6 +14,9 @@ const listeners = {};
 const ctx = { document: { addEventListener: (t, f) => { listeners[t] = f; } } };
 vm.createContext(ctx);
 vm.runInContext(cut("  function esc(s) {", "  function fmtDate") + cut("  function markFragments(", "  function summaryBlock"), ctx);
+const blockCtx = { document: { addEventListener: () => {} }, NA: "n/a", fmtDate: (d) => d };                                            // the whole summary block, with the two helpers it needs
+vm.createContext(blockCtx);
+vm.runInContext(cut("  function esc(s) {", "  function fmtDate") + cut("  function changesBlock(", "  function summarySlot"), blockCtx);
 
 const F1 = "Economic activity is expanding at a solid pace.", F2 = "Inflation remains elevated.";
 const ev = { paragraphs: [3, 4], fragments: [{ text: F1, paragraph: 3 }, { text: F2, paragraph: 4 }], coverage: 1,
@@ -58,4 +61,15 @@ let clicked = 0;
 listeners.keydown({ key: "Enter", target: { classList: { contains: (c) => c === "cb-sum-text" }, click: () => { clicked++; } }, preventDefault() {} });
 if (clicked !== 1) fail("Enter on a focused point clicks it");
 listeners.click({ target: { closest: () => null } });                                                 // a click elsewhere does nothing
+// the note of what verification removed
+const base = { points: ["p one", "p two", "p three"], evidence: [null, null, null], quotes: [], note: "factual summary", model: "m", prompt_version: "x-v6", generated: "2026-09-21", provider: "openai", changes: null, truncated: false };
+const block = vm.runInContext("summaryBlock", blockCtx);
+const none = block(Object.assign({}, base, { dropped: [] }));
+if (none.includes("cb-sum-dropped")) throw new Error("no note when nothing was removed: " + none);
+if (block(base).includes("cb-sum-dropped")) throw new Error("no note for a record without the field");
+const one = block(Object.assign({}, base, { dropped: [{ text: 'a "bad" <point>', reason: "not supported: 'bonds'" }] }));
+if (!one.includes('<div class="cb-sum-dropped" title="\u201ca &quot;bad&quot; &lt;point&gt;\u201d: not supported: \'bonds\'">1 point removed by verification</div>')) throw new Error("one point removed: " + one);
+const two = block(Object.assign({}, base, { dropped: [{ text: "x", reason: "r1" }, { text: "y", reason: "r2" }] }));
+if (!two.includes("2 points removed by verification") || !two.includes("\u201cx\u201d: r1\n\u201cy\u201d: r2")) throw new Error("two points removed: " + two);
+if (two.indexOf("cb-sum-points") > two.indexOf("cb-sum-dropped")) throw new Error("the note comes after the points");
 console.log("point evidence ok");

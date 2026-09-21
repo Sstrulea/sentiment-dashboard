@@ -650,7 +650,8 @@
     }).join("") + "</div>";
     const foot = '<div class="cb-sum-foot">' + esc(s.note.charAt(0).toUpperCase() + s.note.slice(1)) + " · " + (s.provider ? esc(s.provider) + " " : "") + esc(s.model) + " · " + esc(s.prompt_version) + " · generated " + fmtDate(s.generated) +
       (s.truncated ? " · covers the first part of a long document only" : "") + "</div>";
-    return '<div class="cb-summary">' + pts + (s.changes ? changesBlock(s.changes) : "") + qs + foot + "</div>";
+    const dropped = s.dropped && s.dropped.length ? '<div class="cb-sum-dropped" title="' + esc(s.dropped.map(function (d) { return "\u201c" + d.text + "\u201d: " + d.reason; }).join("\n")) + '">' + s.dropped.length + (s.dropped.length === 1 ? " point" : " points") + " removed by verification</div>" : "";
+    return '<div class="cb-summary">' + pts + dropped + (s.changes ? changesBlock(s.changes) : "") + qs + foot + "</div>";
   }
   function summarySlot(slot) {                                      // the summary when ready; otherwise the pending marker, the reason in its tooltip
     if (slot && slot.status === "ready" && SUMMARIES[slot.doc_id]) return summaryBlock(SUMMARIES[slot.doc_id]);

@@ -470,6 +470,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--summaries-bank", action="append", metavar="CCY", help="summaries stage: only these banks (repeatable), e.g. USD")
     ap.add_argument("--summaries-type", action="append", metavar="TYPE", help="summaries stage: only these document types (repeatable), e.g. statement")
     ap.add_argument("--summaries-doc", action="append", metavar="DOC_ID", help="summaries stage: only these documents (repeatable), e.g. USD:statement:2026-09-16")
+    ap.add_argument("--summaries-effort", choices=("low", "medium", "high"), help="summaries stage: the reasoning effort of this run (default: the config's)")
+    ap.add_argument("--summaries-scratch", action="store_true", help="summaries stage: a measurement - write the summaries to a scratch directory and leave data/ and state.json alone")
     ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
@@ -539,12 +541,21 @@ def main(argv: list[str] | None = None) -> int:
     if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
         try:
             from .cb_summarize import run as sum_run
-            narrow = dict(banks=set(a.summaries_bank or []) or None, types=set(a.summaries_type or []) or None, only=set(a.summaries_doc or []) or None)
+            narrow = dict(banks=set(a.summaries_bank or []) or None, types=set(a.summaries_type or []) or None,
+                          only={d for v in (a.summaries_doc or []) for d in v.split(",") if d.strip()} or None)                      # (a comma separates documents)
             if a.summaries_dry_run:
                 text = sum_run.estimate_report(sum_run.estimate(paths, today, **narrow))
                 emit(text, "### summaries (dry run)\n\n```\n" + text + "\n```")
             else:
-                emit(*dsets.summaries_report(sum_run.run_summaries(paths, today, state=load_state(paths), **narrow)))
+                import dataclasses
+                import tempfile
+                from .cb_summarize.config import load as load_summaries_config
+                cfg = load_summaries_config()
+                if a.summaries_effort:
+                    cfg = dataclasses.replace(cfg, reasoning_effort=a.summaries_effort)
+                if a.summaries_scratch:
+                    paths.summaries = Path(tempfile.mkdtemp(prefix="cb_scratch_"))
+                emit(*dsets.summaries_report(sum_run.run_summaries(paths, today, state={} if a.summaries_scratch else load_state(paths), cfg=cfg, persist=not a.summaries_scratch, **narrow)))
         except Exception as e:
             log.exception("summaries stage failed")
             emit(f"summaries: FAILED {type(e).__name__}: {e}", f"### summaries\n\nFAILED `{type(e).__name__}: {e}`")

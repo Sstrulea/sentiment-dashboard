@@ -110,7 +110,7 @@ def test_the_grounding_and_vocabulary_settings_are_the_approved_ones():
 def test_every_document_type_has_a_prompt_with_a_pinned_version():
     reg = PR.registry()
     current = {PR.load(k).version for k in PR.KINDS}
-    assert current == {"statement-v5", "transcript-v5", "minutes-v5", "speech-v5"} and current <= set(reg)
+    assert current == {"statement-v6", "transcript-v6", "minutes-v6", "speech-v6"} and current <= set(reg)
     for k in PR.KINDS:
         p = PR.load(k)
         assert p.version.startswith(k) and re.fullmatch(r"[a-z]+-v\d+", p.version) and reg[p.version] == p.sha256 == hashlib.sha256(p.system.encode()).hexdigest()
@@ -119,9 +119,9 @@ def test_every_document_type_has_a_prompt_with_a_pinned_version():
 
 def test_the_registry_keeps_the_versions_that_were_replaced_and_they_differ_from_the_current_ones():
     reg = PR.registry()
-    assert {k for k in reg if k.endswith(("-v1", "-v2", "-v3", "-v4"))} == {f"{k}-v{n}" for k in PR.KINDS for n in (1, 2, 3, 4)}   # history: a summary made under v1-v4 names a known prompt
+    assert {k for k in reg if k.endswith(("-v1", "-v2", "-v3", "-v4", "-v5"))} == {f"{k}-v{n}" for k in PR.KINDS for n in (1, 2, 3, 4, 5)}   # history: a summary made under v1-v5 names a known prompt
     for k in PR.KINDS:
-        assert len({reg[f"{k}-v1"], reg[f"{k}-v2"], reg[f"{k}-v3"], reg[f"{k}-v4"], reg[PR.load(k).version]}) == 5                      # every version is another prompt
+        assert len({reg[f"{k}-v1"], reg[f"{k}-v2"], reg[f"{k}-v3"], reg[f"{k}-v4"], reg[f"{k}-v5"], reg[PR.load(k).version]}) == 6                      # every version is another prompt
 
 
 def test_editing_a_prompt_without_a_new_version_is_caught(tmp_path):
@@ -172,7 +172,7 @@ def test_the_summaries_step_runs_only_with_the_secret_and_never_fails_the_workfl
     assert names.index("Collect") < names.index("Check for the summaries key") < names.index("Summaries") < names.index("Render Central Banks pages") < names.index("Commit + push")
     assert step["run"].startswith("python -m src.cb_collect --stage summaries")
     assert step["if"] == "${{ steps.key.outputs.present == 'true' && (!inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}"
-    assert step["continue-on-error"] is True and step["timeout-minutes"] <= 10
+    assert step["continue-on-error"] is True and step["timeout-minutes"] <= 15
     check = by["Check for the summaries key"]
     assert check["id"] == "key" and check["env"] == {"KEY": "${{ secrets.OPENAI_API_KEY }}"} and "GITHUB_OUTPUT" in check["run"]
     assert step["env"]["OPENAI_API_KEY"] == "${{ secrets.OPENAI_API_KEY }}"
@@ -187,7 +187,9 @@ def test_the_summaries_step_runs_only_with_the_secret_and_never_fails_the_workfl
 def test_a_dispatch_can_choose_the_stage_the_bank_and_the_type_without_shell_injection(workflow):
     on = workflow.get("on", workflow.get(True))
     inputs = on["workflow_dispatch"]["inputs"]
-    assert list(inputs) == ["force_calendar_check", "stage", "bank", "type", "doc"]
+    assert list(inputs) == ["force_calendar_check", "stage", "bank", "type", "doc", "effort", "scratch"]
+    assert inputs["effort"]["type"] == "choice" and inputs["effort"]["options"] == ["", "low", "medium", "high"] and inputs["effort"]["default"] == ""
+    assert inputs["scratch"]["type"] == "boolean" and inputs["scratch"]["default"] is False
     assert inputs["stage"]["type"] == "choice" and inputs["stage"]["default"] == "all"
     assert inputs["stage"]["options"] == ["all", "market", "official", "decisions", "documents", "projections", "calendar", "summaries"]
     assert inputs["bank"]["type"] == inputs["type"]["type"] == inputs["doc"]["type"] == "string" and inputs["bank"]["default"] == inputs["type"]["default"] == inputs["doc"]["default"] == ""
@@ -199,6 +201,8 @@ def test_a_dispatch_can_choose_the_stage_the_bank_and_the_type_without_shell_inj
     s = by["Summaries"]
     assert s["env"]["BANK"] == "${{ inputs.bank }}" and s["env"]["TYPE"] == "${{ inputs.type }}" and s["env"]["DOC"] == "${{ inputs.doc }}"
     assert '${BANK:+--summaries-bank "$BANK"}' in s["run"] and '${TYPE:+--summaries-type "$TYPE"}' in s["run"] and '${DOC:+--summaries-doc "$DOC"}' in s["run"]
+    assert s["env"]["EFFORT"] == "${{ inputs.effort }}" and s["env"]["SCRATCH"] == "${{ inputs.scratch && 'yes' || '' }}"
+    assert '${EFFORT:+--summaries-effort "$EFFORT"}' in s["run"] and "${SCRATCH:+--summaries-scratch}" in s["run"]
     for name, step in by.items():
         assert "${{ inputs." not in step.get("run", "").replace("${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}", ""), name   # an input reaches the shell only through env
 
@@ -226,7 +230,8 @@ def test_the_commit_step_still_adds_only_the_central_banks_files(workflow):
 
 
 def test_the_workflow_job_timeout_leaves_room_for_the_summaries_step(workflow):
-    assert workflow["jobs"]["refresh"]["timeout-minutes"] >= 15
+    step = steps_of(workflow)["Summaries"]["timeout-minutes"]
+    assert workflow["jobs"]["refresh"]["timeout-minutes"] >= step + 15                                                # the collect stages (~3 min) and the rest, before and after it
 
 
 def test_data_dir_layout_is_the_agreed_one():

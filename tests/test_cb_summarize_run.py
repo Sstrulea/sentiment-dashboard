@@ -167,7 +167,7 @@ def test_a_bad_first_output_gets_one_retry_with_the_errors_as_feedback_and_a_goo
     assert SS.load(paths.summaries)[FED_KEY]["usage"]["attempts"] == 2
 
 
-@pytest.mark.parametrize("case", sorted(BAD))
+@pytest.mark.parametrize("case", sorted(k for k in BAD if k != "invented quote"))                                                # (an invented quote alone: the summary is published without it - see below)
 def test_two_bad_outputs_write_nothing_and_mark_validation_failed(paths, case):
     bad, expected = BAD[case]
     c = RecordedClient([bad, bad])
@@ -675,7 +675,7 @@ def test_a_first_attempt_that_passes_is_counted_and_has_nothing_to_explain(paths
     rep = fed_only(paths, RecordedClient([dumps(GOOD_FED)]))
     assert (rep.first_pass, rep.retried, rep.rejected) == (1, [], [])
     line, md = ds.summaries_report(rep)
-    assert "  ATTEMPTS 1 passed at the first attempt, 0 after the retry, 0 failed twice" in line and "RETRIED" not in line and "REJECTED" not in line
+    assert "  ATTEMPTS 1 passed at the first attempt, 0 after the retry, 0 published partially, 0 failed twice" in line and "RETRIED" not in line and "REJECTED" not in line
 
 
 def test_a_retry_that_passes_says_what_the_first_attempt_got_wrong(paths):
@@ -686,7 +686,7 @@ def test_a_retry_that_passes_says_what_the_first_attempt_got_wrong(paths):
     doc_id, errors = rep.retried[0]
     assert doc_id == FED_KEY and any(expected in e for e in errors)
     line, md = ds.summaries_report(rep)
-    assert "  ATTEMPTS 0 passed at the first attempt, 1 after the retry, 0 failed twice" in line
+    assert "  ATTEMPTS 0 passed at the first attempt, 1 after the retry, 0 published partially, 0 failed twice" in line
     assert f"  RETRIED {FED_KEY}: the first attempt failed - " in line and "summary point 3 is not supported by the paragraph(s) it cites [2]" in line and "REJECTED" not in line
 
 
@@ -698,7 +698,7 @@ def test_a_failed_document_puts_the_refused_output_in_the_log(paths):
     assert rep.new == 0 and rep.first_pass == 0 and rep.retried == [] and [d for d, _ in rep.failed_validation] == [FED_KEY]
     assert rep.rejected == [(FED_KEY, other)]                                                                           # the LAST output the check refused
     line, md = ds.summaries_report(rep)
-    assert "  ATTEMPTS 0 passed at the first attempt, 0 after the retry, 1 failed twice" in line
+    assert "  ATTEMPTS 0 passed at the first attempt, 0 after the retry, 0 published partially, 1 failed twice" in line
     assert f"  FIRST ATTEMPT {FED_KEY} failed - " in line and "summary point 3 is not supported by the paragraph(s) it cites [2]" in line.split("FIRST ATTEMPT")[1].split("\n")[0]
     assert f"  REJECTED OUTPUT {FED_KEY}: " in line and "government bonds and corporate debt" in line
     long = ds.summaries_report(dataclasses.replace(rep, rejected=[(FED_KEY, "word " * 2000)]))[0]
@@ -713,7 +713,7 @@ NEG_PARAS = ["Good morning. I am not going to talk about the past in this speech
 def test_the_run_checks_the_negation_and_the_banks_own_name_words_it_is_configured_with():
     inverted = with_point(0, text="Waller says he is going to talk about the past in this speech.", evidence={"paragraphs": [1], "fragments": ["I am not going to talk about the past in this speech,"]})
     ok, usage, errs = speech_run(RecordedClient([inverted, inverted]), ("waller",), paras=NEG_PARAS)
-    assert ok is None and any("summary point 1 has none but the closest sentence of the paragraph(s) it cites has one" in e for e in errs)
+    assert ok is None and any("summary point 1 has none but the closest clause of the paragraph(s) it cites has one" in e for e in errs)
     ok, usage, errs = speech_run(RecordedClient([inverted]), ("waller",), cfg=dataclasses.replace(CFG, negations=()), paras=NEG_PARAS)
     assert ok is not None and ok.ok, errs                                                                               # the configured negations decide: none configured, none checked
     bank = with_point(0, text="The Reserve Bank of Australia talks about the economy and the outlook for monetary policy.")
@@ -727,9 +727,9 @@ def test_the_run_hands_the_officials_and_the_people_of_the_banks_roster_to_the_s
     seen_officials, seen_people = {}, {}
     real_load, real_sum = SRC.load, R.summarise
 
-    def load(doc, fetcher, max_chars, officials=()):
+    def load(doc, fetcher, max_chars, officials=(), prose=None):
         seen_officials[doc["doc_id"]] = officials
-        return real_load(doc, fetcher, max_chars, officials)
+        return real_load(doc, fetcher, max_chars, officials, prose)
 
     def spy(client, cfg, prompt, doc, src, speakers=(), trace=None, people=()):
         seen_people[doc["doc_id"]] = people

@@ -1,4 +1,4 @@
-prompt_version: minutes-v5
+prompt_version: minutes-v6
 ---
 The document records a monetary policy meeting: minutes, an account, a summary of opinions or a summary of deliberations.
-Summarise the assessments of the economy and of financial conditions that the document reports, the policy discussion, the decision and any disagreement, attributing views to "members" or "participants" as the document does. Give a count of members only if the document gives one.
+Summarise the assessments of the economy and of financial conditions that the document reports, the policy discussion, the decision and any disagreement, attributing views to "members" or "participants" as the document does. Give a count of members only if the document gives one. The decision on the policy rate (what the Committee decided and how the members voted, as the document reports it) is one of the points.
