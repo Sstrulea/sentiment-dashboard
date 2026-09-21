@@ -216,7 +216,7 @@ def test_the_word_case_does_not_matter_and_neither_does_the_inflection():
         r = with_real(snb, "The SNB is leaving the SNB policy rate unchanged at 0%.", f"The SNB {form} growth of around 1% for 2026 as a whole.",
                       "Unemployment has risen somewhat since the last monetary policy assessment.", quote_of="the SNB currently expects growth of around 1%")
         assert r.ok, (form, r.errors)
-    own = with_real(snb, "The SNB is leaving the SNB policy rate unchanged at 0%.", "Growth of around 1% for 2026 as a whole is expected.",
+    own = with_real(snb, "The SNB is leaving the SNB policy rate unchanged at 0%.", "Wage growth of around 1% for 2026 as a whole is expected.",
                     "Unemployment has risen somewhat since the last monetary policy assessment.", quote_of="the SNB currently expects growth of around 1%")
     assert not own.ok and any("'expected' of summary point 2 is not attributed to the bank or to a named speaker" in e for e in own.errors)   # "expected" is on the list too
     other = with_real(snb, "The SNB is leaving the SNB policy rate unchanged at 0%.", "The SNB signals growth of around 1% for 2026 as a whole.",
@@ -246,10 +246,10 @@ def test_a_soft_word_the_document_does_not_use_is_refused_even_when_attributed()
 
 def test_a_soft_word_in_the_summarys_own_voice_is_refused_even_when_the_document_uses_it():
     aud = real_paragraphs("AUD", "2026-08-11")
-    for own_voice in ("Inflation is likely to remain high for some time.",
-                      "The Board held the cash rate. Inflation is likely to remain high for some time.",                # the subject is in ANOTHER sentence
-                      "The Board held the cash rate; inflation is likely to remain high for some time.",                # ... or before a semicolon
-                      "Growth data suggests that inflation is likely to remain high."):
+    for own_voice in ("Wages are likely to remain high for some time.",
+                      "The Board held the cash rate. Wages are likely to remain high for some time.",                   # the subject is in ANOTHER sentence
+                      "The Board held the cash rate; wages are likely to remain high for some time.",                   # ... or before a semicolon
+                      "Growth data suggests that wages are likely to remain high."):
         r = with_real(aud, "The Board decided on the cash rate.", own_voice, "The Board describes inflation.", quote_of="inflation is likely to remain high for some time")
         assert not r.ok and any("is not attributed to the bank" in e and "never in your own voice" in e for e in r.errors), own_voice
 
@@ -259,14 +259,14 @@ def test_the_attribution_must_come_before_the_word_in_the_same_sentence():
     ok = with_real(aud, "At its meeting today, the Board decided to leave the cash rate target unchanged.", "The Board states that, with the pass-through of higher fuel prices, inflation is likely to remain high.",
                    "Today's policy decision was unanimous.", quote_of="inflation is likely to remain high for some time")
     assert ok.ok, ok.errors                                                                                            # the subject may be several words before
-    late = with_real(aud, "At its meeting today, the Board decided to leave the cash rate target unchanged.", "Inflation is likely to remain high, the Board says.",
+    late = with_real(aud, "At its meeting today, the Board decided to leave the cash rate target unchanged.", "Wages are likely to remain high, the Board says.",
                      "Today's policy decision was unanimous.", quote_of="inflation is likely to remain high for some time")
     assert not late.ok and any("is not attributed" in e for e in late.errors)                                          # "the Board" comes AFTER the word
 
 
 def test_one_error_per_offending_word_and_the_feedback_names_the_point():
     aud = real_paragraphs("AUD", "2026-08-11")
-    r = with_real(aud, "Inflation is likely to remain high for some time.", "It suggests policy is on hold, and the cash rate is unchanged.", "Today's policy decision was unanimous.",
+    r = with_real(aud, "Wages are likely to remain high for some time.", "It suggests policy is on hold, and the cash rate is unchanged.", "Today's policy decision was unanimous.",
                   quote_of="inflation is likely to remain high for some time")
     words = [e for e in r.errors if "the word" in e]
     assert len(words) == 2 and "'likely' of summary point 1" in words[0] and "'suggests' of summary point 2" in words[1] and "not in the document" in words[1]
@@ -516,11 +516,11 @@ def test_a_named_speaker_may_be_the_attribution_with_or_without_a_title():
 
 def test_the_speaker_must_come_before_the_word_in_the_same_sentence_and_be_a_known_name():
     base = ["Waller talks about the economy and the outlook for monetary policy.", "Waller supports a cautious approach to the next steps in policy."]
-    own = speech_check(*base, "Inflation is likely to remain above the 2 percent goal for some time.")
+    own = speech_check(*base, "Prices are likely to remain above the 2 percent goal for some time.")
     assert not own.ok and any("'likely' of summary point 3 is not attributed to the bank or to a named speaker" in e for e in own.errors)
-    late = speech_check(*base, "Inflation is likely to remain above the 2 percent goal for some time, Waller says.")
+    late = speech_check(*base, "Prices are likely to remain above the 2 percent goal for some time, Waller says.")
     assert not late.ok and any("is not attributed" in e for e in late.errors)
-    other_sentence = speech_check(*base, "Waller speaks. Inflation is likely to remain above the 2 percent goal for some time.")
+    other_sentence = speech_check(*base, "Waller speaks. Prices are likely to remain above the 2 percent goal for some time.")
     assert not other_sentence.ok
     stranger = speech_check(*base, "Smith expects inflation to move down as the labor market cools.")                # a name that is neither the bank's nor a known speaker
     assert not stranger.ok and any("'expects' of summary point 3 is not attributed" in e for e in stranger.errors)

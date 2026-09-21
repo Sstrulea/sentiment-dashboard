@@ -324,9 +324,9 @@ def test_a_pronoun_is_an_attribution_when_the_speaker_or_the_bank_is_named_earli
     "He expects inflation to move down as the labor market cools.",
     "The labor market cools. He expects inflation to move down.",
     "It expects inflation to move down as the labor market cools, says Waller.",
-    "The Board says the labor market cools. Waller sees risks to employment. Inflation is likely to move down.",
-    "Waller says the labor market cools. He sees risks to employment. Inflation is likely to move down.",                 # a pronoun and the name, but in other sentences than the word
-    "The risks to employment are more important as inflation is likely to move down, he says.",
+    "The Board says the labor market cools. Waller sees risks to employment. Prices are likely to move down.",
+    "Waller says the labor market cools. He sees risks to employment. Prices are likely to move down.",                    # a pronoun and the name, but in other sentences than the word
+    "The risks to employment are more important as prices are likely to move down, he says.",
 ])
 def test_a_pronoun_alone_or_before_the_name_is_not_an_attribution(text):
     r = check_speech(text)
