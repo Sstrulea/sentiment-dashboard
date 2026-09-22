@@ -5,43 +5,6 @@
  },
  "events": [
   {
-   "bank": "JPY",
-   "date": "2026-09-18",
-   "dispatch": {
-    "inputs": {
-     "bank": "JPY",
-     "date": "2026-09-18",
-     "event": "decision"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fallback_at_window_end": true,
-   "grace_minutes": 30,
-   "id": "decision:JPY:2026-09-18",
-   "kind": "boj_window",
-   "window_end": "2026-09-18T04:30:00Z",
-   "window_start": "2026-09-18T02:30:00Z"
-  },
-  {
-   "at": "2026-09-18T06:30:00Z",
-   "at_basis": "conference",
-   "bank": "JPY",
-   "date": "2026-09-18",
-   "dispatch": {
-    "inputs": {
-     "bank": "JPY",
-     "date": "2026-09-18",
-     "event": "conference"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-09-18T08:30:00Z",
-   "grace_minutes": 240,
-   "id": "conference:JPY:2026-09-18",
-   "kind": "conference",
-   "lead_minutes": 0
-  },
-  {
    "at": "2026-09-24T07:30:00Z",
    "bank": "CHF",
    "date": "2026-09-24",
@@ -339,8 +302,8 @@
   }
  ],
  "horizon": {
-  "from": "2026-09-18",
-  "to": "2026-11-20"
+  "from": "2026-09-19",
+  "to": "2026-11-21"
  },
  "regular": [
   {
