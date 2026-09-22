@@ -211,6 +211,457 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     15,
+     22,
+     23,
+     44,
+     51,
+     62,
+     65,
+     83
+    ],
+    "paragraphs_sent": 98,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:7fec970c8aaf",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 1 has none but the closest clause of the paragraph(s) it cites has one: “The overall thesis is that there is no evidence of the emergence of a wage-price spiral in the present circumstances and recent data suggest such an outcome is ” (its clause: “Monetary Policy Board member Ross says recent data suggest such an outcome is unlikely.”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Monetary Policy Board member Ross says recent data suggest such an outcome is unlikely."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-22T08:41:51Z",
+   "input_sha256": "3775ea5455755cceea5d683ff20b861db678be287367a9e6d459eaf27613a878",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3410,
+     "point": 1,
+     "source_text": "79",
+     "start": 3408,
+     "text": "79"
+    },
+    {
+     "end": 3373,
+     "point": 1,
+     "source_text": "31",
+     "start": 3371,
+     "text": "31"
+    },
+    {
+     "end": 3454,
+     "point": 1,
+     "source_text": "1960",
+     "start": 3450,
+     "text": "1960"
+    },
+    {
+     "end": 3464,
+     "point": 1,
+     "source_text": "2022",
+     "start": 3460,
+     "text": "2022"
+    },
+    {
+     "end": 1670,
+     "point": 2,
+     "source_text": "1970",
+     "start": 1666,
+     "text": "1970"
+    },
+    {
+     "end": 1670,
+     "point": 3,
+     "source_text": "1970",
+     "start": 1666,
+     "text": "1970"
+    },
+    {
+     "end": 181,
+     "point": 4,
+     "source_text": "2026",
+     "start": 177,
+     "text": "2026"
+    },
+    {
+     "end": 15227,
+     "point": 4,
+     "source_text": "2028",
+     "start": 15223,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-22",
+   "quotes": [
+    {
+     "end": 2263,
+     "paragraph": 15,
+     "start": 2094,
+     "text": "The overall thesis is that there is no evidence of the emergence of a wage-price spiral in the present circumstances and recent data suggest such an outcome is unlikely."
+    },
+    {
+     "end": 9575,
+     "paragraph": 44,
+     "start": 9489,
+     "text": "Together, these conditions allowed wage and price pressures to become more persistent."
+    },
+    {
+     "end": 10831,
+     "paragraph": 51,
+     "start": 10705,
+     "text": "These changes in Australia’s wage-setting mechanisms have made the wage-price dynamics of the 1970s much less likely to recur."
+    },
+    {
+     "end": 14272,
+     "paragraph": 62,
+     "start": 14107,
+     "text": "The recent data provide further reassurance: there is little evidence that a self-sustaining wage-price spiral has emerged following the latest inflationary episode."
+    },
+    {
+     "end": 20231,
+     "paragraph": 83,
+     "start": 20150,
+     "text": "It is in our collective interest to improve Australia’s productivity performance."
+    }
+   ],
+   "source": {
+    "chars": 23029,
+    "chars_sent": 23030,
+    "method": "html-selector",
+    "paragraphs_sent": 98,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3465,
+        "paragraph": 22,
+        "start": 3364,
+        "text": "Across 31 advanced economies, they identify 79 wage-price spiral episodes between the 1960s and 2022."
+       },
+       {
+        "end": 3710,
+        "paragraph": 23,
+        "start": 3603,
+        "text": "Only a small minority of these episodes were followed by a sustained acceleration in both wages and prices."
+       }
+      ],
+      "paragraphs": [
+       22,
+       23
+      ]
+     },
+     "text": "Monetary Policy Board member Ross says 79 wage-price spiral episodes were identified across 31 advanced economies between the 1960s and 2022, and only a small minority were followed by sustained acceleration in wages and prices."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 9146,
+        "paragraph": 44,
+        "start": 9067,
+        "text": "Strong labour demand and rising inflation expectations added to wage pressures."
+       },
+       {
+        "end": 9320,
+        "paragraph": 44,
+        "start": 9147,
+        "text": "Comparative wage justice helped transmit wage increases across workers and industries, while wage indexation carried the effects of past inflation into later wage decisions."
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "Monetary Policy Board member Ross says Australia’s 1970s experience combined strong labour demand and rising inflation expectations with comparative wage justice, wage indexation and agreements that could be revisited readily."
+    },
+    {
+     "evidence": {
+      "coverage": 0.944,
+      "fragments": [
+       {
+        "end": 11029,
+        "paragraph": 51,
+        "start": 10832,
+        "text": "The current enterprise bargaining arrangements, in particular, effectively operate as a shock absorber by constraining the bargaining capacity of those who are the subject of enterprise agreements."
+       },
+       {
+        "end": 11185,
+        "paragraph": 51,
+        "start": 11030,
+        "text": "Such employees are unable to pursue claims for increased wages until the enterprise agreement to which they are subject has passed its nominal expiry date."
+       },
+       {
+        "end": 10831,
+        "paragraph": 51,
+        "start": 10705,
+        "text": "These changes in Australia’s wage-setting mechanisms have made the wage-price dynamics of the 1970s much less likely to recur."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "Monetary Policy Board member Ross says current enterprise bargaining arrangements constrain bargaining capacity until an agreement has passed its nominal expiry date, making 1970s wage-price dynamics much less likely to recur."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14272,
+        "paragraph": 62,
+        "start": 14107,
+        "text": "The recent data provide further reassurance: there is little evidence that a self-sustaining wage-price spiral has emerged following the latest inflationary episode."
+       },
+       {
+        "end": 15228,
+        "paragraph": 65,
+        "start": 15053,
+        "text": "Further out, wages and broader labour cost growth are expected to moderate, while inflation is expected to decline gradually to the midpoint of the target range in early 2028."
+       }
+      ],
+      "paragraphs": [
+       62,
+       65
+      ]
+     },
+     "text": "Monetary Policy Board member Ross says recent data provide little evidence that a self-sustaining wage-price spiral has emerged, while August 2026 forecasts have inflation declining gradually to the target-range midpoint in early 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 20149,
+        "paragraph": 83,
+        "start": 20017,
+        "text": "But over the longer run, productivity growth is needed to generate sustainable increases in real wages and to lift living standards."
+       }
+      ],
+      "paragraphs": [
+       83
+      ]
+     },
+     "text": "Monetary Policy Board member Ross says productivity growth is needed over the longer run to generate sustainable increases in real wages and lift living standards."
+    }
+   ],
+   "title": "A Wage-price Spiral: What are the Chances?",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-mpb-2026-09-22.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 13762,
+    "output_tokens": 2444,
+    "reasoning_tokens": 885
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     24,
+     33,
+     34,
+     54,
+     62,
+     135,
+     158
+    ],
+    "paragraphs_sent": 160,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:8b5e15af4a13",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 3 has none but the closest clause of the paragraph(s) it cites has one: “but if we can keep inflation low and stable in the background and give businesses and households comfort that they don't have to worry about inflation” (its clause: “Governor Bullock says if the RBA can keep inflation low and stable”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Governor Bullock says if the RBA can keep inflation low and stable, businesses and households can concentrate on doing what they do best."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-22T08:41:51Z",
+   "input_sha256": "92a0a20e945645e58ad54c3ef459cf675f400b6abd1ed0e8420130c95b43cfd0",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-22",
+   "quotes": [
+    {
+     "end": 6383,
+     "paragraph": 24,
+     "start": 6223,
+     "text": "I think monetary policy really just needs to continue to focus on making sure that we limit indirect effects and we try to keep inflation expectations anchored."
+    },
+    {
+     "end": 9670,
+     "paragraph": 34,
+     "start": 9556,
+     "text": "So when we lower inflation, we don't lower the price level, we just lower the rate at which prices are increasing."
+    },
+    {
+     "end": 17367,
+     "paragraph": 54,
+     "start": 17128,
+     "text": "So we've got this awkward sequencing event at the moment where, in Australia at least, we are in a situation of excess demand, and the AI boom is adding to that demand ahead of any potential supply impacts that it might have going forward."
+    },
+    {
+     "end": 46498,
+     "paragraph": 135,
+     "start": 46428,
+     "text": "So you know I don't give forward guidance. I'm not signaling anything."
+    },
+    {
+     "end": 51118,
+     "paragraph": 158,
+     "start": 50832,
+     "text": "We can't fix productivity, but if we can keep inflation low and stable in the background and give businesses and households comfort that they don't have to worry about inflation, and they can concentrate on doing what they do best, then that's the best thing we can do for productivity."
+    }
+   ],
+   "source": {
+    "chars": 51516,
+    "chars_sent": 51517,
+    "method": "html-selector",
+    "paragraphs_sent": 160,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6383,
+        "paragraph": 24,
+        "start": 6223,
+        "text": "I think monetary policy really just needs to continue to focus on making sure that we limit indirect effects and we try to keep inflation expectations anchored."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Governor Bullock says monetary policy needs to limit indirect effects of supply shocks and keep inflation expectations anchored."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9320,
+        "paragraph": 33,
+        "start": 9242,
+        "text": "So inflation really, really hits the people on the lowest incomes the hardest."
+       },
+       {
+        "end": 9670,
+        "paragraph": 34,
+        "start": 9556,
+        "text": "So when we lower inflation, we don't lower the price level, we just lower the rate at which prices are increasing."
+       }
+      ],
+      "paragraphs": [
+       33,
+       34
+      ]
+     },
+     "text": "Governor Bullock says inflation hits people on the lowest incomes hardest, and lower inflation does not lower the price level."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17048,
+        "paragraph": 54,
+        "start": 16930,
+        "text": "everyone also agrees that there are very few signs yet that AI is actually influencing the supply side of the economy."
+       },
+       {
+        "end": 17367,
+        "paragraph": 54,
+        "start": 17259,
+        "text": "the AI boom is adding to that demand ahead of any potential supply impacts that it might have going forward."
+       }
+      ],
+      "paragraphs": [
+       54
+      ]
+     },
+     "text": "Governor Bullock says there are very few signs that AI is influencing the supply side, while the AI boom is adding to demand ahead of potential supply impacts."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21217,
+        "paragraph": 62,
+        "start": 21084,
+        "text": "We do observe closely what's going on in the housing market because it is one area through which monetary policy does have an impact."
+       }
+      ],
+      "paragraphs": [
+       62
+      ]
+     },
+     "text": "Governor Bullock says the RBA does not target housing prices but observes the housing market because monetary policy has an impact through it."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 46498,
+        "paragraph": 135,
+        "start": 46428,
+        "text": "So you know I don't give forward guidance. I'm not signaling anything."
+       },
+       {
+        "end": 46882,
+        "paragraph": 135,
+        "start": 46751,
+        "text": "The things we highlighted were excess demand, the issues to do with what's going on in the Middle East, and inflation expectations."
+       }
+      ],
+      "paragraphs": [
+       135
+      ]
+     },
+     "text": "Governor Bullock says she does not give forward guidance and cited excess demand, the Middle East and inflation expectations as risks."
+    }
+   ],
+   "title": "Fireside Chat at the Committee for Economic Development of Australia (CEDA)",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-gov-2026-09-22.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 26004,
+    "output_tokens": 2459,
+    "reasoning_tokens": 1034
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      5,
      9,
      12,
