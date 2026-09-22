@@ -17,7 +17,7 @@ GH_API = "https://api.github.com"
 # The dedupe marks (one per event and date) and the cached schedule live here. Create it once: `npx wrangler kv namespace create STATE`, then paste the id below.
 [[kv_namespaces]]
 binding = "STATE"
-id = "REPLACE_WITH_THE_ID_OF_npx_wrangler_kv_namespace_create_STATE"
+id = "364993fabf8b4f198ff4cbf3e7f4ab49"
 
 # Secret (never in this file): GH_TOKEN = a fine-grained token limited to this repository - Actions: read and write, Contents: read, Issues: read and write.
 #   npx wrangler secret put GH_TOKEN
