@@ -673,6 +673,9 @@ arătate dar nenumărate (`latency.measure_from` din config).
 **Limite asumate.** RBNZ e în spatele unui challenge Cloudflare: nu se așteaptă declarația (`skip_banks`). Latența acoperă până la comit-ul pe main; deploy-ul Vercel vine după. Cron-ul Cloudflare are granulație de 5 minute:
 de aceea evenimentul de decizie pleacă la tick-ul dinainte de `fire_at`, iar jobul, nu Worker-ul, așteaptă publicarea. Costul: planul gratuit (≈ 288 invocări/zi din 100 000; KV: zeci de scrieri/zi din 1 000).
 
-**Minute GitHub Actions** (repo privat: 2 000 min/lună pe planul Free, 3 000 pe Pro; repo public: nelimitat). Estimare din duratele reale (rotunjire în sus la minut, per job): cb-refresh ≈ 1,5 min/rulare, econ-refresh ≈ 2,05,
-retail 1, daily 1,05, guard 1. Cadența cerută (cb 12/zi, econ 24/zi în zilele lucrătoare + 6/zi weekend, evenimente ~50 min, guard-uri ~330, restul workflow-urilor ~280) ≈ **2 400 min/lună**: încape în Pro,
-nu în Free. Pentru Free, în `config/cb_trigger.yaml`: econ orar doar 06–21 UTC (în zilele lucrătoare) și la 6 h în rest, cb la 3 h, backup-uri la 8 h / 4 h → ≈ 1 800.
+**Minute GitHub Actions** — `Sstrulea/sentiment-dashboard` e **public** (`gh api repos/.../--jq '{private,visibility}'` → `false`, `"public"`, verificat 2026-09-21): minutele Actions sunt **nelimitate, gratuite**, deci
+niciun buget nu se aplică acum. Ipotetic, dacă repo-ul ar deveni privat (2 000 min/lună pe Free, 3 000 pe Pro), din duratele reale (rotunjire în sus la minut, per job): rulările regulate cb-refresh (la 2 h,
+neschimbate de FAZA 4 — Worker-ul păstrează exact cadența de dinainte, doar schimbă cine le declanșează) ≈ 504 min/lună; econ-refresh (orar în zilele lucrătoare + la 4 h în weekend, la fel neschimbată) ≈ 1 160
+min/lună — acestea existau deja înainte de FAZA 4. Ce adaugă FAZA 4: job-urile `guard` de pe schedulurile backup (≈ 328 rulări scurte/lună, ~330 min) + evenimentele de decizie/conferință (~5-6 decizii şi ~5
+conferinţe/lună, ≤ 15 min fiecare cel mult, tipic mult mai puţin) ≈ ~35-90 min. Total ipotetic ≈ **2 000-2 100 min/lună**: la limita planului Free, încape confortabil în Pro. Dacă ar trebui să încapă strict în
+Free pe repo privat, reducerea de propus ar fi pe **schedulurile backup** (mai rare: cb la 8 h, econ la 6 h în loc de 3 h/6 h), nu pe cadența Worker-ului, care ține prospeţimea datelor.
