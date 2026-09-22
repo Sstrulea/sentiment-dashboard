@@ -170,8 +170,8 @@ def test_the_summaries_step_runs_only_with_the_secret_and_never_fails_the_workfl
     by = steps_of(workflow)
     step = by["Summaries"]
     assert names.index("Collect") < names.index("Check for the summaries key") < names.index("Summaries") < names.index("Render Central Banks pages") < names.index("Commit + push")
-    assert step["run"].startswith("python -m src.cb_collect --stage summaries")
-    assert step["if"] == "${{ steps.key.outputs.present == 'true' && (!inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}"
+    assert "python -m src.cb_collect --stage summaries" in step["run"]
+    assert step["if"] == "${{ steps.key.outputs.present == 'true' && (inputs.event || !inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}"      # an event of the trigger runs it too
     assert step["continue-on-error"] is True and step["timeout-minutes"] <= 15
     check = by["Check for the summaries key"]
     assert check["id"] == "key" and check["env"] == {"KEY": "${{ secrets.OPENAI_API_KEY }}"} and "GITHUB_OUTPUT" in check["run"]
@@ -187,16 +187,16 @@ def test_the_summaries_step_runs_only_with_the_secret_and_never_fails_the_workfl
 def test_a_dispatch_can_choose_the_stage_the_bank_and_the_type_without_shell_injection(workflow):
     on = workflow.get("on", workflow.get(True))
     inputs = on["workflow_dispatch"]["inputs"]
-    assert list(inputs) == ["force_calendar_check", "stage", "bank", "type", "doc", "effort", "scratch"]
+    assert list(inputs) == ["force_calendar_check", "stage", "event", "date", "bank", "type", "doc", "effort", "scratch"]
     assert inputs["effort"]["type"] == "choice" and inputs["effort"]["options"] == ["", "low", "medium", "high"] and inputs["effort"]["default"] == ""
     assert inputs["scratch"]["type"] == "boolean" and inputs["scratch"]["default"] is False
     assert inputs["stage"]["type"] == "choice" and inputs["stage"]["default"] == "all"
-    assert inputs["stage"]["options"] == ["all", "market", "official", "decisions", "documents", "projections", "calendar", "summaries"]
+    assert inputs["stage"]["options"] == ["all", "market", "official", "decisions", "documents", "projections", "calendar", "schedule", "summaries"]
     assert inputs["bank"]["type"] == inputs["type"]["type"] == inputs["doc"]["type"] == "string" and inputs["bank"]["default"] == inputs["type"]["default"] == inputs["doc"]["default"] == ""
     by = steps_of(workflow)
-    assert by["Collect"]["if"] == "${{ !inputs.stage || inputs.stage == 'all' }}"                                        # a plain run and the schedule: as before
+    assert by["Collect"]["if"] == "${{ !inputs.event && (!inputs.stage || inputs.stage == 'all') }}"                     # a plain run and the schedule: as before (an event of the trigger has its own steps)
     one = by["Collect one stage"]
-    assert one["if"] == "${{ inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}" and one["env"] == {"STAGE": "${{ inputs.stage }}"}
+    assert one["if"] == "${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}" and one["env"] == {"STAGE": "${{ inputs.stage }}"}
     assert '--stage "$STAGE"' in one["run"]
     s = by["Summaries"]
     assert s["env"]["BANK"] == "${{ inputs.bank }}" and s["env"]["TYPE"] == "${{ inputs.type }}" and s["env"]["DOC"] == "${{ inputs.doc }}"

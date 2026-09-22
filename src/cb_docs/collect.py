@@ -119,18 +119,34 @@ class _Run:
     def discover(self) -> dict:
         """Links that cannot be derived from a date: ECB statements from the press feed, RBA media releases from the decisions page."""
         links: dict = {"EUR": {}, "AUD": {}}
+        self._discover_ecb(links)
+        if "AUD" in self.banks:
+            self._discover_rba(links)
+        if "JPY" in self.banks:
+            self.feed(S.BOJ_RSS, "BoJ RSS")                                  # the time the BoJ published the statement (published_at): its time of day varies
+        return links
+
+    def discover_for(self, ccy: str) -> dict:
+        """What discover() reads, for one bank only (the decision watch polls every minute: no request the bank's statement does not need)."""
+        links: dict = {"EUR": {}, "AUD": {}}
+        {"EUR": self._discover_ecb, "AUD": self._discover_rba}.get(ccy, lambda _l: None)(links)
+        if ccy == "JPY":
+            self.feed(S.BOJ_RSS, "BoJ RSS")
+        return links
+
+    def _discover_ecb(self, links: dict) -> None:
         for it in self.feed(S.ECB_PRESS_FEED, "ECB press feed"):
             m = re.search(r"ecb\.mp(\d{6})~", it["link"])
             if m:
                 links["EUR"][datetime.strptime(m.group(1), "%y%m%d").date()] = it["link"]
-        if "AUD" in self.banks:
-            r = self.get(f"https://www.rba.gov.au/monetary-policy/int-rate-decisions/{self.today.year}/", "RBA decisions page")
-            if r:
-                for li in re.findall(r"<li[^>]*>(.*?)</li>", r.text, flags=re.S):
-                    m = re.search(r"href=\"(/media-releases/[^\"]+)\"[^>]*>\s*(\d{1,2} [A-Z][a-z]+ \d{4})", li, flags=re.S)
-                    if m:
-                        links["AUD"][datetime.strptime(m.group(2), "%d %B %Y").date()] = "https://www.rba.gov.au" + m.group(1)
-        return links
+
+    def _discover_rba(self, links: dict) -> None:
+        r = self.get(f"https://www.rba.gov.au/monetary-policy/int-rate-decisions/{self.today.year}/", "RBA decisions page")
+        if r:
+            for li in re.findall(r"<li[^>]*>(.*?)</li>", r.text, flags=re.S):
+                m = re.search(r"href=\"(/media-releases/[^\"]+)\"[^>]*>\s*(\d{1,2} [A-Z][a-z]+ \d{4})", li, flags=re.S)
+                if m:
+                    links["AUD"][datetime.strptime(m.group(2), "%d %B %Y").date()] = "https://www.rba.gov.au" + m.group(1)
 
     # ---- statements ---------------------------------------------------------------------------------------------------------
     def statement(self, ccy: str, d: date, links: dict) -> None:
@@ -183,7 +199,7 @@ class _Run:
         self.texts[(ccy, d)] = text
 
     def feed_pool(self, ccy: str) -> list:
-        return {"EUR": self.feeds.get(S.ECB_PRESS_FEED, [])}.get(ccy, [])
+        return {"EUR": self.feeds.get(S.ECB_PRESS_FEED, []), "JPY": self.feeds.get(S.BOJ_RSS, [])}.get(ccy, [])
 
     # ---- votes --------------------------------------------------------------------------------------------------------------
     def boe_workbook(self) -> dict:

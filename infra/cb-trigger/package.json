@@ -1,0 +1,11 @@
+{
+  "name": "cb-trigger",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker: fires the Central Banks workflows at the official time of each decision (see ../../docs/central-banks/ARCHITECTURE.md, phase 4)",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "dev": "npx wrangler dev --test-scheduled",
+    "deploy": "npx wrangler deploy"
+  }
+}

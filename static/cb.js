@@ -562,6 +562,20 @@
     return '<section class="cb-card"><h3>Calendar and blackout</h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Decision</th><th>First day</th><th>Effective</th><th>Time</th><th>Projections</th><th>Conference</th><th>Blackout</th><th>Date source</th></tr></thead><tbody>' +
       (rows || '<tr><td colspan="8" class="muted">no upcoming meetings on record</td></tr>') + "</tbody></table></div></section>";
   }
+  // Phase 4: how long after each decision the collector had the statement (labels and numbers all come from the payload).
+  function utcStamp(iso) { const p = parts(iso.slice(0, 10)); return p.d + " " + MONTHS[p.m - 1] + " " + iso.slice(11, 16); }
+  function latencyBlock(l) {
+    if (!l || !l.rows || !l.rows.length) return "";
+    const s = l.summary;
+    const rows = l.rows.map(function (r) {
+      const delay = !r.measured ? '<span class="muted">before the trigger</span>' : isNum(r.minutes) ? r.minutes.toFixed(1) + " min" + (r.ok ? "" : " (over the target)") : NA;
+      return "<tr><td>" + fmtDate(r.meeting) + "</td><td>" + (r.official_at ? esc(utcStamp(r.official_at)) : NA) + "</td><td>" + esc(utcStamp(r.first_seen_at)) + "</td><td>" + delay + "</td></tr>";
+    }).join("");
+    const head = s.n ? s.within + " of " + s.n + " measured decisions within " + s.target_minutes + " min" + (isNum(s.median_minutes) ? " (median " + s.median_minutes + " min)" : "") :
+      "No decision measured yet (target: within " + s.target_minutes + " min).";
+    return "<h4>" + esc(l.title) + "</h4><p>" + esc(l.text) + "</p><p>" + esc(head) + "</p>" +
+      '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Decision</th><th>Official time (UTC)</th><th>First seen (UTC)</th><th>Delay</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+  }
   function methodPanel(d) {
     const meta = d.meta;
     const items = meta.methodology.map(function (m) { return "<dt>" + esc(m.title) + "</dt><dd>" + esc(m.text) + "</dd>"; }).join("");
@@ -571,7 +585,7 @@
     const ck = d.consistency.length ? "<h4>Consistency of months without a meeting</h4><ul>" + d.consistency.map(function (c) { return "<li>" + esc(c.source + " " + c.period) + DOT + fmtSigned(c.dev_bp, 1) + " bp (" + esc(c.detail) + ")</li>"; }).join("") + "</ul>" : "";
     const sp = d.spread ? "<p>Overnight-to-policy spread used: <b>" + fmtSigned(d.spread.bp, 2) + " bp</b>, median of " + d.spread.n + " business days (" + fmtDate(d.spread.start) + EN + fmtDate(d.spread.end) + "; " + d.spread.excluded + " excluded) for " + esc(d.spread.benchmark) + " minus " + esc(d.spread.policy) + ".</p>" : "";
     const notes = d.notes.length ? "<h4>Notes</h4><ul>" + d.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
-    return '<details class="cb-card cb-method" id="cbMethod"><summary>How is this calculated?</summary><dl>' + items + "</dl>" + sp + notes + cc + ck + "</details>";
+    return '<details class="cb-card cb-method" id="cbMethod"><summary>How is this calculated?</summary><dl>' + items + "</dl>" + sp + notes + cc + ck + latencyBlock(d.latency) + "</details>";
   }
   function footerCard(d) {
     const rows = d.sources.map(function (s) {

@@ -643,3 +643,39 @@ src/cb_summarize/store.py       data/cb/summaries/summaries_YYYY-MM.json (parti�
   (`SOURCE …`), nu se marchează și nu costă nimic.
 - Documentele fără hash stocat (transcripturi, discursuri) nu se re-descarcă după primul rezumat: o corectură ulterioară a paginii nu se vede.
 - Prima rulare cu cheie acoperă doar 12 documente (plafonul); backlog-ul actual (~90 de documente) se termină în ~8 rulări (16 ore la 2 ore între rulări).
+
+## 16. FAZA 4 — trigger extern (Cloudflare Worker), latență decizie → site ≤ 15 min
+
+**Problema.** Schedulul GitHub Actions întârzie și pierde tick-uri; o decizie apărută la 14:00 ET ajungea pe site la 2 ore după. Ținta: ≤ 15 minute de la ora oficială a deciziei.
+
+**Arhitectura** (`infra/cb-trigger/`, README acolo): un Worker Cloudflare cu cron `*/5 * * * *` care dă `workflow_dispatch` în GitHub. Nu știe nicio bancă, niciun fus orar: citește
+`data/cb/trigger_schedule.json`, generat de `cb-refresh` (stage `schedule`, `src/cb_trigger/schedule.py`) din `meetings.yaml` + `central_banks.yaml` (ora locală + fusul băncii → instant UTC, deci
+DST-ul e al fusului din ziua respectivă) + `config/cb_trigger.yaml` (toate cifrele: lead, grace, fereastra BoJ, cadența regulată, ținta). Worker-ul citește fișierul prin API-ul GitHub
+(merge și pe repo privat), cu GET condițional (ETag) și ultima copie bună în KV.
+
+| eveniment | când | ce face jobul |
+|---|---|---|
+| `decision:{bank}:{data}` | ora oficială + 1 min; Worker-ul îl trimite la ultimul tick care nu e mai târziu (tick-urile sunt la 5 min): jobul pornește când banca publică | `--watch-decision`: caută declarația la 60 s, cel mult 15 min, o stochează la primul poll care o vede (`first_seen_at` = începutul latenței), apoi documentele acelei bănci, decisions, rezumatul declarației (doar al ei), render, commit; nu apare → ieșire curată, rulările regulate o iau |
+| `decision:JPY:{data}` (fereastră) | BoJ nu are oră fixă: 11:30–13:30 JST Worker-ul citește RSS-ul BoJ la fiecare tick și trimite la primul item `/mopo/mpmdeci/` nou; dacă fereastra se închide fără item, trimite oricum | la fel |
+| `conference:{bank}:{data}` | începutul conferinței + 2 h (BoE: ora deciziei, configul nu are ora conferinței) | documentele băncii (transcript, video) + rezumatele rămase |
+| regulate | cb-refresh la 2 h (:37), econ-refresh la oră (:05, la 4 h în weekend) | rularea completă de până acum |
+
+**Robustețe.** Un dispatch = un `(event, date)`: marcaj în KV (14 zile), deci nicio dublură. 3 reîncercări cu backoff (2 s, 6 s, 18 s) pe erori de rețea / 5xx / 429 / rate limit; 401/404/422 nu se
+reîncearcă. Eșec final → **issue** în repo (email pentru proprietar), o singură dată per eveniment; evenimentul rămâne „due” până la expirarea grace-ului, deci un tick următor îl poate reuși.
+Tokenul GitHub e secret de Worker (`wrangler secret put GH_TOKEN`), fine-grained, doar acest repo (Actions r/w, Contents read, Issues r/w); nimic în cod. Schedulurile GitHub rămase sunt **backup**
+(cb-refresh la 6 h, econ-refresh la 3 h / 6 h în weekend), fiecare cu un job `guard` care le sare dacă un run pornit de Worker a reușit recent (o singură verificare `gh run list`; un guard care eșuează
+nu sare nimic).
+
+**Latența măsurată.** Pentru fiecare decizie: `first_seen_at` al declarației − ora oficială (ora din config în fusul băncii; BoJ: ora din RSS-ul propriu). În `--status` (secțiunea „decision -> site latency”)
+și în panoul „How is this calculated?” al fiecărei pagini de bancă (blocul `latency` din payload; JS-ul nu are nicio etichetă proprie). Declarațiile găsite de rulările regulate înainte de trigger sunt
+arătate dar nenumărate (`latency.measure_from` din config).
+
+**Limite asumate.** RBNZ e în spatele unui challenge Cloudflare: nu se așteaptă declarația (`skip_banks`). Latența acoperă până la comit-ul pe main; deploy-ul Vercel vine după. Cron-ul Cloudflare are granulație de 5 minute:
+de aceea evenimentul de decizie pleacă la tick-ul dinainte de `fire_at`, iar jobul, nu Worker-ul, așteaptă publicarea. Costul: planul gratuit (≈ 288 invocări/zi din 100 000; KV: zeci de scrieri/zi din 1 000).
+
+**Minute GitHub Actions** — `Sstrulea/sentiment-dashboard` e **public** (`gh api repos/.../--jq '{private,visibility}'` → `false`, `"public"`, verificat 2026-09-21): minutele Actions sunt **nelimitate, gratuite**, deci
+niciun buget nu se aplică acum. Ipotetic, dacă repo-ul ar deveni privat (2 000 min/lună pe Free, 3 000 pe Pro), din duratele reale (rotunjire în sus la minut, per job): rulările regulate cb-refresh (la 2 h,
+neschimbate de FAZA 4 — Worker-ul păstrează exact cadența de dinainte, doar schimbă cine le declanșează) ≈ 504 min/lună; econ-refresh (orar în zilele lucrătoare + la 4 h în weekend, la fel neschimbată) ≈ 1 160
+min/lună — acestea existau deja înainte de FAZA 4. Ce adaugă FAZA 4: job-urile `guard` de pe schedulurile backup (≈ 328 rulări scurte/lună, ~330 min) + evenimentele de decizie/conferință (~5-6 decizii şi ~5
+conferinţe/lună, ≤ 15 min fiecare cel mult, tipic mult mai puţin) ≈ ~35-90 min. Total ipotetic ≈ **2 000-2 100 min/lună**: la limita planului Free, încape confortabil în Pro. Dacă ar trebui să încapă strict în
+Free pe repo privat, reducerea de propus ar fi pe **schedulurile backup** (mai rare: cb la 8 h, econ la 6 h în loc de 3 h/6 h), nu pe cadența Worker-ului, care ține prospeţimea datelor.

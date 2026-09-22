@@ -1,0 +1,49 @@
+# External trigger (phase 4): what the Cloudflare Worker in infra/cb-trigger fires, and when. Read by src/cb_trigger/schedule.py, which writes
+# data/cb/trigger_schedule.json (every cb-refresh run); the Worker reads that file through the GitHub API and dispatches the workflows.
+# Nothing here is a secret. The GitHub token is a Worker secret (wrangler secret put GH_TOKEN), never in this repo.
+#
+# Times are never written here: the official time of each decision / conference comes from config/central_banks.yaml (local time + zone, DST-aware) and the dates from
+# data/cb/meetings.yaml.
+
+meta:
+  version: 1
+
+horizon:                            # the events written to the schedule: from `back_days` before today to `ahead_days` after it
+  back_days: 3
+  ahead_days: 60
+
+skip_banks: [NZD]                   # the RBNZ site is behind a Cloudflare challenge: no automatic statement to wait for (documents come from data/cb/manual)
+
+decision:                           # a rate decision: the statement is looked for by the job itself (src.cb_collect --watch-decision)
+  fire_after_minutes: 1             # the event is due 1 minute after the official time ...
+  lead_minutes: 5                   # ... and the Worker fires it at the last tick that is not later than that (cron ticks are 5 minutes apart), so the job is already polling
+  watch_minutes: 15                 # the job looks for the statement at most this long ...
+  poll_seconds: 60                  # ... this often, then exits clean
+  grace_minutes: 90                 # a tick that was skipped by Cloudflare: the event is still fired this long after it was due
+
+conference:                         # the press conference: the transcript and the video appear after it
+  fire_after_minutes: 120           # after the conference's start time
+  lead_minutes: 0
+  grace_minutes: 240
+
+boj:                                # the BoJ announces at a time that varies (window in config/central_banks.yaml): the Worker reads its RSS in the window
+  rss: https://www.boj.or.jp/en/rss/whatsnew.xml
+  item_match: "/mopo/mpmdeci/"      # an item whose link holds this (the decision documents: statement, guideline for market operations) is the first sign of the decision
+  fallback_at_window_end: true      # no such item by the end of the window: fire anyway (the job polls 15 minutes and exits clean)
+  grace_minutes: 30                 # ... a tick that was skipped after the window closed still fires it, this long
+
+workflows:                          # the workflow files the Worker dispatches (the ref is the Worker's GH_REF variable)
+  decision: cb-refresh.yml
+  conference: cb-refresh.yml
+
+regular:                            # the regular runs the Worker fires (UTC): `hours` = every N hours from 00:00, `dow` = days of the week (0 = Sunday)
+  - {workflow: cb-refresh.yml, minute: 37, every_hours: 2, dow: [0, 1, 2, 3, 4, 5, 6]}
+  - {workflow: econ-refresh.yml, minute: 5, every_hours: 1, dow: [1, 2, 3, 4, 5]}
+  - {workflow: econ-refresh.yml, minute: 5, every_hours: 4, dow: [0, 6]}        # the weekend keeps the cadence it had (every 4 hours)
+
+tick_minutes: 5                     # the Worker's cron period (infra/cb-trigger/wrangler.toml: */5 * * * *)
+
+latency:                            # decision -> site: first_seen_at of the statement minus the official time of the decision
+  target_minutes: 15
+  measure_from: 2026-09-22          # from this date on the trigger is live: earlier statements were found by the regular runs, so their delay is shown, not counted
+  rows_per_bank: 4

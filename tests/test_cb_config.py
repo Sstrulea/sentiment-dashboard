@@ -194,7 +194,7 @@ def test_workflow_triggers_and_guards(workflow):
     assert set(on) == {"schedule", "workflow_dispatch"}
     assert on["workflow_dispatch"]["inputs"]["force_calendar_check"]["type"] == "boolean"
     cron = on["schedule"][0]["cron"]
-    assert cron == "37 */2 * * *" and len(cron.split()) == 5
+    assert cron == "47 */6 * * *" and len(cron.split()) == 5                            # the backup: the Cloudflare Worker (infra/cb-trigger) fires the runs, every 2 hours at :37
     assert workflow["concurrency"] == {"group": "cb-refresh", "cancel-in-progress": False}
     assert workflow["permissions"] == {"contents": "write"}
     job = workflow["jobs"]["refresh"]
@@ -276,7 +276,7 @@ def test_econ_refresh_can_render_every_page_on_dispatch_only():
     econ = yaml.safe_load((ROOT / ".github/workflows/econ-refresh.yml").read_text())
     on = econ.get("on", econ.get(True))
     assert on["workflow_dispatch"]["inputs"]["render_all"]["type"] == "boolean" and on["workflow_dispatch"]["inputs"]["render_all"]["default"] is False
-    assert [c["cron"] for c in on["schedule"]] == ["5 * * * 1-5", "5 */4 * * 0,6"]
+    assert [c["cron"] for c in on["schedule"]] == ["35 */3 * * 1-5", "35 */6 * * 0,6"]       # the backup: the Worker fires it hourly at :05 (every 4 h at the weekend)
     steps = econ["jobs"]["refresh"]["steps"]
     names = [s.get("name") for s in steps]
     step = next(s for s in steps if s.get("name") == "Render all pages (navbar sync)")
