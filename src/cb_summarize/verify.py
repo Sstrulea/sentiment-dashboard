@@ -226,13 +226,17 @@ _SUBJECT_START = re.compile(r"[,;:\u2014\u2013]|(?<!\w)(?:that|whether|which|who
 
 
 def mirrors_the_source(prefix: str, word: str, cited: list) -> bool:
-    """The soft word is the source's own, with the source's own subject: the noun phrase that governs it in the point (what stands between the last "that" / "while" /
-    "and" / comma ... and the word: "the staff", "companies", "the Economic Affairs division", "GDP growth") is found in ONE clause of the cited paragraphs - a sentence cut
-    at ; : and dashes - together with a form of the word. A subject that is not there, or is in another clause, does not count."""
-    last = None
-    for b in _SUBJECT_START.finditer(prefix):
-        last = b
-    need = list(dict.fromkeys(content_words(prefix[last.end():] if last else prefix, set())))
+    """The soft word is the source's own, with the source's own subject: the noun phrase that governs it in the point (what stands between a boundary - the last "that" /
+    "while" / "and" / comma ... - and the word: "the staff", "companies", "the Economic Affairs division", "GDP growth") is found in ONE clause of the cited paragraphs - a
+    sentence cut at ; : and dashes - together with a form of the word. A subject that is not there, or is in another clause, does not count. The boundary tried first is the
+    one closest to the word; when it leaves nothing ("risen AS expected": "as" right before the word, no subject between them), an earlier boundary is tried, down to the
+    whole prefix - "words as expected" is never read as "no subject", only as "as" not being the cut this time."""
+    ends = [b.end() for b in _SUBJECT_START.finditer(prefix)]
+    need = []
+    for end in [*reversed(ends), None]:
+        need = list(dict.fromkeys(content_words(prefix[end:] if end is not None else prefix, set())))
+        if need:
+            break
     if not need:
         return False
     fw = forms(word, adverbs=False)

@@ -70,6 +70,16 @@ def test_an_invented_subject_or_one_from_another_clause_is_still_refused(text, w
     assert errs and "is not attributed to the bank or to a named speaker" in errs[0], why
 
 
+def test_a_boundary_right_before_the_word_falls_back_to_an_earlier_one():
+    """"risen AS expected": "as" sits right before the word with nothing between - the real bug the reprocessing run of 2026-09-21 hit (CHF:deliberations:2026-06-18).
+    The subject is the words BEFORE "as" ("inflation ... has risen"), not nothing."""
+    cited = [["The Economic Affairs division then gave an overview of consumer prices. Inflation has risen as expected since the last assessment, and stood at 0.6% in May."]]
+    text = "The Economic Affairs division reported that inflation has risen as expected since the last assessment and stood at 0.6% in May."
+    assert attributed([text], cited, cited[0][0]) == []
+    other = "The Economic Affairs division reported that wages have risen as expected since the last assessment and stood at 0.6% in May."
+    assert attributed([other], cited, cited[0][0]) != []                                                                # a different subject ("wages") is still refused
+
+
 def test_a_subject_in_the_previous_sentence_is_another_clause():
     cited = [["Inflation rose in the quarter. Wages are likely to stay firm."]]
     assert attributed(["Wages are likely to stay firm."], cited, cited[0][0]) == []
