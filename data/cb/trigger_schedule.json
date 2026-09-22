@@ -5,26 +5,6 @@
  },
  "events": [
   {
-   "at": "2026-09-22T07:39:00Z",
-   "bank": "TEST",
-   "date": "2026-09-22",
-   "dispatch": {
-    "inputs": {
-     "bank": "TEST",
-     "date": "2026-09-22",
-     "event": "decision"
-    },
-    "workflow": "cb-refresh-nonexistent.yml"
-   },
-   "failure_test": true,
-   "fire_at": "2026-09-22T07:39:30Z",
-   "grace_minutes": 10,
-   "id": "decision:TEST:2026-09-22-failure-test",
-   "kind": "decision",
-   "lead_minutes": 0,
-   "synthetic_test": true
-  },
-  {
    "at": "2026-09-24T07:30:00Z",
    "bank": "CHF",
    "date": "2026-09-24",
