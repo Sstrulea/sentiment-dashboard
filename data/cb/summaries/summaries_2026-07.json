@@ -1549,6 +1549,287 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     1,
+     8,
+     15,
+     27,
+     32,
+     42
+    ],
+    "paragraphs_sent": 42,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:deliberations:2026-06-18",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-22T06:09:05Z",
+   "input_sha256": "4ff12ebad9f1a08800e8c2322510be531004f2358fdbecedd06e37d321475dac",
+   "meeting_date": "2026-06-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 39,
+     "point": 1,
+     "source_text": "16",
+     "start": 37,
+     "text": "16"
+    },
+    {
+     "end": 46,
+     "point": 1,
+     "source_text": "17",
+     "start": 44,
+     "text": "17"
+    },
+    {
+     "end": 56,
+     "point": 1,
+     "source_text": "2026",
+     "start": 52,
+     "text": "2026"
+    },
+    {
+     "end": 157,
+     "point": 1,
+     "source_text": "0%",
+     "start": 155,
+     "text": "0%"
+    },
+    {
+     "end": 11946,
+     "point": 4,
+     "source_text": "0.6%",
+     "start": 11942,
+     "text": "0.6%"
+    },
+    {
+     "end": 12205,
+     "point": 4,
+     "source_text": "0.5%",
+     "start": 12201,
+     "text": "0.5%"
+    },
+    {
+     "end": 13591,
+     "point": 5,
+     "source_text": "1%",
+     "start": 13589,
+     "text": "1%"
+    },
+    {
+     "end": 56,
+     "point": 5,
+     "source_text": "2026",
+     "start": 52,
+     "text": "2026"
+    },
+    {
+     "end": 13628,
+     "point": 5,
+     "source_text": "1.5%",
+     "start": 13624,
+     "text": "1.5%"
+    },
+    {
+     "end": 13637,
+     "point": 5,
+     "source_text": "2027",
+     "start": 13633,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-07-16",
+   "quotes": [
+    {
+     "end": 158,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At the monetary policy assessment of 16 and 17 June 2026, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 4837,
+     "paragraph": 15,
+     "start": 4701,
+     "text": "With the depreciation of the Swiss franc since the monetary policy assessment in March, monetary conditions have become somewhat easier."
+    },
+    {
+     "end": 13638,
+     "paragraph": 32,
+     "start": 13568,
+     "text": "GDP growth of around 1% is expected for 2026 and around 1.5% for 2027."
+    },
+    {
+     "end": 17809,
+     "paragraph": 42,
+     "start": 17726,
+     "text": "The Governing Board therefore decided to leave the SNB policy rate unchanged at 0%."
+    }
+   ],
+   "source": {
+    "chars": 18151,
+    "chars_sent": 18152,
+    "method": "html-selector",
+    "paragraphs_sent": 42,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 158,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At the monetary policy assessment of 16 and 17 June 2026, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "At the monetary policy assessment of 16 and 17 June 2026, the Governing Board decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2041,
+        "paragraph": 8,
+        "start": 1904,
+        "text": "Since the last monetary policy assessment in March, the financial markets have been primarily driven by the situation in the Middle East."
+       },
+       {
+        "end": 2169,
+        "paragraph": 8,
+        "start": 2042,
+        "text": "Amid hopes of a reopening of the Strait of Hormuz, financial market volatility declined and investors' risk sentiment improved."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Financial markets were primarily driven by the situation in the Middle East, while volatility declined and investors' risk sentiment improved."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 4837,
+        "paragraph": 15,
+        "start": 4701,
+        "text": "With the depreciation of the Swiss franc since the monetary policy assessment in March, monetary conditions have become somewhat easier."
+       },
+       {
+        "end": 4939,
+        "paragraph": 15,
+        "start": 4838,
+        "text": "The monetary policy is continuing to have an expansionary effect and is supporting economic activity."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "With the Swiss franc's depreciation since March, monetary conditions became somewhat easier, and monetary policy continued to have an expansionary effect."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11853,
+        "paragraph": 27,
+        "start": 11740,
+        "text": "The Economic Affairs division then gave an overview of the latest developments in consumer prices in Switzerland."
+       },
+       {
+        "end": 11954,
+        "paragraph": 27,
+        "start": 11854,
+        "text": "Inflation has risen as expected since the last monetary policy assessment, and stood at 0.6% in May."
+       },
+       {
+        "end": 12213,
+        "paragraph": 27,
+        "start": 12118,
+        "text": "The core inflation rate calculated by the SNB using a trimmed mean (TM15) stood at 0.5% in May."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "The Economic Affairs division reported that inflation stood at 0.6% in May and the SNB's TM15 core inflation rate stood at 0.5% in May."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13638,
+        "paragraph": 32,
+        "start": 13568,
+        "text": "GDP growth of around 1% is expected for 2026 and around 1.5% for 2027."
+       },
+       {
+        "end": 13801,
+        "paragraph": 32,
+        "start": 13639,
+        "text": "Inflation is likely to increase in the short term due to higher energy prices, but remain within the range consistent with price stability over the entire period."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "GDP growth of around 1% is expected for 2026 and around 1.5% for 2027, while inflation is likely to remain within the range consistent with price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17482,
+        "paragraph": 42,
+        "start": 17346,
+        "text": "In the current situation, the Governing Board's view is that monetary conditions are appropriate and price stability is not jeopardised."
+       },
+       {
+        "end": 17725,
+        "paragraph": 42,
+        "start": 17582,
+        "text": "Although inflation risks have increased in recent months and stronger second-round effects are possible, there is no immediate need for action."
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "The Governing Board viewed monetary conditions as appropriate and price stability as not jeopardised, and stated there was no immediate need for action."
+    }
+   ],
+   "title": "Swiss National Bank deliberations of the 18 June 2026 meeting",
+   "type": "deliberations",
+   "url": "https://www.snb.ch/en/publications/communication/summaries/zus_20260716",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10525,
+    "output_tokens": 1986,
+    "reasoning_tokens": 516
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 114,
     "changes": [
