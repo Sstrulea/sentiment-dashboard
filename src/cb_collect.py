@@ -447,7 +447,7 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "summaries")
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "summaries")
 DEFAULT_STAGES = STAGES[:-1]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret)
 
 
@@ -467,6 +467,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--backfill-from", type=date.fromisoformat, help="explicit backfill start (YYYY-MM-DD), both datasets")
     ap.add_argument("--lookback-days", type=int, default=LOOKBACK_DAYS)
     ap.add_argument("--force-calendar-check", action="store_true", help="run the weekly meetings check now")
+    ap.add_argument("--documents-bank", action="append", metavar="CCY", help="documents stage: only these banks (repeatable), e.g. USD")
+    ap.add_argument("--watch-decision", metavar="CCY", help="phase 4: wait for the statement of this bank's decision (--decision-date), poll every minute for at most "
+                                                           "config/cb_trigger.yaml decision.watch_minutes, store it, then the documents of that bank and the decisions; exits clean when it does not appear")
+    ap.add_argument("--decision-date", type=date.fromisoformat, help="--watch-decision: the decision day (YYYY-MM-DD, the bank's own calendar)")
     ap.add_argument("--summaries-bank", action="append", metavar="CCY", help="summaries stage: only these banks (repeatable), e.g. USD")
     ap.add_argument("--summaries-type", action="append", metavar="TYPE", help="summaries stage: only these document types (repeatable), e.g. statement")
     ap.add_argument("--summaries-doc", action="append", metavar="DOC_ID", help="summaries stage: only these documents (repeatable), e.g. USD:statement:2026-09-16")
@@ -494,6 +498,21 @@ def main(argv: list[str] | None = None) -> int:
         out_text.append(text)
         out_md.append(md)
 
+    doc_banks = tuple(a.documents_bank) if a.documents_bank else None
+    if a.watch_decision:                                            # phase 4: the job dispatched by the external trigger a minute after a decision
+        if a.decision_date is None:
+            ap.error("--watch-decision needs --decision-date")
+        from .cb_docs.watch import report as watch_report, watch_statement
+        from .cb_trigger.schedule import load_config as load_trigger
+        dec = load_trigger()["decision"]
+        try:
+            wrep = watch_statement(paths, a.watch_decision, a.decision_date, minutes=dec["watch_minutes"], poll_seconds=dec["poll_seconds"])
+            emit(*watch_report(wrep, dec["watch_minutes"]))
+        except Exception as e:                                       # a failed watch never fails the job: the regular runs collect the statement
+            log.exception("decision watch failed")
+            emit(f"decision watch: FAILED {type(e).__name__}: {e}", f"### decision watch\n\nFAILED `{type(e).__name__}: {e}`")
+        stages, doc_banks = ["decisions", "documents"], (a.watch_decision,)
+
     if "market" in stages:
         bf = a.backfill_from or (load_sources()["meta"]["backfill_from"] if a.backfill else None)
         if isinstance(bf, str):
@@ -519,7 +538,7 @@ def main(argv: list[str] | None = None) -> int:
     if "documents" in stages:
         try:
             from .cb_docs.collect import run_documents
-            rep = run_documents(paths, today, state=load_state(paths))
+            rep = run_documents(paths, today, state=load_state(paths), **({"banks": doc_banks} if doc_banks else {}))
             emit(*dsets.documents_report(rep))
             if rep.rate_rows_changed:                                   # a statement rate is new: the decisions take it (precedence official > statement > BIS > FF)
                 emit(*dsets.decisions_report(dsets.run_decisions(paths, today), today))
@@ -538,6 +557,13 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("calendar check failed")
             emit(f"calendar check: FAILED {type(e).__name__}: {e}", f"### calendar check\n\nFAILED `{type(e).__name__}: {e}`")
+    if "schedule" in stages:                                         # phase 4: the schedule the external trigger reads (offline: meetings + config)
+        try:
+            from .cb_trigger import schedule as trig
+            emit(*trig.report(trig.run_schedule(paths, today)))
+        except Exception as e:
+            log.exception("trigger schedule failed")
+            emit(f"trigger schedule: FAILED {type(e).__name__}: {e}", f"### trigger schedule\n\nFAILED `{type(e).__name__}: {e}`")
     if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
         try:
             from .cb_summarize import run as sum_run

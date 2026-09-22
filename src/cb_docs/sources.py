@@ -23,6 +23,7 @@ BIS_FEED = "https://www.bis.org/doclist/cbspeeches.rss"
 BIS_BANK = {"Federal Reserve": "USD", "European Central Bank": "EUR", "Bank of England": "GBP", "Bank of Japan": "JPY", "Bank of Canada": "CAD",
             "Reserve Bank of Australia": "AUD", "Reserve Bank of New Zealand": "NZD", "Swiss National Bank": "CHF"}
 ECB_PRESS_FEED = "https://www.ecb.europa.eu/rss/press.html"
+BOJ_RSS = "https://www.boj.or.jp/en/rss/whatsnew.xml"                                         # what's new: the decision documents carry the time the BoJ published them
 BOC_DELIBERATIONS_FEED = "https://www.bankofcanada.ca/content_type/summary-of-deliberations/feed/"
 BOE_VOTING_XLSX = "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-summary-and-minutes/mpcvoting.xlsx"
 

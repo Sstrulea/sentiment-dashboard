@@ -1,0 +1,23 @@
+# The external trigger of the Central Banks pipeline (phase 4). Deploy: `npx wrangler deploy` from this directory (README.md has the one-time setup).
+# Free plan: a scheduled Worker every 5 minutes is ~8,600 invocations a month against 100,000 a day; KV writes are a few dozen a day against 1,000.
+name = "cb-trigger"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false                     # no public URL: the Worker only runs on its cron
+
+[triggers]
+crons = ["*/5 * * * *"]                 # keep in step with tick_minutes in config/cb_trigger.yaml
+
+[vars]
+GH_REPO = "Sstrulea/sentiment-dashboard"
+GH_REF = "main"                         # the ref the workflows are dispatched on, and the ref the schedule file is read from
+SCHEDULE_PATH = "data/cb/trigger_schedule.json"
+GH_API = "https://api.github.com"
+
+# The dedupe marks (one per event and date) and the cached schedule live here. Create it once: `npx wrangler kv namespace create STATE`, then paste the id below.
+[[kv_namespaces]]
+binding = "STATE"
+id = "REPLACE_WITH_THE_ID_OF_npx_wrangler_kv_namespace_create_STATE"
+
+# Secret (never in this file): GH_TOKEN = a fine-grained token limited to this repository - Actions: read and write, Contents: read, Issues: read and write.
+#   npx wrangler secret put GH_TOKEN

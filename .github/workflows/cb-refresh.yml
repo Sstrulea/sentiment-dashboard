@@ -3,14 +3,17 @@ name: cb-refresh
 # rate decisions, the official texts (statements, votes, redlines, minutes, speeches - phase 2a), their factual summaries (phase 2b, needs the
 # OPENAI_API_KEY secret), Fed SEP projections and the weekly
 # check of meetings.yaml against the official calendar pages.
-# GitHub drops many scheduled ticks; every run is idempotent, so a missed tick only delays new rows.
+# The runs are started by the Cloudflare Worker in infra/cb-trigger (phase 4): every 2 hours at :37, a minute after each rate decision (event=decision: the job waits for the
+# statement, collects that bank's documents, decisions, the statement's summary and the pages) and 2 hours after each press conference (event=conference: transcript and video).
+# The GitHub schedule below is only the backup for when the Worker is down: it is slower, and its `guard` job skips it when a run started by the Worker succeeded recently.
+# Every run is idempotent, so a missed or a doubled tick costs nothing but minutes.
 # Paths are disjoint from econ-refresh: this workflow writes ONLY data/cb/ and the Central Banks files of public/
 # (central-banks.html, central-banks/, data/cb/) - never any other public/ file or other data/.
 # What is committed, and where, depends on the ref the run is on: on main, data/cb/ + the CB files of public/, pushed to main; on any other ref (a feature branch
 # dispatched by hand), ONLY data/cb/summaries/, pushed to THAT branch - main is never touched from a run that is not on main (explicit guard in both steps).
 on:
   schedule:
-    - cron: '37 */2 * * *'
+    - cron: '47 */6 * * *'                   # backup only (the Worker fires every 2 hours); off the Worker's :37 so that the two never start together
   workflow_dispatch:
     inputs:
       force_calendar_check:
@@ -20,10 +23,19 @@ on:
       stage:
         description: "Run only this stage (default all: every stage, then the summaries when the OPENAI_API_KEY secret exists)"
         type: choice
-        options: [all, market, official, decisions, documents, projections, calendar, summaries]
+        options: [all, market, official, decisions, documents, projections, calendar, schedule, summaries]
         default: all
+      event:
+        description: "Set by the external trigger. decision = watch for the statement of the decision of `bank` on `date`, then that bank's documents, decisions, the statement's summary; conference = that bank's documents (transcript, video) and summaries"
+        type: choice
+        options: ["", decision, conference]
+        default: ""
+      date:
+        description: "event only: the decision day (YYYY-MM-DD) in the bank's own calendar"
+        type: string
+        default: ""
       bank:
-        description: "summaries only: restrict to this currency, e.g. USD (empty = every bank)"
+        description: "the currency of an event (e.g. USD); for stage=summaries: restrict to this currency (empty = every bank)"
         type: string
         default: ""
       type:
@@ -52,7 +64,28 @@ permissions:
   contents: write
 
 jobs:
+  # Backup schedule only: skipped when a run started by the Worker (a dispatch) succeeded in the last 3 hours. A dispatch or a failed check never skips anything.
+  guard:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      actions: read                        # gh run list
+    outputs:
+      skip: ${{ steps.recent.outputs.skip }}
+    steps:
+      - id: recent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          since=$(date -u -d '3 hours ago' +%FT%TZ)
+          n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow cb-refresh.yml --status success --created ">=$since" --json event -q '[.[] | select(.event == "workflow_dispatch")] | length') || n=0
+          echo "recent successful dispatch runs: $n"
+          echo "skip=$([ "${n:-0}" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
   refresh:
+    needs: guard
+    if: ${{ !cancelled() && needs.guard.outputs.skip != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30                      # the documents stage is polite (2 s per host, 400 requests at most): ~3 min on a cold start; the summaries step may take 14
     steps:
@@ -66,12 +99,28 @@ jobs:
       # All stages (market, official, decisions, documents, projections, calendar). Writes the per-source report to
       # $GITHUB_STEP_SUMMARY. Exit 0 on partial failure, non-zero only when EVERY source failed; decisions,
       # projections and the calendar check only warn. Skipped when a dispatch asks for one stage.
+      # A decision event: look for the statement (every minute, at most 15), then the bank's documents and the decisions. Never fails the job: a statement that does not show up
+      # is left to the regular runs.
+      - name: Watch the decision
+        if: ${{ inputs.event == 'decision' }}
+        env:
+          BANK: ${{ inputs.bank }}
+          DAY: ${{ inputs.date }}
+        run: python -m src.cb_collect --watch-decision "$BANK" --decision-date "$DAY"
+
+      # A conference event: the transcript and the video of that bank.
+      - name: Collect the conference documents
+        if: ${{ inputs.event == 'conference' }}
+        env:
+          BANK: ${{ inputs.bank }}
+        run: python -m src.cb_collect --stage documents --documents-bank "$BANK"
+
       - name: Collect
-        if: ${{ !inputs.stage || inputs.stage == 'all' }}
+        if: ${{ !inputs.event && (!inputs.stage || inputs.stage == 'all') }}
         run: python -m src.cb_collect ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
 
       - name: Collect one stage
-        if: ${{ inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}
+        if: ${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}
         env:
           STAGE: ${{ inputs.stage }}
         run: python -m src.cb_collect --stage "$STAGE" ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
@@ -86,7 +135,7 @@ jobs:
         run: echo "present=$([ -n "$KEY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Summaries
-        if: ${{ steps.key.outputs.present == 'true' && (!inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}
+        if: ${{ steps.key.outputs.present == 'true' && (inputs.event || !inputs.stage || inputs.stage == 'all' || inputs.stage == 'summaries') }}
         continue-on-error: true
         timeout-minutes: 14
         env:
@@ -96,7 +145,12 @@ jobs:
           DOC: ${{ inputs.doc }}
           EFFORT: ${{ inputs.effort }}
           SCRATCH: ${{ inputs.scratch && 'yes' || '' }}
-        run: python -m src.cb_collect --stage summaries ${BANK:+--summaries-bank "$BANK"} ${TYPE:+--summaries-type "$TYPE"} ${DOC:+--summaries-doc "$DOC"} ${EFFORT:+--summaries-effort "$EFFORT"} ${SCRATCH:+--summaries-scratch}
+          EVENT: ${{ inputs.event }}
+          DAY: ${{ inputs.date }}
+        run: |
+          # a decision event summarises only that statement; a conference event, what is pending of that bank (the transcript)
+          [ "$EVENT" = "decision" ] && DOC="$BANK:statement:$DAY"
+          python -m src.cb_collect --stage summaries ${BANK:+--summaries-bank "$BANK"} ${TYPE:+--summaries-type "$TYPE"} ${DOC:+--summaries-doc "$DOC"} ${EFFORT:+--summaries-effort "$EFFORT"} ${SCRATCH:+--summaries-scratch}
 
       - name: Freshness status
         if: always()

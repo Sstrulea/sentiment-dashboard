@@ -548,6 +548,14 @@ def extra_status(paths, today: date, *, banks: dict | None = None, official_cfg:
         add("official texts (phase 2a)", ["cur", "statements", "minutes etc.", "speeches", "videos", "transcripts", "last first-seen (UTC)"], rows,
             [f"WARN {w}" for w in dcol.expectations(paths, today)] + ["RBNZ: BOTWALL - manual file only (data/cb/manual/documents.yaml)"])
 
+    if docs_present:                                            # phase 4: how long after the decision the statement was first stored
+        from .cb_trigger import latency as lat
+        try:
+            heads, lrows, lnotes = lat.status_section(list(docs.values()), load_banks())
+            add("decision -> site latency (statement first seen - official time)", heads, lrows, lnotes)
+        except (OSError, KeyError) as e:
+            add("decision -> site latency (statement first seen - official time)", ["error"], [[f"{type(e).__name__}: {e}"]])
+
     if paths.summaries.exists() or docs_present:
         add(*_summaries_status_section(paths, today))
 

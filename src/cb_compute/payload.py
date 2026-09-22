@@ -581,8 +581,15 @@ def bank_page(ctx: Context, rep: BankReport, asof: date) -> dict:
         "calendar": calendar_json(ctx, rep.currency, asof), "sources": sources_json(ctx, rep.currency, asof),
         "crosschecks": [{"name": c.name, "period": c.period, "primary": num(c.a), "second": num(c.b), "diff_bp": num(c.diff_bp, 2), "note": c.note, "na": c.na_reason or None}
                         for c in rep.crosschecks],
-        "meta": meta(ctx, asof),
+        "meta": meta(ctx, asof), "latency": latency_block(ctx, rep.currency),
     }
+
+
+def latency_block(ctx: Context, ccy: str) -> Optional[dict]:
+    """The decision -> site latency of this bank's statements (phase 4), for the methodology panel; None when no statement is stored."""
+    from ..cb_trigger import latency as lat
+    block = lat.payload(ctx.documents, ctx.banks, ccy)
+    return block if block["rows"] else None
 
 
 def meta(ctx: Context, asof: date) -> dict:

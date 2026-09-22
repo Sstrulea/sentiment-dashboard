@@ -1,8 +1,10 @@
 name: econ-refresh
+# Started by the Cloudflare Worker in infra/cb-trigger (phase 4): every hour at :05 on weekdays, every 4 hours at the weekend. The GitHub schedule is only the backup for when the
+# Worker is down: it runs less often, and its `guard` job skips it when a run started by the Worker succeeded recently (no needless double runs).
 on:
   schedule:
-    - cron: '5 * * * 1-5'
-    - cron: '5 */4 * * 0,6'
+    - cron: '35 */3 * * 1-5'               # backup only; off the Worker's :05
+    - cron: '35 */6 * * 0,6'
   workflow_dispatch:
     inputs:
       render_all:
@@ -18,7 +20,29 @@ permissions:
   contents: write
 
 jobs:
+  # Backup schedule only: skipped when a run started by the Worker (a dispatch) succeeded recently (2 hours on a weekday, 5 at the weekend). A dispatch or a failed check never skips anything.
+  guard:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      actions: read                        # gh run list
+    outputs:
+      skip: ${{ steps.recent.outputs.skip }}
+    steps:
+      - id: recent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          hours=$([ "$(date -u +%u)" -ge 6 ] && echo 5 || echo 2)
+          since=$(date -u -d "$hours hours ago" +%FT%TZ)
+          n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow econ-refresh.yml --status success --created ">=$since" --json event -q '[.[] | select(.event == "workflow_dispatch")] | length') || n=0
+          echo "recent successful dispatch runs (last $hours h): $n"
+          echo "skip=$([ "${n:-0}" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
   refresh:
+    needs: guard
+    if: ${{ !cancelled() && needs.guard.outputs.skip != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
