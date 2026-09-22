@@ -5,25 +5,6 @@
  },
  "events": [
   {
-   "at": "2026-09-22T07:34:00Z",
-   "bank": "USD",
-   "date": "2026-09-16",
-   "dispatch": {
-    "inputs": {
-     "bank": "USD",
-     "date": "2026-09-16",
-     "event": "decision"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-09-22T07:34:30Z",
-   "grace_minutes": 20,
-   "id": "decision:USD:2026-09-16-synthetic-test",
-   "kind": "decision",
-   "lead_minutes": 0,
-   "synthetic_test": true
-  },
-  {
    "at": "2026-09-24T07:30:00Z",
    "bank": "CHF",
    "date": "2026-09-24",
