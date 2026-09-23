@@ -1263,7 +1263,10 @@ def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
     overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
     _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of,
                                               flagged_bad=flagged_bad)
-    return remaining
+    # audit V3: the policy rate comes only from data/cb/decisions.parquet, so a
+    # manual interest_rate_decision entry would never be used — not listed.
+    from src.policy_rate import KEY as POLICY_KEY
+    return remaining[remaining["indicator_key"] != POLICY_KEY].reset_index(drop=True)
 
 
 def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
@@ -1314,15 +1317,23 @@ def _with_policy_rate(cal: pd.DataFrame, decisions: pd.DataFrame | None,
     return replace_in_calendar(cal, decisions, as_of)
 
 
-def _attach_policy_rate_fields(payload: dict, decisions: pd.DataFrame | None) -> None:
-    """Fed range + provenance on each interest_rate_decision breakdown entry."""
+def _attach_policy_rate_fields(payload: dict, decisions: pd.DataFrame | None,
+                               policy_fresh: dict | None = None) -> None:
+    """Fed range + provenance on each interest_rate_decision breakdown entry, and
+    its `stale` flag (audit V1): a policy rate holds until the next meeting, so
+    age is not a criterion — the entry is stale iff freshness.policy_rates says a
+    past meeting has no decision (never from max_age_days). The instrument
+    breakdowns share these dicts, so they follow."""
     from src.policy_rate import KEY, display_fields
-    if decisions is None:
-        return
+    per = (policy_fresh or {}).get("per_currency") or {}
     for ccy, card in payload.get("currencies", {}).items():
         entry = (card.get("breakdown") or {}).get(KEY)
-        if entry is not None and entry.get("release_dt") is not None:
+        if entry is None:
+            continue
+        if decisions is not None and entry.get("release_dt") is not None:
             entry.update(display_fields(decisions, ccy, entry["release_dt"]))
+        entry["stale"] = bool((per.get(ccy) or {}).get("stale", False))
+        entry["stale_basis"] = "policy_rates"
 
 
 INTEGRITY_REPORT_JSON = ROOT / "data" / "integrity_report.json"
@@ -1469,7 +1480,7 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     meta["trend_enabled"] = trend_on
     _enrich_breakdowns(payload, meta["indicators"], as_of, _previous_lookup(cal))
     _attach_strength_fields(payload, instruments_cfg, rate_scores)
-    _attach_policy_rate_fields(payload, decisions)
+    _attach_policy_rate_fields(payload, decisions, _policy_rates_freshness(as_of))
     # Attach the chosen source to each rate_expectations breakdown entry.
     for ccy, card in payload.get("currencies", {}).items():
         entry = (card.get("breakdown") or {}).get("rate_expectations")

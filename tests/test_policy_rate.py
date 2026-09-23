@@ -21,6 +21,7 @@ def _decisions(rows):
     df = pd.DataFrame(rows, columns=cols)
     df["decision_time_utc"] = pd.to_datetime(df["decision_time_utc"], utc=True)
     t = df["decision_time_utc"].dt.tz_localize(None)
+    df["time_known"] = t.notna()
     df["release_dt"] = t.fillna(pd.to_datetime(df["meeting_date"]))
     return df
 
@@ -87,3 +88,40 @@ def test_repo_decisions_give_the_audited_rates(ccy, expected):
     rows = decision_rows(load_decisions(), pd.Timestamp("2026-09-23T07:06:11"), SCORING_COLUMNS)
     last = rows[rows.currency == ccy].sort_values("release_dt").iloc[-1]
     assert last.actual == expected
+
+
+# --- audit V1-V3 ---------------------------------------------------------------
+
+def test_policy_rate_stale_comes_only_from_freshness_policy_rates():
+    """V1: CHF held at 0.00% for 96 days is not stale; age is not a criterion."""
+    from src.economic_render import _attach_policy_rate_fields
+    payload = {"currencies": {
+        "CHF": {"breakdown": {KEY: {"release_dt": "2026-06-18T07:30:00", "stale": True, "age_days": 96}}},
+        "USD": {"breakdown": {KEY: {"release_dt": "2026-07-29T18:00:00", "stale": False, "age_days": 49}}},
+    }}
+    fresh = {"per_currency": {"CHF": {"stale": False}, "USD": {"stale": True}}}
+    _attach_policy_rate_fields(payload, None, fresh)
+    assert payload["currencies"]["CHF"]["breakdown"][KEY]["stale"] is False
+    assert payload["currencies"]["USD"]["breakdown"][KEY]["stale"] is True   # meeting passed, no decision
+    assert payload["currencies"]["CHF"]["breakdown"][KEY]["stale_basis"] == "policy_rates"
+
+
+def test_decision_without_time_is_date_only():
+    """V2: a BoJ decision with no time is displayed as its meeting date only."""
+    assert display_fields(SYNTH, "JPY", "2026-09-18T00:00:00")["date_only"] is True
+    assert "date_only" not in display_fields(SYNTH, "USD", "2026-09-16T18:00:00")
+
+
+def test_manual_actuals_panel_does_not_list_policy_rates(monkeypatch):
+    """V3: rows for interest_rate_decision are never listed (source = decisions)."""
+    from src import economic_render as er
+    rows = pd.DataFrame([
+        {"canonical_id": "chf_snb_interest_rate_decision", "currency": "CHF",
+         "indicator_key": KEY, "state": "ZERO_CONFIRM"},
+        {"canonical_id": "chf_cpi", "currency": "CHF", "indicator_key": "cpi_yoy", "state": "MISSING"},
+    ])
+    monkeypatch.setattr("src.manual_actuals.apply_overrides", lambda *a, **k: (None, rows))
+    monkeypatch.setattr("src.jb_actuals.build_flagged_bad_lookup", lambda *a, **k: {}, raising=False)
+    monkeypatch.setattr("src.ff_refresh.calendar_source", lambda: "ff")
+    out = er._load_actionable_rows(pd.Timestamp("2026-09-23"))
+    assert out["indicator_key"].tolist() == ["cpi_yoy"]
