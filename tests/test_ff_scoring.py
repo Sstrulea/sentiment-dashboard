@@ -149,24 +149,21 @@ def test_extract_period_suffix_raises_on_unrecognized():
 NEW_DUPLICATE_GUARD_FIXTURE = ROOT / "tests" / "fixtures" / "jb_new_duplicate_guard_2026-08.json"
 
 
-def test_new_duplicate_guard_identical_collapses_divergent_excludes_both():
+def test_same_day_duplicates_identical_zeros_collapse_zero_beside_real_is_placeholder():
     # real archive rows (NOT synthetic): CHF cpi_yoy 2026-07-02 -- the ±1h dup,
-    # BOTH copies widened to actual=0.0 (IDENTICAL) -- must collapse to ONE
-    # valid row, not two. CHF ppi_yoy 2025-04-14 -- one copy already valid
-    # (0.1, never touched by can_be_zero at all) plus one newly-widened 0.0
-    # (DIVERGENT) -- no tiebreak, so BOTH must be excluded, including the
-    # originally-valid 0.1 (keeping it would be guessing which copy is real).
+    # both copies 0.0 (real, zero_possible) -> collapse to ONE valid row.
+    # CHF ppi_yoy 2025-04-14 -- 0.1 plus a 0.0 copy the same day: the 0.0 is the
+    # placeholder of that release (audit Z3), the real 0.1 is KEPT (the previous
+    # guard excluded both).
     parsed = parse_jblanked_range(str(NEW_DUPLICATE_GUARD_FIXTURE), now_utc=pd.Timestamp("2026-08-02"))
     out = to_scoring_frame(parsed, build_matcher())
 
     chf_cpi = out[(out["currency"] == "CHF") & (out["indicator_key"] == "cpi_yoy")]
-    assert len(chf_cpi) == 2                              # both rows still present in the frame
-    assert chf_cpi["actual"].notna().sum() == 1            # but only ONE counts as valid
+    assert len(chf_cpi) == 2 and chf_cpi["actual"].notna().sum() == 1
     assert (chf_cpi.loc[chf_cpi["actual"].notna(), "actual"] == 0.0).all()
 
     chf_ppi = out[(out["currency"] == "CHF") & (out["indicator_key"] == "ppi_yoy")]
-    assert len(chf_ppi) == 2
-    assert chf_ppi["actual"].notna().sum() == 0             # BOTH excluded, including the 0.1
+    assert chf_ppi["actual"].dropna().tolist() == [0.1]
 
 
 def test_new_duplicate_guard_does_not_touch_pre_existing_duplicates():
@@ -186,17 +183,9 @@ def test_new_duplicate_guard_does_not_touch_pre_existing_duplicates():
 
 # --- audit 2026-09-23 phase 2: provenance recorded at ingest -----------------------
 # 2.2 consensus = effective_consensus(forecast, forecast_origin)
-# 2.3 actual 0.0 is a placeholder iff jb_status == "Data Not Loaded"
+# Z1-Z4 zeros = zero_verdicts (one rule)
 
-from src.ff_scoring import actual_is_placeholder, effective_consensus  # noqa: E402
-
-
-def _prow(forecast, origin, actual=1.0, jb_status=None, name="Trade Balance",
-          ccy="CAD", canon="Trade Balance", dt="2026-06-01 12:30"):
-    return {"canonical_id": f"{ccy.lower()}_x", "currency": ccy, "name_raw": name,
-            "name_canonical": canon, "datetime_utc": pd.Timestamp(dt), "actual": actual,
-            "forecast": forecast, "previous": 1.0, "released": True, "source": "ff",
-            "forecast_origin": origin, "jb_status": jb_status}
+from src.ff_scoring import effective_consensus, zero_verdicts  # noqa: E402
 
 
 @pytest.mark.parametrize("forecast,origin,expected", [
@@ -205,7 +194,8 @@ def _prow(forecast, origin, actual=1.0, jb_status=None, name="Trade Balance",
     (np.nan, "ff_blank", np.nan),  # FF "": no consensus
     (0.0, "jb", np.nan),         # JB 0.0: its no-forecast placeholder
     (0.3, "jb", 0.3),            # JB value (pre-archive history): kept
-    (0.0, None, np.nan),         # unknown provenance = not FF-confirmed
+    (0.0, "unknown", np.nan),    # migrated row without evidence = jb
+    (0.0, None, np.nan),
     (0.0, "manual", 0.0),
 ])
 def test_effective_consensus(forecast, origin, expected):
@@ -213,45 +203,78 @@ def test_effective_consensus(forecast, origin, expected):
     assert (np.isnan(got) and np.isnan(expected)) or got == expected
 
 
-@pytest.mark.parametrize("actual,status,placeholder", [
-    (0.0, "Data Not Loaded", True),
-    (0.0, "Good Data", False),   # Good/Bad Data is a direction tag, ignored (C1)
-    (0.0, "Bad Data", False),
-    (0.0, None, False),
-    (0.4, "Data Not Loaded", False),
-    (np.nan, "Data Not Loaded", False),
+def _s(cid, name, canon, ccy, rows):
+    """rows: [(datetime, actual, previous, jb_status)]"""
+    return pd.DataFrame([{"canonical_id": cid, "currency": ccy, "name_raw": name,
+                          "name_canonical": canon, "datetime_utc": pd.Timestamp(dt),
+                          "actual": a, "forecast": 1.0, "previous": p, "released": True,
+                          "source": "ff", "forecast_origin": "ff", "jb_status": st}
+                         for dt, a, p, st in rows], columns=CANON_COLUMNS)
+
+
+PMI = ("chf_procure_ch_manufacturing_pmi", "Manufacturing PMI", "procure.ch Manufacturing PMI", "CHF")
+CPI = ("chf_cpi", "CPI m/m", "CPI y/y", "CHF")
+ZP = {PMI[0]: False, CPI[0]: True}
+
+
+def test_z1_level_series_zero_is_always_a_placeholder_and_recovered():
+    """PMI = 0.0 labelled Good Data (the 2025-10-01 CHF case) -> placeholder,
+    recovered from the next print's previous."""
+    ff = _s(*PMI, [("2025-09-01 07:30", 49.0, 48.0, "Good Data"),
+                   ("2025-10-01 07:30", 0.0, 49.0, "Good Data"),
+                   ("2025-11-03 08:30", 47.0, 46.3, "Bad Data")])
+    v = zero_verdicts(ff, ZP)
+    assert v[(PMI[0], pd.Timestamp("2025-10-01 07:30"))] == (True, 46.3)
+    out = to_scoring_frame(ff, build_matcher(), zero_possible=ZP).sort_values("release_dt")
+    row = out[out.release_dt == pd.Timestamp("2025-10-01 07:30")].iloc[0]
+    assert (row.actual, row.actual_origin) == (46.3, "ff_previous")
+
+
+def test_z1_latest_level_zero_without_next_print_is_nan():
+    ff = _s(*PMI, [("2025-09-01 07:30", 49.0, 48.0, "Good Data"),
+                   ("2025-10-01 07:30", 0.0, 49.0, "Good Data")])
+    out = to_scoring_frame(ff, build_matcher(), zero_possible=ZP)
+    assert out.sort_values("release_dt")["actual"].isna().tolist() == [False, True]
+
+
+@pytest.mark.parametrize("status,next_prev,verdict", [
+    ("Bad Data", 0.0, (False, np.nan)),          # real 0.0, confirmed by next.previous
+    ("Good Data", np.nan, (False, np.nan)),      # real, nothing contradicts it
+    ("Data Not Loaded", np.nan, (True, np.nan)),  # Z2 placeholder, nothing to recover from
+    ("Data Not Loaded", 0.2, (True, 0.2)),       # Z2 placeholder, recovered
+    ("Good Data", 0.3, (True, 0.3)),             # Z2 contradicted beyond tol (0) -> recovered
 ])
-def test_actual_is_placeholder(actual, status, placeholder):
-    assert actual_is_placeholder(actual, status) is placeholder
+def test_z2_zero_possible_series(status, next_prev, verdict):
+    ff = _s(*CPI, [("2026-05-04 06:30", 0.1, 0.2, "Good Data"), ("2026-06-03 06:30", 0.3, 0.1, "Good Data"),
+                   ("2026-07-02 06:30", 0.0, 0.3, status), ("2026-08-04 06:30", 0.2, next_prev, "Good Data")])
+    got = zero_verdicts(ff, ZP)[(CPI[0], pd.Timestamp("2026-07-02 06:30"))]
+    assert got[0] == verdict[0]
+    assert (np.isnan(got[1]) and np.isnan(verdict[1])) or got[1] == verdict[1]
 
 
-def _cpi(forecast, origin, actual=0.4, jb_status="Bad Data", dt="2026-06-01"):
-    return _prow(forecast, origin, actual, jb_status, name="CPI m/m", ccy="CHF", canon="CPI y/y", dt=dt)
+def test_z3_zero_sibling_of_a_real_value_is_a_placeholder_not_a_divergence():
+    """EUR PMI 2026-02-20: 50.8 plus a 0.0 copy the same day -> 50.8 kept."""
+    ff = _s("eur_s_p_global_manufacturing_pmi", "Flash Manufacturing PMI",
+            "S&P Global Manufacturing PMI", "EUR",
+            [("2026-02-20 09:00", 50.8, 49.5, "Bad Data"), ("2026-02-20 08:00", 0.0, 49.5, "Good Data"),
+             ("2026-03-24 09:00", 51.0, 50.8, "Good Data")])
+    zp = {"eur_s_p_global_manufacturing_pmi": True}          # even where zero is possible
+    out = to_scoring_frame(ff, build_matcher(), zero_possible=zp).sort_values("release_dt")
+    assert out["actual"].tolist()[:2] == [None, 50.8] or \
+        (pd.isna(out["actual"].iloc[0]) and out["actual"].iloc[1] == 50.8)
+
+
+def test_zero_possible_has_no_default():
+    ff = _s(*CPI, [("2026-07-02 06:30", 0.0, 0.3, "Good Data")])
+    with pytest.raises(ValueError, match="zero_possible not declared"):
+        zero_verdicts(ff, {})
 
 
 def test_scoring_frame_applies_the_consensus_rule():
-    ff = pd.DataFrame([_cpi(0.0, "ff", dt="2026-09-03"), _cpi(np.nan, "ff_blank", dt="2026-08-03"),
-                       _cpi(0.0, "jb", dt="2026-07-03")], columns=CANON_COLUMNS)
-    ff["datetime_utc"] = pd.to_datetime(["2026-09-03", "2026-08-03", "2026-07-03"])
-    out = to_scoring_frame(ff, build_matcher()).sort_values("release_dt")
-    assert out["consensus"].tolist()[2] == 0.0            # CHF CPI 09-03: FF "0.0%" scored
-    assert out["consensus"].iloc[:2].isna().all()           # ff_blank + jb 0.0
-
-
-def test_scoring_frame_applies_the_placeholder_rule_only():
-    rows = [_cpi(0.1, "ff", actual=0.0, jb_status="Data Not Loaded"),
-            _cpi(0.1, "ff", actual=0.0, jb_status="Bad Data"),
-            _cpi(0.1, "ff", actual=0.0, jb_status=None)]
-    ff = pd.DataFrame(rows, columns=CANON_COLUMNS)
-    ff["datetime_utc"] = pd.to_datetime(["2026-07-03", "2026-08-03", "2026-09-03"])
-    ff["canonical_id"] = ["a", "b", "c"]
-    out = to_scoring_frame(ff, build_matcher()).sort_values("release_dt")
-    assert out["actual"].isna().tolist() == [True, False, False]
-
-
-def test_scoring_frame_without_provenance_columns_is_conservative():
-    """A frame from before 2.1 (no columns): consensus 0.0 is not FF-confirmed."""
-    row = {k: v for k, v in _cpi(0.0, "ff").items() if k not in ("forecast_origin", "jb_status")}
-    ff = pd.DataFrame([row])
-    out = to_scoring_frame(ff, build_matcher())
-    assert out["consensus"].isna().all() and out["actual"].tolist() == [0.4]
+    rows = pd.concat([_s(*CPI, [(d, 0.4, 0.1, "Bad Data")]) for d in
+                      ("2026-07-03", "2026-08-03", "2026-09-03")], ignore_index=True)
+    rows["forecast"] = [0.0, np.nan, 0.0]
+    rows["forecast_origin"] = ["jb", "ff_blank", "ff"]
+    out = to_scoring_frame(rows, build_matcher(), zero_possible=ZP).sort_values("release_dt")
+    assert out["consensus"].isna().tolist() == [True, True, False]
+    assert out["consensus"].iloc[2] == 0.0                 # CHF CPI 09-03: FF "0.0%" scored

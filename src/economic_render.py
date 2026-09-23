@@ -1203,20 +1203,6 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
                 if len(cal) < before:
                     log.warning("FF calendar: %d print(s) excluded by FRED quarantine.", before - len(cal))
 
-        # Audit 2.4 (measurement branch): prints recovered from the NEXT print's
-        # `previous` for a zero the quarantine above removed — a revised value,
-        # marked as such (source / actual_origin = 'ff_previous').
-        rec_path = ROOT / "data" / "ff_previous_recovery.parquet"
-        if rec_path.exists():
-            rec = pd.read_parquet(rec_path)
-            if len(rec):
-                rec = rec.assign(source="ff_previous")
-                rec["release_dt"] = pd.to_datetime(rec["release_dt"])
-                cal = pd.concat([cal, rec[[c for c in cal.columns if c in rec.columns]]],
-                                ignore_index=True)
-                log.warning("FF calendar: %d print(s) recovered from next.previous "
-                            "(actual_origin=ff_previous).", len(rec))
-
         # Manual Actuals Panel (Phase B): human-supplied actuals, unioned in
         # AFTER FRED quarantine — a reviewed manual entry is the pipeline's
         # final say, not subject to an unrelated automated quarantine list.
@@ -1227,6 +1213,8 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
             manual_rows, _ = apply_overrides(ffdf, overrides, now_utc=as_of)
             if len(manual_rows):
                 cal = pd.concat([cal, manual_rows], ignore_index=True)
+                from src.ff_scoring import zero_beside_real_value
+                cal = zero_beside_real_value(cal)
                 log.info("Manual Actuals Panel: %d override(s) applied to scoring.",
                         len(manual_rows))
 

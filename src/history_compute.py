@@ -256,7 +256,7 @@ def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
 
     combined = pd.concat([scored, manual_rows], ignore_index=True) if len(manual_rows) else scored
     combined["release_dt"] = pd.to_datetime(combined["release_dt"])
-    return combined[SCORING_COLUMNS]
+    return combined.reindex(columns=SCORING_COLUMNS)   # actual_origin may be absent (older frames)
 
 
 def quarantine_key_set(quarantine_df: pd.DataFrame) -> set:

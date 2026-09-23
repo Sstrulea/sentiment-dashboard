@@ -1,7 +1,7 @@
 """Manual Actuals Panel — Phase A: pure detection of parquet rows that need
 human intervention (feat/manual-actuals-panel). Read-only: no persistence, no
 rendering. Reuses the existing zero-quarantine decision code instead of
-reimplementing it — see `_zero_passes_widening`.
+reimplementing it — see `_zero_passes_widening` (ff_scoring.zero_verdicts).
 
 Two states, no others:
   MISSING      — datetime_utc < now - missing_after AND actual is NaN. The
@@ -85,6 +85,7 @@ as before (see `apply_overrides`'s docstring for the mechanics).
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 from pathlib import Path
 from typing import Optional
 
@@ -92,9 +93,10 @@ import pandas as pd
 
 from .economic_compute import effective_frequency
 from .economic_fetch import CompiledMatcher
-from .ff_scoring import (CCY2COUNTRY, SCORING_COLUMNS, actual_is_placeholder,
-                         build_matcher, effective_consensus, load_can_be_zero,
-                         load_configs)
+from .econ_calendar_ff import ensure_provenance_columns
+from .ff_scoring import (CCY2COUNTRY, SCORING_COLUMNS, build_matcher,
+                         effective_consensus, load_can_be_zero, load_configs,
+                         load_zero_possible, zero_verdicts)
 
 MISSING = "MISSING"
 ZERO_CONFIRM = "ZERO_CONFIRM"
@@ -133,19 +135,18 @@ OVERRIDE_COLUMNS = [
 ]
 
 
-def _zero_passes_widening(actual, jb_status) -> bool:
-    """A 0.0 actual is legitimate unless it is JBlanked's placeholder — the SAME
-    single rule ff_scoring.to_scoring_frame applies (audit 2.3,
-    ff_scoring.actual_is_placeholder: newest JB payload said "Data Not Loaded").
-    The can_be_zero / m|q suffix / flagged_bad routes are gone; the
-    `can_be_zero` and `flagged_bad` parameters still accepted by the public
+def _zero_passes_widening(verdicts: dict, canonical_id: str, dt) -> bool:
+    """A 0.0 actual is usable (no human needed) unless ff_scoring.zero_verdicts —
+    THE zero rule, the same one to_scoring_frame applies (audit Z1-Z4) — calls
+    it a placeholder it could not recover from the next print's `previous`.
+    The `can_be_zero` and `flagged_bad` parameters still accepted by the public
     functions below are IGNORED (kept only so existing call sites keep working)."""
-    return not actual_is_placeholder(actual, jb_status)
+    v = verdicts.get((canonical_id, pd.Timestamp(dt)))
+    return v is None or not v[0] or pd.notna(v[1])
 
 
 def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
-                         matcher: CompiledMatcher, can_be_zero: set[str],
-                         flagged_bad: Optional[dict],
+                         matcher: CompiledMatcher, verdicts: dict,
                          missing_after: pd.Timedelta) -> pd.DataFrame:
     """The per-row MISSING/ZERO_CONFIRM scan, UNSUPPRESSED — every actionable
     FF row, duplicates included. Split out from `find_actionable_rows` so
@@ -168,7 +169,7 @@ def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
             state = MISSING
         elif r.actual == 0.0:
             release_date = dt.date()
-            if _zero_passes_widening(r.actual, getattr(r, "jb_status", None)):
+            if _zero_passes_widening(verdicts, r.canonical_id, dt):
                 continue
             state = ZERO_CONFIRM
         else:
@@ -187,8 +188,8 @@ def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
 
 
 def _has_valid_sibling_same_day(ff: pd.DataFrame, matcher: CompiledMatcher,
-                                can_be_zero: set[str], flagged_bad: Optional[dict],
-                                canonical_id: str, cal_date, exclude_dt: pd.Timestamp) -> bool:
+                                verdicts: dict, canonical_id: str, cal_date,
+                                exclude_dt: pd.Timestamp) -> bool:
     """Rule (a). Scans the FULL ff frame for the (canonical_id, cal_date)
     group — not just the actionable subset — since the sibling that makes a
     row redundant is, by definition, NOT itself actionable (it already has a
@@ -202,7 +203,7 @@ def _has_valid_sibling_same_day(ff: pd.DataFrame, matcher: CompiledMatcher,
             continue
         if r.actual == 0.0:
             key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
-            if key is None or not _zero_passes_widening(r.actual, getattr(r, "jb_status", None)):
+            if key is None or not _zero_passes_widening(verdicts, r.canonical_id, r.datetime_utc):
                 continue   # sibling itself ambiguous -> not "valid"
         return True
     return False
@@ -216,8 +217,7 @@ def _drop_keys(df: pd.DataFrame, keys: set[tuple]) -> pd.DataFrame:
 
 
 def _suppress_duplicates(raw: pd.DataFrame, ff: pd.DataFrame, *,
-                         matcher: CompiledMatcher, can_be_zero: set[str],
-                         flagged_bad: Optional[dict],
+                         matcher: CompiledMatcher, verdicts: dict,
                          indicators_cfg: Optional[dict]) -> pd.DataFrame:
     """Applies rules (a)/(b)/(c) to the raw, unsuppressed actionable set — see
     the module docstring for the full design and the measurements behind
@@ -238,7 +238,7 @@ def _suppress_duplicates(raw: pd.DataFrame, ff: pd.DataFrame, *,
     drop_a: set[tuple] = set()
     for (cid, cal_date), g in df.groupby(["canonical_id", "_cal_date"]):
         for r in g.itertuples(index=False):
-            if _has_valid_sibling_same_day(ff, matcher, can_be_zero, flagged_bad,
+            if _has_valid_sibling_same_day(ff, matcher, verdicts,
                                            cid, cal_date, r.datetime_utc):
                 drop_a.add((cid, r.datetime_utc))
     df = _drop_keys(df, drop_a)
@@ -295,7 +295,8 @@ def find_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
                          can_be_zero: Optional[set[str]] = None,
                          flagged_bad: Optional[dict] = None,
                          missing_after: pd.Timedelta = DEFAULT_MISSING_AFTER,
-                         indicators_cfg: Optional[dict] = None
+                         indicators_cfg: Optional[dict] = None,
+                         zero_possible: Optional[dict] = None
                          ) -> pd.DataFrame:
     """Pure — no I/O, no mutation of `ff`. Returns one row per actionable FF
     calendar row STILL NEEDING A HUMAN after duplicate suppression (rules
@@ -314,10 +315,12 @@ def find_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
 
     matcher = matcher or build_matcher()
     cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
-    raw = _raw_actionable_rows(ff, now_utc=now_utc, matcher=matcher, can_be_zero=cbz,
-                               flagged_bad=flagged_bad, missing_after=missing_after)
-    return _suppress_duplicates(raw, ff, matcher=matcher, can_be_zero=cbz,
-                                flagged_bad=flagged_bad, indicators_cfg=indicators_cfg)
+    verdicts = zero_verdicts(ff, load_zero_possible() if zero_possible is None else zero_possible,
+                             matcher)
+    raw = _raw_actionable_rows(ff, now_utc=now_utc, matcher=matcher, verdicts=verdicts,
+                               missing_after=missing_after)
+    return _suppress_duplicates(raw, ff, matcher=matcher, verdicts=verdicts,
+                                indicators_cfg=indicators_cfg)
 
 
 def apply_relevance_window(rows: pd.DataFrame, *, now_utc: pd.Timestamp,
@@ -362,7 +365,8 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
                     can_be_zero: Optional[set[str]] = None,
                     flagged_bad: Optional[dict] = None,
                     missing_after: pd.Timedelta = DEFAULT_MISSING_AFTER,
-                    indicators_cfg: Optional[dict] = None
+                    indicators_cfg: Optional[dict] = None,
+                    zero_possible: Optional[dict] = None
                     ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Pure — no I/O. Reconciles `overrides` against the CURRENT actionable set
     (freshly computed here, not trusted from whenever an override was written).
@@ -406,15 +410,30 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
     """
     matcher = matcher or build_matcher()
     cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
-    raw = _raw_actionable_rows(ff, now_utc=now_utc, matcher=matcher, can_be_zero=cbz,
-                               flagged_bad=flagged_bad, missing_after=missing_after)
-    actionable = _suppress_duplicates(raw, ff, matcher=matcher, can_be_zero=cbz,
-                                      flagged_bad=flagged_bad, indicators_cfg=indicators_cfg)
-    if not overrides or raw.empty:
+    verdicts = zero_verdicts(ff, load_zero_possible() if zero_possible is None else zero_possible,
+                             matcher)
+    raw = _raw_actionable_rows(ff, now_utc=now_utc, matcher=matcher, verdicts=verdicts,
+                               missing_after=missing_after)
+    actionable = _suppress_duplicates(raw, ff, matcher=matcher, verdicts=verdicts,
+                                      indicators_cfg=indicators_cfg)
+    if not overrides:
         return pd.DataFrame(columns=SCORING_COLUMNS), actionable
 
-    by_key = {_key(r.canonical_id, r.datetime_utc): r
-             for r in raw.itertuples(index=False)}
+    # An override keeps applying while its row's actual is still NaN or 0.0
+    # (audit, phase 2): a human's reading of a zero is the final say, even when
+    # the zero rule would now call that zero real (e.g. no JB payload and no
+    # next print left on disk to show it was a placeholder). A real non-zero
+    # actual landing still retires it — the same test api/manual-actual.py applies.
+    by_key: dict = {}
+    for r in ensure_provenance_columns(ff).itertuples(index=False):
+        if pd.notna(r.actual) and r.actual != 0.0:
+            continue
+        key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
+        if key is None:
+            continue
+        by_key[_key(r.canonical_id, r.datetime_utc)] = SimpleNamespace(
+            currency=r.currency, indicator_key=key, datetime_utc=pd.Timestamp(r.datetime_utc),
+            forecast=r.forecast, forecast_origin=r.forecast_origin, previous=r.previous)
 
     manual_rows: list[dict] = []
     resolved_keys: set[tuple] = set()
@@ -429,7 +448,7 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
             # audit 2.2: a manual row's consensus follows the same provenance
             # rule as every scored row — it no longer bypasses it.
             "consensus": effective_consensus(row.forecast, row.forecast_origin),
-            "previous": row.previous, "source": "manual",
+            "previous": row.previous, "source": "manual", "actual_origin": "manual",
         })
         resolved_keys.add(key)
 

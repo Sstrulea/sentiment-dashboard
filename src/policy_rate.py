@@ -46,6 +46,7 @@ def decision_rows(decisions: pd.DataFrame, as_of: pd.Timestamp,
         "consensus": d["consensus"].astype(float).to_numpy(),
         "previous": d["rate_before"].astype(float).to_numpy(),
         "source": SOURCE, "name_raw": d["bank"].str.upper().to_numpy(),
+        "actual_origin": SOURCE,
     })
     return out[[c for c in columns if c in out.columns]]
 

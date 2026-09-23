@@ -55,9 +55,24 @@ def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None,
     return {"canonical_id": canonical_id or f"{ccy.lower()}_x", "currency": ccy,
             "name_raw": name_raw or canon,
             "name_canonical": canon, "datetime_utc": pd.Timestamp(dt),
-            "actual": actual, "forecast": forecast, "previous": 0.5,
+            # previous unknown by default: under Z2/Z4 a known next.previous would
+            # contradict and auto-recover a test 0.0 (no human needed).
+            "actual": actual, "forecast": forecast, "previous": float("nan"),
             "released": True, "source": "ff",
             "forecast_origin": forecast_origin, "jb_status": jb_status}
+
+
+class _AllZeroPossible(dict):
+    """Synthetic series ids ('usd_x', ...) are all zero_possible=True here: a test
+    0.0 is a placeholder through its jb_status (Z2), not through Z1."""
+    def __contains__(self, key):
+        return True
+
+    def __getitem__(self, key):
+        return True
+
+
+ZP_ALL = _AllZeroPossible()
 
 
 def _frame(rows):
@@ -69,6 +84,7 @@ def _find(rows, **kw):
     kw.setdefault("can_be_zero", CBZ)
     kw.setdefault("now_utc", NOW)
     kw.setdefault("indicators_cfg", INDICATORS_CFG)
+    kw.setdefault("zero_possible", ZP_ALL)
     return find_actionable_rows(_frame(rows), **kw)
 
 
@@ -129,12 +145,12 @@ def test_manual_row_consensus_follows_the_provenance_rule():
     ov = [{"canonical_id": "usd_x", "datetime_utc": str(dt), "actual": 5.7}]
     kept, _ = apply_overrides(_frame([_row("USD", "CPI y/y", dt, 0.0, forecast=0.0)]), ov,
                               now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
-                              indicators_cfg=INDICATORS_CFG)
+                              indicators_cfg=INDICATORS_CFG, zero_possible=ZP_ALL)
     assert kept.iloc[0]["consensus"] == 0.0
     dropped, _ = apply_overrides(_frame([_row("USD", "CPI y/y", dt, 0.0, forecast=0.0,
                                                forecast_origin="jb")]), ov,
                                  now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
-                                 indicators_cfg=INDICATORS_CFG)
+                                 indicators_cfg=INDICATORS_CFG, zero_possible=ZP_ALL)
     assert pd.isna(dropped.iloc[0]["consensus"])
 
 
@@ -176,7 +192,7 @@ def test_pure_no_mutation_of_input():
     rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0)]
     src = _frame(rows)
     before = src.copy(deep=True)
-    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     pd.testing.assert_frame_equal(src, before)
 
 
@@ -186,7 +202,7 @@ def test_real_matcher_and_can_be_zero_wire_up():
     """No matcher/can_be_zero override -> loads the live indicator config."""
     dt = NOW - pd.Timedelta(hours=1)
     rows = [_row("USD", "CPI y/y", dt, 0.0)]     # cpi_yoy: NOT can_be_zero by config
-    out = find_actionable_rows(_frame(rows), now_utc=NOW)
+    out = find_actionable_rows(_frame(rows), now_utc=NOW, zero_possible=ZP_ALL)
     assert len(out) == 1
     assert out.iloc[0]["indicator_key"] == "cpi_yoy"
     assert out.iloc[0]["state"] == ZERO_CONFIRM
@@ -328,7 +344,7 @@ def test_suppression_pure_no_mutation_of_input():
     ]
     src = _frame(rows)
     before = src.copy(deep=True)
-    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL,
                          indicators_cfg=INDICATORS_CFG)
     pd.testing.assert_frame_equal(src, before)
 
@@ -366,7 +382,7 @@ def test_apply_overrides_missing_row_becomes_manual_source_row():
     rows = [_row("USD", "CPI y/y", dt, float("nan"))]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 3.2)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert list(manual.columns) == SCORING_COLUMNS
     assert len(manual) == 1
     m = manual.iloc[0]
@@ -381,7 +397,7 @@ def test_apply_overrides_zero_confirm_row_confirmed_at_zero():
     rows = [_row("USD", "CPI y/y", dt, 0.0)]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 0.0, state_resolved=ZERO_CONFIRM)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.0)
     assert manual.iloc[0]["source"] == "manual"
     assert remaining.empty
@@ -392,7 +408,7 @@ def test_apply_overrides_zero_confirm_row_corrected():
     rows = [_row("USD", "CPI y/y", dt, 0.0)]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 0.4, state_resolved=ZERO_CONFIRM)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.4)
 
 
@@ -405,7 +421,7 @@ def test_apply_overrides_stale_when_real_actual_has_landed():
     rows = [_row("USD", "CPI y/y", dt, 3.5)]   # real print landed
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 9.9)]   # stale guess from before
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert manual.empty
     assert remaining.empty   # not actionable either way (real value present)
 
@@ -420,7 +436,7 @@ def test_apply_overrides_never_touches_unrelated_actionable_rows():
             _row("USD", "CPI y/y", dt2, float("nan"))]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt1, 3.2)]   # only resolves dt1
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1
     assert len(remaining) == 1 and remaining.iloc[0]["datetime_utc"] == dt2
 
@@ -429,7 +445,7 @@ def test_apply_overrides_empty_overrides_is_noop():
     dt = NOW - pd.Timedelta(hours=7)
     rows = [_row("USD", "CPI y/y", dt, float("nan"))]
     ff = _frame(rows)
-    manual, remaining = apply_overrides(ff, [], now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, [], now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert manual.empty and list(manual.columns) == SCORING_COLUMNS
     assert len(remaining) == 1
 
@@ -448,7 +464,7 @@ def test_apply_overrides_grandfathered_across_rule_a_same_day_suppression():
     ]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt_override_target, 0.3, state_resolved=ZERO_CONFIRM)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER,
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, zero_possible=ZP_ALL,
                                         can_be_zero=CBZ, indicators_cfg=INDICATORS_CFG)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.3)
     assert remaining.empty   # suppressed from the panel, but the override still resolved
@@ -476,7 +492,7 @@ def test_apply_overrides_grandfathered_across_rule_c_cross_day_suppression():
     ]
     ff = _frame(rows)
     overrides = [_override("jpy_boj_interest_rate_decision", dt_override_target, 1.0)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER,
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, zero_possible=ZP_ALL,
                                         can_be_zero=CBZ, indicators_cfg=INDICATORS_CFG)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(1.0)
     assert len(remaining) == 1 and remaining.iloc[0]["datetime_utc"] == dt_kept
@@ -484,7 +500,7 @@ def test_apply_overrides_grandfathered_across_rule_c_cross_day_suppression():
 
 def test_apply_overrides_empty_ff_frame():
     manual, remaining = apply_overrides(_frame([]), [_override("usd_x", NOW, 1.0)],
-                                        now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+                                        now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert manual.empty and remaining.empty
 
 
@@ -545,6 +561,6 @@ def test_relevance_window_never_affects_override_eligibility():
     rows = [_row("USD", "CPI y/y", dt, float("nan"))]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 3.2)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(3.2)   # override still worked
     assert remaining.empty                                                       # resolved, as normal
