@@ -1,6 +1,52 @@
 {
- "as_of": "2026-09-23T14:06:34.357374",
+ "as_of": "2026-09-23T18:06:17.964772",
  "checks": {
+  "release_conflict": {
+   "findings": [
+    {
+     "check": "release_conflict",
+     "canonical_id": "jpy_prelim_industrial_production",
+     "currency": "JPY",
+     "name_raw": "Prelim Industrial Production m/m",
+     "release_dt": "2026-02-26T23:50:00",
+     "actual": 1.8,
+     "forecast": 0.1,
+     "previous": -0.9,
+     "threshold": 1.28956,
+     "reason": "actual 1.8 vs next previous 4.3 (2026-03-30)",
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "release_conflict",
+     "canonical_id": "usd_advance_gdp_price_index",
+     "currency": "USD",
+     "name_raw": "Advance GDP Price Index q/q",
+     "release_dt": "2026-02-20T13:30:00",
+     "actual": 0.4,
+     "forecast": 0.4,
+     "previous": 0.4,
+     "threshold": 1.08956,
+     "reason": "actual 0.4 vs next previous 3.7 (2026-04-30)",
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "release_conflict",
+     "canonical_id": "usd_durable_goods_orders",
+     "currency": "USD",
+     "name_raw": "Durable Goods Orders m/m",
+     "release_dt": "2026-07-27T11:30:00",
+     "actual": 0.3,
+     "forecast": 1.6,
+     "previous": -4.0,
+     "threshold": 0.2,
+     "reason": "previous -4.0 vs prior actual -4.5 (2026-06-25)",
+     "level": "INFO",
+     "new": true
+    }
+   ]
+  },
   "previous_consistency": {
    "findings": [
     {
@@ -18,7 +64,9 @@
      "diff": 4.4,
      "tolerance": 2.75151,
      "threshold": 2.75151,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_s_p_global_manufacturing_pmi",
@@ -29,13 +77,15 @@
      "kind": "value",
      "scored_actual": 45.4,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-03T14:30:00",
-     "next_previous": 49.6,
+     "next_release_dt": "2023-02-01T14:30:00",
+     "next_previous": 49.2,
      "next_from": "parquet",
-     "diff": 4.2,
+     "diff": 3.8,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_ism_manufacturing_pmi",
@@ -46,47 +96,34 @@
      "kind": "value",
      "scored_actual": 47.4,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-04T15:00:00",
-     "next_previous": 49.0,
+     "next_release_dt": "2023-02-01T15:00:00",
+     "next_previous": 48.4,
      "next_from": "parquet",
-     "diff": 1.6,
+     "diff": 1.0,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
-     "canonical_id": "usd_jolts_job_openings",
-     "currency": "USD",
-     "indicator_key": "jolts",
-     "name_raw": "JOLTS Job Openings",
-     "release_dt": "2023-01-03T15:00:00",
+     "canonical_id": "gbp_s_p_global_cips_services_pmi",
+     "currency": "GBP",
+     "indicator_key": "services_pmi",
+     "name_raw": "Final Services PMI",
+     "release_dt": "2023-01-04T09:30:00",
      "kind": "value",
-     "scored_actual": 8.79,
+     "scored_actual": 53.4,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-04T15:00:00",
-     "next_previous": 10.51,
+     "next_release_dt": "2023-02-03T09:30:00",
+     "next_previous": 48.0,
      "next_from": "parquet",
-     "diff": 1.72,
-     "tolerance": 0.455824,
-     "threshold": 0.455824,
-     "n_revision_pairs": 45
-    },
-    {
-     "canonical_id": "usd_initial_jobless_claims",
-     "currency": "USD",
-     "indicator_key": "jobless_claims",
-     "name_raw": "Unemployment Claims",
-     "release_dt": "2023-01-04T13:30:00",
-     "kind": "value",
-     "scored_actual": 202.0,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-05T13:30:00",
-     "next_previous": 223.0,
-     "next_from": "parquet",
-     "diff": 21.0,
-     "tolerance": 1.0,
-     "threshold": 2.0,
-     "n_revision_pairs": 189
+     "diff": -5.4,
+     "tolerance": 5.05824,
+     "threshold": 5.05824,
+     "n_revision_pairs": 48,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_jolts_job_openings",
@@ -103,7 +140,9 @@
      "diff": -1.53,
      "tolerance": 0.455824,
      "threshold": 0.455824,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_core_cpi",
@@ -114,13 +153,15 @@
      "kind": "value",
      "scored_actual": 3.4,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-06T10:00:00",
-     "next_previous": 5.0,
+     "next_release_dt": "2023-02-01T10:00:00",
+     "next_previous": 5.2,
      "next_from": "parquet",
-     "diff": 1.6,
+     "diff": 1.8,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_cpi",
@@ -131,13 +172,15 @@
      "kind": "value",
      "scored_actual": 2.9,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-06T10:00:00",
-     "next_previous": 10.1,
+     "next_release_dt": "2023-02-01T10:00:00",
+     "next_previous": 9.2,
      "next_from": "parquet",
-     "diff": 7.2,
+     "diff": 6.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_ppi",
@@ -154,7 +197,9 @@
      "diff": -0.7,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -171,7 +216,9 @@
      "diff": -77.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_employment_change",
@@ -182,13 +229,15 @@
      "kind": "value",
      "scored_actual": 0.1,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-06T13:30:00",
-     "next_previous": 10.1,
+     "next_release_dt": "2023-02-10T13:30:00",
+     "next_previous": 104.0,
      "next_from": "parquet",
-     "diff": 10.0,
+     "diff": 103.9,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_unemployment_rate",
@@ -199,13 +248,15 @@
      "kind": "value",
      "scored_actual": 5.8,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-06T13:30:00",
-     "next_previous": 5.1,
+     "next_release_dt": "2023-02-10T13:30:00",
+     "next_previous": 5.0,
      "next_from": "parquet",
-     "diff": -0.7,
+     "diff": -0.8,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_ism_non_manufacturing_pmi",
@@ -216,13 +267,34 @@
      "kind": "value",
      "scored_actual": 50.6,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-06T15:00:00",
-     "next_previous": 56.5,
+     "next_release_dt": "2023-02-03T15:00:00",
+     "next_previous": 49.6,
      "next_from": "parquet",
-     "diff": 5.9,
+     "diff": -1.0,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
+    },
+    {
+     "canonical_id": "jpy_labor_cash_earnings",
+     "currency": "JPY",
+     "indicator_key": "wage_growth",
+     "name_raw": "Average Cash Earnings y/y",
+     "release_dt": "2023-01-05T23:30:00",
+     "kind": "value",
+     "scored_actual": 0.5,
+     "scored_source": "ff",
+     "next_release_dt": "2023-02-06T23:30:00",
+     "next_previous": 1.9,
+     "next_from": "parquet",
+     "diff": 1.4,
+     "tolerance": 1.28956,
+     "threshold": 1.28956,
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "chf_retail_sales",
@@ -239,7 +311,9 @@
      "diff": -2.2,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_retail_sales",
@@ -256,24 +330,9 @@
      "diff": 1.5,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41
-    },
-    {
-     "canonical_id": "jpy_tokyo_core_cpi",
-     "currency": "JPY",
-     "indicator_key": "tokyo_core_cpi_yoy",
-     "name_raw": "Tokyo Core CPI y/y",
-     "release_dt": "2023-01-08T23:30:00",
-     "kind": "value",
-     "scored_actual": 2.1,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-09T23:30:00",
-     "next_previous": 3.6,
-     "next_from": "parquet",
-     "diff": 1.5,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -284,13 +343,15 @@
      "kind": "value",
      "scored_actual": 2.0,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-11T00:30:00",
-     "next_previous": 0.3,
+     "next_release_dt": "2023-01-30T00:30:00",
+     "next_previous": 1.6,
      "next_from": "parquet",
-     "diff": -1.7,
+     "diff": -0.4,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 29
+     "n_revision_pairs": 29,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_unemployment_rate",
@@ -307,7 +368,9 @@
      "diff": -0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_labor_cash_earnings",
@@ -324,7 +387,9 @@
      "diff": 1.7,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_tokyo_core_cpi",
@@ -341,7 +406,9 @@
      "diff": -1.9,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_cpi",
@@ -352,13 +419,34 @@
      "kind": "value",
      "scored_actual": 4.3,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-11T00:30:00",
-     "next_previous": 6.9,
+     "next_release_dt": "2023-01-25T00:30:00",
+     "next_previous": 7.3,
      "next_from": "parquet",
-     "diff": 2.6,
+     "diff": 3.0,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
+    },
+    {
+     "canonical_id": "aud_cpi",
+     "currency": "AUD",
+     "indicator_key": "cpi_yoy",
+     "name_raw": "CPI y/y",
+     "release_dt": "2023-01-11T00:30:00",
+     "kind": "value",
+     "scored_actual": 7.3,
+     "scored_source": "ff",
+     "next_release_dt": "2023-01-31T00:30:00",
+     "next_previous": 4.3,
+     "next_from": "parquet",
+     "diff": -3.0,
+     "tolerance": 0.0,
+     "threshold": 0.2,
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_cpi",
@@ -369,30 +457,15 @@
      "kind": "value",
      "scored_actual": 3.4,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-12T13:30:00",
-     "next_previous": 7.1,
+     "next_release_dt": "2023-02-14T13:30:00",
+     "next_previous": 6.5,
      "next_from": "parquet",
-     "diff": 3.7,
+     "diff": 3.1,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_initial_jobless_claims",
-     "currency": "USD",
-     "indicator_key": "jobless_claims",
-     "name_raw": "Unemployment Claims",
-     "release_dt": "2023-01-11T13:30:00",
-     "kind": "value",
-     "scored_actual": 202.0,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-12T13:30:00",
-     "next_previous": 206.0,
-     "next_from": "parquet",
-     "diff": 4.0,
-     "tolerance": 1.0,
-     "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -403,13 +476,15 @@
      "kind": "value",
      "scored_actual": 0.4,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-17T13:30:00",
-     "next_previous": -0.5,
+     "next_release_dt": "2023-02-17T13:30:00",
+     "next_previous": -0.1,
      "next_from": "parquet",
-     "diff": -0.9,
+     "diff": -0.5,
      "tolerance": 0.37239,
      "threshold": 0.37239,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_ppi",
@@ -426,7 +501,9 @@
      "diff": 10.5,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_unemployment_rate",
@@ -437,13 +514,15 @@
      "kind": "value",
      "scored_actual": 4.2,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-17T07:00:00",
+     "next_release_dt": "2023-02-14T07:00:00",
      "next_previous": 3.7,
      "next_from": "parquet",
      "diff": -0.5,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_common_cpi",
@@ -454,13 +533,15 @@
      "kind": "value",
      "scored_actual": 3.9,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-17T13:32:00",
-     "next_previous": 6.8,
+     "next_release_dt": "2023-02-21T13:32:00",
+     "next_previous": 6.6,
      "next_from": "parquet",
-     "diff": 2.9,
+     "diff": 2.7,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_cpi",
@@ -471,13 +552,15 @@
      "kind": "value",
      "scored_actual": -0.3,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-17T13:30:00",
-     "next_previous": 0.1,
+     "next_release_dt": "2023-02-21T13:30:00",
+     "next_previous": -0.6,
      "next_from": "parquet",
-     "diff": 0.4,
+     "diff": -0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_median_cpi",
@@ -488,13 +571,15 @@
      "kind": "value",
      "scored_actual": 3.6,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-17T13:30:00",
-     "next_previous": 5.1,
+     "next_release_dt": "2023-02-21T13:30:00",
+     "next_previous": 5.2,
      "next_from": "parquet",
-     "diff": 1.5,
+     "diff": 1.6,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_trimmed_cpi",
@@ -505,13 +590,15 @@
      "kind": "value",
      "scored_actual": 3.7,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-17T13:30:00",
-     "next_previous": 5.4,
+     "next_release_dt": "2023-02-21T13:30:00",
+     "next_previous": 5.3,
      "next_from": "parquet",
-     "diff": 1.7,
+     "diff": 1.6,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_core_cpi",
@@ -522,13 +609,15 @@
      "kind": "value",
      "scored_actual": 5.1,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-18T07:00:00",
+     "next_release_dt": "2023-02-15T07:00:00",
      "next_previous": 6.3,
      "next_from": "parquet",
      "diff": 1.2,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_cpi",
@@ -539,47 +628,15 @@
      "kind": "value",
      "scored_actual": 4.0,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-18T07:00:00",
-     "next_previous": 10.7,
+     "next_release_dt": "2023-02-15T07:00:00",
+     "next_previous": 10.5,
      "next_from": "parquet",
-     "diff": 6.7,
+     "diff": 6.5,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "gbp_ppi_output",
-     "currency": "GBP",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "PPI Output m/m",
-     "release_dt": "2023-01-17T07:00:00",
-     "kind": "value",
-     "scored_actual": -0.6,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-24T22:00:00",
-     "next_previous": 0.9,
-     "next_from": "parquet",
-     "diff": 1.5,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 31
-    },
-    {
-     "canonical_id": "cad_ippi",
-     "currency": "CAD",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "IPPI m/m",
-     "release_dt": "2023-01-17T13:30:00",
-     "kind": "value",
-     "scored_actual": -1.5,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-18T13:30:00",
-     "next_previous": -0.4,
-     "next_from": "parquet",
-     "diff": 1.1,
-     "tolerance": 0.86717,
-     "threshold": 0.86717,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_retail_sales",
@@ -590,13 +647,15 @@
      "kind": "value",
      "scored_actual": 0.6,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-18T13:30:00",
-     "next_previous": -1.0,
+     "next_release_dt": "2023-02-15T13:30:00",
+     "next_previous": -1.1,
      "next_from": "parquet",
-     "diff": -1.6,
+     "diff": -1.7,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_industrial_production",
@@ -607,13 +666,15 @@
      "kind": "value",
      "scored_actual": 0.1,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-18T14:15:00",
-     "next_previous": -0.6,
+     "next_release_dt": "2023-02-15T14:15:00",
+     "next_previous": -1.0,
      "next_from": "parquet",
-     "diff": -0.7,
+     "diff": -1.1,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_machinery_orders",
@@ -630,7 +691,9 @@
      "diff": -3.4,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -641,13 +704,15 @@
      "kind": "value",
      "scored_actual": -65.1,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-19T00:30:00",
-     "next_previous": 58.3,
+     "next_release_dt": "2023-02-16T00:30:00",
+     "next_previous": -20.0,
      "next_from": "parquet",
-     "diff": 123.4,
+     "diff": 45.1,
      "tolerance": 10.07843,
      "threshold": 10.07843,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_unemployment_rate",
@@ -658,30 +723,15 @@
      "kind": "value",
      "scored_actual": 3.9,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-19T00:30:00",
+     "next_release_dt": "2023-02-16T00:30:00",
      "next_previous": 3.5,
      "next_from": "parquet",
      "diff": -0.4,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 42
-    },
-    {
-     "canonical_id": "usd_initial_jobless_claims",
-     "currency": "USD",
-     "indicator_key": "jobless_claims",
-     "name_raw": "Unemployment Claims",
-     "release_dt": "2023-01-18T13:30:00",
-     "kind": "value",
-     "scored_actual": 187.0,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-19T13:30:00",
-     "next_previous": 205.0,
-     "next_from": "parquet",
-     "diff": 18.0,
-     "tolerance": 1.0,
-     "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "nzd_businessnz_manufacturing_index",
@@ -692,13 +742,15 @@
      "kind": "value",
      "scored_actual": 43.1,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-19T21:30:00",
-     "next_previous": 47.2,
+     "next_release_dt": "2023-02-09T21:30:00",
+     "next_previous": 47.8,
      "next_from": "parquet",
-     "diff": 4.1,
+     "diff": 4.7,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_cpi",
@@ -709,13 +761,15 @@
      "kind": "value",
      "scored_actual": 2.3,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-19T23:30:00",
-     "next_previous": 3.7,
+     "next_release_dt": "2023-02-23T23:30:00",
+     "next_previous": 4.0,
      "next_from": "parquet",
-     "diff": 1.4,
+     "diff": 1.7,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_retail_sales",
@@ -726,30 +780,15 @@
      "kind": "value",
      "scored_actual": -3.2,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-20T07:00:00",
-     "next_previous": -0.5,
+     "next_release_dt": "2023-02-17T07:00:00",
+     "next_previous": -1.2,
      "next_from": "parquet",
-     "diff": 2.7,
+     "diff": 2.0,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 42
-    },
-    {
-     "canonical_id": "cad_retail_sales",
-     "currency": "CAD",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales m/m",
-     "release_dt": "2023-01-19T13:30:00",
-     "kind": "value",
-     "scored_actual": -0.2,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-20T13:30:00",
-     "next_previous": 1.3,
-     "next_from": "parquet",
-     "diff": 1.5,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "nzd_businessnz_services_index",
@@ -760,13 +799,15 @@
      "kind": "value",
      "scored_actual": 48.8,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-23T21:30:00",
-     "next_previous": 53.8,
+     "next_release_dt": "2023-02-12T21:30:00",
+     "next_previous": 52.0,
      "next_from": "parquet",
-     "diff": 5.0,
+     "diff": 3.2,
      "tolerance": 0.86717,
      "threshold": 0.86717,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_cpi",
@@ -777,13 +818,15 @@
      "kind": "value",
      "scored_actual": 2.6,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-24T05:00:00",
-     "next_previous": 2.9,
+     "next_release_dt": "2023-02-28T05:02:00",
+     "next_previous": 3.1,
      "next_from": "parquet",
-     "diff": 0.3,
+     "diff": 0.5,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "nzd_cpi",
@@ -794,47 +837,34 @@
      "kind": "value",
      "scored_actual": 0.5,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-24T21:45:00",
-     "next_previous": 2.2,
+     "next_release_dt": "2023-04-19T22:45:00",
+     "next_previous": 1.4,
      "next_from": "parquet",
-     "diff": 1.7,
+     "diff": 0.9,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 15
+     "n_revision_pairs": 15,
+     "level": "INFO",
+     "new": false
     },
     {
-     "canonical_id": "aud_cpi",
-     "currency": "AUD",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "CPI y/y",
-     "release_dt": "2023-01-25T00:30:00",
+     "canonical_id": "gbp_ppi_output",
+     "currency": "GBP",
+     "indicator_key": "ppi_yoy",
+     "name_raw": "PPI Output m/m",
+     "release_dt": "2023-01-24T22:00:00",
      "kind": "value",
-     "scored_actual": 8.4,
+     "scored_actual": -0.1,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-31T00:30:00",
-     "next_previous": 4.3,
+     "next_release_dt": "2023-02-15T07:00:00",
+     "next_previous": -0.8,
      "next_from": "parquet",
-     "diff": -4.1,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "aud_rba_trimmed_mean_cpi",
-     "currency": "AUD",
-     "indicator_key": "core_cpi",
-     "name_raw": "Trimmed Mean CPI q/q",
-     "release_dt": "2023-01-25T00:30:00",
-     "kind": "value",
-     "scored_actual": 1.7,
-     "scored_source": "ff",
-     "next_release_dt": "2023-01-31T00:30:00",
-     "next_previous": 1.2,
-     "next_from": "parquet",
-     "diff": -0.5,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 12
+     "diff": -0.7,
+     "tolerance": 0.54478,
+     "threshold": 0.54478,
+     "n_revision_pairs": 31,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_advance_gdp_price_index",
@@ -845,13 +875,15 @@
      "kind": "value",
      "scored_actual": 1.5,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-26T13:30:00",
-     "next_previous": 4.4,
+     "next_release_dt": "2023-04-27T12:30:00",
+     "next_previous": 3.9,
      "next_from": "parquet",
-     "diff": 2.9,
+     "diff": 2.4,
      "tolerance": 1.08956,
      "threshold": 1.08956,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -862,13 +894,34 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2023-01-26T13:30:00",
-     "next_previous": -1.7,
+     "next_release_dt": "2023-02-27T13:30:00",
+     "next_previous": 5.1,
      "next_from": "parquet",
-     "diff": -1.7,
+     "diff": 5.1,
      "tolerance": 0.1,
      "threshold": 0.1,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
+    },
+    {
+     "canonical_id": "usd_gdp",
+     "currency": "USD",
+     "indicator_key": "gdp_qoq",
+     "name_raw": "Advance GDP q/q",
+     "release_dt": "2023-01-25T13:30:00",
+     "kind": "value",
+     "scored_actual": 3.3,
+     "scored_source": "ff",
+     "next_release_dt": "2023-04-27T12:30:00",
+     "next_previous": 2.6,
+     "next_from": "parquet",
+     "diff": -0.7,
+     "tolerance": 0.64478,
+     "threshold": 0.64478,
+     "n_revision_pairs": 13,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -879,13 +932,15 @@
      "kind": "value",
      "scored_actual": 214.0,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-26T13:30:00",
-     "next_previous": 192.0,
+     "next_release_dt": "2023-02-02T13:30:00",
+     "next_previous": 186.0,
      "next_from": "parquet",
-     "diff": -22.0,
+     "diff": -28.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_tokyo_core_cpi",
@@ -896,13 +951,15 @@
      "kind": "value",
      "scored_actual": 1.6,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-26T23:30:00",
-     "next_previous": 3.9,
+     "next_release_dt": "2023-03-02T23:30:00",
+     "next_previous": 4.3,
      "next_from": "parquet",
-     "diff": 2.3,
+     "diff": 2.7,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_sppi",
@@ -919,7 +976,9 @@
      "diff": -0.9,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -936,7 +995,9 @@
      "diff": -0.5,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_personal_spending",
@@ -947,30 +1008,15 @@
      "kind": "value",
      "scored_actual": 0.7,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-27T13:30:00",
+     "next_release_dt": "2023-02-24T13:30:00",
      "next_previous": -0.1,
      "next_from": "parquet",
      "diff": -0.8,
      "tolerance": 0.32239,
      "threshold": 0.32239,
-     "n_revision_pairs": 40
-    },
-    {
-     "canonical_id": "aud_import_prices",
-     "currency": "AUD",
-     "indicator_key": "import_prices",
-     "name_raw": "Import Prices q/q",
-     "release_dt": "2023-01-27T00:30:00",
-     "kind": "value",
-     "scored_actual": 1.8,
-     "scored_source": "ff",
-     "next_release_dt": "2023-02-01T00:30:00",
-     "next_previous": 0.8,
-     "next_from": "parquet",
-     "diff": -1.0,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -981,13 +1027,15 @@
      "kind": "value",
      "scored_actual": -2.7,
      "scored_source": "ff",
-     "next_release_dt": "2023-01-31T00:30:00",
-     "next_previous": 1.7,
+     "next_release_dt": "2023-02-28T00:30:00",
+     "next_previous": -4.0,
      "next_from": "parquet",
-     "diff": 4.4,
+     "diff": -1.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 29
+     "n_revision_pairs": 29,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_jolts_job_openings",
@@ -998,13 +1046,15 @@
      "kind": "value",
      "scored_actual": 9.03,
      "scored_source": "ff",
-     "next_release_dt": "2023-02-01T15:00:00",
-     "next_previous": 10.44,
+     "next_release_dt": "2023-03-08T15:00:00",
+     "next_previous": 11.23,
      "next_from": "parquet",
-     "diff": 1.41,
+     "diff": 2.2,
      "tolerance": 0.455824,
      "threshold": 0.455824,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_prelim_industrial_production",
@@ -1021,7 +1071,9 @@
      "diff": -1.5,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -1038,7 +1090,9 @@
      "diff": 1.7,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_cpi",
@@ -1055,7 +1109,9 @@
      "diff": 5.0,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_rba_trimmed_mean_cpi",
@@ -1072,7 +1128,9 @@
      "diff": 0.9,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 12
+     "n_revision_pairs": 12,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "chf_retail_sales",
@@ -1089,24 +1147,9 @@
      "diff": -2.2,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_adp_nonfarm_employment_change",
-     "currency": "USD",
-     "indicator_key": "adp",
-     "name_raw": "ADP Non-Farm Employment Change",
-     "release_dt": "2023-01-31T13:15:00",
-     "kind": "value",
-     "scored_actual": 107.0,
-     "scored_source": "ff",
-     "next_release_dt": "2023-02-01T13:15:00",
-     "next_previous": 253.0,
-     "next_from": "parquet",
-     "diff": 146.0,
-     "tolerance": 25.0151,
-     "threshold": 25.0151,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_import_prices",
@@ -1123,7 +1166,9 @@
      "diff": 0.7,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_prelim_unit_labor_costs",
@@ -1140,7 +1185,9 @@
      "diff": 2.1,
      "tolerance": 1.76195,
      "threshold": 1.76195,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_retail_sales",
@@ -1157,7 +1204,9 @@
      "diff": 1.0,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "nzd_retail_sales",
@@ -1174,7 +1223,9 @@
      "diff": -0.4,
      "tolerance": 0.32239,
      "threshold": 0.32239,
-     "n_revision_pairs": 12
+     "n_revision_pairs": 12,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "aud_company_operating_profits",
@@ -1191,7 +1242,9 @@
      "diff": 2.1,
      "tolerance": 1.08956,
      "threshold": 1.08956,
-     "n_revision_pairs": 11
+     "n_revision_pairs": 11,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -1208,7 +1261,9 @@
      "diff": -0.5,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -1225,7 +1280,9 @@
      "diff": -1.3,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -1242,7 +1299,9 @@
      "diff": 48.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -1259,7 +1318,9 @@
      "diff": 0.7,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_gdp",
@@ -1276,24 +1337,9 @@
      "diff": 0.9,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 13
-    },
-    {
-     "canonical_id": "cad_s_p_global_manufacturing_pmi",
-     "currency": "CAD",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Manufacturing PMI",
-     "release_dt": "2023-05-01T13:30:00",
-     "kind": "value",
-     "scored_actual": 50.2,
-     "scored_source": "ff",
-     "next_release_dt": "2023-05-02T07:30:00",
-     "next_previous": 47.0,
-     "next_from": "parquet",
-     "diff": -3.2,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 13,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "cad_s_p_global_manufacturing_pmi",
@@ -1310,7 +1356,9 @@
      "diff": 4.9,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "eur_ppi",
@@ -1327,7 +1375,9 @@
      "diff": 0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_prelim_unit_labor_costs",
@@ -1344,7 +1394,9 @@
      "diff": -2.1,
      "tolerance": 1.76195,
      "threshold": 1.76195,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_retail_sales",
@@ -1361,7 +1413,9 @@
      "diff": 0.8,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -1378,7 +1432,9 @@
      "diff": -17.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_gdp",
@@ -1395,7 +1451,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -1412,7 +1470,9 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_gdp",
@@ -1429,7 +1489,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -1446,7 +1508,9 @@
      "diff": -42.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -1463,7 +1527,9 @@
      "diff": 47.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -1480,7 +1546,9 @@
      "diff": 13.2,
      "tolerance": 10.07843,
      "threshold": 10.07843,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -1497,194 +1565,9 @@
      "diff": -0.4,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
-    },
-    {
-     "canonical_id": "aud_company_operating_profits",
-     "currency": "AUD",
-     "indicator_key": "company_operating_profits_qoq",
-     "name_raw": "Company Operating Profits q/q",
-     "release_dt": "2023-09-04T01:30:00",
-     "kind": "value",
-     "scored_actual": -13.1,
-     "scored_source": "ff",
-     "next_release_dt": "2024-03-04T00:30:00",
-     "next_previous": -1.6,
-     "next_from": "parquet",
-     "diff": 11.5,
-     "tolerance": 1.08956,
-     "threshold": 1.08956,
-     "n_revision_pairs": 11
-    },
-    {
-     "canonical_id": "chf_gdp",
-     "currency": "CHF",
-     "indicator_key": "gdp_qoq",
-     "name_raw": "GDP q/q",
-     "release_dt": "2023-09-04T07:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-02-29T08:00:00",
-     "next_previous": 0.3,
-     "next_from": "parquet",
-     "diff": 0.3,
-     "tolerance": 0.1,
-     "threshold": 0.1,
-     "n_revision_pairs": 11
-    },
-    {
-     "canonical_id": "nzd_gdp",
-     "currency": "NZD",
-     "indicator_key": "gdp_qoq",
-     "name_raw": "GDP q/q",
-     "release_dt": "2023-09-20T22:45:00",
-     "kind": "value",
-     "scored_actual": 0.9,
-     "scored_source": "ff",
-     "next_release_dt": "2024-03-20T21:45:00",
-     "next_previous": -0.3,
-     "next_from": "parquet",
-     "diff": -1.2,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 13
-    },
-    {
-     "canonical_id": "aud_import_prices",
-     "currency": "AUD",
-     "indicator_key": "import_prices",
-     "name_raw": "Import Prices q/q",
-     "release_dt": "2023-10-26T00:30:00",
-     "kind": "value",
-     "scored_actual": 0.8,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-30T00:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -0.8,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 14
-    },
-    {
-     "canonical_id": "jpy_tokyo_core_cpi",
-     "currency": "JPY",
-     "indicator_key": "tokyo_core_cpi_yoy",
-     "name_raw": "Tokyo Core CPI y/y",
-     "release_dt": "2023-10-26T23:30:00",
-     "kind": "value",
-     "scored_actual": 2.7,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-08T23:30:00",
-     "next_previous": 2.3,
-     "next_from": "parquet",
-     "diff": -0.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 45
-    },
-    {
-     "canonical_id": "aud_ppi",
-     "currency": "AUD",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "PPI q/q",
-     "release_dt": "2023-10-27T00:30:00",
-     "kind": "value",
-     "scored_actual": 1.8,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-31T00:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -1.8,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 14
-    },
-    {
-     "canonical_id": "chf_procurech_manufacturing_pmi",
-     "currency": "CHF",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Manufacturing PMI",
-     "release_dt": "2023-11-01T08:30:00",
-     "kind": "value",
-     "scored_actual": 40.6,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-02T08:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -40.6,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 32
-    },
-    {
-     "canonical_id": "cad_s_p_global_manufacturing_pmi",
-     "currency": "CAD",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Manufacturing PMI",
-     "release_dt": "2023-11-01T13:30:00",
-     "kind": "value",
-     "scored_actual": 48.6,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-02T14:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -48.6,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_jolts_job_openings",
-     "currency": "USD",
-     "indicator_key": "jolts",
-     "name_raw": "JOLTS Job Openings",
-     "release_dt": "2023-11-01T14:00:00",
-     "kind": "value",
-     "scored_actual": 9.55,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-03T15:00:00",
-     "next_previous": 8.85,
-     "next_from": "parquet",
-     "diff": -0.7,
-     "tolerance": 0.455824,
-     "threshold": 0.455824,
-     "n_revision_pairs": 45
-    },
-    {
-     "canonical_id": "eur_sp_global_manufacturing_pmi",
-     "currency": "EUR",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2023-11-02T09:00:00",
-     "kind": "value",
-     "scored_actual": 43.1,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-02T09:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -43.1,
-     "tolerance": 2.75151,
-     "threshold": 2.75151,
-     "n_revision_pairs": 32
-    },
-    {
-     "canonical_id": "gbp_s_p_global_cips_manufacturing_pmi",
-     "currency": "GBP",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2023-11-02T09:00:00",
-     "kind": "value",
-     "scored_actual": 43.1,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-02T09:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -43.1,
-     "tolerance": 4.31346,
-     "threshold": 4.31346,
-     "n_revision_pairs": 48
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -1701,279 +1584,9 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
-    },
-    {
-     "canonical_id": "cad_employment_change",
-     "currency": "CAD",
-     "indicator_key": "employment_change",
-     "name_raw": "Employment Change",
-     "release_dt": "2023-11-03T12:30:00",
-     "kind": "value",
-     "scored_actual": 17.5,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-05T13:30:00",
-     "next_previous": 24.9,
-     "next_from": "parquet",
-     "diff": 7.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_ism_non_manufacturing_pmi",
-     "currency": "USD",
-     "indicator_key": "services_pmi",
-     "name_raw": "ISM Services PMI",
-     "release_dt": "2023-11-03T14:00:00",
-     "kind": "value",
-     "scored_actual": 51.8,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-05T15:00:00",
-     "next_previous": 52.7,
-     "next_from": "parquet",
-     "diff": 0.9,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "chf_unemployment_rate",
-     "currency": "CHF",
-     "indicator_key": "unemployment_rate",
-     "name_raw": "Unemployment Rate",
-     "release_dt": "2023-11-07T06:45:00",
-     "kind": "value",
-     "scored_actual": 2.1,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-07T06:45:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -2.1,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "eur_retail_sales",
-     "currency": "EUR",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales m/m",
-     "release_dt": "2023-11-08T10:00:00",
-     "kind": "value",
-     "scored_actual": -0.3,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-08T10:00:00",
-     "next_previous": 0.4,
-     "next_from": "parquet",
-     "diff": 0.7,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 41
-    },
-    {
-     "canonical_id": "nzd_businessnz_manufacturing_index",
-     "currency": "NZD",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "BusinessNZ Manufacturing Index",
-     "release_dt": "2023-11-09T21:30:00",
-     "kind": "value",
-     "scored_actual": 42.5,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-18T21:30:00",
-     "next_previous": 46.5,
-     "next_from": "parquet",
-     "diff": 4.0,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "gbp_gdp",
-     "currency": "GBP",
-     "indicator_key": "gdp_qoq",
-     "name_raw": "GDP m/m",
-     "release_dt": "2023-11-10T07:00:00",
-     "kind": "value",
-     "scored_actual": 0.2,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-12T07:00:00",
-     "next_previous": -0.3,
-     "next_from": "parquet",
-     "diff": -0.5,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 38
-    },
-    {
-     "canonical_id": "gbp_industrial_production",
-     "currency": "GBP",
-     "indicator_key": "industrial_production_mm",
-     "name_raw": "Industrial Production m/m",
-     "release_dt": "2023-11-10T07:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-01-12T07:00:00",
-     "next_previous": -1.3,
-     "next_from": "parquet",
-     "diff": -1.3,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 42
-    },
-    {
-     "canonical_id": "nzd_businessnz_services_index",
-     "currency": "NZD",
-     "indicator_key": "services_pmi",
-     "name_raw": "BusinessNZ Services Index",
-     "release_dt": "2023-11-12T21:30:00",
-     "kind": "value",
-     "scored_actual": 48.9,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-22T21:30:00",
-     "next_previous": 51.1,
-     "next_from": "parquet",
-     "diff": 2.2,
-     "tolerance": 0.86717,
-     "threshold": 0.86717,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "jpy_ppi",
-     "currency": "JPY",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "PPI y/y",
-     "release_dt": "2023-11-12T23:50:00",
-     "kind": "value",
-     "scored_actual": 0.8,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-15T23:50:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -0.8,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 39
-    },
-    {
-     "canonical_id": "gbp_average_weekly_earnings_total_pay",
-     "currency": "GBP",
-     "indicator_key": "wage_growth",
-     "name_raw": "Average Earnings Index 3m/y",
-     "release_dt": "2023-11-14T07:00:00",
-     "kind": "value",
-     "scored_actual": 7.9,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-16T07:00:00",
-     "next_previous": 7.2,
-     "next_from": "parquet",
-     "diff": -0.7,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "gbp_core_cpi",
-     "currency": "GBP",
-     "indicator_key": "core_cpi",
-     "name_raw": "Core CPI y/y",
-     "release_dt": "2023-11-15T07:00:00",
-     "kind": "value",
-     "scored_actual": 5.7,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-17T07:00:00",
-     "next_previous": 5.1,
-     "next_from": "parquet",
-     "diff": -0.6,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "gbp_cpi",
-     "currency": "GBP",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "CPI y/y",
-     "release_dt": "2023-11-15T07:00:00",
-     "kind": "value",
-     "scored_actual": 4.6,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-15T07:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -4.6,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "jpy_core_machinery_orders",
-     "currency": "JPY",
-     "indicator_key": "core_machinery_orders_mm",
-     "name_raw": "Core Machinery Orders m/m",
-     "release_dt": "2023-11-15T23:50:00",
-     "kind": "value",
-     "scored_actual": 1.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-17T23:50:00",
-     "next_previous": 0.7,
-     "next_from": "parquet",
-     "diff": -0.7,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 41
-    },
-    {
-     "canonical_id": "aud_employment_change",
-     "currency": "AUD",
-     "indicator_key": "employment_change",
-     "name_raw": "Employment Change",
-     "release_dt": "2023-11-16T00:30:00",
-     "kind": "value",
-     "scored_actual": 55.0,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-16T00:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -55.0,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
-     "n_revision_pairs": 42
-    },
-    {
-     "canonical_id": "cad_common_cpi",
-     "currency": "CAD",
-     "indicator_key": "common_cpi_yoy",
-     "name_raw": "Common CPI y/y",
-     "release_dt": "2023-11-21T13:30:00",
-     "kind": "value",
-     "scored_actual": 4.2,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-16T13:30:00",
-     "next_previous": 3.9,
-     "next_from": "parquet",
-     "diff": -0.3,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "usd_durable_goods_orders",
-     "currency": "USD",
-     "indicator_key": "durable_goods_orders_mm",
-     "name_raw": "Durable Goods Orders m/m",
-     "release_dt": "2023-11-22T13:30:00",
-     "kind": "value",
-     "scored_actual": -5.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-25T13:30:00",
-     "next_previous": 5.5,
-     "next_from": "parquet",
-     "diff": 10.9,
-     "tolerance": 0.1,
-     "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "nzd_retail_sales",
@@ -1990,109 +1603,9 @@
      "diff": -0.8,
      "tolerance": 0.32239,
      "threshold": 0.32239,
-     "n_revision_pairs": 12
-    },
-    {
-     "canonical_id": "jpy_cpi",
-     "currency": "JPY",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "National Core CPI y/y",
-     "release_dt": "2023-11-23T23:30:00",
-     "kind": "value",
-     "scored_actual": 2.9,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-18T23:30:00",
-     "next_previous": 2.5,
-     "next_from": "parquet",
-     "diff": -0.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "jpy_core_cpi",
-     "currency": "JPY",
-     "indicator_key": "core_cpi",
-     "name_raw": "BOJ Core CPI y/y",
-     "release_dt": "2023-11-28T05:00:00",
-     "kind": "value",
-     "scored_actual": 3.0,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-21T05:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -3.0,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "aud_cpi",
-     "currency": "AUD",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "CPI y/y",
-     "release_dt": "2023-11-29T00:30:00",
-     "kind": "value",
-     "scored_actual": 4.9,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-07T00:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -4.9,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "jpy_retail_sales",
-     "currency": "JPY",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2023-11-29T23:50:00",
-     "kind": "value",
-     "scored_actual": 4.2,
-     "scored_source": "ff",
-     "next_release_dt": "2024-02-28T23:50:00",
-     "next_previous": 2.3,
-     "next_from": "parquet",
-     "diff": -1.9,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 38
-    },
-    {
-     "canonical_id": "usd_initial_jobless_claims",
-     "currency": "USD",
-     "indicator_key": "jobless_claims",
-     "name_raw": "Unemployment Claims",
-     "release_dt": "2023-11-30T13:30:00",
-     "kind": "value",
-     "scored_actual": 218.0,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-02T13:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -218.0,
-     "tolerance": 1.0,
-     "threshold": 2.0,
-     "n_revision_pairs": 189
-    },
-    {
-     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
-     "currency": "JPY",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2023-12-01T00:30:00",
-     "kind": "value",
-     "scored_actual": 48.3,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-02T00:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -48.3,
-     "tolerance": 1.41195,
-     "threshold": 1.41195,
-     "n_revision_pairs": 36
+     "n_revision_pairs": 12,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
@@ -2103,13 +1616,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-04T00:30:00",
-     "next_previous": 47.7,
+     "next_release_dt": "2024-02-01T00:30:00",
+     "next_previous": 48.0,
      "next_from": "parquet",
-     "diff": 47.7,
+     "diff": 48.0,
      "tolerance": 1.41195,
      "threshold": 1.41195,
-     "n_revision_pairs": 36
+     "n_revision_pairs": 36,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_procurech_manufacturing_pmi",
@@ -2120,13 +1635,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-03T08:30:00",
-     "next_previous": 42.1,
+     "next_release_dt": "2024-02-01T08:30:00",
+     "next_previous": 43.0,
      "next_from": "parquet",
-     "diff": 42.1,
+     "diff": 43.0,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_sp_global_manufacturing_pmi",
@@ -2143,7 +1660,9 @@
      "diff": 46.6,
      "tolerance": 2.75151,
      "threshold": 2.75151,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_s_p_global_cips_manufacturing_pmi",
@@ -2160,7 +1679,9 @@
      "diff": 47.3,
      "tolerance": 4.31346,
      "threshold": 4.31346,
-     "n_revision_pairs": 48
+     "n_revision_pairs": 48,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -2171,13 +1692,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-04T13:30:00",
-     "next_previous": 220.0,
+     "next_release_dt": "2024-01-11T13:30:00",
+     "next_previous": 203.0,
      "next_from": "parquet",
-     "diff": 220.0,
+     "diff": 203.0,
      "tolerance": 1.0,
      "threshold": 1.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_s_p_global_manufacturing_pmi",
@@ -2194,109 +1717,9 @@
      "diff": 45.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_jolts_job_openings",
-     "currency": "USD",
-     "indicator_key": "jolts",
-     "name_raw": "JOLTS Job Openings",
-     "release_dt": "2024-01-03T15:00:00",
-     "kind": "value",
-     "scored_actual": 8.79,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-07T15:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -8.79,
-     "tolerance": 0.455824,
-     "threshold": 0.455824,
-     "n_revision_pairs": 45
-    },
-    {
-     "canonical_id": "eur_sp_global_services_pmi",
-     "currency": "EUR",
-     "indicator_key": "services_pmi",
-     "name_raw": "Final Services PMI",
-     "release_dt": "2024-01-04T09:00:00",
-     "kind": "value",
-     "scored_actual": 48.8,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-06T09:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -48.8,
-     "tolerance": 3.56868,
-     "threshold": 3.56868,
-     "n_revision_pairs": 33
-    },
-    {
-     "canonical_id": "gbp_s_p_global_cips_services_pmi",
-     "currency": "GBP",
-     "indicator_key": "services_pmi",
-     "name_raw": "Final Services PMI",
-     "release_dt": "2024-01-04T09:30:00",
-     "kind": "value",
-     "scored_actual": 53.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-06T09:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -53.4,
-     "tolerance": 5.05824,
-     "threshold": 5.05824,
-     "n_revision_pairs": 48
-    },
-    {
-     "canonical_id": "usd_adp_nonfarm_employment_change",
-     "currency": "USD",
-     "indicator_key": "adp",
-     "name_raw": "ADP Non-Farm Employment Change",
-     "release_dt": "2024-01-04T13:15:00",
-     "kind": "value",
-     "scored_actual": 164.0,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-08T13:15:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -164.0,
-     "tolerance": 25.0151,
-     "threshold": 25.0151,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "usd_initial_jobless_claims",
-     "currency": "USD",
-     "indicator_key": "jobless_claims",
-     "name_raw": "Unemployment Claims",
-     "release_dt": "2024-01-04T13:30:00",
-     "kind": "value",
-     "scored_actual": 202.0,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-09T13:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -202.0,
-     "tolerance": 1.0,
-     "threshold": 2.0,
-     "n_revision_pairs": 189
-    },
-    {
-     "canonical_id": "usd_average_hourly_earnings",
-     "currency": "USD",
-     "indicator_key": "wage_growth",
-     "name_raw": "Average Hourly Earnings m/m",
-     "release_dt": "2024-01-05T13:30:00",
-     "kind": "value",
-     "scored_actual": 0.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-10T13:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -0.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_nonfarm_payrolls",
@@ -2307,30 +1730,15 @@
      "kind": "value",
      "scored_actual": 216.0,
      "scored_source": "ff",
-     "next_release_dt": "2024-01-10T13:30:00",
-     "next_previous": 0.0,
+     "next_release_dt": "2024-02-02T13:30:00",
+     "next_previous": 333.0,
      "next_from": "parquet",
-     "diff": -216.0,
+     "diff": 117.0,
      "tolerance": 96.717,
      "threshold": 96.717,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "chf_cpi",
-     "currency": "CHF",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "CPI m/m",
-     "release_dt": "2024-01-06T07:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-01-08T07:30:00",
-     "next_previous": -0.2,
-     "next_from": "parquet",
-     "diff": -0.2,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 33
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_sp_global_services_pmi",
@@ -2347,7 +1755,9 @@
      "diff": 48.4,
      "tolerance": 3.56868,
      "threshold": 3.56868,
-     "n_revision_pairs": 33
+     "n_revision_pairs": 33,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_s_p_global_cips_services_pmi",
@@ -2364,7 +1774,9 @@
      "diff": 53.8,
      "tolerance": 5.05824,
      "threshold": 5.05824,
-     "n_revision_pairs": 48
+     "n_revision_pairs": 48,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_cpi",
@@ -2375,13 +1787,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-10T00:30:00",
-     "next_previous": 4.9,
+     "next_release_dt": "2024-01-31T00:30:00",
+     "next_previous": 4.3,
      "next_from": "parquet",
-     "diff": 4.9,
+     "diff": 4.3,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_unemployment_rate",
@@ -2392,13 +1806,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-09T06:45:00",
-     "next_previous": 2.1,
+     "next_release_dt": "2024-02-07T06:45:00",
+     "next_previous": 2.2,
      "next_from": "parquet",
-     "diff": 2.1,
+     "diff": 2.2,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_jolts_job_openings",
@@ -2415,7 +1831,28 @@
      "diff": 8.93,
      "tolerance": 0.455824,
      "threshold": 0.455824,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "INFO",
+     "new": false
+    },
+    {
+     "canonical_id": "chf_retail_sales",
+     "currency": "CHF",
+     "indicator_key": "retail_sales",
+     "name_raw": "Retail Sales y/y",
+     "release_dt": "2024-01-08T07:30:00",
+     "kind": "value",
+     "scored_actual": 0.7,
+     "scored_source": "ff",
+     "next_release_dt": "2024-01-31T07:30:00",
+     "next_previous": -1.5,
+     "next_from": "parquet",
+     "diff": -2.2,
+     "tolerance": 1.28956,
+     "threshold": 1.28956,
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -2432,24 +1869,9 @@
      "diff": 158.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "jpy_labor_cash_earnings",
-     "currency": "JPY",
-     "indicator_key": "wage_growth",
-     "name_raw": "Average Cash Earnings y/y",
-     "release_dt": "2024-01-08T23:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-01-09T23:30:00",
-     "next_previous": 1.5,
-     "next_from": "parquet",
-     "diff": 1.5,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -2466,7 +1888,9 @@
      "diff": -0.4,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 29
+     "n_revision_pairs": 29,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -2477,13 +1901,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-11T13:30:00",
+     "next_release_dt": "2024-01-18T13:30:00",
      "next_previous": 203.0,
      "next_from": "parquet",
      "diff": 203.0,
      "tolerance": 1.0,
      "threshold": 1.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_average_hourly_earnings",
@@ -2500,7 +1926,9 @@
      "diff": 0.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_nonfarm_payrolls",
@@ -2517,7 +1945,9 @@
      "diff": 333.0,
      "tolerance": 96.717,
      "threshold": 96.717,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_ppi",
@@ -2528,13 +1958,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-19T07:30:00",
-     "next_previous": -0.9,
+     "next_release_dt": "2024-02-15T07:30:00",
+     "next_previous": -0.6,
      "next_from": "parquet",
-     "diff": -0.9,
+     "diff": -0.6,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_cpi",
@@ -2545,13 +1977,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-17T07:00:00",
-     "next_previous": 3.9,
+     "next_release_dt": "2024-02-14T07:00:00",
+     "next_previous": 4.0,
      "next_from": "parquet",
-     "diff": 3.9,
+     "diff": 4.0,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -2562,30 +1996,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-18T00:30:00",
-     "next_previous": 72.6,
+     "next_release_dt": "2024-02-15T00:30:00",
+     "next_previous": -62.7,
      "next_from": "parquet",
-     "diff": 72.6,
+     "diff": -62.7,
      "tolerance": 10.07843,
      "threshold": 10.07843,
-     "n_revision_pairs": 42
-    },
-    {
-     "canonical_id": "gbp_average_weekly_earnings_total_pay",
-     "currency": "GBP",
-     "indicator_key": "wage_growth",
-     "name_raw": "Average Earnings Index 3m/y",
-     "release_dt": "2024-01-16T07:00:00",
-     "kind": "value",
-     "scored_actual": 6.5,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-21T07:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -6.5,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_retail_sales",
@@ -2596,13 +2015,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-19T07:00:00",
-     "next_previous": 1.4,
+     "next_release_dt": "2024-02-16T07:00:00",
+     "next_previous": -3.3,
      "next_from": "parquet",
-     "diff": 1.4,
+     "diff": -3.3,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -2619,58 +2040,9 @@
      "diff": -0.7,
      "tolerance": 0.37239,
      "threshold": 0.37239,
-     "n_revision_pairs": 38
-    },
-    {
-     "canonical_id": "jpy_core_machinery_orders",
-     "currency": "JPY",
-     "indicator_key": "core_machinery_orders_mm",
-     "name_raw": "Core Machinery Orders m/m",
-     "release_dt": "2024-01-17T23:50:00",
-     "kind": "value",
-     "scored_actual": -4.9,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-19T23:50:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": 4.9,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 41
-    },
-    {
-     "canonical_id": "usd_initial_jobless_claims",
-     "currency": "USD",
-     "indicator_key": "jobless_claims",
-     "name_raw": "Unemployment Claims",
-     "release_dt": "2024-01-18T13:30:00",
-     "kind": "value",
-     "scored_actual": 187.0,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-23T13:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -187.0,
-     "tolerance": 1.0,
-     "threshold": 2.0,
-     "n_revision_pairs": 189
-    },
-    {
-     "canonical_id": "jpy_cpi",
-     "currency": "JPY",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "National Core CPI y/y",
-     "release_dt": "2024-01-18T23:30:00",
-     "kind": "value",
-     "scored_actual": 2.3,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-23T23:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -2.3,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_machinery_orders",
@@ -2687,7 +2059,9 @@
      "diff": -4.9,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_cpi",
@@ -2698,13 +2072,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-23T05:00:00",
-     "next_previous": 2.7,
+     "next_release_dt": "2024-02-29T17:02:00",
+     "next_previous": 2.6,
      "next_from": "parquet",
-     "diff": 2.7,
+     "diff": 2.6,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_average_weekly_earnings_total_pay",
@@ -2721,7 +2097,9 @@
      "diff": 6.7,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -2732,13 +2110,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-01-25T13:30:00",
-     "next_previous": 189.0,
+     "next_release_dt": "2024-02-01T13:30:00",
+     "next_previous": 215.0,
      "next_from": "parquet",
-     "diff": 189.0,
+     "diff": 215.0,
      "tolerance": 1.0,
      "threshold": 1.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_cpi",
@@ -2755,24 +2135,9 @@
      "diff": 2.3,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_advance_gdp_price_index",
-     "currency": "USD",
-     "indicator_key": "gdp_price_index",
-     "name_raw": "Advance GDP Price Index q/q",
-     "release_dt": "2024-01-25T13:30:00",
-     "kind": "value",
-     "scored_actual": 1.5,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-30T13:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -1.5,
-     "tolerance": 1.08956,
-     "threshold": 1.08956,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -2789,41 +2154,9 @@
      "diff": -0.3,
      "tolerance": 0.1,
      "threshold": 0.1,
-     "n_revision_pairs": 39
-    },
-    {
-     "canonical_id": "jpy_tokyo_core_cpi",
-     "currency": "JPY",
-     "indicator_key": "tokyo_core_cpi_yoy",
-     "name_raw": "Tokyo Core CPI y/y",
-     "release_dt": "2024-01-25T23:30:00",
-     "kind": "value",
-     "scored_actual": 1.6,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-30T23:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -1.6,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 45
-    },
-    {
-     "canonical_id": "jpy_sppi",
-     "currency": "JPY",
-     "indicator_key": "sppi_yoy",
-     "name_raw": "SPPI y/y",
-     "release_dt": "2024-01-25T23:50:00",
-     "kind": "value",
-     "scored_actual": 2.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-27T23:50:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -2.4,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_sppi",
@@ -2840,24 +2173,9 @@
      "diff": 2.4,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 42
-    },
-    {
-     "canonical_id": "jpy_unemployment_rate",
-     "currency": "JPY",
-     "indicator_key": "unemployment_rate",
-     "name_raw": "Unemployment Rate",
-     "release_dt": "2024-01-29T23:30:00",
-     "kind": "value",
-     "scored_actual": 2.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-01-30T23:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -2.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_import_prices",
@@ -2868,13 +2186,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-02-01T00:30:00",
-     "next_previous": 0.8,
+     "next_release_dt": "2024-04-26T01:30:00",
+     "next_previous": 1.1,
      "next_from": "parquet",
-     "diff": 0.8,
+     "diff": 1.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -2891,24 +2211,9 @@
      "diff": 0.6,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 29
-    },
-    {
-     "canonical_id": "chf_retail_sales",
-     "currency": "CHF",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2024-01-30T07:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-01-31T07:30:00",
-     "next_previous": -1.5,
-     "next_from": "parquet",
-     "diff": -1.5,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 29,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_advance_gdp_price_index",
@@ -2925,7 +2230,9 @@
      "diff": 1.6,
      "tolerance": 1.08956,
      "threshold": 1.08956,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_tokyo_core_cpi",
@@ -2942,7 +2249,9 @@
      "diff": 1.8,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_unemployment_rate",
@@ -2959,7 +2268,9 @@
      "diff": 2.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_ppi",
@@ -2970,13 +2281,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2024-02-02T00:30:00",
-     "next_previous": 1.8,
+     "next_release_dt": "2024-04-26T01:30:00",
+     "next_previous": 0.9,
      "next_from": "parquet",
-     "diff": 1.8,
+     "diff": 0.9,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_core_pce_price_index",
@@ -2993,7 +2306,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -3010,7 +2325,9 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_nonfarm_payrolls",
@@ -3027,7 +2344,9 @@
      "diff": -124.0,
      "tolerance": 96.717,
      "threshold": 96.717,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -3044,7 +2363,9 @@
      "diff": 14.8,
      "tolerance": 10.07843,
      "threshold": 10.07843,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_gdp",
@@ -3061,7 +2382,9 @@
      "diff": -0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -3078,7 +2401,9 @@
      "diff": -7.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -3095,7 +2420,9 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
@@ -3112,7 +2439,9 @@
      "diff": 1.7,
      "tolerance": 1.41195,
      "threshold": 1.41195,
-     "n_revision_pairs": 36
+     "n_revision_pairs": 36,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -3129,7 +2458,9 @@
      "diff": -221.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -3146,7 +2477,9 @@
      "diff": -1.7,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_s_p_global_cips_manufacturing_pmi",
@@ -3163,7 +2496,9 @@
      "diff": 5.6,
      "tolerance": 4.31346,
      "threshold": 4.31346,
-     "n_revision_pairs": 48
+     "n_revision_pairs": 48,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -3180,24 +2515,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 29
-    },
-    {
-     "canonical_id": "jpy_capital_spending",
-     "currency": "JPY",
-     "indicator_key": "capital_expenditure",
-     "name_raw": "Capital Spending q/y",
-     "release_dt": "2024-09-01T23:50:00",
-     "kind": "value",
-     "scored_actual": 7.4,
-     "scored_source": "ff",
-     "next_release_dt": "2025-03-03T23:50:00",
-     "next_previous": 8.1,
-     "next_from": "parquet",
-     "diff": 0.7,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 11
+     "n_revision_pairs": 29,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "nzd_gdp",
@@ -3214,7 +2534,9 @@
      "diff": -0.9,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 13
+     "n_revision_pairs": 13,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -3231,7 +2553,9 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -3248,7 +2572,9 @@
      "diff": -0.8,
      "tolerance": 0.1,
      "threshold": 0.1,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -3265,24 +2591,9 @@
      "diff": -49.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
-    },
-    {
-     "canonical_id": "aud_retail_sales",
-     "currency": "AUD",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales m/m",
-     "release_dt": "2024-10-31T00:30:00",
-     "kind": "value",
-     "scored_actual": 0.1,
-     "scored_source": "ff",
-     "next_release_dt": "2025-01-09T00:30:00",
-     "next_previous": 0.5,
-     "next_from": "parquet",
-     "diff": 0.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 29
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_cpi",
@@ -3299,7 +2610,9 @@
      "diff": 1.7,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_procurech_manufacturing_pmi",
@@ -3310,13 +2623,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2025-01-03T08:30:00",
-     "next_previous": 48.5,
+     "next_release_dt": "2025-02-03T08:30:00",
+     "next_previous": 48.4,
      "next_from": "parquet",
-     "diff": 48.5,
+     "diff": 48.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_retail_sales",
@@ -3327,13 +2642,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2025-01-06T07:30:00",
-     "next_previous": 1.5,
+     "next_release_dt": "2025-01-31T07:30:00",
+     "next_previous": 1.4,
      "next_from": "parquet",
-     "diff": 1.5,
+     "diff": 1.4,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -3350,7 +2667,9 @@
      "diff": 54.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -3367,7 +2686,9 @@
      "diff": 0.4,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_retail_sales",
@@ -3384,7 +2705,9 @@
      "diff": 1.6,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_ppi",
@@ -3401,7 +2724,9 @@
      "diff": 4.3,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_ppi",
@@ -3412,13 +2737,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2025-04-14T06:35:00",
-     "next_previous": 0.3,
+     "next_release_dt": "2025-05-15T06:30:00",
+     "next_previous": 0.1,
      "next_from": "parquet",
-     "diff": 0.3,
+     "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -3435,7 +2762,9 @@
      "diff": -1.7,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_prelim_industrial_production",
@@ -3452,7 +2781,9 @@
      "diff": 1.3,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_core_pce_price_index",
@@ -3469,7 +2800,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_machinery_orders",
@@ -3486,7 +2819,9 @@
      "diff": 13.0,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -3503,7 +2838,9 @@
      "diff": -0.3,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -3520,7 +2857,9 @@
      "diff": 3.5,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_capital_spending",
@@ -3537,7 +2876,9 @@
      "diff": 6.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 11
+     "n_revision_pairs": 11,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
@@ -3554,7 +2895,9 @@
      "diff": 50.4,
      "tolerance": 1.41195,
      "threshold": 1.41195,
-     "n_revision_pairs": 36
+     "n_revision_pairs": 36,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_unemployment_rate",
@@ -3565,13 +2908,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2025-06-05T07:00:00",
+     "next_release_dt": "2025-07-04T07:00:00",
      "next_previous": 2.8,
      "next_from": "parquet",
      "diff": 2.8,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -3588,7 +2933,9 @@
      "diff": -0.4,
      "tolerance": 0.37239,
      "threshold": 0.37239,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -3605,7 +2952,9 @@
      "diff": 0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 29
+     "n_revision_pairs": 29,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_nonfarm_payrolls",
@@ -3622,58 +2971,9 @@
      "diff": -133.0,
      "tolerance": 96.717,
      "threshold": 96.717,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_advance_gdp_price_index",
-     "currency": "USD",
-     "indicator_key": "gdp_price_index",
-     "name_raw": "Advance GDP Price Index q/q",
-     "release_dt": "2025-07-30T12:30:00",
-     "kind": "value",
-     "scored_actual": 2.0,
-     "scored_source": "ff",
-     "next_release_dt": "2026-02-20T13:30:00",
-     "next_previous": 0.4,
-     "next_from": "parquet",
-     "diff": -1.6,
-     "tolerance": 1.08956,
-     "threshold": 1.08956,
-     "n_revision_pairs": 14
-    },
-    {
-     "canonical_id": "usd_gdp",
-     "currency": "USD",
-     "indicator_key": "gdp_qoq",
-     "name_raw": "Advance GDP q/q",
-     "release_dt": "2025-07-30T12:30:00",
-     "kind": "value",
-     "scored_actual": 3.0,
-     "scored_source": "ff",
-     "next_release_dt": "2026-02-20T12:30:00",
-     "next_previous": 4.4,
-     "next_from": "parquet",
-     "diff": 1.4,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 13
-    },
-    {
-     "canonical_id": "chf_ppi",
-     "currency": "CHF",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "PPI m/m",
-     "release_dt": "2025-08-14T06:30:00",
-     "kind": "value",
-     "scored_actual": -0.2,
-     "scored_source": "ff",
-     "next_release_dt": "2025-10-14T06:30:00",
-     "next_previous": -0.6,
-     "next_from": "parquet",
-     "diff": -0.4,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -3690,7 +2990,9 @@
      "diff": -0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_machinery_orders",
@@ -3707,7 +3009,9 @@
      "diff": -4.6,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_unemployment_rate",
@@ -3724,7 +3028,9 @@
      "diff": 4.2,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_cpi",
@@ -3741,7 +3047,9 @@
      "diff": 3.0,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_tokyo_core_cpi",
@@ -3758,7 +3066,9 @@
      "diff": 0.5,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 45
+     "n_revision_pairs": 45,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
@@ -3775,7 +3085,9 @@
      "diff": 48.3,
      "tolerance": 1.41195,
      "threshold": 1.41195,
-     "n_revision_pairs": 36
+     "n_revision_pairs": 36,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "chf_procurech_manufacturing_pmi",
@@ -3792,7 +3104,9 @@
      "diff": 46.3,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_sp_global_manufacturing_pmi",
@@ -3809,7 +3123,9 @@
      "diff": 50.0,
      "tolerance": 2.75151,
      "threshold": 2.75151,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 32,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_s_p_global_cips_manufacturing_pmi",
@@ -3826,7 +3142,9 @@
      "diff": 49.6,
      "tolerance": 4.31346,
      "threshold": 4.31346,
-     "n_revision_pairs": 48
+     "n_revision_pairs": 48,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_core_cpi",
@@ -3843,7 +3161,9 @@
      "diff": 2.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_cpi",
@@ -3860,7 +3180,9 @@
      "diff": 2.2,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -3877,7 +3199,9 @@
      "diff": -29.0,
      "tolerance": 25.0151,
      "threshold": 25.0151,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_s_p_global_manufacturing_pmi",
@@ -3894,7 +3218,9 @@
      "diff": 47.7,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_ism_manufacturing_pmi",
@@ -3911,41 +3237,9 @@
      "diff": 49.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_average_hourly_earnings",
-     "currency": "USD",
-     "indicator_key": "wage_growth",
-     "name_raw": "Average Hourly Earnings m/m",
-     "release_dt": "2025-10-02T21:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-20T13:30:00",
-     "next_previous": 0.3,
-     "next_from": "parquet",
-     "diff": 0.3,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_unemployment_rate",
-     "currency": "USD",
-     "indicator_key": "unemployment_rate",
-     "name_raw": "Unemployment Rate",
-     "release_dt": "2025-10-02T21:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-20T13:30:00",
-     "next_previous": 4.3,
-     "next_from": "parquet",
-     "diff": 4.3,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -3962,7 +3256,9 @@
      "diff": 12.8,
      "tolerance": 10.07843,
      "threshold": 10.07843,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_unemployment_rate",
@@ -3979,7 +3275,9 @@
      "diff": 4.5,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_prelim_gdp_price_index",
@@ -3996,7 +3294,9 @@
      "diff": 0.6,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -4007,47 +3307,34 @@
      "kind": "value",
      "scored_actual": 232.0,
      "scored_source": "ff",
-     "next_release_dt": "2025-11-19T22:00:00",
-     "next_previous": 229.0,
+     "next_release_dt": "2025-11-26T13:30:00",
+     "next_previous": 222.0,
      "next_from": "parquet",
-     "diff": -3.0,
+     "diff": -10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
-     "canonical_id": "nzd_retail_sales",
-     "currency": "NZD",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales q/q",
-     "release_dt": "2025-11-26T21:45:00",
+     "canonical_id": "usd_initial_jobless_claims",
+     "currency": "USD",
+     "indicator_key": "jobless_claims",
+     "name_raw": "Unemployment Claims",
+     "release_dt": "2025-11-19T22:00:00",
      "kind": "value",
-     "scored_actual": 1.9,
+     "scored_actual": 228.0,
      "scored_source": "ff",
-     "next_release_dt": "2026-05-21T22:45:00",
-     "next_previous": 0.9,
+     "next_release_dt": "2025-11-26T13:30:00",
+     "next_previous": 222.0,
      "next_from": "parquet",
-     "diff": -1.0,
-     "tolerance": 0.32239,
-     "threshold": 0.32239,
-     "n_revision_pairs": 12
-    },
-    {
-     "canonical_id": "chf_gdp",
-     "currency": "CHF",
-     "indicator_key": "gdp_qoq",
-     "name_raw": "GDP q/q",
-     "release_dt": "2025-11-28T08:00:00",
-     "kind": "value",
-     "scored_actual": -0.5,
-     "scored_source": "ff",
-     "next_release_dt": "2026-02-25T08:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": 0.5,
-     "tolerance": 0.1,
-     "threshold": 0.2,
-     "n_revision_pairs": 11
+     "diff": -6.0,
+     "tolerance": 1.0,
+     "threshold": 2.0,
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "aud_company_operating_profits",
@@ -4064,24 +3351,9 @@
      "diff": 1.5,
      "tolerance": 1.08956,
      "threshold": 1.08956,
-     "n_revision_pairs": 11
-    },
-    {
-     "canonical_id": "chf_procurech_manufacturing_pmi",
-     "currency": "CHF",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Manufacturing PMI",
-     "release_dt": "2025-12-01T08:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-12-04T08:30:00",
-     "next_previous": 48.2,
-     "next_from": "parquet",
-     "diff": 48.2,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 32
+     "n_revision_pairs": 11,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_employment_change",
@@ -4098,7 +3370,9 @@
      "diff": 53.6,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_unemployment_rate",
@@ -4115,58 +3389,9 @@
      "diff": 6.5,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
-    },
-    {
-     "canonical_id": "usd_core_pce_price_index",
-     "currency": "USD",
-     "indicator_key": "core_pce",
-     "name_raw": "Core PCE Price Index m/m",
-     "release_dt": "2025-12-05T15:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-01-22T15:00:00",
-     "next_previous": 0.2,
-     "next_from": "parquet",
-     "diff": 0.2,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 40
-    },
-    {
-     "canonical_id": "usd_personal_income",
-     "currency": "USD",
-     "indicator_key": "personal_income_mm",
-     "name_raw": "Personal Income m/m",
-     "release_dt": "2025-12-05T15:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-01-22T15:00:00",
-     "next_previous": 0.1,
-     "next_from": "parquet",
-     "diff": 0.1,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 39
-    },
-    {
-     "canonical_id": "usd_personal_spending",
-     "currency": "USD",
-     "indicator_key": "personal_spending_mm",
-     "name_raw": "Personal Spending m/m",
-     "release_dt": "2025-12-05T15:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-01-22T15:00:00",
-     "next_previous": 0.5,
-     "next_from": "parquet",
-     "diff": 0.5,
-     "tolerance": 0.32239,
-     "threshold": 0.32239,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_ppi",
@@ -4183,7 +3408,47 @@
      "diff": 2.7,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
+    },
+    {
+     "canonical_id": "usd_average_hourly_earnings",
+     "currency": "USD",
+     "indicator_key": "wage_growth",
+     "name_raw": "Average Hourly Earnings m/m",
+     "release_dt": "2025-12-15T22:00:00",
+     "kind": "value",
+     "scored_actual": 0.4,
+     "scored_source": "ff",
+     "next_release_dt": "2026-01-09T13:30:00",
+     "next_previous": 0.1,
+     "next_from": "parquet",
+     "diff": -0.3,
+     "tolerance": 0.0,
+     "threshold": 0.2,
+     "n_revision_pairs": 43,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "canonical_id": "usd_nonfarm_payrolls",
+     "currency": "USD",
+     "indicator_key": "employment_change",
+     "name_raw": "Non-Farm Employment Change",
+     "release_dt": "2025-12-15T22:00:00",
+     "kind": "value",
+     "scored_actual": -105.0,
+     "scored_source": "ff",
+     "next_release_dt": "2026-01-09T13:30:00",
+     "next_previous": 56.0,
+     "next_from": "parquet",
+     "diff": 161.0,
+     "tolerance": 96.717,
+     "threshold": 96.717,
+     "n_revision_pairs": 43,
+     "level": "WARN",
+     "new": true
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -4200,24 +3465,9 @@
      "diff": 10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
-    },
-    {
-     "canonical_id": "jpy_core_cpi",
-     "currency": "JPY",
-     "indicator_key": "core_cpi",
-     "name_raw": "BOJ Core CPI y/y",
-     "release_dt": "2026-01-27T05:00:00",
-     "kind": "value",
-     "scored_actual": 1.9,
-     "scored_source": "ff",
-     "next_release_dt": "2026-02-24T05:00:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -1.9,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_monthly_cpi_indicator",
@@ -4234,24 +3484,9 @@
      "diff": -0.9,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 6
-    },
-    {
-     "canonical_id": "chf_retail_sales",
-     "currency": "CHF",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2026-02-02T07:30:00",
-     "kind": "value",
-     "scored_actual": 2.9,
-     "scored_source": "ff",
-     "next_release_dt": "2026-02-26T07:30:00",
-     "next_previous": 0.0,
-     "next_from": "parquet",
-     "diff": -2.9,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 6,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -4268,7 +3503,9 @@
      "diff": 0.5,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
@@ -4279,13 +3516,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2026-02-20T00:30:00",
-     "next_previous": 51.5,
+     "next_release_dt": "2026-03-24T00:30:00",
+     "next_previous": 53.0,
      "next_from": "parquet",
-     "diff": 51.5,
+     "diff": 53.0,
      "tolerance": 1.41195,
      "threshold": 1.41195,
-     "n_revision_pairs": 36
+     "n_revision_pairs": 36,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "cad_ippi",
@@ -4302,7 +3541,9 @@
      "diff": 2.8,
      "tolerance": 0.86717,
      "threshold": 0.86717,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_core_pce_price_index",
@@ -4319,7 +3560,9 @@
      "diff": 0.4,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 40
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_personal_income",
@@ -4336,7 +3579,9 @@
      "diff": 0.3,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_personal_spending",
@@ -4353,24 +3598,9 @@
      "diff": 0.4,
      "tolerance": 0.32239,
      "threshold": 0.32239,
-     "n_revision_pairs": 40
-    },
-    {
-     "canonical_id": "usd_advance_gdp_price_index",
-     "currency": "USD",
-     "indicator_key": "gdp_price_index",
-     "name_raw": "Advance GDP Price Index q/q",
-     "release_dt": "2026-02-20T13:30:00",
-     "kind": "value",
-     "scored_actual": 0.4,
-     "scored_source": "ff",
-     "next_release_dt": "2026-04-30T12:30:00",
-     "next_previous": 3.7,
-     "next_from": "parquet",
-     "diff": 3.3,
-     "tolerance": 1.08956,
-     "threshold": 1.08956,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_core_cpi",
@@ -4381,13 +3611,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2026-02-25T05:00:00",
-     "next_previous": 1.9,
+     "next_release_dt": "2026-03-26T05:02:00",
+     "next_previous": 1.7,
      "next_from": "parquet",
-     "diff": 1.9,
+     "diff": 1.7,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_monthly_cpi_indicator",
@@ -4404,7 +3636,9 @@
      "diff": 0.5,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 6
+     "n_revision_pairs": 6,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "chf_gdp",
@@ -4415,30 +3649,15 @@
      "kind": "zero",
      "scored_actual": 0.0,
      "scored_source": "quarantined",
-     "next_release_dt": "2026-02-27T08:00:00",
-     "next_previous": -0.4,
+     "next_release_dt": "2026-06-01T07:00:00",
+     "next_previous": 0.2,
      "next_from": "parquet",
-     "diff": -0.4,
+     "diff": 0.2,
      "tolerance": 0.1,
      "threshold": 0.1,
-     "n_revision_pairs": 11
-    },
-    {
-     "canonical_id": "chf_retail_sales",
-     "currency": "CHF",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2026-02-26T07:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-03-02T07:30:00",
-     "next_previous": 2.8,
-     "next_from": "parquet",
-     "diff": 2.8,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 11,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -4455,41 +3674,9 @@
      "diff": 1.8,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
-    },
-    {
-     "canonical_id": "jpy_prelim_industrial_production",
-     "currency": "JPY",
-     "indicator_key": "industrial_production_mm",
-     "name_raw": "Prelim Industrial Production m/m",
-     "release_dt": "2026-02-26T23:50:00",
-     "kind": "value",
-     "scored_actual": 1.8,
-     "scored_source": "ff",
-     "next_release_dt": "2026-03-30T23:50:00",
-     "next_previous": 4.3,
-     "next_from": "parquet",
-     "diff": 2.5,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 38
-    },
-    {
-     "canonical_id": "usd_ism_non_manufacturing_pmi",
-     "currency": "USD",
-     "indicator_key": "services_pmi",
-     "name_raw": "ISM Services PMI",
-     "release_dt": "2026-03-04T15:00:00",
-     "kind": "value",
-     "scored_actual": 56.1,
-     "scored_source": "ff",
-     "next_release_dt": "2026-05-05T14:00:00",
-     "next_previous": 54.0,
-     "next_from": "parquet",
-     "diff": -2.1,
-     "tolerance": 0.0,
-     "threshold": 0.2,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -4506,24 +3693,9 @@
      "diff": 0.4,
      "tolerance": 0.37239,
      "threshold": 0.37239,
-     "n_revision_pairs": 38
-    },
-    {
-     "canonical_id": "usd_nonfarm_payrolls",
-     "currency": "USD",
-     "indicator_key": "employment_change",
-     "name_raw": "Non-Farm Employment Change",
-     "release_dt": "2026-03-06T13:30:00",
-     "kind": "value",
-     "scored_actual": -92.0,
-     "scored_source": "ff",
-     "next_release_dt": "2026-05-08T12:30:00",
-     "next_previous": 185.0,
-     "next_from": "parquet",
-     "diff": 277.0,
-     "tolerance": 96.717,
-     "threshold": 96.717,
-     "n_revision_pairs": 43
+     "n_revision_pairs": 38,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -4540,7 +3712,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -4557,7 +3731,9 @@
      "diff": -0.5,
      "tolerance": 0.1,
      "threshold": 0.1,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -4574,7 +3750,9 @@
      "diff": -0.4,
      "tolerance": 0.37239,
      "threshold": 0.37239,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -4591,7 +3769,9 @@
      "diff": 0.5,
      "tolerance": 0.1,
      "threshold": 0.2,
-     "n_revision_pairs": 39
+     "n_revision_pairs": 39,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -4608,7 +3788,9 @@
      "diff": 1.4,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "aud_import_prices",
@@ -4625,7 +3807,9 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 14
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "eur_retail_sales",
@@ -4642,7 +3826,9 @@
      "diff": 0.9,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41
+     "n_revision_pairs": 41,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -4659,7 +3845,9 @@
      "diff": -22.1,
      "tolerance": 10.07843,
      "threshold": 10.07843,
-     "n_revision_pairs": 42
+     "n_revision_pairs": 42,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "eur_s_p_global_services_pmi",
@@ -4676,7 +3864,9 @@
      "diff": 1.3,
      "tolerance": 0.59478,
      "threshold": 0.59478,
-     "n_revision_pairs": 8
+     "n_revision_pairs": 8,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -4693,7 +3883,9 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "jpy_retail_sales",
@@ -4710,7 +3902,9 @@
      "diff": 0.7,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "nzd_businessnz_manufacturing_index",
@@ -4727,7 +3921,9 @@
      "diff": 1.4,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 44
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -4744,7 +3940,9 @@
      "diff": -0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -4761,7 +3959,9 @@
      "diff": -0.6,
      "tolerance": 0.37239,
      "threshold": 0.37239,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -4778,7 +3978,9 @@
      "diff": 0.8,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 38
+     "n_revision_pairs": 38,
+     "level": "WARN",
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -4795,23 +3997,1339 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189
+     "n_revision_pairs": 189,
+     "level": "WARN",
+     "new": false
     }
    ],
    "findings_by_source": {
-    "ff": 186,
-    "quarantined": 96
+    "ff": 124,
+    "quarantined": 84
    },
    "findings_by_kind": {
-    "value": 186,
-    "zero": 96
+    "value": 124,
+    "zero": 84
    },
-   "n_checked": 3474,
+   "n_checked": 3357,
    "n_series": 107,
-   "n_scored_zero": 180,
+   "n_scored_zero": 181,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
    "weekly_feed": "ff_weekly_2026-09-23.json"
+  },
+  "missing_release": {
+   "findings": [
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_company_operating_profits",
+     "currency": "AUD",
+     "after": "2023-09-04",
+     "before": "2024-03-04",
+     "gap_days": 182,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_company_operating_profits",
+     "currency": "AUD",
+     "after": "2024-09-02",
+     "before": "2025-03-03",
+     "gap_days": 182,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_cpi",
+     "currency": "AUD",
+     "after": "2026-01-28",
+     "before": "2026-03-25",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_employment_change",
+     "currency": "AUD",
+     "after": "2023-11-16",
+     "before": "2024-01-16",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_gdp",
+     "currency": "AUD",
+     "after": "2023-09-06",
+     "before": "2024-03-06",
+     "gap_days": 182,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_household_spending",
+     "currency": "AUD",
+     "after": "2026-03-05",
+     "before": "2026-05-05",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_monthly_trimmed_mean_cpi",
+     "currency": "AUD",
+     "after": "2026-01-28",
+     "before": "2026-03-25",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_retail_sales",
+     "currency": "AUD",
+     "after": "2024-10-31",
+     "before": "2025-01-09",
+     "gap_days": 70,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "aud_unemployment_rate",
+     "currency": "AUD",
+     "after": "2023-11-16",
+     "before": "2024-01-18",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_common_cpi",
+     "currency": "CAD",
+     "after": "2023-11-21",
+     "before": "2024-01-16",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_core_cpi",
+     "currency": "CAD",
+     "after": "2023-11-21",
+     "before": "2024-01-16",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_cpi",
+     "currency": "CAD",
+     "after": "2023-11-21",
+     "before": "2024-01-16",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_employment_change",
+     "currency": "CAD",
+     "after": "2023-11-03",
+     "before": "2024-01-05",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_gdp",
+     "currency": "CAD",
+     "after": "2023-11-30",
+     "before": "2024-01-31",
+     "gap_days": 62,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_ippi",
+     "currency": "CAD",
+     "after": "2023-11-17",
+     "before": "2024-01-17",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_median_cpi",
+     "currency": "CAD",
+     "after": "2023-11-21",
+     "before": "2024-01-16",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_retail_sales",
+     "currency": "CAD",
+     "after": "2023-11-24",
+     "before": "2024-01-19",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_s_p_global_manufacturing_pmi",
+     "currency": "CAD",
+     "after": "2023-11-01",
+     "before": "2024-01-02",
+     "gap_days": 62,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_trimmed_cpi",
+     "currency": "CAD",
+     "after": "2023-11-21",
+     "before": "2024-01-16",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_trimmed_cpi",
+     "currency": "CAD",
+     "after": "2025-05-20",
+     "before": "2025-07-15",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_trimmed_cpi",
+     "currency": "CAD",
+     "after": "2025-11-17",
+     "before": "2026-01-19",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "cad_unemployment_rate",
+     "currency": "CAD",
+     "after": "2023-11-03",
+     "before": "2024-01-05",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "chf_cpi",
+     "currency": "CHF",
+     "after": "2023-11-02",
+     "before": "2024-01-06",
+     "gap_days": 65,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "chf_gdp",
+     "currency": "CHF",
+     "after": "2023-09-04",
+     "before": "2024-02-29",
+     "gap_days": 178,
+     "cadence_days": 91,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "chf_ppi",
+     "currency": "CHF",
+     "after": "2023-11-14",
+     "before": "2024-01-14",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "chf_ppi",
+     "currency": "CHF",
+     "after": "2025-08-14",
+     "before": "2025-10-14",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "chf_procurech_manufacturing_pmi",
+     "currency": "CHF",
+     "after": "2023-11-01",
+     "before": "2024-01-02",
+     "gap_days": 62,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "chf_unemployment_rate",
+     "currency": "CHF",
+     "after": "2023-11-07",
+     "before": "2024-01-07",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "eur_ppi",
+     "currency": "EUR",
+     "after": "2023-11-07",
+     "before": "2024-01-05",
+     "gap_days": 59,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "eur_retail_sales",
+     "currency": "EUR",
+     "after": "2023-11-08",
+     "before": "2024-01-08",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "eur_sp_global_manufacturing_pmi",
+     "currency": "EUR",
+     "after": "2023-11-02",
+     "before": "2024-01-02",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "eur_sp_global_services_pmi",
+     "currency": "EUR",
+     "after": "2023-11-06",
+     "before": "2024-01-04",
+     "gap_days": 59,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_average_weekly_earnings_total_pay",
+     "currency": "GBP",
+     "after": "2023-11-14",
+     "before": "2024-01-16",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_claimant_count_change",
+     "currency": "GBP",
+     "after": "2023-11-14",
+     "before": "2024-01-16",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_core_cpi",
+     "currency": "GBP",
+     "after": "2023-11-15",
+     "before": "2024-01-17",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_cpi",
+     "currency": "GBP",
+     "after": "2023-11-15",
+     "before": "2024-01-15",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_gdp",
+     "currency": "GBP",
+     "after": "2023-11-10",
+     "before": "2024-01-12",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_industrial_production",
+     "currency": "GBP",
+     "after": "2023-11-10",
+     "before": "2024-01-12",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_ppi_output",
+     "currency": "GBP",
+     "after": "2023-11-15",
+     "before": "2024-01-17",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_ppi_output",
+     "currency": "GBP",
+     "after": "2025-02-19",
+     "before": "2025-10-21",
+     "gap_days": 244,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_retail_sales",
+     "currency": "GBP",
+     "after": "2023-11-17",
+     "before": "2024-01-17",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_s_p_global_cips_manufacturing_pmi",
+     "currency": "GBP",
+     "after": "2023-11-02",
+     "before": "2024-01-02",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_s_p_global_cips_services_pmi",
+     "currency": "GBP",
+     "after": "2023-11-06",
+     "before": "2024-01-04",
+     "gap_days": 59,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "gbp_unemployment_rate",
+     "currency": "GBP",
+     "after": "2023-11-14",
+     "before": "2024-01-16",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
+     "currency": "JPY",
+     "after": "2023-05-01",
+     "before": "2023-07-03",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
+     "currency": "JPY",
+     "after": "2024-02-01",
+     "before": "2024-04-01",
+     "gap_days": 60,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
+     "currency": "JPY",
+     "after": "2024-11-01",
+     "before": "2024-12-30",
+     "gap_days": 59,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
+     "currency": "JPY",
+     "after": "2025-12-01",
+     "before": "2026-01-23",
+     "gap_days": 53,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_capital_spending",
+     "currency": "JPY",
+     "after": "2024-09-01",
+     "before": "2025-03-03",
+     "gap_days": 183,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_core_cpi",
+     "currency": "JPY",
+     "after": "2023-11-28",
+     "before": "2024-01-21",
+     "gap_days": 54,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_core_machinery_orders",
+     "currency": "JPY",
+     "after": "2023-11-15",
+     "before": "2024-01-17",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_cpi",
+     "currency": "JPY",
+     "after": "2023-11-23",
+     "before": "2024-01-18",
+     "gap_days": 56,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_labor_cash_earnings",
+     "currency": "JPY",
+     "after": "2023-11-06",
+     "before": "2024-01-08",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_ppi",
+     "currency": "JPY",
+     "after": "2023-11-12",
+     "before": "2024-01-15",
+     "gap_days": 64,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_prelim_industrial_production",
+     "currency": "JPY",
+     "after": "2023-11-29",
+     "before": "2024-02-28",
+     "gap_days": 91,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_retail_sales",
+     "currency": "JPY",
+     "after": "2023-11-29",
+     "before": "2024-02-28",
+     "gap_days": 91,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_sppi",
+     "currency": "JPY",
+     "after": "2023-11-26",
+     "before": "2024-01-25",
+     "gap_days": 60,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_tokyo_core_cpi",
+     "currency": "JPY",
+     "after": "2023-10-26",
+     "before": "2024-01-08",
+     "gap_days": 74,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "jpy_unemployment_rate",
+     "currency": "JPY",
+     "after": "2023-11-30",
+     "before": "2024-01-29",
+     "gap_days": 60,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "nzd_businessnz_manufacturing_index",
+     "currency": "NZD",
+     "after": "2023-11-09",
+     "before": "2024-01-18",
+     "gap_days": 70,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "nzd_businessnz_services_index",
+     "currency": "NZD",
+     "after": "2023-11-12",
+     "before": "2024-01-22",
+     "gap_days": 71,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "nzd_gdp",
+     "currency": "NZD",
+     "after": "2023-09-20",
+     "before": "2024-03-20",
+     "gap_days": 182,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "nzd_retail_sales",
+     "currency": "NZD",
+     "after": "2025-11-26",
+     "before": "2026-05-21",
+     "gap_days": 176,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_adp_nonfarm_employment_change",
+     "currency": "USD",
+     "after": "2023-11-01",
+     "before": "2024-01-04",
+     "gap_days": 64,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_advance_gdp_price_index",
+     "currency": "USD",
+     "after": "2025-07-30",
+     "before": "2026-02-20",
+     "gap_days": 205,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_average_hourly_earnings",
+     "currency": "USD",
+     "after": "2023-11-03",
+     "before": "2024-01-05",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_average_hourly_earnings",
+     "currency": "USD",
+     "after": "2025-10-02",
+     "before": "2025-11-20",
+     "gap_days": 49,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_average_hourly_earnings",
+     "currency": "USD",
+     "after": "2026-03-06",
+     "before": "2026-05-08",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_cpi",
+     "currency": "USD",
+     "after": "2023-07-12",
+     "before": "2023-09-13",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_cpi",
+     "currency": "USD",
+     "after": "2023-11-14",
+     "before": "2024-01-11",
+     "gap_days": 58,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_cpi",
+     "currency": "USD",
+     "after": "2024-03-12",
+     "before": "2024-05-15",
+     "gap_days": 64,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_cpi",
+     "currency": "USD",
+     "after": "2025-10-24",
+     "before": "2026-01-13",
+     "gap_days": 81,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_pce_price_index",
+     "currency": "USD",
+     "after": "2023-11-30",
+     "before": "2024-01-26",
+     "gap_days": 57,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_pce_price_index",
+     "currency": "USD",
+     "after": "2025-09-26",
+     "before": "2025-12-05",
+     "gap_days": 70,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_core_pce_price_index",
+     "currency": "USD",
+     "after": "2025-12-05",
+     "before": "2026-01-22",
+     "gap_days": 48,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_cpi",
+     "currency": "USD",
+     "after": "2023-11-14",
+     "before": "2024-01-11",
+     "gap_days": 58,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_cpi",
+     "currency": "USD",
+     "after": "2025-10-24",
+     "before": "2025-12-18",
+     "gap_days": 55,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_durable_goods_orders",
+     "currency": "USD",
+     "after": "2023-11-22",
+     "before": "2024-01-25",
+     "gap_days": 64,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_durable_goods_orders",
+     "currency": "USD",
+     "after": "2025-09-25",
+     "before": "2025-11-26",
+     "gap_days": 62,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_gdp",
+     "currency": "USD",
+     "after": "2025-07-30",
+     "before": "2026-02-20",
+     "gap_days": 205,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_import_prices",
+     "currency": "USD",
+     "after": "2023-11-16",
+     "before": "2024-01-17",
+     "gap_days": 62,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_import_prices",
+     "currency": "USD",
+     "after": "2025-09-16",
+     "before": "2025-12-03",
+     "gap_days": 78,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_industrial_production",
+     "currency": "USD",
+     "after": "2023-11-16",
+     "before": "2024-02-15",
+     "gap_days": 91,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_industrial_production",
+     "currency": "USD",
+     "after": "2025-09-16",
+     "before": "2025-12-03",
+     "gap_days": 78,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_ism_manufacturing_pmi",
+     "currency": "USD",
+     "after": "2023-11-01",
+     "before": "2024-01-03",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_ism_non_manufacturing_pmi",
+     "currency": "USD",
+     "after": "2023-11-03",
+     "before": "2024-01-05",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_ism_non_manufacturing_pmi",
+     "currency": "USD",
+     "after": "2026-03-04",
+     "before": "2026-05-05",
+     "gap_days": 62,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_jolts_job_openings",
+     "currency": "USD",
+     "after": "2023-11-01",
+     "before": "2024-01-03",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_jolts_job_openings",
+     "currency": "USD",
+     "after": "2025-09-30",
+     "before": "2025-12-08",
+     "gap_days": 69,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_nonfarm_payrolls",
+     "currency": "USD",
+     "after": "2023-11-03",
+     "before": "2024-01-05",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_nonfarm_payrolls",
+     "currency": "USD",
+     "after": "2025-10-02",
+     "before": "2025-11-20",
+     "gap_days": 49,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_nonfarm_payrolls",
+     "currency": "USD",
+     "after": "2026-03-06",
+     "before": "2026-05-08",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_income",
+     "currency": "USD",
+     "after": "2023-11-30",
+     "before": "2024-01-26",
+     "gap_days": 57,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_income",
+     "currency": "USD",
+     "after": "2024-09-27",
+     "before": "2024-11-27",
+     "gap_days": 61,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_income",
+     "currency": "USD",
+     "after": "2025-09-26",
+     "before": "2025-12-05",
+     "gap_days": 70,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_income",
+     "currency": "USD",
+     "after": "2025-12-05",
+     "before": "2026-01-22",
+     "gap_days": 48,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_spending",
+     "currency": "USD",
+     "after": "2023-11-30",
+     "before": "2024-01-26",
+     "gap_days": 57,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_spending",
+     "currency": "USD",
+     "after": "2025-09-26",
+     "before": "2025-12-05",
+     "gap_days": 70,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_personal_spending",
+     "currency": "USD",
+     "after": "2025-12-05",
+     "before": "2026-01-22",
+     "gap_days": 48,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_ppi",
+     "currency": "USD",
+     "after": "2023-11-15",
+     "before": "2024-01-12",
+     "gap_days": 58,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_ppi",
+     "currency": "USD",
+     "after": "2025-07-16",
+     "before": "2025-11-25",
+     "gap_days": 132,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_ppi",
+     "currency": "USD",
+     "after": "2025-11-25",
+     "before": "2026-01-14",
+     "gap_days": 50,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_prelim_unit_labor_costs",
+     "currency": "USD",
+     "after": "2025-08-07",
+     "before": "2026-01-08",
+     "gap_days": 154,
+     "cadence_days": 91,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_retail_sales",
+     "currency": "USD",
+     "after": "2023-11-15",
+     "before": "2024-01-17",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_retail_sales",
+     "currency": "USD",
+     "after": "2025-09-16",
+     "before": "2025-11-25",
+     "gap_days": 70,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_unemployment_rate",
+     "currency": "USD",
+     "after": "2023-11-03",
+     "before": "2024-01-05",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "INFO",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_unemployment_rate",
+     "currency": "USD",
+     "after": "2025-10-02",
+     "before": "2025-11-20",
+     "gap_days": 49,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    },
+    {
+     "check": "missing_release",
+     "kind": "series_gap",
+     "canonical_id": "usd_unemployment_rate",
+     "currency": "USD",
+     "after": "2026-03-06",
+     "before": "2026-05-08",
+     "gap_days": 63,
+     "cadence_days": 30,
+     "level": "WARN",
+     "new": true
+    }
+   ]
   }
  },
- "generated_at": "2026-09-23T14:06:42+00:00"
+ "counts": {
+  "release_conflict": {
+   "WARN": 0,
+   "INFO": 3
+  },
+  "previous_consistency": {
+   "WARN": 25,
+   "INFO": 183
+  },
+  "missing_release": {
+   "WARN": 35,
+   "INFO": 73
+  }
+ },
+ "generated_at": "2026-09-23T18:06:29+00:00"
 }
