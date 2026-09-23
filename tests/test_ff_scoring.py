@@ -17,10 +17,8 @@ import numpy as np
 from src.econ_calendar_ff import CANON_COLUMNS, extract_period_suffix, parse_jblanked_range
 from src.economic_fetch import CompiledMatcher
 from src.ff_scoring import CCY2COUNTRY, build_matcher, detect_cadence, load_can_be_zero, to_scoring_frame
-from src.jb_actuals import build_flagged_bad_lookup
 
 ROOT = Path(__file__).resolve().parents[1]
-CAN_BE_ZERO_TRANSFORM_FIXTURE = ROOT / "tests" / "fixtures" / "jb_can_be_zero_transform_2026-08.json"
 
 # (currency, name_canonical) for the # xf series in config/ff_aliases.yaml, with the
 # indicator_key they must resolve to via the matcher.
@@ -100,7 +98,9 @@ def test_mt5_and_ff_frames_are_disjoint_in_source():
 
 # --- zero-placeholder quarantine gate ---------------------------------------
 
-def _ff_row(ccy, name_canonical, actual, forecast, dt="2026-06-01"):
+def _zrow(ccy, name_canonical, actual, forecast, dt="2026-06-01"):
+    # was a second `_ff_row` that silently shadowed the helper above (so
+    # _ff_frame put the date string in `forecast`); renamed (audit 2026-09-23).
     return {"canonical_id": f"{ccy.lower()}_x", "currency": ccy, "name_raw": "raw",
             "name_canonical": name_canonical, "datetime_utc": pd.Timestamp(dt),
             "actual": actual, "forecast": forecast, "previous": 1.0,
@@ -121,73 +121,6 @@ def test_config_can_be_zero_set():
     assert "employment_change" in cbz and "retail_sales" in cbz  # net change / m/m growth
     assert "unemployment_rate" not in cbz and "manufacturing_pmi" not in cbz  # levels/indices
     assert "cpi_yoy" not in cbz
-
-
-def test_quarantine_zero_actual_and_consensus():
-    # unemployment_rate (can_be_zero=False): actual==0.0 AND consensus==0.0 → NaN
-    #
-    # fix/can-be-zero-transform (2026-08): this test calls to_scoring_frame()
-    # WITHOUT the new `flagged_bad` parameter, which is deliberate, not an
-    # oversight — flagged_bad=None disables the suffix-widening path entirely,
-    # so this test still exercises and codifies EXACTLY the pre-fix contract
-    # (config-only quarantine). "Unemployment Rate" has no period-transform
-    # suffix anyway (extract_period_suffix -> "none"), so it would be
-    # unaffected by the new rule regardless — see test_can_be_zero_transform_*
-    # below for the NEW contract (suffix + Bad-Data guard), which needs a real
-    # m/m-fed row and an explicit flagged_bad lookup to exercise.
-    ff = pd.DataFrame([
-        _ff_row("USD", "Unemployment Rate", 0.0, 4.3),      # placeholder actual
-        _ff_row("USD", "Unemployment Rate", 4.2, 0.0),      # placeholder consensus
-        _ff_row("USD", "Unemployment Rate", 4.2, 4.3),      # clean
-    ], columns=CANON_COLUMNS)
-    out = to_scoring_frame(ff)
-    unemp = out[out["indicator_key"] == "unemployment_rate"].reset_index(drop=True)
-    assert np.isnan(unemp.loc[0, "actual"])                 # 0.0 actual quarantined
-    assert np.isnan(unemp.loc[1, "consensus"])              # 0.0 consensus quarantined
-    assert unemp.loc[2, "actual"] == 4.2                    # clean row untouched
-
-
-def test_can_be_zero_true_keeps_zero():
-    # employment_change (can_be_zero=True): a real 0 net-jobs print is KEPT
-    ff = pd.DataFrame([_ff_row("USD", "Nonfarm Payrolls", 0.0, 50.0)], columns=CANON_COLUMNS)
-    out = to_scoring_frame(ff)
-    emp = out[out["indicator_key"] == "employment_change"].iloc[0]
-    assert emp["actual"] == 0.0                             # NOT quarantined
-
-
-def test_can_be_zero_false_ghost_zero_already_nan_before_dedup():
-    # docs/dedup-latest-wins-bug.md: the _keep_latest_published fix (nonzero
-    # beats zero within a dedup cluster) only matters for can_be_zero: true
-    # indicators. For unemployment_rate (can_be_zero=False), a 0.0 published
-    # AFTER the real value -- the exact ordering that broke JPY retail_sales
-    # -- must already be NaN by the time _dedup_flash_final runs, so the fix
-    # never has anything to do here: the NaN is excluded by the `published`
-    # filter regardless of which _keep_latest_published version is in use.
-    from src.economic_compute import _dedup_flash_final
-    ff = pd.DataFrame([
-        _ff_row("USD", "Unemployment Rate", 4.2, 4.3, dt="2026-06-01 12:00"),  # real, first
-        _ff_row("USD", "Unemployment Rate", 0.0, 4.3, dt="2026-06-01 13:00"),  # ghost, later
-    ], columns=CANON_COLUMNS)
-    out = to_scoring_frame(ff)
-    unemp = out[out["indicator_key"] == "unemployment_rate"].sort_values("release_dt")
-    # the later, ghost row is already NaN here -- before dedup ever runs
-    assert unemp["actual"].iloc[0] == 4.2
-    assert np.isnan(unemp["actual"].iloc[1])
-
-    dd = _dedup_flash_final(unemp.reset_index(drop=True), 18)
-    assert len(dd) == 1
-    assert dd["actual"].iloc[0] == 4.2                      # real value kept, untouched by the fix
-
-
-def test_historical_placeholder_excluded_from_baseline():
-    # a 0.0 placeholder among real prints must not enter the (actual,consensus) pairs
-    rows = [_ff_row("USD", "CPI y/y", v, c, dt=f"2026-0{m}-01")
-            for m, (v, c) in enumerate([(3.0, 3.0), (0.0, 3.0), (3.1, 3.0)], start=1)]
-    out = to_scoring_frame(pd.DataFrame(rows, columns=CANON_COLUMNS))
-    cpi = out[out["indicator_key"] == "cpi_yoy"]
-    both = cpi[cpi["actual"].notna() & cpi["consensus"].notna()]
-    assert len(both) == 2                                   # the 0.0 placeholder dropped
-    assert 0.0 not in set(both["actual"])
 
 
 # --- fix/can-be-zero-transform (2026-08): suffix parser + union rule --------
@@ -211,165 +144,6 @@ def test_extract_period_suffix_raises_on_unrecognized():
         extract_period_suffix("Retail Sales 6m/y")
 
 
-def _load_can_be_zero_transform_fixture():
-    """Real capture (frozen 2026-08 from data/archive/ + data/jb_raw/, NOT
-    synthetic): CHF 'CPI m/m' 2026-07-02 (Good Data, the classic ±1h dup
-    zero-print case investigated in docs/faza1-chf-cpi-zero-placeholder-
-    inventory.md), GBP 'CPI y/y' 2024-01-15 (a real y/y zero print), USD
-    'Core CPI m/m' 2026-07-14 (Bad Data — the contra-example that motivates
-    the flagged_bad guard, per config/alert_exceptions.yaml's exception note
-    for USD core_cpi)."""
-    parsed = parse_jblanked_range(str(CAN_BE_ZERO_TRANSFORM_FIXTURE), now_utc=pd.Timestamp("2026-08-02"))
-    lookup = build_flagged_bad_lookup(raw_dir=None, archive_path=CAN_BE_ZERO_TRANSFORM_FIXTURE)
-    return parsed, lookup
-
-
-def test_can_be_zero_transform_default_disabled_matches_old_contract():
-    # flagged_bad=None (the default, unchanged call signature) must reproduce
-    # EXACTLY today's config-only quarantine — all three real zeros nulled,
-    # regardless of their real transform or Quality/Strength.
-    parsed, _lookup = _load_can_be_zero_transform_fixture()
-    out = to_scoring_frame(parsed, build_matcher())
-    assert out["actual"].notna().sum() == 0
-    assert len(out) == 4                                     # all 4 rows still resolve/score
-
-
-def test_can_be_zero_transform_chf_recovered_gbp_still_quarantined():
-    # same indicator_key ("cpi_yoy") on BOTH sides — the whole point of the
-    # fix is that the verdict now depends on the row's REAL transform, not a
-    # single global config flag: CHF is fed by "CPI m/m" (real, clean, Good
-    # Data) -> recovered; GBP is fed by "CPI y/y" (genuinely y/y, and this
-    # specific real print happens to ALSO be Bad Data) -> suffix alone
-    # already excludes it, before flagged_bad is even consulted.
-    #
-    # FAZA 1c (2026-08 audit): CHF's ±1h dup is BOTH widened to 0.0 (identical)
-    # — the new-duplicate guard collapses that to exactly ONE valid row, not
-    # two (see test_new_duplicate_guard_*). This test no longer asserts BOTH
-    # rows are 0.0 — that assertion codified the double-counting bug the guard
-    # exists to fix. It now asserts recovery happened (>=1 valid, non-NaN,
-    # ==0.0) without asserting how many copies survive — that contract is
-    # test_new_duplicate_guard_identical_collapses_divergent_excludes_both's job.
-    parsed, lookup = _load_can_be_zero_transform_fixture()
-    out = to_scoring_frame(parsed, build_matcher(), flagged_bad=lookup)
-
-    chf = out[(out["currency"] == "CHF") & (out["indicator_key"] == "cpi_yoy")]
-    assert len(chf) == 2                                      # the ±1h dup, both rows present
-    valid = chf["actual"].dropna()
-    assert len(valid) == 1                                     # collapsed, not double-counted
-    assert (valid == 0.0).all()                                # recovered, not NaN
-
-    gbp = out[(out["currency"] == "GBP") & (out["indicator_key"] == "cpi_yoy")]
-    assert len(gbp) == 1
-    assert gbp["actual"].isna().all()                          # still quarantined
-
-
-def test_can_be_zero_transform_bad_data_guard_rejects_despite_suffix_match():
-    # USD core_cpi, 2026-07-14, real fixture (NOT synthetic): "Core CPI m/m"
-    # actual=0.0, suffix=m/m (would qualify for widening on transform alone),
-    # but Quality=='Bad Data' -> the flagged_bad guard rejects it. Without the
-    # guard (config-only OR suffix, no AND NOT flagged_bad) this print would
-    # be silently recovered as if real.
-    parsed, lookup = _load_can_be_zero_transform_fixture()
-    assert lookup[("USD", "Core CPI m/m", pd.Timestamp("2026-07-14").date())] is True
-
-    out = to_scoring_frame(parsed, build_matcher(), flagged_bad=lookup)
-    usd = out[(out["currency"] == "USD") & (out["indicator_key"] == "core_cpi")]
-    assert len(usd) == 1
-    assert usd["actual"].isna().all()                          # rejected by the Bad-Data guard
-
-
-# --- pinned snapshot: derived can_be_zero verdict, every (currency, indicator_key) ---
-# Replaces the visibility a materialized config used to give: any future alias
-# remap, new indicator, or transform drift changes a row here, and shows up as
-# an explicit diff in review instead of a silent behavior change. Regenerate by
-# rerunning the derivation (config[key] OR extract_period_suffix(name_raw) in
-# {"m/m","q/q"}) over data/economic_calendar_ff.parquet — see
-# scripts/measure/transform_uniformity_and_zero_effect.py's V3 for the
-# reusable form — and re-pin deliberately, not to make a failing test pass.
-PINNED_DERIVED_CAN_BE_ZERO = {
-    ("AUD", "capital_expenditure"): True, ("AUD", "company_operating_profits_qoq"): True,
-    ("AUD", "core_cpi"): True, ("AUD", "cpi_monthly"): True, ("AUD", "cpi_yoy"): False,
-    ("AUD", "employment_change"): True, ("AUD", "gdp_qoq"): True, ("AUD", "import_prices"): True,
-    ("AUD", "interest_rate_decision"): True, ("AUD", "manufacturing_pmi"): False,
-    ("AUD", "ppi_yoy"): True, ("AUD", "retail_sales"): True, ("AUD", "services_pmi"): False,
-    ("AUD", "trimmed_mean_cpi_monthly"): True, ("AUD", "unemployment_rate"): False,
-    ("AUD", "wage_growth"): True,
-    ("CAD", "common_cpi_yoy"): False, ("CAD", "core_cpi"): False, ("CAD", "cpi_yoy"): True,
-    ("CAD", "employment_change"): True, ("CAD", "gdp_qoq"): True,
-    ("CAD", "interest_rate_decision"): True, ("CAD", "manufacturing_pmi"): False,
-    ("CAD", "ppi_yoy"): True, ("CAD", "retail_sales"): True, ("CAD", "trimmed_cpi_yoy"): False,
-    ("CAD", "unemployment_rate"): False,
-    ("CHF", "cpi_yoy"): True, ("CHF", "gdp_qoq"): True, ("CHF", "interest_rate_decision"): True,
-    ("CHF", "manufacturing_pmi"): False, ("CHF", "ppi_yoy"): True, ("CHF", "retail_sales"): True,
-    ("CHF", "unemployment_rate"): False,
-    ("EUR", "core_cpi"): False, ("EUR", "cpi_yoy"): False, ("EUR", "employment_change"): True,
-    ("EUR", "gdp_qoq"): True, ("EUR", "interest_rate_decision"): True,
-    ("EUR", "manufacturing_pmi"): False, ("EUR", "ppi_yoy"): True, ("EUR", "retail_sales"): True,
-    ("EUR", "services_pmi"): False, ("EUR", "unemployment_rate"): False,
-    ("GBP", "core_cpi"): False, ("GBP", "cpi_yoy"): False, ("GBP", "employment_change"): True,
-    ("GBP", "gdp_qoq"): True, ("GBP", "industrial_production_mm"): True,
-    ("GBP", "interest_rate_decision"): True, ("GBP", "manufacturing_pmi"): False,
-    ("GBP", "ppi_yoy"): True, ("GBP", "retail_sales"): True, ("GBP", "services_pmi"): False,
-    ("GBP", "unemployment_rate"): False, ("GBP", "wage_growth"): False,
-    ("JPY", "capital_expenditure"): False, ("JPY", "core_cpi"): False,
-    ("JPY", "core_machinery_orders_mm"): True, ("JPY", "cpi_yoy"): False,
-    ("JPY", "gdp_price_index"): False, ("JPY", "gdp_qoq"): True,
-    ("JPY", "industrial_production_mm"): True, ("JPY", "interest_rate_decision"): True,
-    ("JPY", "manufacturing_pmi"): False,
-    # ("JPY", "ppi_yoy") added feat/board-slot-cleanup-and-cad-promotion:
-    # Japan's matcher gained a ppi_yoy rule (was unmodeled, dropped before
-    # this pin existed). Raw name "PPI y/y" is already y/y (suffix "y/y",
-    # not in {"m/m","q/q"}) and ppi_yoy carries no explicit can_be_zero ->
-    # False, same derivation every other row here uses.
-    ("JPY", "ppi_yoy"): False,
-    ("JPY", "retail_sales"): True, ("JPY", "sppi_yoy"): False,
-    ("JPY", "tokyo_core_cpi_yoy"): False, ("JPY", "unemployment_rate"): False,
-    ("JPY", "wage_growth"): False,
-    ("NZD", "cpi_yoy"): True, ("NZD", "employment_change"): True, ("NZD", "gdp_qoq"): True,
-    ("NZD", "interest_rate_decision"): True, ("NZD", "manufacturing_pmi"): False,
-    ("NZD", "ppi_yoy"): True, ("NZD", "retail_sales"): True, ("NZD", "services_pmi"): False,
-    ("NZD", "unemployment_rate"): False, ("NZD", "wage_growth"): True,
-    ("USD", "adp"): False, ("USD", "core_cpi"): True, ("USD", "core_pce"): True,
-    ("USD", "cpi_yoy"): False, ("USD", "durable_goods_orders_mm"): True,
-    ("USD", "employment_change"): True, ("USD", "gdp_price_index"): True, ("USD", "gdp_qoq"): True,
-    ("USD", "import_prices"): True, ("USD", "industrial_production_mm"): True,
-    ("USD", "interest_rate_decision"): True, ("USD", "jobless_claims"): False,
-    ("USD", "jolts"): False, ("USD", "manufacturing_pmi"): False,
-    ("USD", "personal_income_mm"): True, ("USD", "personal_spending_mm"): True,
-    ("USD", "ppi_yoy"): True, ("USD", "retail_sales"): True, ("USD", "services_pmi"): False,
-    ("USD", "unemployment_rate"): False, ("USD", "unit_labor_costs_qoq"): True,
-    ("USD", "wage_growth"): True,
-}
-
-
-def test_can_be_zero_transform_derived_verdict_pinned_snapshot():
-    ind_cfg = yaml.safe_load((ROOT / "data" / "economic_indicators.yaml").read_text())
-    matcher = CompiledMatcher(ind_cfg.get("matcher", {}))
-    cbz = load_can_be_zero(ind_cfg)
-
-    df = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    df["indicator_key"] = [matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
-                           for r in df.itertuples(index=False)]
-    scored = df[df["indicator_key"].notna()].copy()
-    scored["suffix"] = scored["name_raw"].apply(extract_period_suffix)
-
-    actual: dict[tuple[str, str], bool] = {}
-    for (ccy, key), g in scored.groupby(["currency", "indicator_key"], sort=True):
-        suffixes = set(g["suffix"])
-        assert len(suffixes) == 1, f"MIXED suffix for {ccy}/{key}: {suffixes} — H-xf broke, stop"
-        suffix = suffixes.pop()
-        actual[(ccy, key)] = (key in cbz) or (suffix in ("m/m", "q/q"))
-
-    missing = set(PINNED_DERIVED_CAN_BE_ZERO) - set(actual)     # pinned pair no longer scored
-    added = set(actual) - set(PINNED_DERIVED_CAN_BE_ZERO)        # new pair, not yet pinned
-    changed = {k for k in set(actual) & set(PINNED_DERIVED_CAN_BE_ZERO)
-              if actual[k] != PINNED_DERIVED_CAN_BE_ZERO[k]}
-    assert not missing and not added and not changed, (
-        f"derived can_be_zero verdict drifted from the pinned snapshot — "
-        f"missing={missing} added={added} changed={ {k: (PINNED_DERIVED_CAN_BE_ZERO[k], actual[k]) for k in changed} }"
-    )
-
-
 # --- new-duplicate guard (fix/can-be-zero-transform, 2026-08 audit, FAZA 1c) -
 
 NEW_DUPLICATE_GUARD_FIXTURE = ROOT / "tests" / "fixtures" / "jb_new_duplicate_guard_2026-08.json"
@@ -383,8 +157,7 @@ def test_new_duplicate_guard_identical_collapses_divergent_excludes_both():
     # (DIVERGENT) -- no tiebreak, so BOTH must be excluded, including the
     # originally-valid 0.1 (keeping it would be guessing which copy is real).
     parsed = parse_jblanked_range(str(NEW_DUPLICATE_GUARD_FIXTURE), now_utc=pd.Timestamp("2026-08-02"))
-    lookup = build_flagged_bad_lookup(raw_dir=None, archive_path=NEW_DUPLICATE_GUARD_FIXTURE)
-    out = to_scoring_frame(parsed, build_matcher(), flagged_bad=lookup)
+    out = to_scoring_frame(parsed, build_matcher())
 
     chf_cpi = out[(out["currency"] == "CHF") & (out["indicator_key"] == "cpi_yoy")]
     assert len(chf_cpi) == 2                              # both rows still present in the frame
@@ -401,231 +174,84 @@ def test_new_duplicate_guard_does_not_touch_pre_existing_duplicates():
     # all -- two ordinary non-zero prints on the same day) must be completely
     # untouched by this guard, regardless of flagged_bad being provided.
     rows = [
-        _ff_row("USD", "Unemployment Rate", 4.2, 4.3, dt="2026-06-01 12:00"),
-        _ff_row("USD", "Unemployment Rate", 4.3, 4.3, dt="2026-06-01 13:00"),
+        _zrow("USD", "Unemployment Rate", 4.2, 4.3, dt="2026-06-01 12:00"),
+        _zrow("USD", "Unemployment Rate", 4.3, 4.3, dt="2026-06-01 13:00"),
     ]
     ff = pd.DataFrame(rows, columns=CANON_COLUMNS)
     ff["canonical_id"] = "usd_unemployment_rate"
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad={})
+    out = to_scoring_frame(ff, build_matcher())
     unemp = out[out["indicator_key"] == "unemployment_rate"]
     assert unemp["actual"].notna().sum() == 2               # both kept, untouched
 
 
-# --- fix/cbz-flagged-bad-guard (2026-08): flagged_bad as a UNIVERSAL gate ----
-# Closes the hole where `if key not in cbz:` gated the ENTIRE zero-quarantine
-# block, so a can_be_zero indicator's 0.0 never reached the flagged_bad check
-# at all -- a JBlanked 'Data Not Loaded'/'Bad Data' placeholder on
-# employment_change/household_spending/interest_rate_decision/retail_sales
-# sailed through unconditionally. Real case: AUD Cash Rate 2026-08-11, raw
-# Quality=Strength='Data Not Loaded', would have shown 0.00% instead of 4.35%.
+# --- audit 2026-09-23 phase 2: provenance recorded at ingest -----------------------
+# 2.2 consensus = effective_consensus(forecast, forecast_origin)
+# 2.3 actual 0.0 is a placeholder iff jb_status == "Data Not Loaded"
 
-def _gate_row(ccy, name_canonical, name_raw, actual, dt="2026-06-01 12:00", canonical_id=None):
-    return {"canonical_id": canonical_id or f"{ccy.lower()}_gate_x", "currency": ccy,
-            "name_raw": name_raw, "name_canonical": name_canonical,
-            "datetime_utc": pd.Timestamp(dt), "actual": actual, "forecast": 1.0,
-            "previous": 1.0, "released": True, "source": "ff"}
+from src.ff_scoring import actual_is_placeholder, effective_consensus  # noqa: E402
 
 
-def _frame(rows):
-    return pd.DataFrame(rows, columns=CANON_COLUMNS)
+def _prow(forecast, origin, actual=1.0, jb_status=None, name="Trade Balance",
+          ccy="CAD", canon="Trade Balance", dt="2026-06-01 12:30"):
+    return {"canonical_id": f"{ccy.lower()}_x", "currency": ccy, "name_raw": name,
+            "name_canonical": canon, "datetime_utc": pd.Timestamp(dt), "actual": actual,
+            "forecast": forecast, "previous": 1.0, "released": True, "source": "ff",
+            "forecast_origin": origin, "jb_status": jb_status}
 
 
-def test_gate_cbz_zero_kept_when_flagged_bad_clean():
-    # (1) cbz + flagged_bad curat -> 0.0 PĂSTRAT.
-    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
-    lookup = {("USD", "Federal Funds Rate", pd.Timestamp("2026-06-01").date()): False}  # not bad
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
-    assert row["actual"] == 0.0
+@pytest.mark.parametrize("forecast,origin,expected", [
+    (0.0, "ff", 0.0),            # FF "0.0%": a real consensus, kept
+    (0.3, "ff", 0.3),
+    (np.nan, "ff_blank", np.nan),  # FF "": no consensus
+    (0.0, "jb", np.nan),         # JB 0.0: its no-forecast placeholder
+    (0.3, "jb", 0.3),            # JB value (pre-archive history): kept
+    (0.0, None, np.nan),         # unknown provenance = not FF-confirmed
+    (0.0, "manual", 0.0),
+])
+def test_effective_consensus(forecast, origin, expected):
+    got = effective_consensus(forecast, origin)
+    assert (np.isnan(got) and np.isnan(expected)) or got == expected
 
 
-def test_gate_cbz_zero_nulled_when_flagged_bad_true():
-    # (2) cbz + flagged_bad=True ('Bad Data') -> 0.0 NULIFICAT.
-    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
-    lookup = {("USD", "Federal Funds Rate", pd.Timestamp("2026-06-01").date()): True}   # bad
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
-    assert np.isnan(row["actual"])
+@pytest.mark.parametrize("actual,status,placeholder", [
+    (0.0, "Data Not Loaded", True),
+    (0.0, "Good Data", False),   # Good/Bad Data is a direction tag, ignored (C1)
+    (0.0, "Bad Data", False),
+    (0.0, None, False),
+    (0.4, "Data Not Loaded", False),
+    (np.nan, "Data Not Loaded", False),
+])
+def test_actual_is_placeholder(actual, status, placeholder):
+    assert actual_is_placeholder(actual, status) is placeholder
 
 
-def test_gate_cbz_zero_nulled_when_flagged_bad_key_absent():
-    # (3) cbz + cheie ABSENTĂ din flagged_bad -> NULIFICAT (default blocat,
-    # niciodată presupus curat).
-    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad={})   # key never seen
-    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
-    assert np.isnan(row["actual"])
+def _cpi(forecast, origin, actual=0.4, jb_status="Bad Data", dt="2026-06-01"):
+    return _prow(forecast, origin, actual, jb_status, name="CPI m/m", ccy="CHF", canon="CPI y/y", dt=dt)
 
 
-def test_gate_cbz_zero_kept_when_flagged_bad_none():
-    # (4) cbz + flagged_bad=None -> 0.0 PĂSTRAT (comportament vechi intact —
-    # callerii care nu pasează flagged_bad nu văd nicio diferență).
-    ff = _frame([_gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0)])
-    out = to_scoring_frame(ff, build_matcher())   # flagged_bad=None (default)
-    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
-    assert row["actual"] == 0.0
+def test_scoring_frame_applies_the_consensus_rule():
+    ff = pd.DataFrame([_cpi(0.0, "ff", dt="2026-09-03"), _cpi(np.nan, "ff_blank", dt="2026-08-03"),
+                       _cpi(0.0, "jb", dt="2026-07-03")], columns=CANON_COLUMNS)
+    ff["datetime_utc"] = pd.to_datetime(["2026-09-03", "2026-08-03", "2026-07-03"])
+    out = to_scoring_frame(ff, build_matcher()).sort_values("release_dt")
+    assert out["consensus"].tolist()[2] == 0.0            # CHF CPI 09-03: FF "0.0%" scored
+    assert out["consensus"].iloc[:2].isna().all()           # ff_blank + jb 0.0
 
 
-def test_gate_non_cbz_suffix_mm_clean_still_widened_unchanged():
-    # (5) non-cbz cu sufix m/m + flagged curat -> păstrat (neschimbat).
-    ff = _frame([_gate_row("USD", "CPI y/y", "CPI m/m", 0.0)])
-    lookup = {("USD", "CPI m/m", pd.Timestamp("2026-06-01").date()): False}
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
-    assert row["actual"] == 0.0
+def test_scoring_frame_applies_the_placeholder_rule_only():
+    rows = [_cpi(0.1, "ff", actual=0.0, jb_status="Data Not Loaded"),
+            _cpi(0.1, "ff", actual=0.0, jb_status="Bad Data"),
+            _cpi(0.1, "ff", actual=0.0, jb_status=None)]
+    ff = pd.DataFrame(rows, columns=CANON_COLUMNS)
+    ff["datetime_utc"] = pd.to_datetime(["2026-07-03", "2026-08-03", "2026-09-03"])
+    ff["canonical_id"] = ["a", "b", "c"]
+    out = to_scoring_frame(ff, build_matcher()).sort_values("release_dt")
+    assert out["actual"].isna().tolist() == [True, False, False]
 
 
-def test_gate_non_cbz_no_short_suffix_nulled_unchanged():
-    # (6) non-cbz fără sufix scurt (name_raw e chiar y/y) -> nulificat
-    # (neschimbat), indiferent de flagged_bad.
-    ff = _frame([_gate_row("USD", "CPI y/y", "CPI y/y", 0.0)])
-    lookup = {("USD", "CPI y/y", pd.Timestamp("2026-06-01").date()): False}
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
-    assert np.isnan(row["actual"])
-
-
-def test_gate_regression_aud_cash_rate_data_not_loaded():
-    # (7) Regresie AUD Cash Rate: interest_rate_decision, actual 0.0,
-    # Quality='Data Not Loaded' -> NULIFICAT. Mirrors the real dry-run row
-    # (2026-08-11 04:30 UTC) that motivated this fix.
-    ff = _frame([_gate_row("AUD", "RBA Interest Rate Decision", "Cash Rate", 0.0,
-                           dt="2026-08-11 04:30")])
-    lookup = {("AUD", "Cash Rate", pd.Timestamp("2026-08-11").date()): True}   # Data Not Loaded -> bad
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "interest_rate_decision"].iloc[0]
-    assert np.isnan(row["actual"])
-
-
-def test_gate_duplicate_guard_silent_when_new_gate_only_reduces_valid_count(caplog):
-    # (8) New-duplicate guard must NOT fire when the new gate REDUCES a
-    # group's valid count -- it only ever acts on an INCREASE crossing the
-    # <2 -> >=2 threshold (widening recovering a duplicate). Two same-group
-    # cbz rows, both old_valid=True (valid_before=2, since old_valid ignores
-    # cbz zeros entirely). Three sub-cases, all a decrease or flat from
-    # valid_before=2, never an increase -- the guard's `valid_before >= 2`
-    # skip must hold every time.
-    import logging
-    date = "2026-06-01"
-
-    def _pair(flagged):
-        ff = _frame([
-            _gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.0,
-                      dt=f"{date} 12:00", canonical_id="usd_fed_funds"),
-            _gate_row("USD", "Fed Interest Rate Decision", "Federal Funds Rate", 0.1,
-                      dt=f"{date} 13:00", canonical_id="usd_fed_funds"),
-        ])
-        lookup = {("USD", "Federal Funds Rate", pd.Timestamp(date).date()): flagged}
-        with caplog.at_level(logging.INFO):
-            out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-        caplog.clear()
-        return out[out["indicator_key"] == "interest_rate_decision"].sort_values("release_dt")
-
-    # flagged bad -> the 0.0 row is blocked (valid_after drops from 2 to 1),
-    # but the 0.1 row (never touched by the gate at all -- it isn't 0.0) must
-    # SURVIVE untouched. If the guard wrongly treated this post-gate 1-valid
-    # state as cause to act, it could sweep the surviving 0.1 row away too.
-    asym = _pair(True)
-    assert list(asym["actual"].isna()) == [True, False]      # 0.0-row blocked, 0.1-row untouched
-    assert asym["actual"].dropna().iloc[0] == pytest.approx(0.1)
-
-    # flagged clean -> both kept, INCLUDING the 0.1 row -- if the guard had
-    # wrongly fired here (treating [0.0, 0.1] as a "new" divergent dup), it
-    # would null the second row too. It must not: this group was already
-    # >=2 valid before any gate logic ran (interest_rate_decision is cbz, so
-    # old_valid=True for both rows regardless of the 0.0/0.1 split) -- a
-    # pre-existing duplicate, out of the guard's scope entirely.
-    both_clean = _pair(False)
-    assert both_clean["actual"].notna().sum() == 2
-    assert list(both_clean["actual"]) == [0.0, 0.1]
-    assert not any("new-duplicate group" in r.message for r in caplog.records)
-
-
-# --- feat/manual-forecast-review (2026-08): consensus widening -------------
-# Symmetric to the actual-side gate above, but route (b) ONLY (m/m|q/q
-# suffix + flagged_bad) -- deliberately NO can_be_zero route: can_be_zero
-# describes the actual's level/net-change semantics, not the consensus's.
-
-def _cons_row(ccy, name_canonical, name_raw, forecast, actual=1.0,
-             dt="2026-06-01 12:00", canonical_id=None):
-    return {"canonical_id": canonical_id or f"{ccy.lower()}_cons_x", "currency": ccy,
-            "name_raw": name_raw, "name_canonical": name_canonical,
-            "datetime_utc": pd.Timestamp(dt), "actual": actual, "forecast": forecast,
-            "previous": 1.0, "released": True, "source": "ff"}
-
-
-def test_consensus_zero_suffix_mm_flagged_clean_kept():
-    # consens 0.0 + sufix m/m + flagged curat -> PĂSTRAT.
-    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
-    lookup = {("USD", "CPI m/m", pd.Timestamp("2026-06-01").date()): False}   # not bad
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
-    assert row["consensus"] == 0.0
-
-
-def test_consensus_zero_suffix_mm_flagged_bad_quarantined():
-    # consens 0.0 + sufix m/m + flagged bad -> CARANTINAT.
-    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
-    lookup = {("USD", "CPI m/m", pd.Timestamp("2026-06-01").date()): True}   # bad
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
-    assert np.isnan(row["consensus"])
-
-
-def test_consensus_zero_suffix_mm_flagged_bad_key_absent_quarantined():
-    # consens 0.0 + sufix m/m + cheie ABSENTĂ din flagged_bad -> CARANTINAT
-    # (default blocat, niciodată presupus curat).
-    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad={})   # key never seen
-    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
-    assert np.isnan(row["consensus"])
-
-
-def test_consensus_zero_no_suffix_pmi_quarantined_unchanged():
-    # consens 0.0 fără sufix (PMI/indice) -> CARANTINAT, neschimbat, chiar cu
-    # flagged_bad curat -- widening-ul nu se aplică deloc fără sufix m/m|q/q.
-    # name_canonical e forma aliniată post-aliasing (config/ff_aliases.yaml:
-    # "Flash Manufacturing PMI" -> "S&P Global Manufacturing PMI" pentru AUD).
-    ff = _frame([_cons_row("AUD", "S&P Global Manufacturing PMI", "Flash Manufacturing PMI", 0.0)])
-    lookup = {("AUD", "Flash Manufacturing PMI", pd.Timestamp("2026-06-01").date()): False}
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "manufacturing_pmi"].iloc[0]
-    assert np.isnan(row["consensus"])
-
-
-def test_consensus_zero_flagged_bad_none_matches_old_contract():
-    # flagged_bad=None (default) -> comportament vechi INTACT: consensul
-    # rămâne carantinat indiferent de sufix -- widening-ul nu poate acorda
-    # legitimitate fără flagged_bad de confirmat.
-    ff = _frame([_cons_row("USD", "CPI y/y", "CPI m/m", 0.0)])
-    out = to_scoring_frame(ff, build_matcher())   # flagged_bad=None
-    row = out[out["indicator_key"] == "cpi_yoy"].iloc[0]
-    assert np.isnan(row["consensus"])
-
-
-def test_consensus_widening_never_uses_can_be_zero_route():
-    # can_be_zero=True (employment_change) + consens 0.0 FĂRĂ sufix m/m|q/q
-    # ("Nonfarm Payrolls" -> suffix "none") -> consensul rămâne 0.0 (PĂSTRAT),
-    # dar NU prin widening: `if key not in cbz` era deja gate-ul existent
-    # dinainte de acest task -- pentru un indicator cbz, blocul de carantină/
-    # widening pe consensus nu rulează niciodată, indiferent de sufix sau
-    # flagged_bad. Regresie: noul cod de widening nu trebuie să introducă
-    # vreo cale prin care cbz să ajungă totuși relevant pentru consensus.
-    ff = _frame([_cons_row("USD", "Nonfarm Payrolls", "Nonfarm Payrolls", 0.0)])
-    lookup = {("USD", "Nonfarm Payrolls", pd.Timestamp("2026-06-01").date()): True}   # even flagged bad
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "employment_change"].iloc[0]
-    assert row["actual"] == 1.0                  # actual untouched (not under test)
-    assert row["consensus"] == 0.0                # kept -- pre-existing cbz exemption, not widening
-
-
-def test_consensus_widening_actual_side_untouched():
-    # Regresie explicită: widening-ul pe consensus nu schimbă NIMIC pe partea
-    # de actual pentru același rând -- actual==0.0, non-cbz, fără sufix ->
-    # tot carantinat pe actual, indiferent de ce se întâmplă cu consensul.
-    ff = _frame([_cons_row("USD", "Unemployment Rate", "Unemployment Rate", 4.0, actual=0.0)])
-    lookup = {("USD", "Unemployment Rate", pd.Timestamp("2026-06-01").date()): False}
-    out = to_scoring_frame(ff, build_matcher(), flagged_bad=lookup)
-    row = out[out["indicator_key"] == "unemployment_rate"].iloc[0]
-    assert np.isnan(row["actual"])                # actual-side quarantine unchanged
-    assert row["consensus"] == 4.0                # consensus (non-zero) untouched by any of this
+def test_scoring_frame_without_provenance_columns_is_conservative():
+    """A frame from before 2.1 (no columns): consensus 0.0 is not FF-confirmed."""
+    row = {k: v for k, v in _cpi(0.0, "ff").items() if k not in ("forecast_origin", "jb_status")}
+    ff = pd.DataFrame([row])
+    out = to_scoring_frame(ff, build_matcher())
+    assert out["consensus"].isna().all() and out["actual"].tolist() == [0.4]

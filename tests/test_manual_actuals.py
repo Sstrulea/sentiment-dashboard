@@ -43,12 +43,21 @@ INDICATORS_CFG = {
 }
 
 
-def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None):
+_PLACEHOLDER = object()
+
+
+def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None,
+         jb_status=_PLACEHOLDER, forecast_origin="ff"):
+    # audit 2.3: a 0.0 is JBlanked's placeholder iff jb_status says
+    # "Data Not Loaded" -> that is what a test 0.0 stands for unless told otherwise.
+    if jb_status is _PLACEHOLDER:
+        jb_status = "Data Not Loaded" if actual == 0.0 else None
     return {"canonical_id": canonical_id or f"{ccy.lower()}_x", "currency": ccy,
             "name_raw": name_raw or canon,
             "name_canonical": canon, "datetime_utc": pd.Timestamp(dt),
             "actual": actual, "forecast": forecast, "previous": 0.5,
-            "released": True, "source": "ff"}
+            "released": True, "source": "ff",
+            "forecast_origin": forecast_origin, "jb_status": jb_status}
 
 
 def _frame(rows):
@@ -90,74 +99,43 @@ def test_future_null_row_never_missing():
 
 # --- ZERO_CONFIRM ----------------------------------------------------------
 
-def test_zero_confirm_flagged_by_default_no_widening_path():
-    rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0)]
+@pytest.mark.parametrize("status,actionable", [
+    ("Data Not Loaded", True),   # JB placeholder -> needs a human
+    ("Good Data", False),        # a real 0.0 print (Good/Bad Data is a direction tag)
+    ("Bad Data", False),
+    (None, False),               # no JB payload ever carried it -> FF 0.0 kept
+])
+def test_zero_confirm_iff_jb_status_data_not_loaded(status, actionable):
+    """audit 2.3: one rule, the same as ff_scoring.to_scoring_frame's."""
+    rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0, jb_status=status)]
     out = _find(rows)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
+    assert (len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM) is actionable
 
 
-def test_zero_confirm_widened_by_can_be_zero_config():
-    """retail_sales is can_be_zero=True by config -> never flagged, per (a)."""
-    rows = [_row("USD", "Retail Sales m/m", NOW - pd.Timedelta(hours=1), 0.0)]
-    assert _find(rows).empty
-
-
-def test_zero_confirm_cbz_row_still_flagged_when_flagged_bad_marks_it_bad():
-    """fix/cbz-flagged-bad-guard regression: can_be_zero is candidate
-    legitimacy, not automatic pass -- flagged_bad has final say over BOTH
-    routes now, same as ff_scoring.to_scoring_frame. Mirrors the real AUD
-    Cash Rate case (interest_rate_decision, Quality=Strength='Data Not
-    Loaded') that motivated that fix: a cbz zero must still surface as
-    ZERO_CONFIRM when JBlanked itself flags it, not silently pass through."""
+def test_can_be_zero_and_flagged_bad_are_ignored():
+    """The old routes are gone: can_be_zero no longer excuses a placeholder and
+    a flagged_bad lookup no longer blocks a real zero."""
     dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]
-    lookup = {("USD", "Retail Sales m/m", dt.date()): True}   # flagged bad
-    out = _find(rows, flagged_bad=lookup)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
+    placeholder = [_row("USD", "Retail Sales m/m", dt, 0.0, jb_status="Data Not Loaded")]
+    assert len(_find(placeholder, can_be_zero={"retail_sales"})) == 1
+    real = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m", jb_status="Bad Data")]
+    assert _find(real, flagged_bad={("USD", "CPI m/m", dt.date()): True}).empty
 
 
-def test_zero_confirm_cbz_row_kept_when_flagged_bad_clean():
-    """Same cbz row, flagged_bad explicitly clean -> still widened, per (a)+gate."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]
-    lookup = {("USD", "Retail Sales m/m", dt.date()): False}   # explicitly clean
-    assert _find(rows, flagged_bad=lookup).empty
-
-
-def test_zero_confirm_widened_by_flagged_bad_suffix_clean():
-    """cpi_yoy is NOT can_be_zero, but a real m/m-suffixed name_raw not flagged
-    bad passes via path (b) — the suffix-widening reuse from ff_scoring."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m")]
-    lookup = {("USD", "CPI m/m", dt.date()): False}   # explicitly clean
-    assert _find(rows, flagged_bad=lookup).empty
-
-
-def test_zero_confirm_blocked_when_flagged_bad_marks_it():
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m")]
-    lookup = {("USD", "CPI m/m", dt.date()): True}   # explicitly bad
-    out = _find(rows, flagged_bad=lookup)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
-
-
-def test_zero_confirm_flagged_bad_missing_key_defaults_blocked():
-    """Missing lookup key defaults to flagged/blocked (same default as
-    to_scoring_frame) -> the suffix path does NOT widen it -> ZERO_CONFIRM."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m")]
-    out = _find(rows, flagged_bad={})   # no entry for this key
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
-
-
-def test_zero_confirm_non_mm_qq_suffix_never_widened_even_if_clean():
-    """A y/y-suffixed name_raw never takes the widening path regardless of
-    flagged_bad -- only m/m|q/q do."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI y/y")]
-    lookup = {("USD", "CPI y/y", dt.date()): False}
-    out = _find(rows, flagged_bad=lookup)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
+def test_manual_row_consensus_follows_the_provenance_rule():
+    """audit 2.2: a manual row's consensus no longer bypasses the rule —
+    FF "0.0%" (ff) is kept, a JB 0.0 is not."""
+    dt = NOW - pd.Timedelta(hours=8)
+    ov = [{"canonical_id": "usd_x", "datetime_utc": str(dt), "actual": 5.7}]
+    kept, _ = apply_overrides(_frame([_row("USD", "CPI y/y", dt, 0.0, forecast=0.0)]), ov,
+                              now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+                              indicators_cfg=INDICATORS_CFG)
+    assert kept.iloc[0]["consensus"] == 0.0
+    dropped, _ = apply_overrides(_frame([_row("USD", "CPI y/y", dt, 0.0, forecast=0.0,
+                                               forecast_origin="jb")]), ov,
+                                 now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+                                 indicators_cfg=INDICATORS_CFG)
+    assert pd.isna(dropped.iloc[0]["consensus"])
 
 
 # --- exclusions --------------------------------------------------------------
@@ -212,12 +190,6 @@ def test_real_matcher_and_can_be_zero_wire_up():
     assert len(out) == 1
     assert out.iloc[0]["indicator_key"] == "cpi_yoy"
     assert out.iloc[0]["state"] == ZERO_CONFIRM
-
-
-def test_real_can_be_zero_config_widens_retail_sales():
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]   # can_be_zero: true
-    assert find_actionable_rows(_frame(rows), now_utc=NOW).empty
 
 
 # --- duplicate suppression (feat/manual-actuals-dedupe) ----------------------

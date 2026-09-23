@@ -124,7 +124,7 @@ def main() -> int:
     quarantine_df = build_quarantine_df(ff, matcher)
     series_cache = hc.compute_catalog(ff, ind_cfg, catalog, quarantine_df, as_of=AS_OF)
     full_frame = hc.build_full_frame(ff, matcher, hc.load_can_be_zero(ind_cfg),
-                                     hc.build_flagged_bad_lookup(), hc.load_overrides(hc.MANUAL_ACTUALS_OVERRIDES), AS_OF)
+                                     None, hc.load_overrides(hc.MANUAL_ACTUALS_OVERRIDES), AS_OF)
 
     print("=" * 100)
     print("2.1 — per-series n_scored / n_insufficient_history / first scored release")

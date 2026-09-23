@@ -1186,11 +1186,9 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
             log.warning("FF calendar parquet missing — empty Economic page.")
             return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
         from src.ff_scoring import build_matcher, to_scoring_frame
-        from src.jb_actuals import build_flagged_bad_lookup
         ffdf = pd.read_parquet(FF_PARQUET)
         ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
-        flagged_bad = build_flagged_bad_lookup()
-        cal = to_scoring_frame(ffdf, build_matcher(), flagged_bad=flagged_bad)
+        cal = to_scoring_frame(ffdf, build_matcher())
         cal["release_dt"] = pd.to_datetime(cal["release_dt"])
         q_path = ROOT / "data" / "ff_quarantine.parquet"
         if q_path.exists() and len(cal):
@@ -1205,6 +1203,20 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
                 if len(cal) < before:
                     log.warning("FF calendar: %d print(s) excluded by FRED quarantine.", before - len(cal))
 
+        # Audit 2.4 (measurement branch): prints recovered from the NEXT print's
+        # `previous` for a zero the quarantine above removed — a revised value,
+        # marked as such (source / actual_origin = 'ff_previous').
+        rec_path = ROOT / "data" / "ff_previous_recovery.parquet"
+        if rec_path.exists():
+            rec = pd.read_parquet(rec_path)
+            if len(rec):
+                rec = rec.assign(source="ff_previous")
+                rec["release_dt"] = pd.to_datetime(rec["release_dt"])
+                cal = pd.concat([cal, rec[[c for c in cal.columns if c in rec.columns]]],
+                                ignore_index=True)
+                log.warning("FF calendar: %d print(s) recovered from next.previous "
+                            "(actual_origin=ff_previous).", len(rec))
+
         # Manual Actuals Panel (Phase B): human-supplied actuals, unioned in
         # AFTER FRED quarantine — a reviewed manual entry is the pipeline's
         # final say, not subject to an unrelated automated quarantine list.
@@ -1212,8 +1224,7 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
         from src.manual_actuals import apply_overrides, load_overrides
         overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
         if overrides:
-            manual_rows, _ = apply_overrides(ffdf, overrides, now_utc=as_of,
-                                             flagged_bad=flagged_bad)
+            manual_rows, _ = apply_overrides(ffdf, overrides, now_utc=as_of)
             if len(manual_rows):
                 cal = pd.concat([cal, manual_rows], ignore_index=True)
                 log.info("Manual Actuals Panel: %d override(s) applied to scoring.",
@@ -1255,14 +1266,11 @@ def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
         return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
     if source != "ff" or not FF_PARQUET.exists():
         return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
-    from src.jb_actuals import build_flagged_bad_lookup
     from src.manual_actuals import apply_overrides, load_overrides
     ffdf = pd.read_parquet(FF_PARQUET)
     ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
-    flagged_bad = build_flagged_bad_lookup()
     overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
-    _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of,
-                                              flagged_bad=flagged_bad)
+    _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of)
     # audit V3: the policy rate comes only from data/cb/decisions.parquet, so a
     # manual interest_rate_decision entry would never be used — not listed.
     from src.policy_rate import KEY as POLICY_KEY

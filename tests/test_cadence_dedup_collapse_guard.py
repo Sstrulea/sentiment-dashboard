@@ -48,7 +48,7 @@ def scored_frame(indicators_cfg):
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
     matcher = build_matcher()
     cbz = load_can_be_zero(indicators_cfg)
-    return to_scoring_frame(ff, matcher, can_be_zero=cbz, flagged_bad=None)
+    return to_scoring_frame(ff, matcher, can_be_zero=cbz)
 
 
 def test_no_scored_indicator_has_a_declared_cadence_wide_enough_to_collapse_its_history(

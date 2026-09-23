@@ -22,7 +22,6 @@ from src.economic_compute import (
     compute_indicator_score, effective_frequency, _max_age_for, _dedup_flash_final,
 )
 from src.ff_scoring import to_scoring_frame, build_matcher
-from src.jb_actuals import build_flagged_bad_lookup
 
 ROOT = Path(__file__).resolve().parents[1]
 CCYS = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"]
@@ -38,8 +37,7 @@ def indicators_cfg():
 @pytest.fixture(scope="module")
 def scored_frame():
     raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    flagged_bad = build_flagged_bad_lookup()
-    return to_scoring_frame(raw, build_matcher(), flagged_bad=flagged_bad)
+    return to_scoring_frame(raw, build_matcher())
 
 
 def _cad_gdp_sub(scored_frame):
@@ -100,7 +98,7 @@ def test_cad_gdp_qoq_score_is_pinned():
     something to adjust this pin to match."""
     ind_cfg = yaml.safe_load((ROOT / "data" / "economic_indicators.yaml").read_text())
     raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    scored = to_scoring_frame(raw, build_matcher(), flagged_bad=build_flagged_bad_lookup())
+    scored = to_scoring_frame(raw, build_matcher())
     sub = _cad_gdp_sub(scored)
     result = compute_indicator_score(
         sub, ind_cfg["indicators"]["gdp_qoq"], ind_cfg["defaults"], AS_OF,

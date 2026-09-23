@@ -17,7 +17,7 @@ from typing import Optional
 import pandas as pd
 import yaml
 
-from .econ_calendar_ff import extract_period_suffix
+from .econ_calendar_ff import JB_NOT_LOADED, ensure_provenance_columns
 from .economic_compute import build_payload
 from .economic_fetch import CompiledMatcher, _load_indicators_cfg
 
@@ -59,158 +59,74 @@ def build_matcher() -> CompiledMatcher:
     return CompiledMatcher(_load_indicators_cfg().get("matcher", {}) or {})
 
 
+def effective_consensus(forecast, origin) -> float:
+    """Audit 2.2 — the ONE consensus rule, from the provenance recorded at ingest:
+      ff        valid, 0.0 included (FF printed "0.0%": a real consensus)
+      manual    valid
+      ff_blank  NaN (FF printed "": no consensus)
+      jb / None a JBlanked 0.0 is its "no forecast" placeholder -> NaN; any other
+                value is kept (history before the FF archive)."""
+    if forecast is None or pd.isna(forecast):
+        return float("nan")
+    if origin in ("ff", "manual"):
+        return float(forecast)
+    if origin == "ff_blank":
+        return float("nan")
+    return float("nan") if float(forecast) == 0.0 else float(forecast)
+
+
+def actual_is_placeholder(actual, jb_status) -> bool:
+    """Audit 2.3 — the ONE placeholder rule: an actual of 0.0 is JBlanked's
+    unreleased placeholder iff the newest JB payload carrying the event said
+    "Data Not Loaded" (persisted per row as jb_status). JB's Good/Bad Data label
+    is a direction tag, not a quality flag (C1), and is ignored."""
+    return actual is not None and not pd.isna(actual) and float(actual) == 0.0 \
+        and jb_status == JB_NOT_LOADED
+
+
 def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = None,
-                     can_be_zero: Optional[set[str]] = None,
-                     flagged_bad: Optional[dict[tuple[str, str, "date"], bool]] = None
-                     ) -> pd.DataFrame:
+                     can_be_zero: Optional[set[str]] = None) -> pd.DataFrame:
     """FF canonical DataFrame → MT5-schema calendar frame that build_payload accepts.
 
     indicator_key = matcher.match(country(currency), name_canonical). Rows whose
-    name_canonical is not modeled for that country (e.g. JPY PPI — the MT5 matcher
-    has no JPY PPI pattern either) are DROPPED, giving parity with the MT5 pipeline.
+    name_canonical is not modeled for that country are DROPPED (parity with MT5).
     Every output row carries source='ff' — a series baseline can never mix MT5 rows.
 
-    ZERO-PLACEHOLDER QUARANTINE, actual side (fix/can-be-zero-transform, 2026-08):
-    a 0.0 `actual` is legitimate — kept, not nulled — iff EITHER of two orthogonal
-    reasons holds (a UNION, not a replacement of the old rule):
-      (a) `can_be_zero[indicator_key]` is True by CONFIG — net-change/level
-          indicators (employment_change, interest_rate_decision) that have no
-          period-transform suffix to derive legitimacy from at all;
-      (b) the row's REAL transform — `extract_period_suffix(r.name_raw)` — is
-          m/m or q/q. Catches a short-transform series aliased onto a y/y-named
-          canonical slot (config/ff_aliases.yaml `# xf`, e.g. CHF cpi_yoy fed by
-          "CPI m/m") where 0.0 IS a legitimate flat print, same reasoning as (a),
-          just derived from the feed instead of hand-maintained per indicator_key.
-    `flagged_bad` is now a UNIVERSAL gate on BOTH routes (fix/cbz-flagged-bad-guard,
-    2026-08 — closes a real hole: (a) alone let a Quality/Strength=='Bad Data' or
-    'Data Not Loaded' zero straight through for the 4 can_be_zero indicators —
-    employment_change, household_spending, interest_rate_decision, retail_sales
-    — with the flagged_bad check (Quality/Strength, see
-    jb_actuals.build_flagged_bad_lookup) never even running for them. Measured
-    live against data/economic_calendar_ff.parquet (2026-08): of 45 can_be_zero
-    rows carrying actual==0.0 today, 35 fail this new gate — contamination that
-    predates this fix and entered via data/archive/, which never went through
-    clean_jblanked_actuals's own zero-nulling. Verified zero regressions on the
-    non-can_be_zero side (route (b) alone): 0/2974 non-cbz scored rows changed.
-    Once EITHER (a) or (b) grants
-    candidate legitimacy, `flagged_bad.get((currency, name_raw, release_date),
-    True)` has final say for BOTH — a MISSING key defaults to flagged/blocked,
-    never assumed clean. `flagged_bad=None` (the default) disables the gate
-    ENTIRELY and reproduces EXACTLY today's config-only behavior for callers
-    that don't pass it: (a) alone still passes unconditionally, and (b) alone
-    (suffix match with no flagged_bad to confirm it) is NOT sufficient — a
-    non-can_be_zero zero stays quarantined regardless of its transform, same as
-    before this fix. `extract_period_suffix` — fail-loud on an unrecognized
-    slash-shaped suffix, see its docstring — is invoked ONLY when it could
-    still change the outcome: never for a can_be_zero key (short-circuited —
-    route (a) already grants legitimacy) and never when `flagged_bad` is None
-    (route (b) can't grant anything without it to confirm against).
+    Zeros and consensus (audit 2026-09-23, phase 2): provenance is recorded at
+    ingest, never guessed here.
+      actual     0.0 -> NaN iff actual_is_placeholder(actual, jb_status);
+      consensus  effective_consensus(forecast, forecast_origin).
+    The earlier heuristics (can_be_zero config route, m/m|q/q suffix route,
+    Quality/Strength flagged_bad OR across payloads) are gone: one mechanism
+    per decision.
 
-    CONSENSUS WIDENING (feat/manual-forecast-review, 2026-08): a `consensus`
-    (FF `forecast`) of 0.0 is quarantined to NaN by default — same reasoning
-    as the actual side, a 0.0 forecast is usually FF's "no consensus"
-    placeholder, not a real market estimate of zero. Recoverable via ONLY
-    ONE of the two actual-side routes: route (b), the row's real transform
-    (`extract_period_suffix(r.name_raw)`) being m/m or q/q, gated by the
-    SAME `flagged_bad` guard (missing key defaults to blocked, exactly like
-    the actual side). Deliberately NOT route (a) — `can_be_zero` membership
-    is never consulted for consensus: `can_be_zero` encodes whether an
-    indicator's LEVEL/NET-CHANGE reading can legitimately be zero (e.g.
-    employment_change), which says nothing about whether the FORECAST for
-    an m/m|q/q-suffixed series was legitimately 0 — a config flag about the
-    actual's semantics has no bearing on the consensus's. (Measured
-    2026-08 against data/economic_calendar_ff.parquet: of 67 consensus==0.0
-    rows with an m/m|q/q suffix, 19 pass the flagged_bad guard; the other
-    48 stay quarantined — see docs/manual-forecast-review-consensus-
-    widening.md for the full breakdown and the non-suffixed rows, e.g. PMI
-    indices, that this never touches.)
-
-    IMPORTANT for anyone debugging a shifted z-score months from now: this
-    widening recovers consensus on OLD prints (whatever the FF backlog
-    contains), not just today's. Because `compute_indicator_score`'s
-    trailing-K sigma is built from ALL (actual, consensus) pairs in a
-    series' history — not just the print being scored — recovering an old
-    row's consensus changes the sigma used for a COMPLETELY DIFFERENT,
-    unrelated, more recent print in the SAME series, which can move or even
-    flip that print's score. This is NOT a bug: today's sigma is computed
-    on an artificially incomplete distribution (missing pairs that were
-    always real, just quarantined); recovering them completes it. Measured
-    live example (2026-08, see the doc above): recovering USD
-    `personal_spending_mm`'s 2026-02-08 consensus — itself long superseded
-    and never the "latest" print for anything — moved the LATEST print's
-    (2026-07-30) z-score from -1.004 (score -1) to -0.567 (score 0), purely
-    via the trailing-K sigma recalculation. If you're staring at a score
-    that changed with no corresponding new release, check here first.
-
-    NEW-DUPLICATE GUARD (fix/can-be-zero-transform, 2026-08 audit): a
-    (canonical_id, calendar date) group that goes from <2 valid `actual` rows
-    under the OLD contract to >=2 under the NEW one — SOLELY because widening
-    recovered a 0.0 that duplicates (±1h DST artifact, or same-day
-    re-publication) a row never deduped by clean_jblanked_actuals (the
-    pre-07-12 archive backfill doesn't go through it) — is corrected: identical
-    duplicate actuals collapse to one row; DIVERGENT ones are BOTH excluded
-    (fail-safe, no tiebreak guess). Scoped NARROWLY to this transition — a
-    group already >=2 valid BEFORE widening (measured 2026-08: 143 such groups
-    already in production) is left untouched; that is a pre-existing archive
-    integrity issue, out of scope here (see docs/). This is event-level
-    grouping, NOT a reintroduction of "actual != 0.0" value filtering.
+    NEW-DUPLICATE GUARD (kept — a duplicate-handling decision, not a zero one): a
+    (canonical_id, calendar date) group that had <2 valid actuals under the OLD
+    config-only contract (0.0 valid only for can_be_zero keys) and has >=2 now,
+    solely because a 0.0 became valid, is corrected: identical actuals collapse
+    to one row, divergent ones are all excluded (fail-safe, no tiebreak). A group
+    already >=2 valid under the old contract is left untouched.
     """
     matcher = matcher or build_matcher()
     cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
+    ff_df = ensure_provenance_columns(ff_df)
     nan = float("nan")
     recs: list[dict] = []
     meta: list[tuple[str, "date", bool]] = []  # (canonical_id, date, valid under OLD contract)
-    q_actual = q_cons = q_widened = q_cons_widened = 0
+    q_actual = q_cons = 0
     for r in ff_df.itertuples(index=False):
         key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
         if key is None:
             continue
-        actual, consensus = r.actual, r.forecast   # FF forecast → MT5 'consensus'
         release_date = pd.Timestamp(r.datetime_utc).date()
         old_valid = pd.notna(r.actual) and not (key not in cbz and r.actual == 0.0)
-
-        if actual == 0.0:
-            # Single legitimacy gate for BOTH routes (fix/cbz-flagged-bad-guard,
-            # 2026-08): route (a) config can_be_zero, route (b) a real m/m|q/q
-            # transform. `suffix_matched` is tracked separately from `legit` so
-            # extract_period_suffix is only ever invoked when it can change the
-            # outcome — never for a cbz key (short-circuited, matches the OLD
-            # contract's short-circuit exactly) and never when flagged_bad is
-            # None (route (b) cannot grant legitimacy without it — see below).
-            legit = key in cbz
-            suffix_matched = False
-            if not legit and flagged_bad is not None and extract_period_suffix(r.name_raw) in ("m/m", "q/q"):
-                legit = True
-                suffix_matched = True
-            if legit and flagged_bad is not None:
-                # Universal gate: applies to a cbz-legit row exactly as it
-                # already applied to a suffix-legit row. A cbz row with
-                # Quality/Strength flagged bad is no longer an automatic pass.
-                legit = not flagged_bad.get((r.currency, r.name_raw, release_date), True)
-            if legit:
-                if suffix_matched:
-                    q_widened += 1   # recovered via suffix — same counter/meaning as before
-            else:
-                actual = nan
-                q_actual += 1
-
-        if key not in cbz:
-            if consensus == 0.0:
-                # Route (b) ONLY (see docstring) — no can_be_zero route for
-                # consensus. Same short-circuit discipline as the actual
-                # side: extract_period_suffix is invoked only when it could
-                # still change the outcome (never when flagged_bad is None,
-                # since route (b) cannot grant legitimacy without it).
-                cons_legit = False
-                if flagged_bad is not None and extract_period_suffix(r.name_raw) in ("m/m", "q/q"):
-                    cons_legit = True
-                if cons_legit:
-                    cons_legit = not flagged_bad.get((r.currency, r.name_raw, release_date), True)
-                if cons_legit:
-                    q_cons_widened += 1
-                else:
-                    consensus = nan
-                    q_cons += 1
+        actual = r.actual
+        if actual_is_placeholder(actual, r.jb_status):
+            actual = nan
+            q_actual += 1
+        consensus = effective_consensus(r.forecast, r.forecast_origin)
+        if pd.notna(r.forecast) and pd.isna(consensus):
+            q_cons += 1
         recs.append({
             "currency": r.currency, "indicator_key": key, "release_dt": r.datetime_utc,
             "actual": actual, "consensus": consensus, "previous": r.previous, "source": "ff",
@@ -218,38 +134,33 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
         })
         meta.append((r.canonical_id, release_date, old_valid))
 
-    if flagged_bad is not None:
-        groups: dict[tuple[str, "date"], list[int]] = defaultdict(list)
-        for i, (cid, d, _old_valid) in enumerate(meta):
-            groups[(cid, d)].append(i)
-        for (cid, d), idxs in groups.items():
-            valid_before = sum(1 for i in idxs if meta[i][2])
-            valid_after = sum(1 for i in idxs if pd.notna(recs[i]["actual"]))
-            if valid_before >= 2 or valid_after < 2:
-                continue   # pre-existing duplicate (untouched) or no new duplication
-            valid_idxs = [i for i in idxs if pd.notna(recs[i]["actual"])]
-            actuals = [recs[i]["actual"] for i in valid_idxs]
-            currency = recs[idxs[0]]["currency"]
-            if len(set(actuals)) == 1:
-                valid_idxs.sort(key=lambda i: recs[i]["release_dt"])
-                for i in valid_idxs[1:]:
-                    recs[i]["actual"] = nan
-                log.info("can_be_zero widening: new-duplicate group (canonical_id=%s, %s, %s) "
-                        "actuals=%s IDENTICAL → collapsed %d rows to 1.",
-                        cid, currency, d, actuals, len(valid_idxs))
-            else:
-                for i in valid_idxs:
-                    recs[i]["actual"] = nan
-                log.info("can_be_zero widening: new-duplicate group (canonical_id=%s, %s, %s) "
-                        "actuals=%s DIVERGENT, no tiebreak → excluded all %d rows (fail-safe).",
-                        cid, currency, d, actuals, len(valid_idxs))
+    groups: dict[tuple[str, "date"], list[int]] = defaultdict(list)
+    for i, (cid, d, _old_valid) in enumerate(meta):
+        groups[(cid, d)].append(i)
+    for (cid, d), idxs in groups.items():
+        valid_before = sum(1 for i in idxs if meta[i][2])
+        valid_after = sum(1 for i in idxs if pd.notna(recs[i]["actual"]))
+        if valid_before >= 2 or valid_after < 2:
+            continue
+        valid_idxs = [i for i in idxs if pd.notna(recs[i]["actual"])]
+        actuals = [recs[i]["actual"] for i in valid_idxs]
+        currency = recs[idxs[0]]["currency"]
+        if len(set(actuals)) == 1:
+            valid_idxs.sort(key=lambda i: recs[i]["release_dt"])
+            for i in valid_idxs[1:]:
+                recs[i]["actual"] = nan
+            log.info("zero rule: new-duplicate group (canonical_id=%s, %s, %s) actuals=%s "
+                     "IDENTICAL → collapsed %d rows to 1.", cid, currency, d, actuals, len(valid_idxs))
+        else:
+            for i in valid_idxs:
+                recs[i]["actual"] = nan
+            log.info("zero rule: new-duplicate group (canonical_id=%s, %s, %s) actuals=%s "
+                     "DIVERGENT, no tiebreak → excluded all %d rows (fail-safe).",
+                     cid, currency, d, actuals, len(valid_idxs))
 
-    if q_actual or q_cons or q_widened or q_cons_widened:
-        log.info("Zero-placeholder quarantine: %d actual==0.0 + %d consensus==0.0 → NaN, "
-                 "%d actual==0.0 recovered via real-transform suffix (indicators where "
-                 "can_be_zero is False by config), %d consensus==0.0 recovered via "
-                 "real-transform suffix + flagged_bad guard.",
-                 q_actual, q_cons, q_widened, q_cons_widened)
+    if q_actual or q_cons:
+        log.info("Provenance rules: %d actual 0.0 placeholder(s) (jb_status Data Not Loaded) "
+                 "and %d consensus value(s) (ff_blank / jb 0.0) -> NaN.", q_actual, q_cons)
     return pd.DataFrame(recs, columns=SCORING_COLUMNS)
 
 

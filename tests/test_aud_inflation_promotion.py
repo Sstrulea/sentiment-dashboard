@@ -20,7 +20,6 @@ import pytest
 from src.economic_compute import _indicator_applies
 from src.economic_fetch import CompiledMatcher
 from src.ff_scoring import CCY2COUNTRY, to_scoring_frame, build_matcher
-from src.jb_actuals import build_flagged_bad_lookup
 
 ROOT = Path(__file__).resolve().parents[1]
 CCYS = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"]
@@ -35,8 +34,7 @@ def indicators_cfg():
 @pytest.fixture(scope="module")
 def scored_frame():
     raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    flagged_bad = build_flagged_bad_lookup()
-    return to_scoring_frame(raw, build_matcher(), flagged_bad=flagged_bad)
+    return to_scoring_frame(raw, build_matcher())
 
 
 # ---------------------------------------------------------------------------
@@ -147,8 +145,7 @@ def test_no_orphaned_aud_core_cpi_exception():
     with open(ROOT / "data" / "economic_indicators.yaml") as f:
         ind_cfg = yaml.safe_load(f)
     raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    flagged_bad = build_flagged_bad_lookup()
-    scored = to_scoring_frame(raw, build_matcher(), flagged_bad=flagged_bad)
+    scored = to_scoring_frame(raw, build_matcher())
 
     as_of = pd.Timestamp("2026-08-05")
     per_ind = per_currency_indicator_freshness(scored, ind_cfg, as_of)
