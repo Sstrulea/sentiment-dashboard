@@ -304,7 +304,7 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
     if sub.empty:
         return pd.DataFrame(columns=["release_dt", "actual", "forecast", "previous",
                                      "z", "bucket", "score_status", "revised_from",
-                                     "quarantined", "has_override"])
+                                     "quarantined", "has_override", "recovered"])
 
     def _is_quarantined(row) -> bool:
         if row["source"] == "manual":
@@ -313,7 +313,11 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
 
     sub["quarantined"] = sub.apply(_is_quarantined, axis=1)
     sub["has_override"] = sub["source"] == "manual"
-    clean = sub[~sub["quarantined"]].reset_index(drop=True)
+    # audit R1/B2: a value recovered from the next print's `previous` is a
+    # REVISED value, not a first release — shown (marked), never scored and
+    # never part of another point's sigma window.
+    sub["recovered"] = (sub["actual_origin"] == "ff_previous") if "actual_origin" in sub.columns else False
+    clean = sub[~sub["quarantined"] & ~sub["recovered"]].reset_index(drop=True)
 
     rows = []
     for _, row in sub.iterrows():
@@ -321,7 +325,13 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
             rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
                         "forecast": row["consensus"], "previous": row["previous"],
                         "z": None, "bucket": None, "score_status": "quarantined",
-                        "quarantined": True, "has_override": False})
+                        "quarantined": True, "has_override": False, "recovered": False})
+            continue
+        if row["recovered"]:
+            rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
+                        "forecast": row["consensus"], "previous": row["previous"],
+                        "z": None, "bucket": None, "score_status": "recovered",
+                        "quarantined": False, "has_override": False, "recovered": True})
             continue
         if pd.isna(row["actual"]):
             # No print at all yet (scheduled/nulled) — there is nothing to
@@ -335,7 +345,8 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
             rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
                         "forecast": row["consensus"], "previous": row["previous"],
                         "z": None, "bucket": None, "score_status": "no_actual",
-                        "quarantined": False, "has_override": bool(row["has_override"])})
+                        "quarantined": False, "has_override": bool(row["has_override"]),
+                        "recovered": False})
             continue
 
         clean_upto = clean[clean["release_dt"] <= row["release_dt"]]
@@ -359,7 +370,8 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
         rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
                     "forecast": row["consensus"], "previous": row["previous"],
                     "z": z, "bucket": bucket, "score_status": status,
-                    "quarantined": False, "has_override": bool(row["has_override"])})
+                    "quarantined": False, "has_override": bool(row["has_override"]),
+                        "recovered": False})
 
     out = pd.DataFrame(rows)
     out["revised_from"] = None
@@ -592,7 +604,8 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                                 "actual": _json_num(r["actual"]), "forecast": _json_num(r["forecast"]),
                                 "previous": _json_num(r["previous"]), "z": _json_num(r["z"]),
                                 "bucket": _json_num(r["bucket"]), "score_status": r["score_status"],
-                                "revised_from": _json_num(r["revised_from"])}
+                                "revised_from": _json_num(r["revised_from"]),
+                                "recovered": bool(r.get("recovered", False))}
                                 for _, r in sub.iterrows()
                             ],
                         }
