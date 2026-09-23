@@ -890,8 +890,50 @@ def _freshness(as_of: pd.Timestamp | None = None,
     except Exception as e:  # noqa: BLE001
         log.warning("freshness(rates) unavailable: %s", e)
 
+    try:
+        pr = _policy_rates_freshness(as_of)
+        if pr is not None:
+            out["policy_rates"] = pr
+    except Exception as e:  # noqa: BLE001
+        log.warning("freshness(policy_rates) unavailable: %s", e)
+
     out["any_stale"] = any(isinstance(v, dict) and v.get("stale") for v in out.values())
     return out
+
+
+MEETINGS_YAML = ROOT / "data" / "cb" / "meetings.yaml"
+
+
+def _policy_rates_freshness(as_of: pd.Timestamp, meetings_path: Path | None = None,
+                            decisions_path: Path | None = None) -> dict | None:
+    """Displayed policy rate (audit F4): every meeting in data/cb/meetings.yaml
+    dated before today (UTC) must have its decision in data/cb/decisions.parquet.
+    The parquet keeps only each bank's last decisions (4 today), so the check
+    covers the meetings from the oldest decision kept onward — a meeting older
+    than that window is out of the file by design, not missing. A currency with
+    meetings but no decision at all is stale."""
+    from src.policy_rate import DECISIONS_PARQUET
+    meetings_path = meetings_path or MEETINGS_YAML
+    decisions_path = decisions_path or DECISIONS_PARQUET
+    if not meetings_path.exists() or not decisions_path.exists():
+        return None
+    meetings = (_load_yaml(meetings_path).get("meetings") or {})
+    d = pd.read_parquet(decisions_path, columns=["currency", "meeting_date"])
+    d["meeting_date"] = pd.to_datetime(d["meeting_date"]).dt.date
+    today = as_of.date()
+    per: dict = {}
+    for ccy, lst in sorted(meetings.items()):
+        have = set(d.loc[d["currency"] == ccy, "meeting_date"])
+        past = sorted(pd.Timestamp(m["date"]).date() for m in (lst or [])
+                      if pd.Timestamp(m["date"]).date() < today)
+        oldest = min(have) if have else None
+        due = [m for m in past if oldest is None or m >= oldest]
+        missing = [m.isoformat() for m in due if m not in have]
+        per[ccy] = {"last_meeting": past[-1].isoformat() if past else None,
+                    "last_decision": max(have).isoformat() if have else None,
+                    "missing": missing, "stale": bool(missing) or (bool(past) and not have)}
+    stale = [c for c, v in per.items() if v["stale"]]
+    return {"per_currency": per, "stale_currencies": stale, "stale": bool(stale)}
 
 
 def _rates_freshness(as_of: pd.Timestamp) -> dict | None:
