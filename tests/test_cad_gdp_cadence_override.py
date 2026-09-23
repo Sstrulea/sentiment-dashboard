@@ -24,6 +24,15 @@ from src.economic_compute import (
 from src.ff_scoring import to_scoring_frame, build_matcher
 
 ROOT = Path(__file__).resolve().parents[1]
+# Frozen FF calendar: data/economic_calendar_ff.parquet at snapshot 4ace910
+# (2026-09-23 07:06 UTC), migrated with the phase-2 provenance (Z5). Never the
+# live data/ file, which the hourly refresh keeps moving (audit 4D).
+FROZEN_FF = ROOT / "tests" / "fixtures" / "frozen" / "economic_calendar_ff_4ace910.parquet"
+
+
+def _point_in_time(scored: pd.DataFrame, as_of) -> pd.DataFrame:
+    """Only what was released by `as_of` — a pin must not see later prints."""
+    return scored[pd.to_datetime(scored["release_dt"]) <= pd.Timestamp(as_of)]
 CCYS = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"]
 AS_OF = pd.Timestamp("2026-08-05")
 
@@ -36,8 +45,8 @@ def indicators_cfg():
 
 @pytest.fixture(scope="module")
 def scored_frame():
-    raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    return to_scoring_frame(raw, build_matcher())
+    raw = pd.read_parquet(FROZEN_FF)
+    return _point_in_time(to_scoring_frame(raw, build_matcher()), AS_OF)
 
 
 def _cad_gdp_sub(scored_frame):
@@ -97,8 +106,9 @@ def test_cad_gdp_qoq_score_is_pinned():
     no longer holds, that's a genuine discrepancy to investigate, not
     something to adjust this pin to match."""
     ind_cfg = yaml.safe_load((ROOT / "data" / "economic_indicators.yaml").read_text())
-    raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
+    raw = pd.read_parquet(FROZEN_FF)
     scored = to_scoring_frame(raw, build_matcher())
+    scored = _point_in_time(scored, AS_OF)
     sub = _cad_gdp_sub(scored)
     result = compute_indicator_score(
         sub, ind_cfg["indicators"]["gdp_qoq"], ind_cfg["defaults"], AS_OF,

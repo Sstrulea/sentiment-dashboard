@@ -19,12 +19,22 @@
 "use strict";
 
 const assert = require("assert");
+const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
 
-global.document = { readyState: "loading", addEventListener: () => {} };
-global.window = {};
-
-const mod = require(path.join(__dirname, "..", "..", "static", "history.js"));
+// .cjs + vm (audit 4D): the repo's package.json is "type": "module", so a
+// plain .js here is ESM (no require) and static/history.js — a classic
+// browser script with a `module.exports` guard — cannot be require()d as CJS.
+// Run it in a sandbox exposing `module`, like tests/economic_js does.
+const sandbox = {
+  module: { exports: {} }, console,
+  document: { readyState: "loading", addEventListener: () => {} }, window: {},
+};
+vm.createContext(sandbox);
+vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "..", "static", "history.js"), "utf8"),
+                sandbox, { filename: "history.js" });
+const mod = sandbox.module.exports;
 
 function freshPayload() {
   const points = [1, 2, 3, 4, 5].map((i) => ({
@@ -123,11 +133,30 @@ function run() {
   });
 
   check("availableCategories reflects only non-empty categories", () => {
-    assert.deepStrictEqual(mod.availableCategories(), ["inflation"]);
+    assert.deepStrictEqual([...mod.availableCategories()], ["inflation"]);   // [...] = host realm (vm)
   });
 
   check("allCurrencies is the union across categories", () => {
-    assert.deepStrictEqual(mod.allCurrencies(), ["USD"]);
+    assert.deepStrictEqual([...mod.allCurrencies()], ["USD"]);
+  });
+
+  // audit B2: a value recovered from the next print's previous
+  // (actual_origin ff_previous) passes through resolveEntry unchanged and is
+  // drawn HOLLOW in both chart paths; first releases stay filled.
+  check("B2 recovered point survives resolveEntry and is drawn hollow", () => {
+    const p = freshPayload();
+    const pts = p.categories.inflation.USD[0].window_options["1y"].points;
+    pts[2].recovered = true; pts[2].score_status = "recovered"; pts[2].z = null; pts[2].bucket = null;
+    mod.state.payload = p;
+    const r = mod.resolveEntry("USD", "cpi_yoy");
+    assert.strictEqual(r.windowOptions["1y"].points[2].recovered, true);
+    const colors = { accent: "#123", quarantineMarker: "#f00", forecastLine: "#999" };
+    const bar = mod.buildBarDatasets(r.windowOptions["1y"].points, colors)[0];
+    assert.deepStrictEqual([...bar.backgroundColor], ["#123", "#123", "transparent", "#123", "#123"]);
+    assert.deepStrictEqual([...bar.borderWidth], [0, 0, 2, 0, 0]);
+    const step = mod.buildStepDatasets(r.windowOptions["1y"].points, colors)[0];
+    assert.strictEqual(step.pointBackgroundColor[2], "transparent");
+    assert.strictEqual(step.pointBackgroundColor[0], "#123");
   });
 
   if (failures) { console.error("\n" + failures + " test(s) failed."); process.exit(1); }
