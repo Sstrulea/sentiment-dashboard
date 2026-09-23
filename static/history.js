@@ -404,9 +404,15 @@
     // here, so Chart.js draws no bar for it at all — only a point on the
     // forecast line (see the forecast dataset below).
     const actualData = points.map((p) => (p.actual === null || p.actual === undefined ? null : p.actual));
+    // audit B2: a recovered (revised) value — from the next print's previous,
+    // never scored — is drawn HOLLOW (outline only) so it never reads as a
+    // first release.
     return [{
       type: "bar", label: "Actual", data: actualData,
-      backgroundColor: colors.accent, borderWidth: 0, order: 2,
+      backgroundColor: points.map((p) => (p.recovered ? "transparent" : colors.accent)),
+      borderColor: colors.accent,
+      borderWidth: points.map((p) => (p.recovered ? 2 : 0)),
+      order: 2,
     }];
   }
 
@@ -426,6 +432,7 @@
     // (6 vs 2.5), just not via color.
     let lastGood = null;
     const radii = [];
+    const fills = [];   // audit B2: a recovered (revised) value is drawn as a hollow point
     const actualData = [];
     const quarantineY = [];
     points.forEach((p) => {
@@ -434,11 +441,13 @@
       if (isQuarantined || !hasActual) {
         actualData.push(null);
         radii.push(0);
+        fills.push(colors.accent);
         quarantineY.push(isQuarantined ? lastGood : null);
         return;
       }
       const changed = lastGood !== null && p.actual !== lastGood;
-      radii.push(changed ? 6 : 2.5);
+      radii.push(p.recovered ? 5 : (changed ? 6 : 2.5));
+      fills.push(p.recovered ? "transparent" : colors.accent);
       actualData.push(p.actual);
       quarantineY.push(null);
       lastGood = p.actual;
@@ -447,7 +456,8 @@
     const datasets = [{
       type: "line", label: "Actual", data: actualData, stepped: "before",
       spanGaps: false, borderColor: colors.accent, borderWidth: 2,
-      pointRadius: radii, pointBackgroundColor: colors.accent, pointBorderColor: colors.accent,
+      pointRadius: radii, pointBackgroundColor: fills, pointBorderColor: colors.accent,
+      pointBorderWidth: 2,
       order: 2,
     }];
     if (quarantineY.some((v) => v !== null)) {
@@ -532,6 +542,10 @@
                     ? "Forecast: " + fmtNum(p.forecast) + " (not printed yet)" : null;
                 }
                 const originalActual = originalActualOf(p);
+                if (p.recovered) {
+                  return ["Actual: " + fmtNum(p.actual) + " (revised value, from the next print's previous)",
+                          "Not a first release — not scored, not in sigma"];
+                }
                 const lines = ["Actual: " + fmtNum(p.actual), "Forecast: " + fmtNum(p.forecast)];
                 if (originalActual !== null && p.forecast !== null) {
                   lines.push("Delta: " + fmtNum(originalActual - p.forecast));

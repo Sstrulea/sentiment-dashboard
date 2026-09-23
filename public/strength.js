@@ -159,34 +159,25 @@
   // meta key; it mirrors STRENGTH_PCT_K's last-measured value.
   function strengthK() {
     const k = state.payload.meta && state.payload.meta.strength_pct_k;
-    return typeof k === "number" ? k : 10.5;
+    return typeof k === "number" ? k : 22.0;
   }
 
-  // The UNCLAMPED pct-space differential between two cards: (a.index -
-  // b.index) * K. NOT a.pct - b.pct — pct is clamp(50 + index*K, 0, 100),
-  // so a plain pct differential silently truncates whenever either side is
-  // clamped (the "clamp leak" this function exists to avoid). A differential
-  // is not itself bounded to [0,100] — two saturated opposite extremes can
-  // legitimately read over 100pp apart.
-  function unclampedDiffPct(a, b) {
-    return (a.index - b.index) * strengthK();
-  }
+  // Strength is the aggregate of the /economic pairs (audit B1): a card's
+  // `strength_score` is the mean of the fundamental score of its 7 pairs, in
+  // pair units. The divergence is strongest − weakest in those same units.
+  function score(card) { return Number(card.strength_score) || 0; }
 
   // {spread, strongest, weakest} over coverage>0 currencies only, or null if
-  // fewer than 2 qualify (a "spread" needs at least two points to compare).
-  // `strongest`/`weakest` are picked by pct (matches the cadrane's own
-  // sort — the visible "top card"/"bottom card"); `spread` is the
-  // UNCLAMPED index differential (see unclampedDiffPct), not pct_top -
-  // pct_bottom, so it stays correct even when one or both ends are capped.
+  // fewer than 2 qualify.
   function divergence(currencies) {
     const withData = Object.keys(currencies)
       .map(ccy => [ccy, currencies[ccy]])
       .filter(([, c]) => hasCoverage(c));
     if (withData.length < 2) return null;
-    withData.sort((a, b) => b[1].pct - a[1].pct);
+    withData.sort((a, b) => score(b[1]) - score(a[1]));
     const top = withData[0], bottom = withData[withData.length - 1];
     return {
-      spread: unclampedDiffPct(top[1], bottom[1]),
+      spread: score(top[1]) - score(bottom[1]),
       strongest: top[0], weakest: bottom[0],
     };
   }
@@ -233,8 +224,9 @@
       el.innerHTML = '<span class="muted">Not enough currencies with coverage to compute a divergence.</span>';
       return;
     }
-    el.innerHTML = "Divergence: <b>" + d.spread.toFixed(1) + "pp</b> &middot; " +
-      "<b>" + d.strongest + "</b> vs <b>" + d.weakest + "</b>";
+    el.innerHTML = "Divergence: <b>" + d.spread.toFixed(2) + "</b> &middot; " +
+      "<b>" + d.strongest + "</b> vs <b>" + d.weakest + "</b>" +
+      ' <span class="muted">(strongest − weakest score, pair units)</span>';
   }
 
   function cadranHtml(ccy, card) {
@@ -243,10 +235,7 @@
     const bCls = biasClass(bias);
     const n = card.coverage || 0;
 
-    let badges = "";
-    if (card.monetary_available === false) {
-      badges += '<span class="cadran-badge badge-no-rate" title="No rate-expectations data for this currency — index is growth/inflation/labour only">no rate</span>';
-    }
+    let badges = monetaryBadge(card);
     if (card.pct_clamped) {
       badges += '<span class="cadran-badge badge-clamped" title="Saturated at the display range — the real magnitude is in the index below">capped</span>';
     }
@@ -259,7 +248,7 @@
         '</div>'
       );
 
-    const indexLine = noData ? "" : '<div class="cadran-index">index ' + fmtSigned(card.index, 2) + '</div>';
+    const indexLine = noData ? "" : '<div class="cadran-index">score ' + fmtSigned(score(card), 2) + '</div>';
     const nCls = (!noData && n > 0 && n <= LOW_N_THRESHOLD) ? " cadran-n-low" : "";
     const nTitle = (!noData && n > 0 && n <= LOW_N_THRESHOLD) ? ' title="Low coverage — read with caution"' : "";
 
@@ -284,15 +273,33 @@
     });
   }
 
+  // Own 2y monetary sub-score — INFORMATIVE only (the Strength score comes
+  // from the pairs, where monetary counts only when both legs have it).
+  function monetaryText(card) {
+    const m = card.monetary || {};
+    if (m.state === "ok") return "2Y " + fmtSigned(Number(m.score) || 0, 0);
+    if (m.state === "stale") return "2Y stale";
+    return "no 2Y";
+  }
+  function monetaryBadge(card) {
+    const m = card.monetary || {};
+    const cls = m.state === "ok" ? "badge-rate-ok" : (m.state === "stale" ? "badge-rate-stale" : "badge-no-rate");
+    const tip = m.state === "ok"
+      ? "Own 2y rate-expectations score (informative; in a pair only when both currencies have it)"
+      : (m.state === "stale" ? "2y yield stale — excluded from every pair of this currency"
+        : "No 2y yield source for this currency — monetary is excluded from its pairs");
+    return '<span class="cadran-badge ' + cls + '" title="' + escAttr(tip) + '">' + monetaryText(card) + '</span>';
+  }
+
   function tableRowHtml(ccy, card) {
     const noData = !hasCoverage(card);
     const bias = card.bias_label || "Neutral";
-    const monetary = card.monetary_available ? "Yes" : "No";
+    const monetary = monetaryText(card);
     return (
       '<tr' + (noData ? ' class="strength-row-nodata"' : "") + ' data-ccy="' + escAttr(ccy) + '">' +
       '<td class="strength-ccy">' + ccy + '</td>' +
       '<td class="strength-num">' + (noData ? "—" : card.pct.toFixed(1) + "%") + '</td>' +
-      '<td class="strength-num">' + (noData ? "—" : fmtSigned(card.index, 2)) + '</td>' +
+      '<td class="strength-num">' + (noData ? "—" : fmtSigned(score(card), 2)) + '</td>' +
       '<td>' + (noData ? "—" : bias) + '</td>' +
       '<td class="strength-num">' + (card.coverage || 0) + '</td>' +
       '<td>' + (noData ? "—" : monetary) + '</td>' +
@@ -310,24 +317,9 @@
     });
   }
 
-  // One card's tooltip fragment: "EUR 100% (clamped, index +6.56)" when
-  // pct_clamped, else the plain "EUR 54.4%" — so the hover always makes the
-  // unclamped diff traceable back to the two real index values behind it.
-  function matrixTipFragment(ccy, card) {
-    if (card.pct_clamped) {
-      return ccy + " " + card.pct.toFixed(0) + "% (clamped, index " + fmtSigned(card.index, 2) + ")";
-    }
-    return ccy + " " + card.pct.toFixed(1) + "%";
-  }
-
-  // 8x8 (or fewer, once coverage==0 currencies are dropped) divergence
-  // matrix — pure recombination of `index` already in the payload (× the
-  // same K /strength uses everywhere else). No new math beyond that
-  // multiplication, no new data, no scoring call. Cell = (row.index -
-  // column.index) * K, NOT row.pct - column.pct — pct is clamped to
-  // [0,100] for cadran display, so a pct-only differential silently
-  // truncates once either side saturates (see unclampedDiffPct). A
-  // differential is not itself bounded to [0,100].
+  // Divergence matrix (audit B1): cell = the FUNDAMENTAL score of the pair
+  // row/column, row = base (the board's reverse orientation is the negated
+  // pair) — read straight off the payload (card.strength_pairs), no math here.
   function renderMatrix() {
     const table = document.getElementById("strengthMatrix");
     const currencies = state.payload.currencies || {};
@@ -341,12 +333,14 @@
       );
       return;
     }
-
+    const cell = (base, quote) => {
+      const v = (currencies[base].strength_pairs || {})[quote];
+      return typeof v === "number" ? v : null;
+    };
     let maxAbs = 0;
     order.forEach(base => order.forEach(quote => {
-      if (base === quote) return;
-      const d = Math.abs(unclampedDiffPct(currencies[base], currencies[quote]));
-      if (d > maxAbs) maxAbs = d;
+      const v = base === quote ? null : cell(base, quote);
+      if (v !== null && Math.abs(v) > maxAbs) maxAbs = Math.abs(v);
     }));
 
     const headerRow = '<tr><th class="matrix-corner"></th>' +
@@ -355,12 +349,13 @@
     const bodyRows = order.map(base => {
       const cells = order.map(quote => {
         if (base === quote) return '<td class="matrix-diag"></td>';
-        const diff = unclampedDiffPct(currencies[base], currencies[quote]);
-        const style = matrixCellStyle(diff, maxAbs);
-        const tip = matrixTipFragment(base, currencies[base]) + " − " +
-          matrixTipFragment(quote, currencies[quote]) + " = " + fmtSigned(diff, 1) + "pp";
+        const v = cell(base, quote);
+        if (v === null) return '<td class="matrix-cell">—</td>';
+        const style = matrixCellStyle(v, maxAbs);
+        const tip = base + "/" + quote + " fundamental score " + fmtSigned(v, 2) +
+          " (no COT, no trend; categories both legs have)";
         return '<td class="matrix-cell"' + (style ? ' style="' + style + '"' : "") +
-          ' title="' + escAttr(tip) + '">' + fmtSigned(diff, 1) + '</td>';
+          ' title="' + escAttr(tip) + '">' + fmtSigned(v, 2) + '</td>';
       }).join("");
       return '<tr><th class="matrix-row-label">' + base + '</th>' + cells + '</tr>';
     }).join("");
@@ -518,8 +513,8 @@
       '<div class="strength-dd-head">' +
       '<h2>' + ccy + '</h2>' +
       (hasCoverage(card)
-        ? '<span class="strength-dd-meta">' + card.pct.toFixed(1) + '% &middot; index ' + fmtSigned(card.index, 2) +
-          ' &middot; N=' + (card.coverage || 0) + '</span>' +
+        ? '<span class="strength-dd-meta">' + card.pct.toFixed(1) + '% &middot; score ' + fmtSigned(score(card), 2) +
+          ' &middot; ' + monetaryText(card) + ' &middot; N=' + (card.coverage || 0) + '</span>' +
           '<span class="bias-pill ' + biasClass(bias) + '">' + bias + '</span>' + note
         : '<span class="strength-dd-meta">no data</span>') +
       '</div>' +
@@ -586,7 +581,7 @@
     module.exports = {
       sortedCurrencies, divergence, impactState, hasCoverage,
       drilldownGroupsHtml, indicatorRowHtml, cadranHtml, tableRowHtml,
-      matrixOrder, matrixCellStyle, unclampedDiffPct, strengthK,
+      matrixOrder, matrixCellStyle, strengthK, monetaryText,
       _setPayloadForTest: (p) => { state.payload = p; },
     };
   }
