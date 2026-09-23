@@ -7,7 +7,7 @@ surface reused by both `src.rates_probe` (diagnostics) and `src.rate_fetch`
 (parquet build). No I/O of project data here — only outbound keyless HTTP.
 
 Adapter status (verified): USD→FRED DGS2 (DBnomics-FED SVENY02 fallback),
-EUR→ECB SR_2Y, GBP→BoE IUDSNPY, JPY→MoF jgbcm_all.csv (col 2年),
+EUR→ECB SR_2Y, GBP→BoE IUDSNPY, JPY→MoF jgbcm_all.csv + jgbcm.csv (col 2年),
 CAD→BoC BD.CDN.2YR.DQ.YLD, AUD→RBA F2 (Stooq fallback), NZD→RBNZ B2 xlsx
 (Stooq fallback), CHF→SNB rendoblid D0=2J (often stale → Stooq fallback).
 
@@ -553,11 +553,19 @@ class BocValetSource(BaseSource):
 # ---------------------------------------------------------------------------
 
 class MofJgbSource(BaseSource):
+    """MoF JGB constant-maturity yields, column 2年 (2-year).
+
+    Two files, both needed (audit 2026-09-23, 1.3): jgbcm_all.csv is the history
+    and stops at the end of the PREVIOUS month; jgbcm.csv (not under /data/) is
+    the current month. Both parse the same way (shift_jis, header=1, era dates
+    like R8.9.17). They are merged and deduped on date, the current month wins.
+    The historical file is required; the current-month file is best-effort (a
+    failure there leaves the series ending at month end, which the freshness
+    check then reports)."""
     name = "mof_jgb"
-    URLS = [
-        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv",
-        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm.csv",
-    ]
+    URL_HISTORY = "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv"
+    URL_CURRENT = "https://www.mof.go.jp/jgbs/reference/interest_rate/jgbcm.csv"
+    COLUMN = "2年"
     ERA_BASE = {"M": 1867, "T": 1911, "S": 1925, "H": 1988, "R": 2018}
 
     def supports(self, currency: str) -> bool:
@@ -576,33 +584,51 @@ class MofJgbSource(BaseSource):
         except Exception:
             return None
 
+    def parse_csv(self, content: bytes) -> list[tuple[date, float]]:
+        """One MoF file -> [(date, 2y yield)]. Raises ValueError without a 2年
+        column (the maturity is read from the file's own header)."""
+        raw = content.decode("shift_jis", errors="replace")
+        df = pd.read_csv(io.StringIO(raw), header=1, dtype=str)
+        cols = {str(c).strip(): c for c in df.columns}
+        if self.COLUMN not in cols:
+            raise ValueError(f"no {self.COLUMN} column in {list(cols)[:6]}")
+        vals = pd.to_numeric(df[cols[self.COLUMN]].replace("-", np.nan), errors="coerce")
+        out = []
+        for d, v in zip(df[df.columns[0]], vals):
+            dd = self._parse_date(d)
+            if dd is not None and not pd.isna(v):
+                out.append((dd, float(v)))
+        return out
+
+    @staticmethod
+    def merge(history: list[tuple[date, float]],
+              current: list[tuple[date, float]]) -> list[tuple[date, float]]:
+        """Union on date; the current-month file wins a shared date."""
+        by_date = dict(history)
+        by_date.update(dict(current))
+        return sorted(by_date.items())
+
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        for url in self.URLS:
-            r = self._get(url)
-            if r is None:
-                continue
-            if self._check_botwall(r):
-                continue
-            raw = r.content.decode("shift_jis", errors="replace")
-            try:
-                df = pd.read_csv(io.StringIO(raw), header=1, dtype=str)
-            except Exception as e:
-                self._parse_fail(f"csv {e}")
-                continue
-            cols = {str(c).strip(): c for c in df.columns}
-            two = (cols.get("2年") or cols.get("2Y") or cols.get("2")
-                   or (df.columns[2] if df.shape[1] > 2 else None))
-            if two is None:
-                self._parse_fail(f"no 2Y column in {list(df.columns)[:6]}")
-                continue
-            dates = [self._parse_date(d) for d in df[df.columns[0]]]
-            vals = pd.to_numeric(df[two].replace("-", np.nan), errors="coerce")
-            s = _mk(currency, self.name, "2y", "daily", dates, vals, note=url.split("/")[-1])
-            if s:
-                return s
-        if not self.last_status:
+        r = self._get(self.URL_HISTORY)
+        if r is None or self._check_botwall(r):
+            return None
+        history = self.parse_csv(r.content)
+        current: list[tuple[date, float]] = []
+        note = "jgbcm_all.csv"
+        rc = self._get(self.URL_CURRENT)
+        if rc is not None and not self._check_botwall(rc):
+            current = self.parse_csv(rc.content)
+            note += f"+jgbcm.csv({len(current)})"
+        else:
+            log.warning("MoF current-month file unavailable (%s); series ends at "
+                        "the last month end.", self.last_note)
+            self.last_status, self.last_note = "", ""
+        pts = self.merge(history, current)
+        s = _mk(currency, self.name, "2y", "daily", [d for d, _ in pts],
+                [v for _, v in pts], note=note)
+        if not s:
             self._parse_fail("no parsable 2Y series")
-        return None
+        return s
 
 
 # ---------------------------------------------------------------------------
