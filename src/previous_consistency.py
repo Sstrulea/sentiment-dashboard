@@ -2,8 +2,11 @@
 
 Pure and side-effect-free: reads nothing, writes nothing, never changes a score.
 It catches the class of defect behind the AUD import prices override (a JBlanked
-0.0 placeholder that reached scoring, or was confirmed by hand): the NEXT print of
-the same series publishes a `previous` that disagrees with the 0.0 we scored.
+0.0 placeholder that reached scoring, or was confirmed by hand) and, since F3, any
+effective actual the next print contradicts — e.g. a typo in the manual panel: the
+NEXT print of the same series publishes a `previous` that disagrees with the value
+we use beyond the series' revision tolerance. Every finding carries
+kind = "zero" (effective actual 0.0) or "value".
 
 Inputs
   ff        FF canonical parquet frame (canonical_id, currency, name_raw,
@@ -34,8 +37,7 @@ Robust on purpose: the archive holds ghost / out-of-order duplicate releases
 (data_integrity class 1) whose pairing yields spurious "revisions". A quantile is
 dragged by them — AUD import prices: q95 = 0.87 while every real revision of the
 series was 0.0 — the median/MAD estimate is not (tol 0.0 there).
-Flag: scored actual_i == 0.0, previous_{i+1} != 0 and
-      |previous_{i+1} - 0.0| > tol + EPS.
+Flag: effective actual_i present and |previous_{i+1} - actual_i| > tol + EPS.
 A series whose revisions are routinely large (e.g. payrolls) gets a large tol and
 is not flagged for an ordinary revision; a series never revised (tol = 0) is
 flagged at the first disagreement.
@@ -55,7 +57,7 @@ EPS = 1e-9
 
 FINDING_FIELDS = [
     "canonical_id", "currency", "indicator_key", "name_raw", "release_dt",
-    "scored_actual", "scored_source", "next_release_dt", "next_previous",
+    "kind", "scored_actual", "scored_source", "next_release_dt", "next_previous",
     "next_from", "diff", "tolerance", "n_revision_pairs",
 ]
 
@@ -117,12 +119,14 @@ def revision_tolerance(actuals: np.ndarray, next_previous: np.ndarray) -> tuple[
 def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
                                matcher: CompiledMatcher,
                                upcoming: Optional[pd.DataFrame] = None) -> dict:
-    """Returns {"findings": [...], "n_series", "n_scored_zero", "formula"}."""
+    """Returns {"findings": [...], "findings_by_source", "findings_by_kind",
+    "n_series", "n_checked", "n_scored_zero", "formula"}."""
     rel = _releases(ff, upcoming)
     by_name, by_key = _scored_lookup(scoring)
     findings: list[dict] = []
     n_series = 0
     n_scored_zero = 0
+    n_checked = 0
     for cid, g in rel.groupby("canonical_id", sort=True):
         g = g.reset_index(drop=True)
         r0 = g.iloc[0]
@@ -146,20 +150,23 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
                     scored, src = 0.0, "quarantined"
             else:
                 continue
-            if pd.isna(scored) or float(scored) != 0.0:
+            if pd.isna(scored):
                 continue
-            n_scored_zero += 1
+            scored = float(scored)
+            kind = "zero" if scored == 0.0 else "value"
+            n_scored_zero += kind == "zero"
             nprev = nxt_prev[i]
-            if np.isnan(nprev) or nprev == 0.0:
+            if np.isnan(nprev):
                 continue
-            diff = float(nprev) - 0.0
+            n_checked += 1
+            diff = float(nprev) - scored
             if abs(diff) > tol + EPS:
                 nrow = g.iloc[i + 1]
                 findings.append({
                     "canonical_id": cid, "currency": row.currency,
                     "indicator_key": key, "name_raw": row.name_raw,
-                    "release_dt": dt.isoformat(), "scored_actual": 0.0,
-                    "scored_source": src,
+                    "release_dt": dt.isoformat(), "kind": kind,
+                    "scored_actual": scored, "scored_source": src,
                     "next_release_dt": pd.Timestamp(nrow.datetime_utc).isoformat(),
                     "next_previous": float(nprev), "next_from": nrow._from,
                     "diff": round(diff, 6), "tolerance": round(tol, 6),
@@ -167,15 +174,19 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
                 })
     findings.sort(key=lambda f: (f["release_dt"], f["canonical_id"]))
     by_src: dict[str, int] = {}
+    by_kind: dict[str, int] = {}
     for f in findings:
         by_src[f["scored_source"]] = by_src.get(f["scored_source"], 0) + 1
+        by_kind[f["kind"]] = by_kind.get(f["kind"], 0) + 1
     return {
         "findings": findings,
         "findings_by_source": by_src,
+        "findings_by_kind": by_kind,
+        "n_checked": n_checked,
         "n_series": n_series,
         "n_scored_zero": n_scored_zero,
         "formula": ("a = |previous[i+1] - actual[i]| over the series' pairs with "
                     "actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); "
-                    "flag effective actual[i] == 0 with previous[i+1] != 0 and "
-                    "|previous[i+1]| > tol"),
+                    "flag any effective actual[i] with "
+                    "|previous[i+1] - actual[i]| > tol"),
     }

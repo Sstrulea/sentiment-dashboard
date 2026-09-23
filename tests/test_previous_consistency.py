@@ -133,3 +133,39 @@ def test_integrity_counter_is_warn_and_not_stale():
     assert s["previous_consistency"] == 3 and s["level"] == "warn"
     assert "stale" not in s        # a WARN never rolls into any_stale
     assert _integrity_summary({"checks": {}})["level"] == "unavailable"
+
+
+# --- F3: the whole class, not only zeros ------------------------------------------
+
+def test_manual_typo_is_flagged_as_value(matcher):
+    """A manual 7.5 where the next print says previous 5.7 (digits swapped)."""
+    rows = HIST + [("2026-04-30", 0.0, 0.9), ("2026-07-30", 1.0, 5.7)]
+    quarantined = [(d, (np.nan if d == "2026-04-30" else a), p) for d, a, p in rows]
+    res = check_previous_consistency(_ff(rows), _scoring(quarantined, manual=[("2026-04-30", 7.5)]), matcher)
+    f = res["findings"]
+    assert [(x["release_dt"][:10], x["kind"], x["scored_source"], x["scored_actual"]) for x in f] == \
+        [("2026-04-30", "value", "manual", 7.5)]
+    assert res["findings_by_kind"] == {"value": 1}
+
+
+def test_nonzero_actual_contradicted_beyond_tolerance_is_flagged(matcher):
+    rows = HIST + [("2026-04-30", 0.4, 0.9), ("2026-07-30", 1.0, 2.0)]
+    res = check_previous_consistency(_ff(rows), _scoring(rows), matcher)
+    assert [(f["release_dt"][:10], f["kind"], f["diff"]) for f in res["findings"]] == \
+        [("2026-04-30", "value", 1.6)]
+
+
+def test_report_is_rewritten_only_when_findings_change(tmp_path):
+    from src.economic_render import _write_integrity_report
+    path = tmp_path / "integrity_report.json"
+    rep = {"as_of": "2026-09-23T07:00:00", "checks": {"previous_consistency": {
+        "findings": [{"canonical_id": "a", "release_dt": "2026-01-01"}], "formula": "f",
+        "n_checked": 10}}}
+    assert _write_integrity_report(rep, "2026-09-23T07:00:05+00:00", path)
+    first = path.read_text()
+    later = {**rep, "as_of": "2026-09-23T08:00:00"}
+    later["checks"]["previous_consistency"] = {**rep["checks"]["previous_consistency"], "n_checked": 11}
+    assert not _write_integrity_report(later, "2026-09-23T08:00:05+00:00", path)
+    assert path.read_text() == first                  # timestamps alone never rewrite
+    changed = {"as_of": "x", "checks": {"previous_consistency": {"findings": [], "formula": "f"}}}
+    assert _write_integrity_report(changed, "t", path)

@@ -1317,16 +1317,43 @@ def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp) -> dict:
                         len(res["findings"]), res["findings_by_source"],
                         INTEGRITY_REPORT_JSON.name)
         for f in res["findings"]:
-            if f["scored_source"] == "quarantined":
-                continue   # not scored; listed in the report only
-            log.warning("integrity(previous_consistency): %s %s scored 0.0 (%s) but next "
+            # one line each only for what a human entered (panel typos) and for
+            # scored zeros; everything else is in the report (hundreds of
+            # ordinary revisions on never-revised series would drown the log).
+            if not (f["scored_source"] == "manual"
+                    or (f["kind"] == "zero" and f["scored_source"] == "ff")):
+                continue
+            log.warning("integrity(previous_consistency): %s %s actual %s (%s) but next "
                         "print (%s) says previous=%s (tol %s)", f["canonical_id"],
-                        f["release_dt"], f["scored_source"], f["next_release_dt"],
-                        f["next_previous"], f["tolerance"])
+                        f["release_dt"], f["scored_actual"], f["scored_source"],
+                        f["next_release_dt"], f["next_previous"], f["tolerance"])
     except Exception as e:  # noqa: BLE001 — a check must never break the render
         log.warning("integrity report unavailable: %s", e)
         report["error"] = str(e)
     return report
+
+
+def _findings_key(report: dict) -> str:
+    """What decides a rewrite: the findings (and the formula), not the timestamps."""
+    checks = {name: {"findings": c.get("findings"), "formula": c.get("formula")}
+              for name, c in (report.get("checks") or {}).items()}
+    return json.dumps({"checks": checks, "error": report.get("error")}, sort_keys=True)
+
+
+def _write_integrity_report(report: dict, generated_at: str | None,
+                            path: Path | None = None) -> bool:
+    """Rewrite data/integrity_report.json only when the set of findings changed,
+    so its timestamps never cause an hourly commit. Returns True if written."""
+    path = path or INTEGRITY_REPORT_JSON
+    try:
+        old = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — missing/corrupt -> write
+        old = None
+    if old is not None and _findings_key(old) == _findings_key(report):
+        return False
+    report = dict(report, generated_at=generated_at)
+    path.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+    return True
 
 
 def _integrity_summary(report: dict) -> dict:
@@ -1338,6 +1365,7 @@ def _integrity_summary(report: dict) -> dict:
     n = len(pc["findings"])
     return {"previous_consistency": n,
             "previous_consistency_by_source": pc.get("findings_by_source", {}),
+            "previous_consistency_by_kind": pc.get("findings_by_kind", {}),
             "level": "warn" if n else "ok"}
 
 
@@ -1449,9 +1477,7 @@ def render_economic_page() -> Path:
     payload = build_economic_payload()
     integrity = payload.pop("_integrity_report", None)
     if integrity is not None:
-        integrity["generated_at"] = payload.get("generated_at")
-        INTEGRITY_REPORT_JSON.write_text(json.dumps(integrity, indent=1) + "\n",
-                                         encoding="utf-8")
+        _write_integrity_report(integrity, payload.get("generated_at"))
 
     data_dir = PUBLIC_DIR / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
