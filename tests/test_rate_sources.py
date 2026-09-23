@@ -239,3 +239,73 @@ def test_rates_freshness_lag_and_any_stale(monkeypatch, tmp_path):
     monkeypatch.setattr(er, "_trend_enabled", lambda cfg=None: False)
     fr = er._freshness(pd.Timestamp("2026-09-23T07:06:11"), trend_enabled=False)
     assert fr["rates"]["stale"] and fr["any_stale"]
+
+
+# --- F2 BoE month-boundary gap fill -------------------------------------------
+
+from src import rate_gapfill
+
+HIST_ZIP = (FIX / "boe_glcnominalddata_2025_to_present_aug2026.zip").read_bytes()
+CUR_ZIP = _zip(BoeSource.MEMBER_LATEST, (FIX / "boe_glc_nominal_current_month.xlsx").read_bytes())
+
+
+def _stored_gbp(until: str) -> pd.DataFrame:
+    days = pd.bdate_range("2023-01-02", until)
+    return pd.DataFrame({"currency": "GBP", "date": days, "tenor": "2y",
+                         "yield_pct": 4.0, "source": "boe_glc"})
+
+
+@pytest.fixture
+def gap_env(monkeypatch, tmp_path):
+    """rate_fetch against fixtures: current month = Sep 2026, history = Aug 2026."""
+    state = tmp_path / "gap.json"
+    monkeypatch.setattr(rate_fetch, "gap_load_state", lambda: rate_gapfill.load_state(state))
+    monkeypatch.setattr(rate_fetch, "gap_save_state", lambda st: rate_gapfill.save_state(st, state))
+    boe = rate_fetch.ALL_SOURCES["boe_glc"]
+    calls = []
+
+    def fake_get(url, extra_headers=None, retries=0):
+        calls.append(url)
+        return _Resp(HIST_ZIP if url == boe.URL_HISTORY else CUR_ZIP)
+    monkeypatch.setattr(boe, "_get", fake_get)
+    return state, calls, boe
+
+
+def test_gap_at_month_change_is_filled_from_the_archive(gap_env):
+    state, calls, boe = gap_env
+    s = rate_fetch.fetch_currency("GBP", date(2026, 9, 22), _stored_gbp("2026-08-25"))
+    d = dict(s.points)
+    assert round(d[date(2026, 8, 26)], 3) == 4.25 and round(d[date(2026, 8, 28)], 3) == 4.319
+    assert date(2026, 8, 31) not in d                     # UK bank holiday
+    st = rate_gapfill.load_state(state)["boe_glc"]
+    assert st["confirmed_no_data"] == ["2026-08-31"]
+    assert calls.count(boe.URL_HISTORY) == 1
+
+
+def test_gap_fill_at_most_once_per_day_and_idempotent(gap_env):
+    state, calls, boe = gap_env
+    stored = _stored_gbp("2026-08-25")
+    rate_fetch.fetch_currency("GBP", date(2026, 9, 22), stored)
+    rate_fetch.fetch_currency("GBP", date(2026, 9, 22), stored)      # same day: no 2nd download
+    assert calls.count(boe.URL_HISTORY) == 1
+    # once filled (stored up to 08-28) only the confirmed holiday is left -> no download ever
+    rate_fetch.fetch_currency("GBP", date(2026, 9, 23), _stored_gbp("2026-08-28"))
+    assert calls.count(boe.URL_HISTORY) == 1
+
+
+def test_gap_the_archive_does_not_cover_yet_is_retried_next_day(gap_env):
+    """The archive does not cover the gap yet (built 09-03): nothing added,
+    nothing confirmed, no retry the same day, filled the next day."""
+    state, calls, boe = gap_env
+    added, st = rate_gapfill.fill_gap("x", [date(2026, 9, 25)], [(date(2026, 10, 1), 1.0)],
+                                      date(2026, 10, 1), {}, lambda since: ([], date(2026, 9, 2)))
+    assert added == [] and st["x"]["confirmed_no_data"] == []   # 09-28..09-30 beyond the archive
+    again, _ = rate_gapfill.fill_gap("x", [date(2026, 9, 25)], [(date(2026, 10, 1), 1.0)],
+                                     date(2026, 10, 1), st, lambda since: 1 / 0)
+    assert again == []                                            # not retried the same day
+    later, st2 = rate_gapfill.fill_gap("x", [date(2026, 9, 25)], [(date(2026, 10, 1), 1.0)],
+                                       date(2026, 10, 2), st,
+                                       lambda since: ([(date(2026, 9, 28), 2.0), (date(2026, 9, 30), 2.1)],
+                                                      date(2026, 10, 1)))
+    assert later == [(date(2026, 9, 28), 2.0), (date(2026, 9, 30), 2.1)]
+    assert st2["x"]["confirmed_no_data"] == ["2026-09-29"]

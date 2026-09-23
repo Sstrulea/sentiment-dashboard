@@ -734,12 +734,19 @@ class BoeSource(BaseSource):
     def fetch_history(self, since: date) -> list[tuple[date, float]]:
         """One-off backfill (src.rate_migrations): every workbook in
         glcnominalddata.zip (~39 MB) covering >= `since`. Raises on failure."""
+        return self.fetch_history_with_coverage(since)[0]
+
+    def fetch_history_with_coverage(self, since: date) -> tuple[list[tuple[date, float]], date]:
+        """(points >= since, covered_until). covered_until = the day before the
+        newest workbook in the archive was written (zip entry time): every
+        business day up to it without a value is a non-trading day."""
         import zipfile
         r = self._get(self.URL_HISTORY)
         if r is None or r.content[:2] != b"PK":
             raise RuntimeError(f"BoE GLC history download failed: {self.last_note or 'not a zip'}")
         z = zipfile.ZipFile(io.BytesIO(r.content))
         pts: dict[date, float] = {}
+        built = max(date(*i.date_time[:3]) for i in z.infolist())
         for name in z.namelist():
             yrs = [int(t) for t in name.replace(".xlsx", "").replace("_", " ").split()
                    if t.isdigit() and len(t) == 4]
@@ -748,7 +755,7 @@ class BoeSource(BaseSource):
             for d, v in self.parse_spot_xlsx(z.read(name)):
                 if d >= since:
                     pts[d] = v
-        return sorted(pts.items())
+        return sorted(pts.items()), built - pd.Timedelta(days=1).to_pytimedelta()
 
 
 # ---------------------------------------------------------------------------

@@ -86,6 +86,7 @@ jobs:
                   public/
           [ -f data/ff_quarantine.parquet ] && git add data/ff_quarantine.parquet || true
           [ -f data/integrity_report.json ] && git add data/integrity_report.json || true
+          [ -f data/rates_gap_state.json ] && git add data/rates_gap_state.json || true
           git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
           git commit -m "econ: refresh $(date -u +%FT%TZ) [ci]"
           for i in 1 2 3; do

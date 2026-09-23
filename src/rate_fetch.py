@@ -20,6 +20,7 @@ from typing import Optional
 import pandas as pd
 
 from .rate_compute import compute_rate_scores
+from .rate_gapfill import fill_gap, load_state as gap_load_state, save_state as gap_save_state
 from .rate_migrations import ensure_all as ensure_migrations
 from .rate_sources import (
     ALL_SOURCES,
@@ -52,6 +53,29 @@ def _with_stored_history(series: YieldSeries, stored: Optional[pd.DataFrame]) ->
                        sorted(pts.items()), series.note + f" +{len(sub)} stored")
 
 
+def _fill_month_gap(src, series: YieldSeries, stored: Optional[pd.DataFrame],
+                    today: date) -> YieldSeries:
+    """Incremental source with a history archive: fill business days missing
+    between the stored rows and the fetched window (src.rate_gapfill)."""
+    if not hasattr(src, "fetch_history_with_coverage") or stored is None or stored.empty:
+        return series
+    sub = stored[(stored["currency"] == series.currency) & (stored["source"] == series.source)]
+    if sub.empty:
+        return series
+    state = gap_load_state()
+    stored_dates = [pd.Timestamp(d).date() for d in sub["date"]]
+    added, new_state = fill_gap(series.source, stored_dates, series.points, today,
+                                state, src.fetch_history_with_coverage)
+    if new_state != state:
+        gap_save_state(new_state)
+    if not added:
+        return series
+    pts = dict(added)
+    pts.update(dict(series.points))
+    return YieldSeries(series.currency, series.source, series.tenor, series.frequency,
+                       sorted(pts.items()), series.note + f" +{len(added)} gap-filled")
+
+
 def fetch_currency(currency: str, today: Optional[date] = None,
                    stored: Optional[pd.DataFrame] = None) -> Optional[YieldSeries]:
     """Try adapters in preference order; return the first qualifying series, else None.
@@ -73,6 +97,7 @@ def fetch_currency(currency: str, today: Optional[date] = None,
             last_reasons.append(f"{name}:{src.last_status or 'fail'}({src.last_note[:40]})")
             continue
         if getattr(src, "incremental", False):
+            series = _fill_month_gap(src, series, stored, today)
             series = _with_stored_history(series, stored)
         a = assess(series, today)
         if a.qualifies:
