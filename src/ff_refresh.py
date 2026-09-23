@@ -160,6 +160,8 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
     cfg = cfg or load_pipeline_config()
     url = cfg.get("ff_weekly_url", "https://nfs.faireconomy.media/ff_calendar_thisweek.json")
     min_ccy = int(cfg.get("ff_min_currencies", 4))
+    from .ff_provenance import ensure_provenance
+    ensure_provenance(parquet_path)            # audit Z5: one-off, idempotent
     existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
     n_before = 0 if existing is None else len(existing)
 

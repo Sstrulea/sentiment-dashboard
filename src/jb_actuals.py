@@ -374,6 +374,8 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
         return {"status": "empty", "raw": str(raw_path)}
 
     parquet_path = Path(parquet_path)
+    from .ff_provenance import ensure_provenance
+    ensure_provenance(parquet_path)            # audit Z5: one-off, idempotent
     existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
     cleaned = clean_jblanked_actuals(jb, schedule=existing, preserve_zero_actuals=True)
     merged = merge_weekly(existing, cleaned)

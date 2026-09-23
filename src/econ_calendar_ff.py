@@ -46,10 +46,11 @@ CANON_COLUMNS = [
 #                    ff_blank  FF weekly delivered "" (no consensus) -> forecast NaN
 #                    jb        the forecast came from JBlanked (range/archive)
 #                    manual    entered by hand (no row carries it today)
+#                    unknown   migrated row with no evidence (ff_provenance) -> as jb
 #   jb_status        the newest JBlanked payload's verdict for the event:
 #                    "Data Not Loaded" if Quality or Strength says so, else the
 #                    Quality value; None when no JB payload carried the event.
-FORECAST_ORIGINS = ("ff", "ff_blank", "jb", "manual")
+FORECAST_ORIGINS = ("ff", "ff_blank", "jb", "manual", "unknown")
 JB_NOT_LOADED = "Data Not Loaded"
 PROVENANCE_COLUMNS = ("forecast_origin", "jb_status")
 
