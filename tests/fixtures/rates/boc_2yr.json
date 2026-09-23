@@ -1,0 +1,47 @@
+{
+    "terms": {
+        "url": "https://www.bankofcanada.ca/terms/"
+    },
+    "seriesDetail": {
+        "BD.CDN.2YR.DQ.YLD": {
+            "label": "Benchmark bond yield, 2-year",
+            "description": "The yield on the Government of Canada 2-year benchmark bond. This series reflects the prevailing interest rate for the 2-year term and is used to monitor short-term government borrowing costs.",
+            "dimension": {
+                "key": "d",
+                "name": "Date"
+            }
+        }
+    },
+    "observations": [
+        {
+            "d": "2026-09-21",
+            "BD.CDN.2YR.DQ.YLD": {
+                "v": "3.29"
+            }
+        },
+        {
+            "d": "2026-09-18",
+            "BD.CDN.2YR.DQ.YLD": {
+                "v": "3.32"
+            }
+        },
+        {
+            "d": "2026-09-17",
+            "BD.CDN.2YR.DQ.YLD": {
+                "v": "3.27"
+            }
+        },
+        {
+            "d": "2026-09-16",
+            "BD.CDN.2YR.DQ.YLD": {
+                "v": "3.35"
+            }
+        },
+        {
+            "d": "2026-09-15",
+            "BD.CDN.2YR.DQ.YLD": {
+                "v": "3.35"
+            }
+        }
+    ]
+}

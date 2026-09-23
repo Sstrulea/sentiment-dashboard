@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import io
+import json
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -10,7 +11,8 @@ import pandas as pd
 import pytest
 
 from src import rate_fetch, rate_migrations
-from src.rate_sources import BoeSource, MofJgbSource
+from src.rate_sources import (BocValetSource, BoeSource, DbnomicsFedSource, EcbSource,
+                              FredSource, MofJgbSource, RbaSource, TenorMismatch)
 
 FIX = Path(__file__).parent / "fixtures" / "rates"
 
@@ -142,3 +144,98 @@ def test_gbp_migration_failure_blocks_gbp_write(tmp_path):
         raise RuntimeError("download failed")
     assert rate_migrations.ensure_all(p, history=boom) == {"GBP": False}
     assert set(pd.read_parquet(p).query("currency == 'GBP'").source) == {"boe"}  # untouched
+
+
+# --- 1.5 tenor guard: every 2y adapter reads the maturity from source metadata ---
+
+
+class _JsonResp(_Resp):
+    def json(self):
+        return json.loads(self.content)
+
+
+def _serve_one(monkeypatch, src, body: bytes, as_json: bool = False):
+    resp = (_JsonResp if as_json else _Resp)(body)
+    monkeypatch.setattr(src, "_get", lambda url, extra_headers=None, retries=0: resp)
+
+
+FRED = (FIX / "fred_dgs2.csv").read_bytes()
+ECB = (FIX / "ecb_sr_2y.csv").read_bytes()
+BOC = (FIX / "boc_2yr.json").read_bytes()
+DBN = (FIX / "dbnomics_sveny02.json").read_bytes()
+RBA = (FIX / "rba_f2_head.csv").read_bytes()   # layout of the published F2 (web.archive.org copy)
+
+CASES = [
+    # (adapter, currency, good fixture, json?, same payload saying another tenor)
+    (FredSource, "USD", FRED, False, FRED.replace(b"DGS2", b"DGS5")),
+    (EcbSource, "EUR", ECB, False, ECB.replace(b"SR_2Y", b"SR_5Y")),
+    (BocValetSource, "CAD", BOC, True,
+     BOC.replace(b"Benchmark bond yield, 2-year", b"Benchmark bond yield, 5-year")),
+    (DbnomicsFedSource, "USD", DBN, True, DBN.replace(b'"SVENY02"', b'"SVENY05"')),
+    (RbaSource, "AUD", RBA, False, (FIX / "rba_f2_no_2y.csv").read_bytes()),
+]
+
+
+@pytest.mark.parametrize("cls,ccy,good,as_json,bad", CASES, ids=[c[0].__name__ for c in CASES])
+def test_adapter_accepts_its_2y_series(monkeypatch, cls, ccy, good, as_json, bad):
+    src = cls()
+    _serve_one(monkeypatch, src, good, as_json)
+    s = src.fetch(ccy)
+    assert s is not None and s.tenor == "2y" and s.n_points > 0, src.last_note
+
+
+@pytest.mark.parametrize("cls,ccy,good,as_json,bad", CASES, ids=[c[0].__name__ for c in CASES])
+def test_adapter_raises_when_source_metadata_is_not_2y(monkeypatch, cls, ccy, good, as_json, bad):
+    src = cls()
+    _serve_one(monkeypatch, src, bad, as_json)
+    with pytest.raises(TenorMismatch):
+        src.fetch(ccy)
+    assert src.last_status == "TENOR-MISMATCH"
+
+
+def test_mof_raises_without_2nen_column(monkeypatch):
+    src = MofJgbSource()
+    bad = (FIX / "mof_jgbcm_current.csv").read_bytes().replace("2年".encode("shift_jis"),
+                                                               "5年".encode("shift_jis"), 1)
+    _serve(monkeypatch, src, {src.URL_HISTORY: bad})
+    with pytest.raises(TenorMismatch):
+        src.fetch("JPY")
+
+
+def test_boe_raises_without_2y_maturity(monkeypatch):
+    src = BoeSource()
+    xlsx = (FIX / "boe_glc_nominal_no_2y.xlsx").read_bytes()
+    _serve(monkeypatch, src, {src.URL_LATEST: _zip(src.MEMBER_LATEST, xlsx)})
+    with pytest.raises(TenorMismatch):
+        src.fetch("GBP")
+
+
+def test_tenor_mismatch_is_not_masked_by_a_fallback(monkeypatch):
+    """EUR: ECB says SR_5Y -> the currency is not written; Stooq is never tried."""
+    ecb, stooq = rate_fetch.ALL_SOURCES["ecb"], rate_fetch.ALL_SOURCES["stooq"]
+    _serve_one(monkeypatch, ecb, ECB.replace(b"SR_2Y", b"SR_5Y"))
+    monkeypatch.setattr(stooq, "fetch", lambda ccy: pytest.fail("fallback must not run"))
+    assert rate_fetch.fetch_currency("EUR", date(2026, 9, 22)) is None
+
+
+# --- 1.5 freshness.rates ----------------------------------------------------------
+
+def test_rates_freshness_lag_and_any_stale(monkeypatch, tmp_path):
+    from src import economic_render as er
+    p = tmp_path / "rates.parquet"
+    rows = [("USD", "2026-09-21", "fred"), ("JPY", "2026-08-31", "mof_jgb"),
+            ("GBP", "2026-09-21", "boe_glc"), ("GBP", "2026-09-30", "boe_glc")]  # future row ignored
+    pd.DataFrame([{"currency": c, "date": pd.Timestamp(d), "tenor": "2y",
+                   "yield_pct": 1.0, "source": s} for c, d, s in rows]).to_parquet(p)
+    monkeypatch.setattr(er, "RATES_PARQUET", p)
+    out = er._rates_freshness(pd.Timestamp("2026-09-23T07:06:11"))
+    assert out["per_currency"]["USD"] == {"last_update": "2026-09-21", "lag_bd": 2,
+                                          "source": "fred", "stale": False}
+    assert out["per_currency"]["GBP"]["last_update"] == "2026-09-21"
+    assert out["per_currency"]["JPY"]["lag_bd"] == 17 and out["per_currency"]["JPY"]["stale"]
+    assert out["stale_currencies"] == ["JPY"] and out["stale"] is True
+    assert set(out["missing"]) == {"EUR", "AUD", "NZD", "CAD", "CHF"}
+
+    monkeypatch.setattr(er, "_trend_enabled", lambda cfg=None: False)
+    fr = er._freshness(pd.Timestamp("2026-09-23T07:06:11"), trend_enabled=False)
+    assert fr["rates"]["stale"] and fr["any_stale"]

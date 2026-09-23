@@ -23,6 +23,7 @@ from .rate_compute import compute_rate_scores
 from .rate_migrations import ensure_all as ensure_migrations
 from .rate_sources import (
     ALL_SOURCES,
+    TenorMismatch,
     CURRENCIES,
     SOURCE_PREFERENCE,
     YieldSeries,
@@ -62,7 +63,12 @@ def fetch_currency(currency: str, today: Optional[date] = None,
         src = ALL_SOURCES.get(name)
         if src is None or not src.supports(currency):
             continue
-        series = src.fetch(currency)
+        try:
+            series = src.fetch(currency)
+        except TenorMismatch as e:
+            # semantic failure: never masked by a fallback source
+            log.error("%s TENOR GUARD — %s; currency not written this run.", currency, e)
+            return None
         if series is None:
             last_reasons.append(f"{name}:{src.last_status or 'fail'}({src.last_note[:40]})")
             continue

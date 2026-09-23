@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import io
 import logging
+import re
 import socket
 import subprocess
 import time
@@ -68,6 +69,18 @@ FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-anal
 FRESH_LAG_BD = 5     # latest within ~5 business days = fresh
 STALE_LAG_BD = 10    # > 10 business days = STALE / disqualified for the pillar
 MIN_HISTORY_YEARS = 2.0
+
+
+class TenorMismatch(ValueError):
+    """The source's OWN metadata (series id, maturity header, label) does not
+    say 2 years. Never swallowed by BaseSource.fetch and never masked by a
+    fallback source: rate_fetch logs it and leaves the currency unwritten, so
+    freshness.rates turns it stale (audit 2026-09-23, 1.5)."""
+
+
+def require_2y(source: str, ok: bool, what: str) -> None:
+    if not ok:
+        raise TenorMismatch(f"{source}: source metadata is not 2y ({what})")
 
 
 # ---------------------------------------------------------------------------
@@ -177,6 +190,9 @@ class BaseSource:
         self.last_note = ""
         try:
             return self._fetch(currency)
+        except TenorMismatch as e:
+            self.last_status, self.last_note = "TENOR-MISMATCH", str(e)
+            raise
         except Exception as e:  # never propagate — graceful per source
             self._parse_fail(f"{type(e).__name__}: {e}")
             return None
@@ -307,6 +323,9 @@ class FredSource(BaseSource):
         if not val_cols:
             self._parse_fail(f"cols {list(df.columns)}")
             return None
+        # fredgraph names the value column after the series id (DGS2 = 2-year)
+        require_2y(self.name, str(val_cols[0]).strip() == sid,
+                   f"value column {val_cols[0]!r}, expected {sid!r}")
         vals = pd.to_numeric(df[val_cols[0]].replace(".", np.nan), errors="coerce")
         s = _mk(currency, self.name, tenor, "daily",
                 pd.to_datetime(df[date_col], errors="coerce"), vals, note=f"id={sid}")
@@ -480,6 +499,8 @@ class EcbSource(BaseSource):
         if "TIME_PERIOD" not in df.columns or "OBS_VALUE" not in df.columns:
             self._parse_fail(f"cols {list(df.columns)[:8]}")
             return None
+        dtypes = set(df.get("DATA_TYPE_FM", pd.Series(dtype=str)).dropna().astype(str))
+        require_2y(self.name, dtypes == {"SR_2Y"}, f"DATA_TYPE_FM={sorted(dtypes)}")
         s = _mk(currency, self.name, "2y", "daily",
                 pd.to_datetime(df["TIME_PERIOD"], errors="coerce"),
                 pd.to_numeric(df["OBS_VALUE"], errors="coerce"), note=f"key={self.KEY}")
@@ -510,6 +531,8 @@ class DbnomicsFedSource(BaseSource):
             self._parse_fail("no series docs")
             return None
         d = docs[0]
+        code = str(d.get("series_code", ""))
+        require_2y(self.name, code == self.PATH.rsplit("/", 1)[-1], f"series_code={code!r}")
         s = _mk(currency, self.name, "2y", "daily",
                 pd.to_datetime(pd.Series(d.get("period", [])), errors="coerce"),
                 d.get("value", []), note=self.PATH)
@@ -535,6 +558,9 @@ class BocValetSource(BaseSource):
         if r is None:
             return None
         payload = r.json()
+        label = str(((payload.get("seriesDetail") or {}).get(self.SERIES) or {}).get("label", ""))
+        require_2y(self.name, re.search(r"\b2[- ]year\b", label, re.I) is not None,
+                   f"seriesDetail label {label!r}")
         obs = payload.get("observations") or []
         dates, vals = [], []
         for o in obs:
@@ -590,8 +616,7 @@ class MofJgbSource(BaseSource):
         raw = content.decode("shift_jis", errors="replace")
         df = pd.read_csv(io.StringIO(raw), header=1, dtype=str)
         cols = {str(c).strip(): c for c in df.columns}
-        if self.COLUMN not in cols:
-            raise ValueError(f"no {self.COLUMN} column in {list(cols)[:6]}")
+        require_2y("mof_jgb", self.COLUMN in cols, f"no {self.COLUMN} column in {list(cols)[:6]}")
         vals = pd.to_numeric(df[cols[self.COLUMN]].replace("-", np.nan), errors="coerce")
         out = []
         for d, v in zip(df[df.columns[0]], vals):
@@ -676,9 +701,8 @@ class BoeSource(BaseSource):
                 if str(row[0]).strip().lower() == "years:":
                     hits = [i for i, c in enumerate(row[1:], start=1)
                             if isinstance(c, (int, float)) and float(c) == cls.MATURITY_YEARS]
-                    if not hits:
-                        raise ValueError(f"no {cls.MATURITY_YEARS}-year maturity in the "
-                                         f"'years:' header row")
+                    require_2y("boe_glc", bool(hits), f"no {cls.MATURITY_YEARS}-year "
+                               f"maturity in the 'years:' header row")
                     col = hits[0]
                 continue
             d, v = row[0], row[col] if col < len(row) else None
@@ -734,9 +758,28 @@ class BoeSource(BaseSource):
 class RbaSource(BaseSource):
     name = "rba"
     URL = "https://www.rba.gov.au/statistics/tables/csv/f2-data.csv"
+    SERIES_ID = "FCMYGBAG2D"   # Australian Government 2 year bond, daily
 
     def supports(self, currency: str) -> bool:
         return currency == "AUD"
+
+    @classmethod
+    def find_2y_column(cls, rows: list[list[str]]) -> int:
+        """The F2 column whose 'Series ID' row is FCMYGBAG2D AND whose 'Title'
+        row says 2 year (both are the table's own metadata). Raises
+        TenorMismatch otherwise."""
+        head = rows[:15]
+        meta = {str(r[0]).strip().lower(): r for r in head if r}
+        ids, titles = meta.get("series id"), meta.get("title")
+        require_2y("rba", ids is not None and titles is not None,
+                   "no 'Series ID'/'Title' header rows")
+        cols = [i for i, c in enumerate(ids) if str(c).strip().upper() == cls.SERIES_ID]
+        require_2y("rba", len(cols) == 1, f"series id {cls.SERIES_ID} found {len(cols)}x")
+        ci = cols[0]
+        title = str(titles[ci]) if ci < len(titles) else ""
+        require_2y("rba", re.search(r"\b2[- ]year\b", title, re.I) is not None,
+                   f"title {title!r}")
+        return ci
 
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
         r = self._get(self.URL, extra_headers={
@@ -751,26 +794,7 @@ class RbaSource(BaseSource):
         if not rows:
             self._parse_fail("empty")
             return None
-        target_col = None
-        for hdr in rows[:12]:
-            for ci, cell in enumerate(hdr):
-                c = str(cell).lower()
-                if ("2 year" in c or "2-year" in c) and "australian government" in c:
-                    target_col = ci
-                    break
-            if target_col is not None:
-                break
-        if target_col is None:
-            for hdr in rows[:12]:
-                for ci, cell in enumerate(hdr):
-                    if str(cell).strip().upper() in ("FCMYGBAG2", "FCMYGBAG2D"):
-                        target_col = ci
-                        break
-                if target_col is not None:
-                    break
-        if target_col is None:
-            self._parse_fail("no 2-year AGB column found in header")
-            return None
+        target_col = self.find_2y_column(rows)
         dates, vals = [], []
         for row in rows:
             if len(row) <= target_col:
@@ -833,9 +857,8 @@ class RbnzSource(BaseSource):
                         break
                 if col is not None:
                     break
-            if col is None:
-                self._parse_fail("no '2 year ... bond' column found in header band")
-                continue
+            require_2y(self.name, col is not None,
+                       "no '2 year ... bond' column in the header band")
             dates, vals = [], []
             for row in rows:
                 if col >= len(row):
@@ -890,10 +913,8 @@ class SnbSource(BaseSource):
             self._parse_fail(f"unexpected cols {list(df.columns)}; verify cube")
             return None
         sub = df[df["D0"].astype(str).str.strip() == self.MATURITY]
-        if sub.empty:
-            avail = sorted(df["D0"].dropna().astype(str).unique())[:12]
-            self._parse_fail(f"no {self.MATURITY} maturity (have {avail})")
-            return None
+        avail = sorted(df["D0"].dropna().astype(str).unique())[:12]
+        require_2y(self.name, not sub.empty, f"no {self.MATURITY} maturity (have {avail})")
         s = _mk(currency, self.name, "2y", "daily",
                 pd.to_datetime(sub["Date"], errors="coerce"),
                 pd.to_numeric(sub["Value"], errors="coerce"),

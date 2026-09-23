@@ -883,8 +883,48 @@ def _freshness(as_of: pd.Timestamp | None = None,
     except Exception as e:  # noqa: BLE001
         log.warning("freshness(price) unavailable: %s", e)
 
+    try:
+        rates = _rates_freshness(as_of)
+        if rates is not None:
+            out["rates"] = rates
+    except Exception as e:  # noqa: BLE001
+        log.warning("freshness(rates) unavailable: %s", e)
+
     out["any_stale"] = any(isinstance(v, dict) and v.get("stale") for v in out.values())
     return out
+
+
+def _rates_freshness(as_of: pd.Timestamp) -> dict | None:
+    """2y yields, per currency (audit 1.5): last date in data/rates.parquet at or
+    before as_of, lag in business days, stale iff lag > rate_compute.MAX_AGE_BD
+    (the same threshold that makes the monetary score stale). A currency with no
+    2y source at all (NZD/CHF today, see docs) is listed under `missing` and does
+    not roll into `stale` — it is a known gap, not a feed that stopped."""
+    if not RATES_PARQUET.exists():
+        return None
+    import numpy as np
+    from src.rate_compute import MAX_AGE_BD
+    from src.rate_sources import CURRENCIES
+    r = pd.read_parquet(RATES_PARQUET, columns=["currency", "date", "source"])
+    r["date"] = pd.to_datetime(r["date"])
+    r = r[r["date"] <= as_of]
+    ref = as_of.date()
+    per: dict = {}
+    missing: list[str] = []
+    for ccy in CURRENCIES:
+        sub = r[r["currency"] == ccy]
+        if sub.empty:
+            missing.append(ccy)
+            continue
+        last_row = sub.loc[sub["date"].idxmax()]
+        last = last_row["date"].date()
+        lag = 0 if last >= ref else int(np.busday_count(last, ref))
+        per[ccy] = {"last_update": last.isoformat(), "lag_bd": lag,
+                    "source": str(last_row["source"]), "stale": lag > MAX_AGE_BD}
+    stale_ccys = [c for c, v in per.items() if v["stale"]]
+    return {"per_currency": per, "max_lag_bd": MAX_AGE_BD,
+            "stale_currencies": stale_ccys, "missing": missing,
+            "stale": bool(stale_ccys)}
 
 
 def _trend_enabled(cfg: dict | None = None) -> bool:
