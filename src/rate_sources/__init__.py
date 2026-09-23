@@ -7,7 +7,7 @@ surface reused by both `src.rates_probe` (diagnostics) and `src.rate_fetch`
 (parquet build). No I/O of project data here — only outbound keyless HTTP.
 
 Adapter status (verified): USD→FRED DGS2 (DBnomics-FED SVENY02 fallback),
-EUR→ECB SR_2Y, GBP→BoE IUDSNPY, JPY→MoF jgbcm_all.csv + jgbcm.csv (col 2年),
+EUR→ECB SR_2Y, GBP→BoE GLC nominal spot 2.0y, JPY→MoF jgbcm_all.csv + jgbcm.csv (col 2年),
 CAD→BoC BD.CDN.2YR.DQ.YLD, AUD→RBA F2 (Stooq fallback), NZD→RBNZ B2 xlsx
 (Stooq fallback), CHF→SNB rendoblid D0=2J (often stale → Stooq fallback).
 
@@ -636,38 +636,95 @@ class MofJgbSource(BaseSource):
 # ---------------------------------------------------------------------------
 
 class BoeSource(BaseSource):
-    name = "boe"
-    CODE = "IUDSNPY"  # nominal par yield, 2-year, daily
+    """GBP 2y = Bank of England GLC nominal SPOT curve, maturity 2.0 years
+    (audit 2026-09-23, 1.4). BoE has no daily 2y series in the IADB — the old
+    code IUDSNPY is the 5-year nominal PAR yield.
+
+    Daily fetch: latest-yield-curve-data.zip -> "GLC Nominal daily data current
+    month.xlsx", sheet "4. spot curve"; the maturity column is the one whose
+    header row ("years:") reads 2.0. Only the current month is served, so the
+    source is INCREMENTAL: rate_fetch assesses it together with the rows it
+    already holds for this source (history backfilled once from
+    glcnominalddata.zip by src.rate_migrations)."""
+    name = "boe_glc"
+    incremental = True
+    URL_LATEST = ("https://www.bankofengland.co.uk/-/media/boe/files/statistics/"
+                  "yield-curves/latest-yield-curve-data.zip")
+    URL_HISTORY = ("https://www.bankofengland.co.uk/-/media/boe/files/statistics/"
+                   "yield-curves/glcnominalddata.zip")
+    MEMBER_LATEST = "GLC Nominal daily data current month.xlsx"
+    SHEET = "4. spot curve"
+    MATURITY_YEARS = 2.0
 
     def supports(self, currency: str) -> bool:
         return currency == "GBP"
 
+    @classmethod
+    def parse_spot_xlsx(cls, content: bytes) -> list[tuple[date, float]]:
+        """One GLC nominal workbook -> [(date, 2.0y spot)]. Raises ValueError if
+        the sheet or a 2.0-year maturity column is missing."""
+        from openpyxl import load_workbook
+        wb = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+        if cls.SHEET not in wb.sheetnames:
+            raise ValueError(f"no sheet {cls.SHEET!r} in {wb.sheetnames}")
+        col = None
+        out: list[tuple[date, float]] = []
+        for row in wb[cls.SHEET].iter_rows(values_only=True):
+            if not row:
+                continue
+            if col is None:
+                if str(row[0]).strip().lower() == "years:":
+                    hits = [i for i, c in enumerate(row[1:], start=1)
+                            if isinstance(c, (int, float)) and float(c) == cls.MATURITY_YEARS]
+                    if not hits:
+                        raise ValueError(f"no {cls.MATURITY_YEARS}-year maturity in the "
+                                         f"'years:' header row")
+                    col = hits[0]
+                continue
+            d, v = row[0], row[col] if col < len(row) else None
+            if isinstance(d, datetime) and isinstance(v, (int, float)):
+                out.append((d.date(), float(v)))
+        if col is None:
+            raise ValueError("no 'years:' maturity header row")
+        return out
+
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        frm = "01/Jan/2018"
-        to = date.today().strftime("%d/%b/%Y")
-        url = ("https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?"
-               f"csv.x=yes&Datefrom={frm}&Dateto={to}&SeriesCodes={self.CODE}"
-               "&CSVF=TN&UsingCodes=Y")
-        r = self._get(url)
+        import zipfile
+        r = self._get(self.URL_LATEST)
         if r is None:
             return None
-        if self._check_botwall(r):
+        if r.content[:2] != b"PK":
+            self.last_status, self.last_note = "BOT-WALL", "not a zip"
             return None
-        try:
-            df = pd.read_csv(io.StringIO(r.text))
-        except Exception as e:
-            self._parse_fail(f"csv {e}")
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        if self.MEMBER_LATEST not in z.namelist():
+            self._parse_fail(f"no {self.MEMBER_LATEST!r} in {z.namelist()}")
             return None
-        if df.shape[1] < 2:
-            self._parse_fail(f"unexpected shape {df.shape}; needs dedicated parser")
-            return None
-        date_col, val_col = df.columns[0], df.columns[-1]
-        s = _mk(currency, self.name, "2y", "daily",
-                pd.to_datetime(df[date_col], errors="coerce", dayfirst=True),
-                pd.to_numeric(df[val_col], errors="coerce"), note=f"code={self.CODE}")
+        pts = self.parse_spot_xlsx(z.read(self.MEMBER_LATEST))
+        s = _mk(currency, self.name, "2y", "daily", [d for d, _ in pts],
+                [v for _, v in pts], note=f"GLC nominal spot {self.MATURITY_YEARS}y (current month)")
         if not s:
-            self._parse_fail("reachable / needs dedicated parser")
+            self._parse_fail("no 2.0y observations in the current-month file")
         return s
+
+    def fetch_history(self, since: date) -> list[tuple[date, float]]:
+        """One-off backfill (src.rate_migrations): every workbook in
+        glcnominalddata.zip (~39 MB) covering >= `since`. Raises on failure."""
+        import zipfile
+        r = self._get(self.URL_HISTORY)
+        if r is None or r.content[:2] != b"PK":
+            raise RuntimeError(f"BoE GLC history download failed: {self.last_note or 'not a zip'}")
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        pts: dict[date, float] = {}
+        for name in z.namelist():
+            yrs = [int(t) for t in name.replace(".xlsx", "").replace("_", " ").split()
+                   if t.isdigit() and len(t) == 4]
+            if yrs and max(yrs) < since.year and "present" not in name:
+                continue
+            for d, v in self.parse_spot_xlsx(z.read(name)):
+                if d >= since:
+                    pts[d] = v
+        return sorted(pts.items())
 
 
 # ---------------------------------------------------------------------------
@@ -861,7 +918,7 @@ ALL_SOURCES: dict[str, BaseSource] = {
 SOURCE_PREFERENCE: dict[str, list[str]] = {
     "USD": ["fred", "dbnomics_fed", "stooq"],
     "EUR": ["ecb", "stooq"],
-    "GBP": ["boe", "stooq"],
+    "GBP": ["boe_glc", "stooq"],
     "JPY": ["mof_jgb", "stooq"],
     "AUD": ["rba", "stooq"],
     "NZD": ["rbnz", "stooq"],
