@@ -988,14 +988,14 @@ def _policy_rates_freshness(as_of: pd.Timestamp, meetings_path: Path | None = No
 
 def _rates_freshness(as_of: pd.Timestamp) -> dict | None:
     """2y yields, per currency (audit 1.5): last date in data/rates.parquet at or
-    before as_of, lag in business days, stale iff lag > rate_compute.MAX_AGE_BD
-    (the same threshold that makes the monetary score stale). A currency with no
+    before as_of, lag in business days, stale iff lag > rate_compute.max_age_for(source of the last row)
+    (the same per-source threshold that makes the monetary score stale). A currency with no
     2y source at all (NZD/CHF today, see docs) is listed under `missing` and does
     not roll into `stale` — it is a known gap, not a feed that stopped."""
     if not RATES_PARQUET.exists():
         return None
     import numpy as np
-    from src.rate_compute import MAX_AGE_BD
+    from src.rate_compute import MAX_AGE_BD, max_age_for
     from src.rate_sources import CURRENCIES
     r = pd.read_parquet(RATES_PARQUET, columns=["currency", "date", "source"])
     r["date"] = pd.to_datetime(r["date"])
@@ -1011,8 +1011,9 @@ def _rates_freshness(as_of: pd.Timestamp) -> dict | None:
         last_row = sub.loc[sub["date"].idxmax()]
         last = last_row["date"].date()
         lag = 0 if last >= ref else int(np.busday_count(last, ref))
-        per[ccy] = {"last_update": last.isoformat(), "lag_bd": lag,
-                    "source": str(last_row["source"]), "stale": lag > MAX_AGE_BD}
+        src = str(last_row["source"])
+        per[ccy] = {"last_update": last.isoformat(), "lag_bd": lag, "source": src,
+                    "max_lag_bd": max_age_for(src), "stale": lag > max_age_for(src)}
     stale_ccys = [c for c, v in per.items() if v["stale"]]
     return {"per_currency": per, "max_lag_bd": MAX_AGE_BD,
             "stale_currencies": stale_ccys, "missing": missing,

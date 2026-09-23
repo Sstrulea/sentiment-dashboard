@@ -26,6 +26,17 @@ W_DEFAULT = 21          # trading-day offset (~1 month), in ROWS not calendar da
 BASELINE_N = 252        # rolling window of W-changes for the volatility baseline
 MIN_FOR_Z = 60          # need this many W-changes for a stable std → else fallback
 MAX_AGE_BD = 7          # latest obs older than this many business days → stale
+# Per-source threshold = source cadence + holiday margin (audit 4C). Daily
+# sources keep MAX_AGE_BD. RBA F2 is weekly: published on Friday with data to
+# Wednesday, so a healthy series is up to ~7 business days old the day before
+# the next release; 10 leaves room for a holiday or a late publication.
+SOURCE_MAX_AGE_BD = {"rba": 10}
+
+
+def max_age_for(source: Optional[str]) -> int:
+    """Staleness threshold (business days) for the source of a currency's
+    latest observation. Used by compute_rate_scores AND freshness.rates."""
+    return SOURCE_MAX_AGE_BD.get(str(source), MAX_AGE_BD)
 
 # z → score thresholds
 Z_HI, Z_LO = 1.0, 0.5
@@ -58,6 +69,16 @@ def _series_for(rates_df: pd.DataFrame, currency: str) -> tuple[list[date], list
     if sub.empty:
         return [], []
     return clean_series(sub, "yield_pct")
+
+
+def _latest_source(rates_df: pd.DataFrame, currency: str) -> Optional[str]:
+    if "source" not in rates_df.columns:
+        return None
+    sub = rates_df[rates_df["currency"] == currency]
+    if sub.empty:
+        return None
+    d = pd.to_datetime(sub["date"], errors="coerce")
+    return None if d.isna().all() else str(sub.loc[d.idxmax(), "source"])
 
 
 def compute_rate_score_for(
@@ -107,10 +128,13 @@ def compute_rate_scores(
     W: int = W_DEFAULT,
     baseline_n: int = BASELINE_N,
     min_for_z: int = MIN_FOR_Z,
-    max_age_bd: int = MAX_AGE_BD,
+    max_age_bd: Optional[int] = None,
 ) -> dict[str, RateScore]:
     """Per-currency repricing-momentum scores. Currencies absent from the frame
     are simply omitted (graceful — no rate row for that currency).
+
+    `max_age_bd` None (default) = per-source threshold (max_age_for, judged on
+    the source of the latest observation); an int overrides it for all.
 
     Lookahead guard: when `as_of` is given, rows dated after it are dropped here
     (structural — independent of caller slicing)."""
@@ -133,8 +157,9 @@ def compute_rate_scores(
         dates, ys = _series_for(rates_df, ccy)
         if not ys:
             continue
+        age = max_age_bd if max_age_bd is not None else max_age_for(_latest_source(rates_df, ccy))
         out[ccy] = compute_rate_score_for(
             dates, ys, ccy, ref, W=W, baseline_n=baseline_n,
-            min_for_z=min_for_z, max_age_bd=max_age_bd,
+            min_for_z=min_for_z, max_age_bd=age,
         )
     return out
