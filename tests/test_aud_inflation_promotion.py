@@ -22,6 +22,18 @@ from src.economic_fetch import CompiledMatcher
 from src.ff_scoring import CCY2COUNTRY, to_scoring_frame, build_matcher
 
 ROOT = Path(__file__).resolve().parents[1]
+# Frozen FF calendar: data/economic_calendar_ff.parquet at snapshot 4ace910
+# (2026-09-23 07:06 UTC), migrated with the phase-2 provenance (Z5). Never the
+# live data/ file, which the hourly refresh keeps moving (audit 4D).
+FROZEN_FF = ROOT / "tests" / "fixtures" / "frozen" / "economic_calendar_ff_4ace910.parquet"
+
+# The as_of every pin in this module was taken at.
+PIN_AS_OF = pd.Timestamp("2026-08-05")
+
+
+def _point_in_time(scored: pd.DataFrame, as_of) -> pd.DataFrame:
+    """Only what was released by `as_of` — a pin must not see later prints."""
+    return scored[pd.to_datetime(scored["release_dt"]) <= pd.Timestamp(as_of)]
 CCYS = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"]
 
 
@@ -33,8 +45,8 @@ def indicators_cfg():
 
 @pytest.fixture(scope="module")
 def scored_frame():
-    raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
-    return to_scoring_frame(raw, build_matcher())
+    raw = pd.read_parquet(FROZEN_FF)
+    return _point_in_time(to_scoring_frame(raw, build_matcher()), PIN_AS_OF)
 
 
 # ---------------------------------------------------------------------------
@@ -144,8 +156,9 @@ def test_no_orphaned_aud_core_cpi_exception():
 
     with open(ROOT / "data" / "economic_indicators.yaml") as f:
         ind_cfg = yaml.safe_load(f)
-    raw = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
+    raw = pd.read_parquet(FROZEN_FF)
     scored = to_scoring_frame(raw, build_matcher())
+    scored = _point_in_time(scored, PIN_AS_OF)
 
     as_of = pd.Timestamp("2026-08-05")
     per_ind = per_currency_indicator_freshness(scored, ind_cfg, as_of)

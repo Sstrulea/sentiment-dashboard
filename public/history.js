@@ -768,6 +768,7 @@
   // (resolveEntry / points_ref dedup, the P1.4 bug class) without a browser
   // or a DOM shim. No-op in the browser: `module` is undefined there.
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { state, resolveEntry, seriesEntries, availableCategories, allCurrencies };
+    module.exports = { state, resolveEntry, seriesEntries, availableCategories, allCurrencies,
+                       buildBarDatasets, buildStepDatasets };
   }
 })();
