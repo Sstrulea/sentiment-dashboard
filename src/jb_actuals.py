@@ -293,10 +293,31 @@ def _api_key() -> Optional[str]:
     return os.environ.get("JBLANKED_API_KEY") or None
 
 
+ERROR_BODY_CHARS = 300
+_RATE_HEADER_HINTS = ("ratelimit", "rate-limit", "retry-after", "quota", "x-limit")
+
+# Observability (audit F5): what the LAST real call returned — HTTP status, the
+# rate-limit headers if any, and the start of the body on an error. Set by
+# fetch_range_raw, read by pull_actuals into data/jb_last_pull.json. Never holds
+# the key (redacted before it is stored).
+_last_response_meta: Optional[dict] = None
+
+
+def _response_meta(r, api_key: str) -> dict:
+    headers = {k: v for k, v in r.headers.items()
+               if any(h in k.lower() for h in _RATE_HEADER_HINTS)}
+    meta = {"http_status": r.status_code, "rate_limit_headers": headers}
+    if r.status_code >= 400:
+        body = (r.text or "")[:ERROR_BODY_CHARS]
+        meta["body"] = body.replace(api_key, "***") if api_key else body
+    return meta
+
+
 def fetch_range_raw(from_date: date, to_date: date, *, api_key: str,
                     url: str = DEFAULT_RANGE_URL, timeout: int = 30) -> str:
     """ONE authenticated JBlanked range call → raw response text (unparsed).
     Free tier ≈ 1 call/day — callers must gate through should_pull()."""
+    global _last_response_meta
     import requests
     r = requests.get(
         url,
@@ -305,8 +326,27 @@ def fetch_range_raw(from_date: date, to_date: date, *, api_key: str,
                  "User-Agent": "macro-data-analysis/1.0"},
         timeout=timeout,
     )
+    _last_response_meta = _response_meta(r, api_key)
     r.raise_for_status()
     return r.text
+
+
+def _record_attempt(state_path: Path, now: pd.Timestamp, status: str,
+                    error: Optional[str] = None) -> None:
+    """Persist the outcome of a REAL call next to the last-success fields, which
+    are left exactly as they were (observability only, no behavior change)."""
+    meta = _last_response_meta or {}
+    state = load_state(state_path)
+    state.update({
+        "last_attempt_at": now.isoformat(),
+        "last_status": status,
+        "last_http_status": meta.get("http_status"),
+        "last_error": (meta.get("body") or error or None) if status != "ok" else None,
+        "last_rate_limit_headers": meta.get("rate_limit_headers") or {},
+    })
+    if state.get("last_error"):
+        state["last_error"] = str(state["last_error"])[:ERROR_BODY_CHARS]
+    save_state(state, state_path)
 
 
 def save_raw(text: str, now_utc: pd.Timestamp, raw_dir: Path = RAW_DIR,
@@ -373,10 +413,16 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
     _last = last_success_ts(state)
     span = RANGE_DAYS if _last is None else max(RANGE_DAYS, (to_d - _last.date()).days + 1)
     from_d = to_d - timedelta(days=min(span, MAX_RANGE_DAYS))
+    global _last_response_meta
+    _last_response_meta = None
     try:
         raw_text = fetcher(from_d, to_d + timedelta(days=1))  # JB to este EXCLUSIV
     except Exception as e:  # noqa: BLE001 — HTTP/network/auth failure
         log.warning("JB pull: range fetch FAILED (%s); will retry next tick.", str(e)[:120])
+        meta = _last_response_meta or {}
+        if meta.get("body"):
+            log.warning("JB pull: HTTP %s body: %s", meta.get("http_status"), meta["body"])
+        _record_attempt(state_path, now, "fetch_failed", f"{type(e).__name__}: {e}")
         return {"status": "fetch_failed"}
 
     raw_path = save_raw(raw_text, now, raw_dir=raw_dir)   # raw on disk BEFORE parse
@@ -386,11 +432,13 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
     except Exception as e:  # noqa: BLE001 — bad JSON/schema/value
         log.warning("JB pull: parse FAILED (%s); raw kept at %s; will retry next tick.",
                     str(e)[:120], raw_path.name)
+        _record_attempt(state_path, now, "parse_failed", f"{type(e).__name__}: {e}")
         return {"status": "parse_failed", "raw": str(raw_path)}
 
     if jb.empty:
         log.warning("JB pull: payload mapped 0 events; treated as failure "
                     "(state not advanced); raw kept at %s.", raw_path.name)
+        _record_attempt(state_path, now, "empty", "payload mapped 0 events")
         return {"status": "empty", "raw": str(raw_path)}
 
     parquet_path = Path(parquet_path)
@@ -405,6 +453,7 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
     save_state({"last_success_utc_date": str(now.date()),
                 "last_success_at": now.isoformat(),
                 "rows": len(cleaned), "actuals": n_act}, state_path)
+    _record_attempt(state_path, now, "ok")
     log.info("JB pull: OK — %d cleaned row(s), %d with actuals; parquet %d -> %d rows; raw %s.",
              len(cleaned), n_act, n_before, len(merged), raw_path.name)
     return {"status": "ok", "rows": len(cleaned), "actuals": n_act,

@@ -1,0 +1,51 @@
+F2 CAPITAL MARKET YIELDS – GOVERNMENT BONDS,,,
+Title,Australian Government 2 year bond,Australian Government 3 year bond,Australian Government 5 year bond
+Description,"Yields on Australian government bonds, interpolated, 2 years maturity","Yields on Australian government bonds, interpolated, 3 years maturity","Yields on Australian government bonds, interpolated, 5 years maturity"
+Frequency,Daily,Daily,Daily
+Type,Original,Original,Original
+Units,Per cent per annum,Per cent per annum,Per cent per annum
+,,,
+,,,
+Source,Yieldbroker,Yieldbroker,Yieldbroker
+Publish date,07-Jun-2023,07-Jun-2023,07-Jun-2023
+Series ID,FCMYGBAG2D,FCMYGBAG3D,FCMYGBAG5D
+04-Jan-2021,0.08,0.10,0.34
+05-Jan-2021,0.07,0.10,0.34
+06-Jan-2021,0.07,0.11,0.37
+07-Jan-2021,0.08,0.11,0.38
+08-Jan-2021,0.08,0.11,0.40
+11-Jan-2021,0.08,0.11,0.39
+12-Jan-2021,0.08,0.11,0.40
+13-Jan-2021,0.08,0.11,0.40
+14-Jan-2021,0.08,0.11,0.39
+15-Jan-2021,0.08,0.10,0.38
+18-Jan-2021,0.08,0.10,0.37
+19-Jan-2021,0.08,0.10,0.38
+20-Jan-2021,0.08,0.10,0.37
+21-Jan-2021,0.08,0.11,0.37
+22-Jan-2021,0.08,0.11,0.39
+25-Jan-2021,0.08,0.11,0.38
+27-Jan-2021,0.09,0.11,0.37
+28-Jan-2021,0.09,0.11,0.37
+29-Jan-2021,0.09,0.11,0.38
+01-Feb-2021,0.09,0.11,0.39
+02-Feb-2021,0.09,0.11,0.38
+03-Feb-2021,0.09,0.11,0.38
+04-Feb-2021,0.10,0.11,0.41
+05-Feb-2021,0.09,0.11,0.40
+08-Feb-2021,0.09,0.11,0.42
+09-Feb-2021,0.09,0.11,0.41
+10-Feb-2021,0.09,0.10,0.41
+11-Feb-2021,0.09,0.10,0.40
+12-Feb-2021,0.09,0.11,0.41
+15-Feb-2021,0.09,0.11,0.44
+16-Feb-2021,0.09,0.11,0.45
+17-Feb-2021,0.10,0.12,0.48
+18-Feb-2021,0.11,0.12,0.48
+19-Feb-2021,0.12,0.12,0.52
+22-Feb-2021,0.12,0.13,0.62
+23-Feb-2021,0.12,0.13,0.60
+24-Feb-2021,0.12,0.13,0.62
+25-Feb-2021,0.11,0.12,0.71
+26-Feb-2021,0.11,0.12,0.81
+01-Mar-2021,0.11,0.13,0.68

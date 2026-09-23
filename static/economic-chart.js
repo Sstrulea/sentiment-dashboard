@@ -31,6 +31,13 @@
     if (Math.abs(n - Math.round(n)) < 1e-9) return String(Math.round(n));
     return n.toFixed(2);
   }
+  // A policy rate set as a target RANGE (Fed; decisions.parquet lower/upper):
+  // the value is the midpoint, shown as the range around it (same half-width).
+  function fmtPolicy(v, e) {
+    if (!e || !e.range || v === null || v === undefined || Number.isNaN(Number(v))) return fmtNum(v);
+    const hw = (Number(e.range.upper) - Number(e.range.lower)) / 2;
+    return (Number(v) - hw).toFixed(2) + "–" + (Number(v) + hw).toFixed(2);
+  }
   function fmtSigned(v, dp) {
     if (v === null || v === undefined || Number.isNaN(v)) return "—";
     const n = Number(v);
@@ -46,11 +53,23 @@
     const n = Math.round(Number(v));
     return (n > 0 ? "+" : "") + n;
   }
-  function fmtDate(iso) {
+  // Dates (audit V2): the payload's release_dt is tz-naive UTC ("2026-09-18T02:54:00",
+  // no "Z"); `new Date()` would read it as LOCAL time. Parse it as UTC, show the
+  // viewer's local date. A date-only value ("2026-09-23", or an entry flagged
+  // `date_only`, e.g. a BoJ decision with no time) is shown as-is: there is no
+  // instant to convert, and inventing 00:00 would shift it a day west of UTC.
+  function parseUtc(iso) {
+    const s = String(iso);
+    return new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + "Z");
+  }
+  function fmtDate(iso, dateOnly) {
     if (!iso) return "—";
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return iso;
-    return d.toISOString().slice(0, 10);
+    const s = String(iso);
+    if (dateOnly || /^\d{4}-\d{2}-\d{2}$/.test(s)) return s.slice(0, 10);
+    const d = parseUtc(s);
+    if (isNaN(d.getTime())) return s;
+    const p = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
   }
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
 
@@ -831,14 +850,14 @@
       ? ' <span class="econ-inv" title="Inverted: a higher actual is bearish for this currency">⤵</span>'
       : '';
     const zTxt = (e.z === null || e.z === undefined) ? "—" : fmtSigned(e.z, 2);
-    const dateTxt = fmtDate(e.release_dt) +
+    const dateTxt = fmtDate(e.release_dt, e.date_only) +
       (e.age_days !== null && e.age_days !== undefined ? ' <span class="muted">(' + e.age_days + 'd)</span>' : '');
     const staleBadge = e.stale ? ' <span class="econ-flag flag-stale" title="Latest release is older than max_age_days — shown for visibility but excluded from the category average / index">stale</span>' : '';
     return (
       '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
       '<td class="ei-name">' + label + inverted + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.actual, e) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.consensus, e) + '</td>' +
       '<td class="ei-num">' + fmtSigned(e.surprise, 2) + '</td>' +
       '<td class="ei-num">' + zTxt + '</td>' +
       '<td class="ei-score ' + cellClass(e.score) + '">' + fmtScoreCell(e.score) + '</td>' +
@@ -1249,7 +1268,7 @@
   function caIndicatorRow(key, e, sign) {
     const meta = indMeta(key);
     const zTxt = (e.z === null || e.z === undefined) ? "—" : fmtSigned(e.z, 2);
-    const dateTxt = fmtDate(e.release_dt) +
+    const dateTxt = fmtDate(e.release_dt, e.date_only) +
       (e.age_days !== null && e.age_days !== undefined ? ' <span class="muted">(' + e.age_days + 'd)</span>' : '');
     const staleBadge = e.stale ? ' <span class="econ-flag flag-stale" title="stale — excluded from the category average">stale</span>' : '';
     const signed = (e.score === null || e.score === undefined) ? null : sign * e.score;
@@ -1266,8 +1285,8 @@
     return (
       '<tr' + rowCls + '>' +
       '<td class="ei-name">' + (meta.label || key) + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.actual, e) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.consensus, e) + '</td>' +
       '<td class="ei-num">' + fmtSigned(e.surprise, 2) + '</td>' +
       '<td class="ei-num">' + zTxt + '</td>' +
       '<td class="ei-score ' + scoreCls + '">' + scoreTxt + '</td>' +

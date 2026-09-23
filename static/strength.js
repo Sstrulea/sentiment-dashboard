@@ -27,11 +27,23 @@
     if (v === null || v === undefined) return "—";
     return (v > 0 ? "+" : "") + v;
   }
-  function fmtDate(iso) {
+  // Dates (audit V2): the payload's release_dt is tz-naive UTC ("2026-09-18T02:54:00",
+  // no "Z"); `new Date()` would read it as LOCAL time. Parse it as UTC, show the
+  // viewer's local date. A date-only value ("2026-09-23", or an entry flagged
+  // `date_only`, e.g. a BoJ decision with no time) is shown as-is: there is no
+  // instant to convert, and inventing 00:00 would shift it a day west of UTC.
+  function parseUtc(iso) {
+    const s = String(iso);
+    return new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + "Z");
+  }
+  function fmtDate(iso, dateOnly) {
     if (!iso) return "—";
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return String(iso);
-    return d.toISOString().slice(0, 10);
+    const s = String(iso);
+    if (dateOnly || /^\d{4}-\d{2}-\d{2}$/.test(s)) return s.slice(0, 10);
+    const d = parseUtc(s);
+    if (isNaN(d.getTime())) return s;
+    const p = n => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
   }
   function escAttr(s) { return String(s).replace(/"/g, "&quot;"); }
   // Actual/Forecast/Previous per meta.indicators[key].unit — suffix is a
@@ -42,6 +54,19 @@
     const dec = unit && typeof unit.decimals === "number" ? unit.decimals : 1;
     const suffix = (unit && unit.suffix) || "";
     const body = signed ? (n > 0 ? "+" : "") + n.toFixed(dec) : n.toFixed(dec);
+    return suffix ? body + " " + suffix : body;
+  }
+
+  // A policy rate set as a target RANGE (Fed; decisions.parquet lower/upper):
+  // the value is the midpoint, shown as the range around it (same half-width).
+  function fmtPolicy(v, e, unit) {
+    if (!e || !e.range || v === null || v === undefined || Number.isNaN(Number(v))) {
+      return fmtUnit(v, unit);
+    }
+    const hw = (Number(e.range.upper) - Number(e.range.lower)) / 2;
+    const dec = unit && typeof unit.decimals === "number" ? unit.decimals : 2;
+    const suffix = (unit && unit.suffix) || "";
+    const body = (Number(v) - hw).toFixed(dec) + "–" + (Number(v) + hw).toFixed(dec);
     return suffix ? body + " " + suffix : body;
   }
 
@@ -382,7 +407,7 @@
     const previousHtml = revClass
       ? '<span class="' + revClass + '" title="Revizuit de la ' + fmtUnit(e.prior_actual, unit) +
         ' la ' + fmtUnit(e.previous, unit) + senseTxt + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
-      : fmtUnit(e.previous, unit);
+      : fmtPolicy(e.previous, e, unit);
     const impact = impactState(e);
     const rowCls = impact === "stale" ? ' class="ei-stale"'
       : ((impact === "no_forecast" || impact === "direction_guard") ? ' class="ei-no-consensus"' : "");
@@ -399,9 +424,9 @@
     return (
       '<tr' + rowCls + '>' +
       '<td class="ei-name">' + label + inverted + '</td>' +
-      '<td class="ei-date">' + fmtDate(dateVal) + '</td>' +
-      '<td class="ei-num">' + fmtUnit(actualRaw, unit) + '</td>' +
-      '<td class="ei-num">' + fmtUnit(forecastRaw, unit) + '</td>' +
+      '<td class="ei-date">' + fmtDate(dateVal, e.date_only) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(actualRaw, e, unit) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(forecastRaw, e, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(surpriseRaw, unit, true) + '</td>' +
       '<td class="ei-num">' + previousHtml + '</td>' +
       '<td class="ei-score ei-impact">' + impactHtml + '</td>' +

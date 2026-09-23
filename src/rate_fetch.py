@@ -20,8 +20,11 @@ from typing import Optional
 import pandas as pd
 
 from .rate_compute import compute_rate_scores
+from .rate_gapfill import fill_gap, load_state as gap_load_state, save_state as gap_save_state
+from .rate_migrations import ensure_all as ensure_migrations
 from .rate_sources import (
     ALL_SOURCES,
+    TenorMismatch,
     CURRENCIES,
     SOURCE_PREFERENCE,
     YieldSeries,
@@ -35,8 +38,48 @@ RATES_FILE = ROOT / "data" / "rates.parquet"
 COLUMNS = ["currency", "date", "tenor", "yield_pct", "source"]
 
 
-def fetch_currency(currency: str, today: Optional[date] = None) -> Optional[YieldSeries]:
-    """Try adapters in preference order; return the first qualifying series, else None."""
+def _with_stored_history(series: YieldSeries, stored: Optional[pd.DataFrame]) -> YieldSeries:
+    """Incremental source (serves only a recent window, e.g. BoE GLC current month):
+    assess it together with the rows the parquet already holds for the SAME
+    currency and source. The fetched points win a shared date."""
+    if stored is None or stored.empty:
+        return series
+    sub = stored[(stored["currency"] == series.currency) & (stored["source"] == series.source)]
+    if sub.empty:
+        return series
+    pts = {pd.Timestamp(d).date(): float(v) for d, v in zip(sub["date"], sub["yield_pct"])}
+    pts.update(dict(series.points))
+    return YieldSeries(series.currency, series.source, series.tenor, series.frequency,
+                       sorted(pts.items()), series.note + f" +{len(sub)} stored")
+
+
+def _fill_month_gap(src, series: YieldSeries, stored: Optional[pd.DataFrame],
+                    today: date) -> YieldSeries:
+    """Incremental source with a history archive: fill business days missing
+    between the stored rows and the fetched window (src.rate_gapfill)."""
+    if not hasattr(src, "fetch_history_with_coverage") or stored is None or stored.empty:
+        return series
+    sub = stored[(stored["currency"] == series.currency) & (stored["source"] == series.source)]
+    if sub.empty:
+        return series
+    state = gap_load_state()
+    stored_dates = [pd.Timestamp(d).date() for d in sub["date"]]
+    added, new_state = fill_gap(series.source, stored_dates, series.points, today,
+                                state, src.fetch_history_with_coverage)
+    if new_state != state:
+        gap_save_state(new_state)
+    if not added:
+        return series
+    pts = dict(added)
+    pts.update(dict(series.points))
+    return YieldSeries(series.currency, series.source, series.tenor, series.frequency,
+                       sorted(pts.items()), series.note + f" +{len(added)} gap-filled")
+
+
+def fetch_currency(currency: str, today: Optional[date] = None,
+                   stored: Optional[pd.DataFrame] = None) -> Optional[YieldSeries]:
+    """Try adapters in preference order; return the first qualifying series, else None.
+    `stored` (the current parquet) is only read for incremental sources."""
     today = today or date.today()
     pref = SOURCE_PREFERENCE.get(currency, [])
     last_reasons: list[str] = []
@@ -44,10 +87,18 @@ def fetch_currency(currency: str, today: Optional[date] = None) -> Optional[Yiel
         src = ALL_SOURCES.get(name)
         if src is None or not src.supports(currency):
             continue
-        series = src.fetch(currency)
+        try:
+            series = src.fetch(currency)
+        except TenorMismatch as e:
+            # semantic failure: never masked by a fallback source
+            log.error("%s TENOR GUARD — %s; currency not written this run.", currency, e)
+            return None
         if series is None:
             last_reasons.append(f"{name}:{src.last_status or 'fail'}({src.last_note[:40]})")
             continue
+        if getattr(src, "incremental", False):
+            series = _fill_month_gap(src, series, stored, today)
+            series = _with_stored_history(series, stored)
         a = assess(series, today)
         if a.qualifies:
             lag = series.business_days_lag(today)
@@ -97,9 +148,14 @@ def update_rates(currencies: Optional[list[str]] = None) -> pd.DataFrame:
     """
     today = date.today()
     ccys = currencies or CURRENCIES
+    ok_to_write = ensure_migrations(RATES_FILE)
+    stored = pd.read_parquet(RATES_FILE) if RATES_FILE.exists() else None
     frames: list[pd.DataFrame] = []
     for ccy in ccys:
-        s = fetch_currency(ccy, today)
+        if not ok_to_write.get(ccy, True):
+            log.error("%s skipped: pending rates migration (see src.rate_migrations).", ccy)
+            continue
+        s = fetch_currency(ccy, today, stored)
         if s is not None:
             frames.append(_series_to_rows(s))
     if not frames:

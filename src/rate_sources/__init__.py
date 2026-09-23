@@ -7,7 +7,7 @@ surface reused by both `src.rates_probe` (diagnostics) and `src.rate_fetch`
 (parquet build). No I/O of project data here — only outbound keyless HTTP.
 
 Adapter status (verified): USD→FRED DGS2 (DBnomics-FED SVENY02 fallback),
-EUR→ECB SR_2Y, GBP→BoE IUDSNPY, JPY→MoF jgbcm_all.csv (col 2年),
+EUR→ECB SR_2Y, GBP→BoE GLC nominal spot 2.0y, JPY→MoF jgbcm_all.csv + jgbcm.csv (col 2年),
 CAD→BoC BD.CDN.2YR.DQ.YLD, AUD→RBA F2 (Stooq fallback), NZD→RBNZ B2 xlsx
 (Stooq fallback), CHF→SNB rendoblid D0=2J (often stale → Stooq fallback).
 
@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import io
 import logging
+import re
 import socket
 import subprocess
 import time
@@ -68,6 +69,18 @@ FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-anal
 FRESH_LAG_BD = 5     # latest within ~5 business days = fresh
 STALE_LAG_BD = 10    # > 10 business days = STALE / disqualified for the pillar
 MIN_HISTORY_YEARS = 2.0
+
+
+class TenorMismatch(ValueError):
+    """The source's OWN metadata (series id, maturity header, label) does not
+    say 2 years. Never swallowed by BaseSource.fetch and never masked by a
+    fallback source: rate_fetch logs it and leaves the currency unwritten, so
+    freshness.rates turns it stale (audit 2026-09-23, 1.5)."""
+
+
+def require_2y(source: str, ok: bool, what: str) -> None:
+    if not ok:
+        raise TenorMismatch(f"{source}: source metadata is not 2y ({what})")
 
 
 # ---------------------------------------------------------------------------
@@ -177,6 +190,9 @@ class BaseSource:
         self.last_note = ""
         try:
             return self._fetch(currency)
+        except TenorMismatch as e:
+            self.last_status, self.last_note = "TENOR-MISMATCH", str(e)
+            raise
         except Exception as e:  # never propagate — graceful per source
             self._parse_fail(f"{type(e).__name__}: {e}")
             return None
@@ -307,6 +323,9 @@ class FredSource(BaseSource):
         if not val_cols:
             self._parse_fail(f"cols {list(df.columns)}")
             return None
+        # fredgraph names the value column after the series id (DGS2 = 2-year)
+        require_2y(self.name, str(val_cols[0]).strip() == sid,
+                   f"value column {val_cols[0]!r}, expected {sid!r}")
         vals = pd.to_numeric(df[val_cols[0]].replace(".", np.nan), errors="coerce")
         s = _mk(currency, self.name, tenor, "daily",
                 pd.to_datetime(df[date_col], errors="coerce"), vals, note=f"id={sid}")
@@ -480,6 +499,8 @@ class EcbSource(BaseSource):
         if "TIME_PERIOD" not in df.columns or "OBS_VALUE" not in df.columns:
             self._parse_fail(f"cols {list(df.columns)[:8]}")
             return None
+        dtypes = set(df.get("DATA_TYPE_FM", pd.Series(dtype=str)).dropna().astype(str))
+        require_2y(self.name, dtypes == {"SR_2Y"}, f"DATA_TYPE_FM={sorted(dtypes)}")
         s = _mk(currency, self.name, "2y", "daily",
                 pd.to_datetime(df["TIME_PERIOD"], errors="coerce"),
                 pd.to_numeric(df["OBS_VALUE"], errors="coerce"), note=f"key={self.KEY}")
@@ -510,6 +531,8 @@ class DbnomicsFedSource(BaseSource):
             self._parse_fail("no series docs")
             return None
         d = docs[0]
+        code = str(d.get("series_code", ""))
+        require_2y(self.name, code == self.PATH.rsplit("/", 1)[-1], f"series_code={code!r}")
         s = _mk(currency, self.name, "2y", "daily",
                 pd.to_datetime(pd.Series(d.get("period", [])), errors="coerce"),
                 d.get("value", []), note=self.PATH)
@@ -535,6 +558,9 @@ class BocValetSource(BaseSource):
         if r is None:
             return None
         payload = r.json()
+        label = str(((payload.get("seriesDetail") or {}).get(self.SERIES) or {}).get("label", ""))
+        require_2y(self.name, re.search(r"\b2[- ]year\b", label, re.I) is not None,
+                   f"seriesDetail label {label!r}")
         obs = payload.get("observations") or []
         dates, vals = [], []
         for o in obs:
@@ -553,11 +579,19 @@ class BocValetSource(BaseSource):
 # ---------------------------------------------------------------------------
 
 class MofJgbSource(BaseSource):
+    """MoF JGB constant-maturity yields, column 2年 (2-year).
+
+    Two files, both needed (audit 2026-09-23, 1.3): jgbcm_all.csv is the history
+    and stops at the end of the PREVIOUS month; jgbcm.csv (not under /data/) is
+    the current month. Both parse the same way (shift_jis, header=1, era dates
+    like R8.9.17). They are merged and deduped on date, the current month wins.
+    The historical file is required; the current-month file is best-effort (a
+    failure there leaves the series ending at month end, which the freshness
+    check then reports)."""
     name = "mof_jgb"
-    URLS = [
-        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv",
-        "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm.csv",
-    ]
+    URL_HISTORY = "https://www.mof.go.jp/jgbs/reference/interest_rate/data/jgbcm_all.csv"
+    URL_CURRENT = "https://www.mof.go.jp/jgbs/reference/interest_rate/jgbcm.csv"
+    COLUMN = "2年"
     ERA_BASE = {"M": 1867, "T": 1911, "S": 1925, "H": 1988, "R": 2018}
 
     def supports(self, currency: str) -> bool:
@@ -576,33 +610,50 @@ class MofJgbSource(BaseSource):
         except Exception:
             return None
 
+    def parse_csv(self, content: bytes) -> list[tuple[date, float]]:
+        """One MoF file -> [(date, 2y yield)]. Raises ValueError without a 2年
+        column (the maturity is read from the file's own header)."""
+        raw = content.decode("shift_jis", errors="replace")
+        df = pd.read_csv(io.StringIO(raw), header=1, dtype=str)
+        cols = {str(c).strip(): c for c in df.columns}
+        require_2y("mof_jgb", self.COLUMN in cols, f"no {self.COLUMN} column in {list(cols)[:6]}")
+        vals = pd.to_numeric(df[cols[self.COLUMN]].replace("-", np.nan), errors="coerce")
+        out = []
+        for d, v in zip(df[df.columns[0]], vals):
+            dd = self._parse_date(d)
+            if dd is not None and not pd.isna(v):
+                out.append((dd, float(v)))
+        return out
+
+    @staticmethod
+    def merge(history: list[tuple[date, float]],
+              current: list[tuple[date, float]]) -> list[tuple[date, float]]:
+        """Union on date; the current-month file wins a shared date."""
+        by_date = dict(history)
+        by_date.update(dict(current))
+        return sorted(by_date.items())
+
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        for url in self.URLS:
-            r = self._get(url)
-            if r is None:
-                continue
-            if self._check_botwall(r):
-                continue
-            raw = r.content.decode("shift_jis", errors="replace")
-            try:
-                df = pd.read_csv(io.StringIO(raw), header=1, dtype=str)
-            except Exception as e:
-                self._parse_fail(f"csv {e}")
-                continue
-            cols = {str(c).strip(): c for c in df.columns}
-            two = (cols.get("2年") or cols.get("2Y") or cols.get("2")
-                   or (df.columns[2] if df.shape[1] > 2 else None))
-            if two is None:
-                self._parse_fail(f"no 2Y column in {list(df.columns)[:6]}")
-                continue
-            dates = [self._parse_date(d) for d in df[df.columns[0]]]
-            vals = pd.to_numeric(df[two].replace("-", np.nan), errors="coerce")
-            s = _mk(currency, self.name, "2y", "daily", dates, vals, note=url.split("/")[-1])
-            if s:
-                return s
-        if not self.last_status:
+        r = self._get(self.URL_HISTORY)
+        if r is None or self._check_botwall(r):
+            return None
+        history = self.parse_csv(r.content)
+        current: list[tuple[date, float]] = []
+        note = "jgbcm_all.csv"
+        rc = self._get(self.URL_CURRENT)
+        if rc is not None and not self._check_botwall(rc):
+            current = self.parse_csv(rc.content)
+            note += f"+jgbcm.csv({len(current)})"
+        else:
+            log.warning("MoF current-month file unavailable (%s); series ends at "
+                        "the last month end.", self.last_note)
+            self.last_status, self.last_note = "", ""
+        pts = self.merge(history, current)
+        s = _mk(currency, self.name, "2y", "daily", [d for d, _ in pts],
+                [v for _, v in pts], note=note)
+        if not s:
             self._parse_fail("no parsable 2Y series")
-        return None
+        return s
 
 
 # ---------------------------------------------------------------------------
@@ -610,38 +661,101 @@ class MofJgbSource(BaseSource):
 # ---------------------------------------------------------------------------
 
 class BoeSource(BaseSource):
-    name = "boe"
-    CODE = "IUDSNPY"  # nominal par yield, 2-year, daily
+    """GBP 2y = Bank of England GLC nominal SPOT curve, maturity 2.0 years
+    (audit 2026-09-23, 1.4). BoE has no daily 2y series in the IADB — the old
+    code IUDSNPY is the 5-year nominal PAR yield.
+
+    Daily fetch: latest-yield-curve-data.zip -> "GLC Nominal daily data current
+    month.xlsx", sheet "4. spot curve"; the maturity column is the one whose
+    header row ("years:") reads 2.0. Only the current month is served, so the
+    source is INCREMENTAL: rate_fetch assesses it together with the rows it
+    already holds for this source (history backfilled once from
+    glcnominalddata.zip by src.rate_migrations)."""
+    name = "boe_glc"
+    incremental = True
+    URL_LATEST = ("https://www.bankofengland.co.uk/-/media/boe/files/statistics/"
+                  "yield-curves/latest-yield-curve-data.zip")
+    URL_HISTORY = ("https://www.bankofengland.co.uk/-/media/boe/files/statistics/"
+                   "yield-curves/glcnominalddata.zip")
+    MEMBER_LATEST = "GLC Nominal daily data current month.xlsx"
+    SHEET = "4. spot curve"
+    MATURITY_YEARS = 2.0
 
     def supports(self, currency: str) -> bool:
         return currency == "GBP"
 
+    @classmethod
+    def parse_spot_xlsx(cls, content: bytes) -> list[tuple[date, float]]:
+        """One GLC nominal workbook -> [(date, 2.0y spot)]. Raises ValueError if
+        the sheet or a 2.0-year maturity column is missing."""
+        from openpyxl import load_workbook
+        wb = load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+        if cls.SHEET not in wb.sheetnames:
+            raise ValueError(f"no sheet {cls.SHEET!r} in {wb.sheetnames}")
+        col = None
+        out: list[tuple[date, float]] = []
+        for row in wb[cls.SHEET].iter_rows(values_only=True):
+            if not row:
+                continue
+            if col is None:
+                if str(row[0]).strip().lower() == "years:":
+                    hits = [i for i, c in enumerate(row[1:], start=1)
+                            if isinstance(c, (int, float)) and float(c) == cls.MATURITY_YEARS]
+                    require_2y("boe_glc", bool(hits), f"no {cls.MATURITY_YEARS}-year "
+                               f"maturity in the 'years:' header row")
+                    col = hits[0]
+                continue
+            d, v = row[0], row[col] if col < len(row) else None
+            if isinstance(d, datetime) and isinstance(v, (int, float)):
+                out.append((d.date(), float(v)))
+        if col is None:
+            raise ValueError("no 'years:' maturity header row")
+        return out
+
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        frm = "01/Jan/2018"
-        to = date.today().strftime("%d/%b/%Y")
-        url = ("https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?"
-               f"csv.x=yes&Datefrom={frm}&Dateto={to}&SeriesCodes={self.CODE}"
-               "&CSVF=TN&UsingCodes=Y")
-        r = self._get(url)
+        import zipfile
+        r = self._get(self.URL_LATEST)
         if r is None:
             return None
-        if self._check_botwall(r):
+        if r.content[:2] != b"PK":
+            self.last_status, self.last_note = "BOT-WALL", "not a zip"
             return None
-        try:
-            df = pd.read_csv(io.StringIO(r.text))
-        except Exception as e:
-            self._parse_fail(f"csv {e}")
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        if self.MEMBER_LATEST not in z.namelist():
+            self._parse_fail(f"no {self.MEMBER_LATEST!r} in {z.namelist()}")
             return None
-        if df.shape[1] < 2:
-            self._parse_fail(f"unexpected shape {df.shape}; needs dedicated parser")
-            return None
-        date_col, val_col = df.columns[0], df.columns[-1]
-        s = _mk(currency, self.name, "2y", "daily",
-                pd.to_datetime(df[date_col], errors="coerce", dayfirst=True),
-                pd.to_numeric(df[val_col], errors="coerce"), note=f"code={self.CODE}")
+        pts = self.parse_spot_xlsx(z.read(self.MEMBER_LATEST))
+        s = _mk(currency, self.name, "2y", "daily", [d for d, _ in pts],
+                [v for _, v in pts], note=f"GLC nominal spot {self.MATURITY_YEARS}y (current month)")
         if not s:
-            self._parse_fail("reachable / needs dedicated parser")
+            self._parse_fail("no 2.0y observations in the current-month file")
         return s
+
+    def fetch_history(self, since: date) -> list[tuple[date, float]]:
+        """One-off backfill (src.rate_migrations): every workbook in
+        glcnominalddata.zip (~39 MB) covering >= `since`. Raises on failure."""
+        return self.fetch_history_with_coverage(since)[0]
+
+    def fetch_history_with_coverage(self, since: date) -> tuple[list[tuple[date, float]], date]:
+        """(points >= since, covered_until). covered_until = the day before the
+        newest workbook in the archive was written (zip entry time): every
+        business day up to it without a value is a non-trading day."""
+        import zipfile
+        r = self._get(self.URL_HISTORY)
+        if r is None or r.content[:2] != b"PK":
+            raise RuntimeError(f"BoE GLC history download failed: {self.last_note or 'not a zip'}")
+        z = zipfile.ZipFile(io.BytesIO(r.content))
+        pts: dict[date, float] = {}
+        built = max(date(*i.date_time[:3]) for i in z.infolist())
+        for name in z.namelist():
+            yrs = [int(t) for t in name.replace(".xlsx", "").replace("_", " ").split()
+                   if t.isdigit() and len(t) == 4]
+            if yrs and max(yrs) < since.year and "present" not in name:
+                continue
+            for d, v in self.parse_spot_xlsx(z.read(name)):
+                if d >= since:
+                    pts[d] = v
+        return sorted(pts.items()), built - pd.Timedelta(days=1).to_pytimedelta()
 
 
 # ---------------------------------------------------------------------------
@@ -651,9 +765,28 @@ class BoeSource(BaseSource):
 class RbaSource(BaseSource):
     name = "rba"
     URL = "https://www.rba.gov.au/statistics/tables/csv/f2-data.csv"
+    SERIES_ID = "FCMYGBAG2D"   # Australian Government 2 year bond, daily
 
     def supports(self, currency: str) -> bool:
         return currency == "AUD"
+
+    @classmethod
+    def find_2y_column(cls, rows: list[list[str]]) -> int:
+        """The F2 column whose 'Series ID' row is FCMYGBAG2D AND whose 'Title'
+        row says 2 year (both are the table's own metadata). Raises
+        TenorMismatch otherwise."""
+        head = rows[:15]
+        meta = {str(r[0]).strip().lower(): r for r in head if r}
+        ids, titles = meta.get("series id"), meta.get("title")
+        require_2y("rba", ids is not None and titles is not None,
+                   "no 'Series ID'/'Title' header rows")
+        cols = [i for i, c in enumerate(ids) if str(c).strip().upper() == cls.SERIES_ID]
+        require_2y("rba", len(cols) == 1, f"series id {cls.SERIES_ID} found {len(cols)}x")
+        ci = cols[0]
+        title = str(titles[ci]) if ci < len(titles) else ""
+        require_2y("rba", re.search(r"\b2[- ]year\b", title, re.I) is not None,
+                   f"title {title!r}")
+        return ci
 
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
         r = self._get(self.URL, extra_headers={
@@ -668,26 +801,7 @@ class RbaSource(BaseSource):
         if not rows:
             self._parse_fail("empty")
             return None
-        target_col = None
-        for hdr in rows[:12]:
-            for ci, cell in enumerate(hdr):
-                c = str(cell).lower()
-                if ("2 year" in c or "2-year" in c) and "australian government" in c:
-                    target_col = ci
-                    break
-            if target_col is not None:
-                break
-        if target_col is None:
-            for hdr in rows[:12]:
-                for ci, cell in enumerate(hdr):
-                    if str(cell).strip().upper() in ("FCMYGBAG2", "FCMYGBAG2D"):
-                        target_col = ci
-                        break
-                if target_col is not None:
-                    break
-        if target_col is None:
-            self._parse_fail("no 2-year AGB column found in header")
-            return None
+        target_col = self.find_2y_column(rows)
         dates, vals = [], []
         for row in rows:
             if len(row) <= target_col:
@@ -750,9 +864,8 @@ class RbnzSource(BaseSource):
                         break
                 if col is not None:
                     break
-            if col is None:
-                self._parse_fail("no '2 year ... bond' column found in header band")
-                continue
+            require_2y(self.name, col is not None,
+                       "no '2 year ... bond' column in the header band")
             dates, vals = [], []
             for row in rows:
                 if col >= len(row):
@@ -807,10 +920,8 @@ class SnbSource(BaseSource):
             self._parse_fail(f"unexpected cols {list(df.columns)}; verify cube")
             return None
         sub = df[df["D0"].astype(str).str.strip() == self.MATURITY]
-        if sub.empty:
-            avail = sorted(df["D0"].dropna().astype(str).unique())[:12]
-            self._parse_fail(f"no {self.MATURITY} maturity (have {avail})")
-            return None
+        avail = sorted(df["D0"].dropna().astype(str).unique())[:12]
+        require_2y(self.name, not sub.empty, f"no {self.MATURITY} maturity (have {avail})")
         s = _mk(currency, self.name, "2y", "daily",
                 pd.to_datetime(sub["Date"], errors="coerce"),
                 pd.to_numeric(sub["Value"], errors="coerce"),
@@ -835,7 +946,7 @@ ALL_SOURCES: dict[str, BaseSource] = {
 SOURCE_PREFERENCE: dict[str, list[str]] = {
     "USD": ["fred", "dbnomics_fed", "stooq"],
     "EUR": ["ecb", "stooq"],
-    "GBP": ["boe", "stooq"],
+    "GBP": ["boe_glc", "stooq"],
     "JPY": ["mof_jgb", "stooq"],
     "AUD": ["rba", "stooq"],
     "NZD": ["rbnz", "stooq"],

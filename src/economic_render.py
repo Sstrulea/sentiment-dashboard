@@ -883,8 +883,90 @@ def _freshness(as_of: pd.Timestamp | None = None,
     except Exception as e:  # noqa: BLE001
         log.warning("freshness(price) unavailable: %s", e)
 
+    try:
+        rates = _rates_freshness(as_of)
+        if rates is not None:
+            out["rates"] = rates
+    except Exception as e:  # noqa: BLE001
+        log.warning("freshness(rates) unavailable: %s", e)
+
+    try:
+        pr = _policy_rates_freshness(as_of)
+        if pr is not None:
+            out["policy_rates"] = pr
+    except Exception as e:  # noqa: BLE001
+        log.warning("freshness(policy_rates) unavailable: %s", e)
+
     out["any_stale"] = any(isinstance(v, dict) and v.get("stale") for v in out.values())
     return out
+
+
+MEETINGS_YAML = ROOT / "data" / "cb" / "meetings.yaml"
+
+
+def _policy_rates_freshness(as_of: pd.Timestamp, meetings_path: Path | None = None,
+                            decisions_path: Path | None = None) -> dict | None:
+    """Displayed policy rate (audit F4): every meeting in data/cb/meetings.yaml
+    dated before today (UTC) must have its decision in data/cb/decisions.parquet.
+    The parquet keeps only each bank's last decisions (4 today), so the check
+    covers the meetings from the oldest decision kept onward — a meeting older
+    than that window is out of the file by design, not missing. A currency with
+    meetings but no decision at all is stale."""
+    from src.policy_rate import DECISIONS_PARQUET
+    meetings_path = meetings_path or MEETINGS_YAML
+    decisions_path = decisions_path or DECISIONS_PARQUET
+    if not meetings_path.exists() or not decisions_path.exists():
+        return None
+    meetings = (_load_yaml(meetings_path).get("meetings") or {})
+    d = pd.read_parquet(decisions_path, columns=["currency", "meeting_date"])
+    d["meeting_date"] = pd.to_datetime(d["meeting_date"]).dt.date
+    today = as_of.date()
+    per: dict = {}
+    for ccy, lst in sorted(meetings.items()):
+        have = set(d.loc[d["currency"] == ccy, "meeting_date"])
+        past = sorted(pd.Timestamp(m["date"]).date() for m in (lst or [])
+                      if pd.Timestamp(m["date"]).date() < today)
+        oldest = min(have) if have else None
+        due = [m for m in past if oldest is None or m >= oldest]
+        missing = [m.isoformat() for m in due if m not in have]
+        per[ccy] = {"last_meeting": past[-1].isoformat() if past else None,
+                    "last_decision": max(have).isoformat() if have else None,
+                    "missing": missing, "stale": bool(missing) or (bool(past) and not have)}
+    stale = [c for c, v in per.items() if v["stale"]]
+    return {"per_currency": per, "stale_currencies": stale, "stale": bool(stale)}
+
+
+def _rates_freshness(as_of: pd.Timestamp) -> dict | None:
+    """2y yields, per currency (audit 1.5): last date in data/rates.parquet at or
+    before as_of, lag in business days, stale iff lag > rate_compute.MAX_AGE_BD
+    (the same threshold that makes the monetary score stale). A currency with no
+    2y source at all (NZD/CHF today, see docs) is listed under `missing` and does
+    not roll into `stale` — it is a known gap, not a feed that stopped."""
+    if not RATES_PARQUET.exists():
+        return None
+    import numpy as np
+    from src.rate_compute import MAX_AGE_BD
+    from src.rate_sources import CURRENCIES
+    r = pd.read_parquet(RATES_PARQUET, columns=["currency", "date", "source"])
+    r["date"] = pd.to_datetime(r["date"])
+    r = r[r["date"] <= as_of]
+    ref = as_of.date()
+    per: dict = {}
+    missing: list[str] = []
+    for ccy in CURRENCIES:
+        sub = r[r["currency"] == ccy]
+        if sub.empty:
+            missing.append(ccy)
+            continue
+        last_row = sub.loc[sub["date"].idxmax()]
+        last = last_row["date"].date()
+        lag = 0 if last >= ref else int(np.busday_count(last, ref))
+        per[ccy] = {"last_update": last.isoformat(), "lag_bd": lag,
+                    "source": str(last_row["source"]), "stale": lag > MAX_AGE_BD}
+    stale_ccys = [c for c, v in per.items() if v["stale"]]
+    return {"per_currency": per, "max_lag_bd": MAX_AGE_BD,
+            "stale_currencies": stale_ccys, "missing": missing,
+            "stale": bool(stale_ccys)}
 
 
 def _trend_enabled(cfg: dict | None = None) -> bool:
@@ -1181,7 +1263,10 @@ def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
     overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
     _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of,
                                               flagged_bad=flagged_bad)
-    return remaining
+    # audit V3: the policy rate comes only from data/cb/decisions.parquet, so a
+    # manual interest_rate_decision entry would never be used — not listed.
+    from src.policy_rate import KEY as POLICY_KEY
+    return remaining[remaining["indicator_key"] != POLICY_KEY].reset_index(drop=True)
 
 
 def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
@@ -1210,14 +1295,147 @@ def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
     }
 
 
-def build_economic_payload() -> dict:
-    """Read parquet + configs, compute, enrich, and return the JSON-ready payload."""
+def _policy_rate_decisions() -> pd.DataFrame | None:
+    """data/cb/decisions.parquet (src.policy_rate) — None if unreadable."""
+    from src.policy_rate import DECISIONS_PARQUET, load_decisions
+    try:
+        return load_decisions(DECISIONS_PARQUET)
+    except Exception as e:  # noqa: BLE001
+        log.warning("decisions.parquet unavailable (%s); no policy rate displayed.", e)
+        return None
+
+
+def _with_policy_rate(cal: pd.DataFrame, decisions: pd.DataFrame | None,
+                      as_of: pd.Timestamp) -> pd.DataFrame:
+    """interest_rate_decision comes ONLY from the CB decisions (audit 1.6): the
+    FF/JB/manual rows are dropped; no decisions file -> no rows, never a fallback."""
+    from src.policy_rate import KEY, replace_in_calendar
+    if cal is None or cal.empty or "indicator_key" not in cal.columns:
+        return cal
+    if decisions is None:
+        return cal[cal["indicator_key"] != KEY].reset_index(drop=True)
+    return replace_in_calendar(cal, decisions, as_of)
+
+
+def _attach_policy_rate_fields(payload: dict, decisions: pd.DataFrame | None,
+                               policy_fresh: dict | None = None) -> None:
+    """Fed range + provenance on each interest_rate_decision breakdown entry, and
+    its `stale` flag (audit V1): a policy rate holds until the next meeting, so
+    age is not a criterion — the entry is stale iff freshness.policy_rates says a
+    past meeting has no decision (never from max_age_days). The instrument
+    breakdowns share these dicts, so they follow."""
+    from src.policy_rate import KEY, display_fields
+    per = (policy_fresh or {}).get("per_currency") or {}
+    for ccy, card in payload.get("currencies", {}).items():
+        entry = (card.get("breakdown") or {}).get(KEY)
+        if entry is None:
+            continue
+        if decisions is not None and entry.get("release_dt") is not None:
+            entry.update(display_fields(decisions, ccy, entry["release_dt"]))
+        entry["stale"] = bool((per.get(ccy) or {}).get("stale", False))
+        entry["stale_basis"] = "policy_rates"
+
+
+INTEGRITY_REPORT_JSON = ROOT / "data" / "integrity_report.json"
+
+
+def _latest_weekly_raw(as_of: pd.Timestamp) -> Path | None:
+    """Latest data/ff_raw/ff_weekly_YYYY-MM-DD.json dated <= as_of (so a pinned
+    as_of never reads a feed it could not have seen)."""
+    from src.ff_raw_archive import RAW_DIR
+    cands = sorted(p for p in RAW_DIR.glob("ff_weekly_*.json")
+                   if p.stem.removeprefix("ff_weekly_") <= as_of.strftime("%Y-%m-%d"))
+    return cands[-1] if cands else None
+
+
+def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp) -> dict:
+    """Integrity checks over the scored calendar (audit 1.2). Pure check — never
+    feeds back into scoring. Returns the full report; a WARN is logged per finding."""
+    from src.previous_consistency import check_previous_consistency
+    report: dict = {"as_of": as_of.isoformat(), "checks": {}}
+    try:
+        from src.ff_refresh import FF_PARQUET, calendar_source
+        if calendar_source() != "ff" or not FF_PARQUET.exists():
+            return report
+        from src.econ_calendar_ff import parse_ff_weekly
+        from src.ff_scoring import build_matcher
+        ffdf = pd.read_parquet(FF_PARQUET)
+        weekly = _latest_weekly_raw(as_of)
+        upcoming = parse_ff_weekly(weekly, now_utc=as_of) if weekly is not None else None
+        res = check_previous_consistency(ffdf, cal, build_matcher(), upcoming=upcoming)
+        res["weekly_feed"] = weekly.name if weekly is not None else None
+        report["checks"]["previous_consistency"] = res
+        if res["findings"]:
+            log.warning("integrity(previous_consistency): %d finding(s) %s -> %s",
+                        len(res["findings"]), res["findings_by_source"],
+                        INTEGRITY_REPORT_JSON.name)
+        for f in res["findings"]:
+            # one line each only for what a human entered (panel typos) and for
+            # scored zeros; everything else is in the report (hundreds of
+            # ordinary revisions on never-revised series would drown the log).
+            if not (f["scored_source"] == "manual"
+                    or (f["kind"] == "zero" and f["scored_source"] == "ff")):
+                continue
+            log.warning("integrity(previous_consistency): %s %s actual %s (%s) but next "
+                        "print (%s) says previous=%s (tol %s)", f["canonical_id"],
+                        f["release_dt"], f["scored_actual"], f["scored_source"],
+                        f["next_release_dt"], f["next_previous"], f["tolerance"])
+    except Exception as e:  # noqa: BLE001 — a check must never break the render
+        log.warning("integrity report unavailable: %s", e)
+        report["error"] = str(e)
+    return report
+
+
+def _findings_key(report: dict) -> str:
+    """What decides a rewrite: the findings (and the formula), not the timestamps."""
+    checks = {name: {"findings": c.get("findings"), "formula": c.get("formula")}
+              for name, c in (report.get("checks") or {}).items()}
+    return json.dumps({"checks": checks, "error": report.get("error")}, sort_keys=True)
+
+
+def _write_integrity_report(report: dict, generated_at: str | None,
+                            path: Path | None = None) -> bool:
+    """Rewrite data/integrity_report.json only when the set of findings changed,
+    so its timestamps never cause an hourly commit. Returns True if written."""
+    path = path or INTEGRITY_REPORT_JSON
+    try:
+        old = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — missing/corrupt -> write
+        old = None
+    if old is not None and _findings_key(old) == _findings_key(report):
+        return False
+    report = dict(report, generated_at=generated_at)
+    path.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+    return True
+
+
+def _integrity_summary(report: dict) -> dict:
+    """Counter for payload["freshness"]["integrity"]. WARN level, deliberately no
+    `stale` key: it does not roll into any_stale."""
+    pc = (report.get("checks") or {}).get("previous_consistency")
+    if pc is None:
+        return {"previous_consistency": None, "level": "unavailable"}
+    n = len(pc["findings"])
+    return {"previous_consistency": n,
+            "previous_consistency_by_source": pc.get("findings_by_source", {}),
+            "previous_consistency_by_kind": pc.get("findings_by_kind", {}),
+            "level": "warn" if n else "ok"}
+
+
+def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
+    """Read parquet + configs, compute, enrich, and return the JSON-ready payload.
+
+    `as_of` (optional, naive UTC) pins the reference instant — default now. Used to
+    reproduce a committed snapshot bit-for-bit (see scripts/measure/)."""
     indicators_cfg = _load_yaml(INDICATORS_YAML)
     instruments_cfg = _load_yaml(INSTRUMENTS_YAML)
 
-    as_of = pd.Timestamp.utcnow().tz_localize(None)
+    as_of = (pd.Timestamp.utcnow().tz_localize(None) if as_of is None
+             else pd.Timestamp(as_of))
 
     cal = _load_calendar_frame(as_of)   # Phase 3: FF (default) or MT5 (rollback) per config
+    decisions = _policy_rate_decisions()
+    cal = _with_policy_rate(cal, decisions, as_of)
 
     # Rate-Expectations engine (C1): optional 4th "monetary" category. Missing
     # parquet → render exactly as before (3 categories), no crash.
@@ -1262,6 +1480,7 @@ def build_economic_payload() -> dict:
     meta["trend_enabled"] = trend_on
     _enrich_breakdowns(payload, meta["indicators"], as_of, _previous_lookup(cal))
     _attach_strength_fields(payload, instruments_cfg, rate_scores)
+    _attach_policy_rate_fields(payload, decisions, _policy_rates_freshness(as_of))
     # Attach the chosen source to each rate_expectations breakdown entry.
     for ccy, card in payload.get("currencies", {}).items():
         entry = (card.get("breakdown") or {}).get("rate_expectations")
@@ -1296,6 +1515,9 @@ def build_economic_payload() -> dict:
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)
+    integrity = _integrity_report(cal, as_of)
+    payload["freshness"]["integrity"] = _integrity_summary(integrity)
+    payload["_integrity_report"] = integrity   # popped by render_economic_page
     payload["manual_actuals"] = _build_manual_actuals_block(as_of)
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
@@ -1306,6 +1528,9 @@ def render_economic_page() -> Path:
     copy_static_assets()
 
     payload = build_economic_payload()
+    integrity = payload.pop("_integrity_report", None)
+    if integrity is not None:
+        _write_integrity_report(integrity, payload.get("generated_at"))
 
     data_dir = PUBLIC_DIR / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
