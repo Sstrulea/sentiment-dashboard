@@ -30,6 +30,7 @@ SOURCE = "cb"
 def load_decisions(path: Path = DECISIONS_PARQUET) -> pd.DataFrame:
     df = pd.read_parquet(path)
     t = pd.to_datetime(df["decision_time_utc"], utc=True).dt.tz_localize(None)
+    df["time_known"] = t.notna()
     df["release_dt"] = t.fillna(pd.to_datetime(df["meeting_date"]))
     return df.sort_values(["currency", "release_dt"]).reset_index(drop=True)
 
@@ -70,6 +71,8 @@ def display_fields(decisions: pd.DataFrame, currency: str, release_dt) -> dict:
            "decision_status": str(r["status"]),
            "effective_date": str(pd.Timestamp(r["effective_date"]).date()),
            "meeting_date": str(pd.Timestamp(r["meeting_date"]).date())}
+    if not bool(r.get("time_known", True)):
+        out["date_only"] = True       # no decision time: show the meeting date only (V2)
     if pd.notna(r["lower"]) and pd.notna(r["upper"]):
         out["range"] = {"lower": float(r["lower"]), "upper": float(r["upper"])}
     return out
