@@ -131,10 +131,16 @@ def test_repo_history_aud_import_prices_2026_04_30_is_recovered(matcher):
 
 def test_integrity_counter_is_warn_and_not_stale():
     from src.economic_render import _integrity_summary
-    rep = {"checks": {"previous_consistency": {"findings": [{}] * 3,
-                                               "findings_by_source": {"ff": 3}}}}
+    # 4B: the summary is "warn" only for unresolved findings inside a scoring
+    # window (level WARN); INFO-only findings (resolved / old) read "ok".
+    rep = {"checks": {"previous_consistency": {
+        "findings": [{"level": "WARN", "new": True}, {"level": "INFO"}, {"level": "INFO"}],
+        "findings_by_source": {"ff": 3}}}}
     s = _integrity_summary(rep)
     assert s["previous_consistency"] == 3 and s["level"] == "warn"
+    assert (s["warn"], s["new_warn"]) == (1, 1)
+    info_only = {"checks": {"previous_consistency": {"findings": [{"level": "INFO"}] * 2}}}
+    assert _integrity_summary(info_only)["level"] == "ok"
     assert "stale" not in s        # a WARN never rolls into any_stale
     assert _integrity_summary({"checks": {}})["level"] == "unavailable"
 

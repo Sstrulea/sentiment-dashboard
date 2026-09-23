@@ -1394,38 +1394,97 @@ def _latest_weekly_raw(as_of: pd.Timestamp) -> Path | None:
     return cands[-1] if cands else None
 
 
-def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp) -> dict:
-    """Integrity checks over the scored calendar (audit 1.2). Pure check — never
-    feeds back into scoring. Returns the full report; a WARN is logged per finding."""
-    from src.previous_consistency import check_previous_consistency
+def _all_weekly_raw(as_of: pd.Timestamp) -> list[tuple[str, list]]:
+    """Every archived FF weekly feed on disk dated <= as_of: (date tag, events)."""
+    from src.ff_raw_archive import RAW_DIR
+    out = []
+    for p in sorted(RAW_DIR.glob("ff_weekly_*.json")):
+        tag = p.stem.removeprefix("ff_weekly_")
+        if tag <= as_of.strftime("%Y-%m-%d"):
+            try:
+                out.append((tag, json.loads(p.read_text())))
+            except (OSError, ValueError):
+                log.warning("integrity: unreadable %s skipped", p.name)
+    return out
+
+
+def _finding_id(check: str, f: dict) -> str:
+    keys = ("canonical_id", "release_dt", "kind", "after", "before")
+    return check + "|" + "|".join(str(f.get(k)) for k in keys)
+
+
+def _previous_findings(path: Path | None = None) -> set:
+    try:
+        old = json.loads((path or INTEGRITY_REPORT_JSON).read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — first run / unreadable -> everything is new
+        return set()
+    return {_finding_id(name, f) for name, c in (old.get("checks") or {}).items()
+            for f in c.get("findings", [])}
+
+
+def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp,
+                      previous_path: Path | None = None) -> dict:
+    """Integrity checks over the scored calendar (audit 1.2, 4B). Pure checks —
+    never feed back into scoring (release conflicts are excluded by
+    ff_scoring itself; this only reports them).
+
+    Levels: WARN = unresolved AND inside the series' scoring window (its latest
+    print or the K=12 sigma window); INFO = resolved (already out of scoring)
+    or outside the window. A finding is `new` when the previous report did not
+    have it; only new WARN findings are logged as alerts."""
+    from src.previous_consistency import check_previous_consistency, scoring_windows
     report: dict = {"as_of": as_of.isoformat(), "checks": {}}
     try:
         from src.ff_refresh import FF_PARQUET, calendar_source
         if calendar_source() != "ff" or not FF_PARQUET.exists():
             return report
         from src.econ_calendar_ff import parse_ff_weekly
-        from src.ff_scoring import build_matcher
+        from src.ff_scoring import build_matcher, load_zero_possible
+        from src.release_integrity import (find_series_gaps, find_unfed_scheduled,
+                                           resolve_conflicts)
         ffdf = pd.read_parquet(FF_PARQUET)
+        zp = load_zero_possible()
+        matcher = build_matcher()
+        excluded, conflicts = resolve_conflicts(ffdf, zp)
+        for f in conflicts:
+            f["level"] = "INFO"                # resolved: already out of scoring
+        report["checks"]["release_conflict"] = {"findings": conflicts}
+
         weekly = _latest_weekly_raw(as_of)
         upcoming = parse_ff_weekly(weekly, now_utc=as_of) if weekly is not None else None
-        res = check_previous_consistency(ffdf, cal, build_matcher(), upcoming=upcoming)
+        res = check_previous_consistency(ffdf, cal, matcher, upcoming=upcoming,
+                                         zero_possible=zp, excluded=excluded)
         res["weekly_feed"] = weekly.name if weekly is not None else None
         report["checks"]["previous_consistency"] = res
-        if res["findings"]:
-            log.warning("integrity(previous_consistency): %d finding(s) %s -> %s",
-                        len(res["findings"]), res["findings_by_source"],
-                        INTEGRITY_REPORT_JSON.name)
-        for f in res["findings"]:
-            # one line each only for what a human entered (panel typos) and for
-            # scored zeros; everything else is in the report (hundreds of
-            # ordinary revisions on never-revised series would drown the log).
-            if not (f["scored_source"] == "manual"
-                    or (f["kind"] == "zero" and f["scored_source"] == "ff")):
-                continue
-            log.warning("integrity(previous_consistency): %s %s actual %s (%s) but next "
-                        "print (%s) says previous=%s (tol %s)", f["canonical_id"],
-                        f["release_dt"], f["scored_actual"], f["scored_source"],
-                        f["next_release_dt"], f["next_previous"], f["tolerance"])
+
+        windows = scoring_windows(cal)
+        key_of = {}
+        for r in ffdf.drop_duplicates("canonical_id").itertuples(index=False):
+            from src.ff_scoring import CCY2COUNTRY
+            key_of[r.canonical_id] = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
+        missing = find_series_gaps(ffdf, as_of, zp) + find_unfed_scheduled(
+            ffdf, _all_weekly_raw(as_of), as_of, matcher)
+        for f in missing:
+            w = windows.get((f["currency"], key_of.get(f["canonical_id"])))
+            when = pd.Timestamp(f.get("before") or f.get("release_dt"))
+            f["level"] = "WARN" if (w is not None and when >= w) else "INFO"
+        report["checks"]["missing_release"] = {"findings": missing}
+
+        seen = _previous_findings(previous_path)
+        new_warn = []
+        for name, c in report["checks"].items():
+            for f in c.get("findings", []):
+                f["new"] = _finding_id(name, f) not in seen
+                if f["new"] and f.get("level") == "WARN":
+                    new_warn.append((name, f))
+        counts = {name: {lvl: sum(1 for f in c.get("findings", []) if f.get("level") == lvl)
+                         for lvl in ("WARN", "INFO")} for name, c in report["checks"].items()}
+        report["counts"] = counts
+        log.info("integrity: %s -> %s", counts, INTEGRITY_REPORT_JSON.name)
+        for name, f in new_warn:
+            log.warning("integrity NEW WARN %s: %s %s %s", name, f.get("canonical_id"),
+                        f.get("release_dt") or f"{f.get('after')}..{f.get('before')}",
+                        f.get("reason") or f.get("kind") or "")
     except Exception as e:  # noqa: BLE001 — a check must never break the render
         log.warning("integrity report unavailable: %s", e)
         report["error"] = str(e)
@@ -1457,15 +1516,23 @@ def _write_integrity_report(report: dict, generated_at: str | None,
 
 def _integrity_summary(report: dict) -> dict:
     """Counter for payload["freshness"]["integrity"]. WARN level, deliberately no
-    `stale` key: it does not roll into any_stale."""
-    pc = (report.get("checks") or {}).get("previous_consistency")
+    `stale` key: it does not roll into any_stale. `warn` counts unresolved
+    findings inside a scoring window; `new_warn` the ones the previous run did
+    not have (the only ones that alert)."""
+    checks = report.get("checks") or {}
+    pc = checks.get("previous_consistency")
     if pc is None:
         return {"previous_consistency": None, "level": "unavailable"}
-    n = len(pc["findings"])
-    return {"previous_consistency": n,
+    allf = [f for c in checks.values() for f in c.get("findings", [])]
+    warn = sum(1 for f in allf if f.get("level") == "WARN")
+    return {"previous_consistency": len(pc["findings"]),
             "previous_consistency_by_source": pc.get("findings_by_source", {}),
             "previous_consistency_by_kind": pc.get("findings_by_kind", {}),
-            "level": "warn" if n else "ok"}
+            "release_conflict": len((checks.get("release_conflict") or {}).get("findings", [])),
+            "missing_release": len((checks.get("missing_release") or {}).get("findings", [])),
+            "warn": warn,
+            "new_warn": sum(1 for f in allf if f.get("level") == "WARN" and f.get("new")),
+            "level": "warn" if warn else "ok"}
 
 
 def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:

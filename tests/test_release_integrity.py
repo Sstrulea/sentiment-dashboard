@@ -1,0 +1,133 @@
+"""Audit 4B — one publication = one row; next valid release; missing releases."""
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from src.econ_calendar_ff import CANON_COLUMNS
+from src.ff_scoring import build_matcher, load_zero_possible, scoring_view, to_scoring_frame
+from src.release_integrity import (SeriesChain, find_series_gaps, find_unfed_scheduled,
+                                   resolve_conflicts, _prep)
+
+ROOT = Path(__file__).resolve().parents[1]
+FROZEN_FF = ROOT / "tests" / "fixtures" / "frozen" / "economic_calendar_ff_4ace910.parquet"
+
+
+@pytest.fixture(scope="module")
+def frozen():
+    return pd.read_parquet(FROZEN_FF)
+
+
+@pytest.fixture(scope="module")
+def scored(frozen):
+    sc = scoring_view(to_scoring_frame(frozen, build_matcher()))
+    sc["release_dt"] = pd.to_datetime(sc["release_dt"])
+    return sc
+
+
+def _day(sc, ccy, key, day):
+    s = sc[(sc.currency == ccy) & (sc.indicator_key == key) & (sc.release_dt.dt.date == pd.Timestamp(day).date())]
+    return sorted(float(a) for a in s["actual"] if pd.notna(a))
+
+
+# --- gates (frozen snapshot 4ace910) ---------------------------------------------
+
+def test_contradicted_same_day_rows_leave_scoring(frozen, scored):
+    ex, findings = resolve_conflicts(frozen, load_zero_possible())
+    keys = {(k[0], k[1].strftime("%Y-%m-%d %H:%M")) for k in ex}
+    assert ("jpy_prelim_industrial_production", "2026-02-26 23:50") in keys
+    assert ("usd_advance_gdp_price_index", "2026-02-20 13:30") in keys
+    # neither release is scored any more (the real rows' actuals are placeholders)
+    assert _day(scored, "JPY", "industrial_production_mm", "2026-02-26") == []
+    assert _day(scored, "USD", "gdp_price_index", "2026-02-20") == []
+    assert all(f["check"] == "release_conflict" and f["reason"] for f in findings)
+
+
+@pytest.mark.parametrize("ccy,key,day,expected", [
+    ("CHF", "retail_sales", "2026-09-01", [2.3]),
+    ("USD", "jobless_claims", "2026-02-19", [206.0]),
+    ("GBP", "ppi_yoy", "2025-10-22", [0.0]),
+])
+def test_rows_the_chain_cannot_reject_stay(scored, ccy, key, day, expected):
+    assert _day(scored, ccy, key, day) == expected
+
+
+# --- the chain (synthetic) ---------------------------------------------------------
+
+def _series(rows, cid="usd_x"):
+    return _prep(pd.DataFrame([{
+        "canonical_id": cid, "currency": "USD", "name_raw": "X m/m", "name_canonical": "X m/m",
+        "datetime_utc": pd.Timestamp(dt), "actual": a, "forecast": f, "previous": p,
+        "released": True, "source": "ff", "forecast_origin": "ff", "jb_status": st,
+    } for dt, a, f, p, st in rows], columns=CANON_COLUMNS))
+
+
+MONTHLY = [(f"2026-0{m}-15", 0.1 * m, 0.1 * m, 0.1 * (m - 1), "Good Data") for m in range(1, 7)]
+
+
+def test_next_valid_skips_0_0_0_rows_and_same_publication_relistings():
+    rows = MONTHLY + [("2026-07-15", 0.0, 0.0, 0.0, "Good Data"),         # 0/0/0 row
+                      ("2026-07-16", 0.7, 0.7, 0.6, "Good Data"),         # re-listed next day
+                      ("2026-08-14", 0.8, 0.8, 0.7, "Good Data")]
+    ch = SeriesChain(_series(rows), True)
+    nxt = ch.next_valid(pd.Timestamp("2026-06-15").date())
+    assert str(nxt["day"]) == "2026-07-16" and nxt["previous"] == 0.6
+
+
+def test_nothing_is_compared_across_a_gap():
+    rows = MONTHLY + [("2026-09-15", 0.9, 0.9, 0.8, "Good Data")]        # Jul/Aug missing
+    ch = SeriesChain(_series(rows), True)
+    assert ch.next_valid(pd.Timestamp("2026-06-15").date()) is None
+
+
+def test_conflict_rule_picks_the_row_the_chain_contradicts():
+    rows = MONTHLY + [("2026-07-15 12:30", 0.0, 2.8, 0.6, "Data Not Loaded"),   # real release
+                      ("2026-07-15 13:30", 0.4, 0.4, 0.4, "Good Data"),         # wrong row
+                      ("2026-08-14", 0.8, 0.8, 0.7, "Good Data")]
+    ex, f = resolve_conflicts(_series(rows), {})
+    assert list(ex) == [("usd_x", pd.Timestamp("2026-07-15 13:30"))]
+    assert "next previous 0.7" in f[0]["reason"]
+
+
+# --- missing releases ---------------------------------------------------------------
+
+def test_good_friday_2026_04_03_is_a_series_gap(frozen):
+    gaps = find_series_gaps(frozen, pd.Timestamp("2026-09-23T07:06"), load_zero_possible())
+    got = {(g["canonical_id"], g["after"], g["before"]) for g in gaps}
+    for cid in ("usd_nonfarm_payrolls", "usd_unemployment_rate", "usd_average_hourly_earnings"):
+        assert (cid, "2026-03-06", "2026-05-08") in got
+    assert ("usd_ism_non_manufacturing_pmi", "2026-03-04", "2026-05-05") in got
+    assert not any(c.endswith("_interest_rate_decision") for c, _a, _b in got)
+
+
+def test_scheduled_event_that_never_reached_the_parquet_is_reported():
+    ff = _series(MONTHLY, cid="usd_nonfarm_payrolls")
+    ff["name_raw"] = ff["name_canonical"] = "Non-Farm Employment Change"
+    weekly = [("2026-07-01", [{"title": "Non-Farm Employment Change", "country": "USD",
+                               "date": "2026-07-03T08:30:00-04:00", "forecast": "100K", "previous": "90K"}])]
+    out = find_unfed_scheduled(ff, weekly, pd.Timestamp("2026-07-10"))
+    assert [(f["kind"], f["release_dt"][:10]) for f in out] == [("not_ingested", "2026-07-03")]
+    assert find_unfed_scheduled(ff, weekly, pd.Timestamp("2026-07-02")) == []   # not due yet
+
+
+# --- report levels + alert only on new findings ------------------------------------
+
+def test_levels_and_new_findings(tmp_path, monkeypatch):
+    from src import economic_render as er
+    as_of = pd.Timestamp("2026-09-23T07:06:11")
+    monkeypatch.setattr("src.ff_refresh.FF_PARQUET", FROZEN_FF)
+    cal = er._load_calendar_frame(as_of)
+    prev = tmp_path / "integrity_report.json"
+    first = er._integrity_report(cal, as_of, previous_path=prev)
+    allf = [f for c in first["checks"].values() for f in c["findings"]]
+    assert allf and all(f["level"] in ("WARN", "INFO") for f in allf) and all(f["new"] for f in allf)
+    assert all(f["level"] == "INFO" for f in first["checks"]["release_conflict"]["findings"])
+    assert all(f["level"] == "INFO" for f in first["checks"]["previous_consistency"]["findings"]
+               if f["scored_source"] == "quarantined")
+    er._write_integrity_report(first, "t0", prev)
+    second = er._integrity_report(cal, as_of, previous_path=prev)
+    assert not any(f["new"] for c in second["checks"].values() for f in c["findings"])
+    assert er._integrity_summary(second)["new_warn"] == 0

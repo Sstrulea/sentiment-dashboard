@@ -69,18 +69,20 @@ FINDING_FIELDS = [
 
 def _releases(ff: pd.DataFrame, upcoming: Optional[pd.DataFrame]) -> pd.DataFrame:
     cols = ["canonical_id", "currency", "name_raw", "name_canonical",
-            "datetime_utc", "actual", "previous"]
-    base = ff[cols].copy()
+            "datetime_utc", "actual", "forecast", "previous", "jb_status"]
+    from .econ_calendar_ff import ensure_provenance_columns
+    base = ensure_provenance_columns(ff)[cols].copy()
     base["_from"] = "parquet"
     frames = [base]
     if upcoming is not None and len(upcoming):
-        up = upcoming[cols].copy()
+        up = ensure_provenance_columns(upcoming)[cols].copy()
         up["_from"] = "ff_weekly"
         frames.append(up)
     df = pd.concat(frames, ignore_index=True)
     df["datetime_utc"] = pd.to_datetime(df["datetime_utc"])
     df["actual"] = pd.to_numeric(df["actual"], errors="coerce")
     df["previous"] = pd.to_numeric(df["previous"], errors="coerce")
+    df["forecast"] = pd.to_numeric(df["forecast"], errors="coerce")
     df["_date"] = df["datetime_utc"].dt.date
     # the parquet wins over the feed for the same row; then the latest listed time
     # of the day wins.
@@ -131,31 +133,71 @@ def revision_tolerance(actuals: np.ndarray, next_previous: np.ndarray) -> tuple[
     return med + MAD_K * 1.4826 * mad, n
 
 
+SIGMA_WINDOW_K = 12
+
+
+def scoring_windows(scoring: pd.DataFrame) -> dict:
+    """{(currency, indicator_key): earliest release_dt still in the scoring
+    window} — the last SIGMA_WINDOW_K prints with actual AND consensus (the
+    sigma window) and the latest print with an actual."""
+    out: dict = {}
+    if scoring is None or scoring.empty:
+        return out
+    sc = scoring.assign(release_dt=pd.to_datetime(scoring["release_dt"]))
+    for (c, k), g in sc.groupby(["currency", "indicator_key"]):
+        pairs = g[g["actual"].notna() & g["consensus"].notna()].sort_values("release_dt")
+        lat = g[g["actual"].notna()]["release_dt"]
+        starts = []
+        if len(pairs):
+            starts.append(pairs["release_dt"].iloc[-SIGMA_WINDOW_K:].min())
+        if len(lat):
+            starts.append(lat.max())
+        if starts:
+            out[(c, k)] = min(starts)
+    return out
+
+
 def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
                                matcher: CompiledMatcher,
-                               upcoming: Optional[pd.DataFrame] = None) -> dict:
+                               upcoming: Optional[pd.DataFrame] = None,
+                               zero_possible: Optional[dict] = None,
+                               excluded: Optional[dict] = None) -> dict:
     """Returns {"findings": [...], "findings_by_source", "findings_by_kind",
-    "n_series", "n_checked", "n_scored_zero", "formula"}."""
-    rel = _releases(ff, upcoming)
+    "n_series", "n_checked", "n_scored_zero", "formula"}.
+
+    "Next" (audit 4B) = the next period's release with a usable previous, from
+    release_integrity.SeriesChain: re-listings of the same publication and
+    0/0/0 rows are skipped, rows the chain excluded as release conflicts do
+    not count, and nothing is compared across a gap (> 1.5 cadences). Each
+    finding carries `level`: WARN when unresolved and inside its series'
+    scoring window (latest print or the K=12 sigma window), else INFO."""
+    from .release_integrity import SeriesChain
+    rel_all = _releases(ff, upcoming)
     by_name, by_key = _scored_lookup(scoring)
+    windows = scoring_windows(scoring)
+    zero_possible = zero_possible or {}
     findings: list[dict] = []
     n_series = 0
     n_scored_zero = 0
     n_checked = 0
-    for cid, g in rel.groupby("canonical_id", sort=True):
+    for cid, g in rel_all.groupby("canonical_id", sort=True):
         g = g.reset_index(drop=True)
         r0 = g.iloc[0]
         key = matcher.match(CCY2COUNTRY.get(r0.currency, ""), r0.name_canonical)
         if key is None:
             continue   # not modeled -> never scored
         n_series += 1
+        chain = SeriesChain(g.rename(columns={"_date": "day"}), bool(zero_possible.get(cid, True)))
+        chain.excluded = {k: v for k, v in (excluded or {}).items() if k[0] == cid}
         raw_actual = g["actual"].to_numpy(dtype=float)
         nxt_prev = np.append(g["previous"].to_numpy(dtype=float)[1:], np.nan)
         tol, n_pairs = revision_tolerance(raw_actual, nxt_prev)
         value_floor = 2 * series_resolution(np.concatenate([raw_actual, g["previous"].to_numpy(dtype=float)]))
-        for i in range(len(g) - 1):
+        for i in range(len(g)):
             row = g.iloc[i]
             dt = pd.Timestamp(row.datetime_utc)
+            if (cid, dt) in chain.excluded:
+                continue
             if (row.currency, key, dt) in by_key:
                 scored, src = by_key[(row.currency, key, dt)], "manual"
             elif (row.currency, row.name_raw, dt) in by_name:
@@ -171,24 +213,28 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
             scored = float(scored)
             kind = "zero" if scored == 0.0 else "value"
             n_scored_zero += kind == "zero"
-            nprev = nxt_prev[i]
-            if np.isnan(nprev):
+            nrow = chain.next_valid(row._date)
+            if nrow is None or pd.isna(nrow["previous"]):
                 continue
+            nprev = float(nrow["previous"])
             n_checked += 1
-            diff = float(nprev) - scored
+            diff = nprev - scored
             threshold = tol if kind == "zero" else max(tol, value_floor)
             if abs(diff) > threshold + EPS:
-                nrow = g.iloc[i + 1]
+                wstart = windows.get((row.currency, key))
+                in_window = wstart is not None and dt >= wstart
+                resolved = src == "quarantined"
                 findings.append({
                     "canonical_id": cid, "currency": row.currency,
                     "indicator_key": key, "name_raw": row.name_raw,
                     "release_dt": dt.isoformat(), "kind": kind,
                     "scored_actual": scored, "scored_source": src,
-                    "next_release_dt": pd.Timestamp(nrow.datetime_utc).isoformat(),
-                    "next_previous": float(nprev), "next_from": nrow._from,
+                    "next_release_dt": pd.Timestamp(nrow["datetime_utc"]).isoformat(),
+                    "next_previous": nprev, "next_from": nrow["_from"],
                     "diff": round(diff, 6), "tolerance": round(tol, 6),
                     "threshold": round(threshold, 6),
                     "n_revision_pairs": n_pairs,
+                    "level": "WARN" if (in_window and not resolved) else "INFO",
                 })
     findings.sort(key=lambda f: (f["release_dt"], f["canonical_id"]))
     by_src: dict[str, int] = {}

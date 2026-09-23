@@ -109,7 +109,9 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
           for display/history only and never enters sigma or a score
           (see scoring_view).
     Rows whose 0.0 is real map to (False, NaN)."""
-    from .previous_consistency import EPS, revision_tolerance
+    from .previous_consistency import EPS
+    from .previous_consistency import revision_tolerance
+    from .release_integrity import SeriesChain, next_valid_previous, resolve_conflicts
     matcher = matcher or build_matcher()
     df = ensure_provenance_columns(ff_df)
     df = df.assign(datetime_utc=pd.to_datetime(df["datetime_utc"]),
@@ -117,6 +119,10 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
                    previous=pd.to_numeric(df["previous"], errors="coerce"))
     df["day"] = df["datetime_utc"].dt.date
     out: dict = {}
+    if df.empty:
+        return out
+    excluded, _ = resolve_conflicts(df, zero_possible)
+    df = df[[k not in excluded for k in zip(df["canonical_id"], df["datetime_utc"])]]
     for cid, g in df.groupby("canonical_id", sort=False):
         zeros = g[g["actual"] == 0.0]
         if zeros.empty:
@@ -128,14 +134,17 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
             raise ValueError(f"zero_possible not declared for mapped FF series {cid!r} "
                              f"(config/ff_zero_possible.yaml; no default)")
         zp = zero_possible[cid]
+        chain = SeriesChain(g, zp)
         rel = g.sort_values("datetime_utc").drop_duplicates("day", keep="last")
-        nxt_prev = dict(zip(rel["day"], list(rel["previous"].iloc[1:]) + [float("nan")]))
         rep_dt = dict(zip(rel["day"], rel["datetime_utc"]))
         tol, _n = revision_tolerance(rel["actual"].to_numpy(float),
                                      np.append(rel["previous"].to_numpy(float)[1:], np.nan))
         real_days = set(g.loc[g["actual"].notna() & (g["actual"] != 0.0), "day"])
         for z in zeros.itertuples(index=False):
-            nprev = nxt_prev.get(z.day, float("nan"))
+            # 4B: "next" = the next period's release with a usable previous
+            # (same-publication re-listings and 0/0/0 rows skipped; nothing is
+            # compared across a gap) — release_integrity.SeriesChain.
+            nprev = next_valid_previous(chain, z.day)
             if z.day in real_days:
                 out[(cid, z.datetime_utc)] = (True, float("nan"))                 # Z3
                 continue
@@ -143,10 +152,6 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
             confirmed = pd.notna(nprev) and not contradicted
             jb_real = z.jb_status is not None and not pd.isna(z.jb_status) \
                 and z.jb_status != JB_NOT_LOADED
-            # Z1 level -> placeholder. Z2/R2 zero_possible: real only with POSITIVE
-            # evidence (JB status present and not "Data Not Loaded", or the next
-            # print's previous confirms it); DNL or a contradiction -> placeholder;
-            # no evidence at all -> placeholder (a missing key blocks).
             placeholder = (not zp) or z.jb_status == JB_NOT_LOADED or contradicted \
                 or not (jb_real or confirmed)
             recovered = float("nan")
@@ -206,6 +211,13 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
     matcher = matcher or build_matcher()
     zp = load_zero_possible() if zero_possible is None else zero_possible
     ff_df = ensure_provenance_columns(ff_df)
+    # 4B: one publication = one row — a same-day row the series chain
+    # contradicts leaves scoring (reported by the integrity check).
+    from .release_integrity import resolve_conflicts
+    conflicts, _ = resolve_conflicts(ff_df, zp)
+    if conflicts:
+        keys = zip(ff_df["canonical_id"], pd.to_datetime(ff_df["datetime_utc"]))
+        ff_df = ff_df[[k not in conflicts for k in keys]]
     verdicts = zero_verdicts(ff_df, zp, matcher)
     recs: list[dict] = []
     n_ph = n_rec = n_cons = 0
