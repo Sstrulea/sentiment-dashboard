@@ -61,9 +61,21 @@ def test_ensure_provenance_reads_disk_only_and_is_idempotent(tmp_path):
     (ff_raw / "ff_weekly_2026-09-01.json").write_text(json.dumps(WEEKLY[0][1]))
     p = tmp_path / "ff.parquet"
     _pq([("chf_cpi", "CHF", "CPI m/m", "2026-09-03 06:30", 0.4, 0.0)]).to_parquet(p)
-    assert ensure_provenance(p, ff_raw, jb_raw, tmp_path / "none.json")
+    assert ensure_provenance(p, ff_raw, jb_raw, tmp_path / "none.json", tmp_path / "no_hist.json")
     once = pd.read_parquet(p)
     assert list(once.columns) == CANON_COLUMNS and once["forecast_origin"].tolist() == ["ff"]
     (ff_raw / "ff_weekly_2026-09-01.json").unlink()        # snapshot left retention
-    assert not ensure_provenance(p, ff_raw, jb_raw, tmp_path / "none.json")
+    assert not ensure_provenance(p, ff_raw, jb_raw, tmp_path / "none.json", tmp_path / "no_hist.json")
     pd.testing.assert_frame_equal(pd.read_parquet(p), once)
+
+
+def test_r3_status_history_fills_the_gap_but_disk_events_win():
+    pq = _pq([("usd_ppi", "USD", "PPI m/m", "2026-08-13 12:30", 0.0, 0.2),
+              ("usd_cpi", "USD", "CPI y/y", "2026-08-12 12:30", 3.1, 3.0)])
+    hist = {("USD", "PPI m/m", "2026-08-13"): "Data Not Loaded", ("USD", "CPI y/y", "2026-08-12"): "Bad Data"}
+    jb_disk = [("2026-08-14", [{"Name": "CPI y/y", "Currency": "USD", "Date": "2026.08.12 15:30:00",
+                                "Actual": 3.1, "Forecast": 3.0, "Previous": 2.9,
+                                "Quality": "Good Data", "Strength": "Strong Data"}])]
+    b = backfill(pq, [], jb_disk, [], hist).set_index("canonical_id")
+    assert b.loc["usd_ppi", "jb_status"] == "Data Not Loaded"      # from the history archive
+    assert b.loc["usd_cpi", "jb_status"] == "Good Data"            # exact event on disk wins

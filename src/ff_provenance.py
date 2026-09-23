@@ -13,9 +13,10 @@ history, no committed table:
     treated like "jb" by ff_scoring.effective_consensus.
   jb_status
     the newest JBlanked payload on disk (data/archive/ff_calendar_range.json,
-    then data/jb_raw in time order) carrying the event: exact datetime first
+    then data/jb_raw in time order) carrying the event at its exact datetime
     (per event: a DST duplicate's 0.0 copy keeps its own "Data Not Loaded"),
-    else the same UTC date with the copy carrying a real actual. None if none.
+    else data/archive/jb_status_history.json by (currency, name_raw, UTC date)
+    (R3), else the same UTC date on disk with the copy carrying a real actual.
 
 RETENTION DEADLINE: data/ff_raw keeps 90 snapshots; those from 2026-08-01 start
 leaving it at the end of October 2026 — the migration must have run by then, or
@@ -40,6 +41,11 @@ ROOT = Path(__file__).resolve().parents[1]
 FF_RAW_DIR = ROOT / "data" / "ff_raw"
 JB_RAW_DIR = ROOT / "data" / "jb_raw"
 JB_ARCHIVE = ROOT / "data" / "archive" / "ff_calendar_range.json"
+# R3: last JB status per (currency, name_raw, UTC date), built ONCE from the git
+# history of data/jb_raw (scripts/measure/build_jb_status_history.py) and
+# committed; covers the gap between the archive (ends 2026-07-05) and the jb_raw
+# payloads still on disk. Read like any archive: no git at runtime.
+JB_STATUS_HISTORY = ROOT / "data" / "archive" / "jb_status_history.json"
 OVERRIDES_JSON = ROOT / "data" / "ff_forecast_provenance.json"
 UNKNOWN = "unknown"
 
@@ -75,9 +81,18 @@ def _jb_statuses(payloads: Iterable[tuple[str, list]]) -> tuple[dict, dict]:
     return exact, by_date
 
 
+def load_status_history(path: Path = JB_STATUS_HISTORY) -> dict:
+    try:
+        raw = json.loads(Path(path).read_text())
+    except Exception:  # noqa: BLE001 — absent -> no history
+        return {}
+    return {(e["currency"], e["name_raw"], e["date"]): e["jb_status"] for e in raw.get("entries", [])}
+
+
 def backfill(parquet: pd.DataFrame, weekly: Iterable[tuple[str, list]],
              jb_payloads: Iterable[tuple[str, list]],
-             overrides: Optional[list[dict]] = None) -> pd.DataFrame:
+             overrides: Optional[list[dict]] = None,
+             status_history: Optional[dict] = None) -> pd.DataFrame:
     """Fill forecast_origin (+ the FF forecast) and jb_status for rows without a
     forecast_origin. Pure; idempotent (rows that have one are left alone)."""
     df = ensure_provenance_columns(parquet.copy())
@@ -100,7 +115,13 @@ def backfill(parquet: pd.DataFrame, weekly: Iterable[tuple[str, list]],
         df.at[i, "forecast_origin"] = origin
         df.at[i, "forecast"] = forecast
         if pd.isna(df.at[i, "jb_status"]):
-            df.at[i, "jb_status"] = jb_exact.get((cid, dt), jb_by_date.get((cid, dt.date())))
+            st = jb_exact.get((cid, dt))
+            if st is None:
+                st = (status_history or {}).get((df.at[i, "currency"], df.at[i, "name_raw"],
+                                                 str(dt.date())))
+            if st is None:
+                st = jb_by_date.get((cid, dt.date()))
+            df.at[i, "jb_status"] = st
     return df
 
 
@@ -122,7 +143,8 @@ def load_overrides(path: Path = OVERRIDES_JSON) -> list[dict]:
 
 
 def ensure_provenance(parquet_path: Path, ff_raw_dir: Path = FF_RAW_DIR,
-                      jb_raw_dir: Path = JB_RAW_DIR, archive: Path = JB_ARCHIVE) -> bool:
+                      jb_raw_dir: Path = JB_RAW_DIR, archive: Path = JB_ARCHIVE,
+                      status_history: Path = JB_STATUS_HISTORY) -> bool:
     """Pipeline hook (idempotent). Returns True if the parquet was rewritten."""
     parquet_path = Path(parquet_path)
     if not parquet_path.exists():
@@ -132,7 +154,8 @@ def ensure_provenance(parquet_path: Path, ff_raw_dir: Path = FF_RAW_DIR,
         return False
     jb = [("0000-archive", json.loads(Path(archive).read_text()))] if Path(archive).exists() else []
     jb += _disk_payloads(jb_raw_dir, "jb_range_")
-    out = backfill(df, _disk_payloads(ff_raw_dir, "ff_weekly_"), jb, load_overrides())
+    out = backfill(df, _disk_payloads(ff_raw_dir, "ff_weekly_"), jb, load_overrides(),
+                   load_status_history(status_history))
     out.to_parquet(parquet_path, index=False)
     log.warning("ff provenance migration: forecast_origin %s; jb_status %s",
                 out["forecast_origin"].value_counts().to_dict(),
