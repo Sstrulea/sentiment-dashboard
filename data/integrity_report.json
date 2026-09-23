@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-23T18:06:17.964772",
+ "as_of": "2026-09-23T19:06:13.733971",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -15,7 +15,7 @@
      "threshold": 1.28956,
      "reason": "actual 1.8 vs next previous 4.3 (2026-03-30)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -29,7 +29,7 @@
      "threshold": 1.08956,
      "reason": "actual 0.4 vs next previous 3.7 (2026-04-30)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -43,7 +43,7 @@
      "threshold": 0.2,
      "reason": "previous -4.0 vs prior actual -4.5 (2026-06-25)",
      "level": "INFO",
-     "new": true
+     "new": false
     }
    ]
   },
@@ -123,7 +123,7 @@
      "threshold": 5.05824,
      "n_revision_pairs": 48,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_jolts_job_openings",
@@ -294,7 +294,7 @@
      "threshold": 1.28956,
      "n_revision_pairs": 44,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "chf_retail_sales",
@@ -446,7 +446,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 43,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_cpi",
@@ -864,7 +864,7 @@
      "threshold": 0.54478,
      "n_revision_pairs": 31,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_advance_gdp_price_index",
@@ -921,7 +921,7 @@
      "threshold": 0.64478,
      "n_revision_pairs": 13,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -1852,7 +1852,7 @@
      "threshold": 1.28956,
      "n_revision_pairs": 43,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -3334,7 +3334,7 @@
      "threshold": 2.0,
      "n_revision_pairs": 189,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_company_operating_profits",
@@ -3429,7 +3429,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 43,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_nonfarm_payrolls",
@@ -3448,7 +3448,7 @@
      "threshold": 96.717,
      "n_revision_pairs": 43,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -4028,7 +4028,7 @@
      "gap_days": 182,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4040,7 +4040,7 @@
      "gap_days": 182,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4052,7 +4052,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4064,7 +4064,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4076,7 +4076,7 @@
      "gap_days": 182,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4088,7 +4088,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4100,7 +4100,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4112,7 +4112,7 @@
      "gap_days": 70,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4124,7 +4124,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4136,7 +4136,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4148,7 +4148,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4160,7 +4160,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4172,7 +4172,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4184,7 +4184,7 @@
      "gap_days": 62,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4196,7 +4196,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4208,7 +4208,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4220,7 +4220,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4232,7 +4232,7 @@
      "gap_days": 62,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4244,7 +4244,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4256,7 +4256,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4268,7 +4268,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4280,7 +4280,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4292,7 +4292,7 @@
      "gap_days": 65,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4304,7 +4304,7 @@
      "gap_days": 178,
      "cadence_days": 91,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4316,7 +4316,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4328,7 +4328,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4340,7 +4340,7 @@
      "gap_days": 62,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4352,7 +4352,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4364,7 +4364,7 @@
      "gap_days": 59,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4376,7 +4376,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4388,7 +4388,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4400,7 +4400,7 @@
      "gap_days": 59,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4412,7 +4412,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4424,7 +4424,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4436,7 +4436,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4448,7 +4448,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4460,7 +4460,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4472,7 +4472,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4484,7 +4484,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4496,7 +4496,7 @@
      "gap_days": 244,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4508,7 +4508,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4520,7 +4520,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4532,7 +4532,7 @@
      "gap_days": 59,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4544,7 +4544,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4556,7 +4556,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4568,7 +4568,7 @@
      "gap_days": 60,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4580,7 +4580,7 @@
      "gap_days": 59,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4592,7 +4592,7 @@
      "gap_days": 53,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4604,7 +4604,7 @@
      "gap_days": 183,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4616,7 +4616,7 @@
      "gap_days": 54,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4628,7 +4628,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4640,7 +4640,7 @@
      "gap_days": 56,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4652,7 +4652,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4664,7 +4664,7 @@
      "gap_days": 64,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4676,7 +4676,7 @@
      "gap_days": 91,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4688,7 +4688,7 @@
      "gap_days": 91,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4700,7 +4700,7 @@
      "gap_days": 60,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4712,7 +4712,7 @@
      "gap_days": 74,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4724,7 +4724,7 @@
      "gap_days": 60,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4736,7 +4736,7 @@
      "gap_days": 70,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4748,7 +4748,7 @@
      "gap_days": 71,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4760,7 +4760,7 @@
      "gap_days": 182,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4772,7 +4772,7 @@
      "gap_days": 176,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4784,7 +4784,7 @@
      "gap_days": 64,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4796,7 +4796,7 @@
      "gap_days": 205,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4808,7 +4808,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4820,7 +4820,7 @@
      "gap_days": 49,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4832,7 +4832,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4844,7 +4844,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4856,7 +4856,7 @@
      "gap_days": 58,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4868,7 +4868,7 @@
      "gap_days": 64,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4880,7 +4880,7 @@
      "gap_days": 81,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4892,7 +4892,7 @@
      "gap_days": 57,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4904,7 +4904,7 @@
      "gap_days": 70,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4916,7 +4916,7 @@
      "gap_days": 48,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4928,7 +4928,7 @@
      "gap_days": 58,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4940,7 +4940,7 @@
      "gap_days": 55,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4952,7 +4952,7 @@
      "gap_days": 64,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4964,7 +4964,7 @@
      "gap_days": 62,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4976,7 +4976,7 @@
      "gap_days": 205,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -4988,7 +4988,7 @@
      "gap_days": 62,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5000,7 +5000,7 @@
      "gap_days": 78,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5012,7 +5012,7 @@
      "gap_days": 91,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5024,7 +5024,7 @@
      "gap_days": 78,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5036,7 +5036,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5048,7 +5048,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5060,7 +5060,7 @@
      "gap_days": 62,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5072,7 +5072,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5084,7 +5084,7 @@
      "gap_days": 69,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5096,7 +5096,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5108,7 +5108,7 @@
      "gap_days": 49,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5120,7 +5120,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5132,7 +5132,7 @@
      "gap_days": 57,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5144,7 +5144,7 @@
      "gap_days": 61,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5156,7 +5156,7 @@
      "gap_days": 70,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5168,7 +5168,7 @@
      "gap_days": 48,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5180,7 +5180,7 @@
      "gap_days": 57,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5192,7 +5192,7 @@
      "gap_days": 70,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5204,7 +5204,7 @@
      "gap_days": 48,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5216,7 +5216,7 @@
      "gap_days": 58,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5228,7 +5228,7 @@
      "gap_days": 132,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5240,7 +5240,7 @@
      "gap_days": 50,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5252,7 +5252,7 @@
      "gap_days": 154,
      "cadence_days": 91,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5264,7 +5264,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5276,7 +5276,7 @@
      "gap_days": 70,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5288,7 +5288,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5300,7 +5300,7 @@
      "gap_days": 49,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5312,7 +5312,7 @@
      "gap_days": 63,
      "cadence_days": 30,
      "level": "WARN",
-     "new": true
+     "new": false
     }
    ]
   }
@@ -5331,5 +5331,5 @@
    "INFO": 73
   }
  },
- "generated_at": "2026-09-23T18:06:29+00:00"
+ "generated_at": "2026-09-23T19:06:24+00:00"
 }
