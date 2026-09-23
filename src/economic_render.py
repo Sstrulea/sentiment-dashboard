@@ -1250,6 +1250,39 @@ def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
     }
 
 
+def _policy_rate_decisions() -> pd.DataFrame | None:
+    """data/cb/decisions.parquet (src.policy_rate) — None if unreadable."""
+    from src.policy_rate import DECISIONS_PARQUET, load_decisions
+    try:
+        return load_decisions(DECISIONS_PARQUET)
+    except Exception as e:  # noqa: BLE001
+        log.warning("decisions.parquet unavailable (%s); no policy rate displayed.", e)
+        return None
+
+
+def _with_policy_rate(cal: pd.DataFrame, decisions: pd.DataFrame | None,
+                      as_of: pd.Timestamp) -> pd.DataFrame:
+    """interest_rate_decision comes ONLY from the CB decisions (audit 1.6): the
+    FF/JB/manual rows are dropped; no decisions file -> no rows, never a fallback."""
+    from src.policy_rate import KEY, replace_in_calendar
+    if cal is None or cal.empty or "indicator_key" not in cal.columns:
+        return cal
+    if decisions is None:
+        return cal[cal["indicator_key"] != KEY].reset_index(drop=True)
+    return replace_in_calendar(cal, decisions, as_of)
+
+
+def _attach_policy_rate_fields(payload: dict, decisions: pd.DataFrame | None) -> None:
+    """Fed range + provenance on each interest_rate_decision breakdown entry."""
+    from src.policy_rate import KEY, display_fields
+    if decisions is None:
+        return
+    for ccy, card in payload.get("currencies", {}).items():
+        entry = (card.get("breakdown") or {}).get(KEY)
+        if entry is not None and entry.get("release_dt") is not None:
+            entry.update(display_fields(decisions, ccy, entry["release_dt"]))
+
+
 INTEGRITY_REPORT_JSON = ROOT / "data" / "integrity_report.json"
 
 
@@ -1320,6 +1353,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
              else pd.Timestamp(as_of))
 
     cal = _load_calendar_frame(as_of)   # Phase 3: FF (default) or MT5 (rollback) per config
+    decisions = _policy_rate_decisions()
+    cal = _with_policy_rate(cal, decisions, as_of)
 
     # Rate-Expectations engine (C1): optional 4th "monetary" category. Missing
     # parquet → render exactly as before (3 categories), no crash.
@@ -1364,6 +1399,7 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     meta["trend_enabled"] = trend_on
     _enrich_breakdowns(payload, meta["indicators"], as_of, _previous_lookup(cal))
     _attach_strength_fields(payload, instruments_cfg, rate_scores)
+    _attach_policy_rate_fields(payload, decisions)
     # Attach the chosen source to each rate_expectations breakdown entry.
     for ccy, card in payload.get("currencies", {}).items():
         entry = (card.get("breakdown") or {}).get("rate_expectations")

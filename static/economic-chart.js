@@ -31,6 +31,13 @@
     if (Math.abs(n - Math.round(n)) < 1e-9) return String(Math.round(n));
     return n.toFixed(2);
   }
+  // A policy rate set as a target RANGE (Fed; decisions.parquet lower/upper):
+  // the value is the midpoint, shown as the range around it (same half-width).
+  function fmtPolicy(v, e) {
+    if (!e || !e.range || v === null || v === undefined || Number.isNaN(Number(v))) return fmtNum(v);
+    const hw = (Number(e.range.upper) - Number(e.range.lower)) / 2;
+    return (Number(v) - hw).toFixed(2) + "–" + (Number(v) + hw).toFixed(2);
+  }
   function fmtSigned(v, dp) {
     if (v === null || v === undefined || Number.isNaN(v)) return "—";
     const n = Number(v);
@@ -837,8 +844,8 @@
     return (
       '<tr' + (e.stale ? ' class="ei-stale"' : '') + '>' +
       '<td class="ei-name">' + label + inverted + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.actual, e) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.consensus, e) + '</td>' +
       '<td class="ei-num">' + fmtSigned(e.surprise, 2) + '</td>' +
       '<td class="ei-num">' + zTxt + '</td>' +
       '<td class="ei-score ' + cellClass(e.score) + '">' + fmtScoreCell(e.score) + '</td>' +
@@ -1266,8 +1273,8 @@
     return (
       '<tr' + rowCls + '>' +
       '<td class="ei-name">' + (meta.label || key) + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.actual) + '</td>' +
-      '<td class="ei-num">' + fmtNum(e.consensus) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.actual, e) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(e.consensus, e) + '</td>' +
       '<td class="ei-num">' + fmtSigned(e.surprise, 2) + '</td>' +
       '<td class="ei-num">' + zTxt + '</td>' +
       '<td class="ei-score ' + scoreCls + '">' + scoreTxt + '</td>' +
