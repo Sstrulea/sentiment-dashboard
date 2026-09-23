@@ -1210,6 +1210,64 @@ def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
     }
 
 
+INTEGRITY_REPORT_JSON = ROOT / "data" / "integrity_report.json"
+
+
+def _latest_weekly_raw(as_of: pd.Timestamp) -> Path | None:
+    """Latest data/ff_raw/ff_weekly_YYYY-MM-DD.json dated <= as_of (so a pinned
+    as_of never reads a feed it could not have seen)."""
+    from src.ff_raw_archive import RAW_DIR
+    cands = sorted(p for p in RAW_DIR.glob("ff_weekly_*.json")
+                   if p.stem.removeprefix("ff_weekly_") <= as_of.strftime("%Y-%m-%d"))
+    return cands[-1] if cands else None
+
+
+def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp) -> dict:
+    """Integrity checks over the scored calendar (audit 1.2). Pure check — never
+    feeds back into scoring. Returns the full report; a WARN is logged per finding."""
+    from src.previous_consistency import check_previous_consistency
+    report: dict = {"as_of": as_of.isoformat(), "checks": {}}
+    try:
+        from src.ff_refresh import FF_PARQUET, calendar_source
+        if calendar_source() != "ff" or not FF_PARQUET.exists():
+            return report
+        from src.econ_calendar_ff import parse_ff_weekly
+        from src.ff_scoring import build_matcher
+        ffdf = pd.read_parquet(FF_PARQUET)
+        weekly = _latest_weekly_raw(as_of)
+        upcoming = parse_ff_weekly(weekly, now_utc=as_of) if weekly is not None else None
+        res = check_previous_consistency(ffdf, cal, build_matcher(), upcoming=upcoming)
+        res["weekly_feed"] = weekly.name if weekly is not None else None
+        report["checks"]["previous_consistency"] = res
+        if res["findings"]:
+            log.warning("integrity(previous_consistency): %d finding(s) %s -> %s",
+                        len(res["findings"]), res["findings_by_source"],
+                        INTEGRITY_REPORT_JSON.name)
+        for f in res["findings"]:
+            if f["scored_source"] == "quarantined":
+                continue   # not scored; listed in the report only
+            log.warning("integrity(previous_consistency): %s %s scored 0.0 (%s) but next "
+                        "print (%s) says previous=%s (tol %s)", f["canonical_id"],
+                        f["release_dt"], f["scored_source"], f["next_release_dt"],
+                        f["next_previous"], f["tolerance"])
+    except Exception as e:  # noqa: BLE001 — a check must never break the render
+        log.warning("integrity report unavailable: %s", e)
+        report["error"] = str(e)
+    return report
+
+
+def _integrity_summary(report: dict) -> dict:
+    """Counter for payload["freshness"]["integrity"]. WARN level, deliberately no
+    `stale` key: it does not roll into any_stale."""
+    pc = (report.get("checks") or {}).get("previous_consistency")
+    if pc is None:
+        return {"previous_consistency": None, "level": "unavailable"}
+    n = len(pc["findings"])
+    return {"previous_consistency": n,
+            "previous_consistency_by_source": pc.get("findings_by_source", {}),
+            "level": "warn" if n else "ok"}
+
+
 def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     """Read parquet + configs, compute, enrich, and return the JSON-ready payload.
 
@@ -1300,6 +1358,9 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)
+    integrity = _integrity_report(cal, as_of)
+    payload["freshness"]["integrity"] = _integrity_summary(integrity)
+    payload["_integrity_report"] = integrity   # popped by render_economic_page
     payload["manual_actuals"] = _build_manual_actuals_block(as_of)
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
@@ -1310,6 +1371,11 @@ def render_economic_page() -> Path:
     copy_static_assets()
 
     payload = build_economic_payload()
+    integrity = payload.pop("_integrity_report", None)
+    if integrity is not None:
+        integrity["generated_at"] = payload.get("generated_at")
+        INTEGRITY_REPORT_JSON.write_text(json.dumps(integrity, indent=1) + "\n",
+                                         encoding="utf-8")
 
     data_dir = PUBLIC_DIR / "data"
     data_dir.mkdir(parents=True, exist_ok=True)
