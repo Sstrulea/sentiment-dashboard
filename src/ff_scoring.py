@@ -92,15 +92,22 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
       Z1  zero_possible[canonical_id] is False (level / index) -> placeholder.
           No default: a mapped series missing from config/ff_zero_possible.yaml
           raises.
-      Z2  zero_possible True -> placeholder iff the newest JB payload said
+      Z2  zero_possible True -> placeholder if the newest JB payload said
           "Data Not Loaded" (jb_status) OR the next print's `previous`
           contradicts it: |next.previous - 0| > tol (the previous-consistency
           tolerance of the series, median + 3*1.4826*MAD, no floor).
+      R2  ... and real ONLY with positive evidence: a jb_status present and not
+          "Data Not Loaded", or a next.previous that confirms it (within tol).
+          No evidence -> placeholder (a missing key blocks). A human
+          ZERO_CONFIRM override supplies the value as a manual row.
       Z3  same UTC day, a sibling carries a real non-zero actual -> the 0.0 is a
           placeholder of that release (not a divergence), never recovered.
       Z4  a placeholder that is its day's release (latest listed time, no real
           sibling) and has a next.previous is recovered from it
           (actual_origin 'ff_previous'); otherwise recovered = NaN.
+          R1: a recovered value is a REVISED value, not the first release: it is
+          for display/history only and never enters sigma or a score
+          (see scoring_view).
     Rows whose 0.0 is real map to (False, NaN)."""
     from .previous_consistency import EPS, revision_tolerance
     matcher = matcher or build_matcher()
@@ -132,13 +139,34 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
             if z.day in real_days:
                 out[(cid, z.datetime_utc)] = (True, float("nan"))                 # Z3
                 continue
-            placeholder = (not zp) or z.jb_status == JB_NOT_LOADED or \
-                (pd.notna(nprev) and abs(float(nprev)) > tol + EPS)              # Z1/Z2
+            contradicted = pd.notna(nprev) and abs(float(nprev)) > tol + EPS
+            confirmed = pd.notna(nprev) and not contradicted
+            jb_real = z.jb_status is not None and not pd.isna(z.jb_status) \
+                and z.jb_status != JB_NOT_LOADED
+            # Z1 level -> placeholder. Z2/R2 zero_possible: real only with POSITIVE
+            # evidence (JB status present and not "Data Not Loaded", or the next
+            # print's previous confirms it); DNL or a contradiction -> placeholder;
+            # no evidence at all -> placeholder (a missing key blocks).
+            placeholder = (not zp) or z.jb_status == JB_NOT_LOADED or contradicted \
+                or not (jb_real or confirmed)
             recovered = float("nan")
             if placeholder and pd.notna(nprev) and z.datetime_utc == rep_dt[z.day]:
                 recovered = float(nprev)                                          # Z4
             out[(cid, z.datetime_utc)] = (placeholder, recovered)
     return out
+
+
+def scoring_view(cal: pd.DataFrame) -> pd.DataFrame:
+    """R1 — the frame scoring sees: a value recovered from the next print's
+    `previous` (actual_origin 'ff_previous') is a revision, not a first release,
+    so it enters neither sigma nor a score (actual -> NaN here). The full frame,
+    recovered values included and marked, stays for display and history."""
+    if cal is None or cal.empty or "actual_origin" not in cal.columns:
+        return cal
+    rec = cal["actual_origin"] == "ff_previous"
+    if not rec.any():
+        return cal
+    return cal.assign(actual=cal["actual"].where(~rec))
 
 
 def zero_beside_real_value(cal: pd.DataFrame) -> pd.DataFrame:

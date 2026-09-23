@@ -119,10 +119,11 @@ def test_future_null_row_never_missing():
     ("Data Not Loaded", True),   # JB placeholder -> needs a human
     ("Good Data", False),        # a real 0.0 print (Good/Bad Data is a direction tag)
     ("Bad Data", False),
-    (None, False),               # no JB payload ever carried it -> FF 0.0 kept
+    (None, True),                # R2: no evidence -> blocked, a human decides
 ])
 def test_zero_confirm_iff_jb_status_data_not_loaded(status, actionable):
-    """audit 2.3: one rule, the same as ff_scoring.to_scoring_frame's."""
+    """One rule, the same as ff_scoring.to_scoring_frame's (Z2 + R2: a zero is
+    real only with positive evidence — here a JB status other than DNL)."""
     rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0, jb_status=status)]
     out = _find(rows)
     assert (len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM) is actionable
@@ -564,3 +565,40 @@ def test_relevance_window_never_affects_override_eligibility():
     manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(3.2)   # override still worked
     assert remaining.empty                                                       # resolved, as normal
+
+
+def test_recovered_placeholder_stays_actionable():
+    """R1: a value recovered from next.previous is never scored, so the
+    placeholder still needs a human."""
+    rows = [_row("USD", "CPI y/y", "2026-06-10 12:30", 0.0, jb_status="Data Not Loaded"),
+            _row("USD", "CPI y/y", "2026-07-14 12:30", 3.1)]
+    rows[1]["previous"] = 2.9
+    out = _find(rows)
+    assert out["state"].tolist() == [ZERO_CONFIRM]
+
+
+def test_r4_aud_import_prices_2026_07_30_override_applies_while_row_is_zero():
+    """R4 — the real case: FF re-lists the release at 00:30 and 01:30, both 0.0,
+    forecast FF '0.0%' (documented provenance), no JB payload for the day and no
+    next print yet. The human override 5.7 @ 01:30 must be the scored value with
+    consensus 0.0; the zero copies must not score."""
+    from src.ff_scoring import zero_beside_real_value
+    m = CompiledMatcher({"Australia": [{"pattern": "^Import Prices q/q$", "indicator": "import_prices"}]})
+    rows = [_row("AUD", "Import Prices q/q", dt, 0.0, forecast=0.0, canonical_id="aud_import_prices",
+                 jb_status=None) for dt in ("2026-07-30 00:30", "2026-07-30 01:30")]
+    for r in rows:
+        r["previous"] = 0.1
+    ov = [{"canonical_id": "aud_import_prices", "datetime_utc": "2026-07-30 01:30:00", "actual": 5.7}]
+    manual, remaining = apply_overrides(_frame(rows), ov, now_utc=pd.Timestamp("2026-09-23 07:06"),
+                                        matcher=m, indicators_cfg=INDICATORS_CFG,
+                                        zero_possible={"aud_import_prices": True})
+    assert manual[["actual", "consensus", "source"]].values.tolist() == [[5.7, 0.0, "manual"]]
+    assert pd.Timestamp(manual.iloc[0]["release_dt"]) == pd.Timestamp("2026-07-30 01:30")
+    assert remaining[remaining["canonical_id"] == "aud_import_prices"].empty
+    # the ff zero copies next to the human value do not score (Z3 across sources)
+    ff_rows = pd.DataFrame([{"currency": "AUD", "indicator_key": "import_prices",
+                             "release_dt": pd.Timestamp(dt), "actual": 0.0, "consensus": 0.0,
+                             "previous": 0.1, "source": "ff", "name_raw": "Import Prices q/q",
+                             "actual_origin": "ff"} for dt in ("2026-07-30 00:30", "2026-07-30 01:30")])
+    cal = zero_beside_real_value(pd.concat([ff_rows, manual], ignore_index=True))
+    assert cal.loc[cal["source"] == "ff", "actual"].isna().all()

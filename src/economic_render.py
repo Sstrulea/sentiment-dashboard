@@ -1467,7 +1467,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     trend_full = _trend_full() if trend_on else {}
     trend_by_symbol = _trend_cells(trend_full) if trend_on else {}
 
-    payload = build_payload(cal, indicators_cfg, instruments_cfg,
+    from src.ff_scoring import scoring_view
+    payload = build_payload(scoring_view(cal), indicators_cfg, instruments_cfg,
                             as_of=as_of, rate_scores=rate_scores or None,
                             sentiment_cells=fx_cells or None,
                             trend_cells=trend_by_symbol or None)
@@ -1511,7 +1512,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)
-    integrity = _integrity_report(cal, as_of)
+    from src.ff_scoring import scoring_view as _sv
+    integrity = _integrity_report(_sv(cal), as_of)
     payload["freshness"]["integrity"] = _integrity_summary(integrity)
     payload["_integrity_report"] = integrity   # popped by render_economic_page
     payload["manual_actuals"] = _build_manual_actuals_block(as_of)

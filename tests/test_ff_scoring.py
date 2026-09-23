@@ -239,7 +239,9 @@ def test_z1_latest_level_zero_without_next_print_is_nan():
 
 @pytest.mark.parametrize("status,next_prev,verdict", [
     ("Bad Data", 0.0, (False, np.nan)),          # real 0.0, confirmed by next.previous
-    ("Good Data", np.nan, (False, np.nan)),      # real, nothing contradicts it
+    ("Good Data", np.nan, (False, np.nan)),      # real: JB status is positive evidence
+    (None, np.nan, (True, np.nan)),              # R2: no evidence at all -> placeholder
+    (None, 0.0, (False, np.nan)),                # R2: next.previous confirms it -> real
     ("Data Not Loaded", np.nan, (True, np.nan)),  # Z2 placeholder, nothing to recover from
     ("Data Not Loaded", 0.2, (True, 0.2)),       # Z2 placeholder, recovered
     ("Good Data", 0.3, (True, 0.3)),             # Z2 contradicted beyond tol (0) -> recovered
@@ -278,3 +280,15 @@ def test_scoring_frame_applies_the_consensus_rule():
     out = to_scoring_frame(rows, build_matcher(), zero_possible=ZP).sort_values("release_dt")
     assert out["consensus"].isna().tolist() == [True, True, False]
     assert out["consensus"].iloc[2] == 0.0                 # CHF CPI 09-03: FF "0.0%" scored
+
+
+def test_r1_recovered_values_never_reach_scoring():
+    from src.ff_scoring import scoring_view
+    ff = _s(*PMI, [("2025-09-01 07:30", 49.0, 48.0, "Good Data"),
+                   ("2025-10-01 07:30", 0.0, 49.0, "Good Data"),
+                   ("2025-11-03 08:30", 47.0, 46.3, "Bad Data")])
+    full = to_scoring_frame(ff, build_matcher(), zero_possible=ZP)
+    assert full["actual_origin"].tolist().count("ff_previous") == 1       # kept, marked
+    scored = scoring_view(full).sort_values("release_dt")
+    assert scored["actual"].isna().tolist() == [False, True, False]      # not in sigma/score
+    assert scoring_view(full.drop(columns="actual_origin")).equals(full.drop(columns="actual_origin"))

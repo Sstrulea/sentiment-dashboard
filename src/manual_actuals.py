@@ -137,12 +137,14 @@ OVERRIDE_COLUMNS = [
 
 def _zero_passes_widening(verdicts: dict, canonical_id: str, dt) -> bool:
     """A 0.0 actual is usable (no human needed) unless ff_scoring.zero_verdicts —
-    THE zero rule, the same one to_scoring_frame applies (audit Z1-Z4) — calls
-    it a placeholder it could not recover from the next print's `previous`.
+    THE zero rule, the same one to_scoring_frame applies (audit Z1-Z4, R1-R2) —
+    calls it a placeholder (recovered or not: a recovered value is never scored).
     The `can_be_zero` and `flagged_bad` parameters still accepted by the public
     functions below are IGNORED (kept only so existing call sites keep working)."""
     v = verdicts.get((canonical_id, pd.Timestamp(dt)))
-    return v is None or not v[0] or pd.notna(v[1])
+    # R1: a value recovered from next.previous is display-only (never scored),
+    # so a placeholder stays actionable even when it was recovered.
+    return v is None or not v[0]
 
 
 def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
