@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-23T13:06:16.120060",
+ "as_of": "2026-09-23T14:06:34.357374",
  "checks": {
   "previous_consistency": {
    "findings": [
@@ -1813,7 +1813,7 @@
      "release_dt": "2023-11-10T07:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-01-12T07:00:00",
      "next_previous": -1.3,
      "next_from": "parquet",
@@ -1983,7 +1983,7 @@
      "release_dt": "2023-11-23T21:45:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-02-22T21:45:00",
      "next_previous": -0.8,
      "next_from": "parquet",
@@ -2510,7 +2510,7 @@
      "release_dt": "2024-01-10T13:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-02-02T13:30:00",
      "next_previous": 333.0,
      "next_from": "parquet",
@@ -2561,7 +2561,7 @@
      "release_dt": "2024-01-16T00:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-01-18T00:30:00",
      "next_previous": 72.6,
      "next_from": "parquet",
@@ -2595,7 +2595,7 @@
      "release_dt": "2024-01-17T07:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-01-19T07:00:00",
      "next_previous": 1.4,
      "next_from": "parquet",
@@ -2612,7 +2612,7 @@
      "release_dt": "2024-01-17T13:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-02-15T13:30:00",
      "next_previous": -0.7,
      "next_from": "parquet",
@@ -2680,7 +2680,7 @@
      "release_dt": "2024-01-19T23:50:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-02-18T23:50:00",
      "next_previous": -4.9,
      "next_from": "parquet",
@@ -2867,7 +2867,7 @@
      "release_dt": "2024-01-30T00:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-02-01T00:30:00",
      "next_previous": 0.8,
      "next_from": "parquet",
@@ -2901,7 +2901,7 @@
      "release_dt": "2024-01-30T07:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-01-31T07:30:00",
      "next_previous": -1.5,
      "next_from": "parquet",
@@ -2918,7 +2918,7 @@
      "release_dt": "2024-01-30T13:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2024-04-25T12:30:00",
      "next_previous": 1.6,
      "next_from": "parquet",
@@ -3411,7 +3411,7 @@
      "release_dt": "2025-04-13T21:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2025-04-14T06:35:00",
      "next_previous": 0.3,
      "next_from": "parquet",
@@ -3462,7 +3462,7 @@
      "release_dt": "2025-04-30T14:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2025-05-30T12:30:00",
      "next_previous": 0.1,
      "next_from": "parquet",
@@ -4057,7 +4057,7 @@
      "release_dt": "2025-12-01T00:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2026-03-02T00:30:00",
      "next_previous": 1.5,
      "next_from": "parquet",
@@ -4550,7 +4550,7 @@
      "release_dt": "2026-03-13T12:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "ff",
+     "scored_source": "quarantined",
      "next_release_dt": "2026-04-07T12:30:00",
      "next_previous": -0.5,
      "next_from": "parquet",
@@ -4799,19 +4799,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 200,
-    "quarantined": 82
+    "ff": 186,
+    "quarantined": 96
    },
    "findings_by_kind": {
     "value": 186,
     "zero": 96
    },
-   "n_checked": 3473,
+   "n_checked": 3474,
    "n_series": 107,
    "n_scored_zero": 180,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
    "weekly_feed": "ff_weekly_2026-09-23.json"
   }
  },
- "generated_at": "2026-09-23T13:06:22+00:00"
+ "generated_at": "2026-09-23T14:06:42+00:00"
 }
