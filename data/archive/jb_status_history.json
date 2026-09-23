@@ -1,0 +1,5424 @@
+{
+ "built_from": "git log origin/main data/jb_raw (70 payloads)",
+ "until": null,
+ "entries": [
+  {
+   "currency": "AUD",
+   "name_raw": "ANZ Job Advertisements m/m",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "ANZ Job Advertisements m/m",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Bank Holiday",
+   "date": "2026-08-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Building Approvals m/m",
+   "date": "2026-07-30",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Building Approvals m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CPI m/m",
+   "date": "2026-07-29",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CPI m/m",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CPI y/y",
+   "date": "2026-07-29",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "CPI y/y",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Cash Rate",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Commodity Prices y/y",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Commodity Prices y/y",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Company Operating Profits q/q",
+   "date": "2026-08-31",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Construction Work Done q/q",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Current Account",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Employment Change",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Employment Change",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-09-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-09-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "GDP q/q",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Household Spending m/m",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Household Spending m/m",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Import Prices q/q",
+   "date": "2026-07-30",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Inflation Expectations",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Inflation Expectations",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Inflation Expectations",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Inflation Gauge m/m",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Inflation Gauge m/m",
+   "date": "2026-08-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Leading Index m/m",
+   "date": "2026-07-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Leading Index m/m",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Leading Index m/m",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "MI Leading Index m/m",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Monetary Policy Meeting Minutes",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "NAB Business Confidence",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "NAB Business Confidence",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "NAB Business Confidence",
+   "date": "2026-09-08",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "PPI q/q",
+   "date": "2026-07-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Private Capital Expenditure q/q",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Private Sector Credit m/m",
+   "date": "2026-07-31",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Private Sector Credit m/m",
+   "date": "2026-08-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Hunter Speaks",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Hunter Speaks",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Hunter Speaks",
+   "date": "2026-09-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Hunter Speaks",
+   "date": "2026-09-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Hunter Speaks",
+   "date": "2026-09-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Jones Speaks",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Assist Gov Kent Speaks",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Bulletin",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Deputy Gov Hauser Speaks",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Deputy Gov Hauser Speaks",
+   "date": "2026-09-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Gov Bullock Speaks",
+   "date": "2026-07-28",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Gov Bullock Speaks",
+   "date": "2026-08-13",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Gov Bullock Speaks",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Monetary Policy Statement",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "RBA Press Conference",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Trimmed Mean CPI m/m",
+   "date": "2026-07-29",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Trimmed Mean CPI m/m",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Wage Price Index q/q",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Westpac Consumer Sentiment",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Westpac Consumer Sentiment",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Westpac Consumer Sentiment",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "AUD",
+   "name_raw": "Westpac Consumer Sentiment",
+   "date": "2026-09-08",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Gov Macklem Speaks",
+   "date": "2026-09-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Monetary Policy Report",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Press Conference",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Press Conference",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Rate Statement",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Summary of Deliberations",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "BOC Summary of Deliberations",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Bank Holiday",
+   "date": "2026-08-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Bank Holiday",
+   "date": "2026-09-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Building Permits m/m",
+   "date": "2026-07-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Building Permits m/m",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Building Permits m/m",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "CPI m/m",
+   "date": "2026-07-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "CPI m/m",
+   "date": "2026-08-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "CPI m/m",
+   "date": "2026-09-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Common CPI y/y",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Common CPI y/y",
+   "date": "2026-08-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Common CPI y/y",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Core CPI m/m",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Core CPI m/m",
+   "date": "2026-08-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Core CPI m/m",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Core Retail Sales m/m",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Core Retail Sales m/m",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Corporate Profits q/q",
+   "date": "2026-08-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Current Account",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Employment Change",
+   "date": "2026-07-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Employment Change",
+   "date": "2026-08-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Employment Change",
+   "date": "2026-09-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Foreign Securities Purchases",
+   "date": "2026-07-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Foreign Securities Purchases",
+   "date": "2026-08-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Foreign Securities Purchases",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "GDP m/m",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Housing Starts",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Housing Starts",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Housing Starts",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "IPPI m/m",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "IPPI m/m",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "IPPI m/m",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Ivey PMI",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Ivey PMI",
+   "date": "2026-09-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Labor Productivity q/q",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Manufacturing PMI",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Manufacturing Sales m/m",
+   "date": "2026-07-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Manufacturing Sales m/m",
+   "date": "2026-08-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Manufacturing Sales m/m",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Median CPI y/y",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Median CPI y/y",
+   "date": "2026-08-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Median CPI y/y",
+   "date": "2026-09-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "NHPI m/m",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "NHPI m/m",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "NHPI m/m",
+   "date": "2026-09-22",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Overnight Rate",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Overnight Rate",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "RMPI m/m",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "RMPI m/m",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "RMPI m/m",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-07-23",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Trade Balance",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Trade Balance",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Trimmed CPI y/y",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Trimmed CPI y/y",
+   "date": "2026-08-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Trimmed CPI y/y",
+   "date": "2026-09-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-07-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-09-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Wholesale Sales m/m",
+   "date": "2026-07-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Wholesale Sales m/m",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CAD",
+   "name_raw": "Wholesale Sales m/m",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "CPI m/m",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "CPI m/m",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Foreign Currency Reserves",
+   "date": "2026-08-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Foreign Currency Reserves",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "GDP q/q",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Gov Board Member Martin Speaks",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Gov Board Member Martin Speaks",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "KOF Economic Barometer",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "KOF Economic Barometer",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "PPI m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "PPI m/m",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "PPI m/m",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Retail Sales y/y",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "SECO Consumer Climate",
+   "date": "2026-07-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "SECO Consumer Climate",
+   "date": "2026-08-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "SECO Consumer Climate",
+   "date": "2026-09-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "SECO Economic Forecasts",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "SNB Chairman Schlegel Speaks",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Summary of Monetary Policy Discussions",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "UBS Economic Expectations",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "UBS Economic Expectations",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "CHF",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Belgian NBB Business Climate",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Belgian NBB Business Climate",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "CPI Flash Estimate y/y",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Consumer Confidence",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Consumer Confidence",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Consumer Confidence",
+   "date": "2026-09-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Core CPI Flash Estimate y/y",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Current Account",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Current Account",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Current Account",
+   "date": "2026-09-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB Economic Bulletin",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB Monetary Policy Meeting Accounts",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB Monetary Policy Meeting Accounts",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB President Lagarde Speaks",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB Press Conference",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECB Press Conference",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECOFIN Meetings",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECOFIN Meetings",
+   "date": "2026-07-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ECOFIN Meetings",
+   "date": "2026-09-18",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Eurogroup Meetings",
+   "date": "2026-09-18",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final CPI y/y",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final CPI y/y",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final CPI y/y",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Core CPI y/y",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Core CPI y/y",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Core CPI y/y",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Employment Change q/q",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Final Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Employment Change q/q",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash GDP q/q",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French 10-y Bond Auction",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French 10-y Bond Auction",
+   "date": "2026-09-02",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French 10-y Bond Auction",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Bank Holiday",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Consumer Spending m/m",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Consumer Spending m/m",
+   "date": "2026-08-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final CPI m/m",
+   "date": "2026-07-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final CPI m/m",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final CPI m/m",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final Private Payrolls q/q",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Final Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash GDP q/q",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash Manufacturing PMI",
+   "date": "2026-07-24",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash Manufacturing PMI",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash Manufacturing PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash Services PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash Services PMI",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Flash Services PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Gov Budget Balance",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Gov Budget Balance",
+   "date": "2026-09-02",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Industrial Production m/m",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Industrial Production m/m",
+   "date": "2026-09-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Prelim CPI m/m",
+   "date": "2026-08-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Prelim GDP q/q",
+   "date": "2026-08-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Prelim Private Payrolls q/q",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Trade Balance",
+   "date": "2026-08-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "French Trade Balance",
+   "date": "2026-09-08",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 10-y Bond Auction",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 10-y Bond Auction",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 10-y Bond Auction",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 10-y Bond Auction",
+   "date": "2026-09-08",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 10-y Bond Auction",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 30-y Bond Auction",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 30-y Bond Auction",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 30-y Bond Auction",
+   "date": "2026-08-11",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 30-y Bond Auction",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 30-y Bond Auction",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German 30-y Bond Auction",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba Monthly Report",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba Monthly Report",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-07-15",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-09-02",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Buba President Nagel Speaks",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Factory Orders m/m",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Factory Orders m/m",
+   "date": "2026-09-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final CPI m/m",
+   "date": "2026-07-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final CPI m/m",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final CPI m/m",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final GDP q/q",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Final Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Flash Manufacturing PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Flash Manufacturing PMI",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Flash Manufacturing PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Flash Services PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Flash Services PMI",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Flash Services PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German GfK Consumer Climate",
+   "date": "2026-07-24",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German GfK Consumer Climate",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Import Prices m/m",
+   "date": "2026-07-29",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Import Prices m/m",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Industrial Production m/m",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Industrial Production m/m",
+   "date": "2026-09-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German PPI m/m",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German PPI m/m",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German PPI m/m",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Prelim CPI m/m",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Prelim CPI m/m",
+   "date": "2026-08-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Prelim GDP q/q",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Retail Sales m/m",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Retail Sales m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Retail Sales m/m",
+   "date": "2026-09-22",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Trade Balance",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Trade Balance",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Trade Balance",
+   "date": "2026-09-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German Unemployment Change",
+   "date": "2026-08-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German WPI m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German WPI m/m",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German WPI m/m",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German ZEW Economic Sentiment",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German ZEW Economic Sentiment",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German ZEW Economic Sentiment",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German ifo Business Climate",
+   "date": "2026-07-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "German ifo Business Climate",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-07-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian 10-y Bond Auction",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian 10-y Bond Auction",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian 10-y Bond Auction",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Industrial Production m/m",
+   "date": "2026-07-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Industrial Production m/m",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Industrial Production m/m",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Monthly Unemployment Rate",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Monthly Unemployment Rate",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Prelim CPI m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Quarterly Unemployment Rate",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Retail Sales m/m",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Retail Sales m/m",
+   "date": "2026-09-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Trade Balance",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Trade Balance",
+   "date": "2026-08-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Italian Trade Balance",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "M3 Money Supply y/y",
+   "date": "2026-07-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "M3 Money Supply y/y",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Main Refinancing Rate",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Main Refinancing Rate",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Monetary Policy Statement",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Monetary Policy Statement",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "PPI m/m",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "PPI m/m",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Prelim Flash GDP q/q",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Private Loans y/y",
+   "date": "2026-07-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Private Loans y/y",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-09-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Revised GDP q/q",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Sentix Investor Confidence",
+   "date": "2026-08-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Sentix Investor Confidence",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish 10-y Bond Auction",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish 10-y Bond Auction",
+   "date": "2026-09-02",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish 10-y Bond Auction",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish 10-y Bond Auction",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish 10-y Bond Auction",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Flash CPI y/y",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Flash CPI y/y",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Flash GDP q/q",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Unemployment Change",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Unemployment Change",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Spanish Unemployment Rate",
+   "date": "2026-07-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Trade Balance",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Trade Balance",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Trade Balance",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ZEW Economic Sentiment",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ZEW Economic Sentiment",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "EUR",
+   "name_raw": "ZEW Economic Sentiment",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "10-y Bond Auction",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "10-y Bond Auction",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Average Earnings Index 3m/y",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Average Earnings Index 3m/y",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Average Earnings Index 3m/y",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BOE Gov Bailey Speaks",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BOE Gov Bailey Speaks",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BOE Gov Bailey Speaks",
+   "date": "2026-09-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BOE Monetary Policy Report",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BRC Retail Sales Monitor y/y",
+   "date": "2026-07-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BRC Retail Sales Monitor y/y",
+   "date": "2026-08-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BRC Retail Sales Monitor y/y",
+   "date": "2026-09-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BRC Shop Price Index y/y",
+   "date": "2026-07-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "BRC Shop Price Index y/y",
+   "date": "2026-08-31",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Bank Holiday",
+   "date": "2026-08-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-09-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CBI Industrial Order Expectations",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CBI Industrial Order Expectations",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CBI Industrial Order Expectations",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CBI Realized Sales",
+   "date": "2026-07-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CBI Realized Sales",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CPI y/y",
+   "date": "2026-07-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CPI y/y",
+   "date": "2026-08-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "CPI y/y",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Claimant Count Change",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Claimant Count Change",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Claimant Count Change",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Construction Output m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Construction Output m/m",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Construction Output m/m",
+   "date": "2026-09-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Construction PMI",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Construction PMI",
+   "date": "2026-09-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Consumer Inflation Expectations",
+   "date": "2026-09-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Core CPI y/y",
+   "date": "2026-07-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Core CPI y/y",
+   "date": "2026-08-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Core CPI y/y",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Final Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Final Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "GDP m/m",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "GDP m/m",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "GDP m/m",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "GfK Consumer Confidence",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "GfK Consumer Confidence",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "GfK Consumer Confidence",
+   "date": "2026-09-17",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "HPI y/y",
+   "date": "2026-07-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "HPI y/y",
+   "date": "2026-08-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "HPI y/y",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Index of Services 3m/3m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Index of Services 3m/3m",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Index of Services 3m/3m",
+   "date": "2026-09-11",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Lloyds HPI m/m",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Lloyds HPI m/m",
+   "date": "2026-09-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "M4 Money Supply m/m",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "M4 Money Supply m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "MPC Member Mann Speaks",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "MPC Member Pill Speaks",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "MPC Member Pill Speaks",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "MPC Member Pill Speaks",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "MPC Official Bank Rate Votes",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "MPC Official Bank Rate Votes",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Manufacturing Production m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Manufacturing Production m/m",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Monetary Policy Report Hearings",
+   "date": "2026-09-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Monetary Policy Summary",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Mortgage Approvals",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Mortgage Approvals",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Nationwide HPI m/m",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Net Lending to Individuals m/m",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Net Lending to Individuals m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Official Bank Rate",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Official Bank Rate",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "PPI Input m/m",
+   "date": "2026-07-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "PPI Input m/m",
+   "date": "2026-08-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "PPI Input m/m",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "PPI Output m/m",
+   "date": "2026-07-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "PPI Output m/m",
+   "date": "2026-08-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "PPI Output m/m",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Prelim Business Investment q/q",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Prelim GDP q/q",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Public Sector Net Borrowing",
+   "date": "2026-07-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Public Sector Net Borrowing",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Public Sector Net Borrowing",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "RICS House Price Balance",
+   "date": "2026-07-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "RICS House Price Balance",
+   "date": "2026-08-12",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "RICS House Price Balance",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "RPI y/y",
+   "date": "2026-07-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "RPI y/y",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "RPI y/y",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-07-24",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Rightmove HPI m/m",
+   "date": "2026-07-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Rightmove HPI m/m",
+   "date": "2026-08-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Rightmove HPI m/m",
+   "date": "2026-09-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "GBP",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "10-y Bond Auction",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "10-y Bond Auction",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "30-y Bond Auction",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "30-y Bond Auction",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Average Cash Earnings y/y",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Average Cash Earnings y/y",
+   "date": "2026-09-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Core CPI y/y",
+   "date": "2026-07-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Core CPI y/y",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Outlook Report",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Policy Rate",
+   "date": "2026-07-29",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Policy Rate",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Policy Rate",
+   "date": "2026-09-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Press Conference",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Press Conference",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BOJ Summary of Opinions",
+   "date": "2026-08-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "BSI Manufacturing Index",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Holiday",
+   "date": "2026-07-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Holiday",
+   "date": "2026-08-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Holiday",
+   "date": "2026-09-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Holiday",
+   "date": "2026-09-20",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Holiday",
+   "date": "2026-09-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Lending y/y",
+   "date": "2026-08-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Bank Lending y/y",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Capital Spending q/y",
+   "date": "2026-08-31",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Consumer Confidence",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Consumer Confidence",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Core Machinery Orders m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Core Machinery Orders m/m",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Core Machinery Orders m/m",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Current Account",
+   "date": "2026-08-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Current Account",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Economy Watchers Sentiment",
+   "date": "2026-08-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Economy Watchers Sentiment",
+   "date": "2026-09-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Final GDP Price Index y/y",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Final GDP q/q",
+   "date": "2026-09-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-08-02",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-07-24",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-08-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Household Spending y/y",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Household Spending y/y",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Housing Starts y/y",
+   "date": "2026-08-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Leading Indicators",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Leading Indicators",
+   "date": "2026-09-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "M2 Money Stock y/y",
+   "date": "2026-07-08",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "M2 Money Stock y/y",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "M2 Money Stock y/y",
+   "date": "2026-09-08",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Monetary Base y/y",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Monetary Base y/y",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Monetary Policy Meeting Minutes",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Monetary Policy Statement",
+   "date": "2026-09-16",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "National Core CPI y/y",
+   "date": "2026-07-23",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "National Core CPI y/y",
+   "date": "2026-08-20",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "National Core CPI y/y",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "PPI y/y",
+   "date": "2026-07-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "PPI y/y",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "PPI y/y",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim GDP Price Index y/y",
+   "date": "2026-08-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim GDP q/q",
+   "date": "2026-08-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim Industrial Production m/m",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim Industrial Production m/m",
+   "date": "2026-08-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim Machine Tool Orders y/y",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim Machine Tool Orders y/y",
+   "date": "2026-08-12",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Prelim Machine Tool Orders y/y",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Retail Sales y/y",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Retail Sales y/y",
+   "date": "2026-08-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Revised Industrial Production m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Revised Industrial Production m/m",
+   "date": "2026-08-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Revised Industrial Production m/m",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "SPPI y/y",
+   "date": "2026-07-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "SPPI y/y",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Tertiary Industry Activity m/m",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Tertiary Industry Activity m/m",
+   "date": "2026-08-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Tertiary Industry Activity m/m",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Tokyo Core CPI y/y",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Tokyo Core CPI y/y",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Trade Balance",
+   "date": "2026-07-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Trade Balance",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Trade Balance",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "JPY",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "ANZ Business Confidence",
+   "date": "2026-07-30",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "ANZ Business Confidence",
+   "date": "2026-08-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "ANZ Commodity Prices m/m",
+   "date": "2026-08-05",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "ANZ Commodity Prices m/m",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Bank Holiday",
+   "date": "2026-07-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Building Consents m/m",
+   "date": "2026-08-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Building Consents m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "BusinessNZ Manufacturing Index",
+   "date": "2026-07-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "BusinessNZ Manufacturing Index",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "BusinessNZ Manufacturing Index",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "BusinessNZ Services Index",
+   "date": "2026-07-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "BusinessNZ Services Index",
+   "date": "2026-08-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "BusinessNZ Services Index",
+   "date": "2026-09-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "CPI q/q",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Core Retail Sales q/q",
+   "date": "2026-08-23",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Credit Card Spending y/y",
+   "date": "2026-07-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Credit Card Spending y/y",
+   "date": "2026-08-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Credit Card Spending y/y",
+   "date": "2026-09-21",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Current Account",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Employment Change q/q",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "FPI m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "FPI m/m",
+   "date": "2026-08-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "FPI m/m",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDP q/q",
+   "date": "2026-09-16",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-08-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "GDT Price Index",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Inflation Expectations q/q",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Labor Cost Index q/q",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Manufacturing Sales q/q",
+   "date": "2026-09-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "NZIER Business Confidence",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Official Cash Rate",
+   "date": "2026-09-02",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Overseas Trade Index q/q",
+   "date": "2026-09-02",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "PPI Input q/q",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "PPI Output q/q",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "RBNZ Gov Breman Speaks",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "RBNZ Monetary Policy Statement",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "RBNZ Press Conference",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Retail Sales q/q",
+   "date": "2026-08-23",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Trade Balance",
+   "date": "2026-07-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Trade Balance",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Trade Balance",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Visitor Arrivals m/m",
+   "date": "2026-07-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Visitor Arrivals m/m",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Visitor Arrivals m/m",
+   "date": "2026-09-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Westpac Consumer Sentiment",
+   "date": "2026-09-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "NZD",
+   "name_raw": "Westpac Consumer Sentiment",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "10-y Bond Auction",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "10-y Bond Auction",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "30-y Bond Auction",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "30-y Bond Auction",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "30-y Bond Auction",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Non-Farm Employment Change",
+   "date": "2026-08-05",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Non-Farm Employment Change",
+   "date": "2026-09-02",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-07-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-07-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-08-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-08-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-09-08",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ADP Weekly Employment Change",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-07-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-09-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "API Weekly Statistical Bulletin",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Advance GDP Price Index q/q",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Advance GDP q/q",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Average Hourly Earnings m/m",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Average Hourly Earnings m/m",
+   "date": "2026-09-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Beige Book",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Beige Book",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Building Permits",
+   "date": "2026-07-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Building Permits",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Building Permits",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Business Inventories m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Business Inventories m/m",
+   "date": "2026-08-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Business Inventories m/m",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CB Consumer Confidence",
+   "date": "2026-07-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CB Consumer Confidence",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-07-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CB Leading Index m/m",
+   "date": "2026-09-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CPI m/m",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CPI m/m",
+   "date": "2026-08-12",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CPI m/m",
+   "date": "2026-09-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CPI y/y",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CPI y/y",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "CPI y/y",
+   "date": "2026-09-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Capacity Utilization Rate",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Capacity Utilization Rate",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Capacity Utilization Rate",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Challenger Job Cuts y/y",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Challenger Job Cuts y/y",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Chicago PMI",
+   "date": "2026-08-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Cleveland Fed Inflation Expectations",
+   "date": "2026-08-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Cleveland Fed Inflation Expectations",
+   "date": "2026-08-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Construction Spending m/m",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Construction Spending m/m",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Consumer Credit m/m",
+   "date": "2026-08-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Consumer Credit m/m",
+   "date": "2026-09-08",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core CPI m/m",
+   "date": "2026-07-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core CPI m/m",
+   "date": "2026-08-12",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core CPI m/m",
+   "date": "2026-09-11",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core CPI y/y",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core CPI y/y",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core CPI y/y",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core Durable Goods Orders m/m",
+   "date": "2026-07-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core Durable Goods Orders m/m",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core PCE Price Index m/m",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core PCE Price Index m/m",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core PPI m/m",
+   "date": "2026-07-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core PPI m/m",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core PPI m/m",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core Retail Sales m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core Retail Sales m/m",
+   "date": "2026-08-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Core Retail Sales m/m",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-07-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-07-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-07-29",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-08-12",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-08-19",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-09-02",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Crude Oil Inventories",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Durable Goods Orders m/m",
+   "date": "2026-07-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Durable Goods Orders m/m",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Empire State Manufacturing Index",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Empire State Manufacturing Index",
+   "date": "2026-08-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Empire State Manufacturing Index",
+   "date": "2026-09-15",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Existing Home Sales",
+   "date": "2026-07-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Existing Home Sales",
+   "date": "2026-08-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Existing Home Sales",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Economic Projections",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Meeting Minutes",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barkin Speaks",
+   "date": "2026-08-07",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barkin Speaks",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barkin Speaks",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barkin Speaks",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barkin Speaks",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barr Speaks",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Barr Speaks",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Bowman Speaks",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Bowman Speaks",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Bowman Speaks",
+   "date": "2026-08-08",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Bowman Speaks",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Cook Speaks",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Cook Speaks",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Daly Speaks",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Goolsbee Speaks",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Goolsbee Speaks",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Goolsbee Speaks",
+   "date": "2026-09-02",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Goolsbee Speaks",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Goolsbee Speaks",
+   "date": "2026-09-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Hammack Speaks",
+   "date": "2026-08-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Hammack Speaks",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Hammack Speaks",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Hammack Speaks",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Jefferson Speaks",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Jefferson Speaks",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Logan Speaks",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Musalem Speaks",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Musalem Speaks",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Musalem Speaks",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Schmid Speaks",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Schmid Speaks",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Schmid Speaks",
+   "date": "2026-09-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Waller Speaks",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Waller Speaks",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Williams Speaks",
+   "date": "2026-07-09",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Williams Speaks",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Member Williams Speaks",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Press Conference",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Press Conference",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "FOMC Statement",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Factory Orders m/m",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Factory Orders m/m",
+   "date": "2026-09-02",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Fed Chairman Warsh Speaks",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Fed Chairman Warsh Testifies",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Fed Chairman Warsh Testifies",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Fed Monetary Policy Report",
+   "date": "2026-07-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Federal Budget Balance",
+   "date": "2026-07-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Federal Budget Balance",
+   "date": "2026-08-12",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Federal Budget Balance",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Federal Funds Rate",
+   "date": "2026-07-29",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Federal Funds Rate",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Final Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Final Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Final Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Final Wholesale Inventories m/m",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Final Wholesale Inventories m/m",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-07-24",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-08-21",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Flash Manufacturing PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Flash Services PMI",
+   "date": "2026-09-23",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Goods Trade Balance",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "HPI m/m",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "HPI m/m",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Housing Starts",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Housing Starts",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Housing Starts",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ISM Manufacturing PMI",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ISM Manufacturing PMI",
+   "date": "2026-09-01",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ISM Manufacturing Prices",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ISM Manufacturing Prices",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ISM Services PMI",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "ISM Services PMI",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Import Prices m/m",
+   "date": "2026-07-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Import Prices m/m",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Import Prices m/m",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-08-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Industrial Production m/m",
+   "date": "2026-09-18",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "JOLTS Job Openings",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "JOLTS Job Openings",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Loan Officer Survey",
+   "date": "2026-08-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Mortgage Delinquencies",
+   "date": "2026-08-12",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Mortgage Delinquencies",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "NAHB Housing Market Index",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "NAHB Housing Market Index",
+   "date": "2026-08-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "NAHB Housing Market Index",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "NFIB Small Business Index",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "NFIB Small Business Index",
+   "date": "2026-08-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "NFIB Small Business Index",
+   "date": "2026-09-08",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-07-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-07-23",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Natural Gas Storage",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "New Home Sales",
+   "date": "2026-07-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "New Home Sales",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Non-Farm Employment Change",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Non-Farm Employment Change",
+   "date": "2026-09-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Omdia Total Vehicle Sales",
+   "date": "2026-08-02",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Omdia Total Vehicle Sales",
+   "date": "2026-08-31",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "PPI m/m",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "PPI m/m",
+   "date": "2026-08-13",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "PPI m/m",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Pending Home Sales m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Pending Home Sales m/m",
+   "date": "2026-08-18",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Pending Home Sales m/m",
+   "date": "2026-09-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Personal Income m/m",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Personal Income m/m",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Personal Spending m/m",
+   "date": "2026-07-30",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Personal Spending m/m",
+   "date": "2026-08-26",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Philly Fed Manufacturing Index",
+   "date": "2026-07-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Philly Fed Manufacturing Index",
+   "date": "2026-08-20",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Philly Fed Manufacturing Index",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim Benchmark Payrolls Revision",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim GDP Price Index q/q",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim GDP q/q",
+   "date": "2026-08-26",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim Nonfarm Productivity q/q",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim Unit Labor Costs q/q",
+   "date": "2026-08-06",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim UoM Consumer Sentiment",
+   "date": "2026-07-17",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim UoM Consumer Sentiment",
+   "date": "2026-08-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim UoM Consumer Sentiment",
+   "date": "2026-09-11",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim UoM Inflation Expectations",
+   "date": "2026-07-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim UoM Inflation Expectations",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim UoM Inflation Expectations",
+   "date": "2026-09-11",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim Wholesale Inventories m/m",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Prelim Wholesale Inventories m/m",
+   "date": "2026-08-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-07-17",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-07-22",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-07-24",
+   "jb_status": "Data Not Loaded"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-07-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-07-27",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-08-05",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-08-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-08-19",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-08-21",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-09-10",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "President Trump Speaks",
+   "date": "2026-09-22",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "RCM/TIPP Economic Optimism",
+   "date": "2026-08-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "RCM/TIPP Economic Optimism",
+   "date": "2026-08-04",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "RCM/TIPP Economic Optimism",
+   "date": "2026-08-31",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "RCM/TIPP Economic Optimism",
+   "date": "2026-09-01",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-08-14",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Retail Sales m/m",
+   "date": "2026-09-16",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Revised Nonfarm Productivity q/q",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Revised Unit Labor Costs q/q",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Revised UoM Consumer Sentiment",
+   "date": "2026-08-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Revised UoM Inflation Expectations",
+   "date": "2026-08-28",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Richmond Manufacturing Index",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Richmond Manufacturing Index",
+   "date": "2026-08-25",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Richmond Manufacturing Index",
+   "date": "2026-09-22",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "S&P/CS Composite-20 HPI y/y",
+   "date": "2026-07-28",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "S&P/CS Composite-20 HPI y/y",
+   "date": "2026-08-25",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "TIC Long-Term Purchases",
+   "date": "2026-07-14",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "TIC Long-Term Purchases",
+   "date": "2026-08-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "TIC Long-Term Purchases",
+   "date": "2026-09-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Trade Balance",
+   "date": "2026-08-04",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Trade Balance",
+   "date": "2026-09-03",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Treasury Currency Report",
+   "date": "2026-07-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Treasury Currency Report",
+   "date": "2026-07-23",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Treasury Sec Bessent Speaks",
+   "date": "2026-08-24",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Treasury Sec Bessent Speaks",
+   "date": "2026-09-15",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-07-09",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-07-16",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-07-23",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-07-30",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-08-06",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-08-13",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-08-20",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-08-27",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-09-03",
+   "jb_status": "Good Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-09-10",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Claims",
+   "date": "2026-09-17",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-08-07",
+   "jb_status": "Bad Data"
+  },
+  {
+   "currency": "USD",
+   "name_raw": "Unemployment Rate",
+   "date": "2026-09-04",
+   "jb_status": "Good Data"
+  }
+ ]
+}

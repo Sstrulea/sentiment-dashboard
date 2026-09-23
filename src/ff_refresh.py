@@ -15,7 +15,8 @@ from typing import Optional
 import pandas as pd
 import yaml
 
-from .econ_calendar_ff import CANON_COLUMNS, parse_ff_weekly, unmapped_summary
+from .econ_calendar_ff import (CANON_COLUMNS, ensure_provenance_columns, parse_ff_weekly,
+                              unmapped_summary)
 
 log = logging.getLogger(__name__)
 
@@ -67,6 +68,31 @@ def _sanity_ok(df: pd.DataFrame, min_ccy: int) -> bool:
     return (not df.empty) and (df["currency"].nunique() >= min_ccy)
 
 
+def _provenance_aware_forecast(combined: pd.DataFrame) -> pd.DataFrame:
+    """Audit 2.1: JBlanked never overwrites a forecast delivered by FF. Within a
+    (canonical_id, datetime_utc) group (concat order = existing first, incoming
+    last) the kept row takes the forecast + origin of the LAST FF delivery
+    (ff or ff_blank — an FF "" is a delivered "no consensus", not a gap to fill)
+    when there is one; with no FF delivery at all, the last row's (JB) stands."""
+    ff_rows = combined["forecast_origin"].isin(["ff", "ff_blank"])
+    if not ff_rows.any():
+        return combined
+    key = ["canonical_id", "datetime_utc"]
+    dup = combined.duplicated(key, keep=False)
+    if not dup.any():
+        return combined
+    combined = combined.copy()
+    for _, idx in combined[dup].groupby(key, sort=False).groups.items():
+        g = combined.loc[idx]
+        ff = g[g["forecast_origin"].isin(["ff", "ff_blank"])]
+        if ff.empty:
+            continue
+        last_ff = ff.iloc[-1]
+        combined.loc[idx, "forecast"] = last_ff["forecast"]
+        combined.loc[idx, "forecast_origin"] = last_ff["forecast_origin"]
+    return combined
+
+
 def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.DataFrame:
     """History-preserving, FIELD-AWARE merge: append new prints, update revised ones.
 
@@ -87,14 +113,18 @@ def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.D
     regress `previous` back to that frozen snapshot. A row that brings its
     own `actual` is trusted with its `previous` unconditionally — that is
     exactly how a genuine revision (e.g. from the JBlanked leg) still lands."""
+    weekly = ensure_provenance_columns(weekly)
     if existing is None or existing.empty:
         combined = weekly.copy()
     else:
-        existing = existing.copy()
+        existing = ensure_provenance_columns(existing.copy())
         existing["datetime_utc"] = pd.to_datetime(existing["datetime_utc"])
         combined = pd.concat([existing, weekly], ignore_index=True)
     combined["datetime_utc"] = pd.to_datetime(combined["datetime_utc"])
+    combined = _provenance_aware_forecast(combined)
     grp = combined.groupby(["canonical_id", "datetime_utc"], sort=False)
+    # jb_status: the newest JB delivery's verdict (FF rows carry None)
+    combined["jb_status"] = grp["jb_status"].ffill()
     released_before = grp["actual"].transform(lambda s: s.notna().cumsum().shift(fill_value=0) > 0)
     stale_echo = released_before & combined["actual"].isna()
     combined.loc[stale_echo, "previous"] = float("nan")
@@ -130,6 +160,8 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
     cfg = cfg or load_pipeline_config()
     url = cfg.get("ff_weekly_url", "https://nfs.faireconomy.media/ff_calendar_thisweek.json")
     min_ccy = int(cfg.get("ff_min_currencies", 4))
+    from .ff_provenance import ensure_provenance
+    ensure_provenance(parquet_path)            # audit Z5: one-off, idempotent
     existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
     n_before = 0 if existing is None else len(existing)
 

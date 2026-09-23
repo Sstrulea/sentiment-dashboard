@@ -39,7 +39,35 @@ EUR_WHITELIST_YAML = ROOT / "config" / "ff_eur_whitelist.yaml"
 CANON_COLUMNS = [
     "canonical_id", "currency", "name_raw", "name_canonical", "datetime_utc",
     "actual", "forecast", "previous", "released", "source",
+    "forecast_origin", "jb_status",
 ]
+# Provenance recorded at ingest (audit 2026-09-23, phase 2 — 2.1/2.3):
+#   forecast_origin  ff        FF weekly delivered a consensus (a "0.0%" included)
+#                    ff_blank  FF weekly delivered "" (no consensus) -> forecast NaN
+#                    jb        the forecast came from JBlanked (range/archive)
+#                    manual    entered by hand (no row carries it today)
+#                    unknown   migrated row with no evidence (ff_provenance) -> as jb
+#   jb_status        the newest JBlanked payload's verdict for the event:
+#                    "Data Not Loaded" if Quality or Strength says so, else the
+#                    Quality value; None when no JB payload carried the event.
+FORECAST_ORIGINS = ("ff", "ff_blank", "jb", "manual", "unknown")
+JB_NOT_LOADED = "Data Not Loaded"
+PROVENANCE_COLUMNS = ("forecast_origin", "jb_status")
+
+
+def ensure_provenance_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Add missing provenance columns as None (frames built before 2.1)."""
+    for c in PROVENANCE_COLUMNS:
+        if c not in df.columns:
+            df = df.assign(**{c: None})
+    return df
+
+
+def jb_status_of(event: dict) -> Optional[str]:
+    q, s = event.get("Quality"), event.get("Strength")
+    if JB_NOT_LOADED in (q, s):
+        return JB_NOT_LOADED
+    return q if q is not None else None
 OUR_CCYS = {"USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"}
 SOURCE = "ff"
 
@@ -220,7 +248,9 @@ def ff_row_failures() -> dict[str, int]:
 def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
                   aliases: dict, eur_wl: set[str],
                   excluded_finals: Optional[dict] = None) -> pd.DataFrame:
-    """rows: list of {currency, name_raw, dt_utc, actual_raw, forecast_raw, previous_raw}.
+    """rows: list of {currency, name_raw, dt_utc, actual_raw, forecast_raw, previous_raw,
+    origin, jb_status}; origin "ff" (weekly feed -> forecast_origin ff/ff_blank per
+    value) or "jb".
     Applies EUR whitelist (trap 2), alias matcher (trap 1), released gate (trap 3).
     Final/revision variants (excluded_finals) are dropped from scoring at DEBUG (they
     surface as revision telemetry, not unmapped WARNINGs). Value normalization runs
@@ -280,6 +310,9 @@ def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
             "previous": previous_v,
             "released": bool(released),
             "source": SOURCE,
+            "forecast_origin": (("ff" if pd.notna(forecast_v) else "ff_blank")
+                                if r.get("origin") == "ff" else "jb"),
+            "jb_status": r.get("jb_status"),
         })
     if _FF_ROW_FAILURES:
         log.warning("FF ingest: %d rând(uri) sărite (eroare de parsare): %s",
@@ -337,6 +370,8 @@ def parse_jblanked_range(src: str | Path | list, *, now_utc: Optional[pd.Timesta
         "actual_raw": e.get("Actual"),          # normalized in _canonicalize (post-matcher)
         "forecast_raw": e.get("Forecast"),      # FF 'Forecast' -> 'forecast'
         "previous_raw": e.get("Previous"),
+        "origin": "jb",
+        "jb_status": jb_status_of(e),
     } for e in data]
     return _canonicalize(rows, now_utc, aliases, eur_wl, excluded_finals)
 
@@ -357,6 +392,8 @@ def parse_ff_weekly(src: str | Path | list, *, now_utc: Optional[pd.Timestamp] =
         "actual_raw": e.get("actual"),          # often absent (upcoming) -> NaN; normalized post-matcher
         "forecast_raw": e.get("forecast"),
         "previous_raw": e.get("previous"),
+        "origin": "ff",
+        "jb_status": None,
     } for e in data]
     return _canonicalize(rows, now_utc, aliases, eur_wl, excluded_finals)
 

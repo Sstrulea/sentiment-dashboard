@@ -28,7 +28,6 @@ import yaml
 
 from .economic_compute import _max_age_for, compute_indicator_score, effective_frequency
 from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, detect_cadence, load_can_be_zero, to_scoring_frame
-from .jb_actuals import build_flagged_bad_lookup
 from .manual_actuals import apply_overrides, load_overrides
 
 log = logging.getLogger(__name__)
@@ -227,8 +226,8 @@ def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
     must always see the untouched `ff`.
     """
     deduped_ff = _drop_display_duplicate_rows(ff)
-    scored = to_scoring_frame(deduped_ff, matcher, can_be_zero=cbz, flagged_bad=flagged_bad)
-    manual_rows, _ = apply_overrides(ff, overrides, now_utc=as_of, flagged_bad=flagged_bad)
+    scored = to_scoring_frame(deduped_ff, matcher, can_be_zero=cbz)
+    manual_rows, _ = apply_overrides(ff, overrides, now_utc=as_of)
 
     # FAZA 2D 2 — a SEPARATE placeholder-vs-real duplicate from the raw-feed
     # one _drop_display_duplicate_rows handles: a manual override supplies
@@ -257,7 +256,7 @@ def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
 
     combined = pd.concat([scored, manual_rows], ignore_index=True) if len(manual_rows) else scored
     combined["release_dt"] = pd.to_datetime(combined["release_dt"])
-    return combined[SCORING_COLUMNS]
+    return combined.reindex(columns=SCORING_COLUMNS)   # actual_origin may be absent (older frames)
 
 
 def quarantine_key_set(quarantine_df: pd.DataFrame) -> set:
@@ -412,7 +411,7 @@ def compute_catalog(ff: pd.DataFrame, ind_cfg: dict, catalog: dict,
     as_of = as_of or pd.Timestamp.now()
     matcher = build_matcher()
     cbz = load_can_be_zero(ind_cfg)
-    flagged_bad = build_flagged_bad_lookup()
+    flagged_bad = None   # audit 2.3: ignored; zero rule = jb_status
     overrides = overrides if overrides is not None else load_overrides(MANUAL_ACTUALS_OVERRIDES)
 
     full_frame = build_full_frame(ff, matcher, cbz, flagged_bad, overrides, as_of)

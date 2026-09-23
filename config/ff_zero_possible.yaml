@@ -1,0 +1,121 @@
+# zero_possible per mapped FF series (canonical_id) — audit 2026-09-23, Z1.
+# EXPLICIT for every series the matcher maps (tests/test_zero_possible.py enforces it);
+# there is no default: an unlisted mapped series raises in ff_scoring.
+#   false  levels and indices (PMI, unemployment rate, claims, JOLTS): a 0.0 is always
+#          JBlanked's placeholder.
+#   true   m/m, q/q, y/y, 3m/y, q/y changes and net changes (employment change,
+#          claimant count, ADP, NFP): 0.0 is a real print unless the newest JB payload
+#          said "Data Not Loaded" or the next print's `previous` contradicts it (Z2).
+#          interest_rate_decision is true on purpose: a 0.00% policy rate is a real level
+#          (SNB 2025); the displayed rate comes from data/cb/decisions.parquet anyway.
+zero_possible:
+  # --- false: levels / indices
+  aud_s_p_global_manufacturing_pmi: false   # manufacturing_pmi: Flash Manufacturing PMI
+  aud_s_p_global_services_pmi: false   # services_pmi: Flash Services PMI
+  aud_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  cad_s_p_global_manufacturing_pmi: false   # manufacturing_pmi: Manufacturing PMI
+  cad_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  chf_procure_ch_manufacturing_pmi: false   # manufacturing_pmi: Manufacturing PMI
+  chf_procurech_manufacturing_pmi: false   # manufacturing_pmi: Manufacturing PMI
+  chf_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  eur_s_p_global_manufacturing_pmi: false   # manufacturing_pmi: Flash Manufacturing PMI
+  eur_s_p_global_services_pmi: false   # services_pmi: Flash Services PMI
+  eur_sp_global_manufacturing_pmi: false   # manufacturing_pmi: Final Manufacturing PMI
+  eur_sp_global_services_pmi: false   # services_pmi: Final Services PMI
+  eur_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  gbp_s_p_global_cips_manufacturing_pmi: false   # manufacturing_pmi: Final Manufacturing PMI
+  gbp_s_p_global_cips_services_pmi: false   # services_pmi: Final Services PMI
+  gbp_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  jpy_au_jibun_bank_manufacturing_pmi: false   # manufacturing_pmi: Flash Manufacturing PMI
+  jpy_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  nzd_businessnz_manufacturing_index: false   # manufacturing_pmi: BusinessNZ Manufacturing Index
+  nzd_businessnz_services_index: false   # services_pmi: BusinessNZ Services Index
+  nzd_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  usd_initial_jobless_claims: false   # jobless_claims: Unemployment Claims
+  usd_ism_manufacturing_pmi: false   # manufacturing_pmi: ISM Manufacturing PMI
+  usd_ism_non_manufacturing_pmi: false   # services_pmi: ISM Services PMI
+  usd_jolts_job_openings: false   # jolts: JOLTS Job Openings
+  usd_unemployment_rate: false   # unemployment_rate: Unemployment Rate
+  # --- true: changes / net changes / policy rate
+  aud_company_operating_profits: true   # company_operating_profits_qoq: Company Operating Profits q/q
+  aud_cpi: true   # cpi_yoy: CPI y/y
+  aud_employment_change: true   # employment_change: Employment Change
+  aud_gdp: true   # gdp_qoq: GDP q/q
+  aud_household_spending: true   # retail_sales: Household Spending m/m
+  aud_import_prices: true   # import_prices: Import Prices q/q
+  aud_monthly_cpi_indicator: true   # cpi_monthly: CPI m/m
+  aud_monthly_trimmed_mean_cpi: true   # trimmed_mean_cpi_monthly: Trimmed Mean CPI m/m
+  aud_ppi: true   # ppi_yoy: PPI q/q
+  aud_private_capital_expenditure: true   # capital_expenditure: Private Capital Expenditure q/q
+  aud_rba_interest_rate_decision: true   # interest_rate_decision: Cash Rate
+  aud_rba_trimmed_mean_cpi: true   # core_cpi: Trimmed Mean CPI q/q
+  aud_retail_sales: true   # retail_sales: Retail Sales m/m
+  aud_wage_price_index: true   # wage_growth: Wage Price Index q/q
+  cad_boc_interest_rate_decision: true   # interest_rate_decision: Overnight Rate
+  cad_common_cpi: true   # common_cpi_yoy: Common CPI y/y
+  cad_cpi: true   # cpi_yoy: CPI m/m
+  cad_employment_change: true   # employment_change: Employment Change
+  cad_gdp: true   # gdp_qoq: GDP m/m
+  cad_ippi: true   # ppi_yoy: IPPI m/m
+  cad_median_cpi: true   # core_cpi: Median CPI y/y
+  cad_retail_sales: true   # retail_sales: Retail Sales m/m
+  cad_trimmed_cpi: true   # trimmed_cpi_yoy: Trimmed CPI y/y
+  chf_cpi: true   # cpi_yoy: CPI m/m
+  chf_gdp: true   # gdp_qoq: GDP q/q
+  chf_ppi: true   # ppi_yoy: PPI m/m
+  chf_retail_sales: true   # retail_sales: Retail Sales y/y
+  chf_snb_interest_rate_decision: true   # interest_rate_decision: SNB Policy Rate
+  eur_core_cpi: true   # core_cpi: Core CPI Flash Estimate y/y
+  eur_cpi: true   # cpi_yoy: CPI Flash Estimate y/y
+  eur_ecb_interest_rate_decision: true   # interest_rate_decision: Main Refinancing Rate
+  eur_employment_change: true   # employment_change: Flash Employment Change q/q
+  eur_gdp: true   # gdp_qoq: Prelim Flash GDP q/q
+  eur_ppi: true   # ppi_yoy: PPI m/m
+  eur_retail_sales: true   # retail_sales: Retail Sales m/m
+  gbp_average_weekly_earnings_total_pay: true   # wage_growth: Average Earnings Index 3m/y
+  gbp_boe_interest_rate_decision: true   # interest_rate_decision: Official Bank Rate
+  gbp_claimant_count_change: true   # employment_change: Claimant Count Change
+  gbp_core_cpi: true   # core_cpi: Core CPI y/y
+  gbp_cpi: true   # cpi_yoy: CPI y/y
+  gbp_gdp: true   # gdp_qoq: GDP m/m
+  gbp_industrial_production: true   # industrial_production_mm: Industrial Production m/m
+  gbp_ppi_output: true   # ppi_yoy: PPI Output m/m
+  gbp_retail_sales: true   # retail_sales: Retail Sales m/m
+  jpy_boj_interest_rate_decision: true   # interest_rate_decision: BOJ Policy Rate
+  jpy_capital_spending: true   # capital_expenditure: Capital Spending q/y
+  jpy_core_cpi: true   # core_cpi: BOJ Core CPI y/y
+  jpy_core_machinery_orders: true   # core_machinery_orders_mm: Core Machinery Orders m/m
+  jpy_cpi: true   # cpi_yoy: National Core CPI y/y
+  jpy_gdp: true   # gdp_qoq: Prelim GDP q/q
+  jpy_labor_cash_earnings: true   # wage_growth: Average Cash Earnings y/y
+  jpy_ppi: true   # ppi_yoy: PPI y/y
+  jpy_prelim_gdp_price_index: true   # gdp_price_index: Prelim GDP Price Index y/y
+  jpy_prelim_industrial_production: true   # industrial_production_mm: Prelim Industrial Production m/m
+  jpy_retail_sales: true   # retail_sales: Retail Sales y/y
+  jpy_sppi: true   # sppi_yoy: SPPI y/y
+  jpy_tokyo_core_cpi: true   # tokyo_core_cpi_yoy: Tokyo Core CPI y/y
+  nzd_cpi: true   # cpi_yoy: CPI q/q
+  nzd_electronic_card_retail_sales: true   # retail_sales: Electronic Card Retail Sales m/m
+  nzd_employment_change: true   # employment_change: Employment Change q/q
+  nzd_gdp: true   # gdp_qoq: GDP q/q
+  nzd_labor_cost_index: true   # wage_growth: Labor Cost Index q/q
+  nzd_ppi_output: true   # ppi_yoy: PPI Output q/q
+  nzd_rbnz_interest_rate_decision: true   # interest_rate_decision: Official Cash Rate
+  nzd_retail_sales: true   # retail_sales: Retail Sales q/q
+  usd_adp_nonfarm_employment_change: true   # adp: ADP Non-Farm Employment Change
+  usd_advance_gdp_price_index: true   # gdp_price_index: Advance GDP Price Index q/q
+  usd_average_hourly_earnings: true   # wage_growth: Average Hourly Earnings m/m
+  usd_core_cpi: true   # core_cpi: Core CPI m/m
+  usd_core_pce_price_index: true   # core_pce: Core PCE Price Index m/m
+  usd_cpi: true   # cpi_yoy: CPI y/y
+  usd_durable_goods_orders: true   # durable_goods_orders_mm: Durable Goods Orders m/m
+  usd_fed_interest_rate_decision: true   # interest_rate_decision: Federal Funds Rate
+  usd_gdp: true   # gdp_qoq: Advance GDP q/q
+  usd_import_prices: true   # import_prices: Import Prices m/m
+  usd_industrial_production: true   # industrial_production_mm: Industrial Production m/m
+  usd_nonfarm_payrolls: true   # employment_change: Non-Farm Employment Change
+  usd_personal_income: true   # personal_income_mm: Personal Income m/m
+  usd_personal_spending: true   # personal_spending_mm: Personal Spending m/m
+  usd_ppi: true   # ppi_yoy: PPI m/m
+  usd_prelim_unit_labor_costs: true   # unit_labor_costs_qoq: Prelim Unit Labor Costs q/q
+  usd_retail_sales: true   # retail_sales: Retail Sales m/m

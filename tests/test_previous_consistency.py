@@ -113,16 +113,20 @@ def test_zero_actuals_do_not_enter_the_tolerance():
     assert (tol, n) == (0.0, 1)
 
 
-def test_repo_history_catches_aud_import_prices_2026_04_30(matcher):
-    """Acceptance: on the committed FF parquet the check must catch AUD import
-    prices 2026-04-30 (scored/quarantined 0.0 vs next previous 0.1)."""
+def test_repo_history_aud_import_prices_2026_04_30_is_recovered(matcher):
+    """Acceptance (phase 2, Z2/Z4): AUD import prices 2026-04-30 — 0.0 contradicted
+    by the next previous (0.1) — is now recovered in scoring (actual_origin
+    ff_previous), so previous-consistency no longer reports it."""
     from src import economic_render as er
     as_of = pd.Timestamp("2026-09-23T07:06:11")
     cal = er._load_calendar_frame(as_of)
+    row = cal[(cal["currency"] == "AUD") & (cal["indicator_key"] == "import_prices")
+              & (cal["release_dt"] == pd.Timestamp("2026-04-30 01:30"))]
+    assert row["actual"].tolist() == [0.1] and row["actual_origin"].tolist() == ["ff_previous"]
     report = er._integrity_report(cal, as_of)
-    found = {(f["canonical_id"], f["release_dt"][:10], f["next_previous"])
+    found = {(f["canonical_id"], f["release_dt"][:10])
              for f in report["checks"]["previous_consistency"]["findings"]}
-    assert ("aud_import_prices", "2026-04-30", 0.1) in found
+    assert ("aud_import_prices", "2026-04-30") not in found
 
 
 def test_integrity_counter_is_warn_and_not_stale():

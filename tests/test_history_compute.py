@@ -19,7 +19,6 @@ from src import history_compute as hc
 from src.data_integrity import build_quarantine_proposal, detect_ghost_rows, detect_implausible_zeros
 from src.economic_compute import compute_currency_scorecard
 from src.ff_scoring import CCY2COUNTRY, build_matcher, load_can_be_zero
-from src.jb_actuals import build_flagged_bad_lookup
 
 ROOT = Path(__file__).resolve().parents[1]
 FF_PARQUET = ROOT / "data" / "economic_calendar_ff.parquet"

@@ -43,12 +43,36 @@ INDICATORS_CFG = {
 }
 
 
-def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None):
+_PLACEHOLDER = object()
+
+
+def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None,
+         jb_status=_PLACEHOLDER, forecast_origin="ff"):
+    # audit 2.3: a 0.0 is JBlanked's placeholder iff jb_status says
+    # "Data Not Loaded" -> that is what a test 0.0 stands for unless told otherwise.
+    if jb_status is _PLACEHOLDER:
+        jb_status = "Data Not Loaded" if actual == 0.0 else None
     return {"canonical_id": canonical_id or f"{ccy.lower()}_x", "currency": ccy,
             "name_raw": name_raw or canon,
             "name_canonical": canon, "datetime_utc": pd.Timestamp(dt),
-            "actual": actual, "forecast": forecast, "previous": 0.5,
-            "released": True, "source": "ff"}
+            # previous unknown by default: under Z2/Z4 a known next.previous would
+            # contradict and auto-recover a test 0.0 (no human needed).
+            "actual": actual, "forecast": forecast, "previous": float("nan"),
+            "released": True, "source": "ff",
+            "forecast_origin": forecast_origin, "jb_status": jb_status}
+
+
+class _AllZeroPossible(dict):
+    """Synthetic series ids ('usd_x', ...) are all zero_possible=True here: a test
+    0.0 is a placeholder through its jb_status (Z2), not through Z1."""
+    def __contains__(self, key):
+        return True
+
+    def __getitem__(self, key):
+        return True
+
+
+ZP_ALL = _AllZeroPossible()
 
 
 def _frame(rows):
@@ -60,6 +84,7 @@ def _find(rows, **kw):
     kw.setdefault("can_be_zero", CBZ)
     kw.setdefault("now_utc", NOW)
     kw.setdefault("indicators_cfg", INDICATORS_CFG)
+    kw.setdefault("zero_possible", ZP_ALL)
     return find_actionable_rows(_frame(rows), **kw)
 
 
@@ -90,74 +115,44 @@ def test_future_null_row_never_missing():
 
 # --- ZERO_CONFIRM ----------------------------------------------------------
 
-def test_zero_confirm_flagged_by_default_no_widening_path():
-    rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0)]
+@pytest.mark.parametrize("status,actionable", [
+    ("Data Not Loaded", True),   # JB placeholder -> needs a human
+    ("Good Data", False),        # a real 0.0 print (Good/Bad Data is a direction tag)
+    ("Bad Data", False),
+    (None, True),                # R2: no evidence -> blocked, a human decides
+])
+def test_zero_confirm_iff_jb_status_data_not_loaded(status, actionable):
+    """One rule, the same as ff_scoring.to_scoring_frame's (Z2 + R2: a zero is
+    real only with positive evidence — here a JB status other than DNL)."""
+    rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0, jb_status=status)]
     out = _find(rows)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
+    assert (len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM) is actionable
 
 
-def test_zero_confirm_widened_by_can_be_zero_config():
-    """retail_sales is can_be_zero=True by config -> never flagged, per (a)."""
-    rows = [_row("USD", "Retail Sales m/m", NOW - pd.Timedelta(hours=1), 0.0)]
-    assert _find(rows).empty
-
-
-def test_zero_confirm_cbz_row_still_flagged_when_flagged_bad_marks_it_bad():
-    """fix/cbz-flagged-bad-guard regression: can_be_zero is candidate
-    legitimacy, not automatic pass -- flagged_bad has final say over BOTH
-    routes now, same as ff_scoring.to_scoring_frame. Mirrors the real AUD
-    Cash Rate case (interest_rate_decision, Quality=Strength='Data Not
-    Loaded') that motivated that fix: a cbz zero must still surface as
-    ZERO_CONFIRM when JBlanked itself flags it, not silently pass through."""
+def test_can_be_zero_and_flagged_bad_are_ignored():
+    """The old routes are gone: can_be_zero no longer excuses a placeholder and
+    a flagged_bad lookup no longer blocks a real zero."""
     dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]
-    lookup = {("USD", "Retail Sales m/m", dt.date()): True}   # flagged bad
-    out = _find(rows, flagged_bad=lookup)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
+    placeholder = [_row("USD", "Retail Sales m/m", dt, 0.0, jb_status="Data Not Loaded")]
+    assert len(_find(placeholder, can_be_zero={"retail_sales"})) == 1
+    real = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m", jb_status="Bad Data")]
+    assert _find(real, flagged_bad={("USD", "CPI m/m", dt.date()): True}).empty
 
 
-def test_zero_confirm_cbz_row_kept_when_flagged_bad_clean():
-    """Same cbz row, flagged_bad explicitly clean -> still widened, per (a)+gate."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]
-    lookup = {("USD", "Retail Sales m/m", dt.date()): False}   # explicitly clean
-    assert _find(rows, flagged_bad=lookup).empty
-
-
-def test_zero_confirm_widened_by_flagged_bad_suffix_clean():
-    """cpi_yoy is NOT can_be_zero, but a real m/m-suffixed name_raw not flagged
-    bad passes via path (b) — the suffix-widening reuse from ff_scoring."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m")]
-    lookup = {("USD", "CPI m/m", dt.date()): False}   # explicitly clean
-    assert _find(rows, flagged_bad=lookup).empty
-
-
-def test_zero_confirm_blocked_when_flagged_bad_marks_it():
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m")]
-    lookup = {("USD", "CPI m/m", dt.date()): True}   # explicitly bad
-    out = _find(rows, flagged_bad=lookup)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
-
-
-def test_zero_confirm_flagged_bad_missing_key_defaults_blocked():
-    """Missing lookup key defaults to flagged/blocked (same default as
-    to_scoring_frame) -> the suffix path does NOT widen it -> ZERO_CONFIRM."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m")]
-    out = _find(rows, flagged_bad={})   # no entry for this key
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
-
-
-def test_zero_confirm_non_mm_qq_suffix_never_widened_even_if_clean():
-    """A y/y-suffixed name_raw never takes the widening path regardless of
-    flagged_bad -- only m/m|q/q do."""
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI y/y")]
-    lookup = {("USD", "CPI y/y", dt.date()): False}
-    out = _find(rows, flagged_bad=lookup)
-    assert len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM
+def test_manual_row_consensus_follows_the_provenance_rule():
+    """audit 2.2: a manual row's consensus no longer bypasses the rule —
+    FF "0.0%" (ff) is kept, a JB 0.0 is not."""
+    dt = NOW - pd.Timedelta(hours=8)
+    ov = [{"canonical_id": "usd_x", "datetime_utc": str(dt), "actual": 5.7}]
+    kept, _ = apply_overrides(_frame([_row("USD", "CPI y/y", dt, 0.0, forecast=0.0)]), ov,
+                              now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+                              indicators_cfg=INDICATORS_CFG, zero_possible=ZP_ALL)
+    assert kept.iloc[0]["consensus"] == 0.0
+    dropped, _ = apply_overrides(_frame([_row("USD", "CPI y/y", dt, 0.0, forecast=0.0,
+                                               forecast_origin="jb")]), ov,
+                                 now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+                                 indicators_cfg=INDICATORS_CFG, zero_possible=ZP_ALL)
+    assert pd.isna(dropped.iloc[0]["consensus"])
 
 
 # --- exclusions --------------------------------------------------------------
@@ -198,7 +193,7 @@ def test_pure_no_mutation_of_input():
     rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0)]
     src = _frame(rows)
     before = src.copy(deep=True)
-    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     pd.testing.assert_frame_equal(src, before)
 
 
@@ -208,16 +203,10 @@ def test_real_matcher_and_can_be_zero_wire_up():
     """No matcher/can_be_zero override -> loads the live indicator config."""
     dt = NOW - pd.Timedelta(hours=1)
     rows = [_row("USD", "CPI y/y", dt, 0.0)]     # cpi_yoy: NOT can_be_zero by config
-    out = find_actionable_rows(_frame(rows), now_utc=NOW)
+    out = find_actionable_rows(_frame(rows), now_utc=NOW, zero_possible=ZP_ALL)
     assert len(out) == 1
     assert out.iloc[0]["indicator_key"] == "cpi_yoy"
     assert out.iloc[0]["state"] == ZERO_CONFIRM
-
-
-def test_real_can_be_zero_config_widens_retail_sales():
-    dt = NOW - pd.Timedelta(hours=1)
-    rows = [_row("USD", "Retail Sales m/m", dt, 0.0)]   # can_be_zero: true
-    assert find_actionable_rows(_frame(rows), now_utc=NOW).empty
 
 
 # --- duplicate suppression (feat/manual-actuals-dedupe) ----------------------
@@ -356,7 +345,7 @@ def test_suppression_pure_no_mutation_of_input():
     ]
     src = _frame(rows)
     before = src.copy(deep=True)
-    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ,
+    find_actionable_rows(src, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL,
                          indicators_cfg=INDICATORS_CFG)
     pd.testing.assert_frame_equal(src, before)
 
@@ -394,7 +383,7 @@ def test_apply_overrides_missing_row_becomes_manual_source_row():
     rows = [_row("USD", "CPI y/y", dt, float("nan"))]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 3.2)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert list(manual.columns) == SCORING_COLUMNS
     assert len(manual) == 1
     m = manual.iloc[0]
@@ -409,7 +398,7 @@ def test_apply_overrides_zero_confirm_row_confirmed_at_zero():
     rows = [_row("USD", "CPI y/y", dt, 0.0)]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 0.0, state_resolved=ZERO_CONFIRM)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.0)
     assert manual.iloc[0]["source"] == "manual"
     assert remaining.empty
@@ -420,7 +409,7 @@ def test_apply_overrides_zero_confirm_row_corrected():
     rows = [_row("USD", "CPI y/y", dt, 0.0)]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 0.4, state_resolved=ZERO_CONFIRM)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.4)
 
 
@@ -433,7 +422,7 @@ def test_apply_overrides_stale_when_real_actual_has_landed():
     rows = [_row("USD", "CPI y/y", dt, 3.5)]   # real print landed
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 9.9)]   # stale guess from before
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert manual.empty
     assert remaining.empty   # not actionable either way (real value present)
 
@@ -448,7 +437,7 @@ def test_apply_overrides_never_touches_unrelated_actionable_rows():
             _row("USD", "CPI y/y", dt2, float("nan"))]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt1, 3.2)]   # only resolves dt1
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1
     assert len(remaining) == 1 and remaining.iloc[0]["datetime_utc"] == dt2
 
@@ -457,7 +446,7 @@ def test_apply_overrides_empty_overrides_is_noop():
     dt = NOW - pd.Timedelta(hours=7)
     rows = [_row("USD", "CPI y/y", dt, float("nan"))]
     ff = _frame(rows)
-    manual, remaining = apply_overrides(ff, [], now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, [], now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert manual.empty and list(manual.columns) == SCORING_COLUMNS
     assert len(remaining) == 1
 
@@ -476,7 +465,7 @@ def test_apply_overrides_grandfathered_across_rule_a_same_day_suppression():
     ]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt_override_target, 0.3, state_resolved=ZERO_CONFIRM)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER,
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, zero_possible=ZP_ALL,
                                         can_be_zero=CBZ, indicators_cfg=INDICATORS_CFG)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(0.3)
     assert remaining.empty   # suppressed from the panel, but the override still resolved
@@ -504,7 +493,7 @@ def test_apply_overrides_grandfathered_across_rule_c_cross_day_suppression():
     ]
     ff = _frame(rows)
     overrides = [_override("jpy_boj_interest_rate_decision", dt_override_target, 1.0)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER,
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, zero_possible=ZP_ALL,
                                         can_be_zero=CBZ, indicators_cfg=INDICATORS_CFG)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(1.0)
     assert len(remaining) == 1 and remaining.iloc[0]["datetime_utc"] == dt_kept
@@ -512,7 +501,7 @@ def test_apply_overrides_grandfathered_across_rule_c_cross_day_suppression():
 
 def test_apply_overrides_empty_ff_frame():
     manual, remaining = apply_overrides(_frame([]), [_override("usd_x", NOW, 1.0)],
-                                        now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+                                        now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert manual.empty and remaining.empty
 
 
@@ -573,6 +562,43 @@ def test_relevance_window_never_affects_override_eligibility():
     rows = [_row("USD", "CPI y/y", dt, float("nan"))]
     ff = _frame(rows)
     overrides = [_override("usd_x", dt, 3.2)]
-    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ)
+    manual, remaining = apply_overrides(ff, overrides, now_utc=NOW, matcher=MATCHER, can_be_zero=CBZ, zero_possible=ZP_ALL)
     assert len(manual) == 1 and manual.iloc[0]["actual"] == pytest.approx(3.2)   # override still worked
     assert remaining.empty                                                       # resolved, as normal
+
+
+def test_recovered_placeholder_stays_actionable():
+    """R1: a value recovered from next.previous is never scored, so the
+    placeholder still needs a human."""
+    rows = [_row("USD", "CPI y/y", "2026-06-10 12:30", 0.0, jb_status="Data Not Loaded"),
+            _row("USD", "CPI y/y", "2026-07-14 12:30", 3.1)]
+    rows[1]["previous"] = 2.9
+    out = _find(rows)
+    assert out["state"].tolist() == [ZERO_CONFIRM]
+
+
+def test_r4_aud_import_prices_2026_07_30_override_applies_while_row_is_zero():
+    """R4 — the real case: FF re-lists the release at 00:30 and 01:30, both 0.0,
+    forecast FF '0.0%' (documented provenance), no JB payload for the day and no
+    next print yet. The human override 5.7 @ 01:30 must be the scored value with
+    consensus 0.0; the zero copies must not score."""
+    from src.ff_scoring import zero_beside_real_value
+    m = CompiledMatcher({"Australia": [{"pattern": "^Import Prices q/q$", "indicator": "import_prices"}]})
+    rows = [_row("AUD", "Import Prices q/q", dt, 0.0, forecast=0.0, canonical_id="aud_import_prices",
+                 jb_status=None) for dt in ("2026-07-30 00:30", "2026-07-30 01:30")]
+    for r in rows:
+        r["previous"] = 0.1
+    ov = [{"canonical_id": "aud_import_prices", "datetime_utc": "2026-07-30 01:30:00", "actual": 5.7}]
+    manual, remaining = apply_overrides(_frame(rows), ov, now_utc=pd.Timestamp("2026-09-23 07:06"),
+                                        matcher=m, indicators_cfg=INDICATORS_CFG,
+                                        zero_possible={"aud_import_prices": True})
+    assert manual[["actual", "consensus", "source"]].values.tolist() == [[5.7, 0.0, "manual"]]
+    assert pd.Timestamp(manual.iloc[0]["release_dt"]) == pd.Timestamp("2026-07-30 01:30")
+    assert remaining[remaining["canonical_id"] == "aud_import_prices"].empty
+    # the ff zero copies next to the human value do not score (Z3 across sources)
+    ff_rows = pd.DataFrame([{"currency": "AUD", "indicator_key": "import_prices",
+                             "release_dt": pd.Timestamp(dt), "actual": 0.0, "consensus": 0.0,
+                             "previous": 0.1, "source": "ff", "name_raw": "Import Prices q/q",
+                             "actual_origin": "ff"} for dt in ("2026-07-30 00:30", "2026-07-30 01:30")])
+    cal = zero_beside_real_value(pd.concat([ff_rows, manual], ignore_index=True))
+    assert cal.loc[cal["source"] == "ff", "actual"].isna().all()

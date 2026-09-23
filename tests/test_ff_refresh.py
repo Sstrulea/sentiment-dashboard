@@ -453,3 +453,62 @@ def test_state_untouched_by_a_later_failure_after_an_earlier_success(tmp_path, m
     rep2 = R.refresh(now_utc=later, cfg=_NO_GUARDS, parquet_path=p, state_path=sp)
     assert rep2["status"] == "fetch_failed"
     assert R.load_state(sp) == before   # unchanged, still the earlier success
+
+
+# --- audit 2026-09-23, 2.1: JBlanked never overwrites an FF-delivered forecast ------
+
+import numpy as _np
+from src.econ_calendar_ff import CANON_COLUMNS as _CANON
+
+merge_weekly = R.merge_weekly
+
+
+def _row(forecast, origin, actual=_np.nan, jb_status=None):
+    return {"canonical_id": "nzd_businessnz_services_index", "currency": "NZD",
+            "name_raw": "BusinessNZ Services Index", "name_canonical": "BusinessNZ Services Index",
+            "datetime_utc": pd.Timestamp("2026-09-13 22:30"), "actual": actual,
+            "forecast": forecast, "previous": 50.0, "released": True, "source": "ff",
+            "forecast_origin": origin, "jb_status": jb_status}
+
+
+def test_jb_zero_does_not_overwrite_ff_blank():
+    existing = pd.DataFrame([_row(_np.nan, "ff_blank")], columns=_CANON)
+    jb = pd.DataFrame([_row(0.0, "jb", actual=52.1, jb_status="Good Data")], columns=_CANON)
+    out = merge_weekly(existing, jb)
+    r = out.iloc[0]
+    assert r["forecast_origin"] == "ff_blank" and pd.isna(r["forecast"])
+    assert r["actual"] == 52.1 and r["jb_status"] == "Good Data"
+
+
+def test_jb_does_not_overwrite_ff_value_but_ff_overwrites_jb():
+    ff_first = merge_weekly(pd.DataFrame([_row(0.0, "ff")], columns=_CANON),
+                            pd.DataFrame([_row(51.0, "jb", actual=52.1)], columns=_CANON))
+    assert (ff_first.iloc[0]["forecast"], ff_first.iloc[0]["forecast_origin"]) == (0.0, "ff")
+    jb_first = merge_weekly(pd.DataFrame([_row(51.0, "jb")], columns=_CANON),
+                            pd.DataFrame([_row(50.5, "ff")], columns=_CANON))
+    assert (jb_first.iloc[0]["forecast"], jb_first.iloc[0]["forecast_origin"]) == (50.5, "ff")
+
+
+def test_newest_jb_status_wins_and_ff_echo_keeps_it():
+    a = merge_weekly(pd.DataFrame([_row(_np.nan, "ff_blank")], columns=_CANON),
+                     pd.DataFrame([_row(0.0, "jb", actual=0.0, jb_status="Data Not Loaded")], columns=_CANON))
+    b = merge_weekly(a, pd.DataFrame([_row(0.0, "jb", actual=52.1, jb_status="Good Data")], columns=_CANON))
+    c = merge_weekly(b, pd.DataFrame([_row(_np.nan, "ff_blank")], columns=_CANON))   # FF echo
+    assert c.iloc[0]["jb_status"] == "Good Data" and c.iloc[0]["actual"] == 52.1
+
+
+def test_parsers_record_forecast_origin():
+    from src.econ_calendar_ff import parse_ff_weekly, parse_jblanked_range
+    wk = parse_ff_weekly([
+        {"title": "CPI m/m", "country": "CHF", "date": "2026-09-03T08:30:00+02:00",
+         "forecast": "0.0%", "previous": "0.1%"},
+        {"title": "BusinessNZ Services Index", "country": "NZD", "date": "2026-09-14T10:30:00+12:00",
+         "forecast": "", "previous": "50.0"}], now_utc=pd.Timestamp("2026-09-20"))
+    got = dict(zip(wk["name_raw"], zip(wk["forecast_origin"], wk["forecast"])))
+    assert got["CPI m/m"] == ("ff", 0.0)
+    assert got["BusinessNZ Services Index"][0] == "ff_blank" and _np.isnan(got["BusinessNZ Services Index"][1])
+    jb = parse_jblanked_range([{"Name": "CPI m/m", "Currency": "CHF", "Date": "2026.09.03 09:30:00",
+                                "Actual": 0.0, "Forecast": 0.0, "Previous": 0.1,
+                                "Quality": "Bad Data", "Strength": "Data Not Loaded"}],
+                              now_utc=pd.Timestamp("2026-09-20"))
+    assert jb.iloc[0]["forecast_origin"] == "jb" and jb.iloc[0]["jb_status"] == "Data Not Loaded"

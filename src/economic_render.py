@@ -1186,11 +1186,9 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
             log.warning("FF calendar parquet missing — empty Economic page.")
             return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
         from src.ff_scoring import build_matcher, to_scoring_frame
-        from src.jb_actuals import build_flagged_bad_lookup
         ffdf = pd.read_parquet(FF_PARQUET)
         ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
-        flagged_bad = build_flagged_bad_lookup()
-        cal = to_scoring_frame(ffdf, build_matcher(), flagged_bad=flagged_bad)
+        cal = to_scoring_frame(ffdf, build_matcher())
         cal["release_dt"] = pd.to_datetime(cal["release_dt"])
         q_path = ROOT / "data" / "ff_quarantine.parquet"
         if q_path.exists() and len(cal):
@@ -1212,10 +1210,11 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
         from src.manual_actuals import apply_overrides, load_overrides
         overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
         if overrides:
-            manual_rows, _ = apply_overrides(ffdf, overrides, now_utc=as_of,
-                                             flagged_bad=flagged_bad)
+            manual_rows, _ = apply_overrides(ffdf, overrides, now_utc=as_of)
             if len(manual_rows):
                 cal = pd.concat([cal, manual_rows], ignore_index=True)
+                from src.ff_scoring import zero_beside_real_value
+                cal = zero_beside_real_value(cal)
                 log.info("Manual Actuals Panel: %d override(s) applied to scoring.",
                         len(manual_rows))
 
@@ -1255,14 +1254,11 @@ def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
         return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
     if source != "ff" or not FF_PARQUET.exists():
         return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
-    from src.jb_actuals import build_flagged_bad_lookup
     from src.manual_actuals import apply_overrides, load_overrides
     ffdf = pd.read_parquet(FF_PARQUET)
     ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
-    flagged_bad = build_flagged_bad_lookup()
     overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
-    _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of,
-                                              flagged_bad=flagged_bad)
+    _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of)
     # audit V3: the policy rate comes only from data/cb/decisions.parquet, so a
     # manual interest_rate_decision entry would never be used — not listed.
     from src.policy_rate import KEY as POLICY_KEY
@@ -1471,7 +1467,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     trend_full = _trend_full() if trend_on else {}
     trend_by_symbol = _trend_cells(trend_full) if trend_on else {}
 
-    payload = build_payload(cal, indicators_cfg, instruments_cfg,
+    from src.ff_scoring import scoring_view
+    payload = build_payload(scoring_view(cal), indicators_cfg, instruments_cfg,
                             as_of=as_of, rate_scores=rate_scores or None,
                             sentiment_cells=fx_cells or None,
                             trend_cells=trend_by_symbol or None)
@@ -1515,7 +1512,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)
-    integrity = _integrity_report(cal, as_of)
+    from src.ff_scoring import scoring_view as _sv
+    integrity = _integrity_report(_sv(cal), as_of)
     payload["freshness"]["integrity"] = _integrity_summary(integrity)
     payload["_integrity_report"] = integrity   # popped by render_economic_page
     payload["manual_actuals"] = _build_manual_actuals_block(as_of)
