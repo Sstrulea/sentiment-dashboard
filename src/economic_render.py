@@ -205,15 +205,15 @@ INDICATOR_UNITS: dict[str, dict] = {
 }
 
 # Currency-Strength (/strength.html) display constant — pct = clamp(50 +
-# index * K, 0, 100). Measured in scripts/measure/strength_index_distribution.py
-# on 2026-08-17: point-in-time `index` (WITH rate_entry/monetary included)
-# reconstructed weekly for all 8 board currencies, 2025-08-18 .. 2026-08-17
-# (53 weekly points, 424 (currency, week) observations). Global
-# p95(|index|) = 3.750 -> K_raw = 40 / 3.750 = 10.667 -> K = 10.5 (nearest
-# 0.5, pre-registered rounding rule). Saturation point |index| >= 4.762
-# (50 + 4.762*10.5 = 100). Confirmed by the user 2026-08-17; changing it
-# requires re-running that script, not an ad-hoc edit here.
-STRENGTH_PCT_K = 10.5
+# strength_score * K, 0, 100). Re-measured for Strength-as-aggregate-of-pairs
+# (audit B1) with the SAME method as the first calibration
+# (scripts/measure/strength_index_distribution.py, 2026-08-17: K = 40 / p95,
+# rounded to 0.5): scripts/measure/strength_pairs_distribution.py, weekly
+# point-in-time 2025-09-24 .. 2026-09-23 (53 weeks, 424 (currency, week)
+# observations, snapshot 4ace910 + audit phases 1-2): p95(|score|) = 1.817 ->
+# K_raw = 22.017 -> K = 22.0. Saturation at |score| >= 2.273. (Was 10.5 on the
+# old per-currency index.) Changing it requires re-running that script.
+STRENGTH_PCT_K = 22.0
 
 # Per-currency label overrides for cpi_yoy / core_cpi / ppi_yoy — the global
 # INDICATOR_LABELS text ("CPI (YoY)", "Core CPI", "PPI") is accurate for SOME
@@ -578,24 +578,74 @@ def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp,
             ) else float(prev)
 
 
-def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: dict) -> None:
-    """Attach /strength.html display fields to each payload["currencies"][CCY].
+FUND_EXCLUDED_KEYS = ("sentiment", "trend")
 
-    Pure REPRESENTATION of the existing `index` — reuses bias_label (the same
-    function /economic reads, imported from economic_compute) so the two pages
-    can never disagree on direction. `monetary_available` reflects whether the
-    rate engine actually scored this currency (real data in rates.parquet),
-    NOT a hardcoded currency list — see STRENGTH_PCT_K's docstring for how K
-    was measured.
-    """
+
+def _pair_fund_score(inst: dict) -> float:
+    """A pair's FUNDAMENTAL score: compute_instrument's `fund_score`
+    (= macro_score_no_sentiment: D1=D intersection, no COT, no trend), which the
+    sum of its fund contributions reconstructs (the fallback)."""
+    if inst.get("fund_score") is not None:
+        return float(inst["fund_score"])
+    return float(sum(c["contribution"] for c in inst.get("contributions", [])
+                     if c.get("key") not in FUND_EXCLUDED_KEYS))
+
+
+def strength_from_pairs(payload: dict) -> dict:
+    """/strength as an aggregate of the /economic pairs (audit B1).
+
+    scores[ccy] = mean over the pairs ccy belongs to (7 on the 8-currency board)
+    of the pair's fundamental score, + when ccy is the base, - when it is the
+    quote. The monetary category enters a pair only when both legs have it (the
+    D1=D rule of /economic) — no second mechanism. Scores are in pair units, so
+    the pair bias thresholds apply; they sum to 0 over the board.
+    matrix[row][col] = fundamental score of row vs col (row = base; the board's
+    reverse orientation is the negated pair)."""
+    pairs: dict[str, dict[str, float]] = {}
+    for inst in payload.get("instruments", []):
+        if inst.get("type") != "fx":
+            continue
+        base = inst["breakdown"]["base"]["currency"]
+        quote = inst["breakdown"]["quote"]["currency"]
+        v = _pair_fund_score(inst)
+        pairs.setdefault(base, {})[quote] = v
+        pairs.setdefault(quote, {})[base] = -v
+    scores = {ccy: sum(o.values()) / len(o) for ccy, o in pairs.items() if o}
+    return {"scores": scores, "matrix": pairs}
+
+
+def _monetary_state(card: dict) -> dict:
+    """Own 2y monetary sub-score, informative on the card (not in the Strength
+    score by itself): ok (scored, fresh) / stale / missing — read from
+    categories.monetary, not from whether the rate engine saw the currency."""
+    cat = (card.get("categories") or {}).get("monetary")
+    rate = (card.get("breakdown") or {}).get("rate_expectations") or {}
+    if not cat:
+        return {"state": "missing", "score": None}
+    state = "stale" if (cat.get("stale") or not cat.get("coverage")) else "ok"
+    return {"state": state, "score": rate.get("score", cat.get("score_cell"))}
+
+
+def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: dict) -> None:
+    """Attach /strength.html display fields to each payload["currencies"][CCY]
+    (audit B1: Strength is the aggregate of the pairs, see strength_from_pairs).
+
+    `strength_score` (pair units) drives pct = clamp(50 + score * K) and the bias
+    (pair thresholds, bias_label — the same function /economic reads).
+    `strength_pairs` feeds the divergence matrix. `index`, N (`coverage`) and the
+    own monetary state stay informative. /economic is untouched.""" 
     thresholds = instruments_cfg.get("bias_thresholds", {})
+    agg = strength_from_pairs(payload)
     for ccy, card in payload.get("currencies", {}).items():
-        index = float(card.get("index", 0.0))
-        raw_pct = 50.0 + index * STRENGTH_PCT_K
+        score = float(agg["scores"].get(ccy, 0.0))
+        raw_pct = 50.0 + score * STRENGTH_PCT_K
+        card["strength_score"] = score
+        card["strength_pairs"] = agg["matrix"].get(ccy, {})
         card["pct_clamped"] = raw_pct < 0.0 or raw_pct > 100.0
         card["pct"] = round(max(0.0, min(100.0, raw_pct)), 1)
-        card["bias_label"] = bias_label(index, thresholds)
-        card["monetary_available"] = ccy in rate_scores
+        card["bias_label"] = bias_label(score, thresholds)
+        card["monetary"] = _monetary_state(card)
+        card["monetary_available"] = card["monetary"]["state"] == "ok"
 
 
 def _metals_cot_map() -> dict[str, dict]:

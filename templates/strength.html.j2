@@ -15,18 +15,19 @@
     </header>
 
     <div class="econ-legend">
-      <span class="muted">Aceeași surpriză macro ca pe Economic, cu monetary inclus. Poziția (arcul + %)
-      vine din index, culoarea din aceleași praguri de bias. Instrumentele de pe
-      <a href="/economic">Economic</a> includ în plus sentiment (COT), deci biasul unui instrument ca DXY
-      poate diferi de cel al valutei. Click a card or table row for the per-indicator drilldown.</span>
+      <span class="muted">Scorul unei valute = media scorurilor fundamentale ale celor 7 perechi
+      de pe <a href="/economic">Economic</a> în care apare (+ ca bază, − ca cotată), fără COT și fără trend.
+      E în unități de pereche, deci biasul folosește aceleași praguri ca perechile, iar cele 8 scoruri
+      însumează 0. Monetarul (2Y) intră într-o pereche doar dacă ambele valute îl au; pe card e afișat
+      informativ. Poziția (arcul + %) = 50 + scor × K. Click a card or table row for the per-indicator drilldown.</span>
     </div>
     {% include '_help_scoring_modal.html.j2' %}
 
     <div id="strengthMain">
       <p class="strength-divergence" id="strengthDivergence"></p>
-      <p class="strength-context">Spread mic = fără divergență macro exploatabilă. Valutele cu N mare se
-      strâng natural spre 50% (mai mulți indicatori mediați); cele cu N mic oscilează mai larg pe mai
-      puține date. Citește N înainte de poziție.</p>
+      <p class="strength-context">Divergența = cel mai puternic − cel mai slab scor. Spread mic = fără
+      divergență macro exploatabilă. N (indicatorii valutei) e informativ: fiecare pereche compară doar
+      categoriile pe care le au ambele valute.</p>
 
       <div class="strength-grid" id="strengthGrid">
         <p class="muted" style="grid-column: 1/-1; text-align:center; padding: 30px;">Loading…</p>
@@ -38,7 +39,7 @@
           <table class="retail-table strength-table" id="strengthTable">
             <thead>
               <tr>
-                <th>Currency</th><th>%</th><th>Index</th><th>Bias</th><th>N</th><th>Monetary</th>
+                <th>Currency</th><th>%</th><th>Score</th><th>Bias</th><th>N</th><th>Own 2Y</th>
               </tr>
             </thead>
             <tbody id="strengthTableBody"></tbody>
@@ -49,7 +50,8 @@
       <section class="strength-matrix-wrap">
         <h2>Divergence matrix</h2>
         <p class="strength-context" style="margin-bottom:10px;">Rows = base currency, columns = quoted currency.
-        Cell = row's % − column's %. Currencies with no coverage are excluded from the matrix entirely.</p>
+        Cell = fundamental score of the pair row/column (as on Economic, without COT and trend).
+        Currencies with no coverage are excluded from the matrix entirely.</p>
         <div class="strength-matrix-scroll">
           <table class="strength-matrix" id="strengthMatrix"></table>
         </div>

@@ -957,6 +957,9 @@ def compute_instrument(
         "type": itype,
         "score": float(score),
         "bias": bias_label(score, thresholds),
+        # Fundamental-only pair score (D1=D intersection, no COT, no trend) — the
+        # value /strength aggregates (audit B1). Display field; no score uses it.
+        "fund_score": float(macro_score_no_sentiment),
         "breakdown": breakdown,
         # Display cell for the TREND column (same value folded into the score).
         "trend": None if trend_value is None else int(trend_value),

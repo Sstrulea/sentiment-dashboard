@@ -1508,6 +1508,8 @@ table.econ-table td.econ-cell.cell-empty { background: transparent; }
   padding: 1px 5px; border-radius: 3px; cursor: help;
 }
 .cadran-badge.badge-no-rate { background: var(--surface-alt); color: var(--muted); }
+.cadran-badge.badge-rate-ok { background: var(--info-bg); color: var(--info-fg); }
+.cadran-badge.badge-rate-stale { background: var(--surface-alt); color: var(--muted); text-decoration: line-through; }
 .cadran-badge.badge-clamped { background: var(--info-bg); color: var(--info-fg); }
 .cadran-nodata-label { font-size: 13px; color: var(--muted); font-style: italic; margin-top: 8px; }
 
