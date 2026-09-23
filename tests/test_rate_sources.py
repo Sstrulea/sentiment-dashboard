@@ -7,6 +7,7 @@ import zipfile
 from datetime import date
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -230,7 +231,7 @@ def test_rates_freshness_lag_and_any_stale(monkeypatch, tmp_path):
     monkeypatch.setattr(er, "RATES_PARQUET", p)
     out = er._rates_freshness(pd.Timestamp("2026-09-23T07:06:11"))
     assert out["per_currency"]["USD"] == {"last_update": "2026-09-21", "lag_bd": 2,
-                                          "source": "fred", "stale": False}
+                                          "source": "fred", "max_lag_bd": 7, "stale": False}
     assert out["per_currency"]["GBP"]["last_update"] == "2026-09-21"
     assert out["per_currency"]["JPY"]["lag_bd"] == 17 and out["per_currency"]["JPY"]["stale"]
     assert out["stale_currencies"] == ["JPY"] and out["stale"] is True
@@ -239,6 +240,30 @@ def test_rates_freshness_lag_and_any_stale(monkeypatch, tmp_path):
     monkeypatch.setattr(er, "_trend_enabled", lambda cfg=None: False)
     fr = er._freshness(pd.Timestamp("2026-09-23T07:06:11"), trend_enabled=False)
     assert fr["rates"]["stale"] and fr["any_stale"]
+
+
+# --- 4C per-source threshold: daily 7, RBA F2 (weekly) 10 --------------------------
+
+@pytest.mark.parametrize("ccy,source,last,lag,stale", [
+    ("AUD", "rba", "2026-09-10", 9, False),     # weekly F2, one late Friday: still fresh
+    ("AUD", "rba", "2026-09-08", 11, True),
+    ("USD", "fred", "2026-09-11", 8, True),     # daily source keeps 7
+    ("USD", "fred", "2026-09-14", 7, False),
+])
+def test_rates_threshold_is_per_source_and_shared(monkeypatch, tmp_path, ccy, source, last, lag, stale):
+    """freshness.rates and rate_compute read the same per-source threshold."""
+    from src import economic_render as er
+    from src.rate_compute import compute_rate_scores
+    as_of = pd.Timestamp("2026-09-23T07:06:11")
+    dates = pd.bdate_range(end=pd.Timestamp(last), periods=300)
+    df = pd.DataFrame({"currency": ccy, "date": dates, "tenor": "2y",
+                       "yield_pct": np.linspace(1.0, 2.0, len(dates)), "source": source})
+    p = tmp_path / "rates.parquet"
+    df.to_parquet(p)
+    monkeypatch.setattr(er, "RATES_PARQUET", p)
+    fr = er._rates_freshness(as_of)["per_currency"][ccy]
+    assert (fr["lag_bd"], fr["stale"]) == (lag, stale)
+    assert compute_rate_scores(df, as_of=as_of.date())[ccy].stale is stale
 
 
 # --- F2 BoE month-boundary gap fill -------------------------------------------
