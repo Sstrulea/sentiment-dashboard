@@ -1210,12 +1210,16 @@ def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
     }
 
 
-def build_economic_payload() -> dict:
-    """Read parquet + configs, compute, enrich, and return the JSON-ready payload."""
+def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
+    """Read parquet + configs, compute, enrich, and return the JSON-ready payload.
+
+    `as_of` (optional, naive UTC) pins the reference instant — default now. Used to
+    reproduce a committed snapshot bit-for-bit (see scripts/measure/)."""
     indicators_cfg = _load_yaml(INDICATORS_YAML)
     instruments_cfg = _load_yaml(INSTRUMENTS_YAML)
 
-    as_of = pd.Timestamp.utcnow().tz_localize(None)
+    as_of = (pd.Timestamp.utcnow().tz_localize(None) if as_of is None
+             else pd.Timestamp(as_of))
 
     cal = _load_calendar_frame(as_of)   # Phase 3: FF (default) or MT5 (rollback) per config
 
