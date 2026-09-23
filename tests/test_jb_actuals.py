@@ -248,7 +248,8 @@ def test_pull_fetch_failure_is_fail_open_and_retryable(tmp_path):
                          fetcher=lambda f, t: (_ for _ in ()).throw(RuntimeError("HTTP 500")),
                          cfg={})
     assert rep["status"] == "fetch_failed"
-    assert not state.exists()                                   # state NOT advanced
+    st = J.load_state(state)                                    # success NOT advanced
+    assert "last_success_at" not in st and st["last_status"] == "fetch_failed"
     pd.testing.assert_frame_equal(pd.read_parquet(parquet), before)   # last-good kept
     # → the next hourly tick retries
     assert J.should_pull(NOW + pd.Timedelta(hours=1), J.load_state(state))
@@ -260,7 +261,7 @@ def test_pull_empty_payload_does_not_advance_state(tmp_path):
     rep = J.pull_actuals(now_utc=NOW, parquet_path=parquet, state_path=state,
                          raw_dir=raw, fetcher=lambda f, t: "[]", cfg={})
     assert rep["status"] == "empty"
-    assert not state.exists()
+    assert "last_success_at" not in J.load_state(state)
     assert len(list(raw.glob("jb_range_*.json"))) == 1          # raw still kept (forensics)
     pd.testing.assert_frame_equal(pd.read_parquet(parquet), before)
 
@@ -489,3 +490,64 @@ def test_build_flagged_bad_lookup_absent_field_is_not_raise_and_not_clean(tmp_pa
     assert ("CHF", "CPI m/m", date(2026, 7, 2)) not in lookup
 
 
+
+
+# --- audit F5: observability of every real call (no behavior change) -------------
+
+class _FakeResp:
+    def __init__(self, status, text, headers=None):
+        self.status_code, self.text, self.headers = status, text, headers or {}
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            import requests
+            raise requests.HTTPError(f"{self.status_code} Client Error", response=self)
+
+
+def _patch_requests(monkeypatch, resp):
+    import requests
+    monkeypatch.setattr(requests, "get", lambda *a, **k: resp)
+
+
+def test_401_body_and_rate_limit_headers_are_persisted_without_the_key(tmp_path, monkeypatch):
+    key = "k" * 32
+    body = '{"detail": "Daily request limit reached for key ' + key + '"}' + " " * 400
+    _patch_requests(monkeypatch, _FakeResp(401, body, {"X-RateLimit-Remaining": "0",
+                                                        "Retry-After": "3600",
+                                                        "Content-Type": "application/json"}))
+    monkeypatch.setenv("JBLANKED_API_KEY", key)
+    state = tmp_path / "s.json"
+    (state).write_text('{"last_success_at": "2026-07-10T19:00:00", "rows": 5}')
+    rep = J.pull_actuals(now_utc=NOW, parquet_path=_seeded_parquet(tmp_path),
+                         state_path=state, raw_dir=tmp_path / "raw", cfg={})
+    assert rep == {"status": "fetch_failed"}
+    st = J.load_state(state)
+    assert st["last_success_at"] == "2026-07-10T19:00:00" and st["rows"] == 5   # untouched
+    assert st["last_attempt_at"] == NOW.isoformat() and st["last_http_status"] == 401
+    assert st["last_status"] == "fetch_failed"
+    assert key not in state.read_text() and "***" in st["last_error"]
+    assert len(st["last_error"]) <= J.ERROR_BODY_CHARS
+    assert st["last_rate_limit_headers"] == {"X-RateLimit-Remaining": "0", "Retry-After": "3600"}
+    # behavior unchanged: still due, the next tick retries
+    assert J.should_pull(NOW + pd.Timedelta(hours=1), st)
+
+
+def test_success_records_the_attempt_too(tmp_path, monkeypatch):
+    _patch_requests(monkeypatch, _FakeResp(200, FIXTURE.read_text(), {"X-RateLimit-Limit": "1"}))
+    monkeypatch.setenv("JBLANKED_API_KEY", "k" * 32)
+    state = tmp_path / "s.json"
+    rep = J.pull_actuals(now_utc=NOW, parquet_path=_seeded_parquet(tmp_path),
+                         state_path=state, raw_dir=tmp_path / "raw", cfg={})
+    st = J.load_state(state)
+    assert rep["status"] == "ok" and st["last_status"] == "ok" and st["last_error"] is None
+    assert st["last_http_status"] == 200 and st["last_rate_limit_headers"] == {"X-RateLimit-Limit": "1"}
+    assert st["last_success_at"] == st["last_attempt_at"] == NOW.isoformat()
+
+
+def test_skipped_tick_writes_nothing(tmp_path):
+    state = tmp_path / "s.json"
+    state.write_text('{"last_success_at": "2026-07-11T19:00:00"}')
+    J.pull_actuals(now_utc=pd.Timestamp("2026-07-12 05:05"), parquet_path=tmp_path / "ff.parquet",
+                   state_path=state, raw_dir=tmp_path / "raw", cfg={},
+                   fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")))
+    assert state.read_text() == '{"last_success_at": "2026-07-11T19:00:00"}'
