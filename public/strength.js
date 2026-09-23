@@ -45,6 +45,19 @@
     return suffix ? body + " " + suffix : body;
   }
 
+  // A policy rate set as a target RANGE (Fed; decisions.parquet lower/upper):
+  // the value is the midpoint, shown as the range around it (same half-width).
+  function fmtPolicy(v, e, unit) {
+    if (!e || !e.range || v === null || v === undefined || Number.isNaN(Number(v))) {
+      return fmtUnit(v, unit);
+    }
+    const hw = (Number(e.range.upper) - Number(e.range.lower)) / 2;
+    const dec = unit && typeof unit.decimals === "number" ? unit.decimals : 2;
+    const suffix = (unit && unit.suffix) || "";
+    const body = (Number(v) - hw).toFixed(dec) + "–" + (Number(v) + hw).toFixed(dec);
+    return suffix ? body + " " + suffix : body;
+  }
+
   function cellClass(score) {
     const n = Number(score);
     if (Number.isNaN(n)) return "ec-0";
@@ -382,7 +395,7 @@
     const previousHtml = revClass
       ? '<span class="' + revClass + '" title="Revizuit de la ' + fmtUnit(e.prior_actual, unit) +
         ' la ' + fmtUnit(e.previous, unit) + senseTxt + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
-      : fmtUnit(e.previous, unit);
+      : fmtPolicy(e.previous, e, unit);
     const impact = impactState(e);
     const rowCls = impact === "stale" ? ' class="ei-stale"'
       : ((impact === "no_forecast" || impact === "direction_guard") ? ' class="ei-no-consensus"' : "");
@@ -400,8 +413,8 @@
       '<tr' + rowCls + '>' +
       '<td class="ei-name">' + label + inverted + '</td>' +
       '<td class="ei-date">' + fmtDate(dateVal) + '</td>' +
-      '<td class="ei-num">' + fmtUnit(actualRaw, unit) + '</td>' +
-      '<td class="ei-num">' + fmtUnit(forecastRaw, unit) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(actualRaw, e, unit) + '</td>' +
+      '<td class="ei-num">' + fmtPolicy(forecastRaw, e, unit) + '</td>' +
       '<td class="ei-num">' + fmtUnit(surpriseRaw, unit, true) + '</td>' +
       '<td class="ei-num">' + previousHtml + '</td>' +
       '<td class="ei-score ei-impact">' + impactHtml + '</td>' +
