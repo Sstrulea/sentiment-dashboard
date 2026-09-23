@@ -169,3 +169,23 @@ def test_report_is_rewritten_only_when_findings_change(tmp_path):
     assert path.read_text() == first                  # timestamps alone never rewrite
     changed = {"as_of": "x", "checks": {"previous_consistency": {"findings": [], "formula": "f"}}}
     assert _write_integrity_report(changed, "t", path)
+
+
+# --- F3 floor: value class only ------------------------------------------------------
+
+def test_value_class_ignores_a_last_digit_revision_but_zero_class_does_not(matcher):
+    # one-decimal, never-revised series: tol 0, value floor 2 * 0.1 = 0.2
+    small = HIST + [("2026-04-30", 0.4, 0.9), ("2026-07-30", 1.0, 0.5)]   # revised by 0.1
+    assert check_previous_consistency(_ff(small), _scoring(small), matcher)["findings"] == []
+    big = HIST + [("2026-04-30", 0.4, 0.9), ("2026-07-30", 1.0, 0.7)]     # 0.3 > 0.2
+    assert len(check_previous_consistency(_ff(big), _scoring(big), matcher)["findings"]) == 1
+    zero = HIST + [("2026-04-30", 0.0, 0.9), ("2026-07-30", 1.0, 0.1)]    # zero: no floor
+    f = check_previous_consistency(_ff(zero), _scoring(zero), matcher)["findings"]
+    assert [(x["kind"], x["threshold"]) for x in f] == [("zero", 0.0)]
+
+
+def test_series_resolution():
+    from src.previous_consistency import series_resolution
+    assert series_resolution(np.array([0.2, 3.3, -1.4, np.nan])) == pytest.approx(0.1)
+    assert series_resolution(np.array([333.0, 206.0])) == 1.0
+    assert series_resolution(np.array([8.93, 1.5])) == pytest.approx(0.01)

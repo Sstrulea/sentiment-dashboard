@@ -37,7 +37,12 @@ Robust on purpose: the archive holds ghost / out-of-order duplicate releases
 (data_integrity class 1) whose pairing yields spurious "revisions". A quantile is
 dragged by them — AUD import prices: q95 = 0.87 while every real revision of the
 series was 0.0 — the median/MAD estimate is not (tol 0.0 there).
-Flag: effective actual_i present and |previous_{i+1} - actual_i| > tol + EPS.
+Flag: effective actual_i present and |previous_{i+1} - actual_i| > threshold + EPS,
+      threshold = tol                                  for kind "zero" (no floor);
+                  max(tol, 2 * resolution(series))    for kind "value" (audit F3):
+      resolution = 10^-d, d = the most decimals any value of the series carries
+      (0.1 for a one-decimal series -> 0.2), so ordinary last-digit revisions on
+      a never-revised series stop drowning real typos.
 A series whose revisions are routinely large (e.g. payrolls) gets a large tol and
 is not flagged for an ordinary revision; a series never revised (tol = 0) is
 flagged at the first disagreement.
@@ -103,6 +108,16 @@ def _scored_lookup(scoring: pd.DataFrame) -> tuple[dict, dict]:
     return by_name, by_key
 
 
+def series_resolution(values: np.ndarray, max_decimals: int = 4) -> float:
+    """10^-d, d = the most decimals any finite value carries (capped)."""
+    d = 0
+    for v in values[np.isfinite(values)]:
+        s = f"{abs(float(v)):.{max_decimals}f}".rstrip("0").rstrip(".")
+        if "." in s:
+            d = max(d, len(s.split(".")[1]))
+    return 10.0 ** -d
+
+
 def revision_tolerance(actuals: np.ndarray, next_previous: np.ndarray) -> tuple[float, int]:
     """tol and n_pairs per the module docstring. Inputs are aligned arrays of
     (actual_i, previous_{i+1})."""
@@ -137,6 +152,7 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
         raw_actual = g["actual"].to_numpy(dtype=float)
         nxt_prev = np.append(g["previous"].to_numpy(dtype=float)[1:], np.nan)
         tol, n_pairs = revision_tolerance(raw_actual, nxt_prev)
+        value_floor = 2 * series_resolution(np.concatenate([raw_actual, g["previous"].to_numpy(dtype=float)]))
         for i in range(len(g) - 1):
             row = g.iloc[i]
             dt = pd.Timestamp(row.datetime_utc)
@@ -160,7 +176,8 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
                 continue
             n_checked += 1
             diff = float(nprev) - scored
-            if abs(diff) > tol + EPS:
+            threshold = tol if kind == "zero" else max(tol, value_floor)
+            if abs(diff) > threshold + EPS:
                 nrow = g.iloc[i + 1]
                 findings.append({
                     "canonical_id": cid, "currency": row.currency,
@@ -170,6 +187,7 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
                     "next_release_dt": pd.Timestamp(nrow.datetime_utc).isoformat(),
                     "next_previous": float(nprev), "next_from": nrow._from,
                     "diff": round(diff, 6), "tolerance": round(tol, 6),
+                    "threshold": round(threshold, 6),
                     "n_revision_pairs": n_pairs,
                 })
     findings.sort(key=lambda f: (f["release_dt"], f["canonical_id"]))
@@ -187,6 +205,6 @@ def check_previous_consistency(ff: pd.DataFrame, scoring: pd.DataFrame,
         "n_scored_zero": n_scored_zero,
         "formula": ("a = |previous[i+1] - actual[i]| over the series' pairs with "
                     "actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); "
-                    "flag any effective actual[i] with "
-                    "|previous[i+1] - actual[i]| > tol"),
+                    "flag effective actual[i] with |previous[i+1] - actual[i]| > "
+                    "tol (kind zero) or max(tol, 2*resolution) (kind value)"),
     }
