@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-24T08:06:08.905980",
+ "as_of": "2026-09-24T09:06:12.184510",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -4060,7 +4060,9 @@
      "before": "2025-03-03",
      "gap_days": 182,
      "cadence_days": 91,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "aud_company_profits_2024_q3",
+     "reason": "AUD company operating profits Q3 2024 not in any archive we hold (capture otherwise normal)",
      "new": false
     },
     {
@@ -4072,7 +4074,9 @@
      "before": "2026-03-25",
      "gap_days": 56,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "aud_cpi_2026_02",
+     "reason": "AUD CPI y/y and trimmed mean of 2026-02-25 not in any archive we hold (same-day CPI m/m present)",
      "new": false
     },
     {
@@ -4126,7 +4130,9 @@
      "before": "2026-03-25",
      "gap_days": 56,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "aud_cpi_2026_02",
+     "reason": "AUD CPI y/y and trimmed mean of 2026-02-25 not in any archive we hold (same-day CPI m/m present)",
      "new": false
     },
     {
@@ -4316,7 +4322,9 @@
      "before": "2026-01-19",
      "gap_days": 63,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "cad_trimmed_cpi_2025_11",
+     "reason": "CAD trimmed CPI of 2025-12-15 not in any archive we hold (same-day common/median present)",
      "new": false
     },
     {
@@ -4682,7 +4690,9 @@
      "before": "2026-01-23",
      "gap_days": 53,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "jpy_manufacturing_pmi_2025_12_flash",
+     "reason": "JPY flash manufacturing PMI Dec 2025 not in any archive we hold (only the excluded final)",
      "new": false
     },
     {
@@ -4694,7 +4704,9 @@
      "before": "2025-03-03",
      "gap_days": 183,
      "cadence_days": 91,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "jpy_capital_spending_2024_q3",
+     "reason": "JPY capital spending Q3 2024 not in any archive we hold (capture otherwise normal)",
      "new": false
     },
     {
@@ -4882,7 +4894,9 @@
      "before": "2026-05-21",
      "gap_days": 176,
      "cadence_days": 91,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "nzd_retail_sales_2025_q4",
+     "reason": "NZD retail sales Q4 2025 not in any archive we hold (same-day core retail present)",
      "new": false
     },
     {
@@ -5002,7 +5016,9 @@
      "before": "2026-01-13",
      "gap_days": 81,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_core_cpi_2025_10_11",
+     "reason": "Core CPI m/m: October 2025 cancelled and November 2025 1-month change not published (BLS)",
      "new": false
     },
     {
@@ -5042,7 +5058,9 @@
      "before": "2026-01-22",
      "gap_days": 48,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_personal_income_outlays_2025_10",
+     "reason": "Personal Income and Outlays October 2025 merged with November into the 2026-01-22 release (BEA)",
      "new": false
     },
     {
@@ -5068,7 +5086,9 @@
      "before": "2025-12-18",
      "gap_days": 55,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_cpi_2025_10",
+     "reason": "October 2025 CPI cancelled (BLS); November CPI published 2025-12-18",
      "new": false
     },
     {
@@ -5328,7 +5348,9 @@
      "before": "2026-01-22",
      "gap_days": 48,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_personal_income_outlays_2025_10",
+     "reason": "Personal Income and Outlays October 2025 merged with November into the 2026-01-22 release (BEA)",
      "new": false
     },
     {
@@ -5368,7 +5390,9 @@
      "before": "2026-01-22",
      "gap_days": 48,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_personal_income_outlays_2025_10",
+     "reason": "Personal Income and Outlays October 2025 merged with November into the 2026-01-22 release (BEA)",
      "new": false
     },
     {
@@ -5394,7 +5418,9 @@
      "before": "2025-11-25",
      "gap_days": 132,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_ppi_2025_08_09",
+     "reason": "PPI m/m Aug/Sep 2025 releases not in any archive we hold (headline missing, core present); September data postponed to 2025-11-25",
      "new": false
     },
     {
@@ -5406,7 +5432,9 @@
      "before": "2026-01-14",
      "gap_days": 50,
      "cadence_days": 30,
-     "level": "WARN",
+     "level": "INFO",
+     "known_gap": "usd_ppi_2025_10",
+     "reason": "October 2025 PPI merged into the November release of 2026-01-14 (BLS)",
      "new": false
     },
     {
@@ -5506,9 +5534,9 @@
    "INFO": 183
   },
   "missing_release": {
-   "WARN": 14,
-   "INFO": 94
+   "WARN": 0,
+   "INFO": 108
   }
  },
- "generated_at": "2026-09-24T08:06:20+00:00"
+ "generated_at": "2026-09-24T09:06:19+00:00"
 }
