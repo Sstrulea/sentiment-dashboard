@@ -1021,5 +1021,16 @@
   "entered_by": "backfill-official",
   "entered_at": "2026-09-24T11:29:41+00:00",
   "note": "MOF Financial Statements Statistics of Corporations Jan-Mar 2025 (2025-06-02 08:50 JST): investment in plant and equipment incl. software, all industries excl. finance, y/y 6.4% https://www.mof.go.jp/english/pri/reference/ssc/r7.1-3e.xlsx"
+ },
+ {
+  "canonical_id": "usd_initial_jobless_claims",
+  "currency": "USD",
+  "indicator_key": "jobless_claims",
+  "datetime_utc": "2026-09-24 12:30:00",
+  "actual": 197.0,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-24T22:32:56+00:00",
+  "note": ""
  }
 ]
