@@ -3,7 +3,7 @@
  "last_success_at": "2026-09-24T00:05:54.432426",
  "rows": 17,
  "actuals": 13,
- "last_attempt_at": "2026-09-24T20:05:56.026708",
+ "last_attempt_at": "2026-09-24T21:06:01.069818",
  "last_status": "fetch_failed",
  "last_http_status": 401,
  "last_error": "{\"message\":\"This endpoint requires credits, and you currently do not have any. You can purchase some at https://www.jblanked.com/api/billing/\"}",
