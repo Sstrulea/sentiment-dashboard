@@ -2,7 +2,8 @@ name: COT freshness check
 
 on:
   schedule:
-    - cron: '37 9 * * 0'
+    - cron: '0 10 * * 6'   # Saturday 10:00 UTC, after the Friday/Saturday runs
+    - cron: '0 23 * * 2'   # Tuesday 23:00 UTC, after the holiday-delay runs
   workflow_dispatch:
 
 permissions:

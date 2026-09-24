@@ -1,6 +1,7 @@
 """Fetch CFTC Legacy Combined COT data and maintain a local parquet cache."""
 from __future__ import annotations
 
+import json
 import logging
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -16,6 +17,9 @@ ENDPOINT = "https://publicreporting.cftc.gov/resource/jun7-fc8e.json"
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS_FILE = ROOT / "data" / "contracts.yaml"
 HISTORY_FILE = ROOT / "data" / "history.parquet"
+# {last_report_date, fetched_at}: when the parquet last received a new report or a
+# revision (audit 9B). The COT page's "Generated" is fetched_at, not render time.
+META_FILE = ROOT / "data" / "cot_meta.json"
 
 # Columns we actually care about (downloaded as strings, coerced to numeric).
 NUMERIC_COLS = [
@@ -92,11 +96,37 @@ def fetch_all(codes: list[str], since: datetime) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def update_history() -> pd.DataFrame:
+def _canonical(df: pd.DataFrame) -> pd.DataFrame:
+    return (df.sort_values(["cftc_contract_market_code", "report_date_as_yyyy_mm_dd"])
+              .reset_index(drop=True))
+
+
+def history_changed(existing: pd.DataFrame | None, combined: pd.DataFrame) -> bool:
+    """True when `combined` carries a new report or a revision vs `existing`."""
+    if existing is None or existing.empty:
+        return not combined.empty
+    a, b = _canonical(existing), _canonical(combined)
+    if len(a) != len(b) or list(a.columns) != list(b.columns):
+        return True
+    ha = pd.util.hash_pandas_object(a.astype(str), index=False)
+    hb = pd.util.hash_pandas_object(b.astype(str), index=False)
+    return not ha.equals(hb)
+
+
+def load_meta() -> dict:
+    try:
+        return json.loads(META_FILE.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def update_history(return_changed: bool = False):
     """Refresh `data/history.parquet` and return the full DataFrame.
 
     First run pulls ~3 years. Subsequent runs pull only data newer than
-    the latest row already stored.
+    the latest row already stored. Audit 9B: the parquet and data/cot_meta.json
+    are written ONLY when a new report or a revision arrived; with
+    `return_changed` the result is (df, changed).
     """
     contracts = load_contracts()
     codes = [c["cftc_code"] for c in contracts]
@@ -130,7 +160,17 @@ def update_history() -> pd.DataFrame:
         keep="last",
     ).sort_values(["cftc_contract_market_code", "report_date_as_yyyy_mm_dd"])
 
+    changed = history_changed(existing, combined)
+    if not changed:
+        log.info("No new COT report and no revision (latest %s) — nothing written.",
+                 existing["report_date_as_yyyy_mm_dd"].max().date())
+        return (existing, False) if return_changed else existing
+
     HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     combined.to_parquet(HISTORY_FILE, index=False)
+    META_FILE.write_text(json.dumps({
+        "last_report_date": pd.Timestamp(combined["report_date_as_yyyy_mm_dd"].max()).strftime("%Y-%m-%d"),
+        "fetched_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }, indent=1) + "\n")
     log.info("Saved %d rows to %s", len(combined), HISTORY_FILE)
-    return combined
+    return (combined, True) if return_changed else combined

@@ -27,10 +27,14 @@ def _weekly() -> int:
     log = logging.getLogger("weekly")
     log.info("COT weekly refresh starting")
 
-    df = update_history()
+    df, changed = update_history(return_changed=True)
     if df.empty:
         log.error("No data returned from CFTC API.")
         return 2
+    if not changed:
+        # 9B: no new report, no revision -> nothing to render, nothing to commit
+        log.info("COT unchanged — no render.")
+        return 0
 
     snapshot = build_latest_snapshot(df)
     if snapshot.empty:

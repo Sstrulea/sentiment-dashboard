@@ -1,7 +1,13 @@
 name: Weekly COT Update
 on:
+  # CFTC publishes Friday 15:30 ET (19:30 UTC summer, 20:30 UTC winter). Friday
+  # evening, a Saturday morning retry, and Monday/Tuesday evenings for releases
+  # delayed by US holidays (the 16 and 30 Jun 2026 reports never reached the page).
+  # A run that finds no new report and no revision exits 0 without committing.
   schedule:
-    - cron: '23 5 * * 0'   # Sunday 05:23 UTC = 08:23 Romania (off top-of-hour to avoid cron-slot saturation)
+    - cron: '20 21 * * 5'   # Friday 21:20 UTC
+    - cron: '20 8 * * 6'    # Saturday 08:20 UTC
+    - cron: '20 21 * * 1,2' # Monday and Tuesday 21:20 UTC
   workflow_dispatch:
 
 jobs:
@@ -21,6 +27,6 @@ jobs:
         run: |
           git config user.name "sstrulea"
           git config user.email "sebi.strulea@gmail.com"
-          git add data/history.parquet public/
+          git add data/history.parquet data/cot_meta.json public/
           git diff --staged --quiet || git commit -m "Weekly update $(date -u +%Y-%m-%d)"
           git push
