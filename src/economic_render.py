@@ -378,6 +378,25 @@ def _jsonable(v: Any) -> Any:
     return v
 
 
+MODEL_VERSIONS_YAML = ROOT / "config" / "model_versions.yaml"
+
+
+def _model_meta(path: Path = MODEL_VERSIONS_YAML) -> dict | None:
+    """payload.meta.model (audit 6B): the newest model version {version, since,
+    changes, notice_days, history}; None when the file is absent."""
+    if not path.exists():
+        return None
+    raw = yaml.safe_load(path.read_text()) or {}
+    vers = sorted(raw.get("versions") or [], key=lambda v: str(v["since"]))
+    if not vers:
+        return None
+    last = vers[-1]
+    return {"version": str(last["version"]), "since": str(last["since"]),
+            "changes": str(last["changes"]), "notice_days": int(raw.get("notice_days", 14)),
+            "history": [{"version": str(v["version"]), "since": str(v["since"]),
+                         "changes": str(v["changes"])} for v in vers]}
+
+
 def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
     """Static display metadata the client needs: labels, categories, thresholds."""
     defaults = indicators_cfg.get("defaults", {}) or {}
@@ -1617,6 +1636,7 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     meta["trend_enabled"] = trend_on
+    meta["model"] = _model_meta()
     _enrich_breakdowns(payload, meta["indicators"], as_of, _previous_lookup(cal))
     _attach_strength_fields(payload, instruments_cfg, rate_scores)
     _attach_policy_rate_fields(payload, decisions, _policy_rates_freshness(as_of))

@@ -1971,3 +1971,8 @@ body.dark .cb-chip-chair { color: #0d0f12; }
   }
   .cat-filter-actions { border-left: 0; padding-left: 0; margin-left: 0; }
 }
+
+/* Audit 6B: model-change note (discreet, shown for meta.model.notice_days) */
+.model-note { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
+.econ-header-right .model-note { text-align: right; }
+@media (max-width: 640px) { .econ-header-right .model-note { text-align: left; } }
