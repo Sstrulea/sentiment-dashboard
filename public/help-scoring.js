@@ -1,4 +1,4 @@
-/* Shared "Cum se calculează scorul" help modal wiring — included on both
+/* Shared "How the score is computed" help modal wiring — included on both
  * /economic and /strength (templates/_help_scoring_modal.html.j2 provides
  * the markup + text ONCE; this file is the one place the open/close
  * behavior lives, so neither page's own script duplicates it). Same

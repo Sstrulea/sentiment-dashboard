@@ -1,4 +1,4 @@
-<!-- Shared "Cum se calculează scorul" help button + modal — included from both
+<!-- Shared "How the score is computed" help button + modal — included from both
      economic.html.j2 and strength.html.j2 right after the page's legend
      paragraph, so the content lives in exactly one place (see also
      static/help-scoring.js for the shared open/close wiring). Reuses
@@ -6,7 +6,7 @@
      same pattern as #econDetailModal (X, backdrop click, Escape all close it). -->
 <p class="help-scoring-trigger">
   <button type="button" id="helpScoringBtn" class="help-scoring-link" aria-haspopup="dialog">
-    Cum se calculează scorul <span aria-hidden="true">?</span>
+    How the score is computed <span aria-hidden="true">?</span>
   </button>
 </p>
 
@@ -14,14 +14,14 @@
   <div class="modal-backdrop"></div>
   <div class="modal-content help-scoring-content">
     <button class="modal-close" type="button" aria-label="Close">&times;</button>
-    <h2>Cum se calculează scorul</h2>
+    <h2>How the score is computed</h2>
 
-    <p>Comparăm surpriza (Actual &minus; Forecast) cu ultimele 12 surprize ale aceluiași indicator. Dacă e
-    mult peste rateul lui obișnuit &rarr; &plusmn;2, peste medie &rarr; &plusmn;1, în normal &rarr; 0.</p>
+    <p>We compare the surprise (Actual &minus; Forecast) with the last 12 surprises of the same indicator.
+    Far beyond its usual size &rarr; &plusmn;2, above average &rarr; &plusmn;1, normal &rarr; 0.</p>
 
-    <p>Se face media pe fiecare categorie, apoi media categoriilor &rarr; index. Rândurile fără forecast
-    sau prea vechi nu intră în medie.</p>
+    <p>Scores are averaged within each category, then across categories &rarr; index. Rows without a
+    forecast, or too old, do not enter the mean.</p>
 
-    <p>N = câți indicatori au intrat efectiv. N mic = mai puțin de încredere.</p>
+    <p>N = how many indicators actually entered. A small N = less confidence.</p>
   </div>
 </div>

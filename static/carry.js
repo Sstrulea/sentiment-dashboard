@@ -111,7 +111,7 @@
     const status = currencyStatus();
     if (status.missing || status.stale) {
       const bits = [];
-      if (status.missing) bits.push(status.missing + " lipsă");
+      if (status.missing) bits.push(status.missing + " missing");
       if (status.stale) bits.push(status.stale + " stale");
       html += ' <span class="fresh-badge stale" title="' + escAttr(bits.join(", ")) +
         '">⚠ ' + bits.join(", ") + "</span>";
@@ -238,7 +238,7 @@
     const fillStyle = "width:" + widthPct.toFixed(2) + "%;background:rgb(" + rgb + ")";
     const fillCls = "carry-bar-fill " + (positive ? "pos" : "neg");
     const clampMark = clamped
-      ? ' <span class="carry-clamp" title="carry excedează scala ±' + scale.toFixed(2) + 'pp — bară saturată">›</span>'
+      ? ' <span class="carry-clamp" title="carry exceeds the ±' + scale.toFixed(2) + 'pp scale — bar saturated">›</span>'
       : "";
     return '<td class="carry-bar-cell">' +
       '<div class="' + fillCls + '" style="' + fillStyle + '"></div>' +

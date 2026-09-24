@@ -15,20 +15,21 @@
     </header>
 
     <div class="econ-legend">
-      <span class="muted">Scorul unei valute = media scorurilor fundamentale ale celor 7 perechi
-      de pe <a href="/economic">Economic</a> în care apare (+ ca bază, − ca cotată), fără COT și fără trend.
-      E în unități de pereche, deci biasul folosește aceleași praguri ca perechile, iar cele 8 scoruri
-      însumează 0. Monetarul (2Y) intră într-o pereche doar dacă ambele valute îl au; pe card e afișat
-      informativ. Poziția (arcul + %) = 50 + scor × K. Click a card or table row for the per-indicator drilldown.</span>
+      <span class="muted">A currency's score = the mean of the fundamental scores of the 7 pairs on
+      <a href="/economic">Economic</a> it belongs to (+ as base, − as quote), without COT and without trend.
+      It is in pair units, so the bias uses the same thresholds as the pairs, and the 8 scores sum to 0.
+      Monetary enters a pair as the 2Y spread, only when both currencies have a fresh 2Y yield; the card
+      shows each currency's own 2Y for information. Position (arc + %) = 50 + score × K. Click a card or
+      table row for the per-indicator drilldown.</span>
     </div>
     {% include '_help_scoring_modal.html.j2' %}
 
     <div id="strengthMain">
       <p class="model-note" id="modelNote" hidden></p>
       <p class="strength-divergence" id="strengthDivergence"></p>
-      <p class="strength-context">Divergența = cel mai puternic − cel mai slab scor. Spread mic = fără
-      divergență macro exploatabilă. N (indicatorii valutei) e informativ: fiecare pereche compară doar
-      categoriile pe care le au ambele valute.</p>
+      <p class="strength-context">Divergence = strongest − weakest score. A small spread = no exploitable
+      macro divergence. N (the currency's indicators) is informative: each pair compares only the
+      categories both currencies have.</p>
 
       <div class="strength-grid" id="strengthGrid">
         <p class="muted" style="grid-column: 1/-1; text-align:center; padding: 30px;">Loading…</p>
