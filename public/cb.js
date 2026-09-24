@@ -928,7 +928,8 @@
         (x.lower !== null && x.lower !== undefined ? fmtRate(x.lower) + EN + fmtRate(x.upper) : fmtRateAuto(x.rate_after)) + "</td></tr>";
     });
     const docRows = doc ? doc.timeline.map(function (t) {
-      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0 && i.url; }).map(function (i) { return docAnchor(i, i.label); }).join("<br>") || NA; };
+      const SHORT = { presser_video: "Video", presser_transcript: "Transcript", opening_statement: "Opening" };      // short labels: the column is ~80px
+      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0 && i.url; }).map(function (i) { return docAnchor(i, SHORT[i.type] || i.label); }).join("<br>") || NA; };
       return "<tr><td>" + fmtDay(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") : NA) + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) + "</td><td>" + fu(["presser_video", "presser_transcript", "opening_statement"]) + "</td></tr>";
     }) : [];
     const spRows = doc ? doc.speeches.slice(0, 12).map(function (x) {
@@ -953,12 +954,13 @@
       acc("cbAccGap", gapTitle, gapSub, gapBody, false) +
       latest +
       acc("cbAccDecisions", "Last decisions", d.decisions.length + " on record", miniTable(["Date", "Δ bp", "Rate after %"], decRows), false) +
-      (doc ? acc("cbAccDocs", "Documents", "last four meetings", miniTable(["Meeting", "Statement", "Minutes", "Press conf."], docRows), false) +
+      (doc ? acc("cbAccDocs", "Documents", "last four meetings", miniTable(["Meeting", "Statement", "Minutes", "Press"], docRows), false) +
              acc("cbAccSpeeches", "Speeches and testimony", "last 60 days", miniTable(["Date", "Speaker", "Title"], spRows, "no speeches collected in the last 60 days"), false) : "") +
       acc("cbAccCalendar", "Calendar and blackout", "", miniTable(["Decision", "Time", "Blackout"], calRows, "no upcoming meetings on record"), false) +
       acc("cbAccSources", "Sources", "", miniTable(["Source", "Role", "As-of"], srcRows, "no market source for this currency"), false) +
-      acc("cbAccMethod", "How is this calculated?", "", methodPanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, ""), false) +
-      "</div>" + '<p class="ph-note">Every section opens in place; the chart and the tables keep their desktop content, with fewer columns.</p>';
+      acc("cbAccMethod", "How is this calculated?", "", methodPanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, "")
+        .replace("<th>Official time (UTC)</th><th>First seen (UTC)</th>", "<th>Official, UTC</th><th>Seen, UTC</th>"), false) +
+      "</div>";
     const canvas = document.getElementById("cbChart");
     let drawn = false;
     root.querySelectorAll(".cb-acc-head").forEach(function (b) {

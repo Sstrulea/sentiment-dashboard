@@ -2293,6 +2293,8 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
   .econ-ph-name { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .econ-ph-bias { font-size: 12.5px; white-space: nowrap; }
   .econ-ph-exact { text-align: right; font-size: 12.5px; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .ph-list-head .econ-ph-exact { font-size: inherit; color: inherit; }
+  .ph-group-head .ph-count { text-transform: none; }
   .econ-ph-list .ph-row .econ-ph-exact { color: var(--fg); opacity: 0.85; }
   .econ-ph-sc { text-align: center; }
   .econ-ph-list .ph-chip { justify-self: center; min-width: 32px; }
@@ -2358,6 +2360,10 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
 .econ-ph-sheet .ph-chip[style] { box-shadow: none; }
 .econ-ph-sheet .ph-tag { display: inline-block; padding: 0 5px; border-radius: 4px; font-size: 10.5px; line-height: 16px; font-weight: 600; color: var(--muted); box-shadow: inset 0 0 0 1px var(--border); }
 .econ-ph-legacy { padding: 8px; overflow: hidden; }
+.econ-ph-cahead { display: flex; align-items: center; gap: 10px; padding: 10px 14px 6px; }
+.econ-ph-cahead-t { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; font-size: 13px; }
+.econ-ph-canote { margin: 6px 0 0; overflow-wrap: anywhere; }
+.econ-ph-indline, .econ-ph-indname, .econ-ph-kvtxt { overflow-wrap: anywhere; min-width: 0; }
 .econ-ph-legacy .econ-ind-scroll { overflow-x: auto; }
 
 /* ---- Central Banks on the phone (11C) ---- */
@@ -2408,6 +2414,19 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
   .cb-ph-table { width: 100%; }
   .cb-ph-table th { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; }
   .cb-ph-table { border-collapse: collapse; }
+  /* every table in a bank-page section fits the 328px column: fixed layout, text wraps, short headers, tight padding */
+  .cb-acc-body table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+  .cb-acc-body table.cb-table th, .cb-acc-body table.cb-table td { border: 0; border-bottom: 1px solid var(--border); background: transparent; }
+  .cb-acc-body table.cb-table tbody tr:nth-child(even) { background: transparent; }
+  .cb-acc-body table.cb-table tr:last-child td { border-bottom: 0; }
+  .cb-acc-body table th:first-child { width: 22%; }
+  .cb-acc-body a { color: var(--accent); }
+  .cb-acc-body dt { font-weight: 600; margin-top: 8px; }
+  .cb-acc-body dd { margin: 2px 0 0; color: var(--muted); }
+  .cb-acc-body table th, .cb-acc-body table td { white-space: normal; overflow-wrap: anywhere; padding: 6px 3px; font-size: 12px; min-width: 0; max-width: none; }
+  .cb-acc-body table th { font-size: 10px; }
+  .cb-acc-body table td.cb-notes { min-width: 0; }
+  .cb-acc-body .cb-sub, .cb-acc-body p, .cb-acc-body dd { overflow-wrap: anywhere; }
   .cb-ph-table th, .cb-ph-table td { padding: 8px 4px; border: 0; border-bottom: 1px solid var(--border); background: transparent; }
   .cb-ph-table th { color: var(--muted); font-weight: 600; }
   .cb-ph-table tbody tr:nth-child(even) { background: transparent; }
@@ -2502,4 +2521,10 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
   .cot-ph-table .cot-sub { font-size: 10.5px; color: var(--muted); }
   .cot-ph-table .cot-missing, .cot-ph-table tr.cot-empty td, .cot-ph-table tr.cot-hidden td { color: var(--muted); font-size: 12px; }
   .cot-page .cot-source { font-size: 11px; }
+}
+/* Faza 11 fix: the same gap under "How to read" on the list pages (Economic, Carry, Strength) as on Central Banks */
+@media (max-width: 600px) {
+  main .econ-phone { margin-top: 12px; }
+  main .carry-phone { margin-top: 12px; }
+  main .strength-phone { margin-top: 12px; }
 }

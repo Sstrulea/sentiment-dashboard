@@ -1803,25 +1803,30 @@
         (excluded || []).indexOf(cat) !== -1 ? ph("span", { class: "ph-tag", text: "excluded here" }) : null,
         ph("span", { class: "econ-ph-gc" }, ph("span", { class: "econ-ph-muted", text: sub ? "group cell" : "display-only" }), sub ? chipEl(sub.score_cell, 3) : null));
       body.appendChild(gh);
-      keys.forEach((k) => {
-        const e = bd[k];
-        const noCons = e.consensus === null || e.consensus === undefined;
-        const line = cat === "monetary"
-          ? "2Y " + (e.latest_yield === null || e.latest_yield === undefined ? "—" : Number(e.latest_yield).toFixed(3) + "%") +
-            " · Δ 1 month " + (e.delta_w === null || e.delta_w === undefined ? "—" : pmStr(fmtSigned(e.delta_w, 3)) + " pp") + " · " + utcDay(e.as_of)
-          : (noCons ? unitNum(e.actual, e, k) + ", no forecast" : unitNum(e.actual, e, k) + " vs " + unitNum(e.consensus, e, k) + " expected") +
-            " · " + utcDay(e.release_dt);
-        const tags = [];
-        if (e.flag === "no_consensus") tags.push("no consensus");
-        else if (e.flag === "fallback") tags.push("fallback");
-        else if (e.flag === "direction_mismatch") tags.push("direction guard");
-        if (e.stale) tags.push("stale");
-        body.appendChild(ph("div", { class: "econ-ph-ind" + (e.stale ? " is-stale" : "") },
-          ph("span", { class: "econ-ph-indname" }, ph("span", { text: indLabelForCcy(k, ccy) }), tags.map((t) => ph("span", { class: "ph-tag", text: t }))),
-          chipEl(e.score, 3),
-          ph("span", { class: "econ-ph-indline", text: line })));
-      });
+      keys.forEach((k) => body.appendChild(indRowEl(k, bd[k], ccy, cat, e => e.score)));
     });
+    return finishIndicatorsCard(ccy, card, body, open);
+  }
+  // One compact indicator row: name (+ tags), "act vs cons expected · date" on the second line, the chip.
+  // `scoreOf(e)` = the chip value (the FX leg's own score; the per-asset signed score on cross-asset).
+  function indRowEl(k, e, ccy, cat, scoreOf) {
+    const noCons = e.consensus === null || e.consensus === undefined;
+    const line = cat === "monetary"
+      ? "2Y " + (e.latest_yield === null || e.latest_yield === undefined ? "—" : Number(e.latest_yield).toFixed(3) + "%") +
+        " · Δ 1 month " + (e.delta_w === null || e.delta_w === undefined ? "—" : pmStr(fmtSigned(e.delta_w, 3)) + " pp") + " · " + utcDay(e.as_of)
+      : (noCons ? unitNum(e.actual, e, k) + ", no forecast" : unitNum(e.actual, e, k) + " vs " + unitNum(e.consensus, e, k) + " expected") +
+        " · " + utcDay(e.release_dt);
+    const tags = [];
+    if (e.flag === "no_consensus") tags.push("no consensus");
+    else if (e.flag === "fallback") tags.push("fallback");
+    else if (e.flag === "direction_mismatch") tags.push("direction guard");
+    if (e.stale) tags.push("stale");
+    return ph("div", { class: "econ-ph-ind" + (e.stale ? " is-stale" : "") },
+      ph("span", { class: "econ-ph-indname" }, ph("span", { text: indLabelForCcy(k, ccy) }), tags.map((t) => ph("span", { class: "ph-tag", text: t }))),
+      chipEl(scoreOf(e), 3),
+      ph("span", { class: "econ-ph-indline", text: line }));
+  }
+  function finishIndicatorsCard(ccy, card, body, open) {
     const toggle = ph("button", { type: "button", class: "econ-ph-indhead", "aria-expanded": String(open) },
       ph("span", { class: "econ-ph-h3", text: ccy + " indicators" }),
       ph("span", { class: "econ-ph-muted", text: "index " + pmStr(fmtSigned(card.index, 2)) + " · N " + (card.coverage || 0) }),
@@ -1853,15 +1858,95 @@
     if (q) body.appendChild(q);
     P().sheet({ titleNode: sheetTitle(label, inst.bias), body: body, returnFocus: row, cls: "econ-ph-sheet" });
   }
+  // Cross-asset on the phone: the modal's content on one column, in the FX sheet's compact rows (nothing wider than the sheet).
+  function contribPill(v) {
+    const el = ph("span", { class: "econ-ph-cellpill", text: "contrib " + pmStr(fmtSigned(Math.abs(v) < 0.005 ? 0 : v, 2)) });
+    const st = gradientStyle(v, 3);
+    if (st) el.setAttribute("style", st);
+    return el;
+  }
+  function caPhoneSections(inst) {
+    const out = [];
+    const home = inst.home_ccy;
+    if (trendEnabled() && inst.trend_detail) {
+      const t = ph("section", { class: "econ-ph-card econ-ph-legacy" });
+      t.innerHTML = trendSectionHtml(inst.trend_detail);
+      out.push(t);
+    }
+    const sf = caFactor(inst, "sentiment");
+    if (sf) {
+      const card = ph("section", { class: "econ-ph-card" });
+      const why = "weight " + Number(sf.weight).toFixed(1) + " · sign " + pmStr(fmtSigned(sf.sign, 0));
+      if (inst.cot) {
+        const c = inst.cot, u = usualTxt(c.z);
+        card.appendChild(ph("div", { class: "econ-ph-cardhead" }, ph("h3", { class: "econ-ph-h3", text: "COT positioning" }), cellPill(c.cell, 4)));
+        card.appendChild(ph("div", { class: "econ-ph-kv" }, ph("span", { class: "econ-ph-ccy", text: inst.symbol }),
+          ph("span", { class: "econ-ph-kvtxt", text: "Crowding " + pmStr(fmtScoreCell(c.level)) + " · Flow " + pmStr(fmtScoreCell(c.flow)) + (u ? ", " + u : "") }),
+          chipEl(c.cell, 4)));
+        const foot = ph("p", { class: "econ-ph-muted econ-ph-cotfoot", text: "Contributes " + pmStr(fmtSigned(sf.contribution || 0, 2)) + " (" + why + "). " });
+        foot.appendChild(ph("a", { href: "/cot?sym=" + encodeURIComponent(inst.symbol), text: inst.symbol + " on COT" }));
+        card.appendChild(foot);
+      } else if (inst.sentiment && inst.sentiment.source === "pc") {
+        const c = inst.sentiment;
+        card.appendChild(ph("div", { class: "econ-ph-cardhead" }, ph("h3", { class: "econ-ph-h3", text: "Sentiment · P/C" }), cellPill(c.cell, 3)));
+        card.appendChild(ph("div", { class: "econ-ph-kv" }, ph("span", { class: "econ-ph-kvtxt",
+          text: (c.proxy === true ? "US equity P/C, global risk proxy" : "P/C equity, contrarian") + " · percentile " + Number(c.pct).toFixed(0) + " (1Y)" }), chipEl(c.cell, 3)));
+        card.appendChild(ph("p", { class: "econ-ph-muted", text: "Contributes " + pmStr(fmtSigned(sf.contribution || 0, 2)) + " (" + why + ")." }));
+      }
+      if (card.childNodes.length) out.push(card);
+    }
+    const brk = ((state.payload.currencies || {})[home] || {}).breakdown || {};
+    const catMeta = ((state.payload.currencies || {})[home] || {}).categories || {};
+    caLayout().forEach((g) => {
+      const f = caFactor(inst, g.key);
+      const present = f && f.present;
+      const card = ph("section", { class: "econ-ph-card econ-ph-inds" });
+      const n = catMeta[g.key] && catMeta[g.key].coverage != null ? catMeta[g.key].coverage : null;
+      const sub = [g.key !== "rates" && n !== null ? "N " + n : "", f && f.sign !== undefined && f.sign !== null ? "sign " + pmStr(fmtSigned(f.sign, 0)) : ""].filter(Boolean).join(" · ");
+      card.appendChild(ph("div", { class: "econ-ph-cahead" },
+        ph("span", { class: "econ-ph-cahead-t" }, ph("span", { class: "econ-ph-strong", text: (g.key === "rates" ? g.label : (GROUP_LABELS[g.key] || g.label)) + (g.key === "rates" ? "" : " · " + home) }),
+          sub ? ph("span", { class: "econ-ph-muted", text: sub }) : null),
+        present ? contribPill(f.contribution) : ph("span", { class: "econ-ph-muted", text: "—" })));
+      const body = ph("div", { class: "econ-ph-indbody" });
+      if (g.key === "rates") {
+        const labels = { rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield", balance_sheet: "Bank Reserves" };
+        ((f && f.components) || []).forEach((c) => {
+          const has = c.raw !== null && c.raw !== undefined;
+          const tags = c.excluded ? ["excluded from composite"] : c.stale ? ["stale"] : has ? [] : ["absent"];
+          body.appendChild(ph("div", { class: "econ-ph-ind" + ((c.present && !c.excluded) ? "" : " is-stale") },
+            ph("span", { class: "econ-ph-indname" }, ph("span", { text: labels[c.name] || c.name }), tags.map((t) => ph("span", { class: "ph-tag", text: t }))),
+            chipEl(has ? Math.round(c.contribution) : null, 3),
+            ph("span", { class: "econ-ph-indline", text: "raw " + (has ? pmStr(fmtSigned(c.raw, 0)) : "—") + " · sign " + pmStr(fmtSigned(c.sign, 0)) +
+              " · weight " + Number(c.weight).toFixed(1) + (c.source ? " · " + c.source : "") })));
+        });
+        const nl = (state.payload.crossasset || {}).net_liquidity || {};
+        if (nl.present) {
+          const bits = [nl.series === "NET_LIQUIDITY" ? "Net Liquidity (fallback)" : "Bank Reserves",
+            "21d roc " + (nl.roc == null ? "—" : pmStr(fmtSigned(nl.roc * 100, 2)) + "%/mo")];
+          if (nl.as_of) bits.push(utcDay(nl.as_of) + (nl.stale ? " (stale)" : ""));
+          body.appendChild(ph("p", { class: "econ-ph-muted econ-ph-canote", text: bits.join(" · ") }));
+        }
+      } else {
+        const layoutKeys = g.columns.map((c) => c.key);
+        const extra = Object.keys(brk).filter((k) => brk[k] && brk[k].category === g.key && layoutKeys.indexOf(k) === -1)
+          .sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
+        const keys = layoutKeys.filter((k) => brk[k]).concat(extra);
+        const sign = f && f.sign !== undefined && f.sign !== null ? f.sign : 1;
+        if (!keys.length) body.appendChild(ph("p", { class: "econ-ph-muted", text: "no " + home + " data" }));
+        keys.forEach((k) => body.appendChild(indRowEl(k, brk[k], home, g.key,
+          (e) => (e.score === null || e.score === undefined ? null : sign * e.score))));
+      }
+      card.appendChild(body);
+      out.push(card);
+    });
+    return out;
+  }
   function openPhoneCaDetail(inst, row) {
     const label = inst.display || inst.symbol;
     const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst.score_precise, label));
     const bars = caBars(inst);
     if (bars) body.appendChild(barsCard(bars, inst.score_precise, label));
-    const legacy = ph("section", { class: "econ-ph-card econ-ph-legacy" });
-    legacy.innerHTML = (trendEnabled() ? trendSectionHtml(inst.trend_detail) : "") + caSentimentSection(inst) +
-      caLayout().map((g) => caCatSection(inst, g)).join("");
-    body.appendChild(legacy);
+    caPhoneSections(inst).forEach((el) => body.appendChild(el));
     P().sheet({ titleNode: sheetTitle(label, inst.bias_label), body: body, returnFocus: row, cls: "econ-ph-sheet" });
   }
 
