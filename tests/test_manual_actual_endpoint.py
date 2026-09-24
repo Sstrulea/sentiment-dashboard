@@ -144,6 +144,18 @@ def test_zero_confirm_row_accepted_for_sanity_check(server):
     assert r.status_code == 200
 
 
+def test_zero_on_a_series_that_cannot_be_zero_is_rejected(server):
+    """Audit 5A: 0.0 on a zero_possible=false series (a PMI level) is refused
+    before anything is committed; on a zero_possible=true series it passes."""
+    r = _post(server, _payload(canonical_id="eur_sp_global_services_pmi", actual=0.0))
+    assert r.status_code == 422 and "zero_possible" in r.json()["error"]
+    r = _post(server, _payload(canonical_id="unlisted_series", actual=0.0))
+    assert r.status_code == 422
+    r = _post(server, _payload(canonical_id="usd_gdp", datetime_utc="2026-07-03T12:30:00",
+                               actual=0.0, state_resolved="ZERO_CONFIRM"))
+    assert r.status_code != 422
+
+
 def test_missing_github_config_returns_500(server, monkeypatch):
     monkeypatch.delenv("MANUAL_ACTUALS_GITHUB_TOKEN", raising=False)
     r = _post(server, _payload())

@@ -57,10 +57,12 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 FF_PARQUET = ROOT / "data" / "economic_calendar_ff.parquet"
 OVERRIDES_PATH_IN_REPO = "data/manual_actuals_overrides.json"
+ZERO_POSSIBLE_YAML = ROOT / "config" / "ff_zero_possible.yaml"
 
 REQUIRED_FIELDS = ("canonical_id", "currency", "indicator_key", "datetime_utc",
                    "actual", "state_resolved")
@@ -122,6 +124,7 @@ class handler(BaseHTTPRequestHandler):
             raise _HttpError(400, "invalid JSON body")
 
         entry = self._validate(payload)
+        self._reject_impossible_zero(entry["canonical_id"], entry["actual"])
         self._sanity_check_still_actionable(entry["canonical_id"], entry["datetime_utc"])
         gh_token, repo, branch = self._github_config()
         commit_url = self._commit_override(gh_token, repo, branch, entry)
@@ -159,6 +162,17 @@ class handler(BaseHTTPRequestHandler):
             "entered_at": _now_iso(),
             "note": str(payload.get("note") or "")[:NOTE_MAX],
         }
+
+    def _reject_impossible_zero(self, canonical_id: str, actual: float) -> None:
+        """Audit 5A: on a series whose zero_possible is false (levels, indices)
+        0.0 is always a placeholder, never an answer. A series missing from
+        config/ff_zero_possible.yaml has no default: it is treated as false."""
+        if actual != 0.0:
+            return
+        raw = yaml.safe_load(ZERO_POSSIBLE_YAML.read_text()) or {}
+        if not bool((raw.get("zero_possible") or {}).get(canonical_id, False)):
+            raise _HttpError(422, "0.0 is not a valid actual for this series "
+                                  "(zero_possible is false) — enter the published value")
 
     def _sanity_check_still_actionable(self, canonical_id: str, datetime_utc: str) -> None:
         """Cheap, best-effort only (see module docstring) — gives the operator

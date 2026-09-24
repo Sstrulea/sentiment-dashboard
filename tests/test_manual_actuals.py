@@ -48,10 +48,11 @@ _PLACEHOLDER = object()
 
 def _row(ccy, canon, dt, actual, forecast=1.0, name_raw=None, canonical_id=None,
          jb_status=_PLACEHOLDER, forecast_origin="ff"):
-    # audit 2.3: a 0.0 is JBlanked's placeholder iff jb_status says
-    # "Data Not Loaded" -> that is what a test 0.0 stands for unless told otherwise.
+    # audit 5A: a test 0.0 has no independent evidence (no next print, no JB
+    # "Data Not Loaded") on a zero_possible series -> a ZERO_CONFIRM placeholder,
+    # unless told otherwise.
     if jb_status is _PLACEHOLDER:
-        jb_status = "Data Not Loaded" if actual == 0.0 else None
+        jb_status = None
     return {"canonical_id": canonical_id or f"{ccy.lower()}_x", "currency": ccy,
             "name_raw": name_raw or canon,
             "name_canonical": canon, "datetime_utc": pd.Timestamp(dt),
@@ -115,18 +116,45 @@ def test_future_null_row_never_missing():
 
 # --- ZERO_CONFIRM ----------------------------------------------------------
 
-@pytest.mark.parametrize("status,actionable", [
-    ("Data Not Loaded", True),   # JB placeholder -> needs a human
-    ("Good Data", False),        # a real 0.0 print (Good/Bad Data is a direction tag)
-    ("Bad Data", False),
-    (None, True),                # R2: no evidence -> blocked, a human decides
+@pytest.mark.parametrize("status,state", [
+    ("Data Not Loaded", MISSING),   # JB said nothing landed -> only a value is an answer
+    ("Good Data", ZERO_CONFIRM),    # 5A: a JB label is not evidence (JB derives it from the 0.0)
+    ("Bad Data", ZERO_CONFIRM),
+    (None, ZERO_CONFIRM),           # R2: no evidence -> blocked, a human decides
 ])
-def test_zero_confirm_iff_jb_status_data_not_loaded(status, actionable):
-    """One rule, the same as ff_scoring.to_scoring_frame's (Z2 + R2: a zero is
-    real only with positive evidence — here a JB status other than DNL)."""
+def test_zero_state_follows_zero_possible_and_dnl(status, state):
+    """One rule, the same as ff_scoring.to_scoring_frame's (audit 5A): a zero with
+    no independent evidence is a placeholder; ZERO_CONFIRM only where 0.0 can be
+    real and JB did not say "Data Not Loaded", else MISSING."""
     rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0, jb_status=status)]
     out = _find(rows)
-    assert (len(out) == 1 and out.iloc[0]["state"] == ZERO_CONFIRM) is actionable
+    assert out["state"].tolist() == [state]
+
+
+def test_zero_on_a_series_that_cannot_be_zero_is_missing():
+    rows = [_row("USD", "CPI y/y", NOW - pd.Timedelta(hours=1), 0.0, jb_status="Good Data")]
+    assert _find(rows, zero_possible={"usd_x": False})["state"].tolist() == [MISSING]
+
+
+def test_zero_confirmed_by_the_next_release_is_not_actionable():
+    rows = [_row("USD", "CPI y/y", f"2026-0{m}-10 12:30", 0.1 * m) for m in range(1, 6)]
+    rows.append(_row("USD", "CPI y/y", "2026-06-10 12:30", 0.0, jb_status="Bad Data"))
+    rows.append(_row("USD", "CPI y/y", "2026-07-10 12:30", 0.3))
+    for i, r in enumerate(rows[1:], 1):
+        r["previous"] = rows[i - 1]["actual"]
+    out = _find(rows, now_utc=pd.Timestamp("2026-07-11"))
+    assert out[out["actual"] == 0.0].empty
+
+
+def test_zero_override_on_a_series_that_cannot_be_zero_is_ignored():
+    dt = NOW - pd.Timedelta(hours=1)
+    ff = _frame([_row("USD", "CPI y/y", dt, 0.0)])
+    ov = [_override("usd_x", dt, 0.0, state_resolved=ZERO_CONFIRM)]
+    manual, _ = apply_overrides(ff, ov, now_utc=NOW, matcher=MATCHER, zero_possible={"usd_x": False})
+    assert manual.empty
+    manual, _ = apply_overrides(ff, [_override("usd_x", dt, 0.4, state_resolved=MISSING)],
+                                now_utc=NOW, matcher=MATCHER, zero_possible={"usd_x": False})
+    assert manual["actual"].tolist() == [0.4]
 
 
 def test_can_be_zero_and_flagged_bad_are_ignored():
@@ -136,7 +164,8 @@ def test_can_be_zero_and_flagged_bad_are_ignored():
     placeholder = [_row("USD", "Retail Sales m/m", dt, 0.0, jb_status="Data Not Loaded")]
     assert len(_find(placeholder, can_be_zero={"retail_sales"})) == 1
     real = [_row("USD", "CPI y/y", dt, 0.0, name_raw="CPI m/m", jb_status="Bad Data")]
-    assert _find(real, flagged_bad={("USD", "CPI m/m", dt.date()): True}).empty
+    # still ZERO_CONFIRM (no evidence, 5A) — the flagged_bad lookup changes nothing
+    assert _find(real, flagged_bad={("USD", "CPI m/m", dt.date()): True})["state"].tolist() == [ZERO_CONFIRM]
 
 
 def test_manual_row_consensus_follows_the_provenance_rule():
@@ -574,7 +603,7 @@ def test_recovered_placeholder_stays_actionable():
             _row("USD", "CPI y/y", "2026-07-14 12:30", 3.1)]
     rows[1]["previous"] = 2.9
     out = _find(rows)
-    assert out["state"].tolist() == [ZERO_CONFIRM]
+    assert out["state"].tolist() == [MISSING]      # DNL -> only a value is an answer (5A)
 
 
 def test_r4_aud_import_prices_2026_07_30_override_applies_while_row_is_zero():

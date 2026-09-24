@@ -151,7 +151,8 @@ NEW_DUPLICATE_GUARD_FIXTURE = ROOT / "tests" / "fixtures" / "jb_new_duplicate_gu
 
 def test_same_day_duplicates_identical_zeros_collapse_zero_beside_real_is_placeholder():
     # real archive rows (NOT synthetic): CHF cpi_yoy 2026-07-02 -- the ±1h dup,
-    # both copies 0.0 (real, zero_possible) -> collapse to ONE valid row.
+    # both copies 0.0. Audit 5A: the fixture holds no next release, so there is
+    # no independent evidence (the JB label is not one) -> both are placeholders.
     # CHF ppi_yoy 2025-04-14 -- 0.1 plus a 0.0 copy the same day: the 0.0 is the
     # placeholder of that release (audit Z3), the real 0.1 is KEPT (the previous
     # guard excluded both).
@@ -159,8 +160,7 @@ def test_same_day_duplicates_identical_zeros_collapse_zero_beside_real_is_placeh
     out = to_scoring_frame(parsed, build_matcher())
 
     chf_cpi = out[(out["currency"] == "CHF") & (out["indicator_key"] == "cpi_yoy")]
-    assert len(chf_cpi) == 2 and chf_cpi["actual"].notna().sum() == 1
-    assert (chf_cpi.loc[chf_cpi["actual"].notna(), "actual"] == 0.0).all()
+    assert len(chf_cpi) == 2 and chf_cpi["actual"].notna().sum() == 0
 
     chf_ppi = out[(out["currency"] == "CHF") & (out["indicator_key"] == "ppi_yoy")]
     assert chf_ppi["actual"].dropna().tolist() == [0.1]
@@ -239,7 +239,8 @@ def test_z1_latest_level_zero_without_next_print_is_nan():
 
 @pytest.mark.parametrize("status,next_prev,verdict", [
     ("Bad Data", 0.0, (False, np.nan)),          # real 0.0, confirmed by next.previous
-    ("Good Data", np.nan, (False, np.nan)),      # real: JB status is positive evidence
+    ("Good Data", np.nan, (True, np.nan)),       # 5A: a JB label is not evidence -> placeholder
+    ("Good Data", 0.0, (False, np.nan)),         # real: next.previous confirms it
     (None, np.nan, (True, np.nan)),              # R2: no evidence at all -> placeholder
     (None, 0.0, (False, np.nan)),                # R2: next.previous confirms it -> real
     ("Data Not Loaded", np.nan, (True, np.nan)),  # Z2 placeholder, nothing to recover from
