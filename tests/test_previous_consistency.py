@@ -122,7 +122,10 @@ def test_repo_history_aud_import_prices_2026_04_30_is_recovered(matcher):
     cal = er._load_calendar_frame(as_of)
     row = cal[(cal["currency"] == "AUD") & (cal["indicator_key"] == "import_prices")
               & (cal["release_dt"] == pd.Timestamp("2026-04-30 01:30"))]
-    assert row["actual"].tolist() == [0.1] and row["actual_origin"].tolist() == ["ff_previous"]
+    ff_row = row[row["source"] == "ff"]
+    assert ff_row["actual"].tolist() == [0.1] and ff_row["actual_origin"].tolist() == ["ff_previous"]
+    # 8A: the first release (ABS, 0.1) is now also on file as an official manual row
+    assert row.loc[row["source"] == "manual", "actual"].tolist() in ([], [0.1])
     report = er._integrity_report(cal, as_of)
     found = {(f["canonical_id"], f["release_dt"][:10])
              for f in report["checks"]["previous_consistency"]["findings"]}
