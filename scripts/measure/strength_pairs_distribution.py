@@ -11,7 +11,7 @@ quote), each pair score = macro_score_no_sentiment from compute_instrument
 (D1=D intersection, no COT, no trend). Each week goes through the production
 path: economic_render._load_calendar_frame (manual overrides at that as_of),
 the policy rate from decisions.parquet, ff_scoring.scoring_view (R1), truncated
-to release_dt <= as_of, rate scores at as_of.
+to release_dt <= as_of, rate scores and 2y-spread pair monetary (audit 5B) at as_of.
 
     .venv/bin/python scripts/measure/strength_pairs_distribution.py [--end ISO]
 """
@@ -30,7 +30,7 @@ sys.path.insert(0, str(ROOT))
 import src.economic_render as er  # noqa: E402
 from src.economic_compute import build_payload  # noqa: E402
 from src.ff_scoring import scoring_view  # noqa: E402
-from src.rate_compute import compute_rate_scores  # noqa: E402
+from src.rate_compute import compute_pair_spread_scores, compute_rate_scores  # noqa: E402
 
 WEEKS = 52
 
@@ -52,7 +52,10 @@ def reconstruct(end: pd.Timestamp) -> pd.DataFrame:
         cal = scoring_view(cal)
         cal = cal[pd.to_datetime(cal["release_dt"]) <= as_of]
         rs = compute_rate_scores(rates, as_of=as_of.date()) if len(rates) else {}
-        p = build_payload(cal, ind, inst, as_of=as_of, rate_scores=rs or None)
+        # audit 5B: pair monetary on the 2y spread, as economic_render does
+        fx = [(s, c["base"], c["quote"]) for s, c in inst["instruments"].items() if c.get("type") == "fx"]
+        pm = compute_pair_spread_scores(rates, fx, as_of=as_of.date()) if len(rates) else {}
+        p = build_payload(cal, ind, inst, as_of=as_of, rate_scores=rs or None, pair_monetary=pm or None)
         for ccy, s in strength_scores(p).items():
             rows.append({"as_of": as_of, "currency": ccy, "score": s})
     return pd.DataFrame(rows)

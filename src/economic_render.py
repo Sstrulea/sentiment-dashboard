@@ -35,7 +35,7 @@ from src.cot_score import (
     score_metals,
 )
 from src.sentiment_compute import compute_pc_metrics, pc_index_score
-from src.rate_compute import compute_rate_scores
+from src.rate_compute import compute_pair_spread_scores, compute_rate_scores
 from src.realyield_compute import compute_realyield_score
 from src.liquidity_compute import compute_liquidity_score
 from src.crossasset_compute import compute_crossasset_scores, LIQUIDITY_SERIES_LABELS
@@ -508,8 +508,13 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
                     cells[k] = {"v": int(round(e["score"] * sign)), "stale": bool(e.get("stale"))}
         else:
             bb, bq = _bd(base_ccy), _bd(quote_ccy)
+            mp = inst.get("monetary_pair")
             for k in TABLE_COLUMN_KEYS:
                 eb, eq = bb.get(k), bq.get(k)
+                if k == "rate_expectations" and mp:
+                    # audit 5B: the pair's monetary cell is its 2y-spread m
+                    cells[k] = {"v": int(mp["m"]), "stale": False, "pair_spread": True}
+                    continue
                 if eb is None and eq is None:
                     cells[k] = {"v": None, "stale": False}
                 else:
@@ -1554,11 +1559,18 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     # Rate-Expectations engine (C1): optional 4th "monetary" category. Missing
     # parquet → render exactly as before (3 categories), no crash.
     rate_scores = {}
+    pair_monetary = {}
     rate_sources_by_ccy: dict[str, str] = {}
     if RATES_PARQUET.exists():
         try:
             rates_df = pd.read_parquet(RATES_PARQUET)
             rate_scores = compute_rate_scores(rates_df, as_of=as_of.date())
+            # Audit 5B: pair monetary on the 2y spread (used only where both
+            # legs' own 2y is fresh — the D1=D intersection decides).
+            fx_pairs = [(sym, c["base"], c["quote"])
+                        for sym, c in (instruments_cfg.get("instruments") or {}).items()
+                        if c.get("type") == "fx"]
+            pair_monetary = compute_pair_spread_scores(rates_df, fx_pairs, as_of=as_of.date())
             rates_df = rates_df.sort_values("date")
             rate_sources_by_ccy = {
                 str(c): str(g["source"].iloc[-1])
@@ -1567,6 +1579,7 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
         except Exception as e:
             log.warning("rates.parquet present but unreadable (%s); skipping monetary.", e)
             rate_scores = {}
+            pair_monetary = {}
 
     # SENTIMENT (COT) per currency, computed ONCE: fed into the FX SCORE as a
     # weight-0.5 factor AND reused for the display sub-cell below.
@@ -1589,7 +1602,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     payload = build_payload(scoring_view(cal), indicators_cfg, instruments_cfg,
                             as_of=as_of, rate_scores=rate_scores or None,
                             sentiment_cells=fx_cells or None,
-                            trend_cells=trend_by_symbol or None)
+                            trend_cells=trend_by_symbol or None,
+                            pair_monetary=pair_monetary or None)
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     meta["trend_enabled"] = trend_on

@@ -23,6 +23,7 @@ from .momentum_common import sign as _sign, to_date as _to_date
 
 # Defaults
 W_DEFAULT = 21          # trading-day offset (~1 month), in ROWS not calendar days
+END_N = 5               # each end of the change is the mean of this many observations (audit 5B)
 BASELINE_N = 252        # rolling window of W-changes for the volatility baseline
 MIN_FOR_Z = 60          # need this many W-changes for a stable std → else fallback
 MAX_AGE_BD = 7          # latest obs older than this many business days → stale
@@ -71,6 +72,14 @@ def _series_for(rates_df: pd.DataFrame, currency: str) -> tuple[list[date], list
     return clean_series(sub, "yield_pct")
 
 
+def _end_changes(ys: list[float], W: int = W_DEFAULT, k: int = END_N) -> list[float]:
+    """[mean(y[i-k+1..i]) − mean(y[i-W-k+1..i-W]) for i ≥ W+k−1] — the averaged-
+    ends change series (audit 5B). Exactly antisymmetric under y → −y."""
+    a = np.asarray(ys, dtype=float)
+    ends = np.lib.stride_tricks.sliding_window_view(a, k).sum(axis=1) / k   # mean(a[j..j+k-1])
+    return [float(ends[j] - ends[j - W]) for j in range(W, len(ends))]
+
+
 def _latest_source(rates_df: pd.DataFrame, currency: str) -> Optional[str]:
     if "source" not in rates_df.columns:
         return None
@@ -97,12 +106,13 @@ def compute_rate_score_for(
     latest_date = dates[-1] if n else None
     stale = (latest_date is None) or (_bday_lag(latest_date, ref) > max_age_bd)
 
-    if n < W + 1:
+    if n < W + END_N:
         return RateScore(currency, 0, None, latest_yield, None, "insufficient", ref, stale)
 
-    delta_w = ys[-1] - ys[-1 - W]
-    changes = [ys[i] - ys[i - W] for i in range(W, n)]
-
+    # Audit 5B: averaged ends — Δ = mean of the last END_N observations minus the
+    # same mean W observations earlier (one noisy print no longer flips a bucket).
+    changes = _end_changes(ys, W)
+    delta_w = changes[-1]
     z: Optional[float] = None
     method = "fallback"
     if len(changes) >= min_for_z:
@@ -162,4 +172,44 @@ def compute_rate_scores(
             dates, ys, ccy, ref, W=W, baseline_n=baseline_n,
             min_for_z=min_for_z, max_age_bd=age,
         )
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Pair monetary on the 2y SPREAD (audit 4A measured, 5B adopted)
+# ---------------------------------------------------------------------------
+
+def spread_series(rates_df: pd.DataFrame, base: str, quote: str) -> tuple[list[date], list[float]]:
+    """(dates, 2y_base − 2y_quote) on the dates BOTH series observe (inner join,
+    no fill), ascending. Swapping base/quote negates every value exactly."""
+    db, yb = _series_for(rates_df, base)
+    dq, yq = _series_for(rates_df, quote)
+    q = dict(zip(dq, yq))
+    common = [(d, y - q[d]) for d, y in zip(db, yb) if d in q]
+    return [d for d, _ in common], [v for _, v in common]
+
+
+def compute_pair_spread_scores(rates_df: pd.DataFrame, pairs, as_of: Optional[date] = None) -> dict:
+    """{symbol: {m, z, delta, spread, as_of, method}} for fx pairs (symbol, base,
+    quote) whose legs both have a 2y series. m = sign(z)·bucket(|z|; 1.0/0.5) of
+    the averaged-ends change of the spread (same definition as a currency's own
+    score, compute_rate_score_for); the spread is dated at the last common
+    date. Freshness is NOT judged here: each leg's own score (max_age_for its
+    source) decides whether monetary is in the pair's D1=D intersection."""
+    if rates_df is None or rates_df.empty:
+        return {}
+    if as_of is not None and "date" in rates_df.columns:
+        rates_df = rates_df[pd.to_datetime(rates_df["date"], errors="coerce") <= pd.Timestamp(as_of)]
+    have = set(rates_df["currency"].dropna().unique())
+    out = {}
+    for sym, base, quote in pairs:
+        if base not in have or quote not in have:
+            continue
+        dates, vals = spread_series(rates_df, base, quote)
+        if not vals:
+            continue
+        rs = compute_rate_score_for(dates, vals, sym, dates[-1], max_age_bd=10**6)
+        out[sym] = {"m": int(rs.rate_score), "z": rs.z, "delta": rs.delta_w,
+                    "spread": float(vals[-1]), "as_of": dates[-1].isoformat(),
+                    "method": rs.method, "base": base, "quote": quote}
     return out

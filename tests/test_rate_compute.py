@@ -121,7 +121,8 @@ def test_short_history_uses_fallback_bands():
     s = compute_rate_score_for(dates, ys, "NZD", AS_OF)
     assert s.method == "fallback"
     assert s.z is None
-    assert s.delta_w == pytest.approx(0.10, abs=1e-9)
+    # 5B averaged ends: mean of the last 5 ramp points is 2 steps below the last
+    assert s.delta_w == pytest.approx(0.10 - 2 * 0.10 / 20, abs=1e-9)
     assert s.rate_score == 1
 
 
@@ -131,7 +132,7 @@ def test_fallback_large_move_plus_two():
     ys = [2.0] * (n - 21) + [2.0 + (0.40 / 20) * i for i in range(21)]
     s = compute_rate_score_for(dates, ys, "AUD", AS_OF)
     assert s.method == "fallback"
-    assert s.delta_w == pytest.approx(0.40, abs=1e-9)
+    assert s.delta_w == pytest.approx(0.40 - 2 * 0.40 / 20, abs=1e-9)   # 5B averaged ends
     assert s.rate_score == 2
 
 

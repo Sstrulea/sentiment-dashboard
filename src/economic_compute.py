@@ -666,6 +666,14 @@ def _weighted_mean_over(card: dict | None, categories) -> tuple[float, float]:
     return (num / wsum if wsum else 0.0), wsum
 
 
+def _with_monetary(card: dict, value: float) -> dict:
+    """Shallow copy of a scorecard whose monetary category reads `value` (for
+    one pair's comparison only; the currency's own card is untouched)."""
+    cats = dict(card.get("categories") or {})
+    cats["monetary"] = dict(cats["monetary"], score_precise=float(value))
+    return dict(card, categories=cats)
+
+
 def _d2c_sentiment_fold(mean_value: float, sentiment_value, w_s: float) -> float:
     """§M D2-c SENTIMENT fold (FX pairs only; prereg §10.1/§18): (mean + w_s·s)
     / (1+w_s) — a CONSTANT effective weight w_s/(1+w_s) regardless of how many
@@ -794,8 +802,17 @@ def compute_instrument(
     instruments_cfg: dict,
     sentiment_cells: dict | None = None,
     trend_cells: dict | None = None,
+    pair_monetary: dict | None = None,
 ) -> dict:
     """Derive a single instrument payload from precomputed currency scorecards.
+
+    `pair_monetary` (optional, fx only) is this pair's 2y-spread signal
+    (rate_compute.compute_pair_spread_scores): when monetary is in the pair's
+    D1=D intersection (both legs have a fresh 2y), its m REPLACES
+    (monetary_base − monetary_quote) in the pair — each leg's monetary cell is
+    read as ±m/2 for this pair only, so n, the scale/pair_divisor factor, D1=D
+    and the symmetric sentiment fold are untouched. The currencies' own
+    monetary scores stay on their cards (display, and the single-currency row).
 
     `sentiment_cells` (optional) maps a CFTC COT symbol → its currency's COT cell
     (EUR/GBP/JPY/CHF/CAD/AUD/NZD + DXY for the dollar). When given, SENTIMENT
@@ -842,6 +859,7 @@ def compute_instrument(
 
     categories_used = categories_total = None
     categories_excluded: list[str] = []
+    spread_m = None
 
     if itype == "single":
         currency = inst_cfg["currency"]
@@ -884,10 +902,26 @@ def compute_instrument(
         quote_present = set(_present_categories(quote_card))
         intersection = base_present & quote_present
 
+        # Audit 5B: monetary on the 2y spread (pair-level m in place of the
+        # difference of the legs' own scores).
+        spread_m = None
+        if pair_monetary is not None and "monetary" in intersection:
+            spread_m = int(pair_monetary["m"])
+            base_card = _with_monetary(base_card, spread_m / 2.0)
+            quote_card = _with_monetary(quote_card, -spread_m / 2.0)
+
         base_mean, intersection_wsum = _weighted_mean_over(base_card, intersection)
         quote_mean, _ = _weighted_mean_over(quote_card, intersection)  # same wsum by construction (global weights)
 
         # §M D2-c: constant-effective-weight SENTIMENT fold on the intersection mean.
+        # Audit 5B: the fold is SYMMETRIC — with sentiment on, a leg without a
+        # sentiment value (USD in a pair) is folded with s = 0, not left
+        # unfolded, so the pair score is
+        #   [fund + w_s·(s_b − s_q)·scale/pair_divisor] / (1 + w_s)
+        # (pairs whose legs both carry sentiment are bit-identical to before).
+        if sentiment_on:
+            v_s_base = 0.0 if v_s_base is None else v_s_base
+            v_s_quote = 0.0 if v_s_quote is None else v_s_quote
         base_idx_aug = _d2c_sentiment_fold(base_mean, v_s_base, d2c_w_s) * scale
         quote_idx_aug = _d2c_sentiment_fold(quote_mean, v_s_quote, d2c_w_s) * scale
         macro_score = (base_idx_aug - quote_idx_aug) / pair_divisor
@@ -938,6 +972,14 @@ def compute_instrument(
     contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, scale,
                                         fund_base_wsum, fund_base_allowed, fund_quote_wsum, fund_quote_allowed,
                                         relevant_categories=set(categories_display))
+    if spread_m is not None:
+        # the monetary row is ONE pair row: m × the leg multiplier / pair_divisor
+        mult = _leg_indicator_multiplier(base_card, "monetary", scale, fund_base_wsum, fund_base_allowed)
+        for r in contributions:
+            if r["category"] == "monetary":
+                r["contribution"] = float(mult * spread_m / pair_divisor)
+                r["raw"] = spread_m
+                r["pair_spread"] = True
     sentiment_contribution = macro_score - macro_score_no_sentiment
     trend_contribution = score - macro_score
 
@@ -973,6 +1015,9 @@ def compute_instrument(
         "categories_used": categories_used,
         "categories_total": categories_total,
         "categories_excluded": categories_excluded,
+        # Audit 5B: the pair's 2y-spread monetary signal (None: not in use —
+        # a leg without a fresh 2y, or not an fx pair).
+        "monetary_pair": (dict(pair_monetary, used=True) if spread_m is not None else None),
     }
 
 
@@ -1010,6 +1055,7 @@ def build_payload(
     rate_scores: dict | None = None,
     sentiment_cells: dict | None = None,
     trend_cells: dict | None = None,
+    pair_monetary: dict | None = None,
 ) -> dict:
     """Compute every currency scorecard and every instrument payload.
 
@@ -1024,6 +1070,8 @@ def build_payload(
     `trend_cells` (optional) maps an instrument board key → its TREND cell (±3);
     when given, TREND is folded DIRECTLY into each instrument's score as a
     weight-0.5 factor. When None, scores are unchanged by trend.
+    `pair_monetary` (optional) maps an fx symbol → its 2y-spread signal
+    (compute_instrument); None → the pair uses the legs' own difference.
     Returns {"as_of", "currencies", "instruments"}.
     """
     if as_of is None:
@@ -1055,7 +1103,8 @@ def build_payload(
 
     instrument_payloads = [
         compute_instrument(sym, cfg, scorecards, instruments_cfg,
-                           sentiment_cells=sentiment_cells, trend_cells=trend_cells)
+                           sentiment_cells=sentiment_cells, trend_cells=trend_cells,
+                           pair_monetary=(pair_monetary or {}).get(sym))
         for sym, cfg in instruments.items()
     ]
 
