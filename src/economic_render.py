@@ -548,7 +548,7 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
                             cell["transform_tip"] = (
                                 f"{base_ccy}: {_indicator_label_for(base_ccy, k)} · "
                                 f"{quote_ccy}: {_indicator_label_for(quote_ccy, k)} — "
-                                "transformări diferite"
+                                "different transforms"
                             )
                     cells[k] = cell
         inst["indicator_cells"] = cells

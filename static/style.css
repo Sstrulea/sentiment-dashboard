@@ -1202,7 +1202,7 @@ body.dark .fresh-badge.stale { color: #ef9a9a; }
 .econ-legend { font-size: 12px; line-height: 1.5; margin: 0 0 16px 0; max-width: 900px; }
 .econ-legend b { color: var(--fg); }
 
-/* Shared "Cum se calculează scorul" help trigger — sits right under the
+/* Shared "How the score is computed" help trigger — sits right under the
    legend paragraph on both /economic and /strength (markup + text come
    from templates/_help_scoring_modal.html.j2, one place, included on both
    pages). A plain text-link button, not another heading-level control. */
