@@ -21,3 +21,14 @@ def test_economic_page_links_every_pair_and_dxy_to_the_central_banks_pages():
 
 def test_the_served_copy_of_the_script_is_in_step():
     assert (ROOT / "public" / "economic-chart.js").read_text() == (ROOT / "static" / "economic-chart.js").read_text()
+
+
+PHONE = ROOT / "tests" / "economic_js" / "test_phone_bars.cjs"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_phone_bars_add_up_to_the_score():
+    """Faza 11B: the phone sheet's bars add up to inst.score on all 29 rows; cross-asset bars only when exact."""
+    r = subprocess.run(["node", str(PHONE)], cwd=ROOT, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    assert "29 rows exact" in r.stdout

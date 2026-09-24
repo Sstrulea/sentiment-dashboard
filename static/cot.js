@@ -348,7 +348,7 @@
 
   // ---------------------------------------------------------------- header
   function buildHeader() {
-    const intro = h("p", { class: "cot-intro" },
+    const intro = h("p", { class: "cot-intro", "data-htr": true },
       "Weekly CFTC positioning of large speculators and commercials. ",
       h("span", { class: "cot-em", text: "Percentile" }),
       " = where this week’s net position sits in its own range over the last 6 months (26 reports) and 3 years (156 reports): 0 = most short, 100 = most long. ",
@@ -364,11 +364,12 @@
     ui.asOf = h("span");
     ui.nextRel = h("span");
     ui.note = h("p", { class: "cot-note", role: "status" });
-    const right = h("div", { class: "cot-head-right" },
+    ui.phHead = h("div", { class: "phone-only cot-ph-head" });
+    const right = h("div", { class: "cot-head-right desk-only" },
       h("div", { class: "cot-head-controls" }, h("div", { class: "cot-weeknav" }, ui.prev, weekBox, ui.next), csv),
       ui.asOf, ui.nextRel);
     return h("div", { class: "cot-headwrap" },
-      h("div", { class: "cot-head" }, h("div", { class: "cot-head-left" }, h("h1", { text: "COT Positioning" }), intro), right),
+      h("div", { class: "cot-head" }, h("div", { class: "cot-head-left" }, h("h1", { text: "COT Positioning" }), ui.phHead, intro), right),
       ui.note);
   }
   function chevron(d) {
@@ -388,6 +389,7 @@
       " Bucharest · CFTC Legacy, futures + options";
     ui.note.textContent = data.note;
     ui.note.hidden = !data.note;
+    updatePhoneHeader();
   }
 
   // ---------------------------------------------------------------- legend
@@ -395,7 +397,7 @@
     const chips = h("span", { class: "cot-legend-chips" });
     for (let v = -4; v <= 4; v++) chips.appendChild(chip(v, { cls: "cot-chip-sm" }));
     const sampleL = pctBar(0.96, "spec", 64), sampleS = pctBar(0.11, "spec", 64);
-    return h("div", { class: "cot-legend" },
+    return h("div", { class: "cot-legend", "data-htr": true },
       h("div", { class: "cot-legend-row" },
         h("span", { class: "cot-legend-item" }, h("span", { class: "cot-legend-title", text: "Colours" }), chips,
           h("span", {}, h("span", { class: "cot-em", text: "blue = bullish" }), " for the asset, ", h("span", { class: "cot-em", text: "red = bearish" }))),
@@ -472,7 +474,7 @@
     ui.commBtn = h("button", { type: "button", class: "cot-seg-btn", onclick: () => setView("comm"), text: "Commercials" });
     ui.xBox = h("input", { type: "checkbox", onchange: (e) => { state.x = e.target.checked; changed(); } });
     ui.search = h("input", { type: "search", placeholder: "Symbol", "aria-label": "Find a symbol", oninput: (e) => { state.q = e.target.value.trim(); changed(); } });
-    return h("div", { class: "cot-controls" },
+    return h("div", { class: "cot-controls desk-only" },
       h("div", { class: "cot-controls-left" },
         h("div", { class: "cot-mkt" }, ui.mktBtn, ui.menu),
         h("div", { class: "cot-seg", role: "group", "aria-label": "Trader group" }, ui.specBtn, ui.commBtn),
@@ -555,7 +557,7 @@
   ];
   function buildTable() {
     ui.table = h("table", { class: "cot-table" });
-    ui.tableWrap = h("div", { class: "cot-table-wrap" }, ui.table);
+    ui.tableWrap = h("div", { class: "cot-table-wrap desk-only" }, ui.table);
     return ui.tableWrap;
   }
   function sortHeader(col) {
@@ -602,6 +604,7 @@
 
     const tbody = h("tbody");
     const groups = visibleGroups();
+    renderPhoneTable(groups);
     groups.forEach((g) => {
       tbody.appendChild(h("tr", { class: "cot-cat" }, h("td", { colspan: 9 }, g.cat.label + " ",
         h("span", { class: "cot-cat-sub", text: g.rows.length + (g.cat.desc ? " · " + g.cat.desc : "") }))));
@@ -669,6 +672,7 @@
   function openPanel(sym, fromEl) {
     const inst = data.current.instruments.find((i) => i.symbol === sym);
     if (!inst) return;
+    if (isPhone()) { openPhoneDetail(inst, fromEl); return; }
     ui.returnFocus = fromEl || document.activeElement;
     state.sym = sym;
     writeUrl();
@@ -681,6 +685,7 @@
     if (close) close.focus();
   }
   function closePanel() {
+    if (ui.phSheet) { ui.phSheet.close(); return; }
     if (!state.sym) return;
     state.sym = null;
     writeUrl();
@@ -929,10 +934,123 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
+  // ---------------------------------------------------------------- phone (Faza 11F)
+  // The design of 24 Sep (docs/design/cot-v2/Mobile.html) with the header folded: Symbol (+ net) | COT | 3Y pct | Δ 1 wk,
+  // the cards on one scrollable row, Markets full width, Spec / Comm, then Extremes only and the week. A row opens the same
+  // detail as the desktop panel, as a full-screen sheet (PhoneUI.sheet). Desktop is untouched: CSS shows one or the other.
+  function isPhone() { return !!(window.PhoneUI && window.PhoneUI.isPhone()); }
+  function buildPhoneControls() {
+    const P = window.PhoneUI;
+    const all = CATS.map((c) => c.key);
+    const counts = {};
+    data.current.instruments.forEach((i) => { counts[i.category] = (counts[i.category] || 0) + 1; });
+    const group = (g) => ({ label: g, items: MENU_ORDER.map((k) => CAT[k]).filter((c) => c.group === g).map((c) => ({ key: c.key, label: c.label, count: counts[c.key] || 0 })) });
+    ui.phMkt = P.filterButton({
+      label: "Markets", noun: "markets", nounOne: "market", groups: [group("Financial"), group("Commodities")],
+      get: () => state.markets,
+      set: (sel) => { state.markets = sel.size ? sel : new Set(all); changed(); },
+      count: (sel) => data.current.instruments.filter((i) => (!sel.size || sel.has(i.category))).length,
+      summary: (chosen) => (chosen.length > 3 ? chosen.length + " markets" : chosen.join(", ")),
+    });
+    ui.phSeg = P.segmented({ label: "Trader group", value: state.view,
+      items: [{ key: "spec", label: "Speculators" }, { key: "comm", label: "Commercials" }], onChange: (k) => setView(k) });
+    ui.phX = h("input", { type: "checkbox", onchange: (e) => { state.x = e.target.checked; changed(); } });
+    ui.phPrev = h("button", { type: "button", class: "cot-btn cot-icon-btn cot-ph-40", "aria-label": "Previous week", onclick: () => stepWeek(1) }, chevron("M15 18l-6-6 6-6"));
+    ui.phNext = h("button", { type: "button", class: "cot-btn cot-icon-btn cot-ph-40", "aria-label": "Next week", onclick: () => stepWeek(-1) }, chevron("M9 18l6-6-6-6"));
+    ui.phWeek = h("select", { class: "cot-week-select", "aria-label": "Report week", onchange: (e) => setWeek(e.target.value) });
+    data.index.weeks.forEach((w) => ui.phWeek.appendChild(h("option", { value: w, text: fmtDay(w) })));
+    return h("div", { class: "phone-only cot-ph-controls" }, ui.phMkt, ui.phSeg,
+      h("div", { class: "cot-ph-row" }, h("label", { class: "cot-check cot-ph-check" }, ui.phX, "Extremes only"),
+        h("div", { class: "cot-weeknav" }, ui.phPrev, h("label", { class: "cot-btn cot-week cot-ph-40" }, h("span", { class: "cot-muted", text: "Week" }), ui.phWeek, chevron("M6 9l6 6 6-6")), ui.phNext)));
+  }
+  function updatePhoneHeader() {
+    if (!ui.phHead) return;
+    const w = data.current;
+    clear(ui.phHead);
+    const latest = w.as_of === data.index.latest;
+    append(ui.phHead, ["Positions as of ", h("span", { class: "cot-strong", text: fmtDayW(w.as_of) }), h("br"),
+      (latest ? "Next report " + bucharest(w.next_release, false) : "Released " + bucharest(w.released, false)) + " Bucharest"]);
+    if (ui.phWeek) {
+      ui.phWeek.value = w.as_of;
+      const i = data.index.weeks.indexOf(w.as_of);
+      ui.phNext.disabled = i <= 0;
+      ui.phPrev.disabled = i >= data.index.weeks.length - 1;
+    }
+  }
+  function updatePhoneControls() {
+    if (!ui.phMkt) return;
+    ui.phMkt.refresh();
+    ui.phSeg.set(state.view);
+    ui.phX.checked = state.x;
+  }
+  function renderPhoneTable(groups) {
+    if (!ui.phTable) return;
+    clear(ui.phTable);
+    const v = state.view;
+    const t = h("table", { class: "cot-ph-table" },
+      h("thead", {}, h("tr", {}, h("th", { text: "Symbol" }), h("th", { class: "cot-center", text: "COT" }), h("th", { text: "3Y pct" }), h("th", { class: "cot-right", text: "Δ 1 wk" }))));
+    const tb = h("tbody");
+    groups.forEach((g) => {
+      tb.appendChild(h("tr", { class: "cot-cat" }, h("td", { colspan: 4 }, g.cat.label + " ", h("span", { class: "cot-cat-sub", text: String(g.rows.length) }))));
+      g.rows.forEach((inst) => {
+        const sd = inst[v] || {};
+        const tr = h("tr", { class: "cot-row", tabindex: 0, "aria-label": inst.symbol + " " + inst.name + ": open details" });
+        tr.dataset.sym = inst.symbol;
+        tr.addEventListener("click", () => openPanel(inst.symbol, tr));
+        tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openPanel(inst.symbol, tr); } });
+        tr.appendChild(h("td", { class: "cot-ph-sym" }, h("span", { class: "cot-inst-top" }, h("span", { class: "cot-sym", text: inst.symbol }),
+          !inst.missing && sd.flip3y ? newBadge(sd.flip3y) : null), h("span", { class: "cot-name", text: inst.missing ? "no report" : fmtK(sd.net, false) })));
+        if (inst.missing) {
+          tr.appendChild(h("td", { colspan: 3, class: "cot-missing", text: "No report this week" + (inst.last_report ? " · last " + fmtDay(inst.last_report) : "") }));
+        } else {
+          const share = isNum(sd.d1w) && isNum(inst.oi) && inst.oi ? sd.d1w / inst.oi : null;
+          const p3 = isNum(sd.p3) ? pctBar(sd.p3, v, 48) : null;
+          tr.appendChild(h("td", { class: "cot-center" }, cotChip(inst)));
+          tr.appendChild(h("td", {}, p3 ? h("span", { class: "cot-pct", title: pctTitle(p3.P, 3, v, inst.symbol) }, p3.track,
+            h("span", { class: "cot-pct-num" + (p3.ext ? " is-ext" : ""), text: String(p3.P) })) : h("span", { class: "cot-muted", text: "—" })));
+          tr.appendChild(h("td", { class: "cot-right" }, h("span", { class: "cot-stack" },
+            h("span", { class: "cot-d1w" + (isNum(share) && Math.abs(share) >= 0.05 ? " is-big" : ""), text: fmtK(sd.d1w) }),
+            h("span", { class: "cot-sub", text: fmtPct(isNum(share) ? share * 100 : null) + " mkt" }))));
+        }
+        tb.appendChild(tr);
+      });
+    });
+    if (!groups.length) {
+      tb.appendChild(h("tr", { class: "cot-empty" }, h("td", { colspan: 4 }, h("span", { text: "No markets match these filters. " }),
+        h("button", { type: "button", class: "cot-link", text: "Reset filters", onclick: resetFilters }))));
+    }
+    const hidden = CATS.filter((c) => !state.markets.has(c.key));
+    if (hidden.length && groups.length) {
+      tb.appendChild(h("tr", { class: "cot-hidden" }, h("td", { colspan: 4 }, hidden.length + " more market" + (hidden.length === 1 ? " is" : "s are") + " hidden. ",
+        h("button", { type: "button", class: "cot-link", text: "Show all", onclick: () => { state.markets = new Set(CATS.map((x) => x.key)); changed(); } }))));
+    }
+    t.appendChild(tb);
+    ui.phTable.appendChild(t);
+    ui.phTable.appendChild(h("p", { class: "ph-note", text: "Tap a row for the chart, why the score is what it is, and the last 8 reports." }));
+  }
+  function openPhoneDetail(inst, fromEl) {
+    if (ui.phSheet) { const old = ui.phSheet; ui.phSheet = null; old.close(true); }
+    state.sym = inst.symbol;
+    writeUrl();
+    renderPanel(inst);                                     // the desktop panel's content, moved into the sheet
+    const title = ui.panel.querySelector(".cot-panel-id");
+    const body = ui.panel.querySelector(".cot-panel-body");
+    clear(ui.panel);
+    ui.phReturn = fromEl || null;
+    const sheet = window.PhoneUI.sheet({ titleNode: title, body: body, full: true, cls: "cot-ph-sheet", returnFocus: fromEl || null,
+      onClose: () => {
+        if (ui.phSheet !== sheet) return;
+        ui.phSheet = null;
+        if (state.sym) { state.sym = null; writeUrl(); }
+      } });
+    ui.phSheet = sheet;
+  }
+
   // ---------------------------------------------------------------- flow
   function changed() {
     writeUrl();
     updateControls();
+    updatePhoneControls();
     renderCards();
     renderTable();
   }
@@ -955,7 +1073,9 @@
       changed();
       if (state.sym) {
         const inst = w.instruments.find((i) => i.symbol === state.sym);
-        if (inst) renderPanel(inst); else closePanel();
+        if (!inst) closePanel();
+        else if (ui.phSheet) openPhoneDetail(inst, ui.phReturn);
+        else renderPanel(inst);
       }
     }).catch(fail);
   }
@@ -980,11 +1100,15 @@
         app.appendChild(buildLegend());
         app.appendChild(ui.cards);
         app.appendChild(buildControls());
+        if (window.PhoneUI) app.appendChild(buildPhoneControls());
         app.appendChild(buildTable());
+        ui.phTable = h("div", { class: "phone-only cot-ph-tablewrap" });
+        app.appendChild(ui.phTable);
         app.appendChild(h("p", { class: "cot-source", text: "Source: CFTC Commitments of Traders, Legacy report, futures and options combined. Positions are as of Tuesday and published on Friday at 15:30 ET. Percentile = rank within the trailing 26 / 156 reports. COT = Crowding (speculator 6M and 3Y percentiles, read against the crowd) + Flow (4-week change beyond 0.5× a typical move), capped at ±4." }));
         buildPanel();
         updateHeader();
         changed();
+        if (window.PhoneUI) window.PhoneUI.foldHowToRead(app);
         if (state.sym) {
           const sym = state.sym;
           state.sym = null;

@@ -229,7 +229,7 @@
 
   function carryBarHtml(v, scale) {
     if (v === null || v === undefined) {
-      return '<td class="carry-bar-cell carry-cell-na">—</td>';
+      return '<td class="carry-bar-cell carry-cell-na"></td><td class="carry-val carry-cell-na">—</td>';
     }
     const clamped = Math.abs(v) > scale;
     const widthPct = Math.min(Math.abs(v) / scale, 1) * 50;
@@ -240,10 +240,11 @@
     const clampMark = clamped
       ? ' <span class="carry-clamp" title="carry exceeds the ±' + scale.toFixed(2) + 'pp scale — bar saturated">›</span>'
       : "";
+    // Faza 11E: the figure has its own column, never on top of the bar
     return '<td class="carry-bar-cell">' +
       '<div class="' + fillCls + '" style="' + fillStyle + '"></div>' +
-      '<span class="carry-bar-value">' + fmtSigned(v, 2) + "%" + clampMark + "</span>" +
-      "</td>";
+      "</td>" +
+      '<td class="carry-val ' + (positive ? "pos" : v < 0 ? "neg" : "") + '">' + pmSign(fmtSigned(v, 2)) + "%" + clampMark + "</td>";
   }
 
   function rowHtml(row) {
@@ -265,11 +266,11 @@
   function tableHtml() {
     const rows = sortedRows();
     let html = '<div class="retail-table-scroll"><table class="carry-table"><thead><tr>' +
-      '<th class="col-sym">Symbol</th><th>Carry (% p.a.)</th>' +
+      '<th class="col-sym">Symbol</th><th colspan="2">Carry (% p.a.)</th>' +
       '<th class="carry-leg-th">Base</th><th class="carry-leg-th">Quote</th>' +
       "</tr></thead><tbody>";
     if (!rows.length) {
-      html += '<tr><td colspan="4" class="muted" style="text-align:center;padding:24px;">No pairs match this filter.</td></tr>';
+      html += '<tr><td colspan="5" class="muted" style="text-align:center;padding:24px;">No pairs match this filter.</td></tr>';
     } else {
       rows.forEach(function (r) { html += rowHtml(r); });
     }
@@ -279,6 +280,70 @@
 
   function renderTable() {
     document.getElementById("carryContent").innerHTML = tableHtml();
+    renderPhone();
+  }
+
+  function pmSign(s) { return String(s).replace(/^-/, "\u2212"); }
+
+  // ---- Phone (Faza 11E): Long / Short + Currencies (sheet), a list ------
+  let phone = null;
+  function renderPhone() {
+    const root = document.getElementById("carryPhone");
+    if (!root || !window.PhoneUI) return;
+    const P = window.PhoneUI, h = P.h;
+    if (!phone) {
+      const ccys = presentCurrencies();
+      const filter = P.filterButton({
+        label: "Currencies", noun: "pairs", nounOne: "pair", id: "carryPhoneCcy",
+        groups: [{ items: ccys.map(function (c) { return { key: c, label: c }; }) }],
+        get: function () { return state.ccySel; },
+        set: function (sel) { state.ccySel = sel; renderCcyChips(); updateAllButton(); renderTable(); },
+        count: function (sel) {
+          return (state.payload.rows || []).filter(function (r) { return !sel.size || sel.has(r.base) || sel.has(r.quote); }).length;
+        },
+      });
+      const seg = P.segmented({ label: "Direction", value: state.direction,
+        items: [{ key: "long", label: "Long" }, { key: "short", label: "Short" }],
+        onChange: function (k) { state.direction = k; renderDirectionChips(); renderTable(); } });
+      const list = h("div", { class: "ph-list carry-ph-list" });
+      root.appendChild(h("div", { class: "carry-ph-controls" }, seg, filter));
+      root.appendChild(list);
+      root.appendChild(h("p", { class: "ph-note", text: "Short flips the sign: the short earns what the long pays." }));
+      phone = { filter: filter, seg: seg, list: list };
+      const meta = document.getElementById("carryPhoneMeta");
+      if (meta) {
+        const p = state.payload, rates = p.rates || {};
+        const have = Object.keys(rates).filter(function (c) { return rates[c] && rates[c].rate_pct !== null && rates[c].rate_pct !== undefined; }).length;
+        const d = new Date(p.as_of);
+        meta.textContent = "As of " + (isNaN(d.getTime()) ? p.as_of : d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()]) +
+          " · " + have + "/" + Object.keys(rates).length + " rates · " + (p.rows || []).length + " pairs";
+      }
+    }
+    phone.filter.refresh();
+    phone.seg.set(state.direction);
+    const scale = state.payload.scale_pp || 5.0;
+    const list = phone.list;
+    list.textContent = "";
+    list.appendChild(h("div", { class: "ph-list-head carry-ph-grid" }, h("span", { text: "Pair · rates %" }),
+      h("span", { class: "carry-ph-c", text: (state.direction === "short" ? "Short" : "Long") + " earns / pays" }), h("span", { class: "carry-ph-r", text: "% p.a." })));
+    const rows = sortedRows();
+    if (!rows.length) list.appendChild(h("p", { class: "carry-ph-empty", text: "No pairs match this filter." }));
+    rows.forEach(function (r) {
+      const v = directedCarry(r);
+      const rate = function (c, x) { return c + " " + (fmtRate(x) === null ? "—" : fmtRate(x)); };
+      const track = h("span", { class: "carry-ph-track" }, h("span", { class: "carry-ph-axis" }));
+      if (v !== null && v !== 0) {
+        const fill = h("span", { class: "carry-ph-fill " + (v > 0 ? "pos" : "neg") });
+        fill.style.width = (Math.min(Math.abs(v) / scale, 1) * 50).toFixed(2) + "%";
+        fill.style.background = "rgb(" + (v > 0 ? COT_BLUE : COT_RED) + ")";
+        track.appendChild(fill);
+      }
+      list.appendChild(h("div", { class: "ph-row carry-ph-grid" + (r.available ? "" : " is-na") },
+        h("span", { class: "carry-ph-pair" }, h("b", { text: r.display || r.symbol }),
+          h("span", { class: "carry-ph-sub", text: rate(r.base, r.base_rate) + " · " + rate(r.quote, r.quote_rate) + (r.stale ? " · stale" : "") })),
+        track,
+        h("span", { class: "carry-ph-val " + (v > 0 ? "pos" : v < 0 ? "neg" : ""), text: v === null ? "—" : pmSign(fmtSigned(v, 2)) + "%" })));
+    });
   }
 
   // ---- Bootstrap ------------------------------------------------------

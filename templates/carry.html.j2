@@ -14,14 +14,15 @@
   <main class="page-content carry-page">
     <header class="econ-header">
       <h1>Carry</h1>
-      <div class="econ-header-right">
+      <p class="phone-only carry-ph-meta" id="carryPhoneMeta"></p>
+      <div class="econ-header-right desk-only">
         <div class="econ-meta-bar" id="carryMeta">
           <span class="muted">Loading…</span>
         </div>
       </div>
     </header>
 
-    <div class="econ-legend">
+    <div class="econ-legend" data-htr>
       <span class="muted">Carry = the overnight interest-rate differential between the base and the
       quote currency, annualized for the LONG position. Blue = the long earns, red = the long pays.
       The scale saturates at ±5.00 pp. Wednesday night's rollover counts ×3 because it covers the
@@ -29,7 +30,8 @@
       broker's markup, which is deducted in both directions.</span>
     </div>
 
-    <div class="econ-controls">
+    <section class="phone-only carry-phone" id="carryPhone" aria-label="Pairs"></section>
+    <div class="econ-controls desk-only">
       <div id="carryDirFilter" class="cat-filter" role="group" aria-label="Direction">
         <span class="cat-filter-label">Direction:</span>
         <div class="cat-chips" id="carryDirChips"><!-- chips injected by carry.js --></div>
@@ -43,7 +45,7 @@
       </div>
     </div>
 
-    <section class="retail-table-wrapper">
+    <section class="retail-table-wrapper desk-only">
       <div id="carryContent">
         <p class="muted" style="padding: 40px; text-align: center;">Loading carry…</p>
       </div>

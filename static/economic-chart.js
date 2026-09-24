@@ -787,6 +787,13 @@
     return lines.join("\n");
   }
 
+  // The Symbol cell is the pinned column on tablets: its tint is drawn as an inset
+  // shadow (same colour over the row, so desktop looks the same) so the cell can
+  // take an opaque background underneath when it sticks over the scrolled cells.
+  function tintAsShadow(style) {
+    return style.replace(/background:(rgba\([^)]*\))/, "box-shadow:inset 0 0 0 999px $1");
+  }
+
   function renderRow(inst) {
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
     // Symbol / Bias / Score share one continuous gradient driven by the precise
@@ -794,7 +801,7 @@
     const sg = styleAttr(gradientStyle(inst.score, 6));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym"' + sg + ' title="' + escAttr(categoriesNTooltip(inst)) + '">' +
+      '<td class="sym"' + styleAttr(tintAsShadow(gradientStyle(inst.score, 6))) + ' title="' + escAttr(categoriesNTooltip(inst)) + '">' +
       (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
@@ -811,6 +818,7 @@
     const layout = tableLayout();
     const instruments = state.payload.instruments.filter(passesFilters).sort(compareInstruments);
 
+    renderPhone();
     if (!instruments.length) {
       wrap.innerHTML = '<p class="muted" style="padding:40px;text-align:center;">No instruments match the selected filters.</p>';
       return;
@@ -1535,6 +1543,413 @@
     catch (_) {}
   }
 
+  // ---- Phone (Faza 11B): a list + a detail sheet, max-width 600px -------------
+  // Same data, order and filters as the desktop table (state.ccySel / biasSel);
+  // DOM + textContent. Desktop is untouched: the list lives in #econPhone, shown
+  // by CSS on the phone only.
+  const MINUS_SIGN = "−";
+  // typographic minus; a value that rounds to zero shows unsigned ("0.00", not "-0.00")
+  const pmStr = (s) => String(s).replace(/^-(0(\.0+)?)$/, "$1").replace(/^-/, MINUS_SIGN).replace(/ -/g, " " + MINUS_SIGN);
+  const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  function utcDay(iso) {
+    if (!iso) return "—";
+    const d = /^\d{4}-\d{2}-\d{2}$/.test(String(iso)) ? new Date(iso + "T00:00:00Z") : parseUtc(iso);
+    return isNaN(d.getTime()) ? String(iso) : d.getUTCDate() + " " + MONTHS_SHORT[d.getUTCMonth()];
+  }
+  const GROUP_LABELS = { cot: "COT", trend: "Trend", monetary: "Monetary · 2Y", growth: "Growth",
+    inflation: "Inflation", labour: "Labour", rates: "Rates" };
+
+  // "What moves the score": the pair's contributions summed per group (the
+  // sentiment row = COT, the trend row = Trend, else its category), zero groups
+  // left out, sorted by |value|. Pure (tested): the values add up to inst.score.
+  function scoreGroups(inst) {
+    const sums = {}, order = [];
+    (inst.contributions || []).forEach((c) => {
+      const g = c.key === "sentiment" ? "cot" : c.key === "trend" ? "trend" : (c.category || "cot");
+      if (!(g in sums)) { sums[g] = 0; order.push(g); }
+      sums[g] += Number(c.contribution) || 0;
+    });
+    return order.filter((g) => Math.abs(sums[g]) > 1e-12)
+      .map((g) => ({ key: g, label: GROUP_LABELS[g] || catLabelSafe(g), value: sums[g] }))
+      .sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+  }
+  function catLabelSafe(g) {
+    try { return catLabel(g); } catch (_) { return g; }
+  }
+  // Cross-asset: the factor contributions as bars ONLY when they add up to
+  // score_precise exactly (today the score is a weighted mean × scale, so they
+  // do not, and the bars are left out). Pure (tested).
+  function caBars(inst) {
+    const f = (inst.factors || []).filter((x) => x.present && x.contribution !== null && x.contribution !== undefined);
+    const bars = f.filter((x) => Math.abs(x.contribution) > 1e-12)
+      .map((x) => ({ key: x.name, label: GROUP_LABELS[x.name] || x.name, value: Number(x.contribution) }))
+      .sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+    const sum = bars.reduce((s, b) => s + b.value, 0);
+    return Math.abs(sum - Number(inst.score_precise)) < 1e-9 ? bars : null;
+  }
+
+  const P = () => window.PhoneUI;
+  const ph = (...a) => P().h(...a);
+  function chipEl(v, scale, precise) {
+    const src = precise === undefined ? v : precise;
+    const n = src === null || src === undefined || Number.isNaN(Number(src)) ? null : (precise === undefined ? v : Math.round(precise));
+    const el = ph("span", { class: "ph-chip", text: n === null ? "—" : pmStr(fmtScoreCell(n)) });
+    const st = gradientStyle(precise === undefined ? v : precise, scale);
+    if (st) el.setAttribute("style", st);
+    return el;
+  }
+  function biasTone(b) {
+    const s = b || "";
+    return s.indexOf("Bull") >= 0 ? "ph-bull" : s.indexOf("Bear") >= 0 ? "ph-bear" : "ph-neutral";
+  }
+  const ECON_GRID = "econ-ph-grid";
+
+  let phoneBuilt = null;
+  function renderPhone() {
+    const root = document.getElementById("econPhone");
+    if (!root || !window.PhoneUI || !state.payload) return;
+    if (!phoneBuilt) {
+      const p = state.payload;
+      const present = CCY_ORDER.filter((c) => (p.currencies || {})[c]);
+      const fxCount = (sel) => p.instruments.filter((i) => {
+        if (sel.size && !instrumentCurrencies(i).some((c) => sel.has(c))) return false;
+        return !state.biasSel.size || state.biasSel.has(biasGroup(i.bias));
+      }).length;
+      const filter = P().filterButton({
+        label: "Currencies", noun: "pairs", nounOne: "pair", id: "econPhoneCcy",
+        groups: [{ items: present.map((c) => ({ key: c, label: c })) }],
+        get: () => state.ccySel,
+        set: (sel) => { state.ccySel = sel; syncDesktopChips(); renderTable(); },
+        count: fxCount,
+      });
+      const seg = P().segmented({
+        label: "Bias", value: state.biasSel.size === 1 ? Array.from(state.biasSel)[0] : "all",
+        items: [{ key: "all", label: "All" }].concat(BIAS_GROUPS.map((b) => ({ key: b, label: b }))),
+        onChange: (k) => { state.biasSel = k === "all" ? new Set() : new Set([k]); syncDesktopChips(); renderTable(); },
+      });
+      const meta = ph("div", { class: "econ-ph-meta" });
+      const list = ph("div", { class: "econ-ph-lists" });
+      root.appendChild(ph("div", { class: "econ-ph-controls" }, filter, seg));
+      root.appendChild(list);
+      root.appendChild(ph("p", { class: "ph-note", text: "Tap a row to see what moves its score." }));
+      const head = document.getElementById("econPhoneMeta");
+      phoneBuilt = { filter: filter, seg: seg, list: list, meta: head || meta };
+      renderPhoneMeta();
+    }
+    phoneBuilt.filter.refresh();
+    phoneBuilt.seg.set(state.biasSel.size === 1 ? Array.from(state.biasSel)[0] : "all");
+    renderPhoneList();
+  }
+  function syncDesktopChips() {
+    const present = CCY_ORDER.filter((c) => (state.payload.currencies || {})[c]);
+    buildChipGroup("econCcyChips", present, state.ccySel);
+    buildChipGroup("econBiasChips", BIAS_GROUPS, state.biasSel);
+    updateAllButtons();
+  }
+  function renderPhoneMeta() {
+    const el = document.getElementById("econPhoneMeta");
+    if (!el) return;
+    const p = state.payload;
+    const d = new Date(p.as_of);
+    const asOf = isNaN(d.getTime()) ? String(p.as_of) : d.getUTCDate() + " " + MONTHS_SHORT[d.getUTCMonth()] + ", " +
+      String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0") + " UTC";
+    const nCa = ((p.crossasset || {}).instruments || []).length;
+    el.textContent = "";
+    el.appendChild(ph("div", { class: "econ-ph-asof", text: "As of " + asOf + " · " + p.instruments.length + " pairs" + (nCa ? " · " + nCa + " cross-asset" : "") }));
+    const badges = ph("div", { class: "econ-ph-badges" });
+    const f = p.freshness || {};
+    [["calendar", "Calendar"], ["actuals_pull", "Actuals pulled"]].forEach(([k, label]) => {
+      const v = f[k];
+      if (!v) return;
+      const age = v.age_days === null || v.age_days === undefined ? "never" : v.age_days <= 0 ? "today" : v.age_days + "d ago";
+      badges.appendChild(ph("span", { class: "econ-ph-badge" + (v.stale ? " is-stale" : ""), text: (v.stale ? "Stale: " : "") + label + " " + age }));
+    });
+    if (f.price && f.price.stale) badges.appendChild(ph("span", { class: "econ-ph-badge is-stale", text: "Stale prices" }));
+    if (badges.childNodes.length) el.appendChild(badges);
+  }
+  function phoneRow(label, tag, bias, exact, chipVal, onOpen) {
+    const row = ph("button", { type: "button", class: "ph-row " + ECON_GRID, "aria-haspopup": "dialog" },
+      ph("span", { class: "econ-ph-pair" }, ph("span", { class: "econ-ph-name", text: label }), tag ? ph("span", { class: "ph-tag", text: tag }) : null),
+      ph("span", { class: "econ-ph-bias " + biasTone(bias), text: bias || "—" }),
+      ph("span", { class: "econ-ph-exact", text: pmStr(fmtSigned(exact, 2)) }),
+      chipEl(null, 6, exact),
+      ph("span", { class: "ph-chev" }, P().icon(P().ICON.chevronRight, 16)));
+    row.addEventListener("click", () => onOpen(row));
+    return row;
+  }
+  function renderPhoneList() {
+    const list = phoneBuilt.list;
+    list.textContent = "";
+    const p = state.payload;
+    const fx = p.instruments.filter(passesFilters).sort(compareInstruments);
+    const card = ph("div", { class: "ph-list econ-ph-list" },
+      ph("div", { class: "ph-list-head " + ECON_GRID }, ph("span", { text: "Pair" }), ph("span", { text: "Bias" }),
+        ph("span", { class: "econ-ph-exact", text: "Exact" }), ph("span", { class: "econ-ph-sc", text: "Score" }), ph("span")),
+      ph("div", { class: "ph-group-head" }, "FX pairs", ph("span", { class: "ph-count", text: String(fx.length) })));
+    if (!fx.length) card.appendChild(ph("p", { class: "econ-ph-empty", text: "No pairs match these filters." }));
+    fx.forEach((inst) => {
+      const tag = inst.categories_used < inst.categories_total ? inst.categories_used + "/" + inst.categories_total : null;
+      card.appendChild(phoneRow(inst.display || inst.symbol, tag, inst.bias, inst.score, null,
+        (row) => openPhoneDetail(inst, row)));
+    });
+    list.appendChild(card);
+    const ca = ((p.crossasset || {}).instruments || []).slice().sort((a, b) => b.score_precise - a.score_precise);
+    if (ca.length) {
+      const c2 = ph("div", { class: "ph-list econ-ph-list" },
+        ph("div", { class: "ph-group-head" }, "Cross-asset", ph("span", { class: "ph-count", text: ca.length + " indices and metals" })));
+      ca.forEach((inst) => c2.appendChild(phoneRow(inst.display || inst.symbol, null, inst.bias_label, inst.score_precise, null,
+        (row) => openPhoneCaDetail(inst, row))));
+      list.appendChild(c2);
+    }
+  }
+
+  // ---- the detail sheet ----
+  function sheetTitle(name, bias) {
+    return ph("h2", { class: "ph-sheet-title econ-ph-title" }, ph("span", { text: name }),
+      ph("span", { class: "econ-ph-pill " + biasTone(bias), text: bias || "—" }));
+  }
+  function scoreLine(exact, label) {
+    return ph("div", { class: "econ-ph-scoreline" }, chipEl(null, 6, exact),
+      ph("span", { class: "econ-ph-big", text: pmStr(fmtSigned(exact, 2)) }),
+      ph("span", { class: "econ-ph-muted", text: "score · blue = bullish for " + label }));
+  }
+  function barsCard(groups, total, label, note) {
+    const max = Math.max.apply(null, groups.map((g) => Math.abs(g.value)).concat([1e-9]));
+    const card = ph("section", { class: "econ-ph-card econ-ph-bars" }, ph("h3", { class: "econ-ph-h3", text: "What moves the score" }));
+    groups.forEach((g) => {
+      const w = (Math.abs(g.value) / max) * 100;
+      const bar = ph("span", { class: "econ-ph-bar " + (g.value >= 0 ? "is-pos" : "is-neg") });
+      bar.style.width = w.toFixed(1) + "%";
+      card.appendChild(ph("div", { class: "econ-ph-barrow", "data-group": g.key, "data-value": String(g.value) },
+        ph("span", { class: "econ-ph-barlabel", text: g.label }),
+        ph("span", { class: "econ-ph-track" }, ph("span", { class: "econ-ph-half econ-ph-neg" }, g.value < 0 ? bar : null),
+          ph("span", { class: "econ-ph-axis" }), ph("span", { class: "econ-ph-half econ-ph-pos" }, g.value >= 0 ? bar : null)),
+        ph("span", { class: "econ-ph-barval " + (g.value >= 0 ? "is-pos" : "is-neg"), text: pmStr(fmtSigned(g.value, 2)) })));
+    });
+    card.appendChild(ph("div", { class: "econ-ph-barrow econ-ph-total" }, ph("span", { class: "econ-ph-barlabel", text: "Score" }),
+      ph("span"), ph("span", { class: "econ-ph-barval", text: pmStr(fmtSigned(total, 2)) })));
+    card.appendChild(ph("p", { class: "econ-ph-cardnote", text: note ||
+      ("Each bar is that group's part of the score: blue pushes " + label + " up, red pushes it down, and the bars add up to " +
+        pmStr(fmtSigned(total, 2)) + ".") }));
+    return card;
+  }
+  function cellPill(v, scale) {
+    const el = ph("span", { class: "econ-ph-cellpill", text: "cell " + pmStr(fmtScoreCell(v === null || v === undefined ? 0 : v)) });
+    const st = gradientStyle(v, scale);
+    if (st) el.setAttribute("style", st);
+    return el;
+  }
+  function cotCard(cot) {
+    const card = ph("section", { class: "econ-ph-card" });
+    const head = ph("div", { class: "econ-ph-cardhead" }, ph("h3", { class: "econ-ph-h3", text: "COT positioning" }));
+    card.appendChild(head);
+    if (!cot || cot.cell === null || cot.cell === undefined) {
+      card.appendChild(ph("p", { class: "econ-ph-muted", text: "No COT positioning for this pair." }));
+      return card;
+    }
+    head.appendChild(cellPill(cot.cell, 4));
+    const leg = (ccy, cell, det) => {
+      if (!ccy) return null;
+      const txt = det ? "Crowding " + pmStr(fmtScoreCell(det.level)) + " · Flow " + pmStr(fmtScoreCell(det.flow)) : (ccy === "USD" ? "vs-USD leg = 0" : "no COT data");
+      return ph("div", { class: "econ-ph-kv" }, ph("span", { class: "econ-ph-ccy", text: ccy }),
+        ph("span", { class: "econ-ph-kvtxt", text: txt }), chipEl(cell === null || cell === undefined ? 0 : cell, 4));
+    };
+    card.appendChild(leg(cot.base, cot.base_cell, cot.base_detail));
+    if (cot.quote) card.appendChild(leg(cot.quote, cot.quote_cell, cot.quote_detail));
+    const links = [cot.base, cot.quote].filter((c) => c && c !== "USD");
+    const foot = ph("p", { class: "econ-ph-muted econ-ph-cotfoot", text: cot.quote ? "Pair cell = " + cot.base + " " + MINUS_SIGN + " " + cot.quote + ". " : "" });
+    links.forEach((c, i) => {
+      if (i) foot.appendChild(document.createTextNode(" · "));
+      foot.appendChild(ph("a", { href: "/cot?sym=" + encodeURIComponent(c), text: c + " on COT" }));
+    });
+    card.appendChild(foot);
+    return card;
+  }
+  function monetaryCard(inst) {
+    const mp = inst.monetary_pair;
+    if (!mp) return null;
+    const num = (v, d) => (v === null || v === undefined ? "—" : pmStr(fmtSigned(v, d)));
+    return ph("section", { class: "econ-ph-card" },
+      ph("div", { class: "econ-ph-cardhead" }, ph("h3", { class: "econ-ph-h3", text: "Monetary · 2Y spread" }), cellPill(mp.m, 3)),
+      ph("div", { class: "econ-ph-kv" }, ph("span", { class: "econ-ph-kvtxt", text: "2Y " + mp.base + " " + MINUS_SIGN + " 2Y " + mp.quote }),
+        ph("span", { class: "econ-ph-strong", text: mp.spread === null || mp.spread === undefined ? "—" : pmStr(Number(mp.spread).toFixed(3)) + " pp" })),
+      ph("div", { class: "econ-ph-kv econ-ph-muted" },
+        ph("span", { class: "econ-ph-kvtxt", text: "Change over 1 month " + num(mp.delta, 3) + " pp · z " + num(mp.z, 2) + (mp.used === false ? " · not used" : "") }),
+        ph("span", { text: utcDay(mp.as_of) })));
+  }
+  // a value in the indicator's own unit decimals (as the board: "1.8 vs 2.0", "49.3", "40 vs 22")
+  function unitNum(v, e, key) {
+    if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
+    const u = indMeta(key).unit || {};
+    const dec = typeof u.decimals === "number" ? u.decimals : 1;
+    if (e && e.range) {
+      const hw = (Number(e.range.upper) - Number(e.range.lower)) / 2;
+      return pmStr((Number(v) - hw).toFixed(dec)) + "–" + pmStr((Number(v) + hw).toFixed(dec));
+    }
+    return pmStr(Number(v).toFixed(dec));
+  }
+  function indicatorsCard(ccy, open, excluded, pairSpread) {
+    const card = (state.payload.currencies || {})[ccy];
+    if (!card) return null;
+    const bd = card.breakdown || {};
+    const body = ph("div", { class: "econ-ph-indbody" });
+    // a pair scores monetary on the 2Y spread (its own card above), so the leg's own 2Y group is left out here
+    CATS().filter((cat) => !(pairSpread && cat === "monetary")).forEach((cat) => {
+      const keys = Object.keys(bd).filter((k) => indMeta(k).category === cat && bd[k]);
+      if (!keys.length) return;
+      keys.sort((a, b) => Math.abs(bd[b].score || 0) - Math.abs(bd[a].score || 0));   // stable: payload order within a level
+      const sub = (card.categories || {})[cat];
+      const gh = ph("div", { class: "econ-ph-grouphead" }, ph("span", { class: "econ-ph-strong", text: GROUP_LABELS[cat] && cat !== "monetary" ? GROUP_LABELS[cat] : catLabel(cat) }),
+        (excluded || []).indexOf(cat) !== -1 ? ph("span", { class: "ph-tag", text: "excluded here" }) : null,
+        ph("span", { class: "econ-ph-gc" }, ph("span", { class: "econ-ph-muted", text: sub ? "group cell" : "display-only" }), sub ? chipEl(sub.score_cell, 3) : null));
+      body.appendChild(gh);
+      keys.forEach((k) => body.appendChild(indRowEl(k, bd[k], ccy, cat, e => e.score)));
+    });
+    return finishIndicatorsCard(ccy, card, body, open);
+  }
+  // One compact indicator row: name (+ tags), "act vs cons expected · date" on the second line, the chip.
+  // `scoreOf(e)` = the chip value (the FX leg's own score; the per-asset signed score on cross-asset).
+  function indRowEl(k, e, ccy, cat, scoreOf) {
+    const noCons = e.consensus === null || e.consensus === undefined;
+    const line = cat === "monetary"
+      ? "2Y " + (e.latest_yield === null || e.latest_yield === undefined ? "—" : Number(e.latest_yield).toFixed(3) + "%") +
+        " · Δ 1 month " + (e.delta_w === null || e.delta_w === undefined ? "—" : pmStr(fmtSigned(e.delta_w, 3)) + " pp") + " · " + utcDay(e.as_of)
+      : (noCons ? unitNum(e.actual, e, k) + ", no forecast" : unitNum(e.actual, e, k) + " vs " + unitNum(e.consensus, e, k) + " expected") +
+        " · " + utcDay(e.release_dt);
+    const tags = [];
+    if (e.flag === "no_consensus") tags.push("no consensus");
+    else if (e.flag === "fallback") tags.push("fallback");
+    else if (e.flag === "direction_mismatch") tags.push("direction guard");
+    if (e.stale) tags.push("stale");
+    return ph("div", { class: "econ-ph-ind" + (e.stale ? " is-stale" : "") },
+      ph("span", { class: "econ-ph-indname" }, ph("span", { text: indLabelForCcy(k, ccy) }), tags.map((t) => ph("span", { class: "ph-tag", text: t }))),
+      chipEl(scoreOf(e), 3),
+      ph("span", { class: "econ-ph-indline", text: line }));
+  }
+  function finishIndicatorsCard(ccy, card, body, open) {
+    const toggle = ph("button", { type: "button", class: "econ-ph-indhead", "aria-expanded": String(open) },
+      ph("span", { class: "econ-ph-h3", text: ccy + " indicators" }),
+      ph("span", { class: "econ-ph-muted", text: "index " + pmStr(fmtSigned(card.index, 2)) + " · N " + (card.coverage || 0) }),
+      P().icon(P().ICON.chevronDown, 16));
+    body.hidden = !open;
+    toggle.addEventListener("click", () => {
+      const now = toggle.getAttribute("aria-expanded") !== "true";
+      toggle.setAttribute("aria-expanded", String(now));
+      body.hidden = !now;
+    });
+    return ph("section", { class: "econ-ph-card econ-ph-inds" }, toggle, body);
+  }
+  function openPhoneDetail(inst, row) {
+    const label = inst.display || inst.symbol;
+    const base = inst.breakdown && inst.breakdown.base ? inst.breakdown.base.currency : null;
+    const quote = inst.breakdown && inst.breakdown.quote ? inst.breakdown.quote.currency : null;
+    const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst.score, label), barsCard(scoreGroups(inst), inst.score, label));
+    if (trendEnabled() && inst.trend_detail) {
+      const t = ph("section", { class: "econ-ph-card econ-ph-legacy" });
+      t.innerHTML = trendSectionHtml(inst.trend_detail);
+      body.appendChild(t);
+    }
+    body.appendChild(cotCard(inst.cot));
+    const m = monetaryCard(inst);
+    if (m) body.appendChild(m);
+    const b = indicatorsCard(base, true, inst.categories_excluded, !!inst.monetary_pair);
+    if (b) body.appendChild(b);
+    const q = quote ? indicatorsCard(quote, false, inst.categories_excluded, !!inst.monetary_pair) : null;
+    if (q) body.appendChild(q);
+    P().sheet({ titleNode: sheetTitle(label, inst.bias), body: body, returnFocus: row, cls: "econ-ph-sheet" });
+  }
+  // Cross-asset on the phone: the modal's content on one column, in the FX sheet's compact rows (nothing wider than the sheet).
+  function contribPill(v) {
+    const el = ph("span", { class: "econ-ph-cellpill", text: "contrib " + pmStr(fmtSigned(Math.abs(v) < 0.005 ? 0 : v, 2)) });
+    const st = gradientStyle(v, 3);
+    if (st) el.setAttribute("style", st);
+    return el;
+  }
+  function caPhoneSections(inst) {
+    const out = [];
+    const home = inst.home_ccy;
+    if (trendEnabled() && inst.trend_detail) {
+      const t = ph("section", { class: "econ-ph-card econ-ph-legacy" });
+      t.innerHTML = trendSectionHtml(inst.trend_detail);
+      out.push(t);
+    }
+    const sf = caFactor(inst, "sentiment");
+    if (sf) {
+      const card = ph("section", { class: "econ-ph-card" });
+      const why = "weight " + Number(sf.weight).toFixed(1) + " · sign " + pmStr(fmtSigned(sf.sign, 0));
+      if (inst.cot) {
+        const c = inst.cot, u = usualTxt(c.z);
+        card.appendChild(ph("div", { class: "econ-ph-cardhead" }, ph("h3", { class: "econ-ph-h3", text: "COT positioning" }), cellPill(c.cell, 4)));
+        card.appendChild(ph("div", { class: "econ-ph-kv" }, ph("span", { class: "econ-ph-ccy", text: inst.symbol }),
+          ph("span", { class: "econ-ph-kvtxt", text: "Crowding " + pmStr(fmtScoreCell(c.level)) + " · Flow " + pmStr(fmtScoreCell(c.flow)) + (u ? ", " + u : "") }),
+          chipEl(c.cell, 4)));
+        const foot = ph("p", { class: "econ-ph-muted econ-ph-cotfoot", text: "Contributes " + pmStr(fmtSigned(sf.contribution || 0, 2)) + " (" + why + "). " });
+        foot.appendChild(ph("a", { href: "/cot?sym=" + encodeURIComponent(inst.symbol), text: inst.symbol + " on COT" }));
+        card.appendChild(foot);
+      } else if (inst.sentiment && inst.sentiment.source === "pc") {
+        const c = inst.sentiment;
+        card.appendChild(ph("div", { class: "econ-ph-cardhead" }, ph("h3", { class: "econ-ph-h3", text: "Sentiment · P/C" }), cellPill(c.cell, 3)));
+        card.appendChild(ph("div", { class: "econ-ph-kv" }, ph("span", { class: "econ-ph-kvtxt",
+          text: (c.proxy === true ? "US equity P/C, global risk proxy" : "P/C equity, contrarian") + " · percentile " + Number(c.pct).toFixed(0) + " (1Y)" }), chipEl(c.cell, 3)));
+        card.appendChild(ph("p", { class: "econ-ph-muted", text: "Contributes " + pmStr(fmtSigned(sf.contribution || 0, 2)) + " (" + why + ")." }));
+      }
+      if (card.childNodes.length) out.push(card);
+    }
+    const brk = ((state.payload.currencies || {})[home] || {}).breakdown || {};
+    const catMeta = ((state.payload.currencies || {})[home] || {}).categories || {};
+    caLayout().forEach((g) => {
+      const f = caFactor(inst, g.key);
+      const present = f && f.present;
+      const card = ph("section", { class: "econ-ph-card econ-ph-inds" });
+      const n = catMeta[g.key] && catMeta[g.key].coverage != null ? catMeta[g.key].coverage : null;
+      const sub = [g.key !== "rates" && n !== null ? "N " + n : "", f && f.sign !== undefined && f.sign !== null ? "sign " + pmStr(fmtSigned(f.sign, 0)) : ""].filter(Boolean).join(" · ");
+      card.appendChild(ph("div", { class: "econ-ph-cahead" },
+        ph("span", { class: "econ-ph-cahead-t" }, ph("span", { class: "econ-ph-strong", text: (g.key === "rates" ? g.label : (GROUP_LABELS[g.key] || g.label)) + (g.key === "rates" ? "" : " · " + home) }),
+          sub ? ph("span", { class: "econ-ph-muted", text: sub }) : null),
+        present ? contribPill(f.contribution) : ph("span", { class: "econ-ph-muted", text: "—" })));
+      const body = ph("div", { class: "econ-ph-indbody" });
+      if (g.key === "rates") {
+        const labels = { rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield", balance_sheet: "Bank Reserves" };
+        ((f && f.components) || []).forEach((c) => {
+          const has = c.raw !== null && c.raw !== undefined;
+          const tags = c.excluded ? ["excluded from composite"] : c.stale ? ["stale"] : has ? [] : ["absent"];
+          body.appendChild(ph("div", { class: "econ-ph-ind" + ((c.present && !c.excluded) ? "" : " is-stale") },
+            ph("span", { class: "econ-ph-indname" }, ph("span", { text: labels[c.name] || c.name }), tags.map((t) => ph("span", { class: "ph-tag", text: t }))),
+            chipEl(has ? Math.round(c.contribution) : null, 3),
+            ph("span", { class: "econ-ph-indline", text: "raw " + (has ? pmStr(fmtSigned(c.raw, 0)) : "—") + " · sign " + pmStr(fmtSigned(c.sign, 0)) +
+              " · weight " + Number(c.weight).toFixed(1) + (c.source ? " · " + c.source : "") })));
+        });
+        const nl = (state.payload.crossasset || {}).net_liquidity || {};
+        if (nl.present) {
+          const bits = [nl.series === "NET_LIQUIDITY" ? "Net Liquidity (fallback)" : "Bank Reserves",
+            "21d roc " + (nl.roc == null ? "—" : pmStr(fmtSigned(nl.roc * 100, 2)) + "%/mo")];
+          if (nl.as_of) bits.push(utcDay(nl.as_of) + (nl.stale ? " (stale)" : ""));
+          body.appendChild(ph("p", { class: "econ-ph-muted econ-ph-canote", text: bits.join(" · ") }));
+        }
+      } else {
+        const layoutKeys = g.columns.map((c) => c.key);
+        const extra = Object.keys(brk).filter((k) => brk[k] && brk[k].category === g.key && layoutKeys.indexOf(k) === -1)
+          .sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
+        const keys = layoutKeys.filter((k) => brk[k]).concat(extra);
+        const sign = f && f.sign !== undefined && f.sign !== null ? f.sign : 1;
+        if (!keys.length) body.appendChild(ph("p", { class: "econ-ph-muted", text: "no " + home + " data" }));
+        keys.forEach((k) => body.appendChild(indRowEl(k, brk[k], home, g.key,
+          (e) => (e.score === null || e.score === undefined ? null : sign * e.score))));
+      }
+      card.appendChild(body);
+      out.push(card);
+    });
+    return out;
+  }
+  function openPhoneCaDetail(inst, row) {
+    const label = inst.display || inst.symbol;
+    const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst.score_precise, label));
+    const bars = caBars(inst);
+    if (bars) body.appendChild(barsCard(bars, inst.score_precise, label));
+    caPhoneSections(inst).forEach((el) => body.appendChild(el));
+    P().sheet({ titleNode: sheetTitle(label, inst.bias_label), body: body, returnFocus: row, cls: "econ-ph-sheet" });
+  }
+
   // ---- Bootstrap ----------------------------------------------------------
   function init(payload) {
     state.payload = payload;
@@ -1545,6 +1960,18 @@
     wireManualActualsForms();
     renderTable();
     renderCrossAsset();
+    openPairFromUrl();
+  }
+
+  // Faza 11D: /economic?pair=JPYAUD (a Strength matrix cell) opens that pair's detail, whichever way it is quoted here.
+  function openPairFromUrl() {
+    const want = (new URLSearchParams(window.location.search).get("pair") || "").toUpperCase().replace(/[^A-Z]/g, "");
+    if (want.length !== 6) return;
+    const alt = want.slice(3) + want.slice(0, 3);
+    const inst = state.payload.instruments.find((i) => i.symbol === want) || state.payload.instruments.find((i) => i.symbol === alt);
+    if (!inst) return;
+    if (window.PhoneUI && window.PhoneUI.isPhone()) openPhoneDetail(inst, null);
+    else openModal(inst.symbol);
   }
 
   function boot() {
@@ -1571,5 +1998,5 @@
   }
 
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
-  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, cbHref: cbHref };
+  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars };
 })();

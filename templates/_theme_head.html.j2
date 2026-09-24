@@ -8,5 +8,10 @@
     var dark = (t === "dark" || t === "light") ? t === "dark"
       : !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     if (dark) document.documentElement.classList.add("dark");
+    /* Faza 11: the phone banner, once closed, stays closed on this device;
+       decided here so it never flashes. */
+    var closed = null;
+    try { closed = localStorage.getItem("phone-banner-closed"); } catch (e) {}
+    if (closed) document.documentElement.classList.add("banner-closed");
   })();
 </script>
