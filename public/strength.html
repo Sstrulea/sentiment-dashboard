@@ -59,13 +59,14 @@
     </header>
 
     <div class="econ-legend">
-      <span class="muted">Scorul unei valute = media scorurilor fundamentale ale celor 7 perechi
-      de pe <a href="/economic">Economic</a> în care apare (+ ca bază, − ca cotată), fără COT și fără trend.
-      E în unități de pereche, deci biasul folosește aceleași praguri ca perechile, iar cele 8 scoruri
-      însumează 0. Monetarul (2Y) intră într-o pereche doar dacă ambele valute îl au; pe card e afișat
-      informativ. Poziția (arcul + %) = 50 + scor × K. Click a card or table row for the per-indicator drilldown.</span>
+      <span class="muted">A currency's score = the mean of the fundamental scores of the 7 pairs on
+      <a href="/economic">Economic</a> it belongs to (+ as base, − as quote), without COT and without trend.
+      It is in pair units, so the bias uses the same thresholds as the pairs, and the 8 scores sum to 0.
+      Monetary enters a pair as the 2Y spread, only when both currencies have a fresh 2Y yield; the card
+      shows each currency's own 2Y for information. Position (arc + %) = 50 + score × K. Click a card or
+      table row for the per-indicator drilldown.</span>
     </div>
-    <!-- Shared "Cum se calculează scorul" help button + modal — included from both
+    <!-- Shared "How the score is computed" help button + modal — included from both
      economic.html.j2 and strength.html.j2 right after the page's legend
      paragraph, so the content lives in exactly one place (see also
      static/help-scoring.js for the shared open/close wiring). Reuses
@@ -73,7 +74,7 @@
      same pattern as #econDetailModal (X, backdrop click, Escape all close it). -->
 <p class="help-scoring-trigger">
   <button type="button" id="helpScoringBtn" class="help-scoring-link" aria-haspopup="dialog">
-    Cum se calculează scorul <span aria-hidden="true">?</span>
+    How the score is computed <span aria-hidden="true">?</span>
   </button>
 </p>
 
@@ -81,24 +82,24 @@
   <div class="modal-backdrop"></div>
   <div class="modal-content help-scoring-content">
     <button class="modal-close" type="button" aria-label="Close">&times;</button>
-    <h2>Cum se calculează scorul</h2>
+    <h2>How the score is computed</h2>
 
-    <p>Comparăm surpriza (Actual &minus; Forecast) cu ultimele 12 surprize ale aceluiași indicator. Dacă e
-    mult peste rateul lui obișnuit &rarr; &plusmn;2, peste medie &rarr; &plusmn;1, în normal &rarr; 0.</p>
+    <p>We compare the surprise (Actual &minus; Forecast) with the last 12 surprises of the same indicator.
+    Far beyond its usual size &rarr; &plusmn;2, above average &rarr; &plusmn;1, normal &rarr; 0.</p>
 
-    <p>Se face media pe fiecare categorie, apoi media categoriilor &rarr; index. Rândurile fără forecast
-    sau prea vechi nu intră în medie.</p>
+    <p>Scores are averaged within each category, then across categories &rarr; index. Rows without a
+    forecast, or too old, do not enter the mean.</p>
 
-    <p>N = câți indicatori au intrat efectiv. N mic = mai puțin de încredere.</p>
+    <p>N = how many indicators actually entered. A small N = less confidence.</p>
   </div>
 </div>
 
     <div id="strengthMain">
       <p class="model-note" id="modelNote" hidden></p>
       <p class="strength-divergence" id="strengthDivergence"></p>
-      <p class="strength-context">Divergența = cel mai puternic − cel mai slab scor. Spread mic = fără
-      divergență macro exploatabilă. N (indicatorii valutei) e informativ: fiecare pereche compară doar
-      categoriile pe care le au ambele valute.</p>
+      <p class="strength-context">Divergence = strongest − weakest score. A small spread = no exploitable
+      macro divergence. N (the currency's indicators) is informative: each pair compares only the
+      categories both currencies have.</p>
 
       <div class="strength-grid" id="strengthGrid">
         <p class="muted" style="grid-column: 1/-1; text-align:center; padding: 30px;">Loading…</p>
