@@ -888,6 +888,14 @@ def compute_instrument(
         quote_mean, _ = _weighted_mean_over(quote_card, intersection)  # same wsum by construction (global weights)
 
         # §M D2-c: constant-effective-weight SENTIMENT fold on the intersection mean.
+        # Audit 5B: the fold is SYMMETRIC — with sentiment on, a leg without a
+        # sentiment value (USD in a pair) is folded with s = 0, not left
+        # unfolded, so the pair score is
+        #   [fund + w_s·(s_b − s_q)·scale/pair_divisor] / (1 + w_s)
+        # (pairs whose legs both carry sentiment are bit-identical to before).
+        if sentiment_on:
+            v_s_base = 0.0 if v_s_base is None else v_s_base
+            v_s_quote = 0.0 if v_s_quote is None else v_s_quote
         base_idx_aug = _d2c_sentiment_fold(base_mean, v_s_base, d2c_w_s) * scale
         quote_idx_aug = _d2c_sentiment_fold(quote_mean, v_s_quote, d2c_w_s) * scale
         macro_score = (base_idx_aug - quote_idx_aug) / pair_divisor
