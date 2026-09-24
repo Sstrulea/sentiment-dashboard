@@ -225,7 +225,12 @@ def render_dashboard(snapshot: pd.DataFrame, history: pd.DataFrame) -> Path:
         if not snapshot.empty
         else "unknown"
     )
-    generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    # 9B: "Generated" = when the data was fetched (data/cot_meta.json), so a
+    # re-render (render-all) does not change it; render time only as a fallback.
+    from .fetch import load_meta
+    fetched = load_meta().get("fetched_at")
+    generated_at = (pd.Timestamp(fetched).strftime("%Y-%m-%d %H:%M UTC") if fetched
+                    else datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"))
 
     # Write today's snapshot to archive first so the date picker sees it.
     archive_path = ARCHIVE / f"{report_date}.html"
