@@ -2001,12 +2001,12 @@ html.dark body .cb-chip-chair { color: #0d0f12; }
 .cot-table tr.cot-groups th { top: 0; height: 30px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; text-align: left; border-bottom: 1px solid var(--border); }
 .cot-table tr.cot-groups th:first-child { border-top-left-radius: 8px; }
 .cot-table tr.cot-groups th:last-child { border-top-right-radius: 8px; }
-.cot-table tr.cot-cols th { top: 30px; height: 34px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+.cot-table tr.cot-cols th { top: 30px; height: 34px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
 .cot-table tr.cot-groups th > span { display: inline-block; padding: 6px 0 4px; border-bottom: 2px solid var(--cot-tick); }
 .cot-table th.cot-left { text-align: left; }
 .cot-table th.cot-right { text-align: right; }
 .cot-table th.cot-center { text-align: center; }
-.cot-sort { border: 0; background: none; color: inherit; font: inherit; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.cot-sort { border: 0; background: none; color: inherit; font: inherit; text-transform: inherit; letter-spacing: inherit; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 .cot-sort:hover { color: var(--fg); }
 .cot-sort.is-active { color: var(--fg); }
 .cot-sort-ico { fill: currentColor; }
@@ -2036,6 +2036,7 @@ html.dark body .cb-chip-chair { color: #0d0f12; }
 .cot-dot { position: absolute; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); }
 .cot-pct-num { min-width: 22px; text-align: right; color: var(--cot-sec); }
 .cot-pct-num.is-ext { font-weight: 700; color: var(--fg); }
+.cot-net { font-weight: 600; color: var(--fg); }
 .cot-stack { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
 .cot-sub { font-size: 11px; color: var(--muted); }
 .cot-flow { display: inline-flex; align-items: center; gap: 5px; }
