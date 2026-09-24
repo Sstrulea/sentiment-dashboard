@@ -104,7 +104,7 @@
     const p = state.payload;
     const parts = [];
     parts.push("As of " + (p.as_of || "—"));
-    parts.push(p.configured + " valute configurate");
+    parts.push(p.configured + " currencies configured");
     if (p.generated_at) parts.push("Generated " + fmtAsOf(p.generated_at));
     let html = parts.join(" · ");
 
@@ -265,7 +265,7 @@
   function tableHtml() {
     const rows = sortedRows();
     let html = '<div class="retail-table-scroll"><table class="carry-table"><thead><tr>' +
-      '<th class="col-sym">Symbol</th><th>Carry (% anual)</th>' +
+      '<th class="col-sym">Symbol</th><th>Carry (% p.a.)</th>' +
       '<th class="carry-leg-th">Base</th><th class="carry-leg-th">Quote</th>' +
       "</tr></thead><tbody>";
     if (!rows.length) {
