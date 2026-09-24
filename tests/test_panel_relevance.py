@@ -54,3 +54,16 @@ def test_impact_reasons():
     part = _scoring("gdp", MONTHLY[:8])                                # 8 prints: window 8/12
     aff, _h, _d = panel_relevance(_rows(("chf_gdp", "gdp", "2025-03-20 07:30")), part)
     assert aff["impact"].tolist() == ["sigma_window"]
+
+
+def test_not_full_window_takes_old_rows_and_telemetry_never_affects():
+    part = _scoring("gdp", MONTHLY[10:18])                             # 8 prints, window 8/12
+    rows = _rows(("chf_gdp", "gdp", "2024-06-20 07:30"))               # older than every print
+    aff, hist, _d = panel_relevance(rows, part)
+    assert (len(aff), aff["impact"].tolist()) == (1, ["sigma_window"])
+    tel = pd.DataFrame([{"canonical_id": "eur_x", "currency": "EUR", "indicator_key": "gdp",
+                         "name_raw": "Final Manufacturing PMI", "datetime_utc": pd.Timestamp("2026-09-01"),
+                         "state": "MISSING"}])
+    sc = part.assign(currency="EUR")
+    aff, hist, _d = panel_relevance(tel, sc)
+    assert (len(aff), len(hist)) == (0, 1)

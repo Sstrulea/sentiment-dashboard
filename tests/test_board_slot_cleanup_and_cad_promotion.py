@@ -106,7 +106,9 @@ def test_cad_series_remain_excluded_for_every_other_currency(indicators_cfg, key
     assert _indicator_applies(ccy, cfg) is False
 
 
-@pytest.mark.parametrize("key,expected_n", [("common_cpi_yoy", 43), ("trimmed_cpi_yoy", 41)])
+# 7D (one publication identity): the 2023-01-16 prints left scoring — each is
+# the chain-contradicted row of a publication re-listed on the adjacent UTC day.
+@pytest.mark.parametrize("key,expected_n", [("common_cpi_yoy", 42), ("trimmed_cpi_yoy", 40)])
 def test_cad_series_clear_fallback_min_prints_and_z_score(indicators_cfg, scored_frame, key, expected_n):
     from src.economic_compute import compute_indicator_score
 

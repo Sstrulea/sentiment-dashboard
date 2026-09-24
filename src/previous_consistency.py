@@ -83,12 +83,14 @@ def _releases(ff: pd.DataFrame, upcoming: Optional[pd.DataFrame]) -> pd.DataFram
     df["actual"] = pd.to_numeric(df["actual"], errors="coerce")
     df["previous"] = pd.to_numeric(df["previous"], errors="coerce")
     df["forecast"] = pd.to_numeric(df["forecast"], errors="coerce")
-    df["_date"] = df["datetime_utc"].dt.date
     # the parquet wins over the feed for the same row; then the latest listed time
-    # of the day wins.
+    # of the PUBLICATION wins (7D: release_integrity.publication_keys).
     df["_rank"] = (df["_from"] == "parquet").astype(int)
-    df = df.sort_values(["canonical_id", "_date", "datetime_utc", "_rank"])
+    df = df.sort_values(["canonical_id", "datetime_utc", "_rank"])
     df = df.drop_duplicates(["canonical_id", "datetime_utc"], keep="last")
+    from .release_integrity import publication_keys
+    df["_date"] = publication_keys(df)
+    df = df.sort_values(["canonical_id", "_date", "datetime_utc", "_rank"])
     df = df.drop_duplicates(["canonical_id", "_date"], keep="last")
     return df.sort_values(["canonical_id", "datetime_utc"]).reset_index(drop=True)
 

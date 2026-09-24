@@ -16,6 +16,7 @@ modules.
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 import logging
 import math
 from datetime import datetime, timezone
@@ -1349,6 +1350,19 @@ def _row_json(r, affects: bool) -> dict:
             "impact": getattr(r, "impact", None)}
 
 
+def _same_publication(row, scored, relation) -> bool:
+    """An actionable FF row vs a scored row of the same series (the scored row's
+    consensus stands in for its forecast)."""
+    g = lambda o, k: getattr(o, k, float("nan"))
+    a = SimpleNamespace(datetime_utc=pd.Timestamp(row.datetime_utc), actual=g(row, "actual"),
+                        forecast=g(row, "forecast"), previous=g(row, "previous"))
+    b = SimpleNamespace(datetime_utc=pd.Timestamp(scored.release_dt), actual=g(scored, "actual"),
+                        forecast=g(scored, "consensus"), previous=g(scored, "previous"))
+    first, second = (a, b) if a.datetime_utc <= b.datetime_utc else (b, a)
+    rel = relation(first, second)
+    return rel is not None and rel != "next_period"
+
+
 PANEL_WINDOW_K = 12        # = economic_indicators.yaml defaults.surprise_window_k
 PANEL_FALLBACK_MIN = 6     # = defaults.fallback_min_prints
 
@@ -1358,12 +1372,14 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
     """Audit 6C/7C — the panel as a signal: (affects_score, history_only, n_duplicates).
 
       duplicate      the same series (currency, indicator_key) already has a SCORED
-                     value on the same or the adjacent UTC day — the release is in,
-                     re-listed across midnight (4B: one publication = one row) ->
-                     dropped from the panel.
+                     value from the SAME publication (release_integrity.
+                     publication_relation, audit 7D: within ±1 day and not the next
+                     period) — the release is in -> dropped from the panel.
       affects_score  the row falls in the series' scoring window (the sigma window,
                      K=12 prints with actual and consensus, or the last print —
-                     previous_consistency.scoring_windows), or the series has none.
+                     previous_consistency.scoring_windows), the window is not full
+                     (it takes every print), or the series has none — never for a
+                     telemetry publication (7A), which no score reads.
                      Column `impact` (7C) says whether the missing value changes the
                      INPUTS of the current score:
                        last_print    it would be the series' latest print
@@ -1377,25 +1393,29 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
     import numpy as np
     from src.previous_consistency import scoring_windows
     sc = scoring.assign(release_dt=pd.to_datetime(scoring["release_dt"]))
+    from src.release_integrity import publication_relation
     got = sc[sc["actual"].notna()]
-    days: dict = {}
-    for c, k, d in zip(got["currency"], got["indicator_key"], got["release_dt"].dt.normalize()):
-        days.setdefault((c, k), set()).add(d)
+    scored: dict = {}
+    for r in got.itertuples(index=False):
+        scored.setdefault((r.currency, r.indicator_key), []).append(r)
     last = got.groupby(["currency", "indicator_key"])["release_dt"].max().to_dict()
     npairs = sc[sc["actual"].notna() & sc["consensus"].notna()].groupby(
         ["currency", "indicator_key"]).size().to_dict()
     win = scoring_windows(sc)
-    one = pd.Timedelta(days=1)
+    from src.econ_calendar_ff import load_excluded_finals
+    telemetry = {(c, n) for c, names in (load_excluded_finals() or {}).items() for n in (names or {})}
     dup, aff, impact = [], [], []
     for r in rows.itertuples(index=False):
         d = pd.Timestamp(r.datetime_utc)
         key = (r.currency, r.indicator_key)
-        have = days.get(key, set())
-        dn = d.normalize()
-        dup.append(dn in have or (dn - one) in have or (dn + one) in have)
+        # 7D: already scored by a row of the SAME publication (not the next period)
+        dup.append(any(_same_publication(r, s, publication_relation) for s in scored.get(key, ())))
         w = win.get(key)
-        aff.append(w is None or d >= w)
         n = int(npairs.get(key, 0))
+        # a window that is not full takes every print, however old; a telemetry
+        # publication (7A: a final the config does not score) never enters a score
+        tel = (r.currency, getattr(r, "name_raw", None)) in telemetry
+        aff.append(not tel and (w is None or d >= w or n < PANEL_WINDOW_K))
         lp = last.get(key)
         impact.append("last_print" if (lp is None or d > lp) else
                       "fallback" if n < PANEL_FALLBACK_MIN else
