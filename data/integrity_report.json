@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-24T12:06:21.357647",
+ "as_of": "2026-09-24T13:06:25.366267",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -2856,7 +2856,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 42,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_average_hourly_earnings",
@@ -2989,7 +2989,7 @@
      "threshold": 0.64478,
      "n_revision_pairs": 12,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_monthly_cpi_indicator",
@@ -4890,5 +4890,5 @@
    "INFO": 108
   }
  },
- "generated_at": "2026-09-24T12:06:28+00:00"
+ "generated_at": "2026-09-24T13:06:37+00:00"
 }
