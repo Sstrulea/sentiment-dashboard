@@ -1976,3 +1976,7 @@ body.dark .cb-chip-chair { color: #0d0f12; }
 .model-note { color: var(--muted); font-size: 12px; margin: 4px 0 0; }
 .econ-header-right .model-note { text-align: right; }
 @media (max-width: 640px) { .econ-header-right .model-note { text-align: left; } }
+
+/* Audit 6C: history-only Manual Actuals rows, folded */
+.ma-history { margin-top: 12px; }
+.ma-history > summary { cursor: pointer; color: var(--muted); font-size: 13px; padding: 6px 0; }
