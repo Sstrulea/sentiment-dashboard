@@ -85,7 +85,11 @@
   const STATUS_LABEL = {
     scored: "Scored", no_actual: "No print yet",
     insufficient_history: "Not enough history for a full score", quarantined: "Quarantined (data-quality)",
+    recovered: "Revised value, not scored", telemetry: "Final revision, not scored",
   };
+  // audit B2 / 7A: drawn hollow — a recovered (revised) value or a final/revision
+  // publication the config does not score (the flash is the scored print).
+  function isHollow(p) { return !!(p.recovered || p.score_status === "telemetry"); }
   const CADENCE_ABBR = { monthly: "M", quarterly: "Q", weekly: "W", unknown: "?" };
 
   // ---- Category / currency universe --------------------------------------
@@ -409,9 +413,9 @@
     // first release.
     return [{
       type: "bar", label: "Actual", data: actualData,
-      backgroundColor: points.map((p) => (p.recovered ? "transparent" : colors.accent)),
+      backgroundColor: points.map((p) => (isHollow(p) ? "transparent" : colors.accent)),
       borderColor: colors.accent,
-      borderWidth: points.map((p) => (p.recovered ? 2 : 0)),
+      borderWidth: points.map((p) => (isHollow(p) ? 2 : 0)),
       order: 2,
     }];
   }
@@ -446,8 +450,8 @@
         return;
       }
       const changed = lastGood !== null && p.actual !== lastGood;
-      radii.push(p.recovered ? 5 : (changed ? 6 : 2.5));
-      fills.push(p.recovered ? "transparent" : colors.accent);
+      radii.push(isHollow(p) ? 5 : (changed ? 6 : 2.5));
+      fills.push(isHollow(p) ? "transparent" : colors.accent);
       actualData.push(p.actual);
       quarantineY.push(null);
       lastGood = p.actual;
@@ -545,6 +549,10 @@
                 if (p.recovered) {
                   return ["Actual: " + fmtNum(p.actual) + " (revised value, from the next print's previous)",
                           "Not a first release — not scored, not in sigma"];
+                }
+                if (p.score_status === "telemetry") {
+                  return ["Actual: " + fmtNum(p.actual) + " (final revision)",
+                          "The flash is the scored print — not scored, not in sigma"];
                 }
                 const lines = ["Actual: " + fmtNum(p.actual), "Forecast: " + fmtNum(p.forecast)];
                 if (originalActual !== null && p.forecast !== null) {

@@ -317,7 +317,10 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
     # REVISED value, not a first release — shown (marked), never scored and
     # never part of another point's sigma window.
     sub["recovered"] = (sub["actual_origin"] == "ff_previous") if "actual_origin" in sub.columns else False
-    clean = sub[~sub["quarantined"] & ~sub["recovered"]].reset_index(drop=True)
+    # audit 7A: a final/revision variant the config does not score — shown
+    # (marked), never scored and never part of another point's sigma window.
+    sub["telemetry"] = (sub["publication"] == "telemetry") if "publication" in sub.columns else False
+    clean = sub[~sub["quarantined"] & ~sub["recovered"] & ~sub["telemetry"]].reset_index(drop=True)
 
     rows = []
     for _, row in sub.iterrows():
@@ -332,6 +335,12 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
                         "forecast": row["consensus"], "previous": row["previous"],
                         "z": None, "bucket": None, "score_status": "recovered",
                         "quarantined": False, "has_override": False, "recovered": True})
+            continue
+        if row["telemetry"]:
+            rows.append({"release_dt": row["release_dt"], "actual": row["actual"],
+                        "forecast": row["consensus"], "previous": row["previous"],
+                        "z": None, "bucket": None, "score_status": "telemetry",
+                        "quarantined": False, "has_override": False, "recovered": False})
             continue
         if pd.isna(row["actual"]):
             # No print at all yet (scheduled/nulled) — there is nothing to

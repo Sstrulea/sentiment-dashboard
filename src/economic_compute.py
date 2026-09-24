@@ -133,9 +133,17 @@ def _keep_latest_published(rows: pd.DataFrame):
 
 
 def _dedup_flash_final(df: pd.DataFrame, gap_days: int | None) -> pd.DataFrame:
-    """Collapse flash/final double prints of one reference period into the single
-    PUBLISHED final, so the current value and the rolling sigma use one print per
-    period (never a flash, never a future/scheduled blank).
+    """Collapse double prints of one reference period into ONE row, so the current
+    value and the rolling sigma use one print per period (never a future/scheduled
+    blank).
+
+    Audit 7A: the publication kept is the one config/ff_aliases.yaml asks to
+    score — flash, or the final where the config says so (GBP PMIs) — never
+    "the final" by default. Variants listed under excluded_final_variants are
+    tagged publication="telemetry" by ff_scoring.to_scoring_frame and dropped
+    by scoring_view before this runs; if any still reaches here (another
+    caller), it is dropped here too. Within the remaining rows of a group the
+    latest published print wins (a same-publication re-listing or correction).
 
     `df` is one (currency, indicator). Primary key is the MT5 `period` column
     (exact). Rows without a usable period fall back to release-date proximity
@@ -143,6 +151,10 @@ def _dedup_flash_final(df: pd.DataFrame, gap_days: int | None) -> pd.DataFrame:
     """
     if df is None or len(df) < 2:
         return df
+    if "publication" in df.columns and (df["publication"] == "telemetry").any():
+        df = df[df["publication"] != "telemetry"]
+        if len(df) < 2:
+            return df.reset_index(drop=True)
     df = df.sort_values("release_dt")
 
     has_period = "period" in df.columns
