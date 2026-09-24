@@ -246,26 +246,45 @@ def find_series_gaps(ff: pd.DataFrame, as_of: pd.Timestamp, zero_possible: dict,
     return out
 
 
-def load_known_gaps(path=None) -> list[dict]:
-    """config/known_gaps.yaml -> [{id, start, end, currencies|None, reason}]."""
+def _load_known_gaps_raw(path=None) -> dict:
     import yaml
     from pathlib import Path
     p = Path(path) if path else Path(__file__).resolve().parents[1] / "config" / "known_gaps.yaml"
-    if not p.exists():
-        return []
-    raw = yaml.safe_load(p.read_text()) or {}
-    return [{"id": str(e["id"]), "start": pd.Timestamp(e["start"]), "end": pd.Timestamp(e["end"]),
-             "currencies": set(e["currencies"]) if e.get("currencies") else None,
-             "reason": str(e["reason"])} for e in (raw.get("known_gaps") or [])]
+    return (yaml.safe_load(p.read_text()) or {}) if p.exists() else {}
+
+
+def load_known_gaps(path=None) -> list[dict]:
+    """config/known_gaps.yaml -> [{id, start, end, currencies|None, reason}] (capture
+    windows) + [{id, canonical_ids, after, before, publications, reason}]
+    (per-publication entries, audit 6A)."""
+    raw = _load_known_gaps_raw(path)
+    out = [{"id": str(e["id"]), "start": pd.Timestamp(e["start"]), "end": pd.Timestamp(e["end"]),
+            "currencies": set(e["currencies"]) if e.get("currencies") else None,
+            "reason": str(e["reason"])} for e in (raw.get("known_gaps") or [])]
+    for e in raw.get("missing_publications") or []:
+        pubs = e.get("publications") or []
+        if not pubs or any(not p.get("evidence") for p in pubs):
+            raise ValueError(f"known_gaps: {e.get('id')} needs publications with evidence")
+        out.append({"id": str(e["id"]), "canonical_ids": set(e["canonical_ids"]),
+                    "after": pd.Timestamp(e["gap"]["after"]), "before": pd.Timestamp(e["gap"]["before"]),
+                    "publications": pubs, "reason": str(e["reason"])})
+    return out
 
 
 def explain_gap(finding: dict, known: list[dict]) -> Optional[dict]:
-    """The known-gap entry that explains a series_gap finding, or None: every
-    release expected inside the gap (after + k x cadence) must fall in ONE
-    known window of that currency, give or take min(7, cadence/4) days."""
+    """The known-gap entry that explains a series_gap finding, or None.
+      per-publication entry: same canonical_id and exactly the same (after,
+        before) — the entry names each missing publication with its evidence;
+      capture window: every release expected inside the gap (after + k x
+        cadence) falls in ONE window of that currency, give or take
+        min(7, cadence/4) days (only for holes that hit every series)."""
     if finding.get("kind") != "series_gap" or not known:
         return None
     after, before = pd.Timestamp(finding["after"]), pd.Timestamp(finding["before"])
+    for e in known:
+        if "canonical_ids" in e and finding.get("canonical_id") in e["canonical_ids"] \
+                and e["after"] == after and e["before"] == before:
+            return e
     cad = float(finding["cadence_days"])
     tol = pd.Timedelta(days=min(7.0, cad / 4))
     expected = []
@@ -276,6 +295,8 @@ def explain_gap(finding: dict, known: list[dict]) -> Optional[dict]:
     if not expected:
         return None
     for e in known:
+        if "start" not in e:
+            continue
         if e["currencies"] is not None and finding.get("currency") not in e["currencies"]:
             continue
         if all(e["start"] - tol <= d <= e["end"] + tol for d in expected):

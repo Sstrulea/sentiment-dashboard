@@ -16,3 +16,116 @@ known_gaps:
     start: 2026-04-03
     end: 2026-04-06
     reason: "JBlanked archive capture has no events for 2026-04-03..06 (Good Friday week) and data/ff_raw starts 2026-08-01"
+
+# Per-publication entries (audit 6A). Each names the series, the exact gap it
+# explains (the two releases the parquet does have around it) and every missing
+# publication inside it, with the evidence. A finding is explained only when its
+# canonical_id AND (after, before) match an entry exactly — never by a window.
+#   status: cancelled | merged | not_published | no_source
+#   no_source = the publication existed, but no archive we hold carries the value
+#   (JB archive capture = data/archive/ff_calendar_range.json, 2023-01-01..2026-07-05;
+#   data/ff_raw starts 2026-08-01), so there is nothing to fill from without a JB call.
+missing_publications:
+  - id: usd_cpi_2025_10
+    canonical_ids: [usd_cpi]
+    gap: {after: 2025-10-24, before: 2025-12-18}
+    publications:
+      - reference: October 2025
+        status: cancelled
+        evidence: "BLS: October 2025 CPI cancelled — data could not be collected during the lapse in appropriations"
+        source: https://www.bls.gov/bls/2025-lapse-revised-release-dates.htm
+    reason: "October 2025 CPI cancelled (BLS); November CPI published 2025-12-18"
+  - id: usd_core_cpi_2025_10_11
+    canonical_ids: [usd_core_cpi]
+    gap: {after: 2025-10-24, before: 2026-01-13}
+    publications:
+      - reference: October 2025
+        status: cancelled
+        evidence: "BLS: October 2025 CPI cancelled"
+        source: https://www.bls.gov/bls/2025-lapse-revised-release-dates.htm
+      - reference: November 2025 (1-month change)
+        status: not_published
+        evidence: "November 2025 CPI release (2025-12-18): seasonally adjusted 1-month changes shown as dashes (October missing); only 12-month changes published"
+        source: https://www.bls.gov/news.release/archives/cpi_12182025.htm
+    reason: "Core CPI m/m: October 2025 cancelled and November 2025 1-month change not published (BLS)"
+  - id: usd_ppi_2025_10
+    canonical_ids: [usd_ppi]
+    gap: {after: 2025-11-25, before: 2026-01-14}
+    publications:
+      - reference: October 2025
+        status: merged
+        evidence: "BLS: no October 2025 PPI news release; October data published with November 2025 PPI on 2026-01-14"
+        source: https://www.bls.gov/bls/2025-lapse-revised-release-dates.htm
+    reason: "October 2025 PPI merged into the November release of 2026-01-14 (BLS)"
+  - id: usd_ppi_2025_08_09
+    canonical_ids: [usd_ppi]
+    gap: {after: 2025-07-16, before: 2025-11-25}
+    publications:
+      - reference: July 2025 (released 2025-08-14)
+        status: no_source
+        evidence: "JB archive capture holds 'Core PPI m/m' on 2025-08-14 but no headline 'PPI m/m'"
+      - reference: August 2025 (released 2025-09-10)
+        status: no_source
+        evidence: "JB archive capture holds 'Core PPI m/m' on 2025-09-10 but no headline 'PPI m/m'"
+      - reference: September 2025
+        status: merged
+        evidence: "BLS: September 2025 PPI moved from 2025-10-16 to 2025-11-25 (the row after this gap)"
+        source: https://www.bls.gov/bls/2025-lapse-revised-release-dates.htm
+    reason: "PPI m/m Aug/Sep 2025 releases not in any archive we hold (headline missing, core present); September data postponed to 2025-11-25"
+  - id: usd_personal_income_outlays_2025_10
+    canonical_ids: [usd_personal_income, usd_personal_spending, usd_core_pce_price_index]
+    gap: {after: 2025-12-05, before: 2026-01-22}
+    publications:
+      - reference: October 2025
+        status: merged
+        evidence: "BEA: 'this report for October and November replaces releases originally scheduled for November 26 and December 19, 2025' (released 2026-01-22)"
+        source: https://www.bea.gov/index.php/news/2026/personal-income-and-outlays-october-and-november-2025
+    reason: "Personal Income and Outlays October 2025 merged with November into the 2026-01-22 release (BEA)"
+  - id: aud_cpi_2026_02
+    canonical_ids: [aud_cpi, aud_monthly_trimmed_mean_cpi]
+    gap: {after: 2026-01-28, before: 2026-03-25}
+    publications:
+      - reference: January 2026 (released 2026-02-25)
+        status: no_source
+        evidence: "JB archive capture holds only 'CPI m/m' (-0.1) for AUD on 2026-02-25; no 'CPI y/y' and no 'Trimmed Mean CPI m/m'"
+    reason: "AUD CPI y/y and trimmed mean of 2026-02-25 not in any archive we hold (same-day CPI m/m present)"
+  - id: nzd_retail_sales_2025_q4
+    canonical_ids: [nzd_retail_sales]
+    gap: {after: 2025-11-26, before: 2026-05-21}
+    publications:
+      - reference: Q4 2025 (released 2026-02-22 UTC)
+        status: no_source
+        evidence: "JB archive capture holds only 'Core Retail Sales q/q' (1.5) for NZD on 2026-02-22; no headline 'Retail Sales q/q'"
+    reason: "NZD retail sales Q4 2025 not in any archive we hold (same-day core retail present)"
+  - id: cad_trimmed_cpi_2025_11
+    canonical_ids: [cad_trimmed_cpi]
+    gap: {after: 2025-11-17, before: 2026-01-19}
+    publications:
+      - reference: November 2025 (released 2025-12-15)
+        status: no_source
+        evidence: "JB archive capture holds CPI m/m, Common CPI y/y, Core CPI m/m and Median CPI y/y for CAD on 2025-12-15, but no 'Trimmed CPI y/y'"
+    reason: "CAD trimmed CPI of 2025-12-15 not in any archive we hold (same-day common/median present)"
+  - id: jpy_manufacturing_pmi_2025_12_flash
+    canonical_ids: [jpy_au_jibun_bank_manufacturing_pmi]
+    gap: {after: 2025-12-01, before: 2026-01-23}
+    publications:
+      - reference: December 2025 flash
+        status: no_source
+        evidence: "JB archive capture holds no JPY Flash Manufacturing PMI in December 2025; the Final of 2026-01-05 (50.0) exists but is an excluded final variant (config/ff_aliases.yaml excluded_final_variants: flash only)"
+    reason: "JPY flash manufacturing PMI Dec 2025 not in any archive we hold (only the excluded final)"
+  - id: aud_company_profits_2024_q3
+    canonical_ids: [aud_company_operating_profits]
+    gap: {after: 2024-09-02, before: 2025-03-03}
+    publications:
+      - reference: Q3 2024 (released early December 2024)
+        status: no_source
+        evidence: "Not a capture hole: the JB archive has 17-27 events a day on 2024-12-02..06, but no AUD 'Company Operating Profits q/q'"
+    reason: "AUD company operating profits Q3 2024 not in any archive we hold (capture otherwise normal)"
+  - id: jpy_capital_spending_2024_q3
+    canonical_ids: [jpy_capital_spending]
+    gap: {after: 2024-09-01, before: 2025-03-03}
+    publications:
+      - reference: Q3 2024 (released early December 2024)
+        status: no_source
+        evidence: "Not a capture hole: the JB archive has 17-27 events a day on 2024-12-02..06, but no JPY 'Capital Spending q/y'"
+    reason: "JPY capital spending Q3 2024 not in any archive we hold (capture otherwise normal)"
