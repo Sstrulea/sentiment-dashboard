@@ -1985,6 +1985,443 @@
    }
   },
   {
+   "changes_vs_previous": {
+    "added_words": 275,
+    "changes": [
+     {
+      "added": "The",
+      "paragraph": 1,
+      "removed": "If necessary, the"
+     },
+     {
+      "added": "is also willing",
+      "paragraph": 1,
+      "removed": "has an increased willingness"
+     },
+     {
+      "added": "be active",
+      "paragraph": 1,
+      "removed": "intervene"
+     },
+     {
+      "added": "market as necessary to ensure appropriate monetary conditions.",
+      "paragraph": 1,
+      "removed": "market. The SNB thereby counters a rapid and excessive appreciation of the Swiss franc, which would jeopardise price stability in Switzerland."
+     },
+     {
+      "added": "further since June, primarily due to",
+      "paragraph": 2,
+      "removed": "in recent months as a result of"
+     },
+     {
+      "added": "pressure has increased only slightly. Monetary",
+      "paragraph": 2,
+      "removed": "pressure, however, is virtually unchanged compared with the last monetary policy assessment. The SNB's monetary"
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "it"
+     },
+     {
+      "added": "",
+      "paragraph": 2,
+      "removed": "The SNB will continue to monitor the situation and adjust its monetary policy if necessary, in order to ensure price stability."
+     },
+     {
+      "added": "Inflation rose slightly, from 0.6% in May to 0.8% in August. This increase was attributable to a rise in goods inflation, which was positive in August for the first time since May 2024. The rise in goods inflation was mainly driven by higher prices for oil products.",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "initially"
+     },
+     {
+      "added": "rise somewhat",
+      "paragraph": 4,
+      "removed": "increase slightly"
+     },
+     {
+      "added": "fourth quarter,",
+      "paragraph": 4,
+      "removed": "coming quarters,"
+     },
+     {
+      "added": "over",
+      "paragraph": 4,
+      "removed": "somewhat in"
+     },
+     {
+      "added": "course",
+      "paragraph": 4,
+      "removed": "first half"
+     },
+     {
+      "added": "fact that",
+      "paragraph": 4,
+      "removed": "impact of higher"
+     },
+     {
+      "added": "inflation, which is currently significantly elevated, is",
+      "paragraph": 4,
+      "removed": "prices being"
+     },
+     {
+      "added": "decline again",
+      "paragraph": 4,
+      "removed": "ease over time. Energy prices will be largely influenced by the further development of the situation"
+     },
+     {
+      "added": "coming quarters. Thereafter, the conditional inflation forecast rises slightly.",
+      "paragraph": 4,
+      "removed": "Middle East."
+     },
+     {
+      "added": "for",
+      "paragraph": 5,
+      "removed": "in"
+     },
+     {
+      "added": "",
+      "paragraph": 5,
+      "removed": "slightly"
+     },
+     {
+      "added": "higher-than-expected",
+      "paragraph": 5,
+      "removed": "rise in raw material"
+     },
+     {
+      "added": "for oil products. For",
+      "paragraph": 5,
+      "removed": "and higher inflation abroad. In"
+     },
+     {
+      "added": "too,",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "conditional",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "slightly higher than in the previous quarter, reflecting, among other things, the weakening of the Swiss franc.",
+      "paragraph": 5,
+      "removed": "practically unchanged."
+     },
+     {
+      "added": "conditional inflation",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "0.7%",
+      "paragraph": 5,
+      "removed": "0.6%"
+     },
+     {
+      "added": "0.8%",
+      "paragraph": 5,
+      "removed": "0.6%"
+     },
+     {
+      "added": "0.8%",
+      "paragraph": 5,
+      "removed": "0.7%"
+     },
+     {
+      "added": "stronger than expected",
+      "paragraph": 6,
+      "removed": "solid overall"
+     },
+     {
+      "added": "second",
+      "paragraph": 6,
+      "removed": "first"
+     },
+     {
+      "added": "In many countries, inflation remains above central banks' targets, notably",
+      "paragraph": 6,
+      "removed": "However,"
+     },
+     {
+      "added": "",
+      "paragraph": 6,
+      "removed": "escalation in the Middle East and the increase in energy prices, economic momentum slowed somewhat. Inflation has risen significantly in many countries as a result of"
+     },
+     {
+      "added": "were",
+      "paragraph": 6,
+      "removed": "have been"
+     },
+     {
+      "added": "both",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "area and",
+      "paragraph": 6,
+      "removed": "area, while they have remained unchanged"
+     },
+     {
+      "added": "growth in the global economy",
+      "paragraph": 7,
+      "removed": "inflation worldwide"
+     },
+     {
+      "added": "be moderate",
+      "paragraph": 7,
+      "removed": "remain elevated"
+     },
+     {
+      "added": "quarters. Inflation",
+      "paragraph": 7,
+      "removed": "quarters due to the higher raw material prices. In addition, global economic growth"
+     },
+     {
+      "added": "remain elevated for some time.",
+      "paragraph": 7,
+      "removed": "be more moderate in the short term than in the previous quarters. However, growth is likely to pick up again in the medium term."
+     }
+    ],
+    "removed_words": 347,
+    "truncated": true,
+    "vs_doc_id": "CHF:statement:2026-06-18",
+    "vs_meeting": "2026-06-18"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     5
+    ],
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:statement:2026-09-24",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-24T07:31:13Z",
+   "input_sha256": "840eb19f68bf41831d6abc65d0fe53b281fa4200338b00c424819eb0ab6a8825",
+   "meeting_date": "2026-09-24",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 70,
+     "point": 1,
+     "source_text": "0%",
+     "start": 68,
+     "text": "0%"
+    },
+    {
+     "end": 1809,
+     "point": 4,
+     "source_text": "0.7%",
+     "start": 1805,
+     "text": "0.7%"
+    },
+    {
+     "end": 1818,
+     "point": 4,
+     "source_text": "2026",
+     "start": 1814,
+     "text": "2026"
+    },
+    {
+     "end": 721,
+     "point": 4,
+     "source_text": "0.8%",
+     "start": 717,
+     "text": "0.8%"
+    },
+    {
+     "end": 1098,
+     "point": 4,
+     "source_text": "2027",
+     "start": 1094,
+     "text": "2027"
+    },
+    {
+     "end": 721,
+     "point": 4,
+     "source_text": "0.8%",
+     "start": 717,
+     "text": "0.8%"
+    },
+    {
+     "end": 1851,
+     "point": 4,
+     "source_text": "2028",
+     "start": 1847,
+     "text": "2028"
+    },
+    {
+     "end": 271,
+     "point": 5,
+     "source_text": "0.25 percentage points",
+     "start": 249,
+     "text": "0.25 percentage points"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-09-24",
+   "quotes": [
+    {
+     "end": 71,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 475,
+     "paragraph": 2,
+     "start": 397,
+     "text": "Inflation has risen further since June, primarily due to higher energy prices."
+    },
+    {
+     "end": 1864,
+     "paragraph": 5,
+     "start": 1769,
+     "text": "It puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028 (cf. table)."
+    },
+    {
+     "end": 396,
+     "paragraph": 1,
+     "start": 273,
+     "text": "The SNB is also willing to be active in the foreign exchange market as necessary to ensure appropriate monetary conditions."
+    }
+   ],
+   "source": {
+    "chars": 4065,
+    "chars_sent": 4066,
+    "method": "stored",
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 71,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Swiss National Bank is leaving the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 475,
+        "paragraph": 2,
+        "start": 397,
+        "text": "Inflation has risen further since June, primarily due to higher energy prices."
+       },
+       {
+        "end": 538,
+        "paragraph": 2,
+        "start": 476,
+        "text": "Medium-term inflationary pressure has increased only slightly."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB states that inflation has risen further since June, primarily due to higher energy prices, while medium-term inflationary pressure has increased only slightly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 671,
+        "paragraph": 2,
+        "start": 539,
+        "text": "Monetary policy is appropriate to keep inflation within the range consistent with price stability and supports economic development."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The SNB states that monetary policy is appropriate to keep inflation within the range consistent with price stability and supports economic development."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1864,
+        "paragraph": 5,
+        "start": 1769,
+        "text": "It puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028 (cf. table)."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The conditional inflation forecast puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 0.938,
+      "fragments": [
+       {
+        "end": 179,
+        "paragraph": 1,
+        "start": 72,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 272,
+        "paragraph": 1,
+        "start": 180,
+        "text": "The discount for sight deposits above this threshold is unchanged at 0.25 percentage points."
+       },
+       {
+        "end": 396,
+        "paragraph": 1,
+        "start": 273,
+        "text": "The SNB is also willing to be active in the foreign exchange market as necessary to ensure appropriate monetary conditions."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The SNB will remunerate banks' sight deposits up to a threshold at the SNB policy rate, keeps the discount above it at 0.25 percentage points, and is willing to be active in the foreign exchange market as necessary."
+    }
+   ],
+   "title": "Swiss National Bank monetary policy statement, 24 September 2026",
+   "type": "statement",
+   "url": "https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260924",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2328,
+    "output_tokens": 552,
+    "reasoning_tokens": 0
+   }
+  },
+  {
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
