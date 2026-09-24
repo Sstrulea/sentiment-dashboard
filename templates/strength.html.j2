@@ -14,9 +14,10 @@
   <main class="page-content strength-page">
     <header class="strength-header">
       <h1>Currency Strength</h1>
+      <p class="phone-only strength-ph-meta" id="strengthPhoneMeta"></p>
     </header>
 
-    <div class="econ-legend">
+    <div class="econ-legend" data-htr>
       <span class="muted">A currency's score = the mean of the fundamental scores of the 7 pairs on
       <a href="/economic">Economic</a> it belongs to (+ as base, − as quote), without COT and without trend.
       It is in pair units, so the bias uses the same thresholds as the pairs, and the 8 scores sum to 0.
@@ -27,17 +28,18 @@
     {% include '_help_scoring_modal.html.j2' %}
 
     <div id="strengthMain">
-      <p class="model-note" id="modelNote" hidden></p>
-      <p class="strength-divergence" id="strengthDivergence"></p>
-      <p class="strength-context">Divergence = strongest − weakest score. A small spread = no exploitable
+      <p class="model-note" id="modelNote" data-htr hidden></p>
+      <p class="strength-divergence desk-only" id="strengthDivergence"></p>
+      <section class="phone-only strength-phone" id="strengthPhone" aria-label="Ranked currencies"></section>
+      <p class="strength-context" data-htr>Divergence = strongest − weakest score. A small spread = no exploitable
       macro divergence. N (the currency's indicators) is informative: each pair compares only the
       categories both currencies have.</p>
 
-      <div class="strength-grid" id="strengthGrid">
+      <div class="strength-grid desk-only" id="strengthGrid">
         <p class="muted" style="grid-column: 1/-1; text-align:center; padding: 30px;">Loading…</p>
       </div>
 
-      <section class="strength-table-wrap">
+      <section class="strength-table-wrap desk-only">
         <h2>Sorted</h2>
         <div class="retail-table-scroll">
           <table class="retail-table strength-table" id="strengthTable">
@@ -52,13 +54,14 @@
       </section>
 
       <section class="strength-matrix-wrap">
-        <h2>Divergence matrix</h2>
-        <p class="strength-context" style="margin-bottom:10px;">Rows = base currency, columns = quoted currency.
+        <h2>Divergence matrix <span class="phone-only strength-ph-cap">row = base, column = quote</span></h2>
+        <p class="strength-context desk-only" style="margin-bottom:10px;">Rows = base currency, columns = quoted currency.
         Cell = fundamental score of the pair row/column (as on Economic, without COT and trend).
         Currencies with no coverage are excluded from the matrix entirely.</p>
         <div class="strength-matrix-scroll">
           <table class="strength-matrix" id="strengthMatrix"></table>
         </div>
+        <p class="phone-only ph-note">Tap a currency for its indicators; tap a cell to open that pair on Economic.</p>
       </section>
     </div>
 

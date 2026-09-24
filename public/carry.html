@@ -11,6 +11,11 @@
     var dark = (t === "dark" || t === "light") ? t === "dark"
       : !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     if (dark) document.documentElement.classList.add("dark");
+    /* Faza 11: the phone banner, once closed, stays closed on this device;
+       decided here so it never flashes. */
+    var closed = null;
+    try { closed = localStorage.getItem("phone-banner-closed"); } catch (e) {}
+    if (closed) document.documentElement.classList.add("banner-closed");
   })();
 </script>
   <meta charset="UTF-8">
@@ -23,6 +28,7 @@
   <nav class="main-nav">
   <div class="nav-container">
     <a class="nav-brand" href="/">Dashboard</a>
+    <div class="nav-tabs">
     <ul class="nav-links">
       <li class="">
         <a href="/economic">Economic</a>
@@ -49,6 +55,7 @@
         <a href="/vix-ratio">VIX/VIX3M</a>
       </li>
     </ul>
+    </div>
     <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle theme">
       <svg class="theme-icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
            fill="none" stroke="currentColor" stroke-width="2"
@@ -64,19 +71,33 @@
     </button>
   </div>
 </nav>
+<div class="phone-banner" role="status">
+  <svg class="phone-banner-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+       stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="4" width="15" height="11" rx="1.5"></rect><path d="M6 19h7M9.5 15v4"></path>
+    <rect x="18" y="8" width="4" height="11" rx="1"></rect>
+  </svg>
+  <span class="phone-banner-text"><b>Best on desktop or tablet.</b> This is the compact phone view.</span>
+  <button type="button" class="phone-banner-x" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+  </button>
+</div>
 <script src="/theme-toggle.js"></script>
+<script src="/phone.js"></script>
 
   <main class="page-content carry-page">
     <header class="econ-header">
       <h1>Carry</h1>
-      <div class="econ-header-right">
+      <p class="phone-only carry-ph-meta" id="carryPhoneMeta"></p>
+      <div class="econ-header-right desk-only">
         <div class="econ-meta-bar" id="carryMeta">
           <span class="muted">Loading…</span>
         </div>
       </div>
     </header>
 
-    <div class="econ-legend">
+    <div class="econ-legend" data-htr>
       <span class="muted">Carry = the overnight interest-rate differential between the base and the
       quote currency, annualized for the LONG position. Blue = the long earns, red = the long pays.
       The scale saturates at ±5.00 pp. Wednesday night's rollover counts ×3 because it covers the
@@ -84,7 +105,8 @@
       broker's markup, which is deducted in both directions.</span>
     </div>
 
-    <div class="econ-controls">
+    <section class="phone-only carry-phone" id="carryPhone" aria-label="Pairs"></section>
+    <div class="econ-controls desk-only">
       <div id="carryDirFilter" class="cat-filter" role="group" aria-label="Direction">
         <span class="cat-filter-label">Direction:</span>
         <div class="cat-chips" id="carryDirChips"><!-- chips injected by carry.js --></div>
@@ -98,7 +120,7 @@
       </div>
     </div>
 
-    <section class="retail-table-wrapper">
+    <section class="retail-table-wrapper desk-only">
       <div id="carryContent">
         <p class="muted" style="padding: 40px; text-align: center;">Loading carry…</p>
       </div>

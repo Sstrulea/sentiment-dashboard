@@ -249,7 +249,7 @@
     const badges = Object.keys(meta.flags).filter(function (k) { return k !== "DECIDED"; }).map(function (k) {
       return '<span class="cb-legend-item">' + flagBadge(k) + '<span class="muted"> ' + esc(meta.flags[k].help) + "</span></span>";
     }).join("");
-    return '<div class="econ-legend cb-legend"><span class="muted">Market-implied policy paths from futures / OIS curves. <span class="cb-hawk"><b>Blue = hawkish</b></span> (higher rates than the base), ' +
+    return '<div class="econ-legend cb-legend" data-htr><span class="muted">Market-implied policy paths from futures / OIS curves. <span class="cb-hawk"><b>Blue = hawkish</b></span> (higher rates than the base), ' +
       '<span class="cb-dove"><b>red = dovish</b></span>; the sign is always written out. Grey = stale source. <b>' + NA + "</b> = not available: hover for the reason. Click a row for the bank page.</span>" +
       '<div class="cb-legend-badges">' + badges + "</div></div>";
   }
@@ -261,7 +261,7 @@
     root.innerHTML = legendHtml(ov.meta) +
       '<div class="cb-tabs" role="tablist"><button type="button" class="cb-tab active" data-tab="banks" role="tab" aria-selected="true">Banks</button>' +
       '<button type="button" class="cb-tab" data-tab="pairs" role="tab" aria-selected="false">Pairs</button></div>' +
-      '<section class="cb-tablewrap"><div id="cbBanks">' + bankTable(ov) + '</div><div id="cbPairs" hidden><p class="muted cb-loading">Loading pairs…</p></div></section>';
+      '<section class="cb-tablewrap"><div id="cbBanks"><div class="desk-only">' + bankTable(ov) + "</div>" + bankList(ov) + '</div><div id="cbPairs" hidden><p class="muted cb-loading">Loading pairs…</p></div></section>';
     wireRows(document.getElementById("cbBanks"));
     let pairsLoaded = false;
     root.querySelectorAll(".cb-tab").forEach(function (b) {
@@ -272,13 +272,14 @@
         if (b.dataset.tab === "pairs" && !pairsLoaded) {
           pairsLoaded = true;
           getJSON(CFG.urls.pairs).then(function (pj) {
-            document.getElementById("cbPairs").innerHTML = pairTable(pj);
+            document.getElementById("cbPairs").innerHTML = '<div class="desk-only">' + pairTable(pj) + "</div>" + pairList(pj);
             wireRows(document.getElementById("cbPairs"));
           }).catch(function (e) { document.getElementById("cbPairs").innerHTML = failHtml(e); });
         }
       });
     });
     if (window.location.hash === "#pairs") root.querySelector('.cb-tab[data-tab="pairs"]').click();
+    if (window.PhoneUI) window.PhoneUI.foldHowToRead();
     tick();
   }
 
@@ -744,7 +745,10 @@
       (sp ? '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Date</th><th>Speaker</th><th>Title</th><th>Type</th><th>Relevance</th></tr></thead><tbody>' + sp + "</tbody></table></div>" : '<div class="cb-sub">' + NA + " no speeches collected in the last 60 days.</div>") + "</section>";
   }
 
+  let themeWatched = false;
   function renderBank(d) {
+    destroyCharts();
+    state.redraw = [];
     state.meta = d.meta;
     SUMMARIES = (d.documents && d.documents.summaries) || {};
     titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + "</span>";
@@ -753,6 +757,14 @@
     metaEl.innerHTML = '<a href="' + esc(CFG.urls.overview_page) + '">' + "← All banks</a>" + DOT + "As of " + esc(fmtDate(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "");
     const n = d.summary.next;
     const dayMode = !!(n && n.decision && todayIn((n.time || {}).tz || "UTC") === n.decision);
+    if (isPhone()) {
+      titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + DOT + "as of " + esc(fmtDay(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "") + "</span>";
+      metaEl.innerHTML = '<a class="cb-back" href="' + esc(CFG.urls.overview_page) + '">' + '<svg class="ph-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>All banks</a>';
+      renderBankPhone(d, dayMode);
+      if (!themeWatched) { themeWatched = true; watchTheme(); }
+      tick();
+      return;
+    }
     root.innerHTML = (dayMode ? nextCard(d, true) + latestDecisionCard(d, true) : "") + headerCard(d) +
       '<section class="cb-card cb-chartcard"><h3>Policy-rate trajectory <small class="muted">market-implied vs history' + (d.chart.bank.kind !== "n/a" ? " and the bank’s own path" : "") + '</small></h3><div class="cb-chart-wrap"><canvas id="cbChart"></canvas></div>' +
       '<div class="cb-sub">' + esc(chartHelp(d)) + "</div></section>" +
@@ -760,9 +772,204 @@
     wireRedline(d);
     const canvas = document.getElementById("cbChart");
     registerRedraw(function () { drawBankChart(canvas, d); });
-    watchTheme();
+    if (!themeWatched) { themeWatched = true; watchTheme(); }
     document.querySelectorAll("[data-open-method]").forEach(function (a) { a.addEventListener("click", function () { document.getElementById("cbMethod").open = true; }); });
     tick();
+  }
+
+  // ---- phone (Faza 11C), max-width 600px ------------------------------------------------------------------------------------
+  // Overview: a list next to each desktop table (CSS shows one). Bank page: rendered either for the desktop or for the phone and
+  // re-rendered when the viewport crosses 600px (one chart canvas, one id).
+  function isPhone() { return !!(window.PhoneUI && window.PhoneUI.isPhone()); }
+  const CHEV = '<svg class="ph-ico ph-chev" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+  const CHEV_DOWN = '<svg class="ph-ico" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  function methodLabel(flag) {
+    if (!flag) return "";
+    const f = ((state.meta || {}).flags || {})[flag] || {};
+    return '<span class="cb-ph-m cb-ph-m-' + esc(flag) + '">' + esc(String(f.label || flag).toLowerCase()) + "</span>";
+  }
+  function dominantProb(h) {
+    const list = h.probabilities || [];
+    if (!list.length) return "";
+    const top = list.slice().sort(function (a, b) { return b.p - a.p; })[0];
+    return Math.round(top.p * 100) + "% " + (top.moves === 0 ? "hold" : (h.direction === "cut" ? MINUS : "+") + 25 * top.moves);
+  }
+  function daysTo(n) {                                                   // whole days to next.time.utc; BoJ (no time): the date
+    const utc = n.time && n.time.utc;
+    const d = utc ? Math.floor((Date.parse(utc) - Date.now()) / DAY_MS) : daysBetween(todayIn((n.time || {}).tz || "UTC"), n.decision);
+    return d > 0 ? "in " + d + " d" : d === 0 ? "today" : "announced";
+  }
+  function shortReason(h) {
+    if (h.flag === "PROXY" || /^PROXY/.test(h.method || "")) return "proxy only";
+    const t = shortNa(h.na || "n/a");
+    if (/no market path/i.test(t)) return "no market path";
+    return t.split(/[|:(;]/)[0].trim();
+  }
+  function rateText(r) {
+    if (!r || !isNum(r.value)) return NA;
+    return (r.range && isNum(r.lower) ? fmtRate(r.lower) + EN + fmtRate(r.upper) : fmtRate(r.value)) + "%";
+  }
+  function rateNote(r) {
+    if (!r) return "";
+    if (r.pending) return '<span class="cb-ph-warn">from ' + fmtDay(r.from) + "</span>";
+    if (r.decision_status && r.decision_status !== "official" && r.decision_status !== "bis") return '<span class="cb-ph-warn">unconfirmed</span>';
+    return "";
+  }
+  function pricedIn(r) {
+    const h = r.horizon || {};
+    const v = h.kind === "step" ? h.step_bp : h.kind === "window" ? h.cum_bp : null;
+    if (isNum(v)) {
+      const sub = [methodLabel(h.flag), h.kind === "window" ? h.n_meetings + " mtg" + (h.n_meetings === 1 ? "" : "s") : esc(dominantProb(h)), h.stale ? "stale" : ""].filter(Boolean).join(DOT);
+      const num = h.stale ? '<span class="cb-ph-num cb-ph-stale">' + fmtSigned(v, 1) + "</span>"
+        : '<span class="cb-ph-chip"' + tint(v, 25) + ">" + fmtSigned(v, 1) + "</span>";
+      return num + '<span class="cb-ph-sub">' + sub + "</span>";
+    }
+    if (isNum(h.level) && h.level_kind === "bkbm") {
+      return '<span class="cb-ph-num">' + fmtRate(h.level, 2) + '%</span><span class="cb-ph-sub">' + methodLabel(h.flag) + DOT + "BKBM level</span>";
+    }
+    return '<span class="cb-ph-num cb-ph-na">' + NA + '</span><span class="cb-ph-sub">' + esc(shortReason(h)) + "</span>";
+  }
+  function bankList(ov) {
+    const rows = ov.banks.map(function (r) {
+      const n = r.next, m = r.repricing["1w"].years["2026"];
+      const next = n && n.decision ? '<b>' + fmtDay(n.decision) + '</b><span class="cb-ph-sub">' + daysTo(n) + "</span>" : '<span class="cb-ph-na">' + NA + "</span>";
+      return '<a class="ph-row cb-ph-grid" href="' + esc(r.href) + '">' +
+        '<span class="cb-ph-bank"><span><b>' + esc(r.ccy) + '</b> <span class="cb-ph-short">' + esc(r.bank.short) + '</span></span><span class="cb-ph-rate">' + rateText(r.rate) + "</span>" + rateNote(r.rate) + "</span>" +
+        '<span class="cb-ph-next">' + next + "</span>" +
+        '<span class="cb-ph-priced">' + pricedIn(r) + "</span>" +
+        '<span class="cb-ph-1w">' + (isNum(m.v) ? fmtSigned(m.v, 1) : '<span class="cb-ph-na">' + NA + "</span>") + "</span>" + CHEV + "</a>";
+    }).join("");
+    return '<div class="phone-only"><div class="ph-list cb-ph-list"><div class="ph-list-head cb-ph-grid"><span>Bank · rate</span><span>Next</span><span class="cb-ph-r">Priced in</span><span class="cb-ph-r">1W</span><span></span></div>' + rows + "</div>" +
+      '<p class="ph-note">Tap a bank for its page: the path by meeting, decisions, documents and speeches.</p></div>';
+  }
+  function pairList(pj) {
+    const cell = function (m) {
+      if (!m || !isNum(m.v)) return '<span class="cb-ph-na" title="' + esc((m && m.na) || "n/a") + '">' + NA + "</span>";
+      return "<b" + (m.stale ? ' class="cb-ph-stale"' : "") + ">" + fmtSigned(m.v, 1) + "</b>" + (m.flag ? '<span class="cb-ph-sub">' + methodLabel(m.flag) + "</span>" : "");
+    };
+    const rows = pj.pairs.map(function (p) {
+      return '<a class="ph-row cb-ph-pgrid" href="' + esc(p.href) + '"><span class="cb-ph-bank"><b>' + esc(p.display) + '</b><span class="cb-ph-sub">' + esc(p.base) + " " + MINUS + " " + esc(p.quote) + "</span></span>" +
+        '<span class="cb-ph-r">' + cell(p.current) + '</span><span class="cb-ph-r">' + cell(p.implied["2026"].diff_bp) + '</span><span class="cb-ph-r">' + cell(p.implied["2027"].diff_bp) + "</span>" + CHEV + "</a>";
+    }).join("");
+    return '<div class="phone-only"><div class="ph-list cb-ph-list"><div class="ph-list-head cb-ph-pgrid"><span>Pair</span><span class="cb-ph-r">Now</span><span class="cb-ph-r">End-2026</span><span class="cb-ph-r">End-2027</span><span></span></div>' + rows + "</div>" +
+      '<p class="ph-note">Differentials in bp, base minus quote. Tap a pair for its page: the paths, the differential and repricing.</p></div>';
+  }
+
+  // bank page on the phone
+  function acc(id, title, sub, body, open) {
+    return '<section class="cb-acc" id="' + id + '"><button type="button" class="cb-acc-head" aria-expanded="' + (open ? "true" : "false") + '" aria-controls="' + id + '-body">' +
+      '<span class="cb-acc-title"><b>' + esc(title) + "</b>" + (sub ? '<span class="cb-ph-sub">' + sub + "</span>" : "") + "</span>" + CHEV_DOWN + "</button>" +
+      '<div class="cb-acc-body" id="' + id + '-body"' + (open ? "" : " hidden") + ">" + body + "</div></section>";
+  }
+  function miniTable(head, rows, empty) {
+    return '<div class="cb-scroll"><table class="cb-table cb-mini cb-ph-table"><thead><tr>' + head.map(function (h, i) { return "<th" + (i ? ' class="cb-n"' : "") + ">" + h + "</th>"; }).join("") +
+      "</tr></thead><tbody>" + (rows.join("") || '<tr><td colspan="' + head.length + '" class="muted">' + esc(empty || "n/a") + "</td></tr>") + "</tbody></table></div>";
+  }
+  function phoneTop(d) {
+    const s = d.summary, n = s.next, h = s.horizon || {}, last = d.decisions[0];
+    const cell = function (k, big, sub, cls) { return '<div class="cb-ph-kpi"><div class="cb-kicker">' + k + '</div><div class="cb-ph-big' + (cls ? " " + cls : "") + '">' + big + '</div><div class="cb-ph-sub">' + sub + "</div></div>"; };
+    const rate = cell("Policy rate", esc(rateText(s.rate).replace("%", "")), esc(d.bank.policy_rate || "%") + (rateNote(s.rate) ? DOT + rateNote(s.rate) : ""));
+    const next = n && n.decision ? cell("Next meeting", esc(weekday(n.decision)) + " " + fmtDay(n.decision), daysTo(n) + (timeText(n.time) ? DOT + esc(timeText(n.time)) : "")) : cell("Next meeting", NA, esc((n && n.na) || "n/a"));
+    const v = h.kind === "step" ? h.step_bp : h.kind === "window" ? h.cum_bp : null;
+    const priced = isNum(v)
+      ? cell("Priced in by then", fmtSigned(v, 1) + " bp", [methodLabel(h.flag), h.kind === "window" ? h.n_meetings + " meeting" + (h.n_meetings === 1 ? "" : "s") : esc(dominantProb(h)), h.stale ? "stale" : ""].filter(Boolean).join(DOT),
+             h.stale ? "cb-ph-stale" : v > 0 ? "cb-hawk" : v < 0 ? "cb-dove" : "")
+      : isNum(h.level) && h.level_kind === "bkbm" ? cell("Priced in by then", fmtRate(h.level, 2) + "%", methodLabel(h.flag) + DOT + "BKBM level")
+      : cell("Priced in by then", NA, esc(shortReason(h)), "cb-ph-na");
+    const sp = last && isNum(last.surprise_consensus_bp) ? (Number(last.surprise_consensus_bp) === 0 ? "no surprise" : "surprise " + fmtSigned(last.surprise_consensus_bp, 1) + " bp") : "no consensus";
+    const lastC = last ? cell("Last decision", fmtSigned(last.delta_bp, 0) + " bp", fmtDay(last.date) + DOT + sp, last.delta_bp > 0 ? "cb-hawk" : last.delta_bp < 0 ? "cb-dove" : "") : cell("Last decision", NA, "no decision on record");
+    return '<section class="cb-ph-top">' + rate + next + priced + lastC + "</section>";
+  }
+  function renderBankPhone(d, dayMode) {
+    const doc = d.documents, L = doc && doc.latest;
+    const staleSrc = d.sources.filter(function (x) { return x.stale; })[0];
+    const pathRows = d.trajectory.map(function (p) {
+      const rate = isNum(p.rate) ? fmtRate(p.rate, 3) : isNum(p.level) ? "[" + fmtRate(p.level, 3) + "]" : NA;
+      return "<tr" + (p.stale ? ' class="cb-stale"' : "") + "><td>" + fmtDate(p.meeting) + '</td><td class="cb-n">' + rate + '</td><td class="cb-n">' + (isNum(p.cum_bp) ? fmtSigned(p.cum_bp, 1) : NA) + "</td></tr>";
+    });
+    const pathNote = [staleSrc ? "Grey: the source is from " + fmtDay(staleSrc.asof) + (isNum(staleSrc.lag_bd) ? ", " + staleSrc.lag_bd + " business days old." : ".") : "",
+                      d.trajectory.some(function (p) { return p.upper_bound; }) ? "Upper bounds from 3M windows." : ""].filter(Boolean).join(" ");
+    const kinds = ["history"].concat(d.chart.market.length ? ["market path"] : []).concat(d.chart.bank.kind === "dots" ? ["FOMC dots"] : d.chart.bank.kind === "ocr_track" ? ["OCR track"] : []);
+    const g = d.gap;
+    let gapTitle = "GAP", gapSub = "", gapBody;
+    if (g.kind === "dots") {
+      gapTitle = "Gap vs the FOMC dots";
+      gapSub = Object.keys(g.years).map(function (y) { return y + " " + (isNum(g.years[y].v) ? fmtSigned(g.years[y].v, 1) + " bp" : NA); }).join(DOT);
+      gapBody = miniTable(["Year", "Dots %", "Market %", "GAP bp"], Object.keys(g.years).map(function (y) {
+        const m = g.years[y];
+        return "<tr><td>" + y + '</td><td class="cb-n">' + fmtRate(m.bank, 3) + '</td><td class="cb-n">' + fmtRate(m.market, 3) + '</td><td class="cb-n">' + (isNum(m.v) ? fmtSigned(m.v, 1) : NA) + "</td></tr>";
+      })) + '<div class="cb-sub">GAP = market minus bank, on the same basis. SEP of ' + fmtDate(g.sep) + ".</div>";
+    } else if (d.chart.bank.kind === "ocr_track") {
+      gapTitle = "Bank path: RBNZ OCR track";
+      gapSub = "GAP " + NA;
+      const byYear = {};
+      d.chart.bank.quarters.forEach(function (x) { const y = x.period.slice(0, 4); (byYear[y] = byYear[y] || {})[x.period.slice(-1)] = x.value; });
+      gapBody = miniTable(["Year", "Q1 / Q2 / Q3 / Q4 %"], Object.keys(byYear).sort().map(function (y) {
+        return "<tr><td>" + esc(y) + '</td><td class="cb-n">' + [1, 2, 3, 4].map(function (k) { return isNum(byYear[y][k]) ? fmtRate(byYear[y][k], 1) : NA; }).join(" / ") + "</td></tr>";
+      })) + '<div class="cb-sub">' + esc(d.chart.bank.note || "") + " GAP " + NA + ": " + esc(g.na || "n/a") + "</div>";
+    } else {
+      gapSub = NA;
+      gapBody = '<div class="cb-sub">' + NA + " " + esc(g.na || "n/a") + "</div>";
+    }
+    const latest = L ? (function () {
+      const bits = [];
+      const dec = d.decisions.find(function (x) { return x.date === L.meeting; });
+      if (dec) bits.push(fmtSigned(dec.delta_bp, 0) + " bp");
+      if (L.votes && L.votes.label) bits.push(esc(L.votes.label));
+      const have = [L.statement ? "statement" : ""].concat((L.follow_up || []).filter(function (i) { return i.url; }).map(function (i) {
+        return /minutes|account|summary|deliberations/.test(i.type) ? "minutes" : /presser|opening/.test(i.type) ? "press conference" : "";
+      })).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+      if (have.length) bits.push(have.join(", "));
+      const html = latestDecisionCard(d, false).replace(/^<section[^>]*>/, "").replace(/<\/section>$/, "").replace(/<h3>[\s\S]*?<\/h3>/, "");
+      return acc("cbAccLatest", "Latest decision" + DOT + fmtDay(L.meeting), bits.join(DOT), html, dayMode);
+    })() : "";
+    const decRows = d.decisions.map(function (x) {
+      return "<tr><td>" + fmtDate(x.date) + '</td><td class="cb-n econ-cell cb-num"' + tint(x.delta_bp, 25) + ">" + fmtSigned(x.delta_bp, 0) + '</td><td class="cb-n">' +
+        (x.lower !== null && x.lower !== undefined ? fmtRate(x.lower) + EN + fmtRate(x.upper) : fmtRateAuto(x.rate_after)) + "</td></tr>";
+    });
+    const docRows = doc ? doc.timeline.map(function (t) {
+      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0 && i.url; }).map(function (i) { return docAnchor(i, i.label); }).join("<br>") || NA; };
+      return "<tr><td>" + fmtDay(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") : NA) + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) + "</td><td>" + fu(["presser_video", "presser_transcript", "opening_statement"]) + "</td></tr>";
+    }) : [];
+    const spRows = doc ? doc.speeches.slice(0, 12).map(function (x) {
+      return '<tr class="' + (x.relevance === "other" ? "cb-dim" : "") + '"><td>' + fmtDay(x.published) + "</td><td>" + esc(x.speaker || NA) + '</td><td class="cb-notes"><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></td></tr>";
+    }) : [];
+    const calRows = d.calendar.map(function (m) {
+      const b = m.blackout;
+      return "<tr><td>" + weekday(m.decision) + " " + fmtDay(m.decision) + "</td><td>" + esc(timeText(m.time) || NA) + "</td><td>" + (b ? fmtDay(b.start.slice(0, 10)) + " → " + fmtDay(b.end.slice(0, 10)) : NA) + "</td></tr>";
+    });
+    const srcRows = d.sources.map(function (x) {
+      return "<tr" + (x.stale ? ' class="cb-stale"' : "") + "><td>" + esc(x.id) + "</td><td>" + esc(x.role || "") + '</td><td class="cb-n">' + (x.asof ? fmtDay(x.asof) : NA) + staleBadge(x.stale) + "</td></tr>";
+    });
+    const horizons = ["2026", "2027"].map(function (y) {
+      const hz = d.horizons[y];
+      return "<tr><td>End-" + y + '</td><td class="cb-n">' + (isNum(hz.v) ? fmtSigned(hz.v, 1) + " bp" : isNum(hz.level) ? fmtRate(hz.level, 3) + "%" : NA) + '</td><td class="cb-n">' +
+        (isNum(hz.repricing["1w"].v) ? fmtSigned(hz.repricing["1w"].v, 1) : NA) + '</td><td class="cb-n">' + (isNum(hz.repricing["1m"].v) ? fmtSigned(hz.repricing["1m"].v, 1) : NA) + "</td></tr>";
+    });
+    root.innerHTML = phoneTop(d) + '<div class="cb-accs">' +
+      acc("cbAccChart", "Policy-rate trajectory", "chart: " + kinds.join(", "), '<div class="cb-chart-wrap"><canvas id="cbChart"></canvas></div><div class="cb-sub">' + esc(chartHelp(d)) + "</div>", false) +
+      acc("cbAccPath", "Implied path by meeting", d.trajectory.length + " meeting" + (d.trajectory.length === 1 ? "" : "s"), miniTable(["Meeting", "Rate %", "Total, bp"], pathRows, d.summary.na || "no upcoming meeting") + (pathNote ? '<div class="cb-sub">' + esc(pathNote) + "</div>" : ""), true) +
+      acc("cbAccHorizon", "End-2026 and end-2027", "implied change and repricing", miniTable(["Horizon", "Implied", "1w", "1m"], horizons), false) +
+      acc("cbAccGap", gapTitle, gapSub, gapBody, false) +
+      latest +
+      acc("cbAccDecisions", "Last decisions", d.decisions.length + " on record", miniTable(["Date", "Δ bp", "Rate after %"], decRows), false) +
+      (doc ? acc("cbAccDocs", "Documents", "last four meetings", miniTable(["Meeting", "Statement", "Minutes", "Press conf."], docRows), false) +
+             acc("cbAccSpeeches", "Speeches and testimony", "last 60 days", miniTable(["Date", "Speaker", "Title"], spRows, "no speeches collected in the last 60 days"), false) : "") +
+      acc("cbAccCalendar", "Calendar and blackout", "", miniTable(["Decision", "Time", "Blackout"], calRows, "no upcoming meetings on record"), false) +
+      acc("cbAccSources", "Sources", "", miniTable(["Source", "Role", "As-of"], srcRows, "no market source for this currency"), false) +
+      acc("cbAccMethod", "How is this calculated?", "", methodPanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, ""), false) +
+      "</div>" + '<p class="ph-note">Every section opens in place; the chart and the tables keep their desktop content, with fewer columns.</p>';
+    const canvas = document.getElementById("cbChart");
+    let drawn = false;
+    root.querySelectorAll(".cb-acc-head").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const open = b.getAttribute("aria-expanded") !== "true";
+        b.setAttribute("aria-expanded", String(open));
+        document.getElementById(b.getAttribute("aria-controls")).hidden = !open;
+        if (open && b.parentNode.id === "cbAccChart" && !drawn) { drawn = true; registerRedraw(function () { drawBankChart(canvas, d); }); }
+      });
+    });
+    wireRedline(d);
   }
 
   // ---- pair page ------------------------------------------------------------------------------------------------------------
@@ -870,7 +1077,11 @@
     if (CFG.page !== "overview" && !window.Chart) { root.innerHTML = failHtml(new Error("Chart.js missing")); return; }
     let job;
     if (CFG.page === "overview") job = getJSON(CFG.urls.overview).then(renderOverview);
-    else if (CFG.page === "bank") job = getJSON(bankUrl(CFG.ccy)).then(renderBank);
+    else if (CFG.page === "bank") job = getJSON(bankUrl(CFG.ccy)).then(function (d) {
+      renderBank(d);
+      const mq = window.PhoneUI && window.PhoneUI.mq;                  // re-render when the viewport crosses the phone breakpoint
+      if (mq && mq.addEventListener) mq.addEventListener("change", function () { renderBank(d); });
+    });
     else if (CFG.page === "pair") {
       job = getJSON(CFG.urls.pairs).then(function (pj) {
         const p = pj.pairs.find(function (x) { return x.pair === CFG.pair; });

@@ -11,6 +11,11 @@
     var dark = (t === "dark" || t === "light") ? t === "dark"
       : !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
     if (dark) document.documentElement.classList.add("dark");
+    /* Faza 11: the phone banner, once closed, stays closed on this device;
+       decided here so it never flashes. */
+    var closed = null;
+    try { closed = localStorage.getItem("phone-banner-closed"); } catch (e) {}
+    if (closed) document.documentElement.classList.add("banner-closed");
   })();
 </script>
   <meta charset="UTF-8">
@@ -25,6 +30,7 @@
   <nav class="main-nav">
   <div class="nav-container">
     <a class="nav-brand" href="/">Dashboard</a>
+    <div class="nav-tabs">
     <ul class="nav-links">
       <li class="">
         <a href="/economic">Economic</a>
@@ -51,6 +57,7 @@
         <a href="/vix-ratio">VIX/VIX3M</a>
       </li>
     </ul>
+    </div>
     <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle theme">
       <svg class="theme-icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
            fill="none" stroke="currentColor" stroke-width="2"
@@ -66,13 +73,26 @@
     </button>
   </div>
 </nav>
+<div class="phone-banner" role="status">
+  <svg class="phone-banner-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+       stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="4" width="15" height="11" rx="1.5"></rect><path d="M6 19h7M9.5 15v4"></path>
+    <rect x="18" y="8" width="4" height="11" rx="1"></rect>
+  </svg>
+  <span class="phone-banner-text"><b>Best on desktop or tablet.</b> This is the compact phone view.</span>
+  <button type="button" class="phone-banner-x" aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+  </button>
+</div>
 <script src="/theme-toggle.js"></script>
+<script src="/phone.js"></script>
 
   <main class="page-content vix-page">
 
     <header class="vix-header">
       <h1>VIX / VIX3M Ratio</h1>
-      <p class="subtitle">Term structure signal. Ratio above 1 indicates short-term volatility premium (stress). Ratio below 1 indicates contango (calm).</p>
+      <p class="subtitle" data-htr>Term structure signal. Ratio above 1 indicates short-term volatility premium (stress). Ratio below 1 indicates contango (calm).</p>
     </header>
 
     <section class="vix-signal-card" id="vix-signal-card">

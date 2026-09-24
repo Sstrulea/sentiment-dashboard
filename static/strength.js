@@ -354,13 +354,73 @@
         const style = matrixCellStyle(v, maxAbs);
         const tip = base + "/" + quote + " fundamental score " + fmtSigned(v, 2) +
           " (no COT, no trend; categories both legs have)";
-        return '<td class="matrix-cell"' + (style ? ' style="' + style + '"' : "") +
+        return '<td class="matrix-cell" data-pair="' + escAttr(base + "/" + quote) + '"' + (style ? ' style="' + style + '"' : "") +
           ' title="' + escAttr(tip) + '">' + fmtSigned(v, 2) + '</td>';
       }).join("");
       return '<tr><th class="matrix-row-label">' + base + '</th>' + cells + '</tr>';
     }).join("");
 
     table.innerHTML = '<thead>' + headerRow + '</thead><tbody>' + bodyRows + '</tbody>';
+    // Faza 11D: a cell opens that pair on Economic (whichever way the pair is quoted there)
+    table.querySelectorAll("td.matrix-cell[data-pair]").forEach(td => {
+      td.addEventListener("click", () => {
+        window.location.href = "/economic?pair=" + encodeURIComponent(td.dataset.pair.replace("/", ""));
+      });
+    });
+  }
+
+  // ---- Phone (Faza 11D): divergence card + ranked list, max-width 600px ----
+  const MINUS_SIGN = "\u2212";
+  const pm = (s) => String(s).replace(/^-(0(\.0+)?)$/, "$1").replace(/^-/, MINUS_SIGN);
+  function renderPhone() {
+    const root = document.getElementById("strengthPhone");
+    if (!root || !window.PhoneUI) return;
+    const h = window.PhoneUI.h;
+    const currencies = state.payload.currencies || {};
+    root.textContent = "";
+    const meta = document.getElementById("strengthPhoneMeta");
+    if (meta) {
+      const n = CCY_ORDER.filter(c => currencies[c]).length;
+      const d = new Date(state.payload.as_of);
+      meta.textContent = "Model of " + (isNaN(d.getTime()) ? String(state.payload.as_of).slice(0, 10) :
+        d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()]) +
+        " · " + n + " currencies · pair units";
+    }
+    const dv = divergence(currencies);
+    if (dv) {
+      root.appendChild(h("div", { class: "strength-ph-div" },
+        h("div", {}, h("div", { class: "strength-ph-kicker", text: "Divergence" }),
+          h("div", { class: "strength-ph-divtxt" }, h("b", { text: dv.strongest }), " strongest vs ", h("b", { text: dv.weakest }), " weakest")),
+        h("div", { class: "strength-ph-divval", text: dv.spread.toFixed(2) })));
+    }
+    const list = h("div", { class: "ph-list strength-ph-list" },
+      h("div", { class: "ph-list-head strength-ph-grid" }, h("span", { text: "#" }), h("span", { text: "Currency" }),
+        h("span", { text: "Position" }), h("span"), h("span", { class: "strength-ph-r", text: "Score" })));
+    sortedCurrencies(currencies).forEach((ccy, i) => {
+      const card = currencies[ccy];
+      const noData = !hasCoverage(card);
+      const pct = noData ? null : Math.max(0, Math.min(100, card.pct));
+      const track = h("span", { class: "strength-ph-track" }, h("span", { class: "strength-ph-mid" }));
+      if (pct !== null && Math.abs(pct - 50) > 0.05) {
+        const t = (pct - 50) / 50, mag = Math.max(Math.pow(Math.abs(t), 0.7), 0.25);
+        const fill = h("span", { class: "strength-ph-fill" });
+        fill.style.left = Math.min(pct, 50) + "%";
+        fill.style.width = Math.abs(pct - 50) + "%";
+        fill.style.background = "rgba(" + (t > 0 ? MATRIX_BLUE : MATRIX_RED) + "," + mag.toFixed(3) + ")";
+        track.appendChild(fill);
+      }
+      const row = h("button", { type: "button", class: "ph-row strength-ph-grid" },
+        h("span", { class: "strength-ph-rank", text: String(i + 1) }),
+        h("span", { class: "strength-ph-ccy" }, h("b", { text: ccy }),
+          h("span", { class: "strength-ph-sub", text: "N " + (card.coverage || 0) + " · " + monetaryText(card) })),
+        track,
+        h("span", { class: "strength-ph-pct", text: noData ? "—" : card.pct.toFixed(1) + "%" }),
+        h("span", { class: "strength-ph-score" }, h("span", { text: noData ? "—" : pm(fmtSigned(score(card), 2)) }),
+          h("span", { class: "strength-ph-sub", text: noData ? "no data" : (card.bias_label || "Neutral") })));
+      row.addEventListener("click", () => goToDrilldown(ccy));
+      list.appendChild(row);
+    });
+    root.appendChild(list);
   }
 
   function renderMain() {
@@ -368,6 +428,7 @@
     renderGrid();
     renderTable();
     renderMatrix();
+    renderPhone();
   }
 
   // ---- Drilldown --------------------------------------------------------

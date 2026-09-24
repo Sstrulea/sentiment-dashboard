@@ -13,25 +13,28 @@
 
   <main class="page-content econ-page">
     <header class="econ-header">
-      <h1>Economic Dashboard</h1>
+      <h1>Economic<span class="desk-only"> Dashboard</span></h1>
+      <div class="phone-only econ-ph-head" id="econPhoneMeta"></div>
       <div class="econ-header-right">
-        <div class="econ-meta-bar" id="econMeta">
+        <div class="econ-meta-bar desk-only" id="econMeta">
           <span class="muted">Loading…</span>
         </div>
-        <p class="model-note" id="modelNote" hidden></p>
+        <p class="model-note" id="modelNote" data-htr hidden></p>
         <button type="button" id="manualActualsBtn" class="manual-actuals-btn" hidden
                 aria-haspopup="dialog"></button>
       </div>
     </header>
 
-    <div class="econ-legend">
+    <div class="econ-legend" data-htr>
       <span class="muted">Bias from the normalized macro-surprise index. Cells are rounded scores on a
       blue (bullish) ↔ red (bearish) scale; for a pair each indicator cell is the base − quote
       differential. Click a row for the per-indicator breakdown.</span>
     </div>
     {% include '_help_scoring_modal.html.j2' %}
 
-    <div class="econ-controls">
+    <section class="phone-only econ-phone" id="econPhone" aria-label="Pairs"></section>
+
+    <div class="econ-controls desk-only">
       <div id="econCcyFilter" class="cat-filter" role="group" aria-label="Filter by currency">
         <span class="cat-filter-label">Currency:</span>
         <div class="cat-chips" id="econCcyChips"><!-- chips injected by economic-chart.js --></div>
@@ -48,13 +51,13 @@
       </div>
     </div>
 
-    <section class="retail-table-wrapper">
+    <section class="retail-table-wrapper desk-only">
       <div id="econContent">
         <p class="muted" style="padding: 40px; text-align: center;">Loading economic bias…</p>
       </div>
     </section>
 
-    <section class="crossasset-section" id="crossassetSection" hidden>
+    <section class="crossasset-section desk-only" id="crossassetSection" hidden>
       <header class="econ-header crossasset-header">
         <h2>Cross-Asset</h2>
       </header>
