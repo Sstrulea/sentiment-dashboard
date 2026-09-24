@@ -293,8 +293,8 @@
     body.innerHTML =
       '<header class="modal-header">' +
       '<h2>Manual Actuals <small class="muted">(' + ma.count + ' needing review' + olderNote + ')</small></h2>' +
-      '<div class="muted modal-subhead">MISSING: scheduled, past due, no print yet — enter the actual. ' +
-      'ZERO_CONFIRM: a 0.0 print scoring would quarantine — confirm it as a real flat print, or correct it. ' +
+      '<div class="muted modal-subhead">MISSING: scheduled, past due, no usable print (nothing yet, or a 0.0 placeholder where 0.0 cannot be the value) — enter the actual. ' +
+      'ZERO_CONFIRM: a 0.0 print with no independent evidence, on a series where 0.0 can be real — confirm it as a real flat print, or correct it. ' +
       'One row, one decision; a submit starts a refresh (~3 min) but only reload of this page will confirm it landed.</div>' +
       '</header>' +
       '<div class="econ-ind-scroll"><table class="econ-ind-table">' +

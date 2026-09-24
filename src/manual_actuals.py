@@ -8,8 +8,12 @@ Two states, no others:
                  event was scheduled, the time has passed, we have nothing.
   ZERO_CONFIRM — actual == 0.0 that does NOT pass the widening check
                  `ff_scoring.to_scoring_frame` applies at scoring time (i.e.
-                 it would be quarantined to NaN there). Ambiguous: a genuine
-                 flat print, or the JBlanked "unreleased" placeholder.
+                 it would be quarantined to NaN there), on a series whose
+                 zero_possible is true. Ambiguous: a genuine flat print, or
+                 the JBlanked "unreleased" placeholder.
+  A 0.0 placeholder on a zero_possible=false series, or one JB reported as
+  "Data Not Loaded", is MISSING (audit 5A): 0.0 cannot be the answer there,
+  only a value can.
 
 Distinct from `stale` (economic_render._freshness): stale means nothing new
 has been released yet — informational. MISSING/ZERO_CONFIRM mean something
@@ -93,7 +97,7 @@ import pandas as pd
 
 from .economic_compute import effective_frequency
 from .economic_fetch import CompiledMatcher
-from .econ_calendar_ff import ensure_provenance_columns
+from .econ_calendar_ff import JB_NOT_LOADED, ensure_provenance_columns
 from .ff_scoring import (CCY2COUNTRY, SCORING_COLUMNS, build_matcher,
                          effective_consensus, load_can_be_zero, load_configs,
                          load_zero_possible, zero_verdicts)
@@ -135,6 +139,12 @@ OVERRIDE_COLUMNS = [
 ]
 
 
+def _zero_possible(zero_possible: Optional[dict], canonical_id: str) -> bool:
+    """zero_possible of a series; an undeclared series has no default -> False."""
+    zp = {} if zero_possible is None else zero_possible
+    return bool(zp[canonical_id]) if canonical_id in zp else False
+
+
 def _zero_passes_widening(verdicts: dict, canonical_id: str, dt) -> bool:
     """A 0.0 actual is usable (no human needed) unless ff_scoring.zero_verdicts —
     THE zero rule, the same one to_scoring_frame applies (audit Z1-Z4, R1-R2) —
@@ -149,7 +159,8 @@ def _zero_passes_widening(verdicts: dict, canonical_id: str, dt) -> bool:
 
 def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
                          matcher: CompiledMatcher, verdicts: dict,
-                         missing_after: pd.Timedelta) -> pd.DataFrame:
+                         missing_after: pd.Timedelta,
+                         zero_possible: Optional[dict] = None) -> pd.DataFrame:
     """The per-row MISSING/ZERO_CONFIRM scan, UNSUPPRESSED — every actionable
     FF row, duplicates included. Split out from `find_actionable_rows` so
     `apply_overrides` can reconcile a written override against this full set
@@ -160,7 +171,7 @@ def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
 
     cutoff = pd.Timestamp(now_utc) - missing_after
     rows: list[dict] = []
-    for r in ff.itertuples(index=False):
+    for r in ensure_provenance_columns(ff).itertuples(index=False):
         key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
         if key is None:
             continue
@@ -173,7 +184,9 @@ def _raw_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
             release_date = dt.date()
             if _zero_passes_widening(verdicts, r.canonical_id, dt):
                 continue
-            state = ZERO_CONFIRM
+            zp = _zero_possible(zero_possible, r.canonical_id)
+            dnl = getattr(r, "jb_status", None) == JB_NOT_LOADED
+            state = ZERO_CONFIRM if (zp and not dnl) else MISSING
         else:
             continue
         rows.append({
@@ -317,10 +330,10 @@ def find_actionable_rows(ff: pd.DataFrame, *, now_utc: pd.Timestamp,
 
     matcher = matcher or build_matcher()
     cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
-    verdicts = zero_verdicts(ff, load_zero_possible() if zero_possible is None else zero_possible,
-                             matcher)
+    zero_possible = load_zero_possible() if zero_possible is None else zero_possible
+    verdicts = zero_verdicts(ff, zero_possible, matcher)
     raw = _raw_actionable_rows(ff, now_utc=now_utc, matcher=matcher, verdicts=verdicts,
-                               missing_after=missing_after)
+                               missing_after=missing_after, zero_possible=zero_possible)
     return _suppress_duplicates(raw, ff, matcher=matcher, verdicts=verdicts,
                                 indicators_cfg=indicators_cfg)
 
@@ -412,10 +425,10 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
     """
     matcher = matcher or build_matcher()
     cbz = load_can_be_zero() if can_be_zero is None else can_be_zero
-    verdicts = zero_verdicts(ff, load_zero_possible() if zero_possible is None else zero_possible,
-                             matcher)
+    zero_possible = load_zero_possible() if zero_possible is None else zero_possible
+    verdicts = zero_verdicts(ff, zero_possible, matcher)
     raw = _raw_actionable_rows(ff, now_utc=now_utc, matcher=matcher, verdicts=verdicts,
-                               missing_after=missing_after)
+                               missing_after=missing_after, zero_possible=zero_possible)
     actionable = _suppress_duplicates(raw, ff, matcher=matcher, verdicts=verdicts,
                                       indicators_cfg=indicators_cfg)
     if not overrides:
@@ -444,6 +457,8 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
         row = by_key.get(key)
         if row is None:
             continue   # stale: superseded by a real actual, or never actionable
+        if float(entry["actual"]) == 0.0 and not _zero_possible(zero_possible, entry["canonical_id"]):
+            continue   # audit 5A: 0.0 is not an answer on a zero_possible=false series
         manual_rows.append({
             "currency": row.currency, "indicator_key": row.indicator_key,
             "release_dt": row.datetime_utc, "actual": float(entry["actual"]),

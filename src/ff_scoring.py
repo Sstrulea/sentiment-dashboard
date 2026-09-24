@@ -84,8 +84,25 @@ def load_zero_possible(path: Path = ZERO_POSSIBLE_YAML) -> dict[str, bool]:
     return {str(k): bool(v) for k, v in (raw.get("zero_possible") or {}).items()}
 
 
+def _policy_zero_evidence(decisions: Optional[pd.DataFrame], currency: str, day) -> bool:
+    """A 0.00 policy rate decided that day, or the next meeting (within ~4
+    months) starting from rate_before = 0.00 (decisions.parquet)."""
+    if decisions is None or decisions.empty:
+        return False
+    d = decisions[decisions["currency"] == currency]
+    md = pd.to_datetime(d["meeting_date"]).dt.date
+    same = d[md == day]
+    if not same.empty:
+        return bool((same["rate_after"].astype(float) == 0.0).any())
+    later = d[md > day].assign(_md=md[md > day]).sort_values("_md")
+    if later.empty or (pd.Timestamp(later["_md"].iloc[0]) - pd.Timestamp(day)).days > 120:
+        return False
+    return float(later["rate_before"].iloc[0]) == 0.0
+
+
 def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
-                  matcher: Optional[CompiledMatcher] = None) -> dict:
+                  matcher: Optional[CompiledMatcher] = None,
+                  decisions: Optional[pd.DataFrame] = None) -> dict:
     """THE zero rule (audit Z1-Z4), one verdict per FF row whose actual is 0.0:
     {(canonical_id, datetime_utc): (placeholder: bool, recovered: float)}.
 
@@ -93,13 +110,17 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
           No default: a mapped series missing from config/ff_zero_possible.yaml
           raises.
       Z2  zero_possible True -> placeholder if the newest JB payload said
-          "Data Not Loaded" (jb_status) OR the next print's `previous`
-          contradicts it: |next.previous - 0| > tol (the previous-consistency
-          tolerance of the series, median + 3*1.4826*MAD, no floor).
-      R2  ... and real ONLY with positive evidence: a jb_status present and not
-          "Data Not Loaded", or a next.previous that confirms it (within tol).
-          No evidence -> placeholder (a missing key blocks). A human
-          ZERO_CONFIRM override supplies the value as a manual row.
+          "Data Not Loaded" (jb_status).
+      R2  ... and real ONLY with INDEPENDENT evidence (audit 5A): the `previous`
+          the next valid release publishes is within 2 x resolution of 0 and
+          does not contradict it (|next.previous| <= tol, the previous-
+          consistency tolerance, no floor; release_integrity.SeriesChain,
+          nothing across a gap). For interest_rate_decision the evidence is
+          data/cb/decisions.parquet: a 0.00 decision that day, or the next
+          meeting's rate_before = 0.00. A JB "Good/Bad Data" label is NOT
+          evidence: JB derives it from the same 0.0. No evidence ->
+          placeholder. A human override is the remaining evidence: a manual
+          row, unioned by the caller.
       Z3  same UTC day, a sibling carries a real non-zero actual -> the 0.0 is a
           placeholder of that release (not a divergence), never recovered.
       Z4  a placeholder that is its day's release (latest listed time, no real
@@ -109,8 +130,7 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
           for display/history only and never enters sigma or a score
           (see scoring_view).
     Rows whose 0.0 is real map to (False, NaN)."""
-    from .previous_consistency import EPS
-    from .previous_consistency import revision_tolerance
+    from .previous_consistency import EPS, revision_tolerance, series_resolution
     from .release_integrity import SeriesChain, next_valid_previous, resolve_conflicts
     matcher = matcher or build_matcher()
     df = ensure_provenance_columns(ff_df)
@@ -139,6 +159,15 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
         rep_dt = dict(zip(rel["day"], rel["datetime_utc"]))
         tol, _n = revision_tolerance(rel["actual"].to_numpy(float),
                                      np.append(rel["previous"].to_numpy(float)[1:], np.nan))
+        zero_band = min(tol, 2 * series_resolution(np.concatenate([g["actual"].to_numpy(float),
+                                                                   g["previous"].to_numpy(float)])))
+        policy = cid.endswith("_interest_rate_decision")
+        if policy and decisions is None:
+            from .policy_rate import load_decisions
+            try:
+                decisions = load_decisions()
+            except Exception:  # noqa: BLE001 — no decisions file: no policy evidence
+                decisions = pd.DataFrame()
         real_days = set(g.loc[g["actual"].notna() & (g["actual"] != 0.0), "day"])
         for z in zeros.itertuples(index=False):
             # 4B: "next" = the next period's release with a usable previous
@@ -148,12 +177,11 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
             if z.day in real_days:
                 out[(cid, z.datetime_utc)] = (True, float("nan"))                 # Z3
                 continue
-            contradicted = pd.notna(nprev) and abs(float(nprev)) > tol + EPS
-            confirmed = pd.notna(nprev) and not contradicted
-            jb_real = z.jb_status is not None and not pd.isna(z.jb_status) \
-                and z.jb_status != JB_NOT_LOADED
-            placeholder = (not zp) or z.jb_status == JB_NOT_LOADED or contradicted \
-                or not (jb_real or confirmed)
+            if policy:
+                confirmed = _policy_zero_evidence(decisions, z.currency, z.day)
+            else:
+                confirmed = pd.notna(nprev) and abs(float(nprev)) <= zero_band + EPS
+            placeholder = (not zp) or z.jb_status == JB_NOT_LOADED or not confirmed
             recovered = float("nan")
             if placeholder and pd.notna(nprev) and z.datetime_utc == rep_dt[z.day]:
                 recovered = float(nprev)                                          # Z4
