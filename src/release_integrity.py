@@ -246,6 +246,43 @@ def find_series_gaps(ff: pd.DataFrame, as_of: pd.Timestamp, zero_possible: dict,
     return out
 
 
+def load_known_gaps(path=None) -> list[dict]:
+    """config/known_gaps.yaml -> [{id, start, end, currencies|None, reason}]."""
+    import yaml
+    from pathlib import Path
+    p = Path(path) if path else Path(__file__).resolve().parents[1] / "config" / "known_gaps.yaml"
+    if not p.exists():
+        return []
+    raw = yaml.safe_load(p.read_text()) or {}
+    return [{"id": str(e["id"]), "start": pd.Timestamp(e["start"]), "end": pd.Timestamp(e["end"]),
+             "currencies": set(e["currencies"]) if e.get("currencies") else None,
+             "reason": str(e["reason"])} for e in (raw.get("known_gaps") or [])]
+
+
+def explain_gap(finding: dict, known: list[dict]) -> Optional[dict]:
+    """The known-gap entry that explains a series_gap finding, or None: every
+    release expected inside the gap (after + k x cadence) must fall in ONE
+    known window of that currency, give or take min(7, cadence/4) days."""
+    if finding.get("kind") != "series_gap" or not known:
+        return None
+    after, before = pd.Timestamp(finding["after"]), pd.Timestamp(finding["before"])
+    cad = float(finding["cadence_days"])
+    tol = pd.Timedelta(days=min(7.0, cad / 4))
+    expected = []
+    k = 1
+    while after + pd.Timedelta(days=k * cad) < before - pd.Timedelta(days=MIN_PERIOD * cad):
+        expected.append(after + pd.Timedelta(days=k * cad))
+        k += 1
+    if not expected:
+        return None
+    for e in known:
+        if e["currencies"] is not None and finding.get("currency") not in e["currencies"]:
+            continue
+        if all(e["start"] - tol <= d <= e["end"] + tol for d in expected):
+            return e
+    return None
+
+
 def find_unfed_scheduled(ff: pd.DataFrame, weekly: list[tuple[str, list]], as_of: pd.Timestamp,
                          matcher=None) -> list[dict]:
     """missing_release (not ingested): an event listed in an archived FF weekly

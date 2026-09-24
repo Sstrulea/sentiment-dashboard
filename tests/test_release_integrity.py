@@ -131,3 +131,28 @@ def test_levels_and_new_findings(tmp_path, monkeypatch):
     second = er._integrity_report(cal, as_of, previous_path=prev)
     assert not any(f["new"] for c in second["checks"].values() for f in c["findings"])
     assert er._integrity_summary(second)["new_warn"] == 0
+
+
+# --- 5C: signal, not a counter; known gaps ------------------------------------------
+
+def test_known_gaps_explain_only_gaps_fully_inside_a_window():
+    from src.release_integrity import explain_gap, load_known_gaps
+    known = load_known_gaps()
+    f = lambda ccy, a, b, cad=30: {"kind": "series_gap", "currency": ccy, "after": a, "before": b,
+                                   "cadence_days": cad}
+    assert explain_gap(f("USD", "2026-03-06", "2026-05-08"), known)["id"] == "jb_archive_hole_2026_04"
+    assert explain_gap(f("USD", "2025-10-02", "2025-11-20"), known)["id"] == "us_shutdown_2025"
+    assert explain_gap(f("CAD", "2023-11-21", "2024-01-16"), known)["id"] == "jb_archive_hole_2023_12"
+    assert explain_gap(f("EUR", "2025-10-02", "2025-11-20"), known) is None      # shutdown is USD only
+    assert explain_gap(f("USD", "2025-07-16", "2025-11-25"), known) is None      # Aug/Sep not explained
+    assert explain_gap(f("JPY", "2023-11-29", "2024-02-28"), known) is None      # Jan not in the hole
+
+
+def test_level_warn_only_with_new_warn_findings():
+    from src import economic_render as er
+    rep = {"checks": {"previous_consistency": {"findings": [{"level": "WARN", "new": False}]},
+                      "missing_release": {"findings": [{"level": "INFO", "known_gap": "x", "new": True}]}}}
+    s = er._integrity_summary(rep)
+    assert (s["warn"], s["new_warn"], s["level"], s["known_gaps"]) == (1, 0, "ok", 1)
+    rep["checks"]["previous_consistency"]["findings"][0]["new"] = True
+    assert er._integrity_summary(rep)["level"] == "warn"

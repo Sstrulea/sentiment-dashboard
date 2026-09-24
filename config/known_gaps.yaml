@@ -1,0 +1,18 @@
+# Known gaps with no fill source (audit 5C). A missing_release/series_gap finding
+# whose EVERY expected missing release falls inside one of these windows (± a
+# quarter cadence, at most 7 days) is reported INFO with the reason; any other
+# gap stays WARN. Dates are inclusive, UTC. `currencies` omitted = all.
+known_gaps:
+  - id: us_shutdown_2025
+    start: 2025-10-01
+    end: 2025-11-12
+    currencies: [USD]
+    reason: "US federal government shutdown 2025-10-01..11-12: BLS/BEA/Census releases were not published on schedule"
+  - id: jb_archive_hole_2023_12
+    start: 2023-12-04
+    end: 2023-12-29
+    reason: "JBlanked archive capture has no events for 2023-12-04..29 and there is no FF archive for that period"
+  - id: jb_archive_hole_2026_04
+    start: 2026-04-03
+    end: 2026-04-06
+    reason: "JBlanked archive capture has no events for 2026-04-03..06 (Good Friday week) and data/ff_raw starts 2026-08-01"
