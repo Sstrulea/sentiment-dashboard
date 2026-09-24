@@ -156,3 +156,31 @@ def test_level_warn_only_with_new_warn_findings():
     assert (s["warn"], s["new_warn"], s["level"], s["known_gaps"]) == (1, 0, "ok", 1)
     rep["checks"]["previous_consistency"]["findings"][0]["new"] = True
     assert er._integrity_summary(rep)["level"] == "warn"
+
+
+# --- 6A: per-publication entries -----------------------------------------------------
+
+def test_publication_entry_explains_only_its_exact_gap():
+    from src.release_integrity import explain_gap, load_known_gaps
+    known = load_known_gaps()
+    f = lambda cid, ccy, a, b: {"kind": "series_gap", "canonical_id": cid, "currency": ccy,
+                                "after": a, "before": b, "cadence_days": 30}
+    assert explain_gap(f("usd_cpi", "USD", "2025-10-24", "2025-12-18"), known)["id"] == "usd_cpi_2025_10"
+    assert explain_gap(f("usd_ppi", "USD", "2025-11-25", "2026-01-14"), known)["id"] == "usd_ppi_2025_10"
+    assert explain_gap(f("usd_cpi", "USD", "2025-10-24", "2025-12-19"), known) is None      # other gap
+    assert explain_gap(f("usd_retail_sales", "USD", "2025-10-24", "2025-12-18"), known) is None
+
+
+def test_every_publication_entry_carries_evidence_and_windows_did_not_grow():
+    from src.release_integrity import _load_known_gaps_raw
+    raw = _load_known_gaps_raw()
+    for e in raw["missing_publications"]:
+        assert e["canonical_ids"] and e["gap"]["after"] < e["gap"]["before"]
+        for p in e["publications"]:
+            assert p["status"] in ("cancelled", "merged", "not_published", "no_source") and p["evidence"]
+            if p["status"] != "no_source":
+                assert str(p["source"]).startswith(("https://www.bls.gov/", "https://www.bea.gov/"))
+    win = {e["id"]: (str(e["start"]), str(e["end"])) for e in raw["known_gaps"]}
+    assert win == {"us_shutdown_2025": ("2025-10-01", "2025-11-12"),
+                   "jb_archive_hole_2023_12": ("2023-12-04", "2023-12-29"),
+                   "jb_archive_hole_2026_04": ("2026-04-03", "2026-04-06")}
