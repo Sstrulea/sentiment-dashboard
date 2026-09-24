@@ -1446,7 +1446,7 @@ def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp,
             return report
         from src.econ_calendar_ff import parse_ff_weekly
         from src.ff_scoring import build_matcher, load_zero_possible
-        from src.release_integrity import (find_series_gaps, find_unfed_scheduled,
+        from src.release_integrity import (explain_gap, find_series_gaps, find_unfed_scheduled, load_known_gaps,
                                            resolve_conflicts)
         ffdf = pd.read_parquet(FF_PARQUET)
         zp = load_zero_possible()
@@ -1470,10 +1470,16 @@ def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp,
             key_of[r.canonical_id] = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
         missing = find_series_gaps(ffdf, as_of, zp) + find_unfed_scheduled(
             ffdf, _all_weekly_raw(as_of), as_of, matcher)
+        known = load_known_gaps()
         for f in missing:
             w = windows.get((f["currency"], key_of.get(f["canonical_id"])))
             when = pd.Timestamp(f.get("before") or f.get("release_dt"))
             f["level"] = "WARN" if (w is not None and when >= w) else "INFO"
+            k = explain_gap(f, known)          # 5C: known, unfillable gap -> INFO + reason
+            if k is not None:
+                f["level"] = "INFO"
+                f["known_gap"] = k["id"]
+                f["reason"] = k["reason"]
         report["checks"]["missing_release"] = {"findings": missing}
 
         seen = _previous_findings(previous_path)
@@ -1531,14 +1537,18 @@ def _integrity_summary(report: dict) -> dict:
         return {"previous_consistency": None, "level": "unavailable"}
     allf = [f for c in checks.values() for f in c.get("findings", [])]
     warn = sum(1 for f in allf if f.get("level") == "WARN")
+    new_warn = sum(1 for f in allf if f.get("level") == "WARN" and f.get("new"))
     return {"previous_consistency": len(pc["findings"]),
             "previous_consistency_by_source": pc.get("findings_by_source", {}),
             "previous_consistency_by_kind": pc.get("findings_by_kind", {}),
             "release_conflict": len((checks.get("release_conflict") or {}).get("findings", [])),
             "missing_release": len((checks.get("missing_release") or {}).get("findings", [])),
             "warn": warn,
-            "new_warn": sum(1 for f in allf if f.get("level") == "WARN" and f.get("new")),
-            "level": "warn" if warn else "ok"}
+            "new_warn": new_warn,
+            "known_gaps": sum(1 for f in allf if f.get("known_gap")),
+            # 5C: a signal, not a counter — "warn" only when this run has NEW
+            # WARN findings (the ones that alert); the standing ones are counted.
+            "level": "warn" if new_warn else "ok"}
 
 
 def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
