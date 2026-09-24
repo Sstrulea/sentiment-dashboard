@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-24T00:06:19.086210",
+ "as_of": "2026-09-24T01:06:15.440650",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -3942,7 +3942,7 @@
      "threshold": 0.37239,
      "n_revision_pairs": 8,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -5350,5 +5350,5 @@
    "INFO": 73
   }
  },
- "generated_at": "2026-09-24T00:06:27+00:00"
+ "generated_at": "2026-09-24T01:06:23+00:00"
 }
