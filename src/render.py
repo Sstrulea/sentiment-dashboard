@@ -240,8 +240,9 @@ def render_dashboard(snapshot: pd.DataFrame, history: pd.DataFrame) -> Path:
         active_page="cot",
     )
 
-    index_path = PUBLIC / "index.html"
-    index_path.write_text(html, encoding="utf-8")
+    # The COT page lives at /cot (public/cot.html); "/" redirects to /economic.
+    cot_path = PUBLIC / "cot.html"
+    cot_path.write_text(html, encoding="utf-8")
     archive_path.write_text(html, encoding="utf-8")
 
     # Copy CSS to public/.
@@ -250,4 +251,4 @@ def render_dashboard(snapshot: pd.DataFrame, history: pd.DataFrame) -> Path:
     if css_src.exists():
         shutil.copyfile(css_src, css_dst)
 
-    return index_path
+    return cot_path

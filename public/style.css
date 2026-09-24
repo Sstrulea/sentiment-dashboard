@@ -326,6 +326,7 @@ footer { padding: 20px 16px; color: var(--muted); font-size: 12px; }
 }
 .nav-brand {
   color: var(--nav-brand);
+  text-decoration: none;
   font-weight: 600;
   font-size: 16px;
   letter-spacing: 0.5px;

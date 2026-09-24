@@ -26,7 +26,21 @@ function parseCookies(header) {
   return out;
 }
 
-function loginPage(error) {
+const DEFAULT_NEXT = "/economic";
+
+// Only an internal path may be a post-login target: starts with "/" but not
+// "//" (protocol-relative) or "/\\" (browsers normalize it to "//").
+function safeNext(value) {
+  const v = String(value || "");
+  if (!v.startsWith("/") || v.startsWith("//") || v.startsWith("/\\")) return DEFAULT_NEXT;
+  return v;
+}
+
+function escapeAttr(v) {
+  return String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+function loginPage(error, nextPath) {
   const msg = error || "Sentiment Dashboard";
   const cls = error ? ' class="err"' : "";
   return `<!doctype html><html lang="ro"><head><meta charset="utf-8">
@@ -44,6 +58,7 @@ function loginPage(error) {
   input:focus{border-bottom-color:#8b949e}
 </style></head><body>
 <form method="POST" action="/login">
+  <input type="hidden" name="next" value="${escapeAttr(safeNext(nextPath))}">
   <p${cls}>${msg}</p>
   <input type="password" name="token" autofocus autocomplete="current-password">
 </form></body></html>`;
@@ -78,17 +93,18 @@ export default async function middleware(request) {
     if (request.method === "POST") {
       const form = await request.formData();
       const submitted = String(form.get("token") || "").trim();
-      if (!tokens.has(submitted)) return html(loginPage("Parolă greșită."), 401);
+      const nextPath = safeNext(form.get("next") || url.searchParams.get("next"));
+      if (!tokens.has(submitted)) return html(loginPage("Parolă greșită.", nextPath), 401);
       return new Response(null, {
         status: 303,
         headers: {
-          Location: "/",
+          Location: nextPath,
           "Set-Cookie": `${COOKIE}=${encodeURIComponent(submitted)}; Path=/; HttpOnly; ` +
                         `Secure; SameSite=Lax; Max-Age=${MAX_AGE}`,
         },
       });
     }
-    return html(loginPage(""), 200);
+    return html(loginPage("", url.searchParams.get("next")), 200);
   }
 
   const raw = parseCookies(request.headers.get("cookie"))[COOKIE];
@@ -98,8 +114,9 @@ export default async function middleware(request) {
     return next();
   }
 
+  const back = encodeURIComponent(url.pathname + url.search);
   return new Response(null, {
     status: 303,
-    headers: { Location: "/login", "cache-control": "no-store" },
+    headers: { Location: `/login?next=${back}`, "cache-control": "no-store" },
   });
 }
