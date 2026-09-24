@@ -614,5 +614,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-24T07:01:23+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
+  "currency": "JPY",
+  "indicator_key": "manufacturing_pmi",
+  "datetime_utc": "2026-09-24 00:30:00",
+  "actual": 54.1,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-24T07:05:42+00:00",
+  "note": ""
  }
 ]
