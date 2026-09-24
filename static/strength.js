@@ -459,10 +459,10 @@
     // means unknown/below-epsilon (unknown != revised), never re-derived here.
     const revClass = e.revision_sense > 0 ? "econ-rev-favorable"
       : e.revision_sense < 0 ? "econ-rev-unfavorable" : null;
-    const senseTxt = e.revision_sense > 0 ? ", favorabil" : e.revision_sense < 0 ? ", nefavorabil" : "";
+    const senseTxt = e.revision_sense > 0 ? ", favourable" : e.revision_sense < 0 ? ", unfavourable" : "";
     const previousHtml = revClass
-      ? '<span class="' + revClass + '" title="Revizuit de la ' + fmtUnit(e.prior_actual, unit) +
-        ' la ' + fmtUnit(e.previous, unit) + senseTxt + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
+      ? '<span class="' + revClass + '" title="Revised from ' + fmtUnit(e.prior_actual, unit) +
+        ' to ' + fmtUnit(e.previous, unit) + senseTxt + '">' + fmtUnit(e.previous, unit) + ' ↻</span>'
       : fmtPolicy(e.previous, e, unit);
     const impact = impactState(e);
     const rowCls = impact === "stale" ? ' class="ei-stale"'
@@ -513,7 +513,7 @@
         fmtScoreCell(sub.score_cell) + '</span>' +
         '<span class="muted"> &middot; N' + (sub.coverage || 0) + '</span>';
     } else {
-      subHtml = '<span class="econ-flag flag-fb" title="Category not scored — shown for visibility, never counted toward N">nescorat</span>';
+      subHtml = '<span class="econ-flag flag-fb" title="Category not scored — shown for visibility, never counted toward N">not scored</span>';
     }
     return '<tr class="strength-cat-header"><td colspan="7">' + catLabel(catKey).toUpperCase() +
       ' ' + subHtml + '</td></tr>';
@@ -524,7 +524,7 @@
   // currency's breakdown (rates, inflation_display, growth_display…),
   // appended in first-seen order — identical algorithm to /economic's
   // legHtml. A group whose key is a REAL card.categories entry shows its
-  // score_cell + N; anything else is display-only ("nescorat") and never
+  // score_cell + N; anything else is display-only ("not scored") and never
   // promoted into a real category's N (mirrors the economic_compute.py
   // regression test that guards this at the scoring layer).
   function drilldownGroupsHtml(card, ccy) {
@@ -548,13 +548,59 @@
     if (!rows) return '<p class="muted">No indicators within the lookback window.</p>';
 
     return (
-      '<div class="econ-ind-scroll strength-dd-scroll"><table class="econ-ind-table">' +
+      phoneDrilldownHtml(card, ccy, cats) +
+      '<div class="econ-ind-scroll strength-dd-scroll desk-only"><table class="econ-ind-table">' +
       DRILLDOWN_COLGROUP +
       '<thead><tr><th>Indicator</th><th>Date</th><th>Actual</th><th>Forecast</th>' +
       '<th>Surprise</th><th>Previous</th><th class="impact-head">Impact ' + ccy + '</th></tr></thead>' +
       '<tbody>' + rows + '</tbody>' +
       '</table></div>'
     );
+  }
+
+  // ---- Phone drilldown (Faza 11 fix): the Economic sheet's compact rows ----
+  // Name (may wrap) / "1.9 % vs 1.7 % expected · 3 Sep" (or "…, no forecast · date") / the surprise on the right
+  // (the impact under it); the group headers keep the cell and N. Desktop keeps the table.
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const pmS = (x) => String(x).replace(/^-/, "\u2212").replace(/ -/g, " \u2212");
+  function shortDay(iso, dateOnly) {
+    if (!iso) return "—";
+    const s = String(iso);
+    const d = dateOnly || /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s.slice(0, 10) + "T00:00:00Z") : parseUtc(s);
+    return isNaN(d.getTime()) ? s : d.getUTCDate() + " " + MON[d.getUTCMonth()];
+  }
+  function phoneRowHtml(key, e, ccy) {
+    const meta = indMeta(key);
+    const unit = meta.unit || { suffix: "", decimals: 1 };
+    const isRate = key === "rate_expectations";
+    const act = isRate ? e.latest_yield : e.actual;
+    const cons = isRate ? null : e.consensus;
+    const noCons = cons === null || cons === undefined;
+    const line = (noCons ? fmtPolicy(act, e, unit) + ", no forecast" : fmtPolicy(act, e, unit) + " vs " + fmtPolicy(cons, e, unit) + " expected") +
+      " · " + shortDay(e.release_dt || e.as_of, e.date_only);
+    const impact = impactState(e);
+    const impactHtml = impact === "no_forecast" ? "no forecast" : impact === "stale" ? "stale" : impact === "direction_guard" ? "direction guard"
+      : impact === "neutral" ? "neutral" : '<span class="' + cellClass(e.score) + '">' + fmtScoreCell(e.score) + "</span>";
+    const surprise = isRate ? "—" : fmtUnit(e.surprise, unit, true);
+    return '<div class="sdd-row' + (impact === "stale" ? " is-stale" : "") + '">' +
+      '<span class="sdd-name">' + (ccy ? indLabelForCcy(key, ccy) : (meta.label || key)) + "</span>" +
+      '<span class="sdd-surp">' + pmS(surprise) + '<span class="sdd-impact">' + impactHtml + "</span></span>" +
+      '<span class="sdd-line">' + pmS(line) + "</span></div>";
+  }
+  function phoneDrilldownHtml(card, ccy, cats) {
+    const breakdown = card.breakdown || {};
+    let html = "";
+    cats.forEach(catKey => {
+      const keys = Object.keys(breakdown).filter(k => indMeta(k).category === catKey);
+      if (!keys.length) return;
+      keys.sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
+      const sub = (card.categories || {})[catKey];
+      html += '<div class="sdd-head"><span class="sdd-cat">' + catLabel(catKey) + "</span>" +
+        (sub ? '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' + fmtScoreCell(sub.score_cell) + '</span><span class="muted">N ' + (sub.coverage || 0) + "</span>"
+             : '<span class="econ-flag flag-fb">not scored</span>') + "</div>" +
+        keys.map(k => phoneRowHtml(k, breakdown[k], ccy)).join("");
+    });
+    return '<div class="phone-only sdd-list"><div class="sdd-colhead"><span>Indicator</span><span>Surprise · impact</span></div>' + html + "</div>";
   }
 
   function renderDrilldown(ccy) {

@@ -42,3 +42,18 @@ def test_phone_js_builds_dom_without_html_strings():
     js = (ROOT / "static" / "phone.js").read_text()
     assert "innerHTML" not in js and "insertAdjacentHTML" not in js
     assert 'role: "dialog"' in js and '"aria-modal": "true"' in js
+
+
+def test_ui_text_is_english():
+    """The last Romanian UI strings (Strength drilldown) are gone: "not scored", "Revised from ... to ..."."""
+    for f in ("strength.js", "economic-chart.js", "cb.js", "cot.js", "carry.js", "phone.js"):
+        js = (ROOT / "static" / f).read_text()
+        for word in ("nescorat", "favorabil", "Revizuit"):
+            assert word not in js, (f, word)
+    assert "not scored" in (ROOT / "static" / "strength.js").read_text()
+
+
+def test_cot_default_order_is_the_score():
+    js = (ROOT / "static" / "cot.js").read_text()
+    assert 'const isDefault = !state.sort && col.key === "cot";' in js
+    assert "function defaultOrder(a, b)" in js

@@ -2528,3 +2528,33 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
   main .carry-phone { margin-top: 12px; }
   main .strength-phone { margin-top: 12px; }
 }
+
+/* ---- Faza 11 fix: Strength drilldown on the phone (the Economic sheet's compact rows) ---- */
+@media (max-width: 600px) {
+  .sdd-list { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 0 14px 6px; }
+  .sdd-colhead { display: flex; justify-content: space-between; height: 34px; align-items: center; margin: 0 -14px; padding: 0 14px;
+    background: var(--header-bg); border-bottom: 1px solid var(--border); border-radius: 12px 12px 0 0;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .sdd-head { display: flex; align-items: center; gap: 8px; min-height: 38px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .sdd-cat { flex: 1; font-weight: 600; }
+  .sdd-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; row-gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .sdd-row:last-child { border-bottom: 0; }
+  .sdd-row.is-stale { opacity: 0.6; }
+  .sdd-name { font-size: 13px; overflow-wrap: anywhere; min-width: 0; }
+  .sdd-line { grid-column: 1; font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; min-width: 0; }
+  .sdd-surp { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+    font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sdd-impact { font-size: 11px; font-weight: 600; color: var(--muted); }
+  .sdd-impact span { padding: 0 5px; border-radius: 4px; }
+  .strength-dd-head { gap: 6px 10px; }
+}
+
+/* ---- Faza 11 fix: pair-page metrics on the phone, one per row ---- */
+@media (max-width: 600px) {
+  .cb-pm-list { display: flex; flex-direction: column; }
+  .cb-pm-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; row-gap: 2px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .cb-pm-row:last-child { border-bottom: 0; }
+  .cb-pm-label { font-size: 13px; overflow-wrap: anywhere; min-width: 0; }
+  .cb-pm-val { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 11px; }
+  .cb-pm-detail { grid-column: 1; font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; min-width: 0; }
+}

@@ -322,9 +322,26 @@
     }
     return null;
   }
+  // Default order (no ?sort=): COT score descending, bullish on top, in both views. Ties, and the rows without a score
+  // (after the scored ones), go by the reading of the view's 3Y percentile, bullish first: speculators are read against
+  // the crowd (low p3 first), commercials with the hedgers (high p3 first).
+  function defaultOrder(a, b) {
+    const ca = sortValue(a, "cot"), cb = sortValue(b, "cot");
+    const sa = isNum(ca), sb = isNum(cb);
+    if (sa !== sb) return sa ? -1 : 1;
+    if (sa && ca !== cb) return cb - ca;
+    const pa = sortValue(a, "p3"), pb = sortValue(b, "p3");
+    const qa = isNum(pa), qb = isNum(pb);
+    if (qa !== qb) return qa ? -1 : 1;
+    if (qa && pa !== pb) return state.view === "spec" ? pa - pb : pb - pa;
+    return a.symbol.localeCompare(b.symbol);
+  }
   function sortRows(rows) {
-    const key = state.sort ? state.sort.key : "p3";
-    const dir = state.sort ? state.sort.dir : "desc";
+    if (!state.sort) {
+      return rows.slice().sort((a, b) => (a.missing !== b.missing ? (a.missing ? 1 : -1) : defaultOrder(a, b)));
+    }
+    const key = state.sort.key;
+    const dir = state.sort.dir;
     const mul = dir === "asc" ? 1 : -1;
     return rows.slice().sort((a, b) => {
       if (a.missing !== b.missing) return a.missing ? 1 : -1;
@@ -562,7 +579,7 @@
   }
   function sortHeader(col) {
     const active = state.sort && state.sort.key === col.key;
-    const isDefault = !state.sort && col.key === "p3";
+    const isDefault = !state.sort && col.key === "cot";
     const dir = active ? state.sort.dir : isDefault ? "desc" : null;
     const btn = h("button", { type: "button", class: "cot-sort" + (dir ? " is-active" : ""), "data-sort": col.key, onclick: () => cycleSort(col.key) }, col.label);
     if (dir) btn.appendChild(s("svg", { width: 10, height: 10, viewBox: "0 0 10 10", "aria-hidden": "true", class: "cot-sort-ico" },
