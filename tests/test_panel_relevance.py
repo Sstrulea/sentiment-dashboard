@@ -37,3 +37,20 @@ def test_sigma_window_and_last_print_decide_affects_vs_history():
 def test_series_without_scoring_window_affects():
     aff, hist, dup = panel_relevance(_rows(("chf_x", "retail_sales", "2024-01-05 07:30")), _scoring("cpi", MONTHLY))
     assert (len(aff), len(hist), dup) == (1, 0, 0)
+
+
+# --- 7C: ⚠ only for real impact ----------------------------------------------------
+
+def test_impact_reasons():
+    full = _scoring("cpi", MONTHLY)                                    # 20 prints: window full
+    rows = _rows(("chf_cpi", "cpi", "2026-09-05 07:30"),              # after the last print
+                 ("chf_cpi", "cpi", "2025-11-20 07:30"))              # inside a full window
+    aff, _h, _d = panel_relevance(rows, full)
+    got = dict(zip(aff["datetime_utc"].dt.strftime("%Y-%m-%d"), aff["impact"]))
+    assert got == {"2026-09-05": "last_print", "2025-11-20": None}
+    few = _scoring("pmi", MONTHLY[:4])                                 # 4 prints: fallback
+    aff, _h, _d = panel_relevance(_rows(("chf_pmi", "pmi", "2025-02-20 07:30")), few)
+    assert aff["impact"].tolist() == ["fallback"]
+    part = _scoring("gdp", MONTHLY[:8])                                # 8 prints: window 8/12
+    aff, _h, _d = panel_relevance(_rows(("chf_gdp", "gdp", "2025-03-20 07:30")), part)
+    assert aff["impact"].tolist() == ["sigma_window"]

@@ -1345,12 +1345,17 @@ def _row_json(r, affects: bool) -> dict:
             "indicator_key": r.indicator_key, "name_raw": r.name_raw,
             "name_canonical": r.name_canonical, "datetime_utc": r.datetime_utc,
             "forecast": r.forecast, "previous": r.previous,
-            "actual": r.actual, "state": r.state, "affects_score": affects}
+            "actual": r.actual, "state": r.state, "affects_score": affects,
+            "impact": getattr(r, "impact", None)}
+
+
+PANEL_WINDOW_K = 12        # = economic_indicators.yaml defaults.surprise_window_k
+PANEL_FALLBACK_MIN = 6     # = defaults.fallback_min_prints
 
 
 def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
                     ) -> tuple[pd.DataFrame, pd.DataFrame, int]:
-    """Audit 6C — the panel as a signal: (affects_score, history_only, n_duplicates).
+    """Audit 6C/7C — the panel as a signal: (affects_score, history_only, n_duplicates).
 
       duplicate      the same series (currency, indicator_key) already has a SCORED
                      value on the same or the adjacent UTC day — the release is in,
@@ -1359,9 +1364,16 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
       affects_score  the row falls in the series' scoring window (the sigma window,
                      K=12 prints with actual and consensus, or the last print —
                      previous_consistency.scoring_windows), or the series has none.
+                     Column `impact` (7C) says whether the missing value changes the
+                     INPUTS of the current score:
+                       last_print    it would be the series' latest print
+                       fallback      the series has < 6 prints (fallback method)
+                       sigma_window  the sigma window is not full (< 12 prints)
+                     None = the window is full: the value only changes WHICH 12
+                     prints enter sigma ("refines sigma only").
       history_only   older than that: an entry changes /history only."""
     if rows.empty or scoring is None or scoring.empty:
-        return rows, rows.iloc[0:0], 0
+        return rows.assign(impact=None), rows.iloc[0:0].assign(impact=None), 0
     import numpy as np
     from src.previous_consistency import scoring_windows
     sc = scoring.assign(release_dt=pd.to_datetime(scoring["release_dt"]))
@@ -1369,47 +1381,60 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
     days: dict = {}
     for c, k, d in zip(got["currency"], got["indicator_key"], got["release_dt"].dt.normalize()):
         days.setdefault((c, k), set()).add(d)
+    last = got.groupby(["currency", "indicator_key"])["release_dt"].max().to_dict()
+    npairs = sc[sc["actual"].notna() & sc["consensus"].notna()].groupby(
+        ["currency", "indicator_key"]).size().to_dict()
     win = scoring_windows(sc)
     one = pd.Timedelta(days=1)
-    dup, aff = [], []
+    dup, aff, impact = [], [], []
     for r in rows.itertuples(index=False):
         d = pd.Timestamp(r.datetime_utc)
-        have = days.get((r.currency, r.indicator_key), set())
+        key = (r.currency, r.indicator_key)
+        have = days.get(key, set())
         dn = d.normalize()
         dup.append(dn in have or (dn - one) in have or (dn + one) in have)
-        w = win.get((r.currency, r.indicator_key))
+        w = win.get(key)
         aff.append(w is None or d >= w)
+        n = int(npairs.get(key, 0))
+        lp = last.get(key)
+        impact.append("last_print" if (lp is None or d > lp) else
+                      "fallback" if n < PANEL_FALLBACK_MIN else
+                      "sigma_window" if n < PANEL_WINDOW_K else None)
     dup = np.array(dup, dtype=bool)
     aff = np.array(aff, dtype=bool)
+    rows = rows.assign(impact=impact)
     return (rows[~dup & aff].reset_index(drop=True), rows[~dup & ~aff].reset_index(drop=True),
             int(dup.sum()))
 
 
 def _build_manual_actuals_block(as_of: pd.Timestamp, scoring: pd.DataFrame | None = None) -> dict:
-    """JSON-ready Manual Actuals Panel block (audit 6C — a signal, not a counter):
-      count          rows that affect a score (panel_relevance) — the button number
-      rows           those rows, newest first by the 45-day relevance window:
-                     recent ones, then older ones still inside a scoring window
+    """JSON-ready Manual Actuals Panel block (audits 6C/7C — a signal, not a counter):
+      count          rows whose missing value changes the inputs of a current score
+                     (panel_relevance `impact`: last print / fallback / sigma window
+                     not full) — the button number, the only ones flagged ⚠
+      rows           those rows (each with its `impact` reason)
+      refine_count / refine_rows   inside a FULL sigma window: the value only
+                     changes which 12 prints enter sigma (folded in the UI)
+      history_count / history_rows outside every scoring window (folded)
       older_count    how many of `rows` are older than the 45-day window
-      history_rows   actionable but outside every scoring window (folded in the UI)
-      history_count  len(history_rows)
       duplicates_suppressed  rows whose release is already scored (same/adjacent day)
     Every listed row stays fully actionable/overridable."""
-    from src.manual_actuals import apply_relevance_window
+    from src.manual_actuals import RELEVANCE_WINDOW
     rows = _load_actionable_rows(as_of)
     if scoring is not None and not scoring.empty:
         scoring = scoring[pd.to_datetime(scoring["release_dt"]) <= as_of]
     affects, history, n_dup = panel_relevance(rows, scoring)
-    recent, _ = apply_relevance_window(affects, now_utc=as_of)
-    older = affects[~affects.set_index(["canonical_id", "datetime_utc"]).index.isin(
-        recent.set_index(["canonical_id", "datetime_utc"]).index)] if len(affects) else affects
-    ordered = pd.concat([recent, older.sort_values("datetime_utc", ascending=False)], ignore_index=True) \
-        if len(affects) else affects
+    has_impact = affects["impact"].notna() if len(affects) else pd.Series(dtype=bool)
+    impact = affects[has_impact].sort_values("datetime_utc", ascending=False) if len(affects) else affects
+    refine = affects[~has_impact].sort_values("datetime_utc", ascending=False) if len(affects) else affects
     history = history.sort_values("datetime_utc", ascending=False) if len(history) else history
+    cutoff = pd.Timestamp(as_of) - RELEVANCE_WINDOW
     return {
-        "count": int(len(affects)),
-        "older_count": int(len(older)),
-        "rows": [_row_json(r, True) for r in ordered.itertuples(index=False)],
+        "count": int(len(impact)),
+        "older_count": int((pd.to_datetime(impact["datetime_utc"]) < cutoff).sum()) if len(impact) else 0,
+        "rows": [_row_json(r, True) for r in impact.itertuples(index=False)],
+        "refine_count": int(len(refine)),
+        "refine_rows": [_row_json(r, True) for r in refine.itertuples(index=False)],
         "history_count": int(len(history)),
         "history_rows": [_row_json(r, False) for r in history.itertuples(index=False)],
         "duplicates_suppressed": n_dup,
