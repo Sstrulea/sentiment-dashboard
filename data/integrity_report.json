@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-23T19:06:13.733971",
+ "as_of": "2026-09-24T00:06:19.086210",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -3862,8 +3862,8 @@
      "next_previous": 47.7,
      "next_from": "parquet",
      "diff": 1.3,
-     "tolerance": 0.59478,
-     "threshold": 0.59478,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
      "n_revision_pairs": 8,
      "level": "WARN",
      "new": false
@@ -3924,6 +3924,25 @@
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
+    },
+    {
+     "canonical_id": "eur_s_p_global_services_pmi",
+     "currency": "EUR",
+     "indicator_key": "services_pmi",
+     "name_raw": "Flash Services PMI",
+     "release_dt": "2026-06-23T08:00:00",
+     "kind": "value",
+     "scored_actual": 48.9,
+     "scored_source": "ff",
+     "next_release_dt": "2026-07-24T08:00:00",
+     "next_previous": 49.4,
+     "next_from": "parquet",
+     "diff": 0.5,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 8,
+     "level": "WARN",
+     "new": true
     },
     {
      "canonical_id": "gbp_gdp",
@@ -4003,18 +4022,18 @@
     }
    ],
    "findings_by_source": {
-    "ff": 124,
+    "ff": 125,
     "quarantined": 84
    },
    "findings_by_kind": {
-    "value": 124,
+    "value": 125,
     "zero": 84
    },
    "n_checked": 3357,
    "n_series": 107,
-   "n_scored_zero": 181,
+   "n_scored_zero": 182,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-09-23.json"
+   "weekly_feed": "ff_weekly_2026-09-24.json"
   },
   "missing_release": {
    "findings": [
@@ -5323,7 +5342,7 @@
    "INFO": 3
   },
   "previous_consistency": {
-   "WARN": 25,
+   "WARN": 26,
    "INFO": 183
   },
   "missing_release": {
@@ -5331,5 +5350,5 @@
    "INFO": 73
   }
  },
- "generated_at": "2026-09-23T19:06:24+00:00"
+ "generated_at": "2026-09-24T00:06:27+00:00"
 }
