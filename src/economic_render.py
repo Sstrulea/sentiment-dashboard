@@ -1340,29 +1340,79 @@ def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
     return remaining[remaining["indicator_key"] != POLICY_KEY].reset_index(drop=True)
 
 
-def _build_manual_actuals_block(as_of: pd.Timestamp) -> dict:
-    """JSON-ready {count, older_count, rows[]} for the Manual Actuals Panel
-    button + list. `rows`/`count` are windowed to
-    manual_actuals.RELEVANCE_WINDOW (default 45d) — display-only, per
-    apply_relevance_window's docstring: an older row is still fully
-    actionable/overridable, just not listed. `older_count` is exactly that
-    many rows, for a discreet "+N older" indicator, never expanded into rows."""
+def _row_json(r, affects: bool) -> dict:
+    return {"canonical_id": r.canonical_id, "currency": r.currency,
+            "indicator_key": r.indicator_key, "name_raw": r.name_raw,
+            "name_canonical": r.name_canonical, "datetime_utc": r.datetime_utc,
+            "forecast": r.forecast, "previous": r.previous,
+            "actual": r.actual, "state": r.state, "affects_score": affects}
+
+
+def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
+                    ) -> tuple[pd.DataFrame, pd.DataFrame, int]:
+    """Audit 6C — the panel as a signal: (affects_score, history_only, n_duplicates).
+
+      duplicate      the same series (currency, indicator_key) already has a SCORED
+                     value on the same or the adjacent UTC day — the release is in,
+                     re-listed across midnight (4B: one publication = one row) ->
+                     dropped from the panel.
+      affects_score  the row falls in the series' scoring window (the sigma window,
+                     K=12 prints with actual and consensus, or the last print —
+                     previous_consistency.scoring_windows), or the series has none.
+      history_only   older than that: an entry changes /history only."""
+    if rows.empty or scoring is None or scoring.empty:
+        return rows, rows.iloc[0:0], 0
+    import numpy as np
+    from src.previous_consistency import scoring_windows
+    sc = scoring.assign(release_dt=pd.to_datetime(scoring["release_dt"]))
+    got = sc[sc["actual"].notna()]
+    days: dict = {}
+    for c, k, d in zip(got["currency"], got["indicator_key"], got["release_dt"].dt.normalize()):
+        days.setdefault((c, k), set()).add(d)
+    win = scoring_windows(sc)
+    one = pd.Timedelta(days=1)
+    dup, aff = [], []
+    for r in rows.itertuples(index=False):
+        d = pd.Timestamp(r.datetime_utc)
+        have = days.get((r.currency, r.indicator_key), set())
+        dn = d.normalize()
+        dup.append(dn in have or (dn - one) in have or (dn + one) in have)
+        w = win.get((r.currency, r.indicator_key))
+        aff.append(w is None or d >= w)
+    dup = np.array(dup, dtype=bool)
+    aff = np.array(aff, dtype=bool)
+    return (rows[~dup & aff].reset_index(drop=True), rows[~dup & ~aff].reset_index(drop=True),
+            int(dup.sum()))
+
+
+def _build_manual_actuals_block(as_of: pd.Timestamp, scoring: pd.DataFrame | None = None) -> dict:
+    """JSON-ready Manual Actuals Panel block (audit 6C — a signal, not a counter):
+      count          rows that affect a score (panel_relevance) — the button number
+      rows           those rows, newest first by the 45-day relevance window:
+                     recent ones, then older ones still inside a scoring window
+      older_count    how many of `rows` are older than the 45-day window
+      history_rows   actionable but outside every scoring window (folded in the UI)
+      history_count  len(history_rows)
+      duplicates_suppressed  rows whose release is already scored (same/adjacent day)
+    Every listed row stays fully actionable/overridable."""
     from src.manual_actuals import apply_relevance_window
     rows = _load_actionable_rows(as_of)
-    recent, older_count = apply_relevance_window(rows, now_utc=as_of)
+    if scoring is not None and not scoring.empty:
+        scoring = scoring[pd.to_datetime(scoring["release_dt"]) <= as_of]
+    affects, history, n_dup = panel_relevance(rows, scoring)
+    recent, _ = apply_relevance_window(affects, now_utc=as_of)
+    older = affects[~affects.set_index(["canonical_id", "datetime_utc"]).index.isin(
+        recent.set_index(["canonical_id", "datetime_utc"]).index)] if len(affects) else affects
+    ordered = pd.concat([recent, older.sort_values("datetime_utc", ascending=False)], ignore_index=True) \
+        if len(affects) else affects
+    history = history.sort_values("datetime_utc", ascending=False) if len(history) else history
     return {
-        "count": int(len(recent)),
-        "older_count": older_count,
-        "rows": [
-            {
-                "canonical_id": r.canonical_id, "currency": r.currency,
-                "indicator_key": r.indicator_key, "name_raw": r.name_raw,
-                "name_canonical": r.name_canonical, "datetime_utc": r.datetime_utc,
-                "forecast": r.forecast, "previous": r.previous,
-                "actual": r.actual, "state": r.state,
-            }
-            for r in recent.itertuples(index=False)
-        ],
+        "count": int(len(affects)),
+        "older_count": int(len(older)),
+        "rows": [_row_json(r, True) for r in ordered.itertuples(index=False)],
+        "history_count": int(len(history)),
+        "history_rows": [_row_json(r, False) for r in history.itertuples(index=False)],
+        "duplicates_suppressed": n_dup,
     }
 
 
@@ -1678,7 +1728,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     integrity = _integrity_report(_sv(cal), as_of)
     payload["freshness"]["integrity"] = _integrity_summary(integrity)
     payload["_integrity_report"] = integrity   # popped by render_economic_page
-    payload["manual_actuals"] = _build_manual_actuals_block(as_of)
+    payload["manual_actuals"] = _build_manual_actuals_block(
+        as_of, scoring=_sv(cal))
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
 

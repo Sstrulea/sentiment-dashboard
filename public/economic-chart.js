@@ -243,12 +243,12 @@
     const ma = state.payload.manual_actuals;
     if (!ma) { btn.hidden = true; return; }
     btn.hidden = false;
+    // Audit 6C: the number counts only rows that affect a score (inside the
+    // series' sigma window or its last print); history-only rows live folded
+    // in the modal and never inflate the signal.
     const n = ma.count || 0;
-    const older = ma.older_count || 0;
-    // `older` is a count only (manual_actuals.RELEVANCE_WINDOW, 45d default) —
-    // those rows are still fully actionable/overridable, just not listed here.
-    const olderSuffix = older > 0 ? " (+" + older + " older)" : "";
-    btn.textContent = (n === 0 ? "Needs review: 0" : "⚠ Needs review: " + n) + olderSuffix;
+    btn.textContent = n === 0 ? "Needs review: 0" : "⚠ Needs review: " + n;
+    btn.title = n + " affect a score" + (ma.history_count ? " · " + ma.history_count + " history-only (in the panel, folded)" : "");
     btn.classList.toggle("has-items", n > 0);
     btn.onclick = openManualActualsModal;
   }
@@ -284,7 +284,7 @@
 
   function manualActualsRowHtml(row) {
     const stateLabel = row.state === "MISSING" ? "Missing" : "Zero — confirm";
-    return '<tr data-canonical-id="' + escAttr(row.canonical_id) + '" data-currency="' + escAttr(row.currency) +
+    return '<tr data-affects="' + (row.affects_score ? "1" : "0") + '" data-canonical-id="' + escAttr(row.canonical_id) + '" data-currency="' + escAttr(row.currency) +
       '" data-indicator-key="' + escAttr(row.indicator_key) + '" data-datetime-utc="' + escAttr(row.datetime_utc) +
       '" data-state="' + escAttr(row.state) + '">' +
       '<td class="ei-name">' + row.currency + '</td>' +
@@ -305,22 +305,28 @@
 
     const rowsHtml = ma.rows.length
       ? ma.rows.map(manualActualsRowHtml).join("")
-      : '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px;">Nothing needs review.</td></tr>';
-
-    const olderNote = ma.older_count
-      ? ' <span title="Older than the 45-day panel window — still actionable and overridable, just not listed here.">+' +
-        ma.older_count + ' older, not shown</span>'
+      : '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px;">Nothing affecting a score needs review.</td></tr>';
+    const head = '<thead><tr><th>Currency</th><th style="text-align:left">Indicator</th><th>UTC</th><th>Forecast</th><th style="text-align:left">Action</th></tr></thead>';
+    const hist = ma.history_rows || [];
+    const histHtml = hist.length
+      ? '<details class="ma-history"><summary>History only (' + hist.length + ') — outside every scoring window; an entry changes /history, not a score</summary>' +
+        '<div class="econ-ind-scroll"><table class="econ-ind-table">' + head + '<tbody>' +
+        hist.map(manualActualsRowHtml).join("") + '</tbody></table></div></details>'
+      : "";
+    const dupNote = ma.duplicates_suppressed
+      ? ' <span title="Rows whose release is already scored by another row on the same or the adjacent UTC day (one publication = one row) are not listed.">· ' +
+        ma.duplicates_suppressed + ' duplicate' + (ma.duplicates_suppressed === 1 ? "" : "s") + ' hidden</span>'
       : "";
     body.innerHTML =
       '<header class="modal-header">' +
-      '<h2>Manual Actuals <small class="muted">(' + ma.count + ' needing review' + olderNote + ')</small></h2>' +
+      '<h2>Manual Actuals <small class="muted">(' + ma.count + ' affecting a score' + dupNote + ')</small></h2>' +
       '<div class="muted modal-subhead">MISSING: scheduled, past due, no usable print (nothing yet, or a 0.0 placeholder where 0.0 cannot be the value) — enter the actual. ' +
       'ZERO_CONFIRM: a 0.0 print with no independent evidence, on a series where 0.0 can be real — confirm it as a real flat print, or correct it. ' +
+      'Listed: rows inside a series\u2019 scoring window (sigma window or last print). ' +
       'One row, one decision; a submit starts a refresh (~3 min) but only reload of this page will confirm it landed.</div>' +
       '</header>' +
-      '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
-      '<thead><tr><th>Currency</th><th style="text-align:left">Indicator</th><th>UTC</th><th>Forecast</th><th style="text-align:left">Action</th></tr></thead>' +
-      '<tbody>' + rowsHtml + '</tbody></table></div>';
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + head +
+      '<tbody>' + rowsHtml + '</tbody></table></div>' + histHtml;
 
     modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -347,15 +353,17 @@
     return u || "unknown";
   }
 
-  function manualActualsDecrementCount() {
+  function manualActualsDecrementCount(tr) {
     const ma = state.payload.manual_actuals;
-    if (ma && ma.count > 0) ma.count -= 1;
+    if (!ma) return;
+    if (tr && tr.dataset.affects === "0") {
+      if (ma.history_count > 0) ma.history_count -= 1;
+    } else if (ma.count > 0) {
+      ma.count -= 1;
+    }
     renderManualActualsButton();
     const small = document.querySelector("#econDetailContent .modal-header h2 small");
-    if (small && ma) {
-      const olderNote = ma.older_count ? " +" + ma.older_count + " older, not shown" : "";
-      small.textContent = "(" + ma.count + " needing review" + olderNote + ")";
-    }
+    if (small) small.textContent = "(" + ma.count + " affecting a score)";
   }
 
   function submitManualActual(tr, actual) {
@@ -396,7 +404,7 @@
           ? '<span class="ma-applying">⏳ Applying — refresh running, ~3 min. Reload the page after that to confirm.</span>'
           : '<span class="ma-applying ma-applying-manual">✓ Committed — auto-refresh didn\'t start; applies on the next hourly run. Reload later to confirm.</span>';
         if (noteEl) noteEl.remove();
-        manualActualsDecrementCount();
+        manualActualsDecrementCount(tr);
       })
       .catch(function () {
         form.insertAdjacentHTML("beforeend", '<div class="ma-error">Network error — try again.</div>');
