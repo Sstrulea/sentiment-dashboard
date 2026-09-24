@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  /* Theme before the first paint (audit 9D): the saved choice ("cot-theme")
+     wins; without one, follow prefers-color-scheme. theme-toggle.js keeps
+     html.dark and body.dark in sync afterwards. */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("cot-theme"); } catch (e) {}
+    var dark = (t === "dark" || t === "light") ? t === "dark"
+      : !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    if (dark) document.documentElement.classList.add("dark");
+  })();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EUR/AUD | Central Banks | Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
