@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-24T01:06:15.440650",
+ "as_of": "2026-09-24T07:02:12.914097",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -4031,7 +4031,7 @@
    },
    "n_checked": 3357,
    "n_series": 107,
-   "n_scored_zero": 182,
+   "n_scored_zero": 181,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
    "weekly_feed": "ff_weekly_2026-09-24.json"
   },
@@ -5042,7 +5042,7 @@
      "before": "2025-12-03",
      "gap_days": 78,
      "cadence_days": 30,
-     "level": "INFO",
+     "level": "WARN",
      "new": false
     },
     {
@@ -5346,9 +5346,9 @@
    "INFO": 183
   },
   "missing_release": {
-   "WARN": 35,
-   "INFO": 73
+   "WARN": 36,
+   "INFO": 72
   }
  },
- "generated_at": "2026-09-24T01:06:23+00:00"
+ "generated_at": "2026-09-24T07:02:19+00:00"
 }
