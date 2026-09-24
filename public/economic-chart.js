@@ -888,7 +888,7 @@
     );
   }
 
-  function legHtml(role, currency, excludedCategories) {
+  function legHtml(role, currency, excludedCategories, pairSpread) {
     if (!currency) return "";
     const excluded = excludedCategories || [];
     const card = (state.payload.currencies || {})[currency];
@@ -927,6 +927,14 @@
         const tip = "Excluded from this pair's score — the other leg has no data for this category. " +
           "Included normally on pairs where both legs have it.";
         subHtml += ' <span class="econ-flag flag-excluded" title="' + escAttr(tip) + '">excluded here</span>';
+      }
+      // Audit 5B: in a pair the monetary factor is the pair's 2Y spread (one
+      // pair row above); the leg's own 2Y is shown for information only.
+      if (catKey === "monetary" && pairSpread) {
+        subHtml += ' <span class="econ-flag flag-excluded" title="' +
+          escAttr("This pair scores monetary on the 2Y spread (the Monetary section above). " +
+                  "The currency's own 2Y repricing is shown for information.") +
+          '">info — pair uses 2Y spread</span>';
       }
       let table;
       if (catKey === "monetary") {
@@ -1020,6 +1028,27 @@
       '</tbody></table></div></div>';
   }
 
+  // Audit 5B: the pair's monetary factor — ONE pair row on the 2Y spread.
+  function fxMonetarySectionHtml(inst, base, quote) {
+    const mp = inst.monetary_pair;
+    if (!mp) return "";
+    const cls = cellClass(mp.m);
+    const num = (v, d, unit) => (v === null || v === undefined) ? "—" : fmtSigned(v, d) + (unit || "");
+    const head = '<div class="econ-cat-group"><div class="econ-cat-head">Monetary (2Y spread) ' +
+      '<span class="econ-cat-sub ' + cls + '">' + fmtScoreCell(mp.m) + '</span>' +
+      ' <span class="muted">· m replaces the legs\u2019 own 2Y difference · 5-obs averaged ends, z vs 252 changes</span></div>';
+    const row =
+      '<tr><td class="ei-name">2Y ' + base + ' − 2Y ' + quote + '</td>' +
+      '<td class="ei-num">' + num(mp.spread, 3, "pp") + '</td>' +
+      '<td class="ei-num">' + num(mp.delta, 3, "pp") + '</td>' +
+      '<td class="ei-num">' + num(mp.z, 2) + '</td>' +
+      '<td class="ei-score ' + cls + '">' + fmtScoreCell(mp.m) + '</td>' +
+      '<td class="ei-date">' + (mp.as_of ? fmtDate(mp.as_of) : "—") + '</td></tr>';
+    return head + '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
+      '<thead><tr><th>Spread</th><th>Level</th><th>Δ(1m)</th><th>z</th><th>m</th><th>As-of</th></tr></thead>' +
+      '<tbody>' + row + '</tbody></table></div></div>';
+  }
+
   function openModal(symKey) {
     const inst = findInstrument(symKey);
     if (!inst) return;
@@ -1034,7 +1063,8 @@
 
     const gridClass = isFx ? "modal-grid econ-leg-grid" : "modal-grid econ-leg-grid one-col";
     const legs = isFx
-      ? legHtml("Base", base, inst.categories_excluded) + legHtml("Quote", quote, inst.categories_excluded)
+      ? legHtml("Base", base, inst.categories_excluded, !!inst.monetary_pair) +
+        legHtml("Quote", quote, inst.categories_excluded, !!inst.monetary_pair)
       : legHtml("Currency", base);
 
     const sub =
@@ -1054,6 +1084,7 @@
       // TREND first (matches column order), then Sentiment (COT), then the macro legs.
       (trendEnabled() ? trendSectionHtml(inst.trend_detail) : "") +
       fxCotSectionHtml(inst.cot) +
+      (isFx ? fxMonetarySectionHtml(inst, base, quote) : "") +
       '<div class="' + gridClass + '">' + legs + '</div>';
 
     modal.hidden = false;
