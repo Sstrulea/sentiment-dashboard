@@ -1985,6 +1985,431 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     7,
+     19,
+     20,
+     22
+    ],
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:opening_statement:2026-09-24",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-24T08:41:34Z",
+   "input_sha256": "47a77456d2274cb7adbe323b71e75b3821a33572630dd0af244e2ceb20277fd5",
+   "meeting_date": "2026-09-24",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 334,
+     "point": 1,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    },
+    {
+     "end": 535,
+     "point": 3,
+     "source_text": "0.25 percentage points",
+     "start": 513,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 2122,
+     "point": 4,
+     "source_text": "0.7%",
+     "start": 2118,
+     "text": "0.7%"
+    },
+    {
+     "end": 2131,
+     "point": 4,
+     "source_text": "2026",
+     "start": 2127,
+     "text": "2026"
+    },
+    {
+     "end": 1034,
+     "point": 4,
+     "source_text": "0.8%",
+     "start": 1030,
+     "text": "0.8%"
+    },
+    {
+     "end": 1411,
+     "point": 4,
+     "source_text": "2027",
+     "start": 1407,
+     "text": "2027"
+    },
+    {
+     "end": 1034,
+     "point": 4,
+     "source_text": "0.8%",
+     "start": 1030,
+     "text": "0.8%"
+    },
+    {
+     "end": 2164,
+     "point": 4,
+     "source_text": "2028",
+     "start": 2160,
+     "text": "2028"
+    },
+    {
+     "end": 334,
+     "point": 4,
+     "source_text": "0%",
+     "start": 332,
+     "text": "0%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-09-24",
+   "quotes": [
+    {
+     "end": 335,
+     "paragraph": 3,
+     "start": 274,
+     "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 2177,
+     "paragraph": 7,
+     "start": 2082,
+     "text": "It puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028 (cf. table)."
+    },
+    {
+     "end": 6140,
+     "paragraph": 20,
+     "start": 6075,
+     "text": "We have therefore decided to leave the SNB policy rate unchanged."
+    }
+   ],
+   "source": {
+    "chars": 6975,
+    "chars_sent": 6976,
+    "method": "stored",
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 335,
+        "paragraph": 3,
+        "start": 274,
+        "text": "We have decided to leave the SNB policy rate unchanged at 0%."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5545,
+        "paragraph": 19,
+        "start": 5466,
+        "text": "Since our last monetary policy assessment in June, inflation has risen further."
+       },
+       {
+        "end": 5855,
+        "paragraph": 20,
+        "start": 5774,
+        "text": "medium-term inflationary pressure has only increased slightly compared with June."
+       }
+      ],
+      "paragraphs": [
+       19,
+       20
+      ]
+     },
+     "text": "The SNB said inflation had risen further since June, while medium-term inflationary pressure had increased only slightly compared with June."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 443,
+        "paragraph": 3,
+        "start": 336,
+        "text": "Banks' sight deposits held at the SNB will be remunerated at the SNB policy rate up to a certain threshold."
+       },
+       {
+        "end": 536,
+        "paragraph": 3,
+        "start": 444,
+        "text": "The discount for sight deposits above this threshold is unchanged at 0.25 percentage points."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The SNB said banks' sight deposits will be remunerated at the SNB policy rate up to a certain threshold, and the discount above that threshold is unchanged at 0.25 percentage points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2177,
+        "paragraph": 7,
+        "start": 2082,
+        "text": "It puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028 (cf. table)."
+       },
+       {
+        "end": 2282,
+        "paragraph": 7,
+        "start": 2178,
+        "text": "Our forecast is based on the assumption that the SNB policy rate is 0% over the entire forecast horizon."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The SNB's conditional inflation forecast puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028, based on an SNB policy rate of 0% over the entire forecast horizon."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6798,
+        "paragraph": 22,
+        "start": 6659,
+        "text": "We will therefore continue to monitor the situation and adjust our monetary policy if necessary, to ensure appropriate monetary conditions."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "The SNB said it will continue to monitor the situation and adjust its monetary policy if necessary, to ensure appropriate monetary conditions."
+    }
+   ],
+   "title": "Swiss National Bank introductory statement, 24 September 2026",
+   "type": "opening_statement",
+   "url": "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260924_mslanmargpe",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2895,
+    "output_tokens": 1504,
+    "reasoning_tokens": 964
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     14,
+     15,
+     16
+    ],
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:speech:ea5ace57b3b9",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-24T08:41:34Z",
+   "input_sha256": "47a77456d2274cb7adbe323b71e75b3821a33572630dd0af244e2ceb20277fd5",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 4772,
+     "point": 3,
+     "source_text": "1.5%",
+     "start": 4768,
+     "text": "1.5%"
+    },
+    {
+     "end": 4779,
+     "point": 3,
+     "source_text": "2%",
+     "start": 4777,
+     "text": "2%"
+    },
+    {
+     "end": 2131,
+     "point": 3,
+     "source_text": "2026",
+     "start": 2127,
+     "text": "2026"
+    },
+    {
+     "end": 4772,
+     "point": 4,
+     "source_text": "1.5%",
+     "start": 4768,
+     "text": "1.5%"
+    },
+    {
+     "end": 1411,
+     "point": 4,
+     "source_text": "2027",
+     "start": 1407,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-24",
+   "quotes": [
+    {
+     "end": 3968,
+     "paragraph": 14,
+     "start": 3904,
+     "text": "Swiss GDP growth was exceptionally strong in the second quarter."
+    },
+    {
+     "end": 4780,
+     "paragraph": 15,
+     "start": 4709,
+     "text": "For 2026 as a whole, we currently expect growth of between 1.5% and 2%."
+    },
+    {
+     "end": 5128,
+     "paragraph": 16,
+     "start": 5028,
+     "text": "The main risk to the economic outlook for Switzerland stems from developments in the global economy."
+    }
+   ],
+   "source": {
+    "chars": 6975,
+    "chars_sent": 6976,
+    "method": "html-selector",
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3968,
+        "paragraph": 14,
+        "start": 3904,
+        "text": "Swiss GDP growth was exceptionally strong in the second quarter."
+       },
+       {
+        "end": 4100,
+        "paragraph": 14,
+        "start": 3969,
+        "text": "An unusually robust performance in the chemicals/pharmaceuticals industry meant that GDP overstated the underlying growth momentum."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Member Tschudin says Swiss GDP growth was exceptionally strong in the second quarter, but chemicals/pharmaceuticals performance meant that GDP overstated underlying growth momentum."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4336,
+        "paragraph": 14,
+        "start": 4170,
+        "text": "Current indicators, such as the information from our talks with companies, confirm this picture and show that the positive development continued in the third quarter."
+       },
+       {
+        "end": 4487,
+        "paragraph": 14,
+        "start": 4337,
+        "text": "At the same time, capacity utilisation was below average, especially in manufacturing, while unemployment rose again somewhat through to early summer."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Member Tschudin says current indicators show that the positive development continued in the third quarter, while capacity utilisation was below average and unemployment rose again somewhat through to early summer."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4599,
+        "paragraph": 15,
+        "start": 4539,
+        "text": "Growth stimuli are likely to continue emanating from abroad."
+       },
+       {
+        "end": 4780,
+        "paragraph": 15,
+        "start": 4709,
+        "text": "For 2026 as a whole, we currently expect growth of between 1.5% and 2%."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Member Tschudin says growth stimuli are likely to continue emanating from abroad, and she currently expects growth of between 1.5% and 2% for 2026 as a whole."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5027,
+        "paragraph": 15,
+        "start": 4974,
+        "text": "We continue to expect growth of around 1.5% for 2027."
+       },
+       {
+        "end": 5128,
+        "paragraph": 16,
+        "start": 5028,
+        "text": "The main risk to the economic outlook for Switzerland stems from developments in the global economy."
+       }
+      ],
+      "paragraphs": [
+       15,
+       16
+      ]
+     },
+     "text": "Member Tschudin says she continues to expect growth of around 1.5% for 2027, and that the main risk to the economic outlook for Switzerland stems from developments in the global economy."
+    }
+   ],
+   "title": "2026-09-24 - Martin Schlegel / Antoine Martin / Petra Tschudin: Introductory remarks, news conference",
+   "type": "speech",
+   "url": "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260924_mslanmargpe",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2899,
+    "output_tokens": 1462,
+    "reasoning_tokens": 997
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 275,
     "changes": [
@@ -4047,6 +4472,180 @@
     "input_tokens": 21780,
     "output_tokens": 3555,
     "reasoning_tokens": 1552
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     5,
+     9,
+     43,
+     95,
+     97,
+     106
+    ],
+    "paragraphs_sent": 121,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:569c8f0508c2",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-24T08:41:34Z",
+   "input_sha256": "469441377bd3e41b17f455d4e89e9a33ee2ef5213a8f86569be9c6dbc8921dab",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-24",
+   "quotes": [
+    {
+     "end": 1179,
+     "paragraph": 5,
+     "start": 1028,
+     "text": "The energy shock due to the conflict in the Middle East has already pushed up UK inflation, and we expect it to continue to do so in the coming months."
+    },
+    {
+     "end": 5842,
+     "paragraph": 43,
+     "start": 5637,
+     "text": "The direct effects from higher energy prices have raised inflation broadly as expected, while indirect pass-through has so far been weaker and firms’ and households’ demand more resilient than anticipated."
+    },
+    {
+     "end": 23043,
+     "paragraph": 97,
+     "start": 22880,
+     "text": "Monetary policy cannot change global energy prices; our task is to prevent the shock from generating persistent inflation without imposing undue costs on activity."
+    },
+    {
+     "end": 27965,
+     "paragraph": 106,
+     "start": 27809,
+     "text": "On that basis, policy is increasingly likely to need to tighten if elevated energy prices persist, absent clear evidence of disinflation or weaker activity."
+    }
+   ],
+   "source": {
+    "chars": 31935,
+    "chars_sent": 31936,
+    "method": "html-selector",
+    "paragraphs_sent": 121,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1179,
+        "paragraph": 5,
+        "start": 1028,
+        "text": "The energy shock due to the conflict in the Middle East has already pushed up UK inflation, and we expect it to continue to do so in the coming months."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says the energy shock from the conflict in the Middle East has already pushed up UK inflation and is expected to continue to do so in the coming months."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 2378,
+        "paragraph": 9,
+        "start": 2198,
+        "text": "A global energy price shock affects UK inflation through four channels: direct effects on household energy costs; indirect effects through firms’ production costs and supply chains"
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says a global energy price shock affects UK inflation through four channels, including direct, indirect, demand and second-round effects."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5842,
+        "paragraph": 43,
+        "start": 5637,
+        "text": "The direct effects from higher energy prices have raised inflation broadly as expected, while indirect pass-through has so far been weaker and firms’ and households’ demand more resilient than anticipated."
+       }
+      ],
+      "paragraphs": [
+       43
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says direct effects from higher energy prices have raised inflation broadly as expected, while indirect pass-through has been weaker and demand more resilient than anticipated."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22262,
+        "paragraph": 95,
+        "start": 22155,
+        "text": "So I now put higher weight on us being closer to the adverse scenario for energy prices than I did in July."
+       }
+      ],
+      "paragraphs": [
+       95
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says she now puts higher weight on energy prices being closer to the adverse scenario than she did in July."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23043,
+        "paragraph": 97,
+        "start": 22880,
+        "text": "Monetary policy cannot change global energy prices; our task is to prevent the shock from generating persistent inflation without imposing undue costs on activity."
+       }
+      ],
+      "paragraphs": [
+       97
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says monetary policy cannot change global energy prices and its task is to prevent the shock from generating persistent inflation without imposing undue costs on activity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 27965,
+        "paragraph": 106,
+        "start": 27809,
+        "text": "On that basis, policy is increasingly likely to need to tighten if elevated energy prices persist, absent clear evidence of disinflation or weaker activity."
+       }
+      ],
+      "paragraphs": [
+       106
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says policy is increasingly likely to need to tighten if elevated energy prices persist, absent clear evidence of disinflation or weaker activity."
+    }
+   ],
+   "title": "The outlook for inflation − speech by Clare Lombardelli",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/september/clare-lombardelli-speech-at-the-sixth-biennial-conference-poland",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 16861,
+    "output_tokens": 1513,
+    "reasoning_tokens": 189
    }
   },
   {
