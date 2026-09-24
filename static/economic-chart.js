@@ -292,7 +292,8 @@
       '" data-indicator-key="' + escAttr(row.indicator_key) + '" data-datetime-utc="' + escAttr(row.datetime_utc) +
       '" data-state="' + escAttr(row.state) + '">' +
       '<td class="ei-name">' + row.currency + '</td>' +
-      '<td class="ei-name">' + indicatorLabel(row) + '</td>' +
+      '<td class="ei-name">' + indicatorLabel(row) +
+      (row.reason ? ' <span class="muted">· ' + escAttr(row.reason) + '</span>' : '') + '</td>' +
       '<td class="ei-date">' + fmtUtcNaive(row.datetime_utc) + '</td>' +
       '<td class="ei-num">' + fmtNum(row.forecast) + '</td>' +
       '<td class="ei-score ma-cell">' +

@@ -6,7 +6,8 @@ from src.economic_render import panel_relevance
 
 def _rows(*rs):
     return pd.DataFrame([{"canonical_id": c, "currency": "CHF", "indicator_key": k,
-                          "datetime_utc": pd.Timestamp(d), "state": "MISSING"} for c, k, d in rs])
+                          "datetime_utc": pd.Timestamp(d), "state": "MISSING",
+                          "forecast": 1.0, "forecast_origin": "ff"} for c, k, d in rs])
 
 
 def _scoring(k, dates, cons=1.0):
@@ -50,7 +51,7 @@ def test_impact_reasons():
     assert got == {"2026-09-05": "last_print", "2025-11-20": None}
     few = _scoring("pmi", MONTHLY[:4])                                 # 4 prints: fallback
     aff, _h, _d = panel_relevance(_rows(("chf_pmi", "pmi", "2025-02-20 07:30")), few)
-    assert aff["impact"].tolist() == ["fallback"]
+    assert len(aff) == 1 and aff["impact"].iloc[0] is not None            # flagged again
     part = _scoring("gdp", MONTHLY[:8])                                # 8 prints: window 8/12
     aff, _h, _d = panel_relevance(_rows(("chf_gdp", "gdp", "2025-03-20 07:30")), part)
     assert aff["impact"].tolist() == ["sigma_window"]
@@ -63,7 +64,23 @@ def test_not_full_window_takes_old_rows_and_telemetry_never_affects():
     assert (len(aff), aff["impact"].tolist()) == (1, ["sigma_window"])
     tel = pd.DataFrame([{"canonical_id": "eur_x", "currency": "EUR", "indicator_key": "gdp",
                          "name_raw": "Final Manufacturing PMI", "datetime_utc": pd.Timestamp("2026-09-01"),
-                         "state": "MISSING"}])
+                         "state": "MISSING", "forecast": 1.0, "forecast_origin": "ff"}])
     sc = part.assign(currency="EUR")
     aff, hist, _d = panel_relevance(tel, sc)
     assert (len(aff), len(hist)) == (0, 1)
+
+
+# --- 8B: ⚠ only for what can be resolved -------------------------------------------
+
+def test_row_without_real_consensus_is_history_no_consensus():
+    few = _scoring("pmi", MONTHLY[:4])                                 # fallback series
+    rows = _rows(("cad_s_p_global_manufacturing_pmi", "pmi", "2025-10-01 13:30"))
+    rows["forecast"] = 0.0                                             # PMI: 0.0 is a placeholder
+    aff, hist, _d = panel_relevance(rows, few)
+    assert (len(aff), hist["reason"].tolist()) == (0, ["no consensus"])
+    rows["forecast"] = float("nan")                                    # missing
+    aff, hist, _d = panel_relevance(rows, few)
+    assert (len(aff), hist["reason"].tolist()) == (0, ["no consensus"])
+    rows["forecast"] = 48.5                                            # a real consensus
+    aff, hist, _d = panel_relevance(rows, few)
+    assert len(aff) == 1 and aff["impact"].iloc[0] is not None            # flagged again

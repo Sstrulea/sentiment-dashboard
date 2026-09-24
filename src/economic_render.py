@@ -1347,7 +1347,7 @@ def _row_json(r, affects: bool) -> dict:
             "name_canonical": r.name_canonical, "datetime_utc": r.datetime_utc,
             "forecast": r.forecast, "previous": r.previous,
             "actual": r.actual, "state": r.state, "affects_score": affects,
-            "impact": getattr(r, "impact", None)}
+            "impact": getattr(r, "impact", None), "reason": getattr(r, "reason", None)}
 
 
 def _same_publication(row, scored, relation) -> bool:
@@ -1387,9 +1387,12 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
                        sigma_window  the sigma window is not full (< 12 prints)
                      None = the window is full: the value only changes WHICH 12
                      prints enter sigma ("refines sigma only").
-      history_only   older than that: an entry changes /history only."""
+      history_only   older than that: an entry changes /history only. Also (8B)
+                     a row without a real consensus (forecast missing, blank, or a
+                     0.0 placeholder on a zero_possible=false series), `reason`
+                     "no consensus": even entered, the value can never be scored."""
     if rows.empty or scoring is None or scoring.empty:
-        return rows.assign(impact=None), rows.iloc[0:0].assign(impact=None), 0
+        return rows.assign(impact=None, reason=None), rows.iloc[0:0].assign(impact=None, reason=None), 0
     import numpy as np
     from src.previous_consistency import scoring_windows
     sc = scoring.assign(release_dt=pd.to_datetime(scoring["release_dt"]))
@@ -1404,7 +1407,9 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
     win = scoring_windows(sc)
     from src.econ_calendar_ff import load_excluded_finals
     telemetry = {(c, n) for c, names in (load_excluded_finals() or {}).items() for n in (names or {})}
-    dup, aff, impact = [], [], []
+    from src.ff_scoring import effective_consensus, load_zero_possible
+    zp = load_zero_possible()
+    dup, aff, impact, reason = [], [], [], []
     for r in rows.itertuples(index=False):
         d = pd.Timestamp(r.datetime_utc)
         key = (r.currency, r.indicator_key)
@@ -1415,14 +1420,19 @@ def panel_relevance(rows: pd.DataFrame, scoring: pd.DataFrame | None
         # a window that is not full takes every print, however old; a telemetry
         # publication (7A: a final the config does not score) never enters a score
         tel = (r.currency, getattr(r, "name_raw", None)) in telemetry
-        aff.append(not tel and (w is None or d >= w or n < PANEL_WINDOW_K))
+        # 8B: without a real consensus the value can never be scored (no surprise)
+        f = getattr(r, "forecast", float("nan"))
+        cons = effective_consensus(f, getattr(r, "forecast_origin", None))
+        no_cons = pd.isna(cons) or (float(cons) == 0.0 and not zp.get(getattr(r, "canonical_id", ""), True))
+        reason.append("no consensus" if no_cons else None)
+        aff.append(not tel and not no_cons and (w is None or d >= w or n < PANEL_WINDOW_K))
         lp = last.get(key)
         impact.append("last_print" if (lp is None or d > lp) else
                       "fallback" if n < PANEL_FALLBACK_MIN else
                       "sigma_window" if n < PANEL_WINDOW_K else None)
     dup = np.array(dup, dtype=bool)
     aff = np.array(aff, dtype=bool)
-    rows = rows.assign(impact=impact)
+    rows = rows.assign(impact=impact, reason=reason)
     return (rows[~dup & aff].reset_index(drop=True), rows[~dup & ~aff].reset_index(drop=True),
             int(dup.sum()))
 
