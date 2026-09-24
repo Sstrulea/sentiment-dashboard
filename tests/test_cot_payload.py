@@ -76,7 +76,8 @@ def test_d_jpy_on_2026_09_15(built):
 def test_missing_row_and_week_selection(built):
     week = _by_symbol(built["weeks"]["2026-09-15"])
     assert week["OATS"] == {**{k: week["OATS"][k] for k in ("symbol", "name", "category",
-                            "category_label", "in_model")}, "missing": True, "last_report": "2026-09-01"}
+                            "category_label", "in_model", "exchange", "quote")}, "missing": True,
+                            "last_report": "2026-09-01"}
     series = built["series"]
     assert len(series["dates"]) == len(series["instruments"]["JPY"]["spec_net"])
     assert built["index"]["weeks"][0] == built["index"]["latest"]
