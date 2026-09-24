@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-24T09:06:12.184510",
+ "as_of": "2026-09-24T10:06:15.637926",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -49,25 +49,6 @@
   },
   "previous_consistency": {
    "findings": [
-    {
-     "canonical_id": "eur_sp_global_manufacturing_pmi",
-     "currency": "EUR",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2023-01-02T09:00:00",
-     "kind": "value",
-     "scored_actual": 44.4,
-     "scored_source": "ff",
-     "next_release_dt": "2023-02-01T09:00:00",
-     "next_previous": 48.8,
-     "next_from": "parquet",
-     "diff": 4.4,
-     "tolerance": 2.75151,
-     "threshold": 2.75151,
-     "n_revision_pairs": 32,
-     "level": "INFO",
-     "new": false
-    },
     {
      "canonical_id": "cad_s_p_global_manufacturing_pmi",
      "currency": "CAD",
@@ -1608,25 +1589,6 @@
      "new": false
     },
     {
-     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
-     "currency": "JPY",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2024-01-02T00:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-02-01T00:30:00",
-     "next_previous": 48.0,
-     "next_from": "parquet",
-     "diff": 48.0,
-     "tolerance": 1.41195,
-     "threshold": 1.41195,
-     "n_revision_pairs": 36,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "chf_procurech_manufacturing_pmi",
      "currency": "CHF",
      "indicator_key": "manufacturing_pmi",
@@ -1641,25 +1603,6 @@
      "diff": 43.0,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "eur_sp_global_manufacturing_pmi",
-     "currency": "EUR",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2024-01-02T09:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-02-01T09:00:00",
-     "next_previous": 46.6,
-     "next_from": "parquet",
-     "diff": 46.6,
-     "tolerance": 2.75151,
-     "threshold": 2.75151,
      "n_revision_pairs": 32,
      "level": "INFO",
      "new": false
@@ -1737,25 +1680,6 @@
      "tolerance": 96.717,
      "threshold": 96.717,
      "n_revision_pairs": 43,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "eur_sp_global_services_pmi",
-     "currency": "EUR",
-     "indicator_key": "services_pmi",
-     "name_raw": "Final Services PMI",
-     "release_dt": "2024-01-06T09:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2024-02-05T09:00:00",
-     "next_previous": 48.4,
-     "next_from": "parquet",
-     "diff": 48.4,
-     "tolerance": 3.56868,
-     "threshold": 3.56868,
-     "n_revision_pairs": 33,
      "level": "INFO",
      "new": false
     },
@@ -2425,25 +2349,6 @@
      "new": false
     },
     {
-     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
-     "currency": "JPY",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2024-04-01T00:30:00",
-     "kind": "value",
-     "scored_actual": 48.2,
-     "scored_source": "ff",
-     "next_release_dt": "2024-05-01T00:30:00",
-     "next_previous": 49.9,
-     "next_from": "parquet",
-     "diff": 1.7,
-     "tolerance": 1.41195,
-     "threshold": 1.41195,
-     "n_revision_pairs": 36,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "usd_initial_jobless_claims",
      "currency": "USD",
      "indicator_key": "jobless_claims",
@@ -2881,25 +2786,6 @@
      "new": false
     },
     {
-     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
-     "currency": "JPY",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2025-06-02T00:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-07-01T00:30:00",
-     "next_previous": 50.4,
-     "next_from": "parquet",
-     "diff": 50.4,
-     "tolerance": 1.41195,
-     "threshold": 1.41195,
-     "n_revision_pairs": 36,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "chf_unemployment_rate",
      "currency": "CHF",
      "indicator_key": "unemployment_rate",
@@ -3071,25 +2957,6 @@
      "new": false
     },
     {
-     "canonical_id": "jpy_au_jibun_bank_manufacturing_pmi",
-     "currency": "JPY",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2025-10-01T00:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-04T00:30:00",
-     "next_previous": 48.3,
-     "next_from": "parquet",
-     "diff": 48.3,
-     "tolerance": 1.41195,
-     "threshold": 1.41195,
-     "n_revision_pairs": 36,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "chf_procurech_manufacturing_pmi",
      "currency": "CHF",
      "indicator_key": "manufacturing_pmi",
@@ -3104,25 +2971,6 @@
      "diff": 46.3,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "eur_sp_global_manufacturing_pmi",
-     "currency": "EUR",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Final Manufacturing PMI",
-     "release_dt": "2025-10-01T08:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-03T09:00:00",
-     "next_previous": 50.0,
-     "next_from": "parquet",
-     "diff": 50.0,
-     "tolerance": 2.75151,
-     "threshold": 2.75151,
      "n_revision_pairs": 32,
      "level": "INFO",
      "new": false
@@ -4022,16 +3870,16 @@
     }
    ],
    "findings_by_source": {
-    "ff": 125,
-    "quarantined": 84
+    "ff": 123,
+    "quarantined": 78
    },
    "findings_by_kind": {
-    "value": 125,
-    "zero": 84
+    "value": 123,
+    "zero": 78
    },
-   "n_checked": 3357,
+   "n_checked": 3263,
    "n_series": 107,
-   "n_scored_zero": 181,
+   "n_scored_zero": 175,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
    "weekly_feed": "ff_weekly_2026-09-24.json"
   },
@@ -5531,12 +5379,12 @@
   },
   "previous_consistency": {
    "WARN": 26,
-   "INFO": 183
+   "INFO": 175
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 108
   }
  },
- "generated_at": "2026-09-24T09:06:19+00:00"
+ "generated_at": "2026-09-24T10:06:25+00:00"
 }
