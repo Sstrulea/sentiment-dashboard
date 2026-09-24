@@ -1000,27 +1000,40 @@
     if (!m || !isNum(m.v)) return "<tr><td>" + esc(label) + '</td><td class="econ-cell cell-na cb-na">' + NA + '</td><td class="cb-notes" title="' + esc((m && m.na) || "n/a") + '">' + esc(shortNa((m && m.na) || "n/a")) + "</td></tr>";
     return "<tr><td>" + esc(label) + "</td>" + numCell(m, { scale: o.scale || 100, dp: 1, unit: " bp" }) + '<td class="cb-notes">' + esc(o.note || "") + "</td></tr>";
   }
+  // Phone (Faza 11 fix): one metric per row - the label left, the value right (chip + method), the detail on a second line.
+  function pairMetricPh(label, m, o) {
+    o = o || {};
+    if (!m || !isNum(m.v)) {
+      return '<div class="cb-pm-row"><span class="cb-pm-label">' + esc(label) + '</span><span class="cb-pm-val"><span class="cb-ph-na">' + NA + "</span></span>" +
+        '<span class="cb-pm-detail">' + esc(shortNa((m && m.na) || "n/a")) + "</span></div>";
+    }
+    return '<div class="cb-pm-row"><span class="cb-pm-label">' + esc(label) + '</span><span class="cb-pm-val">' +
+      '<span class="cb-ph-chip"' + (m.stale ? "" : tint(m.v, o.scale || 100)) + ">" + fmtSigned(m.v, 1) + " bp</span>" +
+      (m.flag ? methodLabel(m.flag) : "") + (m.stale ? '<span class="cb-ph-sub">stale</span>' : "") + "</span>" +
+      (o.note ? '<span class="cb-pm-detail">' + esc(o.note) + "</span>" : "") + "</div>";
+  }
   function renderPair(pj, p, b, q) {
     state.meta = pj.meta;
     titleEl.innerHTML = esc(p.display) + ' <span class="cb-title-sub">' + esc(p.base) + " " + MINUS + " " + esc(p.quote) + "</span>";
     document.title = p.display + " | Central Banks | Dashboard";
     metaEl.innerHTML = '<a href="' + esc(CFG.urls.overview_page) + '#pairs">← All pairs</a>' + DOT + "As of " + esc(fmtDate(pj.meta.asof)) + DOT + '<a href="' + esc(pj.banks[p.base].href) + '">' + esc(p.base) + " page</a>" + DOT + '<a href="' + esc(pj.banks[p.quote].href) + '">' + esc(p.quote) + " page</a>";
-    const rows = [];
-    rows.push(pairMetricRow("Now: " + p.base + " rate " + MINUS + " " + p.quote + " rate (carry)", p.current, { scale: 300, note: fmtRateAuto(b.summary.rate.value) + "% " + MINUS + " " + fmtRateAuto(q.summary.rate.value) + "%" }));
+    const rows = [], phRows = [];
+    const both = function (label, m, o) { rows.push(pairMetricRow(label, m, o)); phRows.push(pairMetricPh(label, m, o)); };
+    both("Now: " + p.base + " rate " + MINUS + " " + p.quote + " rate (carry)", p.current, { scale: 300, note: fmtRateAuto(b.summary.rate.value) + "% " + MINUS + " " + fmtRateAuto(q.summary.rate.value) + "%" });
     ["2026", "2027"].forEach(function (y) {
       const m = p.implied[y];
-      rows.push(pairMetricRow("End-" + y + ": implied differential", m.diff_bp, { scale: 200, note: isNum(m.diff_pp) ? fmtSigned(m.diff_pp * 100, 1) + " bp = " + fmtRate(m.diff_pp, 3) + " pp" : "" }));
-      rows.push(pairMetricRow("End-" + y + ": change vs today (cumulative bp differential)", m.cum_bp, { scale: 100 }));
+      both("End-" + y + ": implied differential", m.diff_bp, { scale: 200, note: isNum(m.diff_pp) ? fmtSigned(m.diff_pp * 100, 1) + " bp = " + fmtRate(m.diff_pp, 3) + " pp" : "" });
+      both("End-" + y + ": change vs today (cumulative bp differential)", m.cum_bp, { scale: 100 });
     });
     ["1w", "1m"].forEach(function (w) {
-      ["2026", "2027"].forEach(function (y) { rows.push(pairMetricRow("Repricing " + w + ", end-" + y + " differential", p.repricing[w][y], { scale: 25, note: w === "1w" ? "5 business days" : "21 business days" })); });
+      ["2026", "2027"].forEach(function (y) { both("Repricing " + w + ", end-" + y + " differential", p.repricing[w][y], { scale: 25, note: w === "1w" ? "5 business days" : "21 business days" }); });
     });
     const flagLine = p.flag ? '<div class="cb-sub">Weakest method across the two legs: ' + flagBadge(p.flag) + "</div>" : '<div class="cb-sub">No implied metric is available for this pair.</div>';
     root.innerHTML = '<section class="cb-card cb-chartcard"><h3>Policy-rate paths <small class="muted">' + esc(p.base) + " and " + esc(p.quote) + '</small></h3><div class="cb-chart-wrap"><canvas id="cbPairChart"></canvas></div>' +
       '<div class="cb-sub" id="cbPairNote"></div></section>' +
       '<section class="cb-card cb-chartcard"><h3>Differential ' + esc(p.base) + " " + MINUS + " " + esc(p.quote) + ' <small class="muted">bp</small></h3><div class="cb-chart-wrap cb-chart-short"><canvas id="cbDiffChart"></canvas></div>' +
       '<div class="cb-sub">Drawn only where both legs have a policy-equivalent path; dashed = market-implied.</div></section>' +
-      '<section class="cb-card"><h3>' + esc(p.display) + " metrics</h3>" + flagLine + '<div class="cb-scroll"><table class="cb-table cb-mini cb-pairtable"><thead><tr><th>Metric</th><th>Value</th><th>Detail</th></tr></thead><tbody>' + rows.join("") + "</tbody></table></div>" +
+      '<section class="cb-card"><h3>' + esc(p.display) + " metrics</h3>" + flagLine + '<div class="phone-only cb-pm-list">' + phRows.join("") + "</div>" + '<div class="cb-scroll desk-only"><table class="cb-table cb-mini cb-pairtable"><thead><tr><th>Metric</th><th>Value</th><th>Detail</th></tr></thead><tbody>' + rows.join("") + "</tbody></table></div>" +
       '<div class="cb-sub">Each metric is n/a on its own: differentials of level need both legs policy-equivalent, repricing needs a change of level on both legs. The flag is the weaker of the two legs.</div></section>' +
       '<section class="cb-card cb-method-link"><a href="' + esc(pj.banks[p.base].href) + '#cbMethod">How is this calculated?</a></section>';
     const pb = ratePath(b), pq = ratePath(q);
