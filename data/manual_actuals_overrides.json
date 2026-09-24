@@ -625,5 +625,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-24T07:18:39+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_employment_change",
+  "currency": "AUD",
+  "indicator_key": "employment_change",
+  "datetime_utc": "2026-09-24 01:30:00",
+  "actual": 39.5,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-24T08:13:59+00:00",
+  "note": ""
  }
 ]
