@@ -44,6 +44,9 @@ def _weekly() -> int:
     out = render_dashboard(snapshot, df)
     copy_static_assets()
     log.info("Wrote COT dashboard to %s", out)
+    # audit 10A: the COT data payload (public/data/cot/*.json), compute only
+    from .cot_payload import write as write_cot_payload
+    log.info("COT payload: %s", write_cot_payload())
     return 0
 
 
@@ -251,6 +254,11 @@ def _render_all() -> int:
             else:
                 out = render_dashboard(snapshot, df)
                 log.info("COT dashboard rendered → %s", out)
+                try:
+                    from .cot_payload import write as write_cot_payload
+                    log.info("COT payload: %s", write_cot_payload())
+                except Exception as e:  # noqa: BLE001 — never break the other pages
+                    log.error("COT payload failed: %s", e)
 
     for label, render_fn in (
         ("P/C ratio", render_pc_ratio_page),
