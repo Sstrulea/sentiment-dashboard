@@ -522,6 +522,9 @@
 
   function renderFilters() {
     const present = CCY_ORDER.filter(c => (state.payload.currencies || {})[c]);
+    // Audit 10C: /economic?ccy=JPY preselects the currency (as on /strength, /history).
+    const wanted = (new URLSearchParams(window.location.search).get("ccy") || "").toUpperCase();
+    if (wanted && present.includes(wanted)) state.ccySel.add(wanted);
     buildChipGroup("econCcyChips", present, state.ccySel);
     buildChipGroup("econBiasChips", BIAS_GROUPS, state.biasSel);
     wireAllButton("econCcyFilter", "econCcyChips", state.ccySel);
@@ -674,6 +677,23 @@
   // SENTIMENT > COT sub-cell for an FX row (display-only). Same divergent color
   // engine as the factor cells (gradientStyle), on the COT ±4 scale. Pairs whose
   // non-USD leg lacks COT data render blank (no "—", which means N/A).
+  // Audit 10C: the COT page's words — "Crowding" (not level) and the 4-week flow
+  // as "N.N× usual" (|z| against the last 52 weeks), not z/σ.
+  function usualTxt(z) {
+    return (z === null || z === undefined || Number.isNaN(Number(z))) ? "" : Math.abs(Number(z)).toFixed(1) + "× usual";
+  }
+  function cotPartsTxt(det) {
+    const u = usualTxt(det.z);
+    return "Crowding " + fmtScoreCell(det.level) + " + Flow " + fmtScoreCell(det.flow) + (u ? ", " + u : "");
+  }
+  // "Open on COT →" links for the modal: one per scored COT symbol (the USD leg has none).
+  function cotLinksHtml(syms) {
+    const list = syms.filter(x => x && x !== "USD");
+    if (!list.length) return "";
+    return '<p class="econ-cot-links">' + list.map(x =>
+      '<a href="/cot?sym=' + encodeURIComponent(x) + '">Open ' + escAttr(x) + ' on COT →</a>').join(" · ") + '</p>';
+  }
+
   function fxCotCellHtml(inst) {
     const cot = inst.cot;
     if (!cot || cot.cell === null || cot.cell === undefined) {
@@ -683,7 +703,7 @@
     const contrib = findContribution(inst, "sentiment");
     function legTxt(ccy, cell, det) {
       let t = ccy + " " + fmtScoreCell(cell === null || cell === undefined ? 0 : cell);
-      if (det) t += " (lvl " + fmtScoreCell(det.level) + ", flow " + fmtScoreCell(det.flow) + ")";
+      if (det) t += " (" + cotPartsTxt(det) + ")";
       return t;
     }
     const baseTxt = legTxt(cot.base, cot.base_cell, cot.base_detail);
@@ -1057,7 +1077,7 @@
       ' <span class="muted">· weight 0.5 · positioning, base − quote (vs-USD)</span></div>';
     const legRow = (role, ccy, cell, det) => {
       if (ccy === null || ccy === undefined) return "";
-      const extra = det ? (" · level " + fmtScoreCell(det.level) + ", flow " + fmtScoreCell(det.flow))
+      const extra = det ? (" · " + cotPartsTxt(det))
         : (ccy === "USD" ? " · vs-USD leg = 0" : "");
       const c = (cell === null || cell === undefined) ? 0 : cell;
       return '<tr><td class="ei-name">' + role + " " + ccy + extra + '</td><td class="ei-num ' +
@@ -1069,7 +1089,7 @@
       cls + '"><strong>' + fmtScoreCell(cot.cell) + '</strong></td></tr>';
     return head + '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
       '<thead><tr><th>Leg</th><th>Cell</th></tr></thead><tbody>' + rows +
-      '</tbody></table></div></div>';
+      '</tbody></table></div>' + cotLinksHtml([cot.base, cot.quote]) + '</div>';
   }
 
   // Audit 5B: the pair's monetary factor — ONE pair row on the 2Y spread.
@@ -1234,11 +1254,8 @@
       return '<td class="econ-cell cell-empty"></td>';
     }
     const v = cot.cell;
-    const tip = "COT positioning · level " + fmtScoreCell(cot.level) +
-      " + flow " + fmtScoreCell(cot.flow) + " = cell " + fmtScoreCell(v) +
-      " · blend " + Number(cot.blend).toFixed(0) +
-      (cot.z === null || cot.z === undefined ? "" : " · z " + fmtSigned(cot.z, 2)) +
-      " · " + cot.basis;
+    const tip = "COT positioning · " + cotPartsTxt(cot) + " = " + fmtScoreCell(v) +
+      ". Same value as the COT column on the COT page.";
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
       ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
   }
@@ -1456,8 +1473,7 @@
     let detail = "—";
     if (inst.cot) {
       const c = inst.cot;
-      detail = "COT · level " + fmtScoreCell(c.level) + " + flow " + fmtScoreCell(c.flow) +
-        " = cell " + fmtScoreCell(c.cell) + " · blend " + Number(c.blend).toFixed(0);
+      detail = "COT · " + cotPartsTxt(c) + " = " + fmtScoreCell(c.cell);
     } else if (inst.sentiment && inst.sentiment.source === "pc") {
       const c = inst.sentiment;
       detail = (c.proxy === true ? "US equity P/C — global risk proxy · percentile "
@@ -1477,7 +1493,8 @@
       '<td class="ei-score ' + cls + '">' + contrib + '</td>' +
       '</tr></tbody>';
     return '<div class="econ-cat-group">' + head +
-      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + '</table></div></div>';
+      '<div class="econ-ind-scroll"><table class="econ-ind-table">' + table + '</table></div>' +
+      (inst.cot ? cotLinksHtml([inst.symbol]) : "") + '</div>';
   }
 
   function openCrossAssetModal(sym) {

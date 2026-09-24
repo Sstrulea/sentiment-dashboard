@@ -61,14 +61,17 @@ def test_weekly_exits_0_without_render_when_unchanged(monkeypatch):
     assert main._weekly() == 0
 
 
-def test_generated_is_fetched_at(tmp_path, monkeypatch):
-    from src import render
-    from src.compute import build_latest_snapshot
-    df = pd.read_parquet(fetch.ROOT / "data" / "history.parquet")
+def test_generated_is_fetched_at(tmp_path):
+    """Audit 10B: the page reads fetched_at from the payload (index meta + the
+    latest week only), not from rendered HTML."""
+    from src import cot_payload
     meta = tmp_path / "cot_meta.json"
     meta.write_text(json.dumps({"last_report_date": "2026-09-15", "fetched_at": "2026-09-19T21:21:07Z"}))
-    monkeypatch.setattr(fetch, "META_FILE", meta)
-    monkeypatch.setattr(render, "PUBLIC", tmp_path / "public")
-    monkeypatch.setattr(render, "ARCHIVE", tmp_path / "public" / "archive")
-    out = render.render_dashboard(build_latest_snapshot(df), df)
-    assert "2026-09-19 21:21 UTC" in out.read_text()
+    out = tmp_path / "cot"
+    summary = cot_payload.write(fetch.ROOT / "data" / "history.parquet", out, meta)
+    index = json.loads((out / "index.json").read_text())
+    assert index["meta"]["fetched_at"] == "2026-09-19T21:21:07Z"
+    latest = json.loads((out / f"{summary['latest']}.json").read_text())
+    assert latest["fetched_at"] == "2026-09-19T21:21:07Z"
+    older = [w for w in index["weeks"] if w != summary["latest"]]
+    assert all(json.loads((out / f"{w}.json").read_text())["fetched_at"] is None for w in older)

@@ -82,6 +82,16 @@ export default async function middleware(request) {
     });
   }
 
+  // The per-week HTML archive is gone (audit 10B): /archive/<date>[.html] opens
+  // the same week on /cot. Same place and same rule as the "/" redirect.
+  const arch = url.pathname.match(/^\/archive\/(\d{4}-\d{2}-\d{2})(?:\.html)?$/);
+  if (arch) {
+    return new Response(null, {
+      status: 307,
+      headers: { Location: `/cot?week=${arch[1]}`, "cache-control": "no-store" },
+    });
+  }
+
   const tokens = loadTokens();
 
   if (tokens.size === 0) {

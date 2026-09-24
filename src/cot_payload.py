@@ -48,6 +48,17 @@ IN_MODEL = ("EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "DXY", "GOLD", "SIL
 SOURCE = ("CFTC Commitments of Traders, Legacy, Futures and Options Combined "
           "(publicreporting.cftc.gov, dataset jun7-fc8e)")
 NY = ZoneInfo("America/New_York")
+EXCHANGES = {"CHICAGO MERCANTILE EXCHANGE": "CME", "CHICAGO BOARD OF TRADE": "CBOT",
+             "NEW YORK MERCANTILE EXCHANGE": "NYMEX", "COMMODITY EXCHANGE INC.": "COMEX",
+             "ICE FUTURES U.S.": "ICE US", "CBOE FUTURES EXCHANGE": "CFE"}
+
+
+def _exchange(name) -> str | None:
+    """Short exchange name from CFTC's market_and_exchange_names."""
+    if not isinstance(name, str) or " - " not in name:
+        return None
+    full = name.rsplit(" - ", 1)[1].strip()
+    return EXCHANGES.get(full, full.title())
 
 
 def _num(v):
@@ -131,8 +142,14 @@ def build(history: pd.DataFrame) -> dict:
     enriched = enriched[enriched[CODE].isin(meta)].copy()
     enriched[DATE] = pd.to_datetime(enriched[DATE])
     by_code = {c: g.sort_values(DATE).reset_index(drop=True) for c, g in enriched.groupby(CODE)}
+    exch = {c: _exchange(g["market_and_exchange_names"].dropna().iloc[-1])
+            for c, g in by_code.items()
+            if "market_and_exchange_names" in g and g["market_and_exchange_names"].notna().any()}
     infos = {c: {"symbol": m["symbol"], "name": m["name"], "category": m["category"],
-                 "category_label": m["category_label"], "in_model": m["symbol"] in IN_MODEL}
+                 "category_label": m["category_label"], "in_model": m["symbol"] in IN_MODEL,
+                 "exchange": exch.get(c),
+                 # currency futures are quoted vs USD (the dollar index is not)
+                 "quote": "USD" if m["category"] == "fx" and m["symbol"] != "DXY" else None}
              for c, m in meta.items()}
 
     dates = sorted(enriched[DATE].unique())

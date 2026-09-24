@@ -26,6 +26,17 @@ for (const cookie of [undefined, "dash_auth=secret", "dash_auth=wrong"]) {
   assert.equal(rr.headers.get("location"), "/economic", String(cookie));
 }
 
+// the old COT archive opens the same week on /cot, with or without a cookie
+for (const path of ["/archive/2026-09-08", "/archive/2026-09-08.html"]) {
+  for (const cookie of [undefined, "dash_auth=secret"]) {
+    const ar = await get(path, cookie);
+    assert.equal(ar.status, 307, path);
+    assert.equal(ar.headers.get("location"), "/cot?week=2026-09-08", path);
+  }
+}
+const notDate = await get("/archive/latest");
+assert.equal(notDate.status, 303);
+
 // /economic not logged in -> /login?next=%2Feconomic; after login -> /economic
 let e = await get("/economic");
 assert.equal(e.status, 303);
