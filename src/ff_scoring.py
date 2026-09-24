@@ -94,6 +94,7 @@ def _policy_zero_evidence(decisions: Optional[pd.DataFrame], currency: str, day)
     months) starting from rate_before = 0.00 (decisions.parquet)."""
     if decisions is None or decisions.empty:
         return False
+    day = pd.Timestamp(day).date()
     d = decisions[decisions["currency"] == currency]
     md = pd.to_datetime(d["meeting_date"]).dt.date
     same = d[md == day]
@@ -126,8 +127,9 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
           evidence: JB derives it from the same 0.0. No evidence ->
           placeholder. A human override is the remaining evidence: a manual
           row, unioned by the caller.
-      Z3  same UTC day, a sibling carries a real non-zero actual -> the 0.0 is a
-          placeholder of that release (not a divergence), never recovered.
+      Z3  same publication (release_integrity.publication_keys, audit 7D), a
+          sibling carries a real non-zero actual -> the 0.0 is a placeholder
+          of that release (not a divergence), never recovered.
       Z4  a placeholder that is its day's release (latest listed time, no real
           sibling) and has a next.previous is recovered from it
           (actual_origin 'ff_previous'); otherwise recovered = NaN.
@@ -142,10 +144,11 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
     df = df.assign(datetime_utc=pd.to_datetime(df["datetime_utc"]),
                    actual=pd.to_numeric(df["actual"], errors="coerce"),
                    previous=pd.to_numeric(df["previous"], errors="coerce"))
-    df["day"] = df["datetime_utc"].dt.date
     out: dict = {}
     if df.empty:
         return out
+    from .release_integrity import publication_keys
+    df["day"] = publication_keys(df)     # 7D: the publication, not the UTC day
     excluded, _ = resolve_conflicts(df, zero_possible)
     df = df[[k not in excluded for k in zip(df["canonical_id"], df["datetime_utc"])]]
     for cid, g in df.groupby("canonical_id", sort=False):
@@ -263,9 +266,11 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
         keys = zip(ff_df["canonical_id"], pd.to_datetime(ff_df["datetime_utc"]))
         ff_df = ff_df[[k not in conflicts for k in keys]]
     verdicts = zero_verdicts(ff_df, zp, matcher)
+    from .release_integrity import publication_keys
+    pub_key = publication_keys(ff_df.assign(actual=pd.to_numeric(ff_df["actual"], errors="coerce")))
     recs: list[dict] = []
     n_ph = n_rec = n_cons = 0
-    for r in ff_df.itertuples(index=False):
+    for pk, r in zip(pub_key.to_numpy(), ff_df.itertuples(index=False)):
         key = matcher.match(CCY2COUNTRY.get(r.currency, ""), r.name_canonical)
         if key is None:
             continue
@@ -286,14 +291,15 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
             "actual": actual, "consensus": consensus, "previous": r.previous, "source": "ff",
             "name_raw": r.name_raw, "actual_origin": origin,
             "publication": "telemetry" if (r.currency, r.name_raw) in telemetry else "scored",
+            "_pub": pk,
         })
-    # identical same-day REAL zeros (a re-listed 0.0 print that now counts) collapse
-    # to one row — the earliest, as the previous guard did; real non-zero
-    # duplicates are left exactly as before (pre-existing behavior).
+    # identical REAL zeros of one publication (a re-listed 0.0 print that now
+    # counts) collapse to one row — the earliest, as the previous guard did; real
+    # non-zero duplicates are left exactly as before (pre-existing behavior).
     by_day: dict = {}
     for i, rec in enumerate(recs):
         by_day.setdefault((rec["currency"], rec["indicator_key"], rec["name_raw"],
-                           pd.Timestamp(rec["release_dt"]).date()), []).append(i)
+                           rec["_pub"]), []).append(i)
     for idxs in by_day.values():
         zeros = [i for i in idxs if recs[i]["actual"] == 0.0]
         if len(zeros) > 1 and all(recs[i]["actual"] == 0.0 for i in idxs

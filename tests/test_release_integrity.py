@@ -74,7 +74,9 @@ def test_next_valid_skips_0_0_0_rows_and_same_publication_relistings():
                       ("2026-08-14", 0.8, 0.8, 0.7, "Good Data")]
     ch = SeriesChain(_series(rows), True)
     nxt = ch.next_valid(pd.Timestamp("2026-06-15").date())
-    assert str(nxt["day"]) == "2026-07-16" and nxt["previous"] == 0.6
+    # 7D: the 0/0/0 row (07-15) and the real row (07-16) are ONE publication;
+    # its representative is the real, latest-listed row
+    assert str(nxt["datetime_utc"])[:10] == "2026-07-16" and nxt["previous"] == 0.6
 
 
 def test_nothing_is_compared_across_a_gap():
@@ -184,3 +186,36 @@ def test_every_publication_entry_carries_evidence_and_windows_did_not_grow():
     assert win == {"us_shutdown_2025": ("2025-10-01", "2025-11-12"),
                    "jb_archive_hole_2023_12": ("2023-12-04", "2023-12-29"),
                    "jb_archive_hole_2026_04": ("2026-04-03", "2026-04-06")}
+
+
+# --- 7D: one publication identity ------------------------------------------------------
+
+def test_publication_relation():
+    from types import SimpleNamespace as N
+    from src.release_integrity import publication_relation
+    t = lambda s: pd.Timestamp(s)
+    a = N(datetime_utc=t("2025-12-15 22:00"), actual=-105.0, forecast=0.0, previous=108.0)
+    b = N(datetime_utc=t("2025-12-16 13:30"), actual=64.0, forecast=51.0, previous=-105.0)
+    assert publication_relation(a, b) == "next_period"          # NFP Oct and Nov, both kept
+    c = N(datetime_utc=t("2025-01-05 22:00"), actual=0.0, forecast=0.9, previous=1.5)
+    d = N(datetime_utc=t("2025-01-06 07:30"), actual=0.8, forecast=0.9, previous=1.5)
+    assert publication_relation(c, d) == "same"                 # re-listed across midnight
+    e = N(datetime_utc=t("2023-01-03 15:00"), actual=47.4, forecast=47.2, previous=46.7)
+    f = N(datetime_utc=t("2023-01-04 15:00"), actual=48.4, forecast=48.5, previous=49.0)
+    assert publication_relation(e, f) == "conflict"             # the chain decides
+    g = N(datetime_utc=t("2025-01-07 07:30"), actual=0.8, forecast=0.9, previous=1.5)
+    assert publication_relation(c, g) is None                   # > 26 h apart
+
+
+def test_chain_picks_the_real_ism_print_of_january_2023(frozen):
+    ex, _f = resolve_conflicts(frozen, load_zero_possible())
+    assert ("usd_ism_manufacturing_pmi", pd.Timestamp("2023-01-03 15:00")) in ex
+    assert ("usd_ism_manufacturing_pmi", pd.Timestamp("2023-01-04 15:00")) not in ex
+
+
+def test_nfp_october_and_november_both_scored(frozen):
+    sc = scoring_view(to_scoring_frame(frozen, build_matcher()))
+    sc["release_dt"] = pd.to_datetime(sc["release_dt"])
+    nfp = sc[(sc.currency == "USD") & (sc.indicator_key == "employment_change")
+             & (sc.release_dt >= "2025-12-15") & (sc.release_dt <= "2025-12-17")]
+    assert sorted(nfp["actual"].dropna().tolist()) == [-105.0, 64.0]

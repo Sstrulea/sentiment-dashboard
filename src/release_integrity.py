@@ -24,6 +24,7 @@ nothing is compared across it, and find_series_gaps reports it (missing_release)
 """
 from __future__ import annotations
 
+import math
 from typing import Optional
 
 import numpy as np
@@ -74,12 +75,87 @@ def _prep(ff: pd.DataFrame) -> pd.DataFrame:
     df["datetime_utc"] = pd.to_datetime(df["datetime_utc"])
     for c in ("actual", "forecast", "previous"):
         df[c] = pd.to_numeric(df[c], errors="coerce")
-    df["day"] = df["datetime_utc"].dt.date
+    # 7D: `day` is the PUBLICATION (publication_keys), not the UTC calendar day
+    df["day"] = publication_keys(df)
     return df
 
 
 def _same(a, b) -> bool:
     return (pd.isna(a) and pd.isna(b)) or (pd.notna(a) and pd.notna(b) and abs(a - b) < EPS)
+
+
+# ---------------------------------------------------------------------------
+# Publication identity (audit 7D) — THE definition of "the same publication",
+# used by 4B (conflicts, chain), the zero rule, previous_consistency, the
+# scoring frame and the Manual Actuals panel.
+# ---------------------------------------------------------------------------
+
+PUBLICATION_WINDOW = pd.Timedelta(hours=26)     # "at most ±1 day", DST slack
+
+
+def publication_relation(a, b) -> Optional[str]:
+    """Two rows of ONE series, `a` listed no later than `b` (attributes
+    datetime_utc, actual, forecast, previous):
+      None           more than PUBLICATION_WINDOW apart -> different publications
+      "same"         same forecast and previous -> one publication, re-listed
+      "next_period"  b.previous == a.actual (a real, non-zero value): two
+                     consecutive periods published together (NFP Oct/Nov
+                     2025-12-16) -> different publications, both kept
+      "conflict"     otherwise -> one publication whose rows disagree: the
+                     series chain decides (resolve_conflicts)."""
+    if pd.Timestamp(b.datetime_utc) - pd.Timestamp(a.datetime_utc) >= PUBLICATION_WINDOW:
+        return None
+    if _same(a.forecast, b.forecast) and _same(a.previous, b.previous):
+        return "same"
+    if pd.notna(b.previous) and pd.notna(a.actual) and float(a.actual) != 0.0 \
+            and abs(float(b.previous) - float(a.actual)) < EPS:
+        return "next_period"
+    return "conflict"
+
+
+def publication_keys(df: pd.DataFrame) -> pd.Series:
+    """Per row (index-aligned): the publication it belongs to, as the listed time
+    of that publication's first row (a Timestamp; unique per series). Rows of a
+    series join the current publication while they are within the window of
+    its first row and not the next period of any of its rows."""
+    out = pd.Series(pd.NaT, index=df.index, dtype="datetime64[ns]")
+    if df.empty:
+        return out
+    dt = pd.to_datetime(df["datetime_utc"]).to_numpy()
+    cid = df["canonical_id"].to_numpy()
+    act = pd.to_numeric(df["actual"], errors="coerce").to_numpy(float)
+    fc = pd.to_numeric(df["forecast"], errors="coerce").to_numpy(float)
+    pv = pd.to_numeric(df["previous"], errors="coerce").to_numpy(float)
+    order = np.lexsort((dt, cid))                      # by series, then time (stable)
+    keys = np.empty(len(df), dtype="datetime64[ns]")
+    members: list = []
+    anchor = None
+    cur = object()
+    for i in order:
+        row = _Pub(dt[i], act[i], fc[i], pv[i])
+        if cid[i] == cur and members:
+            rel0 = publication_relation(members[0], row)
+            if rel0 is not None and all(publication_relation(m, row) != "next_period" for m in members):
+                members.append(row)
+                keys[i] = anchor
+                continue
+        cur, members, anchor = cid[i], [row], dt[i]
+        keys[i] = anchor
+    return pd.Series(keys, index=df.index)
+
+
+class _Pub:
+    __slots__ = ("datetime_utc", "actual", "forecast", "previous")
+
+    def __init__(self, t, a, f, p):
+        self.datetime_utc, self.actual, self.forecast, self.previous = t, _num(a), _num(f), _num(p)
+
+
+def _num(v):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return float("nan")
 
 
 class SeriesChain:
@@ -124,13 +200,28 @@ class SeriesChain:
         """The previous period's valid release: releases closer than half a
         cadence are the SAME publication re-listed (skipped); the first one
         beyond is compared only if it is within 1.5 cadences (else a gap)."""
-        v = self.valid()
-        v = v[v["day"] < day]
-        v = v[[self._far_enough(d, day) for d in v["day"]]]
-        if v.empty:
+        day = pd.Timestamp(day)
+        import bisect
+        days, rows = self._prev_index()
+        if self.cad is None:
             return None
-        r = v.iloc[-1]
+        # the latest valid release at least half a cadence before `day`
+        limit = day - pd.Timedelta(days=math.ceil(MIN_PERIOD * self.cad))   # = _far_enough (whole days)
+        i = bisect.bisect_right(days, limit) - 1
+        if i < 0:
+            return None
+        r = rows.iloc[i]
         return r if self._period_ok(r["day"], day) else None
+
+    def _prev_index(self):
+        """Cached (days, rows) of the valid representatives (prev_valid)."""
+        key = frozenset(self.excluded)
+        if getattr(self, "_prev_key", None) != key:
+            v = self.valid().reset_index(drop=True)
+            self._prev_rows = v
+            self._prev_days = [pd.Timestamp(d) for d in v["day"]]
+            self._prev_key = key
+        return self._prev_days, self._prev_rows
 
     def _next_index(self):
         """Cached (days, rows) of the representatives whose previous is usable."""
@@ -152,6 +243,7 @@ class SeriesChain:
         cadences it is a gap (None)."""
         if self.cad is None:
             return None
+        day = pd.Timestamp(day)
         import bisect
         days, rows = self._next_index()
         start = pd.Timestamp(day) + pd.Timedelta(days=MIN_PERIOD * self.cad)
@@ -162,10 +254,36 @@ class SeriesChain:
         return r if self._period_ok(day, r["day"]) else None
 
 
+_CONFLICT_CACHE: dict = {}
+_CONFLICT_COLS = ["canonical_id", "currency", "name_raw", "datetime_utc", "actual",
+                  "forecast", "previous", "jb_status"]
+
+
 def resolve_conflicts(ff: pd.DataFrame, zero_possible: dict) -> tuple[dict, list[dict]]:
-    """({(canonical_id, datetime_utc): reason} excluded from scoring, findings)."""
+    """({(canonical_id, datetime_utc): reason} excluded from scoring, findings).
+    Memoized on the CONTENT of the columns it reads (+ zero_possible): one build
+    calls it several times on the same calendar."""
     if ff is None or len(ff) == 0:
         return {}, []
+    try:
+        cols = [c for c in _CONFLICT_COLS if c in ff.columns]
+        key = (int(pd.util.hash_pandas_object(ff[cols], index=False).sum()), len(ff),
+               type(zero_possible).__name__,
+               tuple(sorted((k, bool(v)) for k, v in (zero_possible or {}).items())))
+    except TypeError:
+        key = None
+    if key is not None and key in _CONFLICT_CACHE:
+        ex, fi = _CONFLICT_CACHE[key]
+        return dict(ex), [dict(f) for f in fi]
+    ex, fi = _resolve_conflicts(ff, zero_possible)
+    if key is not None:
+        if len(_CONFLICT_CACHE) > 8:
+            _CONFLICT_CACHE.clear()
+        _CONFLICT_CACHE[key] = (dict(ex), [dict(f) for f in fi])
+    return ex, fi
+
+
+def _resolve_conflicts(ff: pd.DataFrame, zero_possible: dict) -> tuple[dict, list[dict]]:
     df = _prep(ff)
     excluded: dict = {}
     findings: list[dict] = []
@@ -182,8 +300,14 @@ def resolve_conflicts(ff: pd.DataFrame, zero_possible: dict) -> tuple[dict, list
             if len(fp) < 2:
                 continue
             prev_r, next_r = chain.prev_valid(day), chain.next_valid(day)
+            has_real = bool(((grp["actual"].notna()) & (grp["actual"] != 0.0)).any())
             for r in grp.itertuples(index=False):
                 why = []
+                # 7D: a 0/0/0 listing never survives beside a real print of the
+                # same publication (it is that publication's placeholder)
+                if has_real and all(pd.notna(v) and float(v) == 0.0
+                                    for v in (r.actual, r.forecast, r.previous)):
+                    why.append("0/0/0 listing of a publication that has a real print")
                 if prev_r is not None and pd.notna(r.previous) and \
                         abs(float(r.previous) - float(prev_r["actual"])) > chain.thr + EPS:
                     why.append(f"previous {r.previous} vs prior actual {prev_r['actual']} "
@@ -241,7 +365,8 @@ def find_series_gaps(ff: pd.DataFrame, as_of: pd.Timestamp, zero_possible: dict,
             gap = (pd.Timestamp(d1) - pd.Timestamp(d0)).days
             if gap > PERIOD_SLACK * cad:
                 out.append({"check": "missing_release", "kind": "series_gap", "canonical_id": cid,
-                            "currency": g.iloc[0]["currency"], "after": str(d0), "before": str(d1),
+                            "currency": g.iloc[0]["currency"],
+                            "after": str(pd.Timestamp(d0).date()), "before": str(pd.Timestamp(d1).date()),
                             "gap_days": int(gap), "cadence_days": cad})
     return out
 
@@ -313,7 +438,9 @@ def find_unfed_scheduled(ff: pd.DataFrame, weekly: list[tuple[str, list]], as_of
     from .ff_scoring import CCY2COUNTRY, build_matcher
     matcher = matcher or build_matcher()
     df = _prep(ff)
-    have = set(zip(df["canonical_id"], df["day"]))
+    listed: dict = {}
+    for cid, t in zip(df["canonical_id"], df["datetime_utc"]):
+        listed.setdefault(cid, []).append(pd.Timestamp(t))
     # the archived snapshots overlap heavily: parse each distinct event once
     uniq: dict = {}
     for _tag, events in weekly:
@@ -335,7 +462,8 @@ def find_unfed_scheduled(ff: pd.DataFrame, weekly: list[tuple[str, list]], as_of
             seen[(r.canonical_id, dt.date())] = (r.currency, r.name_raw, dt)
     return [{"check": "missing_release", "kind": "not_ingested", "canonical_id": cid,
              "currency": c, "name_raw": n, "release_dt": dt.isoformat()}
-            for (cid, day), (c, n, dt) in sorted(seen.items()) if (cid, day) not in have]
+            for (cid, day), (c, n, dt) in sorted(seen.items())
+            if not any(abs(dt - t) < PUBLICATION_WINDOW for t in listed.get(cid, ()))]
 
 
 def next_valid_previous(chain: SeriesChain, day) -> float:
