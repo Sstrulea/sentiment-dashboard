@@ -135,6 +135,26 @@
   const styleAttr = window.ScorePalette.styleAttr;
 
   // ---- Meta-bar -----------------------------------------------------------
+  // Audit 6B: a discreet note for meta.model.notice_days after a model change, so
+  // that day's bias jumps are read as the method, not the market. Judged on the
+  // payload's own as_of (deterministic), not the viewer's clock.
+  function modelNoteText(p) {
+    const m = p && p.meta && p.meta.model;
+    if (!m || !m.since || !p.as_of) return "";
+    const since = Date.parse(m.since + "T00:00:00Z");
+    const asOf = Date.parse(String(p.as_of).slice(0, 10) + "T00:00:00Z");
+    const days = (asOf - since) / 86400000;
+    if (!(days >= 0 && days < (m.notice_days || 14))) return "";
+    return "Model updated on " + m.since + ": " + m.changes + ".";
+  }
+  function renderModelNote(p) {
+    const el = document.getElementById("modelNote");
+    if (!el) return;
+    const t = modelNoteText(p);
+    el.textContent = t;
+    el.hidden = !t;
+  }
+
   function renderMeta() {
     const el = document.getElementById("econMeta");
     const p = state.payload;
@@ -143,6 +163,7 @@
     parts.push(p.instruments.length + " instruments");
     if (p.generated_at) parts.push("Generated " + fmtAsOf(p.generated_at));
     el.innerHTML = parts.join(" · ") + freshnessBadges(p.freshness);
+    renderModelNote(p);
   }
 
   // Per-source freshness badges (calendar / actuals pull / price). STALE → red

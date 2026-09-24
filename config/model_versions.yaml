@@ -1,0 +1,8 @@
+# Model versions (audit 6B). The newest entry is payload.meta.model; /economic and
+# /strength show a discreet note for `notice_days` after `since`, so bias jumps on
+# that day are attributed to the method, not the market. Append, never rewrite.
+notice_days: 14
+versions:
+  - version: "2026.09.24"
+    since: 2026-09-24
+    changes: "monetary on the 2Y spread (5-observation averaged ends, common dates) + symmetric sentiment fold"
