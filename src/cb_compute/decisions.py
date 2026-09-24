@@ -69,6 +69,14 @@ class SeriesView:
         i = bisect.bisect_right(ks, on)
         return self._d[sid][i - 1][1] if i else None
 
+    def obs(self, sid: str, on: date) -> Optional[tuple]:
+        """(date, value) of the last observation on or before `on`; None if the series starts later."""
+        ks = self._k.get(sid)
+        if not ks:
+            return None
+        i = bisect.bisect_right(ks, on)
+        return self._d[sid][i - 1] if i else None
+
     def covers(self, sid: str, on: date) -> bool:
         first, last = self.first_date(sid), self.last_date(sid)
         return first is not None and first <= on <= last
@@ -222,12 +230,37 @@ def ff_candidate(cfg: dict, view: SeriesView, rows: list, meeting: dict, eff: da
 
 # ---------------------------------------------------------------------------
 # One decision
+def series_before(cfg: dict, view: SeriesView, eff: date, prev_eff: Optional[date]) -> Optional[tuple]:
+    """(rate_before, note) from the bank's official series (the one official_candidate reads) when that series lags and
+    does not reach `eff` yet: its last published level before `eff`. Only when the series already has an observation
+    on / after the previous meeting's effective date, so that level is the one the previous decision set; else None."""
+    if prev_eff is None:
+        return None
+    off = cfg["policy_rate"].get("official") or {}
+    sids = [off["lower"], off["upper"]] if "lower" in off and "upper" in off else \
+        [off["level"]] if "level" in off else [off["bis"]] if "bis" in off else []
+    if not sids:
+        return None
+    obs = []
+    for sid in sids:
+        last = view.last_date(sid)
+        o = view.obs(sid, eff - ONE)
+        if last is None or last < prev_eff or o is None or o[0] < prev_eff:
+            return None
+        obs.append(o)
+    value = _r(sum(v for _, v in obs) / len(obs))
+    on = min(d for d, _ in obs)
+    return value, f"rate_before = {'+'.join(sids)} on {on.isoformat()} (series not yet at the effective date)"
+
+
 # ---------------------------------------------------------------------------
 
 def compute_decision(bank: str, cfg: dict, meeting: dict, calendars: dict, view: SeriesView, ff_rows: list,
-                     manual: Optional[dict] = None, statement: Optional[dict] = None) -> Optional[dict]:
+                     manual: Optional[dict] = None, statement: Optional[dict] = None,
+                     prev_meeting: Optional[dict] = None) -> Optional[dict]:
     """The decision row of one meeting, or None when no source has a rate for it yet. `statement` = {"after", "lower", "upper",
-    "doc_id"}: the rate parsed (and validated) from the bank's own statement."""
+    "doc_id"}: the rate parsed (and validated) from the bank's own statement. `prev_meeting`: the bank's meeting before this
+    one (its effective date gates the lagging-series fallback for rate_before)."""
     decision = meeting["date"]
     cal: Calendar = calendars[cfg["calendar_id"]]
     eff = effective_date(cfg["effective_rule"], decision, cal)
@@ -267,6 +300,12 @@ def compute_decision(bank: str, cfg: dict, meeting: dict, calendars: dict, view:
         before = next((c.before for c in (official, ff, man, stmt) if c is not None and c.before is not None), None)
         if before is not None:
             notes.append("rate_before taken from another source")
+    if before is None:
+        prev_eff = effective_date(cfg["effective_rule"], prev_meeting["date"], cal) if prev_meeting else None
+        lag = series_before(cfg, view, eff, prev_eff)
+        if lag is not None:
+            before = lag[0]
+            notes.append(lag[1])
     delta = None if before is None else _r((win.after - before) * 100, 4)
     return {
         "bank": cfg["id"], "currency": bank, "meeting_date": decision,
@@ -290,9 +329,11 @@ def compute_all(cfgs: dict, meetings: dict, calendars: dict, view: SeriesView, f
     """Rows for the last `n` meetings of every bank; also the list of (bank, date) that no source could resolve."""
     rows, unresolved = [], []
     for bank, cfg in cfgs.items():
-        for m in select_meetings(meetings.get(bank, []), today, n):
+        every = sorted(meetings.get(bank, []), key=lambda x: x["date"])
+        for m in select_meetings(every, today, n):
             man = (manual or {}).get((bank, m["date"]))
-            row = compute_decision(bank, cfg, m, calendars, view, ff_by_bank.get(bank, []), man, (statements or {}).get((bank, m["date"])))
+            prev = next((x for x in reversed(every) if x["date"] < m["date"]), None)
+            row = compute_decision(bank, cfg, m, calendars, view, ff_by_bank.get(bank, []), man, (statements or {}).get((bank, m["date"])), prev)
             if row is None:
                 unresolved.append((bank, m["date"]))
             else:
