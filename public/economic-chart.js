@@ -243,12 +243,16 @@
     const ma = state.payload.manual_actuals;
     if (!ma) { btn.hidden = true; return; }
     btn.hidden = false;
-    // Audit 6C: the number counts only rows that affect a score (inside the
-    // series' sigma window or its last print); history-only rows live folded
-    // in the modal and never inflate the signal.
+    // Audits 6C/7C: the number (and the ⚠) counts only rows whose missing value
+    // changes the inputs of a current score (last print, fallback method, sigma
+    // window not full). Rows that only refine a full sigma window, and history-
+    // only rows, live folded in the modal and never inflate the signal.
     const n = ma.count || 0;
     btn.textContent = n === 0 ? "Needs review: 0" : "⚠ Needs review: " + n;
-    btn.title = n + " affect a score" + (ma.history_count ? " · " + ma.history_count + " history-only (in the panel, folded)" : "");
+    const extra = [];
+    if (ma.refine_count) extra.push(ma.refine_count + " refine sigma only");
+    if (ma.history_count) extra.push(ma.history_count + " history-only");
+    btn.title = n + " change a current score" + (extra.length ? " · " + extra.join(" · ") + " (in the panel, folded)" : "");
     btn.classList.toggle("has-items", n > 0);
     btn.onclick = openManualActualsModal;
   }
@@ -284,7 +288,7 @@
 
   function manualActualsRowHtml(row) {
     const stateLabel = row.state === "MISSING" ? "Missing" : "Zero — confirm";
-    return '<tr data-affects="' + (row.affects_score ? "1" : "0") + '" data-canonical-id="' + escAttr(row.canonical_id) + '" data-currency="' + escAttr(row.currency) +
+    return '<tr data-group="' + (row.impact ? "impact" : (row.affects_score ? "refine" : "history")) + '" data-canonical-id="' + escAttr(row.canonical_id) + '" data-currency="' + escAttr(row.currency) +
       '" data-indicator-key="' + escAttr(row.indicator_key) + '" data-datetime-utc="' + escAttr(row.datetime_utc) +
       '" data-state="' + escAttr(row.state) + '">' +
       '<td class="ei-name">' + row.currency + '</td>' +
@@ -303,15 +307,26 @@
     const modal = document.getElementById("econDetailModal");
     const body = document.getElementById("econDetailContent");
 
+    const IMPACT_LABEL = { last_print: "latest print", fallback: "series < 6 prints (fallback)",
+                           sigma_window: "sigma window not full" };
     const rowsHtml = ma.rows.length
       ? ma.rows.map(manualActualsRowHtml).join("")
-      : '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px;">Nothing affecting a score needs review.</td></tr>';
+      : '<tr><td colspan="5" class="muted" style="text-align:center;padding:16px;">Nothing that changes a current score needs review.</td></tr>';
     const head = '<thead><tr><th>Currency</th><th style="text-align:left">Indicator</th><th>UTC</th><th>Forecast</th><th style="text-align:left">Action</th></tr></thead>';
-    const hist = ma.history_rows || [];
-    const histHtml = hist.length
-      ? '<details class="ma-history"><summary>History only (' + hist.length + ') — outside every scoring window; an entry changes /history, not a score</summary>' +
+    const folded = (rows, title) => rows && rows.length
+      ? '<details class="ma-history"><summary>' + title + '</summary>' +
         '<div class="econ-ind-scroll"><table class="econ-ind-table">' + head + '<tbody>' +
-        hist.map(manualActualsRowHtml).join("") + '</tbody></table></div></details>'
+        rows.map(manualActualsRowHtml).join("") + '</tbody></table></div></details>'
+      : "";
+    const refineHtml = folded(ma.refine_rows, "Refines sigma only (" + (ma.refine_rows || []).length +
+      ") — the sigma window is full; an entry only changes which 12 prints enter it");
+    const histHtml = folded(ma.history_rows, "History only (" + (ma.history_rows || []).length +
+      ") — outside every scoring window; an entry changes /history, not a score");
+    const reasons = ma.rows.length
+      ? '<div class="muted modal-subhead">Why flagged: ' + ma.rows.map(function (r) {
+          return escAttr(r.currency + " " + indicatorLabel(r) + " " + String(r.datetime_utc).slice(0, 10)) +
+            " — " + (IMPACT_LABEL[r.impact] || r.impact);
+        }).join("; ") + '.</div>'
       : "";
     const dupNote = ma.duplicates_suppressed
       ? ' <span title="Rows whose release is already scored by another row on the same or the adjacent UTC day (one publication = one row) are not listed.">· ' +
@@ -319,14 +334,14 @@
       : "";
     body.innerHTML =
       '<header class="modal-header">' +
-      '<h2>Manual Actuals <small class="muted">(' + ma.count + ' affecting a score' + dupNote + ')</small></h2>' +
+      '<h2>Manual Actuals <small class="muted">(' + ma.count + ' changing a current score' + dupNote + ')</small></h2>' +
       '<div class="muted modal-subhead">MISSING: scheduled, past due, no usable print (nothing yet, or a 0.0 placeholder where 0.0 cannot be the value) — enter the actual. ' +
       'ZERO_CONFIRM: a 0.0 print with no independent evidence, on a series where 0.0 can be real — confirm it as a real flat print, or correct it. ' +
-      'Listed: rows inside a series\u2019 scoring window (sigma window or last print). ' +
+      'Listed: rows whose value changes the inputs of a current score (the latest print, a series on the fallback method, or a sigma window that is not full). ' +
       'One row, one decision; a submit starts a refresh (~3 min) but only reload of this page will confirm it landed.</div>' +
       '</header>' +
       '<div class="econ-ind-scroll"><table class="econ-ind-table">' + head +
-      '<tbody>' + rowsHtml + '</tbody></table></div>' + histHtml;
+      '<tbody>' + rowsHtml + '</tbody></table></div>' + reasons + refineHtml + histHtml;
 
     modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -356,14 +371,13 @@
   function manualActualsDecrementCount(tr) {
     const ma = state.payload.manual_actuals;
     if (!ma) return;
-    if (tr && tr.dataset.affects === "0") {
-      if (ma.history_count > 0) ma.history_count -= 1;
-    } else if (ma.count > 0) {
-      ma.count -= 1;
-    }
+    const group = tr ? tr.dataset.group : "impact";
+    if (group === "history") { if (ma.history_count > 0) ma.history_count -= 1; }
+    else if (group === "refine") { if (ma.refine_count > 0) ma.refine_count -= 1; }
+    else if (ma.count > 0) { ma.count -= 1; }
     renderManualActualsButton();
     const small = document.querySelector("#econDetailContent .modal-header h2 small");
-    if (small) small.textContent = "(" + ma.count + " affecting a score)";
+    if (small) small.textContent = "(" + ma.count + " changing a current score)";
   }
 
   function submitManualActual(tr, actual) {
