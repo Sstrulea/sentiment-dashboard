@@ -73,6 +73,15 @@ function html(body, status) {
 
 export default async function middleware(request) {
   const url = new URL(request.url);
+  // "/" -> /economic (307, temporary), before any auth check and whatever the
+  // cookie: the single place for this redirect (not vercel.json).
+  if (url.pathname === "/") {
+    return new Response(null, {
+      status: 307,
+      headers: { Location: "/economic" + url.search, "cache-control": "no-store" },
+    });
+  }
+
   const tokens = loadTokens();
 
   if (tokens.size === 0) {

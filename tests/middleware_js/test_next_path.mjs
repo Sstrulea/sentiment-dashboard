@@ -19,6 +19,20 @@ const post = (path, form) => middleware(new Request(H + path, {
   method: "POST", body: new URLSearchParams(form),
   headers: { "content-type": "application/x-www-form-urlencoded" } }));
 
+// "/" -> 307 /economic, with and without a cookie (before the auth check)
+for (const cookie of [undefined, "dash_auth=secret", "dash_auth=wrong"]) {
+  const rr = await get("/", cookie);
+  assert.equal(rr.status, 307, String(cookie));
+  assert.equal(rr.headers.get("location"), "/economic", String(cookie));
+}
+
+// /economic not logged in -> /login?next=%2Feconomic; after login -> /economic
+let e = await get("/economic");
+assert.equal(e.status, 303);
+assert.equal(e.headers.get("location"), "/login?next=%2Feconomic");
+e = await post("/login?next=%2Feconomic", { token: "secret", next: "/economic" });
+assert.equal(e.status, 303); assert.equal(e.headers.get("location"), "/economic");
+
 // not logged in -> /login?next=<path+query>
 let r = await get("/carry?x=1&y=2");
 assert.equal(r.status, 303);

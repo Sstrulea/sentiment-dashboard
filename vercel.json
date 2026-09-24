@@ -7,12 +7,5 @@
     "api/manual-actual.py": {
       "excludeFiles": "{tests/**,docs/**,scripts/**,static/**,public/**,.github/**,data/jb_raw/**,data/archive/**,data/*.csv,data/*.xlsx}"
     }
-  },
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/economic",
-      "permanent": false
-    }
-  ]
+  }
 }
