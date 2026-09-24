@@ -52,7 +52,12 @@ CCY2COUNTRY = {
 }
 
 SCORING_COLUMNS = ["currency", "indicator_key", "release_dt", "actual",
-                   "consensus", "previous", "source", "name_raw", "actual_origin"]
+                   "consensus", "previous", "source", "name_raw", "actual_origin",
+                   "publication"]
+# publication (audit 7A): "scored" = the publication config/ff_aliases.yaml asks to
+# score (flash, or the final where the config says so — GBP PMIs); "telemetry" = a
+# variant listed under excluded_final_variants, kept for display only. NaN (manual,
+# cb, mt5 rows) counts as scored.
 
 
 def build_matcher() -> CompiledMatcher:
@@ -192,9 +197,17 @@ def zero_verdicts(ff_df: pd.DataFrame, zero_possible: dict[str, bool],
 def scoring_view(cal: pd.DataFrame) -> pd.DataFrame:
     """R1 — the frame scoring sees: a value recovered from the next print's
     `previous` (actual_origin 'ff_previous') is a revision, not a first release,
-    so it enters neither sigma nor a score (actual -> NaN here). The full frame,
-    recovered values included and marked, stays for display and history."""
-    if cal is None or cal.empty or "actual_origin" not in cal.columns:
+    so it enters neither sigma nor a score (actual -> NaN here). 7A: a
+    "telemetry" publication (a final/revision variant the config does not score)
+    is dropped. The full frame, both included and marked, stays for display and
+    history."""
+    if cal is None or cal.empty:
+        return cal
+    if "publication" in cal.columns:
+        tel = cal["publication"] == "telemetry"
+        if tel.any():
+            cal = cal[~tel].reset_index(drop=True)
+    if "actual_origin" not in cal.columns:
         return cal
     rec = cal["actual_origin"] == "ff_previous"
     if not rec.any():
@@ -239,6 +252,9 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
     matcher = matcher or build_matcher()
     zp = load_zero_possible() if zero_possible is None else zero_possible
     ff_df = ensure_provenance_columns(ff_df)
+    # 7A: ONE flash/final rule, whatever the ingest path that wrote the row.
+    from .econ_calendar_ff import load_excluded_finals
+    telemetry = {(c, n) for c, names in (load_excluded_finals() or {}).items() for n in (names or {})}
     # 4B: one publication = one row — a same-day row the series chain
     # contradicts leaves scoring (reported by the integrity check).
     from .release_integrity import resolve_conflicts
@@ -269,6 +285,7 @@ def to_scoring_frame(ff_df: pd.DataFrame, matcher: Optional[CompiledMatcher] = N
             "currency": r.currency, "indicator_key": key, "release_dt": r.datetime_utc,
             "actual": actual, "consensus": consensus, "previous": r.previous, "source": "ff",
             "name_raw": r.name_raw, "actual_origin": origin,
+            "publication": "telemetry" if (r.currency, r.name_raw) in telemetry else "scored",
         })
     # identical same-day REAL zeros (a re-listed 0.0 print that now counts) collapse
     # to one row — the earliest, as the previous guard did; real non-zero
