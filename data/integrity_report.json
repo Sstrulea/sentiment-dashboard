@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-24T11:06:16.764076",
+ "as_of": "2026-09-24T12:06:21.357647",
  "checks": {
   "release_conflict": {
    "findings": [
@@ -15,7 +15,7 @@
      "threshold": 0.2,
      "reason": "actual 4.3 vs next previous 7.3 (2023-01-25 00:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -29,7 +29,7 @@
      "threshold": 8.71648,
      "reason": "actual -65.1 vs next previous -20.0 (2023-02-16 00:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -43,7 +43,7 @@
      "threshold": 0.2,
      "reason": "actual -2.7 vs next previous -4.0 (2023-02-28 00:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -57,7 +57,7 @@
      "threshold": 0.2,
      "reason": "previous 1.7 vs prior actual 1.4 (2023-01-11 00:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -71,7 +71,7 @@
      "threshold": 0.2,
      "reason": "actual 3.9 vs next previous 3.5 (2023-02-16 00:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -85,7 +85,7 @@
      "threshold": 0.02,
      "reason": "actual 5.0 vs next previous 4.5 (2023-04-12 14:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -99,7 +99,7 @@
      "threshold": 0.2,
      "reason": "actual 3.9 vs next previous 6.6 (2023-02-21 13:32:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -113,7 +113,7 @@
      "threshold": 0.2,
      "reason": "actual -0.3 vs next previous -0.6 (2023-02-21 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -127,7 +127,7 @@
      "threshold": 0.2,
      "reason": "actual 0.1 vs next previous 104.0 (2023-02-10 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -141,7 +141,7 @@
      "threshold": 0.2,
      "reason": "actual 3.6 vs next previous 5.2 (2023-02-21 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -155,7 +155,7 @@
      "threshold": 0.2,
      "reason": "actual 45.4 vs next previous 49.2 (2023-02-01 14:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -169,7 +169,7 @@
      "threshold": 0.2,
      "reason": "previous 47.0 vs prior actual 48.6 (2023-04-03 13:30:00); actual 45.3 vs next previous 50.2 (2023-06-01 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -183,7 +183,7 @@
      "threshold": 0.2,
      "reason": "actual 3.7 vs next previous 5.3 (2023-02-21 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -197,7 +197,7 @@
      "threshold": 0.2,
      "reason": "actual 5.8 vs next previous 5.0 (2023-02-10 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -211,7 +211,7 @@
      "threshold": 0.2,
      "reason": "0/0/0 listing of a publication that has a real print",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -225,7 +225,7 @@
      "threshold": 1.28956,
      "reason": "0/0/0 listing of a publication that has a real print",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -239,7 +239,7 @@
      "threshold": 1.28956,
      "reason": "previous -1.5 vs prior actual 0.7 (2024-01-08 07:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -253,7 +253,7 @@
      "threshold": 0.2,
      "reason": "actual 3.4 vs next previous 5.2 (2023-02-01 10:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -267,7 +267,7 @@
      "threshold": 0.2,
      "reason": "actual 2.9 vs next previous 9.2 (2023-02-01 10:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -281,7 +281,7 @@
      "threshold": 0.2,
      "reason": "actual 5.1 vs next previous 6.3 (2023-02-15 07:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -295,7 +295,7 @@
      "threshold": 0.2,
      "reason": "actual 4.0 vs next previous 10.5 (2023-02-15 07:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -309,7 +309,7 @@
      "threshold": 0.64478,
      "reason": "actual -3.2 vs next previous -1.2 (2023-02-17 07:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -323,7 +323,7 @@
      "threshold": 4.31346,
      "reason": "previous 45.6 vs prior actual 50.3 (2024-04-02 08:30:00); actual 45.7 vs next previous 51.3 (2024-06-03 08:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -337,7 +337,7 @@
      "threshold": 0.2,
      "reason": "actual 4.2 vs next previous 3.7 (2023-02-14 07:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -351,7 +351,7 @@
      "threshold": 0.2,
      "reason": "actual 2.6 vs next previous 3.1 (2023-02-28 05:02:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -365,7 +365,7 @@
      "threshold": 0.2,
      "reason": "0/0/0 listing of a publication that has a real print; previous 0.0 vs prior actual 1.9 (2026-01-27 05:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -379,7 +379,7 @@
      "threshold": 0.2,
      "reason": "actual 2.3 vs next previous 4.0 (2023-02-23 23:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -393,7 +393,7 @@
      "threshold": 1.01717,
      "reason": "0/0/0 listing of a publication that has a real print",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -421,7 +421,7 @@
      "threshold": 0.2,
      "reason": "actual 2.1 vs next previous 3.9 (2023-01-25 23:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -435,7 +435,7 @@
      "threshold": 0.2,
      "reason": "previous 2.1 vs prior actual 4.0 (2023-01-08 23:30:00); actual 1.6 vs next previous 4.3 (2023-03-02 23:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -449,7 +449,7 @@
      "threshold": 0.2,
      "reason": "0/0/0 listing of a publication that has a real print",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -463,7 +463,7 @@
      "threshold": 0.64478,
      "reason": "actual 43.1 vs next previous 47.8 (2023-02-09 21:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -477,7 +477,7 @@
      "threshold": 0.64478,
      "reason": "actual 48.8 vs next previous 52.0 (2023-02-12 21:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -491,7 +491,7 @@
      "threshold": 0.2,
      "reason": "actual 0.5 vs next previous 1.4 (2023-04-19 22:45:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -505,7 +505,7 @@
      "threshold": 20.5673,
      "reason": "actual 164.0 vs next previous 253.0 (2023-01-31 13:15:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -519,7 +519,7 @@
      "threshold": 20.5673,
      "reason": "previous 158.0 vs prior actual 235.0 (2023-01-04 13:15:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -533,7 +533,7 @@
      "threshold": 1.08956,
      "reason": "actual 1.5 vs next previous 3.9 (2023-04-27 12:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -561,7 +561,7 @@
      "threshold": 0.2,
      "reason": "actual 3.4 vs next previous 6.5 (2023-02-14 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -575,7 +575,7 @@
      "threshold": 0.2,
      "reason": "actual 5.6 vs next previous 5.1 (2023-02-27 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -603,7 +603,7 @@
      "threshold": 0.64478,
      "reason": "actual 3.3 vs next previous 2.6 (2023-04-27 12:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -617,7 +617,7 @@
      "threshold": 0.64478,
      "reason": "actual 0.1 vs next previous -1.0 (2023-02-15 14:15:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -631,7 +631,7 @@
      "threshold": 2.0,
      "reason": "actual 202.0 vs next previous 206.0 (2023-01-11 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -645,7 +645,7 @@
      "threshold": 2.0,
      "reason": "actual 202.0 vs next previous 205.0 (2023-01-18 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -659,7 +659,7 @@
      "threshold": 2.0,
      "reason": "actual 187.0 vs next previous 192.0 (2023-01-25 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -673,7 +673,7 @@
      "threshold": 2.0,
      "reason": "actual 214.0 vs next previous 186.0 (2023-02-02 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -687,7 +687,7 @@
      "threshold": 0.2,
      "reason": "actual 47.4 vs next previous 48.4 (2023-02-01 15:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -701,7 +701,7 @@
      "threshold": 0.2,
      "reason": "actual 50.6 vs next previous 49.6 (2023-02-03 15:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -715,7 +715,7 @@
      "threshold": 0.406346,
      "reason": "actual 10.46 vs next previous 8.93 (2023-01-30 15:00:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -729,7 +729,7 @@
      "threshold": 0.2,
      "reason": "actual 0.7 vs next previous -0.1 (2023-02-24 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "check": "release_conflict",
@@ -743,7 +743,7 @@
      "threshold": 0.54478,
      "reason": "actual 0.6 vs next previous -1.1 (2023-02-15 13:30:00)",
      "level": "INFO",
-     "new": true
+     "new": false
     }
    ]
   },
@@ -1164,7 +1164,7 @@
      "tolerance": 1.08956,
      "threshold": 1.08956,
      "n_revision_pairs": 11,
-     "level": "WARN",
+     "level": "INFO",
      "new": false
     },
     {
@@ -1259,7 +1259,7 @@
      "tolerance": 0.64478,
      "threshold": 0.64478,
      "n_revision_pairs": 12,
-     "level": "WARN",
+     "level": "INFO",
      "new": false
     },
     {
@@ -1431,7 +1431,7 @@
      "threshold": 0.406346,
      "n_revision_pairs": 44,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_adp_nonfarm_employment_change",
@@ -2248,7 +2248,7 @@
      "threshold": 20.5673,
      "n_revision_pairs": 42,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -2305,7 +2305,7 @@
      "threshold": 8.71648,
      "n_revision_pairs": 41,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -2612,25 +2612,6 @@
      "new": false
     },
     {
-     "canonical_id": "jpy_capital_spending",
-     "currency": "JPY",
-     "indicator_key": "capital_expenditure",
-     "name_raw": "Capital Spending q/y",
-     "release_dt": "2025-06-01T23:50:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-08-31T23:50:00",
-     "next_previous": 6.4,
-     "next_from": "parquet",
-     "diff": 6.4,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 11,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "usd_import_prices",
      "currency": "USD",
      "indicator_key": "import_prices",
@@ -2665,7 +2646,7 @@
      "tolerance": 0.0,
      "threshold": 0.2,
      "n_revision_pairs": 28,
-     "level": "WARN",
+     "level": "INFO",
      "new": false
     },
     {
@@ -2695,7 +2676,7 @@
      "release_dt": "2025-09-12T06:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2025-10-16T06:00:00",
      "next_previous": -0.1,
      "next_from": "parquet",
@@ -2703,7 +2684,7 @@
      "tolerance": 0.0,
      "threshold": 0.0,
      "n_revision_pairs": 37,
-     "level": "INFO",
+     "level": "WARN",
      "new": false
     },
     {
@@ -2722,44 +2703,6 @@
      "tolerance": 0.0,
      "threshold": 0.0,
      "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "aud_unemployment_rate",
-     "currency": "AUD",
-     "indicator_key": "unemployment_rate",
-     "name_raw": "Unemployment Rate",
-     "release_dt": "2025-09-18T01:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-10-16T00:30:00",
-     "next_previous": 4.2,
-     "next_from": "parquet",
-     "diff": 4.2,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "aud_cpi",
-     "currency": "AUD",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "CPI y/y",
-     "release_dt": "2025-09-24T01:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-10-29T00:30:00",
-     "next_previous": 3.0,
-     "next_from": "parquet",
-     "diff": 3.0,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 42,
      "level": "INFO",
      "new": false
     },
@@ -2783,25 +2726,6 @@
      "new": false
     },
     {
-     "canonical_id": "chf_procurech_manufacturing_pmi",
-     "currency": "CHF",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "Manufacturing PMI",
-     "release_dt": "2025-10-01T07:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-03T08:30:00",
-     "next_previous": 46.3,
-     "next_from": "parquet",
-     "diff": 46.3,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 32,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "gbp_s_p_global_cips_manufacturing_pmi",
      "currency": "GBP",
      "indicator_key": "manufacturing_pmi",
@@ -2821,63 +2745,6 @@
      "new": false
     },
     {
-     "canonical_id": "eur_core_cpi",
-     "currency": "EUR",
-     "indicator_key": "core_cpi",
-     "name_raw": "Core CPI Flash Estimate y/y",
-     "release_dt": "2025-10-01T09:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-10-31T10:00:00",
-     "next_previous": 2.4,
-     "next_from": "parquet",
-     "diff": 2.4,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 42,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "eur_cpi",
-     "currency": "EUR",
-     "indicator_key": "cpi_yoy",
-     "name_raw": "CPI Flash Estimate y/y",
-     "release_dt": "2025-10-01T09:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-10-31T10:00:00",
-     "next_previous": 2.2,
-     "next_from": "parquet",
-     "diff": 2.2,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 42,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "usd_adp_nonfarm_employment_change",
-     "currency": "USD",
-     "indicator_key": "adp",
-     "name_raw": "ADP Non-Farm Employment Change",
-     "release_dt": "2025-10-01T12:15:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-05T13:15:00",
-     "next_previous": -29.0,
-     "next_from": "parquet",
-     "diff": -29.0,
-     "tolerance": 20.5673,
-     "threshold": 20.5673,
-     "n_revision_pairs": 42,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "cad_s_p_global_manufacturing_pmi",
      "currency": "CAD",
      "indicator_key": "manufacturing_pmi",
@@ -2890,63 +2757,6 @@
      "next_previous": 47.7,
      "next_from": "parquet",
      "diff": 47.7,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "usd_ism_manufacturing_pmi",
-     "currency": "USD",
-     "indicator_key": "manufacturing_pmi",
-     "name_raw": "ISM Manufacturing PMI",
-     "release_dt": "2025-10-01T14:00:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-03T15:00:00",
-     "next_previous": 49.1,
-     "next_from": "parquet",
-     "diff": 49.1,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 42,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "aud_employment_change",
-     "currency": "AUD",
-     "indicator_key": "employment_change",
-     "name_raw": "Employment Change",
-     "release_dt": "2025-10-16T00:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-13T00:30:00",
-     "next_previous": 12.8,
-     "next_from": "parquet",
-     "diff": 12.8,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
-     "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "aud_unemployment_rate",
-     "currency": "AUD",
-     "indicator_key": "unemployment_rate",
-     "name_raw": "Unemployment Rate",
-     "release_dt": "2025-10-16T00:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2025-11-13T00:30:00",
-     "next_previous": 4.5,
-     "next_from": "parquet",
-     "diff": 4.5,
      "tolerance": 0.0,
      "threshold": 0.0,
      "n_revision_pairs": 41,
@@ -3018,7 +2828,7 @@
      "release_dt": "2025-12-01T00:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2026-03-02T00:30:00",
      "next_previous": 1.5,
      "next_from": "parquet",
@@ -3026,7 +2836,7 @@
      "tolerance": 1.08956,
      "threshold": 1.08956,
      "n_revision_pairs": 11,
-     "level": "INFO",
+     "level": "WARN",
      "new": false
     },
     {
@@ -3035,56 +2845,18 @@
      "indicator_key": "employment_change",
      "name_raw": "Employment Change",
      "release_dt": "2025-12-05T13:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "kind": "value",
+     "scored_actual": 54.0,
+     "scored_source": "manual",
      "next_release_dt": "2026-01-09T13:30:00",
      "next_previous": 53.6,
      "next_from": "parquet",
-     "diff": 53.6,
+     "diff": -0.4,
      "tolerance": 0.0,
-     "threshold": 0.0,
+     "threshold": 0.2,
      "n_revision_pairs": 42,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "cad_unemployment_rate",
-     "currency": "CAD",
-     "indicator_key": "unemployment_rate",
-     "name_raw": "Unemployment Rate",
-     "release_dt": "2025-12-05T13:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-01-09T13:30:00",
-     "next_previous": 6.5,
-     "next_from": "parquet",
-     "diff": 6.5,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 42,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "jpy_ppi",
-     "currency": "JPY",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "PPI y/y",
-     "release_dt": "2025-12-09T23:50:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-01-14T23:50:00",
-     "next_previous": 2.7,
-     "next_from": "parquet",
-     "diff": 2.7,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
-     "n_revision_pairs": 39,
-     "level": "INFO",
-     "new": false
+     "level": "WARN",
+     "new": true
     },
     {
      "canonical_id": "usd_average_hourly_earnings",
@@ -3141,7 +2913,7 @@
      "threshold": 1.01717,
      "n_revision_pairs": 44,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -3201,80 +2973,23 @@
      "new": false
     },
     {
-     "canonical_id": "cad_ippi",
-     "currency": "CAD",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "IPPI m/m",
+     "canonical_id": "usd_gdp",
+     "currency": "USD",
+     "indicator_key": "gdp_qoq",
+     "name_raw": "Advance GDP q/q",
      "release_dt": "2026-02-20T12:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-03-20T12:30:00",
-     "next_previous": 2.8,
+     "kind": "value",
+     "scored_actual": 1.4,
+     "scored_source": "manual",
+     "next_release_dt": "2026-04-30T12:30:00",
+     "next_previous": 0.5,
      "next_from": "parquet",
-     "diff": 2.8,
+     "diff": -0.9,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 39,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "usd_core_pce_price_index",
-     "currency": "USD",
-     "indicator_key": "core_pce",
-     "name_raw": "Core PCE Price Index m/m",
-     "release_dt": "2026-02-20T12:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-03-13T12:30:00",
-     "next_previous": 0.4,
-     "next_from": "parquet",
-     "diff": 0.4,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 40,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "usd_personal_income",
-     "currency": "USD",
-     "indicator_key": "personal_income_mm",
-     "name_raw": "Personal Income m/m",
-     "release_dt": "2026-02-20T12:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-03-13T12:30:00",
-     "next_previous": 0.3,
-     "next_from": "parquet",
-     "diff": 0.3,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 39,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "usd_personal_spending",
-     "currency": "USD",
-     "indicator_key": "personal_spending_mm",
-     "name_raw": "Personal Spending m/m",
-     "release_dt": "2026-02-20T12:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-03-13T12:30:00",
-     "next_previous": 0.4,
-     "next_from": "parquet",
-     "diff": 0.4,
-     "tolerance": 0.1,
-     "threshold": 0.1,
-     "n_revision_pairs": 39,
-     "level": "INFO",
-     "new": false
+     "n_revision_pairs": 12,
+     "level": "WARN",
+     "new": true
     },
     {
      "canonical_id": "aud_monthly_cpi_indicator",
@@ -3360,7 +3075,7 @@
      "release_dt": "2026-03-13T07:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2026-04-16T06:00:00",
      "next_previous": 0.1,
      "next_from": "parquet",
@@ -3368,7 +3083,7 @@
      "tolerance": 0.0,
      "threshold": 0.0,
      "n_revision_pairs": 37,
-     "level": "INFO",
+     "level": "WARN",
      "new": false
     },
     {
@@ -3379,7 +3094,7 @@
      "release_dt": "2026-03-13T12:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2026-04-07T12:30:00",
      "next_previous": -0.5,
      "next_from": "parquet",
@@ -3387,7 +3102,7 @@
      "tolerance": 0.1,
      "threshold": 0.1,
      "n_revision_pairs": 39,
-     "level": "INFO",
+     "level": "WARN",
      "new": false
     },
     {
@@ -3444,25 +3159,6 @@
      "tolerance": 0.64478,
      "threshold": 0.64478,
      "n_revision_pairs": 38,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "aud_import_prices",
-     "currency": "AUD",
-     "indicator_key": "import_prices",
-     "name_raw": "Import Prices q/q",
-     "release_dt": "2026-04-30T01:30:00",
-     "kind": "zero",
-     "scored_actual": 0.0,
-     "scored_source": "quarantined",
-     "next_release_dt": "2026-07-30T01:30:00",
-     "next_previous": 0.1,
-     "next_from": "parquet",
-     "diff": 0.1,
-     "tolerance": 0.0,
-     "threshold": 0.0,
-     "n_revision_pairs": 14,
      "level": "INFO",
      "new": false
     },
@@ -3678,15 +3374,16 @@
    ],
    "findings_by_source": {
     "ff": 85,
-    "quarantined": 69
+    "quarantined": 47,
+    "manual": 6
    },
    "findings_by_kind": {
-    "value": 85,
-    "zero": 69
+    "value": 87,
+    "zero": 51
    },
-   "n_checked": 3183,
+   "n_checked": 3185,
    "n_series": 107,
-   "n_scored_zero": 165,
+   "n_scored_zero": 140,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
    "weekly_feed": "ff_weekly_2026-09-24.json"
   },
@@ -4270,7 +3967,7 @@
      "level": "INFO",
      "known_gap": "jb_archive_hole_2023_12",
      "reason": "JBlanked archive capture has no events for 2023-12-04..29 and there is no FF archive for that period",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -5185,13 +4882,13 @@
    "INFO": 53
   },
   "previous_consistency": {
-   "WARN": 26,
-   "INFO": 128
+   "WARN": 29,
+   "INFO": 109
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 108
   }
  },
- "generated_at": "2026-09-24T11:06:25+00:00"
+ "generated_at": "2026-09-24T12:06:28+00:00"
 }
