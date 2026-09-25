@@ -1065,5 +1065,148 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-25T11:37:10+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_industrial_production",
+  "currency": "USD",
+  "indicator_key": "industrial_production_mm",
+  "datetime_utc": "2023-02-15 14:15:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "Fed G.17 2023-02-15 (Jan 2023, first release): 'Industrial production was unchanged in January' https://www.federalreserve.gov/releases/g17/20230215/ ; FF page https://www.forexfactory.com/calendar?day=feb15.2023 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "cad_gdp",
+  "currency": "CAD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2023-05-31 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "StatCan The Daily 2023-05-31 (Mar 2023, first release): 'Real gross domestic product (GDP) was essentially unchanged in March' https://www150.statcan.gc.ca/n1/daily-quotidien/230531/dq230531b-eng.htm ; FF page https://www.forexfactory.com/calendar?day=may31.2023 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "cad_gdp",
+  "currency": "CAD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2023-06-30 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "StatCan The Daily 2023-06-30 (Apr 2023, first release): 'Real gross domestic product (GDP) was essentially unchanged in April' https://www150.statcan.gc.ca/n1/daily-quotidien/230630/dq230630a-eng.htm ; FF page https://www.forexfactory.com/calendar?day=jun30.2023 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "cad_gdp",
+  "currency": "CAD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2024-02-29 13:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "StatCan The Daily 2024-02-29 (Dec 2023, first release): 'Real gross domestic product (GDP) was essentially unchanged in December' https://www150.statcan.gc.ca/n1/daily-quotidien/240229/dq240229b-eng.htm ; FF page https://www.forexfactory.com/calendar?day=feb29.2024 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "eur_retail_sales",
+  "currency": "EUR",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2023-07-06 09:00:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "Eurostat euro indicators 2023-07-06 (May 2023, first release): 'the seasonally adjusted volume of retail trade remained unchanged in the euro area' https://ec.europa.eu/eurostat/web/products-euro-indicators/w/4-06072023-ap ; FF page https://www.forexfactory.com/calendar?day=jul6.2023 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "nzd_retail_sales",
+  "currency": "NZD",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2023-11-23 21:45:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "Stats NZ 2023-11-24 NZT (Sep 2023 quarter, first release): 'The total volume of seasonally adjusted retail sales was relatively unchanged' https://www.stats.govt.nz/information-releases/retail-trade-survey-september-2023-quarter/ ; the next release lists previous -0.8 (a revision beyond the series' tolerance: expected previous_consistency WARN) ; FF page https://www.forexfactory.com/calendar?day=nov23.2023 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "usd_import_prices",
+  "currency": "USD",
+  "indicator_key": "import_prices",
+  "datetime_utc": "2024-01-17 13:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "BLS 2024-01-17 (Dec 2023, first release): 'U.S. import prices were unchanged in December' https://www.bls.gov/news.release/archives/ximpim_01172024.htm ; FF page https://www.forexfactory.com/calendar?day=jan17.2024 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "usd_import_prices",
+  "currency": "USD",
+  "indicator_key": "import_prices",
+  "datetime_utc": "2025-06-17 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "BLS 2025-06-17 (May 2025, first release): 'U.S. import prices were unchanged in May' https://www.bls.gov/news.release/archives/ximpim_06172025.htm ; FF page https://www.forexfactory.com/calendar?day=jun17.2025 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "usd_durable_goods_orders",
+  "currency": "USD",
+  "indicator_key": "durable_goods_orders_mm",
+  "datetime_utc": "2024-01-25 13:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "Census 2024-01-25 (Dec 2023, advance): 'New orders for manufactured durable goods in December ... increased $0.1 billion or virtually unchanged' https://www.census.gov/manufacturing/m3/historical_data/pressreleases/adv/2023/dec23adv.pdf ; FF page https://www.forexfactory.com/calendar?day=jan25.2024 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "usd_durable_goods_orders",
+  "currency": "USD",
+  "indicator_key": "durable_goods_orders_mm",
+  "datetime_utc": "2024-09-26 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "Census 2024-09-26 (Aug 2024, advance): 'New orders for manufactured durable goods in August ... increased $0.1 billion or virtually unchanged' https://www.census.gov/manufacturing/m3/historical_data/pressreleases/adv/2024/aug24adv.pdf ; FF page https://www.forexfactory.com/calendar?day=sep26.2024 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "aud_retail_sales",
+  "currency": "AUD",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2024-08-30 01:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "ABS 2024-08-30 (Jul 2024, first release): 'Australian retail turnover was unchanged in July 2024' https://www.abs.gov.au/media-centre/media-releases/retail-turnover-holds-steady ; FF page https://www.forexfactory.com/calendar?day=aug29.2024 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "usd_core_pce_price_index",
+  "currency": "USD",
+  "indicator_key": "core_pce",
+  "datetime_utc": "2025-04-30 14:00:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "BEA 2025-04-30 (Mar 2025, first release): 'Excluding food and energy, the PCE price index increased less than 0.1 percent' (0.0% at one decimal) https://www.bea.gov/index.php/news/2025/personal-income-and-outlays-march-2025 ; FF page https://www.forexfactory.com/calendar?day=apr30.2025 (actual 0.0%)"
+ },
+ {
+  "canonical_id": "chf_retail_sales",
+  "currency": "CHF",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2025-07-01 06:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T11:28:22+00:00",
+  "note": "ForexFactory https://www.forexfactory.com/calendar?day=jul1.2025 (actual 0.0%); FSO 2025-07-01 (May 2025, first release): real retail sales y/y 0.0%; official FSO page not retrieved; reported the same day: 'Retail sales in Switzerland stalled year-on-year in May 2025' https://tradingeconomics.com/switzerland/retail-sales-annual/news/466869"
  }
 ]
