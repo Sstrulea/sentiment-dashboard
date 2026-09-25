@@ -25,11 +25,30 @@ for (const inst of payload.instruments) {
   assert.ok(g.every((x) => Math.abs(x.value) > 1e-12), inst.symbol + ": no zero group");
   for (let i = 1; i < g.length; i++) assert.ok(Math.abs(g[i - 1].value) >= Math.abs(g[i].value), inst.symbol + ": sorted by |value|");
 }
-// AUD/JPY, as on the board: Monetary · 2Y, COT, Labour, Inflation = +1.67 (Growth nets to 0: no bar)
-const aj = mod.scoreGroups(payload.instruments.find((i) => i.symbol === "AUDJPY"));
-assert.strictEqual(JSON.stringify(aj.map((x) => x.label)), JSON.stringify(["Monetary · 2Y", "COT", "Labour", "Inflation"]));
-assert.strictEqual(aj.map((x) => x.value.toFixed(2)).join(","), "1.25,0.73,-0.63,0.31");
-assert.strictEqual(aj.reduce((s, x) => s + x.value, 0).toFixed(2), "1.67");
+// The grouping behaviour, pinned on a FIXED row shaped like the board's AUD/JPY (key /
+// category / contribution). Not on live data: public/data/economic.json moves with every
+// refresh, and a snapshot of the live AUDJPY row broke on routine data twice (PR #26, and
+// 2026-09-25 after a manual JPY core CPI entry). The live rows are covered above by the
+// invariants that must hold on any data (bars add up to the score, no zero group, sorted).
+// Pinned here: contributions summed per category, the sentiment row = COT, a group netting
+// to 0 gets no bar (Growth), bars sorted by |value|, the group labels.
+const fixed = {
+  symbol: "FIXED", score: 1.66,
+  contributions: [
+    { key: "rate_expectations", category: "monetary", contribution: 1.25 },
+    { key: "cpi_yoy", category: "inflation", contribution: 0.25 },
+    { key: "core_cpi", category: "inflation", contribution: 0.06 },
+    { key: "unemployment_rate", category: "labour", contribution: -0.315 },
+    { key: "wage_growth", category: "labour", contribution: -0.315 },
+    { key: "retail_sales", category: "growth", contribution: 0.156 },
+    { key: "capital_expenditure", category: "growth", contribution: -0.156 },
+    { key: "sentiment", category: null, contribution: 0.73 },
+  ],
+};
+const fg = mod.scoreGroups(fixed);
+assert.strictEqual(JSON.stringify(fg.map((x) => x.label)), JSON.stringify(["Monetary · 2Y", "COT", "Labour", "Inflation"]));
+assert.strictEqual(fg.map((x) => x.value.toFixed(2)).join(","), "1.25,0.73,-0.63,0.31");
+assert.ok(Math.abs(fg.reduce((s, x) => s + x.value, 0) - fixed.score) < 1e-9, "fixed row: bars add up to the score");
 
 // cross-asset: bars iff exact
 const ca = (payload.crossasset || {}).instruments || [];
