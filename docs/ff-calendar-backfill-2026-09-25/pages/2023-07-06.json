@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "6.4%",
+    "forecast": "1.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "48.9",
+    "forecast": "50.9",
+    "previous": "51.6"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Housing Equity Withdrawal q/q",
+    "actual": "-22.9B",
+    "forecast": "-10.7B",
+    "previous": "-15.3B"
+  },
+  {
+    "time": "4:47am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.55|1.5",
+    "forecast": "",
+    "previous": "3.51|1.4"
+  },
+  {
+    "time": "4:58am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.04|1.9",
+    "forecast": "",
+    "previous": "2.85|1.9"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "Day 2",
+    "currency": "EUR",
+    "title": "OPEC Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "25.2%",
+    "forecast": "",
+    "previous": "286.7%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "497K",
+    "forecast": "226K",
+    "previous": "267K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "-3.4B",
+    "forecast": "1.4B",
+    "previous": "0.9B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "248K",
+    "forecast": "247K",
+    "previous": "236K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-69.0B",
+    "forecast": "-68.9B",
+    "previous": "-74.4B"
+  },
+  {
+    "time": "8:45am",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Services PMI",
+    "actual": "54.4",
+    "forecast": "54.1",
+    "previous": "54.1"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Services PMI",
+    "actual": "53.9",
+    "forecast": "51.3",
+    "previous": "50.3"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "9.82M",
+    "forecast": "9.93M",
+    "previous": "10.32M"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-1.5M",
+    "forecast": "-2.0M",
+    "previous": "-9.6M"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "2.5%",
+    "forecast": "1.2%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-4.0%",
+    "forecast": "-2.4%",
+    "previous": "-4.4%"
+  }
+]

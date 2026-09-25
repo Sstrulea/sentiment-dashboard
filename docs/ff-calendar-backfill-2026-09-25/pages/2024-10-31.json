@@ -1,0 +1,205 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "-0.6%",
+    "forecast": "-4.2%",
+    "previous": "-5.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.4%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "1.2%",
+    "forecast": "-0.7%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-1.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Monthly Unemployment Rate",
+    "actual": "6.1%",
+    "forecast": "6.2%",
+    "previous": "6.1%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.7%",
+    "forecast": "2.6%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.0%",
+    "forecast": "1.9%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Unemployment Rate",
+    "actual": "6.3%",
+    "forecast": "6.4%",
+    "previous": "6.3%"
+  },
+  {
+    "time": "6:03am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "4.83|3.1",
+    "forecast": "",
+    "previous": "4.33|2.9"
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "50.9%",
+    "forecast": "",
+    "previous": "53.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Employment Cost Index q/q",
+    "actual": "0.8%",
+    "forecast": "0.9%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "216K",
+    "forecast": "229K",
+    "previous": "228K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.5%",
+    "forecast": "0.4%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "41.6",
+    "forecast": "46.9",
+    "previous": "46.6"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "78B",
+    "forecast": "79B",
+    "previous": "80B"
+  },
+  {
+    "time": "5:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "2.6%",
+    "forecast": "",
+    "previous": "-5.2%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "AUD",
+    "title": "PPI q/q",
+    "actual": "0.9%",
+    "forecast": "0.7%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "49.2",
+    "forecast": "49.0",
+    "previous": "49.0"
+  }
+]

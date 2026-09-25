@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final CPI m/m",
+    "actual": "0.8%",
+    "forecast": "0.8%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.3%",
+    "forecast": "0.1%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "-1.7%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-17.9B",
+    "forecast": "-17.5B",
+    "previous": "-19.3B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "-0.4%",
+    "forecast": "0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Trade Balance",
+    "actual": "-12.9B",
+    "forecast": "-14.0B",
+    "previous": "-14.7B"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CAD",
+    "title": "New Loans",
+    "actual": "1810B",
+    "forecast": "1500B",
+    "previous": "4900B"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CAD",
+    "title": "M2 Money Supply y/y",
+    "actual": "12.9%",
+    "forecast": "12.5%",
+    "previous": "12.6%"
+  },
+  {
+    "time": "6:40am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Employment Change",
+    "actual": "21.8K",
+    "forecast": "8.5K",
+    "previous": "150.0K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Unemployment Rate",
+    "actual": "5.0%",
+    "forecast": "5.1%",
+    "previous": "5.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Capacity Utilization Rate",
+    "actual": "81.7%",
+    "forecast": "82.2%",
+    "previous": "82.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Average Hourly Earnings m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Non-Farm Employment Change",
+    "actual": "311K",
+    "forecast": "224K",
+    "previous": "504K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Rate",
+    "actual": "3.6%",
+    "forecast": "3.4%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Budget Balance",
+    "actual": "-262.4B",
+    "forecast": "-261.0B",
+    "previous": "-38.8B"
+  }
+]

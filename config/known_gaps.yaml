@@ -25,6 +25,10 @@ known_gaps:
 #   no_source = the publication existed, but no archive we hold carries the value
 #   (JB archive capture = data/archive/ff_calendar_range.json, 2023-01-01..2026-07-05;
 #   data/ff_raw starts 2026-08-01), so there is nothing to fill from without a JB call.
+# 2026-09-25: aud_cpi_2026_02, nzd_retail_sales_2025_q4, cad_trimmed_cpi_2025_11,
+# jpy_manufacturing_pmi_2025_12_flash, aud_company_profits_2024_q3 and
+# jpy_capital_spending_2024_q3 were removed: those publications were filled from the
+# ForexFactory calendar pages (migrations/2026-09-25_backfill_ff_calendar_pages.py).
 missing_publications:
   - id: usd_cpi_2025_10
     canonical_ids: [usd_cpi]
@@ -81,51 +85,20 @@ missing_publications:
         evidence: "BEA: 'this report for October and November replaces releases originally scheduled for November 26 and December 19, 2025' (released 2026-01-22)"
         source: https://www.bea.gov/index.php/news/2026/personal-income-and-outlays-october-and-november-2025
     reason: "Personal Income and Outlays October 2025 merged with November into the 2026-01-22 release (BEA)"
-  - id: aud_cpi_2026_02
-    canonical_ids: [aud_cpi, aud_monthly_trimmed_mean_cpi]
-    gap: {after: 2026-01-28, before: 2026-03-25}
+  - id: gbp_ppi_output_2025_pause
+    canonical_ids: [gbp_ppi_output]
+    gap: {after: 2025-02-19, before: 2025-10-21}
     publications:
-      - reference: January 2026 (released 2026-02-25)
-        status: no_source
-        evidence: "JB archive capture holds only 'CPI m/m' (-0.1) for AUD on 2026-02-25; no 'CPI y/y' and no 'Trimmed Mean CPI m/m'"
-    reason: "AUD CPI y/y and trimmed mean of 2026-02-25 not in any archive we hold (same-day CPI m/m present)"
-  - id: nzd_retail_sales_2025_q4
-    canonical_ids: [nzd_retail_sales]
-    gap: {after: 2025-11-26, before: 2026-05-21}
+      - reference: February to July 2025 (due 2025-03-26 onwards)
+        status: not_published
+        evidence: "ONS, 21 March 2025: 'we are pausing the publication of PPI and SPPI data, which was next due on 26 March' (chain-linking problem); publication resumed 2025-10-22 with September 2025 and an August catch-up (FF 'Aug Data' row, present)"
+        source: https://www.ons.gov.uk/news/statementsandletters/pausingofproducerpricespublications
+    reason: "UK PPI publication paused by ONS from March 2025, resumed 2025-10-22"
+  - id: chf_ppi_2025_08
+    canonical_ids: [chf_ppi]
+    gap: {after: 2025-08-14, before: 2025-10-14}
     publications:
-      - reference: Q4 2025 (released 2026-02-22 UTC)
+      - reference: August 2025 (expected mid-September 2025)
         status: no_source
-        evidence: "JB archive capture holds only 'Core Retail Sales q/q' (1.5) for NZD on 2026-02-22; no headline 'Retail Sales q/q'"
-    reason: "NZD retail sales Q4 2025 not in any archive we hold (same-day core retail present)"
-  - id: cad_trimmed_cpi_2025_11
-    canonical_ids: [cad_trimmed_cpi]
-    gap: {after: 2025-11-17, before: 2026-01-19}
-    publications:
-      - reference: November 2025 (released 2025-12-15)
-        status: no_source
-        evidence: "JB archive capture holds CPI m/m, Common CPI y/y, Core CPI m/m and Median CPI y/y for CAD on 2025-12-15, but no 'Trimmed CPI y/y'"
-    reason: "CAD trimmed CPI of 2025-12-15 not in any archive we hold (same-day common/median present)"
-  - id: jpy_manufacturing_pmi_2025_12_flash
-    canonical_ids: [jpy_au_jibun_bank_manufacturing_pmi]
-    gap: {after: 2025-12-01, before: 2026-01-23}
-    publications:
-      - reference: December 2025 flash
-        status: no_source
-        evidence: "JB archive capture holds no JPY Flash Manufacturing PMI in December 2025; the Final of 2026-01-05 (50.0) exists but is an excluded final variant (config/ff_aliases.yaml excluded_final_variants: flash only)"
-    reason: "JPY flash manufacturing PMI Dec 2025 not in any archive we hold (only the excluded final)"
-  - id: aud_company_profits_2024_q3
-    canonical_ids: [aud_company_operating_profits]
-    gap: {after: 2024-09-02, before: 2025-03-03}
-    publications:
-      - reference: Q3 2024 (released early December 2024)
-        status: no_source
-        evidence: "Not a capture hole: the JB archive has 17-27 events a day on 2024-12-02..06, but no AUD 'Company Operating Profits q/q'"
-    reason: "AUD company operating profits Q3 2024 not in any archive we hold (capture otherwise normal)"
-  - id: jpy_capital_spending_2024_q3
-    canonical_ids: [jpy_capital_spending]
-    gap: {after: 2024-09-01, before: 2025-03-03}
-    publications:
-      - reference: Q3 2024 (released early December 2024)
-        status: no_source
-        evidence: "Not a capture hole: the JB archive has 17-27 events a day on 2024-12-02..06, but no JPY 'Capital Spending q/y'"
-    reason: "JPY capital spending Q3 2024 not in any archive we hold (capture otherwise normal)"
+        evidence: "Neither the JB archive capture nor the ForexFactory calendar lists a CHF PPI between 2025-08-31 and 2025-09-27 (FF weekly pages of Aug 31, Sep 7, Sep 14 and Sep 21 checked 2026-09-25); the 2025-10-14 print's previous (-0.6) is the only trace"
+    reason: "CHF PPI August 2025 not listed by any source we hold"

@@ -1,0 +1,261 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "34.5",
+    "forecast": "33.6",
+    "previous": "32.8"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "-0.8%",
+    "forecast": "-0.2%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "-8.7%",
+    "forecast": "",
+    "previous": "-9.4%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "0.0%",
+    "forecast": "0.8%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Manufacturing PMI",
+    "actual": "51.4",
+    "forecast": "50.6",
+    "previous": "50.5"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "49.6",
+    "forecast": "44.2",
+    "previous": "42.1"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Manufacturing PMI",
+    "actual": "48.4",
+    "forecast": "49.5",
+    "previous": "49.2"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Manufacturing PMI",
+    "actual": "48.1",
+    "forecast": "47.8",
+    "previous": "47.8"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Manufacturing PMI",
+    "actual": "49.0",
+    "forecast": "49.0",
+    "previous": "49.0"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "11K",
+    "forecast": "18K",
+    "previous": "33K"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Manufacturing PMI",
+    "actual": "49.5",
+    "forecast": "49.4",
+    "previous": "49.4"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Manufacturing PMI",
+    "actual": "47.7",
+    "forecast": "47.7",
+    "previous": "47.7"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.3%",
+    "forecast": "2.3%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.0%",
+    "forecast": "2.0%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "5.17|3.2",
+    "forecast": "",
+    "previous": "5.36|3.0"
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "JPY",
+    "title": "BOJ Gov Ueda Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "USD",
+    "title": "FOMC Member Powell Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Manufacturing PMI",
+    "actual": "52.9",
+    "forecast": "52.0",
+    "previous": "52.0"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing PMI",
+    "actual": "49.0",
+    "forecast": "48.8",
+    "previous": "48.5"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "7.77M",
+    "forecast": "7.32M",
+    "previous": "7.40M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing Prices",
+    "actual": "69.7",
+    "forecast": "69.6",
+    "previous": "69.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "10:03am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "48.6",
+    "forecast": "50.1",
+    "previous": "49.2"
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "15.3M",
+    "forecast": "15.5M",
+    "previous": "15.7M"
+  },
+  {
+    "time": "11:21am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "-4.1%",
+    "forecast": "",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Monetary Base y/y",
+    "actual": "-3.5%",
+    "forecast": "-3.5%",
+    "previous": "-3.4%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "3.2%",
+    "forecast": "4.2%",
+    "previous": "-4.1%"
+  }
+]

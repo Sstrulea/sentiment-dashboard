@@ -1,0 +1,29 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "PPI y/y",
+  "actual": "10.2%",
+  "forecast": "9.5%",
+  "previous": "9.7%"
+ },
+ {
+  "time": "7:01pm",
+  "currency": "GBP",
+  "title": "Rightmove HPI m/m",
+  "actual": "0.9%",
+  "forecast": "",
+  "previous": "-2.1%"
+ },
+ {
+  "time": "7:02pm",
+  "currency": "AUD",
+  "title": "MI Inflation Gauge m/m",
+  "actual": "0.2%",
+  "forecast": "",
+  "previous": "1.0%"
+ }
+]

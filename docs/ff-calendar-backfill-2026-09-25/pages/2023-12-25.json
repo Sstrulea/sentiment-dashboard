@@ -1,0 +1,93 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "CHF",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "French Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "GBP",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "NZD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "AUD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "SPPI y/y",
+    "actual": "2.3%",
+    "forecast": "2.4%",
+    "previous": "2.3%"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "Day 2",
+    "currency": "All",
+    "title": "BRICS Summit",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Services Index",
+    "actual": "51.2",
+    "forecast": "",
+    "previous": "50.6"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "0.5%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "10:30pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Hunter Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

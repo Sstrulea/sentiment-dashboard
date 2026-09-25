@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "0.5%",
+    "forecast": "0.1%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final Private Payrolls q/q",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.7%",
+    "forecast": "0.7%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim GDP q/q",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "106.7",
+    "forecast": "103.0",
+    "previous": "104.2"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash CPI y/y",
+    "actual": "4.3%",
+    "forecast": "4.2%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "4K",
+    "forecast": "4K",
+    "previous": "6K"
+  },
+  {
+    "time": "5:09am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "4.10|1.6",
+    "forecast": "",
+    "previous": "4.00|1.7"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "0.3%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "47.1",
+    "forecast": "57.9",
+    "previous": "57.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Fed Chairman Warsh Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim Benchmark Payrolls Revision",
+    "actual": "-79K",
+    "forecast": "",
+    "previous": "-911K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Consumer Sentiment",
+    "actual": "51.7",
+    "forecast": "51.0",
+    "previous": "51.0"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Inflation Expectations",
+    "actual": "4.0%",
+    "forecast": "",
+    "previous": "4.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "Day 2",
+    "currency": "USD",
+    "title": "Jackson Hole Symposium",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,309 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "Cash Rate",
+    "actual": "3.60%",
+    "forecast": "3.60%",
+    "previous": "3.60%"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "RBA Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "-9.8%",
+    "forecast": "-5.2%",
+    "previous": "-9.7%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "AUD",
+    "title": "RBA Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.2%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-0.2%",
+    "forecast": "0.6%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Current Account",
+    "actual": "-28.9B",
+    "forecast": "-24.8B",
+    "previous": "-21.2B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Final GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Revised Business Investment q/q",
+    "actual": "-1.1%",
+    "forecast": "-4.0%",
+    "previous": "-4.0%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "0.1%",
+    "forecast": "0.3%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "-1.0%",
+    "forecast": "-0.9%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "98.0",
+    "forecast": "97.1",
+    "previous": "96.2"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "14K",
+    "forecast": "8K",
+    "previous": "-7K"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "USD",
+    "title": "FOMC Member Jefferson Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50am",
+    "currency": "GBP",
+    "title": "MPC Member Lombardelli Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:50am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Collins Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "HPI m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "S&P/CS Composite-20 HPI y/y",
+    "actual": "1.8%",
+    "forecast": "1.7%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "9:25am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "40.6",
+    "forecast": "43.4",
+    "previous": "41.5"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "7.23M",
+    "forecast": "7.19M",
+    "previous": "7.21M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Consumer Confidence",
+    "actual": "94.2",
+    "forecast": "96.0",
+    "previous": "97.8"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:30am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "5.8%",
+    "forecast": "",
+    "previous": "5.3%"
+  },
+  {
+    "time": "7:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Tankan Manufacturing Index",
+    "actual": "14",
+    "forecast": "14",
+    "previous": "13"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Tankan Non-Manufacturing Index",
+    "actual": "34",
+    "forecast": "33",
+    "previous": "34"
+  },
+  {
+    "time": "All Day",
+    "currency": "CHF",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "48.5",
+    "forecast": "48.4",
+    "previous": "48.4"
+  }
+]

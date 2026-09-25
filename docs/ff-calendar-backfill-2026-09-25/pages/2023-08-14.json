@@ -1,0 +1,53 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Cleveland Fed Inflation Expectations",
+    "actual": "4.3%",
+    "forecast": "",
+    "previous": "5.0%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP Price Index y/y",
+    "actual": "3.4%",
+    "forecast": "3.8%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP q/q",
+    "actual": "1.5%",
+    "forecast": "0.8%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Wage Price Index q/q",
+    "actual": "0.8%",
+    "forecast": "0.9%",
+    "previous": "0.8%"
+  }
+]

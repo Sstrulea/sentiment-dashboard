@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Gov Budget Balance",
+    "actual": "-145.9B",
+    "forecast": "",
+    "previous": "-106.8B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Unemployment Change",
+    "actual": "44.4K",
+    "forecast": "15.4K",
+    "previous": "19.5K"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "38K",
+    "forecast": "47K",
+    "previous": "46K"
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "BOC Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "Overnight Rate",
+    "actual": "2.25%",
+    "forecast": "2.25%",
+    "previous": "2.25%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Factory Orders m/m",
+    "actual": "0.9%",
+    "forecast": "0.7%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "CAD",
+    "title": "BOC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-4.5M",
+    "forecast": "-0.4M",
+    "previous": "0.1M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Beige Book",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Overseas Trade Index q/q",
+    "actual": "-9.0%",
+    "forecast": "-2.1%",
+    "previous": "-1.9%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "ANZ Commodity Prices m/m",
+    "actual": "-0.4%",
+    "forecast": "",
+    "previous": "-4.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "1.92B",
+    "forecast": "1.52B",
+    "previous": "2.34B"
+  },
+  {
+    "time": "9:45pm",
+    "currency": "CNY",
+    "title": "RatingDog Services PMI",
+    "actual": "51.4",
+    "forecast": "50.6",
+    "previous": "50.4"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "4.08|3.8",
+    "forecast": "",
+    "previous": "3.94|3.9"
+  }
+]

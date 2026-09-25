@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "CHF",
+    "title": "SNB Financial Stability Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00am",
+    "currency": "CHF",
+    "title": "Trade Balance",
+    "actual": "3.83B",
+    "forecast": "5.85B",
+    "previous": "6.33B"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Monetary Policy Assessment",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Policy Rate",
+    "actual": "0.00%",
+    "forecast": "0.00%",
+    "previous": "0.25%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "SNB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.21|1.7",
+    "forecast": "",
+    "previous": "3.35|1.9"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Eurogroup Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Monetary Policy Summary",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "MPC Official Bank Rate Votes",
+    "actual": "0-3-6",
+    "forecast": "0-2-7",
+    "previous": "0-7-2"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Official Bank Rate",
+    "actual": "4.25%",
+    "forecast": "4.25%",
+    "previous": "4.25%"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "BOE Inflation Letter",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "NZD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-18",
+    "forecast": "-19",
+    "previous": "-20"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "3.7%",
+    "forecast": "3.6%",
+    "previous": "3.5%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

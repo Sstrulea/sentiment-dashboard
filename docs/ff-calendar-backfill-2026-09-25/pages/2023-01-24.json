@@ -1,0 +1,205 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "BOJ Core CPI y/y",
+    "actual": "3.1%",
+    "forecast": "2.9%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "CHF",
+    "title": "Trade Balance",
+    "actual": "2.83B",
+    "forecast": "3.23B",
+    "previous": "2.40B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German GfK Consumer Climate",
+    "actual": "-33.9",
+    "forecast": "-33.2",
+    "previous": "-37.6"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "26.6B",
+    "forecast": "22.3B",
+    "previous": "18.8B"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "50.8",
+    "forecast": "49.6",
+    "previous": "49.2"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "49.2",
+    "forecast": "49.7",
+    "previous": "49.5"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "47.0",
+    "forecast": "48.0",
+    "previous": "47.1"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "50.4",
+    "forecast": "49.6",
+    "previous": "49.2"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "48.8",
+    "forecast": "48.6",
+    "previous": "47.8"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "50.7",
+    "forecast": "50.0",
+    "previous": "49.8"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "46.7",
+    "forecast": "45.4",
+    "previous": "45.3"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "48.0",
+    "forecast": "49.6",
+    "previous": "49.9"
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-17",
+    "forecast": "-7",
+    "previous": "-6"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "46.6",
+    "forecast": "45.3",
+    "previous": "44.7"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "46.8",
+    "forecast": "46.0",
+    "previous": "46.2"
+  },
+  {
+    "time": "9:59am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "-11",
+    "forecast": "-5",
+    "previous": "1"
+  },
+  {
+    "time": "11:30am",
+    "currency": "CHF",
+    "title": "Gov Board Member Schlegel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "CPI q/q",
+    "actual": "1.4%",
+    "forecast": "1.3%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "All Day",
+    "currency": "CNY",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "CPI m/m",
+    "actual": "1.9%",
+    "forecast": "1.6%",
+    "previous": "1.8%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "CPI y/y",
+    "actual": "8.4%",
+    "forecast": "7.6%",
+    "previous": "7.3%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Trimmed Mean CPI m/m",
+    "actual": "1.7%",
+    "forecast": "1.5%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "Credit Card Spending y/y",
+    "actual": "12.4%",
+    "forecast": "",
+    "previous": "16.2%"
+  }
+]

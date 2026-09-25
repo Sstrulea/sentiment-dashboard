@@ -1,0 +1,37 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "8:15am",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:35pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Kent Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "5.3%",
+    "forecast": "3.1%",
+    "previous": "2.8%"
+  }
+]

@@ -1,0 +1,205 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "-10.5%",
+    "forecast": "",
+    "previous": "-15.9%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.2%",
+    "forecast": "-0.4%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Gov Budget Balance",
+    "actual": "-177.7B",
+    "forecast": "",
+    "previous": "-186.1B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Manufacturing PMI",
+    "actual": "46.3",
+    "forecast": "45.6",
+    "previous": "45.1"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "42.1",
+    "forecast": "42.0",
+    "previous": "40.6"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Manufacturing PMI",
+    "actual": "44.4",
+    "forecast": "45.3",
+    "previous": "44.9"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Manufacturing PMI",
+    "actual": "42.9",
+    "forecast": "42.6",
+    "previous": "42.6"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Manufacturing PMI",
+    "actual": "42.6",
+    "forecast": "42.3",
+    "previous": "42.3"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Manufacturing PMI",
+    "actual": "44.2",
+    "forecast": "43.8",
+    "previous": "43.8"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Manufacturing PMI",
+    "actual": "47.2",
+    "forecast": "46.7",
+    "previous": "46.7"
+  },
+  {
+    "time": "6:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Employment Change",
+    "actual": "24.9K",
+    "forecast": "14.2K",
+    "previous": "17.5K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Unemployment Rate",
+    "actual": "5.8%",
+    "forecast": "5.8%",
+    "previous": "5.7%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "CAD",
+    "title": "Manufacturing PMI",
+    "actual": "47.7",
+    "forecast": "",
+    "previous": "48.6"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Manufacturing PMI",
+    "actual": "49.4",
+    "forecast": "49.4",
+    "previous": "49.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing PMI",
+    "actual": "46.7",
+    "forecast": "47.9",
+    "previous": "46.7"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing Prices",
+    "actual": "49.9",
+    "forecast": "46.1",
+    "previous": "45.1"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "0.6%",
+    "forecast": "0.4%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "15.3M",
+    "forecast": "15.5M",
+    "previous": "15.5M"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "FOMC Member Powell Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Powell Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Cook Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

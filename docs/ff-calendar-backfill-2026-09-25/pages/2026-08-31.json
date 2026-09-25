@@ -1,0 +1,93 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "8.2%",
+    "forecast": "7.5%",
+    "previous": "18.6%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "All Day",
+    "currency": "GBP",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "Day 3",
+    "currency": "All",
+    "title": "G20 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Shop Price Index y/y",
+    "actual": "1.5%",
+    "forecast": "0.9%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Capital Spending q/y",
+    "actual": "1.6%",
+    "forecast": "-0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "54.9",
+    "forecast": "55.1",
+    "previous": "55.1"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "-3.6%",
+    "forecast": "-4.7%",
+    "previous": "6.9%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Current Account",
+    "actual": "-27.2B",
+    "forecast": "-29.7B",
+    "previous": "-25.4B"
+  },
+  {
+    "time": "9:45pm",
+    "currency": "CNY",
+    "title": "RatingDog Manufacturing PMI",
+    "actual": "51.5",
+    "forecast": "51.0",
+    "previous": "50.9"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "10-y Bond Auction",
+    "actual": "3.00|3.3",
+    "forecast": "",
+    "previous": "2.84|2.6"
+  }
+]

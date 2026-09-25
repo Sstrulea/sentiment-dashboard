@@ -1,0 +1,237 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German PPI m/m",
+  "actual": "-0.6%",
+  "forecast": "0.3%",
+  "previous": "-0.2%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Retail Sales m/m",
+  "actual": "1.8%",
+  "forecast": "0.2%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Public Sector Net Borrowing",
+  "actual": "-30.4B",
+  "forecast": "-24.0B",
+  "previous": "13.4B"
+ },
+ {
+  "time": "3:15am",
+  "currency": "EUR",
+  "title": "French Flash Manufacturing PMI",
+  "actual": "49.9",
+  "forecast": "50.9",
+  "previous": "51.2"
+ },
+ {
+  "time": "3:15am",
+  "currency": "EUR",
+  "title": "French Flash Services PMI",
+  "actual": "49.6",
+  "forecast": "49.1",
+  "previous": "48.4"
+ },
+ {
+  "time": "3:30am",
+  "currency": "EUR",
+  "title": "German Flash Manufacturing PMI",
+  "actual": "50.7",
+  "forecast": "49.6",
+  "previous": "49.1"
+ },
+ {
+  "time": "3:30am",
+  "currency": "EUR",
+  "title": "German Flash Services PMI",
+  "actual": "53.4",
+  "forecast": "52.4",
+  "previous": "52.4"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Flash Manufacturing PMI",
+  "actual": "50.8",
+  "forecast": "49.9",
+  "previous": "49.5"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Flash Services PMI",
+  "actual": "51.8",
+  "forecast": "51.9",
+  "previous": "51.6"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Flash Manufacturing PMI",
+  "actual": "52.0",
+  "forecast": "51.5",
+  "previous": "51.8"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Flash Services PMI",
+  "actual": "53.9",
+  "forecast": "53.5",
+  "previous": "54.0"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Core Retail Sales m/m",
+  "actual": "0.1%",
+  "forecast": "-0.1%",
+  "previous": "1.6%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Retail Sales m/m",
+  "actual": "-0.4%",
+  "forecast": "-0.5%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "IPPI m/m",
+  "actual": "2.7%",
+  "forecast": "0.2%",
+  "previous": "-0.9%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "RMPI m/m",
+  "actual": "7.7%",
+  "forecast": "0.7%",
+  "previous": "0.3%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Advance GDP q/q",
+  "actual": "1.4%",
+  "forecast": "2.8%",
+  "previous": "4.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core PCE Price Index m/m",
+  "actual": "0.4%",
+  "forecast": "0.3%",
+  "previous": "0.2%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Advance GDP Price Index q/q",
+  "actual": "3.6%",
+  "forecast": "2.8%",
+  "previous": "3.8%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Personal Income m/m",
+  "actual": "0.3%",
+  "forecast": "0.3%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Personal Spending m/m",
+  "actual": "0.4%",
+  "forecast": "0.4%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Flash Manufacturing PMI",
+  "actual": "51.2",
+  "forecast": "52.4",
+  "previous": "52.4"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Flash Services PMI",
+  "actual": "52.3",
+  "forecast": "53.0",
+  "previous": "52.7"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "FOMC Member Bostic Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "New Home Sales",
+  "actual": "745K",
+  "forecast": "732K",
+  "previous": "758K"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Revised UoM Consumer Sentiment",
+  "actual": "56.6",
+  "forecast": "56.9",
+  "previous": "57.3"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Revised UoM Inflation Expectations",
+  "actual": "3.4%",
+  "forecast": "",
+  "previous": "3.5%"
+ },
+ {
+  "time": "12:45pm",
+  "currency": "USD",
+  "title": "President Trump Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "12:45pm",
+  "currency": "USD",
+  "title": "FOMC Member Logan Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "3:30pm",
+  "currency": "USD",
+  "title": "FOMC Member Musalem Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

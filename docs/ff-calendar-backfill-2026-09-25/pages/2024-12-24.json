@@ -1,0 +1,61 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:59am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "-10",
+    "forecast": "-10",
+    "previous": "-14"
+  },
+  {
+    "time": "All Day",
+    "currency": "NZD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "AUD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "SPPI y/y",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "11:17pm",
+    "currency": "JPY",
+    "title": "BOJ Gov Ueda Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

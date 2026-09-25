@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.5%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Gov Budget Balance",
+    "actual": "-32.1B",
+    "forecast": "",
+    "previous": "-9.7B"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:55am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.73|1.9",
+    "forecast": "",
+    "previous": "3.39|2.2"
+  },
+  {
+    "time": "5:06am",
+    "currency": "EUR",
+    "title": "Italian Retail Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.3%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "-78.0%",
+    "forecast": "",
+    "previous": "-71.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "-5.7B",
+    "forecast": "-2.5B",
+    "previous": "-4.2B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "202K",
+    "forecast": "212K",
+    "previous": "211K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Goods Trade Balance",
+    "actual": "-83.5B",
+    "forecast": "",
+    "previous": "-80.9B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-57.3B",
+    "forecast": "-60.5B",
+    "previous": "-54.7B"
+  },
+  {
+    "time": "10:15am",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "36B",
+    "forecast": "38B",
+    "previous": "-54B"
+  },
+  {
+    "time": "12:45pm",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "NZD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "AUD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

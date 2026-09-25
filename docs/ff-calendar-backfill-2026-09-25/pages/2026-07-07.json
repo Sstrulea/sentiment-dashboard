@@ -1,0 +1,189 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Leading Indicators",
+    "actual": "116.8%",
+    "forecast": "116.9%",
+    "previous": "116.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Industrial Production m/m",
+    "actual": "0.9%",
+    "forecast": "0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:03am",
+    "currency": "GBP",
+    "title": "Lloyds HPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Trade Balance",
+    "actual": "-6.9B",
+    "forecast": "-5.9B",
+    "previous": "-5.4B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Foreign Currency Reserves",
+    "actual": "759B",
+    "forecast": "",
+    "previous": "711B"
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "BOE Financial Stability Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "FPC Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "FPC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "21.0K",
+    "forecast": "",
+    "previous": "24.3K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "4.2B",
+    "forecast": "2.8B",
+    "previous": "3.4B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-77.6B",
+    "forecast": "-78.3B",
+    "previous": "-54.6B"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Ivey PMI",
+    "actual": "56.2",
+    "forecast": "59.1",
+    "previous": "58.2"
+  },
+  {
+    "time": "10:04am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "45.5",
+    "forecast": "45.0",
+    "previous": "42.5"
+  },
+  {
+    "time": "11:16am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "-4.9%",
+    "forecast": "",
+    "previous": "-2.8%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Bank Lending y/y",
+    "actual": "5.7%",
+    "forecast": "5.8%",
+    "previous": "5.7%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Current Account",
+    "actual": "3.06T",
+    "forecast": "3.19T",
+    "previous": "4.21T"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Hunter Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "Official Cash Rate",
+    "actual": "2.50%",
+    "forecast": "2.50%",
+    "previous": "2.25%"
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

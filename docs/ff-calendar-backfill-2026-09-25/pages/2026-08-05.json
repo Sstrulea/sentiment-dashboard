@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Industrial Production m/m",
+    "actual": "0.1%",
+    "forecast": "0.3%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Services PMI",
+    "actual": "58.3",
+    "forecast": "54.9",
+    "previous": "54.2"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Services PMI",
+    "actual": "52.5",
+    "forecast": "51.0",
+    "previous": "50.2"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Services PMI",
+    "actual": "49.6",
+    "forecast": "49.8",
+    "previous": "49.8"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Services PMI",
+    "actual": "49.8",
+    "forecast": "49.6",
+    "previous": "49.6"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Services PMI",
+    "actual": "51.7",
+    "forecast": "51.6",
+    "previous": "51.6"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Services PMI",
+    "actual": "52.1",
+    "forecast": "51.8",
+    "previous": "51.8"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "PPI m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "44K",
+    "forecast": "68K",
+    "previous": "95K"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Services PMI",
+    "actual": "54.6",
+    "forecast": "53.6",
+    "previous": "53.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Services PMI",
+    "actual": "54.1",
+    "forecast": "54.5",
+    "previous": "54.0"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "2.5M",
+    "forecast": "-1.5M",
+    "previous": "-7.2M"
+  },
+  {
+    "time": "4:05pm",
+    "currency": "USD",
+    "title": "FOMC Member Cook Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:35pm",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "1.93B",
+    "forecast": "-1.06B",
+    "previous": "-2.37B"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "3.94|3.9",
+    "forecast": "",
+    "previous": "3.99|4.6"
+  }
+]

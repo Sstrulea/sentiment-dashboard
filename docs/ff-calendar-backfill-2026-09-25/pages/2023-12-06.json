@@ -1,0 +1,189 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "-3.7%",
+    "forecast": "0.2%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "45.5",
+    "forecast": "46.7",
+    "previous": "45.6"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "4.09|2.7",
+    "forecast": "",
+    "previous": "4.41|2.9"
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "BOE Financial Stability Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "FPC Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "FPC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "103K",
+    "forecast": "131K",
+    "previous": "106K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Labor Productivity q/q",
+    "actual": "-0.8%",
+    "forecast": "-0.6%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "3.0B",
+    "forecast": "1.8B",
+    "previous": "1.1B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Revised Nonfarm Productivity q/q",
+    "actual": "5.2%",
+    "forecast": "4.8%",
+    "previous": "4.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Revised Unit Labor Costs q/q",
+    "actual": "-1.2%",
+    "forecast": "-0.9%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-64.3B",
+    "forecast": "-64.1B",
+    "previous": "-61.2B"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "BOC Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Overnight Rate",
+    "actual": "5.00%",
+    "forecast": "5.00%",
+    "previous": "5.00%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Ivey PMI",
+    "actual": "54.7",
+    "forecast": "54.2",
+    "previous": "53.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-4.6M",
+    "forecast": "-1.3M",
+    "previous": "1.6M"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "7.13B",
+    "forecast": "7.75B",
+    "previous": "6.18B"
+  },
+  {
+    "time": "10:00pm",
+    "currency": "CNY",
+    "title": "USD-Denominated Trade Balance",
+    "actual": "68.4B",
+    "forecast": "55.0B",
+    "previous": "56.5B"
+  },
+  {
+    "time": "10:01pm",
+    "currency": "CNY",
+    "title": "Trade Balance",
+    "actual": "491B",
+    "forecast": "392B",
+    "previous": "405B"
+  },
+  {
+    "time": "10:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "1.62|2.6",
+    "forecast": "",
+    "previous": "1.74|3.6"
+  }
+]

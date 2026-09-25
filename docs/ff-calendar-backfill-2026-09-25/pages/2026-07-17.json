@@ -1,0 +1,93 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "25.1B",
+    "forecast": "18.1B",
+    "previous": "17.5B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "2.4%",
+    "forecast": "2.4%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "2.8%",
+    "forecast": "2.8%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Foreign Securities Purchases",
+    "actual": "7.90B",
+    "forecast": "15.21B",
+    "previous": "46.92B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Building Permits",
+    "actual": "1.37M",
+    "forecast": "1.40M",
+    "previous": "1.41M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Housing Starts",
+    "actual": "1.43M",
+    "forecast": "1.31M",
+    "previous": "1.20M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "0.3%",
+    "forecast": "-0.7%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "76.1%",
+    "forecast": "76.2%",
+    "previous": "76.1%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "54.4",
+    "forecast": "51.0",
+    "previous": "49.5"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "4.2%",
+    "forecast": "",
+    "previous": "4.6%"
+  }
+]

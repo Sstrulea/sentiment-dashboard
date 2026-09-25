@@ -17,6 +17,12 @@ parquet, and drops any candidate the guard flags. This is READING an
 existing guard, not writing a new quarantine rule or touching `src/ff_
 scoring.py`/`src/economic_compute.py`/any weight/threshold/category/alias.
 
+Same reason, second guard: rows a documented migration deliberately deleted
+(JB placeholders, the January-2024 prints the archive also dated January 2023,
+pre-print re-listings — `migrations/2026-09-25_backfill_ff_calendar_pages.py`)
+are listed in `data/ff_tombstones.csv`; the archive still carries them, so a
+tombstoned (canonical_id, release date) is never a recovery candidate.
+
 docs/board-data-loss-round3.md (Q2) found real prints sitting in
 `data/archive/ff_calendar_range.json` that never reached
 `data/economic_calendar_ff.parquet`, because the alias routing them to a
@@ -82,6 +88,11 @@ from .pmi_ingest_guard import country_hour_guard
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE_JSON = ROOT / "data" / "archive" / "ff_calendar_range.json"
 INDICATORS_YAML = ROOT / "data" / "economic_indicators.yaml"
+# Rows a documented migration deliberately removed from the parquet (JB
+# placeholders, wrong-year copies, re-listings — see each row's `source`).
+# The archive still carries them, so "absent from the parquet" is not
+# "missing" for these: scope_recoverable_rows skips them.
+TOMBSTONES_CSV = ROOT / "data" / "ff_tombstones.csv"
 
 # The archive's own max Date, UTC (via jblanked_to_utc — see module docstring).
 # Recomputed by tests against the live file rather than hard-asserted equal,
@@ -99,12 +110,24 @@ def _build_scoring_matcher(indicators_cfg: dict) -> CompiledMatcher:
     return CompiledMatcher(indicators_cfg.get("matcher", {}) or {})
 
 
+def load_tombstones(path: Path = TOMBSTONES_CSV) -> set:
+    """{(canonical_id, release date)} of rows deliberately removed from the
+    parquet. Same granularity as the scope's own presence test (release DATE:
+    the archive can list one removed row at a slightly different time)."""
+    p = Path(path)
+    if not p.exists():
+        return set()
+    t = pd.read_csv(p)
+    return set(zip(t["canonical_id"], pd.to_datetime(t["datetime_utc"]).dt.date))
+
+
 def scope_recoverable_rows(
     archive_path: Path = ARCHIVE_JSON,
     parquet_path: Path = FF_PARQUET,
     indicators_yaml: Path = INDICATORS_YAML,
     *,
     now_utc: Optional[pd.Timestamp] = None,
+    tombstones_path: Path = TOMBSTONES_CSV,
 ) -> pd.DataFrame:
     """STEP 1 scope. Pure / read-only — reads both files, writes nothing.
 
@@ -115,7 +138,8 @@ def scope_recoverable_rows(
     mislabeling the 2026-07-30/07-31 migrations already purged (see module
     docstring) — the archive predates that correction, so without this check
     a "recoverable" row can be exactly the wrong-currency-tagged data that
-    was deliberately removed.
+    was deliberately removed. Likewise a row tombstoned by a later migration
+    (data/ff_tombstones.csv, `load_tombstones`) is never a candidate.
     """
     indicators_cfg = _load_indicators_cfg(indicators_yaml)
     matcher = _build_scoring_matcher(indicators_cfg)
@@ -136,8 +160,10 @@ def scope_recoverable_rows(
     existing_keys = set(zip(existing["canonical_id"], existing["datetime_utc"].dt.date))
 
     scoped["_release_date"] = scoped["datetime_utc"].dt.date
+    removed_keys = load_tombstones(tombstones_path)
     already_present = scoped.apply(
-        lambda r: (r["canonical_id"], r["_release_date"]) in existing_keys, axis=1)
+        lambda r: (r["canonical_id"], r["_release_date"]) in existing_keys
+        or (r["canonical_id"], r["_release_date"]) in removed_keys, axis=1)
     candidates = scoped[~already_present].drop(columns=["_release_date"]).copy()
     if candidates.empty:
         return candidates.reset_index(drop=True)
@@ -179,6 +205,7 @@ def backfill_from_archive(
     *,
     now_utc: Optional[pd.Timestamp] = None,
     dry_run: bool = False,
+    tombstones_path: Path = TOMBSTONES_CSV,
 ) -> dict:
     """STEP 2. Recovers the `scope_recoverable_rows` set through the exact
     same two calls `src.jb_actuals.pull_actuals` uses for a live pull:
@@ -189,7 +216,8 @@ def backfill_from_archive(
     alike), so `cleaned` is empty and `merge_weekly` is a no-op merge.
     """
     recoverable = scope_recoverable_rows(
-        archive_path, parquet_path, indicators_yaml, now_utc=now_utc)
+        archive_path, parquet_path, indicators_yaml, now_utc=now_utc,
+        tombstones_path=tombstones_path)
 
     existing = pd.read_parquet(parquet_path) if Path(parquet_path).exists() else None
     if existing is not None:

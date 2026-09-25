@@ -1,0 +1,221 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "10.1%",
+    "forecast": "10.3%",
+    "previous": "10.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "5.8%",
+    "forecast": "6.2%",
+    "previous": "6.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "0.5%",
+    "forecast": "0.1%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "13.4%",
+    "forecast": "13.2%",
+    "previous": "13.4%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "9.8%",
+    "forecast": "9.2%",
+    "previous": "10.6%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "-1.1%",
+    "forecast": "-0.8%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "-18.1B",
+    "forecast": "-16.0B",
+    "previous": "-14.4B"
+  },
+  {
+    "time": "5:40am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "2.26|1.1",
+    "forecast": "",
+    "previous": "2.05|1.5"
+  },
+  {
+    "time": "8:14am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "215K",
+    "forecast": "246K",
+    "previous": "248K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-1.5%",
+    "forecast": "-1.6%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "-0.8%",
+    "forecast": "-1.5%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "2.3%",
+    "forecast": "0.9%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-5.8",
+    "forecast": "-18.2",
+    "previous": "-32.9"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "3.0%",
+    "forecast": "1.9%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "78.3%",
+    "forecast": "79.1%",
+    "previous": "78.4%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.0%",
+    "forecast": "0.5%",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "42",
+    "forecast": "37",
+    "previous": "35"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "16.3M",
+    "forecast": "1.5M",
+    "previous": "2.4M"
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "152.8B",
+    "forecast": "119.1B",
+    "previous": "171.5B"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "55.6%",
+    "forecast": "",
+    "previous": "43.1%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Core Machinery Orders m/m",
+    "actual": "1.6%",
+    "forecast": "2.7%",
+    "previous": "-8.3%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Trade Balance",
+    "actual": "-1.82T",
+    "forecast": "-2.35T",
+    "previous": "-1.82T"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Expectations",
+    "actual": "5.1%",
+    "forecast": "",
+    "previous": "5.6%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "-11.5K",
+    "forecast": "19.8K",
+    "previous": "-20.0K"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "3.7%",
+    "forecast": "3.5%",
+    "previous": "3.5%"
+  }
+]

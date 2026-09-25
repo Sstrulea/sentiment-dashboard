@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:29am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "-0.9%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "1.9%",
+    "forecast": "0.4%",
+    "previous": "-2.3%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "4.81B",
+    "forecast": "4.25B",
+    "previous": "4.30B"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Consumer Inflation Expectations",
+    "actual": "2.8%",
+    "forecast": "",
+    "previous": "3.0%"
+  },
+  {
+    "time": "Day 2",
+    "currency": "All",
+    "title": "G7 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "19.4B",
+    "forecast": "17.0B",
+    "previous": "17.2B"
+  },
+  {
+    "time": "5:02am",
+    "currency": "CNY",
+    "title": "M2 Money Supply y/y",
+    "actual": "7.0%",
+    "forecast": "7.1%",
+    "previous": "7.2%"
+  },
+  {
+    "time": "5:03am",
+    "currency": "CNY",
+    "title": "New Loans",
+    "actual": "950B",
+    "forecast": "2250B",
+    "previous": "730B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "1.1%",
+    "forecast": "1.3%",
+    "previous": "-1.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "2.4%",
+    "forecast": "2.6%",
+    "previous": "-1.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "-0.4%",
+    "forecast": "0.0%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "65.6",
+    "forecast": "72.1",
+    "previous": "69.1"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "3.3%",
+    "forecast": "",
+    "previous": "3.3%"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Cook Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

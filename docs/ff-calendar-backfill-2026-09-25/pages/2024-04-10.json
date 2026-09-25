@@ -1,0 +1,165 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Retail Sales m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Building Permits m/m",
+    "actual": "9.3%",
+    "forecast": "-4.3%",
+    "previous": "12.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI y/y",
+    "actual": "3.8%",
+    "forecast": "3.7%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.4%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "8:45am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "BOC Monetary Policy Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "BOC Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "Overnight Rate",
+    "actual": "5.00%",
+    "forecast": "5.00%",
+    "previous": "5.00%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "CAD",
+    "title": "BOC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "5.8M",
+    "forecast": "0.9M",
+    "previous": "3.2M"
+  },
+  {
+    "time": "12:45pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "10-y Bond Auction",
+    "actual": "4.56|2.3",
+    "forecast": "",
+    "previous": "4.17|2.5"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Budget Balance",
+    "actual": "-236.5B",
+    "forecast": "-209.4B",
+    "previous": "-296.3B"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "RICS House Price Balance",
+    "actual": "-4%",
+    "forecast": "-6%",
+    "previous": "-10%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "M2 Money Stock y/y",
+    "actual": "2.5%",
+    "forecast": "2.4%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Expectations",
+    "actual": "4.6%",
+    "forecast": "",
+    "previous": "4.3%"
+  }
+]

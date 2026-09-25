@@ -1,0 +1,77 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "BOJ Core CPI y/y",
+    "actual": "2.7%",
+    "forecast": "3.0%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "All Day",
+    "currency": "CHF",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "GBP",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "HPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.5%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "S&P/CS Composite-20 HPI y/y",
+    "actual": "4.9%",
+    "forecast": "5.0%",
+    "previous": "3.9%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "BOJ Summary of Opinions",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

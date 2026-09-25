@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "0.2%",
+    "forecast": "0.0%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-18.9B",
+    "forecast": "-20.8B",
+    "previous": "-19.5B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-2.0%",
+    "forecast": "-0.5%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "-1.7%",
+    "forecast": "-0.7%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim Business Investment q/q",
+    "actual": "-0.3%",
+    "forecast": "0.3%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "0.2%",
+    "forecast": "0.7%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "MPC Member Greene Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:00am",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "FOMC Member Kashkari Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "6.4M",
+    "forecast": "1.0M",
+    "previous": "5.2M"
+  },
+  {
+    "time": "12:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:20pm",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30pm",
+    "currency": "CHF",
+    "title": "Gov Board Member Tschudin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "4.69|2.3",
+    "forecast": "",
+    "previous": "4.73|2.4"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "51.4",
+    "forecast": "",
+    "previous": "50.1"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.1%"
+  }
+]

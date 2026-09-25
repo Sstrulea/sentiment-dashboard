@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Monetary Policy Assessment",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Policy Rate",
+    "actual": "",
+    "forecast": "0.00%",
+    "previous": "0.00%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "SNB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "",
+    "forecast": "89.1",
+    "previous": "88.8"
+  },
+  {
+    "time": "4:10am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "MPC Member Dhingra Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Realized Sales",
+    "actual": "",
+    "forecast": "-42",
+    "previous": "-48"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "",
+    "forecast": "-0.5%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "",
+    "forecast": "-0.8%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "",
+    "forecast": "201K",
+    "previous": "196K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Current Account",
+    "actual": "",
+    "forecast": "-258B",
+    "previous": "-227B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:50am",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "",
+    "forecast": "-13.5",
+    "previous": "-13.2"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "GBP",
+    "title": "MPC Member Lombardelli Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "New Home Sales",
+    "actual": "",
+    "forecast": "615K",
+    "previous": "607K"
+  },
+  {
+    "time": "10:10am",
+    "currency": "USD",
+    "title": "FOMC Member Paulson Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "",
+    "forecast": "50B",
+    "previous": "44B"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "",
+    "forecast": "-16",
+    "previous": "-14"
+  },
+  {
+    "time": "Tentative",
+    "currency": "AUD",
+    "title": "NAB Quarterly Business Confidence",
+    "actual": "",
+    "forecast": "",
+    "previous": "-19"
+  }
+]

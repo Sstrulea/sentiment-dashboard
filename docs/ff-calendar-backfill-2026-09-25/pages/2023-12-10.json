@@ -1,0 +1,29 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "BSI Manufacturing Index",
+    "actual": "5.7",
+    "forecast": "5.6",
+    "previous": "5.4"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "M2 Money Stock y/y",
+    "actual": "2.3%",
+    "forecast": "2.5%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "Rightmove HPI m/m",
+    "actual": "-1.9%",
+    "forecast": "",
+    "previous": "-1.7%"
+  }
+]

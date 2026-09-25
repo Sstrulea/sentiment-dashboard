@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Industrial Production m/m",
+    "actual": "-0.3%",
+    "forecast": "0.2%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Services PMI",
+    "actual": "51.0",
+    "forecast": "51.6",
+    "previous": "51.1"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Services PMI",
+    "actual": "49.5",
+    "forecast": "48.3",
+    "previous": "47.7"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Services PMI",
+    "actual": "45.4",
+    "forecast": "45.3",
+    "previous": "45.3"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Services PMI",
+    "actual": "49.6",
+    "forecast": "48.7",
+    "previous": "48.7"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Services PMI",
+    "actual": "48.7",
+    "forecast": "48.2",
+    "previous": "48.2"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Services PMI",
+    "actual": "50.9",
+    "forecast": "50.5",
+    "previous": "50.5"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "PPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "9:17am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "1.6%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Services PMI",
+    "actual": "50.8",
+    "forecast": "50.8",
+    "previous": "50.8"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Services PMI",
+    "actual": "52.7",
+    "forecast": "52.2",
+    "previous": "51.8"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "8.73M",
+    "forecast": "9.31M",
+    "previous": "9.35M"
+  },
+  {
+    "time": "10:09am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "40.0",
+    "forecast": "45.2",
+    "previous": "44.5"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.5%",
+    "previous": "0.4%"
+  }
+]

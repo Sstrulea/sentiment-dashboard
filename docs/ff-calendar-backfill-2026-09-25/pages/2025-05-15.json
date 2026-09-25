@@ -1,0 +1,301 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:59am",
+    "currency": "JPY",
+    "title": "Prelim Machine Tool Orders y/y",
+    "actual": "7.7%",
+    "forecast": "",
+    "previous": "11.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.2%",
+    "forecast": "0.0%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim GDP q/q",
+    "actual": "0.7%",
+    "forecast": "0.6%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "0.5%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-19.9B",
+    "forecast": "-19.1B",
+    "previous": "-21.0B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.7%",
+    "forecast": "0.7%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.6%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "-0.8%",
+    "forecast": "-0.8%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim Business Investment q/q",
+    "actual": "5.9%",
+    "forecast": "0.4%",
+    "previous": "-1.9%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.6%",
+    "forecast": "0.5%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash Employment Change q/q",
+    "actual": "0.3%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "2.6%",
+    "forecast": "1.9%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "279K",
+    "forecast": "227K",
+    "previous": "214K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-1.4%",
+    "forecast": "-1.8%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "0.2%",
+    "forecast": "-0.4%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PPI m/m",
+    "actual": "-0.4%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.1%",
+    "forecast": "0.3%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "PPI m/m",
+    "actual": "-0.5%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "229K",
+    "forecast": "229K",
+    "previous": "229K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-9.2",
+    "forecast": "-8.2",
+    "previous": "-8.1"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "-4.0",
+    "forecast": "-11.3",
+    "previous": "-26.4"
+  },
+  {
+    "time": "8:40am",
+    "currency": "USD",
+    "title": "FOMC Member Powell Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "77.7%",
+    "forecast": "77.8%",
+    "previous": "77.8%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "34",
+    "forecast": "40",
+    "previous": "40"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "110B",
+    "forecast": "111B",
+    "previous": "104B"
+  },
+  {
+    "time": "11:15am",
+    "currency": "GBP",
+    "title": "MPC Member Dhingra Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:05pm",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "53.9",
+    "forecast": "",
+    "previous": "53.2"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP Price Index y/y",
+    "actual": "3.3%",
+    "forecast": "3.2%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP q/q",
+    "actual": "-0.2%",
+    "forecast": "-0.1%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "11:00pm",
+    "currency": "NZD",
+    "title": "Inflation Expectations q/q",
+    "actual": "2.29%",
+    "forecast": "",
+    "previous": "2.06%"
+  }
+]

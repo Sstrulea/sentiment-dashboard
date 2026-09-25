@@ -1,0 +1,141 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Claimant Count Change",
+  "actual": "20.1K",
+  "forecast": "21.6K",
+  "previous": "-3.9K"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Average Earnings Index 3m/y",
+  "actual": "4.7%",
+  "forecast": "4.4%",
+  "previous": "4.9%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Unemployment Rate",
+  "actual": "5.1%",
+  "forecast": "5.1%",
+  "previous": "5.0%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Flash Manufacturing PMI",
+  "actual": "49.2",
+  "forecast": "49.9",
+  "previous": "49.6"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Flash Services PMI",
+  "actual": "52.6",
+  "forecast": "53.3",
+  "previous": "53.6"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Flash Manufacturing PMI",
+  "actual": "51.2",
+  "forecast": "50.3",
+  "previous": "50.2"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Flash Services PMI",
+  "actual": "52.1",
+  "forecast": "51.6",
+  "previous": "51.3"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "Average Hourly Earnings m/m",
+  "actual": "0.4%",
+  "forecast": "",
+  "previous": "0.2%"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "Non-Farm Employment Change",
+  "actual": "-105K",
+  "forecast": "",
+  "previous": "108K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Average Hourly Earnings m/m",
+  "actual": "0.1%",
+  "forecast": "0.3%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core Retail Sales m/m",
+  "actual": "0.4%",
+  "forecast": "0.2%",
+  "previous": "0.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Non-Farm Employment Change",
+  "actual": "64K",
+  "forecast": "51K",
+  "previous": "-105K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Retail Sales m/m",
+  "actual": "0.0%",
+  "forecast": "0.1%",
+  "previous": "0.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Unemployment Rate",
+  "actual": "4.6%",
+  "forecast": "4.5%",
+  "previous": "4.4%"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Flash Manufacturing PMI",
+  "actual": "51.8",
+  "forecast": "52.0",
+  "previous": "52.2"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Flash Services PMI",
+  "actual": "52.9",
+  "forecast": "54.0",
+  "previous": "54.1"
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "Core Machinery Orders m/m",
+  "actual": "7.0%",
+  "forecast": "-1.8%",
+  "previous": "4.2%"
+ }
+]

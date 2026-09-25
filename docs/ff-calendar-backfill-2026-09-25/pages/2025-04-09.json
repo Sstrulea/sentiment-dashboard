@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "34.1",
+    "forecast": "34.7",
+    "previous": "35.0"
+  },
+  {
+    "time": "1:59am",
+    "currency": "JPY",
+    "title": "Prelim Machine Tool Orders y/y",
+    "actual": "11.4%",
+    "forecast": "",
+    "previous": "3.5%"
+  },
+  {
+    "time": "2:15am",
+    "currency": "JPY",
+    "title": "BOJ Gov Ueda Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "FPC Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "FPC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "2.6M",
+    "forecast": "2.2M",
+    "previous": "6.2M"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "10-y Bond Auction",
+    "actual": "4.44|2.7",
+    "forecast": "",
+    "previous": "4.31|2.6"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "RICS House Price Balance",
+    "actual": "2%",
+    "forecast": "8%",
+    "previous": "11%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Bank Lending y/y",
+    "actual": "2.8%",
+    "forecast": "3.1%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "PPI y/y",
+    "actual": "4.2%",
+    "forecast": "3.9%",
+    "previous": "4.1%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Expectations",
+    "actual": "4.2%",
+    "forecast": "",
+    "previous": "3.6%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "CNY",
+    "title": "CPI y/y",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "CNY",
+    "title": "PPI y/y",
+    "actual": "-2.5%",
+    "forecast": "-2.3%",
+    "previous": "-2.2%"
+  }
+]

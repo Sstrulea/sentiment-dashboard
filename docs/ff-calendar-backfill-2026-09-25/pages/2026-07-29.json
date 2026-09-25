@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.7%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "10.0",
+    "forecast": "",
+    "previous": "-25.0"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "M4 Money Supply m/m",
+    "actual": "0.8%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Mortgage Approvals",
+    "actual": "58K",
+    "forecast": "57K",
+    "previous": "57K"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Net Lending to Individuals m/m",
+    "actual": "9.5B",
+    "forecast": "5.5B",
+    "previous": "5.0B"
+  },
+  {
+    "time": "5:31am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "3.13|1.1",
+    "forecast": "",
+    "previous": "3.09|1.0"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-7.2M",
+    "forecast": "0.7M",
+    "previous": "2.0M"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "3.75%",
+    "forecast": "3.75%",
+    "previous": "3.75%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "FOMC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:40pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Hunter Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "ANZ Business Confidence",
+    "actual": "56.1",
+    "forecast": "",
+    "previous": "36.6"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "7.2%",
+    "forecast": "-0.7%",
+    "previous": "-1.6%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Import Prices q/q",
+    "actual": "5.7%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  }
+]

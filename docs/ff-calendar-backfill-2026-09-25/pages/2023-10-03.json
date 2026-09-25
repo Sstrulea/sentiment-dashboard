@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "-22.0%",
+    "forecast": "",
+    "previous": "-22.9%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Gov Budget Balance",
+    "actual": "-187.9B",
+    "forecast": "",
+    "previous": "-169.0B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Unemployment Change",
+    "actual": "19.8K",
+    "forecast": "-12.2K",
+    "previous": "24.8K"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "4.94|2.8",
+    "forecast": "",
+    "previous": "4.70|2.4"
+  },
+  {
+    "time": "8:25am",
+    "currency": "CAD",
+    "title": "Gov Council Member Vincent Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "9.61M",
+    "forecast": "8.81M",
+    "previous": "8.92M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "36.3",
+    "forecast": "41.6",
+    "previous": "43.2"
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "15.7M",
+    "forecast": "15.4M",
+    "previous": "15.0M"
+  },
+  {
+    "time": "11:11am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "4.4%",
+    "forecast": "",
+    "previous": "4.6%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "Official Cash Rate",
+    "actual": "5.50%",
+    "forecast": "5.50%",
+    "previous": "5.50%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

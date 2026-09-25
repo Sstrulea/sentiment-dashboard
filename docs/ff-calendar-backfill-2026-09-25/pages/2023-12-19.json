@@ -1,0 +1,205 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00am",
+    "currency": "CHF",
+    "title": "Trade Balance",
+    "actual": "3.71B",
+    "forecast": "3.50B",
+    "previous": "4.71B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "3.6%",
+    "forecast": "3.6%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "2.4%",
+    "forecast": "2.4%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "3.74|2.8",
+    "forecast": "",
+    "previous": "4.09|2.7"
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-23",
+    "forecast": "-28",
+    "previous": "-35"
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "3.4%",
+    "forecast": "3.3%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.4%",
+    "previous": "3.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "3.9%",
+    "forecast": "4.0%",
+    "previous": "4.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "IPPI m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.7%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "RMPI m/m",
+    "actual": "-4.2%",
+    "forecast": "-3.5%",
+    "previous": "-2.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Building Permits",
+    "actual": "1.46M",
+    "forecast": "1.47M",
+    "previous": "1.50M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Housing Starts",
+    "actual": "1.56M",
+    "forecast": "1.36M",
+    "previous": "1.36M"
+  },
+  {
+    "time": "8:32am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:52am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "2.3%",
+    "forecast": "",
+    "previous": "1.6%"
+  },
+  {
+    "time": "12:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Bostic Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Gov Orr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "3.3B",
+    "forecast": "37.8B",
+    "previous": "0.9B"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Trade Balance",
+    "actual": "-0.41T",
+    "forecast": "-0.76T",
+    "previous": "-0.50T"
+  }
+]

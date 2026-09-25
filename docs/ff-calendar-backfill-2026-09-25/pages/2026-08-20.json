@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German PPI m/m",
+    "actual": "1.1%",
+    "forecast": "0.5%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "German Buba Monthly Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-25",
+    "forecast": "-40",
+    "previous": "-45"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "IPPI m/m",
+    "actual": "0.6%",
+    "forecast": "-0.4%",
+    "previous": "-1.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "NHPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "RMPI m/m",
+    "actual": "-2.2%",
+    "forecast": "-1.8%",
+    "previous": "-6.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "47.4",
+    "forecast": "24.1",
+    "previous": "41.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "206K",
+    "forecast": "210K",
+    "previous": "212K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Leading Index m/m",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "16B",
+    "forecast": "15B",
+    "previous": "36B"
+  },
+  {
+    "time": "11:10am",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Trade Balance",
+    "actual": "-1949M",
+    "forecast": "-175M",
+    "previous": "-237M"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "52.0",
+    "forecast": "",
+    "previous": "52.0"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "Flash Services PMI",
+    "actual": "52.9",
+    "forecast": "",
+    "previous": "53.6"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-14",
+    "forecast": "-18",
+    "previous": "-17"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "1.8%",
+    "forecast": "1.8%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "55.1",
+    "forecast": "55.1",
+    "previous": "54.5"
+  },
+  {
+    "time": "11:00pm",
+    "currency": "NZD",
+    "title": "Credit Card Spending y/y",
+    "actual": "5.3%",
+    "forecast": "",
+    "previous": "3.2%"
+  }
+]

@@ -1,0 +1,165 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.4%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Manufacturing PMI",
+    "actual": "50.2",
+    "forecast": "50.5",
+    "previous": "49.7"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "53.2",
+    "forecast": "54.5",
+    "previous": "54.3"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Manufacturing PMI",
+    "actual": "51.3",
+    "forecast": "52.5",
+    "previous": "52.2"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Manufacturing PMI",
+    "actual": "49.8",
+    "forecast": "50.0",
+    "previous": "50.0"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Manufacturing PMI",
+    "actual": "52.2",
+    "forecast": "52.2",
+    "previous": "52.2"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Manufacturing PMI",
+    "actual": "51.9",
+    "forecast": "52.0",
+    "previous": "52.0"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Manufacturing PMI",
+    "actual": "51.9",
+    "forecast": "52.8",
+    "previous": "52.8"
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Manufacturing PMI",
+    "actual": "53.9",
+    "forecast": "53.8",
+    "previous": "53.8"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing PMI",
+    "actual": "55.6",
+    "forecast": "54.0",
+    "previous": "53.3"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing Prices",
+    "actual": "71.1",
+    "forecast": "70.0",
+    "previous": "73.0"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "16.3M",
+    "forecast": "16.3M",
+    "previous": "16.5M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Loan Officer Survey",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Monetary Base y/y",
+    "actual": "-13.8%",
+    "forecast": "-13.0%",
+    "previous": "-13.7%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "ANZ Job Advertisements m/m",
+    "actual": "0.8%",
+    "forecast": "",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "0.8%",
+    "forecast": "0.2%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "10-y Bond Auction",
+    "actual": "2.84|2.6",
+    "forecast": "",
+    "previous": "2.73|3.1"
+  }
+]

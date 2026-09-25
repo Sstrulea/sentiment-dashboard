@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "13.4B",
+    "forecast": "12.8B",
+    "previous": "15.1B"
+  },
+  {
+    "time": "3:42am",
+    "currency": "CNY",
+    "title": "Foreign Direct Investment ytd/y",
+    "actual": "-10.0%",
+    "forecast": "",
+    "previous": "-9.4%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Realized Sales",
+    "actual": "-32",
+    "forecast": "-13",
+    "previous": "-11"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.6%",
+    "forecast": "0.5%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.7%",
+    "forecast": "0.8%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Final GDP q/q",
+    "actual": "4.9%",
+    "forecast": "5.2%",
+    "previous": "5.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "205K",
+    "forecast": "214K",
+    "previous": "203K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Final GDP Price Index q/q",
+    "actual": "3.3%",
+    "forecast": "3.6%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "-10.5",
+    "forecast": "-3.3",
+    "previous": "-5.9"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.5%",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-87B",
+    "forecast": "-82B",
+    "previous": "-55B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.4%",
+    "forecast": "0.4%",
+    "previous": "0.3%"
+  }
+]

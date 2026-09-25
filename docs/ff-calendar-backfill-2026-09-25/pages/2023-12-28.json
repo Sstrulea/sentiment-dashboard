@@ -1,0 +1,53 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "218K",
+    "forecast": "211K",
+    "previous": "206K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Goods Trade Balance",
+    "actual": "-90.3B",
+    "forecast": "-88.6B",
+    "previous": "-89.6B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Wholesale Inventories m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.2%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.8%",
+    "previous": "-1.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-87B",
+    "forecast": "-80B",
+    "previous": "-87B"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-7.1M",
+    "forecast": "-2.7M",
+    "previous": "2.9M"
+  }
+]

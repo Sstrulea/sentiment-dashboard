@@ -1,0 +1,221 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "1:30am",
+  "currency": "EUR",
+  "title": "French Consumer Spending m/m",
+  "actual": "0.3%",
+  "forecast": "0.0%",
+  "previous": "0.6%"
+ },
+ {
+  "time": "1:30am",
+  "currency": "EUR",
+  "title": "French Flash GDP q/q",
+  "actual": "0.0%",
+  "forecast": "0.0%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "CHF",
+  "title": "Trade Balance",
+  "actual": "1.25B",
+  "forecast": "2.55B",
+  "previous": "3.83B"
+ },
+ {
+  "time": "3:00am",
+  "currency": "CHF",
+  "title": "KOF Economic Barometer",
+  "actual": "101.5",
+  "forecast": "98.3",
+  "previous": "98.0"
+ },
+ {
+  "time": "3:00am",
+  "currency": "EUR",
+  "title": "Spanish Flash CPI y/y",
+  "actual": "3.4%",
+  "forecast": "3.0%",
+  "previous": "3.1%"
+ },
+ {
+  "time": "3:00am",
+  "currency": "EUR",
+  "title": "Spanish Flash GDP q/q",
+  "actual": "0.6%",
+  "forecast": "0.2%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Italian Prelim GDP q/q",
+  "actual": "0.2%",
+  "forecast": "0.0%",
+  "previous": "0.1%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "German Prelim GDP q/q",
+  "actual": "-0.3%",
+  "forecast": "-0.3%",
+  "previous": "0.0%"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "M4 Money Supply m/m",
+  "actual": "0.5%",
+  "forecast": "0.2%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Mortgage Approvals",
+  "actual": "50K",
+  "forecast": "53K",
+  "previous": "49K"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Net Lending to Individuals m/m",
+  "actual": "0.4B",
+  "forecast": "1.5B",
+  "previous": "2.1B"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Prelim Flash GDP q/q",
+  "actual": "0.0%",
+  "forecast": "-0.1%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "5:19am",
+  "currency": "EUR",
+  "title": "Italian 10-y Bond Auction",
+  "actual": "3.69|1.7",
+  "forecast": "",
+  "previous": "4.17|1.4"
+ },
+ {
+  "time": "9:00am",
+  "currency": "USD",
+  "title": "S&P/CS Composite-20 HPI y/y",
+  "actual": "5.4%",
+  "forecast": "5.8%",
+  "previous": "4.9%"
+ },
+ {
+  "time": "9:00am",
+  "currency": "USD",
+  "title": "HPI m/m",
+  "actual": "0.3%",
+  "forecast": "0.3%",
+  "previous": "0.3%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "CB Consumer Confidence",
+  "actual": "114.8",
+  "forecast": "114.2",
+  "previous": "108.0"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "JOLTS Job Openings",
+  "actual": "9.03M",
+  "forecast": "8.73M",
+  "previous": "8.93M"
+ },
+ {
+  "time": "10:30am",
+  "currency": "EUR",
+  "title": "German Buba President Nagel Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "4:30pm",
+  "currency": "USD",
+  "title": "API Weekly Statistical Bulletin",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "BOJ Summary of Opinions",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "Prelim Industrial Production m/m",
+  "actual": "1.8%",
+  "forecast": "2.5%",
+  "previous": "-0.9%"
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "Retail Sales y/y",
+  "actual": "2.1%",
+  "forecast": "5.0%",
+  "previous": "5.4%"
+ },
+ {
+  "time": "7:00pm",
+  "currency": "NZD",
+  "title": "ANZ Business Confidence",
+  "actual": "36.6",
+  "forecast": "",
+  "previous": "33.2"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "CPI m/m",
+  "actual": "0.6%",
+  "forecast": "0.8%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "CPI y/y",
+  "actual": "3.4%",
+  "forecast": "3.7%",
+  "previous": "4.3%"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "Trimmed Mean CPI m/m",
+  "actual": "0.8%",
+  "forecast": "0.9%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "Private Sector Credit m/m",
+  "actual": "0.4%",
+  "forecast": "0.4%",
+  "previous": "0.4%"
+ }
+]

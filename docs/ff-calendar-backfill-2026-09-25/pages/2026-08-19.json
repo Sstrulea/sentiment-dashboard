@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "2.9%",
+    "forecast": "2.9%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.5%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "-1.7%",
+    "forecast": "0.0%",
+    "previous": "-1.9%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "3.2%",
+    "forecast": "3.3%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "3:10am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "35.1B",
+    "forecast": "26.8B",
+    "previous": "25.8B"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "2.0%",
+    "forecast": "1.9%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "2.9%",
+    "forecast": "2.9%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "5:34am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "3.26|1.1",
+    "forecast": "",
+    "previous": "3.13|1.1"
+  },
+  {
+    "time": "6:15am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "4.4M",
+    "forecast": "0.2M",
+    "previous": "17.4M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Trade Balance",
+    "actual": "-0.69T",
+    "forecast": "-0.44T",
+    "previous": "-0.93T"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Expectations",
+    "actual": "4.9%",
+    "forecast": "",
+    "previous": "4.7%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "-15.8K",
+    "forecast": "11.7K",
+    "previous": "80.2K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.5%",
+    "forecast": "4.4%",
+    "previous": "4.4%"
+  }
+]

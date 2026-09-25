@@ -135,10 +135,15 @@ def test_all_17_target_canonical_ids_present_with_expected_counts(migration):
     tests/test_backfill_pmi_guard.py's PMI-count assertion did. A floor
     (`got >= want`) still catches the real regression (rows missing or a
     failed backfill) while not breaking on the calendar simply moving
-    forward."""
+    forward. A row a later migration deliberately deleted is listed in
+    data/ff_tombstones.csv (with its reason) and counts as accounted for:
+    the floor is about SILENT loss, not documented removals."""
     df = pd.read_parquet(ROOT / "data" / "economic_calendar_ff.parquet")
+    tomb_path = ROOT / "data" / "ff_tombstones.csv"
+    tomb = pd.read_csv(tomb_path) if tomb_path.exists() else pd.DataFrame(columns=["canonical_id"])
     for ccy, name in migration.TARGET_SERIES:
         cid = migration.canonical_id(ccy, name)
         got = int((df["canonical_id"] == cid).sum())
+        removed = int((tomb["canonical_id"] == cid).sum())
         want = migration.EXPECTED_COUNTS[cid]
-        assert got >= want, f"{cid}: {got} rows, expected at least {want}"
+        assert got + removed >= want, f"{cid}: {got} rows (+{removed} tombstoned), expected at least {want}"

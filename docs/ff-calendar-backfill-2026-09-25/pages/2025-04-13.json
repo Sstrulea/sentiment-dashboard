@@ -1,0 +1,61 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "5:06am",
+    "currency": "CNY",
+    "title": "M2 Money Supply y/y",
+    "actual": "7.0%",
+    "forecast": "7.0%",
+    "previous": "7.0%"
+  },
+  {
+    "time": "5:07am",
+    "currency": "CNY",
+    "title": "New Loans",
+    "actual": "3640B",
+    "forecast": "3020B",
+    "previous": "1010B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Services Index",
+    "actual": "49.1",
+    "forecast": "",
+    "previous": "49.0"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "-3.7%",
+    "forecast": "",
+    "previous": "1.5%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "Rightmove HPI m/m",
+    "actual": "1.4%",
+    "forecast": "",
+    "previous": "1.1%"
+  },
+  {
+    "time": "11:02pm",
+    "currency": "CNY",
+    "title": "USD-Denominated Trade Balance",
+    "actual": "102.6B",
+    "forecast": "74.3B",
+    "previous": "170.5B"
+  },
+  {
+    "time": "11:03pm",
+    "currency": "CNY",
+    "title": "Trade Balance",
+    "actual": "737B",
+    "forecast": "537B",
+    "previous": "1220B"
+  }
+]

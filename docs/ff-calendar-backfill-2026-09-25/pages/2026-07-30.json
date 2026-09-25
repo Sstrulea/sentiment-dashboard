@@ -1,0 +1,301 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "34.9",
+    "forecast": "34.2",
+    "previous": "33.8"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "0.4%",
+    "forecast": "-0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Flash GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "0.8%",
+    "forecast": "0.7%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim Private Payrolls q/q",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "103.5",
+    "forecast": "100.9",
+    "previous": "102.1"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash CPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.2%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash GDP q/q",
+    "actual": "0.7%",
+    "forecast": "0.6%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German Prelim GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Monthly Unemployment Rate",
+    "actual": "5.7%",
+    "forecast": "5.0%",
+    "previous": "5.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Prelim Flash GDP q/q",
+    "actual": "0.4%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Unemployment Rate",
+    "actual": "6.3%",
+    "forecast": "6.2%",
+    "previous": "6.3%"
+  },
+  {
+    "time": "5:06am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "4.00|1.7",
+    "forecast": "",
+    "previous": "3.63|1.7"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "BOE Monetary Policy Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Monetary Policy Summary",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "MPC Official Bank Rate Votes",
+    "actual": "3-0-6",
+    "forecast": "2-0-7",
+    "previous": "2-0-7"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Official Bank Rate",
+    "actual": "3.75%",
+    "forecast": "3.75%",
+    "previous": "3.75%"
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Advance GDP q/q",
+    "actual": "1.5%",
+    "forecast": "2.1%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Advance GDP Price Index q/q",
+    "actual": "6.2%",
+    "forecast": "4.1%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "197K",
+    "forecast": "201K",
+    "previous": "188K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "28B",
+    "forecast": "37B",
+    "previous": "32B"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "1.9%",
+    "forecast": "1.8%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "1.3%",
+    "forecast": "1.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "0.5%",
+    "forecast": "3.1%",
+    "previous": "5.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "PPI q/q",
+    "actual": "1.3%",
+    "forecast": "0.5%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.8%",
+    "forecast": "0.6%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "CNY",
+    "title": "Manufacturing PMI",
+    "actual": "49.2",
+    "forecast": "50.1",
+    "previous": "50.3"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "CNY",
+    "title": "Non-Manufacturing PMI",
+    "actual": "49.0",
+    "forecast": "50.0",
+    "previous": "50.2"
+  },
+  {
+    "time": "11:11pm",
+    "currency": "JPY",
+    "title": "BOJ Outlook Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:11pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<1.00%",
+    "forecast": "<1.00%",
+    "previous": "<1.00%"
+  },
+  {
+    "time": "11:11pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

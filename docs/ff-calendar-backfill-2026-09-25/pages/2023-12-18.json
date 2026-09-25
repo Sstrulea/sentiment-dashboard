@@ -1,0 +1,85 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "86.4",
+    "forecast": "87.6",
+    "previous": "87.2"
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "MPC Member Broadbent Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "German Buba Monthly Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "NHPI m/m",
+    "actual": "-0.2%",
+    "forecast": "0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "37",
+    "forecast": "36",
+    "previous": "34"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Trade Balance",
+    "actual": "-1234M",
+    "forecast": "-1200M",
+    "previous": "-1730M"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "NZD",
+    "title": "ANZ Business Confidence",
+    "actual": "33.2",
+    "forecast": "",
+    "previous": "30.8"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:49pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:49pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "-0.10%",
+    "forecast": "-0.10%",
+    "previous": "-0.10%"
+  }
+]

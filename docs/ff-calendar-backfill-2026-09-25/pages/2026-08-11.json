@@ -1,0 +1,85 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "Cash Rate",
+    "actual": "4.35%",
+    "forecast": "4.35%",
+    "previous": "4.35%"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "RBA Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "RBA Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30am",
+    "currency": "AUD",
+    "title": "RBA Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "4.23B",
+    "forecast": "4.74B",
+    "previous": "4.79B"
+  },
+  {
+    "time": "6:00am",
+    "currency": "USD",
+    "title": "NFIB Small Business Index",
+    "actual": "99.8",
+    "forecast": "97.5",
+    "previous": "97.4"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "8.3K",
+    "forecast": "",
+    "previous": "11.0K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Existing Home Sales",
+    "actual": "4.06M",
+    "forecast": "4.05M",
+    "previous": "4.13M"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "M2 Money Stock y/y",
+    "actual": "2.2%",
+    "forecast": "2.1%",
+    "previous": "2.2%"
+  }
+]

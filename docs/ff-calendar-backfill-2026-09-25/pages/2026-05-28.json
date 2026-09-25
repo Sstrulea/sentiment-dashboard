@@ -1,0 +1,237 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:10am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:05am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:09am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "3.77|1.6",
+    "forecast": "",
+    "previous": "3.77|1.7"
+  },
+  {
+    "time": "7:00am",
+    "currency": "CHF",
+    "title": "SNB Chairman Schlegel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30am",
+    "currency": "EUR",
+    "title": "ECB Monetary Policy Meeting Accounts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Current Account",
+    "actual": "-7.2B",
+    "forecast": "-3.9B",
+    "previous": "-1.0B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP q/q",
+    "actual": "1.6%",
+    "forecast": "2.0%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP Price Index q/q",
+    "actual": "3.5%",
+    "forecast": "3.6%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "215K",
+    "forecast": "211K",
+    "previous": "210K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Durable Goods Orders m/m",
+    "actual": "1.1%",
+    "forecast": "0.5%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Durable Goods Orders m/m",
+    "actual": "7.9%",
+    "forecast": "4.0%",
+    "previous": "1.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.0%",
+    "forecast": "0.4%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:55am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "BOC Financial System Review",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "New Home Sales",
+    "actual": "622K",
+    "forecast": "661K",
+    "previous": "663K"
+  },
+  {
+    "time": "10:15am",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "92B",
+    "forecast": "96B",
+    "previous": "101B"
+  },
+  {
+    "time": "11:00am",
+    "currency": "CAD",
+    "title": "BOC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-3.3M",
+    "forecast": "-3.8M",
+    "previous": "-7.9M"
+  },
+  {
+    "time": "1:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Treasury Sec Bessent Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "1.3%",
+    "forecast": "1.5%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.5%",
+    "forecast": "2.7%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "0.8%",
+    "forecast": "-0.4%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "2.1%",
+    "forecast": "1.4%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "ANZ Business Confidence",
+    "actual": "10.0",
+    "forecast": "",
+    "previous": "-10.6"
+  }
+]

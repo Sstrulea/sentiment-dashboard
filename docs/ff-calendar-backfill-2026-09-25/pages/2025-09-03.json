@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Services PMI",
+    "actual": "53.2",
+    "forecast": "54.4",
+    "previous": "55.1"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Services PMI",
+    "actual": "51.5",
+    "forecast": "52.1",
+    "previous": "52.3"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Services PMI",
+    "actual": "49.8",
+    "forecast": "49.7",
+    "previous": "49.7"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Services PMI",
+    "actual": "49.3",
+    "forecast": "50.1",
+    "previous": "50.1"
+  },
+  {
+    "time": "4:00am",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Services PMI",
+    "actual": "50.5",
+    "forecast": "50.7",
+    "previous": "50.7"
+  },
+  {
+    "time": "4:15am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Services PMI",
+    "actual": "54.2",
+    "forecast": "53.6",
+    "previous": "53.6"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "PPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.2%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "5:32am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.77|1.4",
+    "forecast": "",
+    "previous": "2.69|1.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Labor Productivity q/q",
+    "actual": "-1.0%",
+    "forecast": "-0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:15am",
+    "currency": "GBP",
+    "title": "Monetary Policy Report Hearings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "7.18M",
+    "forecast": "7.38M",
+    "previous": "7.36M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Factory Orders m/m",
+    "actual": "-1.3%",
+    "forecast": "-1.3%",
+    "previous": "-4.8%"
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "16.1M",
+    "forecast": "16.1M",
+    "previous": "16.4M"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Kashkari Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Beige Book",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "RBA Deputy Gov Hauser Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "7.31B",
+    "forecast": "4.88B",
+    "previous": "5.37B"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "3.26|3.3",
+    "forecast": "",
+    "previous": "3.09|3.4"
+  }
+]

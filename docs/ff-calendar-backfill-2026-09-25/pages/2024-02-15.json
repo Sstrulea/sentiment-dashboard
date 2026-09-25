@@ -1,0 +1,317 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim GDP q/q",
+    "actual": "-0.3%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.1%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-14.0B",
+    "forecast": "-15.0B",
+    "previous": "-15.1B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "-0.2%",
+    "forecast": "0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "0.6%",
+    "forecast": "-0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "0.8%",
+    "forecast": "-0.1%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim Business Investment q/q",
+    "actual": "1.5%",
+    "forecast": "-0.1%",
+    "previous": "-3.2%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.2%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "SECO Consumer Climate",
+    "actual": "-41",
+    "forecast": "-33",
+    "previous": "-40"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "5.61B",
+    "forecast": "3.65B",
+    "previous": "3.88B"
+  },
+  {
+    "time": "4:46am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.14|1.9",
+    "forecast": "",
+    "previous": "3.17|1.8"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "EU Economic Forecasts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "13.0B",
+    "forecast": "15.7B",
+    "previous": "15.1B"
+  },
+  {
+    "time": "7:22am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "MPC Member Greene Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "224K",
+    "forecast": "236K",
+    "previous": "249K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.5%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "-0.6%",
+    "forecast": "0.2%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-2.4",
+    "forecast": "-13.7",
+    "previous": "-43.7"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "-0.8%",
+    "forecast": "-0.2%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "212K",
+    "forecast": "219K",
+    "previous": "220K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "5.2",
+    "forecast": "-8.0",
+    "previous": "-10.6"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "0.8%",
+    "forecast": "0.0%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "8:50am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "78.5%",
+    "forecast": "78.8%",
+    "previous": "78.7%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.4%",
+    "forecast": "0.4%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "48",
+    "forecast": "46",
+    "previous": "44"
+  },
+  {
+    "time": "10:30am",
+    "currency": "AUD",
+    "title": "CB Leading Index m/m",
+    "actual": "0.3%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-49B",
+    "forecast": "-67B",
+    "previous": "-75B"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:40pm",
+    "currency": "NZD",
+    "title": "RBNZ Gov Orr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "160.2B",
+    "forecast": "42.6B",
+    "previous": "99.7B"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "47.3",
+    "forecast": "",
+    "previous": "43.4"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Bostic Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "0.7%",
+    "forecast": "0.2%",
+    "previous": "-1.4%"
+  }
+]

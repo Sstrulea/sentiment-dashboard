@@ -1,0 +1,205 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "3.5%",
+    "forecast": "-2.6%",
+    "previous": "-11.9%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "-1.4%",
+    "forecast": "-1.5%",
+    "previous": "-1.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "0.4%",
+    "forecast": "0.0%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Current Account",
+    "actual": "-10.8B",
+    "forecast": "-9.8B",
+    "previous": "-2.5B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Final GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.1%",
+    "forecast": "-0.3%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Revised Business Investment q/q",
+    "actual": "3.3%",
+    "forecast": "0.7%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "-1.1%",
+    "forecast": "-2.5%",
+    "previous": "-4.0%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "0.5%",
+    "forecast": "0.7%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "90.8",
+    "forecast": "89.1",
+    "previous": "91.4"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "28K",
+    "forecast": "14K",
+    "previous": "13K"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Monthly Unemployment Rate",
+    "actual": "7.6%",
+    "forecast": "7.9%",
+    "previous": "7.8%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "5.4%",
+    "forecast": "5.5%",
+    "previous": "5.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "5.5%",
+    "forecast": "5.6%",
+    "previous": "6.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Unemployment Rate",
+    "actual": "6.5%",
+    "forecast": "6.5%",
+    "previous": "6.5%"
+  },
+  {
+    "time": "5:13am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "4.13|1.4",
+    "forecast": "",
+    "previous": "4.24|1.5"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "41.5",
+    "forecast": "43.6",
+    "previous": "40.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Consumer Sentiment",
+    "actual": "64.4",
+    "forecast": "63.9",
+    "previous": "63.9"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Inflation Expectations",
+    "actual": "3.3%",
+    "forecast": "",
+    "previous": "3.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "CAD",
+    "title": "BOC Business Outlook Survey",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "3.1%",
+    "forecast": "0.5%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "3.1%",
+    "forecast": "3.1%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Industrial Production m/m",
+    "actual": "-1.0%",
+    "forecast": "0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "44.7",
+    "forecast": "40.0",
+    "previous": "38.4"
+  },
+  {
+    "time": "4:41am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.54|2.4",
+    "forecast": "",
+    "previous": "3.40|1.8"
+  },
+  {
+    "time": "4:57am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.86|3.7",
+    "forecast": "",
+    "previous": "3.68|3.3"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.3%",
+    "forecast": "0.1%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "5:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "-46.1%",
+    "forecast": "",
+    "previous": "-4.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "199K",
+    "forecast": "203K",
+    "previous": "198K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Nonfarm Productivity q/q",
+    "actual": "1.4%",
+    "forecast": "0.6%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Unit Labor Costs q/q",
+    "actual": "1.3%",
+    "forecast": "2.2%",
+    "previous": "1.8%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "33B",
+    "forecast": "30B",
+    "previous": "28B"
+  },
+  {
+    "time": "5:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-3.3%",
+    "forecast": "0.8%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "10:38pm",
+    "currency": "CNY",
+    "title": "Trade Balance",
+    "actual": "767B",
+    "forecast": "735B",
+    "previous": "859B"
+  },
+  {
+    "time": "10:38pm",
+    "currency": "CNY",
+    "title": "USD-Denominated Trade Balance",
+    "actual": "112.5B",
+    "forecast": "108.6B",
+    "previous": "125.6B"
+  }
+]

@@ -1,0 +1,253 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "0.0%",
+    "forecast": "",
+    "previous": "-5.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "-0.2%",
+    "forecast": "0.5%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Manufacturing PMI",
+    "actual": "51.5",
+    "forecast": "53.8",
+    "previous": "54.3"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "46.3",
+    "forecast": "47.9",
+    "previous": "49.0"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Manufacturing PMI",
+    "actual": "49.0",
+    "forecast": "49.9",
+    "previous": "50.4"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Manufacturing PMI",
+    "actual": "48.2",
+    "forecast": "48.1",
+    "previous": "48.1"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Manufacturing PMI",
+    "actual": "49.5",
+    "forecast": "48.5",
+    "previous": "48.5"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Manufacturing PMI",
+    "actual": "49.8",
+    "forecast": "49.5",
+    "previous": "49.5"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Manufacturing PMI",
+    "actual": "46.2",
+    "forecast": "46.2",
+    "previous": "46.2"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.3%",
+    "forecast": "2.3%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.2%",
+    "forecast": "2.2%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "5:32am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.72|1.2",
+    "forecast": "",
+    "previous": "2.61|1.9"
+  },
+  {
+    "time": "5:55am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "-32K",
+    "forecast": "52K",
+    "previous": "-3K"
+  },
+  {
+    "time": "9:00am",
+    "currency": "CHF",
+    "title": "SNB Quarterly Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "CAD",
+    "title": "Manufacturing PMI",
+    "actual": "47.7",
+    "forecast": "",
+    "previous": "48.3"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Manufacturing PMI",
+    "actual": "52.0",
+    "forecast": "52.0",
+    "previous": "52.0"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing PMI",
+    "actual": "49.1",
+    "forecast": "49.0",
+    "previous": "48.7"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing Prices",
+    "actual": "61.9",
+    "forecast": "62.7",
+    "previous": "63.7"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "1.8M",
+    "forecast": "1.5M",
+    "previous": "-0.6M"
+  },
+  {
+    "time": "12:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:05pm",
+    "currency": "CAD",
+    "title": "Gov Council Member Rogers Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Monetary Base y/y",
+    "actual": "-6.2%",
+    "forecast": "-3.8%",
+    "previous": "-4.1%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "1.83B",
+    "forecast": "6.13B",
+    "previous": "6.61B"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "0.1%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "RBA Financial Stability Review",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "10-y Bond Auction",
+    "actual": "1.64|3.3",
+    "forecast": "",
+    "previous": "1.61|3.9"
+  }
+]

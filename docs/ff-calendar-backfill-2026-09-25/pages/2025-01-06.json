@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "0.8%",
+    "forecast": "1.3%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Services PMI",
+    "actual": "57.3",
+    "forecast": "54.1",
+    "previous": "53.1"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Services PMI",
+    "actual": "50.7",
+    "forecast": "50.0",
+    "previous": "49.2"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Services PMI",
+    "actual": "49.3",
+    "forecast": "48.2",
+    "previous": "48.2"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Services PMI",
+    "actual": "51.2",
+    "forecast": "51.0",
+    "previous": "51.0"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Services PMI",
+    "actual": "51.6",
+    "forecast": "51.4",
+    "previous": "51.4"
+  },
+  {
+    "time": "4:30am",
+    "currency": "EUR",
+    "title": "Sentix Investor Confidence",
+    "actual": "-17.7",
+    "forecast": "-17.7",
+    "previous": "-17.5"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Services PMI",
+    "actual": "51.1",
+    "forecast": "51.4",
+    "previous": "51.4"
+  },
+  {
+    "time": "9:30am",
+    "currency": "USD",
+    "title": "FOMC Member Cook Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Services PMI",
+    "actual": "56.8",
+    "forecast": "58.5",
+    "previous": "58.5"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Factory Orders m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.3%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Monetary Base y/y",
+    "actual": "-1.0%",
+    "forecast": "-0.2%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Retail Sales Monitor y/y",
+    "actual": "3.1%",
+    "forecast": "-0.2%",
+    "previous": "-3.4%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "-3.6%",
+    "forecast": "-0.9%",
+    "previous": "5.2%"
+  },
+  {
+    "time": "10:35pm",
+    "currency": "JPY",
+    "title": "10-y Bond Auction",
+    "actual": "1.14|3.4",
+    "forecast": "",
+    "previous": "1.08|3.1"
+  }
+]

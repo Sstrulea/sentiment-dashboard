@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Retail Sales m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.5%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "1.8B",
+    "forecast": "0.0B",
+    "previous": "12.8B"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "51.5",
+    "forecast": "50.1",
+    "previous": "49.8"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "48.4",
+    "forecast": "49.4",
+    "previous": "49.6"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "54.1",
+    "forecast": "52.1",
+    "previous": "52.2"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "48.5",
+    "forecast": "50.1",
+    "previous": "49.8"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "52.8",
+    "forecast": "51.8",
+    "previous": "51.9"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "51.7",
+    "forecast": "51.5",
+    "previous": "51.7"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "51.5",
+    "forecast": "51.6",
+    "previous": "51.9"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "52.8",
+    "forecast": "51.8",
+    "previous": "52.1"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.5%",
+    "forecast": "0.2%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.6%",
+    "forecast": "0.4%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "53.2",
+    "forecast": "53.9",
+    "previous": "53.9"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "56.8",
+    "forecast": "54.0",
+    "previous": "54.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-16",
+    "forecast": "-16",
+    "previous": "-16"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

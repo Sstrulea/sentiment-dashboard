@@ -1,0 +1,229 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.2%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-17.0B",
+    "forecast": "-14.1B",
+    "previous": "-14.3B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.8%",
+    "forecast": "-0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "-1.1%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "SECO Economic Forecasts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Quarterly Unemployment Rate",
+    "actual": "7.6%",
+    "forecast": "7.6%",
+    "previous": "7.7%"
+  },
+  {
+    "time": "4:01am",
+    "currency": "CNY",
+    "title": "New Loans",
+    "actual": "1090B",
+    "forecast": "1300B",
+    "previous": "738B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.3%",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "4.43|2.7",
+    "forecast": "",
+    "previous": "4.66|2.3"
+  },
+  {
+    "time": "7:50am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "PPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.5%",
+    "forecast": "",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-4.3M",
+    "forecast": "-1.9M",
+    "previous": "-4.6M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "5.50%",
+    "forecast": "5.50%",
+    "previous": "5.50%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Economic Projections",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "FOMC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "GDP q/q",
+    "actual": "-0.3%",
+    "forecast": "0.2%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Core Machinery Orders m/m",
+    "actual": "0.7%",
+    "forecast": "-0.4%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Expectations",
+    "actual": "4.5%",
+    "forecast": "",
+    "previous": "4.9%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "RICS House Price Balance",
+    "actual": "-43%",
+    "forecast": "-57%",
+    "previous": "-61%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "61.5K",
+    "forecast": "10.6K",
+    "previous": "42.7K"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "3.9%",
+    "forecast": "3.8%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Jones Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "1.3%",
+    "forecast": "1.0%",
+    "previous": "1.0%"
+  }
+]

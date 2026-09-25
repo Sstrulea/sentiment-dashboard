@@ -1,0 +1,125 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "12:30am",
+  "currency": "AUD",
+  "title": "Commodity Prices y/y",
+  "actual": "-10.7%",
+  "forecast": "",
+  "previous": "-12.8%"
+ },
+ {
+  "time": "All Day",
+  "currency": "CHF",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "3:15am",
+  "currency": "EUR",
+  "title": "Spanish Manufacturing PMI",
+  "actual": "46.2",
+  "forecast": "46.3",
+  "previous": "46.3"
+ },
+ {
+  "time": "3:45am",
+  "currency": "EUR",
+  "title": "Italian Manufacturing PMI",
+  "actual": "45.3",
+  "forecast": "44.3",
+  "previous": "44.4"
+ },
+ {
+  "time": "3:50am",
+  "currency": "EUR",
+  "title": "French Final Manufacturing PMI",
+  "actual": "42.1",
+  "forecast": "42.0",
+  "previous": "42.0"
+ },
+ {
+  "time": "3:55am",
+  "currency": "EUR",
+  "title": "German Final Manufacturing PMI",
+  "actual": "43.3",
+  "forecast": "43.1",
+  "previous": "43.1"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Final Manufacturing PMI",
+  "actual": "44.4",
+  "forecast": "44.2",
+  "previous": "44.2"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "M3 Money Supply y/y",
+  "actual": "-0.9%",
+  "forecast": "-1.0%",
+  "previous": "-1.0%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Private Loans y/y",
+  "actual": "0.5%",
+  "forecast": "0.8%",
+  "previous": "0.6%"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Final Manufacturing PMI",
+  "actual": "46.2",
+  "forecast": "46.4",
+  "previous": "46.4"
+ },
+ {
+  "time": "9:30am",
+  "currency": "CAD",
+  "title": "Manufacturing PMI",
+  "actual": "45.4",
+  "forecast": "",
+  "previous": "47.7"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Final Manufacturing PMI",
+  "actual": "47.9",
+  "forecast": "48.4",
+  "previous": "48.2"
+ },
+ {
+  "time": "9:51am",
+  "currency": "NZD",
+  "title": "GDT Price Index",
+  "actual": "1.2%",
+  "forecast": "",
+  "previous": "2.3%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Construction Spending m/m",
+  "actual": "0.4%",
+  "forecast": "0.6%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "All Day",
+  "currency": "JPY",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

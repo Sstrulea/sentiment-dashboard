@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.9%",
+    "forecast": "0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Monetary Policy Assessment",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Policy Rate",
+    "actual": "1.75%",
+    "forecast": "1.75%",
+    "previous": "1.75%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "SNB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Monetary Policy Summary",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "MPC Official Bank Rate Votes",
+    "actual": "3-0-6",
+    "forecast": "2-0-7",
+    "previous": "3-0-6"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Official Bank Rate",
+    "actual": "5.25%",
+    "forecast": "5.25%",
+    "previous": "5.25%"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "BOE Inflation Letter",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "EUR",
+    "title": "Main Refinancing Rate",
+    "actual": "4.50%",
+    "forecast": "4.50%",
+    "previous": "4.50%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "EUR",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-2.8%",
+    "forecast": "-2.1%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "-0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.3%",
+    "forecast": "-0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "202K",
+    "forecast": "219K",
+    "previous": "221K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.7%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "8:45am",
+    "currency": "EUR",
+    "title": "ECB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-55B",
+    "forecast": "-60B",
+    "previous": "-117B"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "47.8",
+    "forecast": "",
+    "previous": "47.7"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "Flash Services PMI",
+    "actual": "47.6",
+    "forecast": "",
+    "previous": "46.0"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-22",
+    "forecast": "-23",
+    "previous": "-24"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "47.7",
+    "forecast": "48.2",
+    "previous": "48.3"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "-0.8%",
+    "forecast": "0.2%",
+    "previous": "-1.2%"
+  }
+]

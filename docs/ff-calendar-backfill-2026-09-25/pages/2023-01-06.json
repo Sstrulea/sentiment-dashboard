@@ -1,0 +1,157 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German Factory Orders m/m",
+  "actual": "-5.3%",
+  "forecast": "-0.5%",
+  "previous": "0.6%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German Retail Sales m/m",
+  "actual": "1.1%",
+  "forecast": "1.5%",
+  "previous": "-2.8%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Lloyds HPI m/m",
+  "actual": "-1.5%",
+  "forecast": "-0.6%",
+  "previous": "-2.4%"
+ },
+ {
+  "time": "All Day",
+  "currency": "EUR",
+  "title": "Italian Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "2:36am",
+  "currency": "CHF",
+  "title": "Retail Sales y/y",
+  "actual": "-1.3%",
+  "forecast": "-1.0%",
+  "previous": "-2.6%"
+ },
+ {
+  "time": "2:45am",
+  "currency": "EUR",
+  "title": "French Consumer Spending m/m",
+  "actual": "0.5%",
+  "forecast": "1.0%",
+  "previous": "-2.7%"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Construction PMI",
+  "actual": "48.8",
+  "forecast": "50.6",
+  "previous": "50.4"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Core CPI Flash Estimate y/y",
+  "actual": "5.2%",
+  "forecast": "5.1%",
+  "previous": "5.0%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "CPI Flash Estimate y/y",
+  "actual": "9.2%",
+  "forecast": "9.6%",
+  "previous": "10.1%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Retail Sales m/m",
+  "actual": "0.8%",
+  "forecast": "0.5%",
+  "previous": "-1.5%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Employment Change",
+  "actual": "104.0K",
+  "forecast": "5.5K",
+  "previous": "10.1K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Unemployment Rate",
+  "actual": "5.0%",
+  "forecast": "5.2%",
+  "previous": "5.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Average Hourly Earnings m/m",
+  "actual": "0.3%",
+  "forecast": "0.4%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Non-Farm Employment Change",
+  "actual": "223K",
+  "forecast": "200K",
+  "previous": "256K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Unemployment Rate",
+  "actual": "3.5%",
+  "forecast": "3.7%",
+  "previous": "3.7%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "CAD",
+  "title": "Ivey PMI",
+  "actual": "33.4",
+  "forecast": "51.0",
+  "previous": "51.4"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "ISM Services PMI",
+  "actual": "49.6",
+  "forecast": "55.0",
+  "previous": "56.5"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Factory Orders m/m",
+  "actual": "-1.8%",
+  "forecast": "-0.9%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "11:15am",
+  "currency": "USD",
+  "title": "FOMC Member Cook Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

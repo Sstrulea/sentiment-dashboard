@@ -181,7 +181,8 @@ def test_every_publication_entry_carries_evidence_and_windows_did_not_grow():
         for p in e["publications"]:
             assert p["status"] in ("cancelled", "merged", "not_published", "no_source") and p["evidence"]
             if p["status"] != "no_source":
-                assert str(p["source"]).startswith(("https://www.bls.gov/", "https://www.bea.gov/"))
+                assert str(p["source"]).startswith(("https://www.bls.gov/", "https://www.bea.gov/",
+                                                     "https://www.ons.gov.uk/"))
     win = {e["id"]: (str(e["start"]), str(e["end"])) for e in raw["known_gaps"]}
     assert win == {"us_shutdown_2025": ("2025-10-01", "2025-11-12"),
                    "jb_archive_hole_2023_12": ("2023-12-04", "2023-12-29"),

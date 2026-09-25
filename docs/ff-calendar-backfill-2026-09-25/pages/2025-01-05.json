@@ -1,0 +1,21 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:45pm",
+    "currency": "CNY",
+    "title": "RatingDog Services PMI",
+    "actual": "52.2",
+    "forecast": "51.4",
+    "previous": "51.5"
+  }
+]

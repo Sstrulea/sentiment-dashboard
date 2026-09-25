@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "-0.8%",
+    "forecast": "-0.3%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-18.7B",
+    "forecast": "-23.1B",
+    "previous": "-24.6B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.7%",
+    "forecast": "0.6%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "0.1%",
+    "forecast": "-0.2%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Summary of Monetary Policy Discussions",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "4.79B",
+    "forecast": "4.83B",
+    "previous": "4.42B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "-5.0B",
+    "forecast": "2.8B",
+    "previous": "0.8B"
+  },
+  {
+    "time": "5:02am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "5.04|3.1",
+    "forecast": "",
+    "previous": "4.93|3.3"
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "239K",
+    "forecast": "256K",
+    "previous": "253K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "-0.2%",
+    "forecast": "0.0%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "41.4",
+    "forecast": "12.7",
+    "previous": "10.3"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "208K",
+    "forecast": "216K",
+    "previous": "216K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "34",
+    "forecast": "35",
+    "previous": "36"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-5.4%",
+    "forecast": "-0.5%",
+    "previous": "3.5%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "41B",
+    "forecast": "45B",
+    "previous": "61B"
+  },
+  {
+    "time": "12:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:25pm",
+    "currency": "USD",
+    "title": "FOMC Member Schmid Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "0.6%",
+    "forecast": "",
+    "previous": "1.0%"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Jefferson Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

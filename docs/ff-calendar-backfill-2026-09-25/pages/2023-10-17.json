@@ -1,0 +1,213 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "-0.1%",
+    "forecast": "0.4%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Average Earnings Index 3m/y",
+    "actual": "8.1%",
+    "forecast": "8.3%",
+    "previous": "8.5%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "German ZEW Economic Sentiment",
+    "actual": "-1.1",
+    "forecast": "-9.1",
+    "previous": "-11.4"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "ZEW Economic Sentiment",
+    "actual": "2.3",
+    "forecast": "-7.7",
+    "previous": "-8.9"
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "4.93|2.6",
+    "forecast": "",
+    "previous": "4.94|2.8"
+  },
+  {
+    "time": "5:05am",
+    "currency": "GBP",
+    "title": "MPC Member Dhingra Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:00am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.1%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "3.8%",
+    "forecast": "4.0%",
+    "previous": "4.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "3.7%",
+    "forecast": "3.8%",
+    "previous": "3.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "4.4%",
+    "forecast": "4.7%",
+    "previous": "4.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Foreign Securities Purchases",
+    "actual": "-8.47B",
+    "forecast": "11.78B",
+    "previous": "13.93B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.6%",
+    "forecast": "0.2%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.7%",
+    "forecast": "0.3%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "8:32am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.3%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "79.7%",
+    "forecast": "79.6%",
+    "previous": "79.5%"
+  },
+  {
+    "time": "9:20am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "40",
+    "forecast": "44",
+    "previous": "44"
+  },
+  {
+    "time": "10:50am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "4.3%",
+    "forecast": "",
+    "previous": "4.4%"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:35pm",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.0%"
+  }
+]

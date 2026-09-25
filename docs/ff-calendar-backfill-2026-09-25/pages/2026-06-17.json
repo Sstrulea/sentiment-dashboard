@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "2.8%",
+    "forecast": "3.0%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.7%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "0.2%",
+    "forecast": "0.5%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "3.1%",
+    "forecast": "3.3%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "3.8%",
+    "forecast": "2.8%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "3.2%",
+    "forecast": "3.2%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "NHPI m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.1%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.8%",
+    "forecast": "0.6%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.9%",
+    "forecast": "0.5%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "3.8%",
+    "forecast": "0.8%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-8.3M",
+    "forecast": "-3.6M",
+    "previous": "-7.2M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "3.75%",
+    "forecast": "3.75%",
+    "previous": "3.75%"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "GDP q/q",
+    "actual": "0.8%",
+    "forecast": "0.8%",
+    "previous": "0.5%"
+  }
+]

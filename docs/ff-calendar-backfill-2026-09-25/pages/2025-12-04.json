@@ -1,0 +1,109 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "49.7",
+    "forecast": "48.9",
+    "previous": "48.2"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "39.4",
+    "forecast": "44.5",
+    "previous": "44.1"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "5:01am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.38|2.3",
+    "forecast": "",
+    "previous": "3.43|2.1"
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "23.5%",
+    "forecast": "",
+    "previous": "175.3%"
+  },
+  {
+    "time": "7:45am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "191K",
+    "forecast": "219K",
+    "previous": "218K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Ivey PMI",
+    "actual": "48.4",
+    "forecast": "53.6",
+    "previous": "52.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Factory Orders m/m",
+    "actual": "0.2%",
+    "forecast": "",
+    "previous": "1.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-12B",
+    "forecast": "-18B",
+    "previous": "-11B"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-3.0%",
+    "forecast": "1.1%",
+    "previous": "1.8%"
+  }
+]

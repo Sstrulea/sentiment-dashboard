@@ -1,0 +1,109 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "0.3%",
+    "forecast": "1.1%",
+    "previous": "-3.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Trade Balance",
+    "actual": "20.4B",
+    "forecast": "17.9B",
+    "previous": "17.7B"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "0.7%",
+    "forecast": "0.0%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "EUR",
+    "title": "Sentix Investor Confidence",
+    "actual": "-15.8",
+    "forecast": "-15.5",
+    "previous": "-16.8"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "12:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Bostic Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "Consumer Credit m/m",
+    "actual": "23.8B",
+    "forecast": "8.9B",
+    "previous": "5.8B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "2.1%",
+    "forecast": "2.1%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-2.9%",
+    "forecast": "-2.2%",
+    "previous": "-2.5%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Retail Sales Monitor y/y",
+    "actual": "1.9%",
+    "forecast": "2.3%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Retail Sales m/m",
+    "actual": "2.0%",
+    "forecast": "1.2%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "1.6%",
+    "forecast": "-1.9%",
+    "previous": "7.2%"
+  }
+]

@@ -1043,5 +1043,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-24T22:33:01+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "chf_snb_interest_rate_decision",
+  "currency": "CHF",
+  "indicator_key": "interest_rate_decision",
+  "datetime_utc": "2026-09-24 07:30:00",
+  "actual": 0.0,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-09-25T00:00:00+00:00",
+  "note": "SNB monetary policy statement 2026-09-24: 'leaving the SNB policy rate unchanged at 0%' https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260924"
  }
 ]

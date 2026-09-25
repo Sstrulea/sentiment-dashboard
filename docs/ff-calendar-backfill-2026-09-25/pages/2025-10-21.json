@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "CHF",
+    "title": "Trade Balance",
+    "actual": "4.07B",
+    "forecast": "5.22B",
+    "previous": "3.88B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "20.2B",
+    "forecast": "20.7B",
+    "previous": "15.3B"
+  },
+  {
+    "time": "5:02am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "5.29|3.2",
+    "forecast": "",
+    "previous": "5.48|3.1"
+  },
+  {
+    "time": "7:00am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "0.1%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "3.2%",
+    "forecast": "3.0%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "3.1%",
+    "forecast": "3.0%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "2.7%",
+    "forecast": "2.6%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "0.2%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:38pm",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "-1.4%",
+    "forecast": "",
+    "previous": "-1.6%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Trade Balance",
+    "actual": "-0.31T",
+    "forecast": "-0.11T",
+    "previous": "-0.17T"
+  }
+]

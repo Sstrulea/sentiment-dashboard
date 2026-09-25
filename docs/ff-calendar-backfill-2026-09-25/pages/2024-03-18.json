@@ -1,0 +1,85 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "3.1%",
+    "forecast": "3.1%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.6%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "28.1B",
+    "forecast": "14.2B",
+    "previous": "14.3B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "IPPI m/m",
+    "actual": "0.7%",
+    "forecast": "0.0%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "RMPI m/m",
+    "actual": "2.1%",
+    "forecast": "0.8%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "51",
+    "forecast": "48",
+    "previous": "48"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "AUD",
+    "title": "Cash Rate",
+    "actual": "4.35%",
+    "forecast": "4.35%",
+    "previous": "4.35%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "AUD",
+    "title": "RBA Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:36pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.10%",
+    "forecast": "-0.10%",
+    "previous": "-0.10%"
+  },
+  {
+    "time": "11:36pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

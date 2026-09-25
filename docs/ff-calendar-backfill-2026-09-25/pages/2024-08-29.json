@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "36.7",
+    "forecast": "36.9",
+    "previous": "36.7"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash CPI y/y",
+    "actual": "2.2%",
+    "forecast": "2.4%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "5:14am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "3.68|1.6",
+    "forecast": "",
+    "previous": "3.76|1.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Current Account",
+    "actual": "-8.5B",
+    "forecast": "-6.0B",
+    "previous": "-5.4B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP q/q",
+    "actual": "3.0%",
+    "forecast": "2.8%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "231K",
+    "forecast": "232K",
+    "previous": "233K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP Price Index q/q",
+    "actual": "2.5%",
+    "forecast": "2.3%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Goods Trade Balance",
+    "actual": "-102.7B",
+    "forecast": "-97.7B",
+    "previous": "-96.6B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Wholesale Inventories m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-5.5%",
+    "forecast": "0.2%",
+    "previous": "4.8%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "35B",
+    "forecast": "33B",
+    "previous": "35B"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "CHF",
+    "title": "SNB Chairman Jordan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "26.2%",
+    "forecast": "",
+    "previous": "-17.0%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "2.4%",
+    "forecast": "2.2%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.7%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "2.8%",
+    "forecast": "3.6%",
+    "previous": "-4.2%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "2.6%",
+    "forecast": "2.8%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Retail Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.3%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "0.6%"
+  }
+]

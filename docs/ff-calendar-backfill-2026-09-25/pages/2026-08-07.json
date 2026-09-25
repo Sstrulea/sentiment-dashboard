@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Leading Indicators",
+    "actual": "116.4%",
+    "forecast": "116.5%",
+    "previous": "116.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Industrial Production m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Trade Balance",
+    "actual": "15.4B",
+    "forecast": "17.2B",
+    "previous": "19.3B"
+  },
+  {
+    "time": "2:03am",
+    "currency": "GBP",
+    "title": "Lloyds HPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Trade Balance",
+    "actual": "-5.8B",
+    "forecast": "-6.5B",
+    "previous": "-7.7B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Foreign Currency Reserves",
+    "actual": "768B",
+    "forecast": "",
+    "previous": "759B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "SECO Consumer Climate",
+    "actual": "-35",
+    "forecast": "-34",
+    "previous": "-36"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Employment Change",
+    "actual": "75.1K",
+    "forecast": "17.8K",
+    "previous": "18.2K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Unemployment Rate",
+    "actual": "6.4%",
+    "forecast": "6.5%",
+    "previous": "6.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Average Hourly Earnings m/m",
+    "actual": "0.1%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Non-Farm Employment Change",
+    "actual": "-23K",
+    "forecast": "85K",
+    "previous": "20K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Rate",
+    "actual": "4.1%",
+    "forecast": "4.2%",
+    "previous": "4.2%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Ivey PMI",
+    "actual": "55.1",
+    "forecast": "55.4",
+    "previous": "56.2"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "Consumer Credit m/m",
+    "actual": "14.2B",
+    "forecast": "11.4B",
+    "previous": "-1.1B"
+  }
+]

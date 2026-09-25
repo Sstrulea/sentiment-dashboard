@@ -1,0 +1,37 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "4:45pm",
+  "currency": "NZD",
+  "title": "Retail Sales q/q",
+  "actual": "0.9%",
+  "forecast": "0.6%",
+  "previous": "1.9%"
+ },
+ {
+  "time": "4:45pm",
+  "currency": "NZD",
+  "title": "Core Retail Sales q/q",
+  "actual": "1.5%",
+  "forecast": "0.4%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "All Day",
+  "currency": "JPY",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "9:00pm",
+  "currency": "NZD",
+  "title": "Credit Card Spending y/y",
+  "actual": "1.0%",
+  "forecast": "",
+  "previous": "-0.2%"
+ }
+]

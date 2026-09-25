@@ -1,0 +1,61 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Services Index",
+    "actual": "50.4",
+    "forecast": "",
+    "previous": "48.1"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "3.5%",
+    "forecast": "",
+    "previous": "1.3%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP Price Index y/y",
+    "actual": "2.8%",
+    "forecast": "2.8%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP q/q",
+    "actual": "0.7%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "Rightmove HPI m/m",
+    "actual": "0.5%",
+    "forecast": "",
+    "previous": "1.7%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "-0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.3%"
+  }
+]

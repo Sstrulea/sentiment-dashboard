@@ -230,3 +230,24 @@ def test_scope_does_not_reintroduce_purged_cross_country_pmi_contamination():
         f"archive backfill reintroduced cross-country PMI contamination: "
         f"{recontaminated.to_dict('records')}"
     )
+
+
+def test_scope_skips_a_tombstoned_row(tmp_path):
+    """A row a migration deliberately deleted (data/ff_tombstones.csv) is absent
+    from the parquet but NOT missing: the archive still carries it, and a
+    re-scan must not bring it back. Same (canonical_id, release date)
+    granularity as the presence test."""
+    archive_path = _write_archive(tmp_path, [TRIMMED_0107, TRIMMED_0128])
+    parquet_path = _write_parquet(tmp_path, [])
+    tomb = tmp_path / "tombstones.csv"
+    pd.DataFrame([{"canonical_id": TRIMMED_CID, "datetime_utc": "2026-01-07 00:30:00",
+                   "reason": "test", "source": "test"}]).to_csv(tomb, index=False)
+
+    recoverable = scope_recoverable_rows(archive_path, parquet_path, now_utc=NOW,
+                                         tombstones_path=tomb)
+    assert len(recoverable) == 1
+    assert recoverable.iloc[0]["datetime_utc"] == pd.Timestamp("2026-01-28 00:30:00")
+
+    no_tomb = scope_recoverable_rows(archive_path, parquet_path, now_utc=NOW,
+                                     tombstones_path=tmp_path / "absent.csv")
+    assert len(no_tomb) == 2

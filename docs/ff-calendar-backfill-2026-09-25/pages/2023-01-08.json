@@ -1,0 +1,29 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "MPC Member Pill Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "JPY",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "-9.0%",
+    "forecast": "0.1%",
+    "previous": "-5.6%"
+  }
+]

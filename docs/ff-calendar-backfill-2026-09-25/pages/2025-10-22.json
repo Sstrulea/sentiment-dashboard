@@ -1,0 +1,37 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "Aug Data",
+  "currency": "GBP",
+  "title": "PPI Output m/m",
+  "actual": "0.1%",
+  "forecast": "",
+  "previous": "0.6%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "CPI y/y",
+  "actual": "3.8%",
+  "forecast": "4.0%",
+  "previous": "3.8%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Core CPI y/y",
+  "actual": "3.5%",
+  "forecast": "3.7%",
+  "previous": "3.6%"
+ },
+ {
+  "time": "2:05am",
+  "currency": "GBP",
+  "title": "PPI Output m/m",
+  "actual": "0.0%",
+  "forecast": "0.2%",
+  "previous": "0.1%"
+ }
+]

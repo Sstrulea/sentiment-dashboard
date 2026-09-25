@@ -1,0 +1,317 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "35.5",
+    "forecast": "35.3",
+    "previous": "34.9"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-3.4%",
+    "forecast": "0.4%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "15.5%",
+    "forecast": "",
+    "previous": "17.2%"
+  },
+  {
+    "time": "2:33am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "2.3%",
+    "forecast": "1.6%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Manufacturing PMI",
+    "actual": "49.5",
+    "forecast": "50.3",
+    "previous": "50.2"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "57.1",
+    "forecast": "54.1",
+    "previous": "53.2"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Manufacturing PMI",
+    "actual": "49.6",
+    "forecast": "51.4",
+    "previous": "51.3"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Manufacturing PMI",
+    "actual": "51.1",
+    "forecast": "51.5",
+    "previous": "51.5"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Manufacturing PMI",
+    "actual": "54.3",
+    "forecast": "54.1",
+    "previous": "54.1"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Manufacturing PMI",
+    "actual": "52.7",
+    "forecast": "52.8",
+    "previous": "52.8"
+  },
+  {
+    "time": "4:30am",
+    "currency": "EUR",
+    "title": "Italian Monthly Unemployment Rate",
+    "actual": "5.8%",
+    "forecast": "5.6%",
+    "previous": "5.8%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Manufacturing PMI",
+    "actual": "51.7",
+    "forecast": "51.5",
+    "previous": "51.5"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "M4 Money Supply m/m",
+    "actual": "-0.3%",
+    "forecast": "0.9%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Mortgage Approvals",
+    "actual": "56K",
+    "forecast": "59K",
+    "previous": "58K"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Net Lending to Individuals m/m",
+    "actual": "6.3B",
+    "forecast": "7.2B",
+    "previous": "9.5B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.4%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "3.3%",
+    "forecast": "3.3%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Unemployment Rate",
+    "actual": "6.4%",
+    "forecast": "6.3%",
+    "previous": "6.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:05am",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "CAD",
+    "title": "Manufacturing PMI",
+    "actual": "53.0",
+    "forecast": "",
+    "previous": "53.5"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Manufacturing PMI",
+    "actual": "53.9",
+    "forecast": "53.3",
+    "previous": "53.2"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing PMI",
+    "actual": "54.6",
+    "forecast": "55.2",
+    "previous": "55.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing Prices",
+    "actual": "71.1",
+    "forecast": "70.5",
+    "previous": "71.1"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "7.27M",
+    "forecast": "7.33M",
+    "previous": "7.18M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "-0.5%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "10:04am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "45.6",
+    "forecast": "46.2",
+    "previous": "45.1"
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "16.8M",
+    "forecast": "16.3M",
+    "previous": "16.3M"
+  },
+  {
+    "time": "11:25am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "0.9%",
+    "forecast": "",
+    "previous": "2.3%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "-4.3%",
+    "forecast": "",
+    "previous": "-3.7%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Monetary Base y/y",
+    "actual": "-15.7%",
+    "forecast": "-13.5%",
+    "previous": "-13.8%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "GDP q/q",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "Official Cash Rate",
+    "actual": "2.75%",
+    "forecast": "2.75%",
+    "previous": "2.50%"
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:00pm",
+    "currency": "NZD",
+    "title": "RBNZ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

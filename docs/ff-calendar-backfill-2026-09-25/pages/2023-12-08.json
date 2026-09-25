@@ -1,0 +1,101 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "Economy Watchers Sentiment",
+    "actual": "49.5",
+    "forecast": "49.0",
+    "previous": "49.5"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final CPI m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.4%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Consumer Inflation Expectations",
+    "actual": "3.3%",
+    "forecast": "",
+    "previous": "3.6%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Capacity Utilization Rate",
+    "actual": "79.7%",
+    "forecast": "81.4%",
+    "previous": "79.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Average Hourly Earnings m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Non-Farm Employment Change",
+    "actual": "199K",
+    "forecast": "184K",
+    "previous": "150K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Rate",
+    "actual": "3.7%",
+    "forecast": "3.9%",
+    "previous": "3.9%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "69.4",
+    "forecast": "62.0",
+    "previous": "61.3"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "3.1%",
+    "forecast": "",
+    "previous": "4.5%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "CNY",
+    "title": "CPI y/y",
+    "actual": "-0.5%",
+    "forecast": "-0.2%",
+    "previous": "-0.2%"
+  }
+]

@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "37.2",
+    "forecast": "37.8",
+    "previous": "37.5"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "5.6%",
+    "forecast": "-0.9%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "2:02am",
+    "currency": "GBP",
+    "title": "Lloyds HPI m/m",
+    "actual": "-0.6%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Trade Balance",
+    "actual": "-4.2B",
+    "forecast": "-4.3B",
+    "previous": "-3.5B"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Summary of Monetary Policy Discussions",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Monthly Unemployment Rate",
+    "actual": "5.7%",
+    "forecast": "6.0%",
+    "previous": "5.8%"
+  },
+  {
+    "time": "4:59am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.53|2.0",
+    "forecast": "",
+    "previous": "3.38|2.3"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "PPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.4%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Unemployment Rate",
+    "actual": "6.3%",
+    "forecast": "6.4%",
+    "previous": "6.4%"
+  },
+  {
+    "time": "5:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "-8.3%",
+    "forecast": "",
+    "previous": "23.5%"
+  },
+  {
+    "time": "8:00am",
+    "currency": "USD",
+    "title": "FOMC Member Miran Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "-0.6B",
+    "forecast": "-1.4B",
+    "previous": "0.2B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "208K",
+    "forecast": "213K",
+    "previous": "200K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Goods Trade Balance",
+    "actual": "-59.1B",
+    "forecast": "",
+    "previous": "-78.3B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Nonfarm Productivity q/q",
+    "actual": "4.9%",
+    "forecast": "4.9%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Unit Labor Costs q/q",
+    "actual": "-1.9%",
+    "forecast": "0.0%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-29.4B",
+    "forecast": "-58.1B",
+    "previous": "-48.1B"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-119B",
+    "forecast": "-109B",
+    "previous": "-38B"
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "Consumer Credit m/m",
+    "actual": "4.2B",
+    "forecast": "10.1B",
+    "previous": "9.2B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "2.9%",
+    "forecast": "-1.0%",
+    "previous": "-3.0%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "CNY",
+    "title": "CPI y/y",
+    "actual": "0.8%",
+    "forecast": "0.8%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "CNY",
+    "title": "PPI y/y",
+    "actual": "-1.9%",
+    "forecast": "-2.0%",
+    "previous": "-2.2%"
+  }
+]

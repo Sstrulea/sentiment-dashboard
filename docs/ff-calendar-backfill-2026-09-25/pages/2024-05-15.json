@@ -1,0 +1,229 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.5%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "EU Economic Forecasts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash Employment Change q/q",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "0.6%",
+    "forecast": "0.5%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "4.07|3.5",
+    "forecast": "",
+    "previous": "4.37|3.1"
+  },
+  {
+    "time": "5:33am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "2.62|3.1",
+    "forecast": "",
+    "previous": "2.62|3.2"
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "240K",
+    "forecast": "239K",
+    "previous": "242K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-2.1%",
+    "forecast": "-2.4%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI y/y",
+    "actual": "3.6%",
+    "forecast": "3.6%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI y/y",
+    "actual": "3.4%",
+    "forecast": "3.4%",
+    "previous": "3.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-15.6",
+    "forecast": "-9.9",
+    "previous": "-14.3"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.4%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "45",
+    "forecast": "51",
+    "previous": "51"
+  },
+  {
+    "time": "10:30am",
+    "currency": "AUD",
+    "title": "CB Leading Index m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-2.5M",
+    "forecast": "-0.4M",
+    "previous": "-1.4M"
+  },
+  {
+    "time": "3:20pm",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "100.5B",
+    "forecast": "89.3B",
+    "previous": "62.9B"
+  },
+  {
+    "time": "7:40pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Hunter Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP q/q",
+    "actual": "-0.5%",
+    "forecast": "-0.3%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP Price Index y/y",
+    "actual": "3.6%",
+    "forecast": "3.3%",
+    "previous": "3.9%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "38.5K",
+    "forecast": "22.4K",
+    "previous": "-5.9K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.1%",
+    "forecast": "3.9%",
+    "previous": "3.9%"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "97.8",
+    "forecast": "96.9",
+    "previous": "97.2"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash CPI y/y",
+    "actual": "3.1%",
+    "forecast": "3.2%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "46.9",
+    "forecast": "50.1",
+    "previous": "55.8"
+  }
+]

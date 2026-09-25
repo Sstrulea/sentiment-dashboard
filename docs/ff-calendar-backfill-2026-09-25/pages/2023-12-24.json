@@ -1,0 +1,29 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "NZD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "AUD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:00pm",
+    "currency": "JPY",
+    "title": "BOJ Gov Ueda Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

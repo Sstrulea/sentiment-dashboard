@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "Cash Rate",
+    "actual": "4.35%",
+    "forecast": "4.35%",
+    "previous": "4.35%"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "RBA Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "RBA Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30am",
+    "currency": "AUD",
+    "title": "RBA Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:45am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "3.9%",
+    "forecast": "0.4%",
+    "previous": "-1.7%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "-2.2%",
+    "forecast": "0.5%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim Private Payrolls q/q",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "55.3",
+    "forecast": "52.5",
+    "previous": "52.2"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "0.6B",
+    "forecast": "-2.0B",
+    "previous": "-1.6B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-73.1B",
+    "forecast": "-72.5B",
+    "previous": "-75.0B"
+  },
+  {
+    "time": "10:05am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "44.5",
+    "forecast": "45.0",
+    "previous": "44.2"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Employment Change q/q",
+    "actual": "0.4%",
+    "forecast": "-0.2%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Unemployment Rate",
+    "actual": "4.6%",
+    "forecast": "4.7%",
+    "previous": "4.4%"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Labor Cost Index q/q",
+    "actual": "0.9%",
+    "forecast": "0.8%",
+    "previous": "0.8%"
+  }
+]

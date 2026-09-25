@@ -1,0 +1,125 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "12:00am",
+  "currency": "JPY",
+  "title": "BOJ Core CPI y/y",
+  "actual": "1.7%",
+  "forecast": "1.8%",
+  "previous": "1.9%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German Final GDP q/q",
+  "actual": "0.3%",
+  "forecast": "0.3%",
+  "previous": "0.3%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German GfK Consumer Climate",
+  "actual": "-24.7",
+  "forecast": "-23.0",
+  "previous": "-24.2"
+ },
+ {
+  "time": "3:40am",
+  "currency": "AUD",
+  "title": "RBA Gov Bullock Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "4:00am",
+  "currency": "CHF",
+  "title": "UBS Economic Expectations",
+  "actual": "9.8",
+  "forecast": "",
+  "previous": "-4.7"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Final Core CPI y/y",
+  "actual": "2.2%",
+  "forecast": "2.2%",
+  "previous": "2.2%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Final CPI y/y",
+  "actual": "1.7%",
+  "forecast": "1.7%",
+  "previous": "1.7%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Corporate Profits q/q",
+  "actual": "-1.6%",
+  "forecast": "",
+  "previous": "7.6%"
+ },
+ {
+  "time": "9:30am",
+  "currency": "USD",
+  "title": "FOMC Member Barkin Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Crude Oil Inventories",
+  "actual": "16.0M",
+  "forecast": "1.8M",
+  "previous": "-9.0M"
+ },
+ {
+  "time": "11:00am",
+  "currency": "USD",
+  "title": "FOMC Member Schmid Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "1:20pm",
+  "currency": "USD",
+  "title": "FOMC Member Musalem Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "7:00pm",
+  "currency": "NZD",
+  "title": "ANZ Business Confidence",
+  "actual": "59.2",
+  "forecast": "",
+  "previous": "64.1"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "Private Capital Expenditure q/q",
+  "actual": "0.4%",
+  "forecast": "-0.1%",
+  "previous": "6.4%"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "RBA Bulletin",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

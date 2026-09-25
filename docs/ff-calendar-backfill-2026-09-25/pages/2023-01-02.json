@@ -1,0 +1,93 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "All Day",
+  "currency": "CHF",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "All Day",
+  "currency": "GBP",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "3:15am",
+  "currency": "EUR",
+  "title": "Spanish Manufacturing PMI",
+  "actual": "46.4",
+  "forecast": "45.9",
+  "previous": "45.7"
+ },
+ {
+  "time": "3:45am",
+  "currency": "EUR",
+  "title": "Italian Manufacturing PMI",
+  "actual": "48.5",
+  "forecast": "48.5",
+  "previous": "48.4"
+ },
+ {
+  "time": "3:50am",
+  "currency": "EUR",
+  "title": "French Final Manufacturing PMI",
+  "actual": "49.2",
+  "forecast": "48.9",
+  "previous": "48.9"
+ },
+ {
+  "time": "3:55am",
+  "currency": "EUR",
+  "title": "German Final Manufacturing PMI",
+  "actual": "47.1",
+  "forecast": "47.4",
+  "previous": "47.4"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Final Manufacturing PMI",
+  "actual": "47.8",
+  "forecast": "47.8",
+  "previous": "47.8"
+ },
+ {
+  "time": "All Day",
+  "currency": "CAD",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "All Day",
+  "currency": "USD",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "All Day",
+  "currency": "NZD",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "All Day",
+  "currency": "JPY",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

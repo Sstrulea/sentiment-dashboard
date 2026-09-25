@@ -1,0 +1,125 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "Nov Data",
+  "currency": "GBP",
+  "title": "PPI Input m/m",
+  "actual": "-0.2%",
+  "forecast": "",
+  "previous": "0.9%"
+ },
+ {
+  "time": "Nov Data",
+  "currency": "GBP",
+  "title": "PPI Output m/m",
+  "actual": "-0.1%",
+  "forecast": "",
+  "previous": "0.9%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "PPI Input m/m",
+  "actual": "-1.1%",
+  "forecast": "-0.8%",
+  "previous": "-0.2%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "PPI Output m/m",
+  "actual": "-0.8%",
+  "forecast": "0.1%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "CHF",
+  "title": "UBS Economic Expectations",
+  "actual": "-40.0",
+  "forecast": "",
+  "previous": "-42.8"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "German ifo Business Climate",
+  "actual": "90.2",
+  "forecast": "90.2",
+  "previous": "88.6"
+ },
+ {
+  "time": "8:58am",
+  "currency": "EUR",
+  "title": "Belgian NBB Business Climate",
+  "actual": "-13.5",
+  "forecast": "-12.0",
+  "previous": "-13.6"
+ },
+ {
+  "time": "10:00am",
+  "currency": "CAD",
+  "title": "BOC Monetary Policy Report",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "10:00am",
+  "currency": "CAD",
+  "title": "BOC Rate Statement",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "10:00am",
+  "currency": "CAD",
+  "title": "Overnight Rate",
+  "actual": "4.50%",
+  "forecast": "4.50%",
+  "previous": "4.25%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Crude Oil Inventories",
+  "actual": "0.5M",
+  "forecast": "1.2M",
+  "previous": "8.4M"
+ },
+ {
+  "time": "11:00am",
+  "currency": "CAD",
+  "title": "BOC Press Conference",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "All Day",
+  "currency": "AUD",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "BOJ Summary of Opinions",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "SPPI y/y",
+  "actual": "1.5%",
+  "forecast": "1.6%",
+  "previous": "1.7%"
+ }
+]

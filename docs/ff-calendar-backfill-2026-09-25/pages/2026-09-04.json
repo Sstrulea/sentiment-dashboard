@@ -1,0 +1,93 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "2.5%",
+    "forecast": "0.3%",
+    "previous": "3.7%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Retail Sales m/m",
+    "actual": "-0.4%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "44.3",
+    "forecast": "45.8",
+    "previous": "44.7"
+  },
+  {
+    "time": "4:50am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.6%",
+    "forecast": "0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Employment Change",
+    "actual": "-41.7K",
+    "forecast": "15.1K",
+    "previous": "75.1K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Unemployment Rate",
+    "actual": "6.4%",
+    "forecast": "6.4%",
+    "previous": "6.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Average Hourly Earnings m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Non-Farm Employment Change",
+    "actual": "162K",
+    "forecast": "55K",
+    "previous": "21K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Rate",
+    "actual": "4.1%",
+    "forecast": "4.1%",
+    "previous": "4.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Ivey PMI",
+    "actual": "64.3",
+    "forecast": "56.2",
+    "previous": "55.1"
+  }
+]

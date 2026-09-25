@@ -1,0 +1,189 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.5%",
+    "forecast": "0.1%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "SECO Economic Forecasts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "0.8%",
+    "forecast": "0.7%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "254K",
+    "forecast": "248K",
+    "previous": "232K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "2.8%",
+    "forecast": "2.9%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "2.8%",
+    "forecast": "2.9%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "2.8%",
+    "forecast": "2.8%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-1.0%",
+    "forecast": "-1.0%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-3.9",
+    "forecast": "9.8",
+    "previous": "18.7"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "USD",
+    "title": "FOMC Member Miran Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "39",
+    "forecast": "39",
+    "previous": "38"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "FOMC Member Miran Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "-0.4%",
+    "forecast": "",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "52.2",
+    "forecast": "",
+    "previous": "51.6"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "Flash Services PMI",
+    "actual": "51.0",
+    "forecast": "",
+    "previous": "52.8"
+  },
+  {
+    "time": "5:15pm",
+    "currency": "AUD",
+    "title": "RBA Assist Gov Jones Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00pm",
+    "currency": "AUD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "-9.0%",
+    "forecast": "",
+    "previous": "12.8%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "49.7",
+    "forecast": "49.0",
+    "previous": "48.7"
+  }
+]

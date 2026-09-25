@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "RBA Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "1.7%",
+    "forecast": "0.9%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "German ZEW Economic Sentiment",
+    "actual": "-0.5",
+    "forecast": "39.0",
+    "previous": "58.3"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "ZEW Economic Sentiment",
+    "actual": "-8.5",
+    "forecast": "26.5",
+    "previous": "39.4"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "9.0K",
+    "forecast": "",
+    "previous": "14.8K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "1.8%",
+    "forecast": "-0.6%",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "10:25am",
+    "currency": "AUD",
+    "title": "CB Leading Index m/m",
+    "actual": "0.2%",
+    "forecast": "",
+    "previous": "0.3%"
+  },
+  {
+    "time": "11:15am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:18am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "5.7%"
+  },
+  {
+    "time": "3:05pm",
+    "currency": "NZD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "94.7",
+    "forecast": "",
+    "previous": "96.5"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:45pm",
+    "currency": "NZD",
+    "title": "Current Account",
+    "actual": "-5.98B",
+    "forecast": "-4.78B",
+    "previous": "-8.36B"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Trade Balance",
+    "actual": "-0.37T",
+    "forecast": "-0.62T",
+    "previous": "0.50T"
+  }
+]
