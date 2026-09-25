@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-25T08:14:51.598318",
+ "as_of": "2026-09-25T09:12:27.558849",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -42,7 +42,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 29,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "gbp_ppi_output",
@@ -80,7 +80,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 41,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_prelim_unit_labor_costs",
@@ -194,7 +194,7 @@
      "threshold": 18.3434,
      "n_revision_pairs": 43,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -517,7 +517,7 @@
      "threshold": 9.85604,
      "n_revision_pairs": 42,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -536,7 +536,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 41,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "nzd_retail_sales",
@@ -574,7 +574,7 @@
      "threshold": 9.85604,
      "n_revision_pairs": 42,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_nonfarm_payrolls",
@@ -612,7 +612,7 @@
      "threshold": 1.28956,
      "n_revision_pairs": 42,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -897,7 +897,7 @@
      "threshold": 1.18956,
      "n_revision_pairs": 13,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "nzd_gdp",
@@ -1182,7 +1182,7 @@
      "threshold": 3.00151,
      "n_revision_pairs": 44,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "jpy_prelim_gdp_price_index",
@@ -1410,7 +1410,7 @@
      "threshold": 1.46195,
      "n_revision_pairs": 42,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -1619,7 +1619,7 @@
      "threshold": 0.2,
      "n_revision_pairs": 41,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_import_prices",
@@ -1823,7 +1823,7 @@
      "level": "INFO",
      "known_gap": "us_shutdown_2025",
      "reason": "US federal government shutdown 2025-10-01..11-12: BLS/BEA/Census releases were not published on schedule",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -1907,7 +1907,7 @@
      "level": "INFO",
      "known_gap": "us_shutdown_2025",
      "reason": "US federal government shutdown 2025-10-01..11-12: BLS/BEA/Census releases were not published on schedule",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -1963,7 +1963,7 @@
      "level": "INFO",
      "known_gap": "us_shutdown_2025",
      "reason": "US federal government shutdown 2025-10-01..11-12: BLS/BEA/Census releases were not published on schedule",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -2033,7 +2033,7 @@
      "level": "INFO",
      "known_gap": "us_shutdown_2025",
      "reason": "US federal government shutdown 2025-10-01..11-12: BLS/BEA/Census releases were not published on schedule",
-     "new": true
+     "new": false
     },
     {
      "check": "missing_release",
@@ -2089,7 +2089,7 @@
      "level": "INFO",
      "known_gap": "us_shutdown_2025",
      "reason": "US federal government shutdown 2025-10-01..11-12: BLS/BEA/Census releases were not published on schedule",
-     "new": true
+     "new": false
     }
    ]
   }
@@ -2108,5 +2108,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-09-25T08:14:54+00:00"
+ "generated_at": "2026-09-25T09:12:36+00:00"
 }
