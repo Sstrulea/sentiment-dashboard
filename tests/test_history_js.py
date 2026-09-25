@@ -22,3 +22,10 @@ JS_TEST = ROOT / "tests" / "history_js" / "test_resolve_entry.cjs"
 def test_history_js_resolve_entry():
     result = subprocess.run(["node", str(JS_TEST)], cwd=ROOT, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_history_js_tooltip_lines():
+    js_test = ROOT / "tests" / "history_js" / "test_tooltip_lines.cjs"
+    result = subprocess.run(["node", str(js_test)], cwd=ROOT, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"

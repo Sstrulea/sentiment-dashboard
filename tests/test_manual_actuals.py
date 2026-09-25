@@ -16,7 +16,7 @@ from src.ff_scoring import SCORING_COLUMNS, build_matcher, load_can_be_zero
 from src.manual_actuals import (MISSING, RELEVANCE_WINDOW, RESULT_COLUMNS,
                                 ZERO_CONFIRM, apply_overrides,
                                 apply_relevance_window, find_actionable_rows,
-                                load_overrides)
+                                load_overrides, supersede_by_overrides)
 
 NOW = pd.Timestamp("2026-08-11 12:00:00")
 
@@ -631,3 +631,75 @@ def test_r4_aud_import_prices_2026_07_30_override_applies_while_row_is_zero():
                              "actual_origin": "ff"} for dt in ("2026-07-30 00:30", "2026-07-30 01:30")])
     cal = zero_beside_real_value(pd.concat([ff_rows, manual], ignore_index=True))
     assert cal.loc[cal["source"] == "ff", "actual"].isna().all()
+
+
+# ---- supersede_by_overrides: one publication = one row (/history) ----------
+
+def _scored(ccy, ik, dt, actual, name_raw, origin="ff"):
+    return {"currency": ccy, "indicator_key": ik, "release_dt": pd.Timestamp(dt), "actual": actual,
+            "consensus": 1.0, "previous": float("nan"), "source": "ff", "name_raw": name_raw,
+            "actual_origin": origin, "publication": None}
+
+
+def _manual(ccy, ik, dt, actual, name_raw):
+    return {**_scored(ccy, ik, dt, actual, name_raw), "source": "manual", "actual_origin": None}
+
+
+def _sframe(rows):
+    return pd.DataFrame(rows, columns=SCORING_COLUMNS)
+
+
+def test_supersede_drops_a_recovered_feed_row_at_the_override_key():
+    ff = _frame([_row("USD", "CPI y/y", "2026-07-14 12:30", 0.0, canonical_id="usd_cpi")])
+    scored = _sframe([_scored("USD", "cpi_yoy", "2026-07-14 12:30", 2.9, "CPI y/y", origin="ff_previous")])
+    manual = _sframe([_manual("USD", "cpi_yoy", "2026-07-14 12:30", 2.7, "CPI y/y")])
+    out, kept = supersede_by_overrides(scored, manual, ff, matcher=MATCHER)
+    assert out.empty
+    assert len(kept) == 1 and kept.iloc[0]["actual"] == 2.7
+
+
+def test_supersede_drops_every_listing_of_the_targeted_publication():
+    # one publication listed twice, 1h apart (identical 0.0 placeholders); the
+    # display dedup kept 00:30, the override was entered against 01:30
+    ff = _frame([_row("USD", "CPI y/y", "2026-07-14 00:30", 0.0, canonical_id="usd_cpi"),
+                 _row("USD", "CPI y/y", "2026-07-14 01:30", 0.0, canonical_id="usd_cpi")])
+    scored = _sframe([_scored("USD", "cpi_yoy", "2026-07-14 00:30", 0.0, "CPI y/y")])
+    manual = _sframe([_manual("USD", "cpi_yoy", "2026-07-14 01:30", 2.7, "CPI y/y")])
+    out, kept = supersede_by_overrides(scored, manual, ff, matcher=MATCHER)
+    assert out.empty
+    assert len(kept) == 1
+
+
+def test_supersede_retires_the_override_when_the_publication_has_a_real_print():
+    ff = _frame([_row("USD", "CPI y/y", "2026-07-14 12:30", 0.0, canonical_id="usd_cpi"),
+                 _row("USD", "CPI y/y", "2026-07-14 13:30", 3.1, canonical_id="usd_cpi")])
+    scored = _sframe([_scored("USD", "cpi_yoy", "2026-07-14 12:30", 0.0, "CPI y/y"),
+                      _scored("USD", "cpi_yoy", "2026-07-14 13:30", 3.1, "CPI y/y")])
+    manual = _sframe([_manual("USD", "cpi_yoy", "2026-07-14 12:30", 2.7, "CPI y/y")])
+    out, kept = supersede_by_overrides(scored, manual, ff, matcher=MATCHER)
+    assert len(out) == 2
+    assert kept.empty
+
+
+def test_supersede_leaves_other_publications_and_other_series_alone():
+    ff = _frame([_row("USD", "CPI y/y", "2026-07-14 12:30", 0.0, canonical_id="usd_cpi"),
+                 _row("USD", "CPI y/y", "2026-08-12 12:30", 2.8, canonical_id="usd_cpi"),
+                 _row("USD", "Retail Sales m/m", "2026-07-14 12:30", 0.4, canonical_id="usd_retail")])
+    scored = _sframe([_scored("USD", "cpi_yoy", "2026-07-14 12:30", 0.0, "CPI y/y"),
+                      _scored("USD", "cpi_yoy", "2026-08-12 12:30", 2.8, "CPI y/y"),
+                      _scored("USD", "retail_sales", "2026-07-14 12:30", 0.4, "Retail Sales m/m")])
+    manual = _sframe([_manual("USD", "cpi_yoy", "2026-07-14 12:30", 2.7, "CPI y/y")])
+    out, kept = supersede_by_overrides(scored, manual, ff, matcher=MATCHER)
+    assert sorted(zip(out["indicator_key"], out["release_dt"].astype(str))) == [
+        ("cpi_yoy", "2026-08-12 12:30:00"), ("retail_sales", "2026-07-14 12:30:00")]
+    assert len(kept) == 1
+
+
+def test_supersede_drops_the_exact_key_even_without_the_ff_row():
+    ff = _frame([_row("USD", "Retail Sales m/m", "2026-07-14 12:30", 0.4, canonical_id="usd_retail")])
+    scored = _sframe([_scored("USD", "cpi_yoy", "2026-07-14 12:30", 2.9, "CPI y/y", origin="ff_previous"),
+                      _scored("USD", "retail_sales", "2026-07-14 12:30", 0.4, "Retail Sales m/m")])
+    manual = _sframe([_manual("USD", "cpi_yoy", "2026-07-14 12:30", 2.7, "CPI y/y")])
+    out, kept = supersede_by_overrides(scored, manual, ff, matcher=MATCHER)
+    assert list(out["indicator_key"]) == ["retail_sales"]
+    assert len(kept) == 1
