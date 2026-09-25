@@ -1054,5 +1054,16 @@
   "entered_by": "backfill-official",
   "entered_at": "2026-09-25T00:00:00+00:00",
   "note": "SNB monetary policy statement 2026-09-24: 'leaving the SNB policy rate unchanged at 0%' https://www.snb.ch/en/publications/communication/press-releases-restricted/pre_20260924"
+ },
+ {
+  "canonical_id": "jpy_core_cpi",
+  "currency": "JPY",
+  "indicator_key": "core_cpi",
+  "datetime_utc": "2026-09-25 05:00:00",
+  "actual": 1.8,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-25T11:37:10+00:00",
+  "note": ""
  }
 ]
