@@ -524,3 +524,40 @@ def test_build_full_frame_drops_placeholder_superseded_by_manual_override(monkey
     assert aud.iloc[0]["source"] == "manual"
     usd = out[(out["currency"] == "USD") & (out["indicator_key"] == "cpi_yoy")]
     assert len(usd) == 1, "an unrelated scored row (no override) must be untouched"
+
+
+def test_override_replaces_a_recovered_row_of_its_publication(monkeypatch):
+    """The AUD Employment 2025-10-16 shape ("override twin"): the feed row of
+    that publication holds 12.8, recovered from the next print's previous; a
+    manual override supplies the first print, 14.9. One publication = one
+    point: the override's, shown at its revised value with its source."""
+    def _s(dt, actual, forecast, previous, source="ff", origin="ff"):
+        return {"currency": "AUD", "indicator_key": "employment_change", "release_dt": pd.Timestamp(dt),
+                "actual": actual, "consensus": forecast, "previous": previous, "source": source,
+                "name_raw": "Employment Change" if source == "ff" else None,
+                "actual_origin": origin if source == "ff" else None, "publication": None}
+    scored_df = pd.DataFrame([
+        _s("2025-08-14 01:30", 24.5, 25.0, -1.0),
+        _s("2025-09-18 01:30", -5.4, 21.0, 24.5),
+        _s("2025-10-16 00:30", 12.8, 20.5, -5.4, origin="ff_previous"),
+        _s("2025-11-13 00:30", 42.2, 20.0, 12.8),
+    ])
+    manual_df = pd.DataFrame([_s("2025-10-16 00:30", 14.9, 20.5, -5.4, source="manual")])
+    overrides = [{"canonical_id": "aud_employment_change", "currency": "AUD",
+                  "indicator_key": "employment_change", "datetime_utc": "2025-10-16 00:30:00",
+                  "actual": 14.9, "note": "ABS Labour Force Sep 2025 https://www.abs.gov.au/statistics/labour"}]
+
+    monkeypatch.setattr(hc, "_drop_display_duplicate_rows", lambda ff: ff)
+    monkeypatch.setattr(hc, "to_scoring_frame", lambda *a, **k: scored_df)
+    monkeypatch.setattr(hc, "apply_overrides", lambda *a, **k: (manual_df, pd.DataFrame()))
+
+    full = hc.build_full_frame(pd.DataFrame(), matcher=None, cbz=set(), flagged_bad=None,
+                               overrides=overrides, as_of=pd.Timestamp("2025-12-01"))
+    out = hc.compute_series_history(full, "AUD", "employment_change", hc.load_indicators_cfg(), set())
+
+    day = out[out["release_dt"].dt.strftime("%Y-%m-%d") == "2025-10-16"]
+    assert len(day) == 1, "one publication = one point"
+    p = day.iloc[0]
+    assert p["actual"] == 12.8 and p["revised_from"] == 14.9
+    assert bool(p["has_override"]) and not bool(p["recovered"])
+    assert p["source_ref"] == "abs.gov.au"

@@ -4,8 +4,9 @@ z-score/bucket `economic_compute.compute_indicator_score` would produce (called
 repeatedly, once per point in time — NOT re-implemented, see
 `_score_one_point`'s docstring for why a single call cannot serve this).
 
-Fixed order (per FAZA 1B): scoring frame -> overlay manual overrides -> mark
-quarantine. Overrides always win over quarantine — a row with
+Fixed order (per FAZA 1B): scoring frame -> overlay manual overrides (each
+override replaces every feed row of the publication it targets: one
+publication = one point) -> mark quarantine. Overrides always win over quarantine — a row with
 `source == "manual"` is never quarantined, by construction (checked before any
 quarantine-key lookup, not as a special case bolted on after).
 
@@ -20,6 +21,7 @@ from __future__ import annotations
 import gzip
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -28,7 +30,7 @@ import yaml
 
 from .economic_compute import _max_age_for, compute_indicator_score, effective_frequency
 from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, detect_cadence, load_can_be_zero, to_scoring_frame
-from .manual_actuals import apply_overrides, load_overrides
+from .manual_actuals import apply_overrides, load_overrides, supersede_by_overrides
 
 log = logging.getLogger(__name__)
 
@@ -200,6 +202,21 @@ def _drop_display_duplicate_rows(ff: pd.DataFrame) -> pd.DataFrame:
     return df.drop(columns="cal_date").reset_index(drop=True)
 
 
+_URL_HOST = re.compile(r"https?://([^/\s]+)")
+
+
+def _with_source_ref(manual_rows: pd.DataFrame, overrides: list[dict]) -> pd.DataFrame:
+    """Display-only provenance for a manual point: the host of the first URL in
+    the override's note (e.g. "bea.gov"), None when the note has no URL."""
+    ref = {}
+    for e in overrides or []:
+        m = _URL_HOST.search(str(e.get("note") or ""))
+        host = re.sub(r"^www\d*\.", "", m.group(1)) if m else None
+        ref[(e.get("currency"), e.get("indicator_key"), pd.Timestamp(e.get("datetime_utc")))] = host
+    keys = zip(manual_rows["currency"], manual_rows["indicator_key"], pd.to_datetime(manual_rows["release_dt"]))
+    return manual_rows.assign(source_ref=[ref.get(k) for k in keys])
+
+
 def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
                      overrides: list[dict], as_of: pd.Timestamp) -> pd.DataFrame:
     """scoring frame -> overlay overrides, EXACTLY the economic_render.py:1111,
@@ -224,39 +241,35 @@ def build_full_frame(ff: pd.DataFrame, matcher, cbz: set, flagged_bad: dict,
     "silently hide a real conflict" failure this phase's own dedup logic is
     supposed to avoid, just one step removed. Never repeat that: overrides
     must always see the untouched `ff`.
+
+    Display-only (one publication = one row): each override then REPLACES
+    every feed row of the publication it targets, whatever that row holds
+    (NaN, 0.0, or a value recovered from the next print's previous) — or is
+    retired itself when that publication has since received a real non-zero
+    feed print (manual_actuals.supersede_by_overrides, called with the same
+    raw `ff`). A manual row carries `source_ref`, the host of the first URL
+    in its override's note (display-only provenance).
     """
     deduped_ff = _drop_display_duplicate_rows(ff)
     scored = to_scoring_frame(deduped_ff, matcher, can_be_zero=cbz)
     manual_rows, _ = apply_overrides(ff, overrides, now_utc=as_of)
 
-    # FAZA 2D 2 — a SEPARATE placeholder-vs-real duplicate from the raw-feed
-    # one _drop_display_duplicate_rows handles: a manual override supplies
-    # the real actual for a release the automatic feed never captured
-    # (`scored`'s own row for that exact (currency, indicator_key,
-    # release_dt) is still NaN — apply_overrides is matched against the RAW
-    # ff, not `scored`, by design, so it never edits that row in place, see
-    # the docstring above). Same non-conflict as the raw-feed case (nothing
-    # ambiguous about which value is real), just discovered one step later
-    # in the pipeline, after overrides are known — so it is resolved here,
-    # not in _drop_display_duplicate_rows, which has already finished by
-    # this point and never sees manual_rows at all.
+    # One publication = one row: a manual override REPLACES the feed row(s) of
+    # the publication it targets, whatever they hold (NaN, 0.0, or a value
+    # recovered from the next print's previous) — see
+    # manual_actuals.supersede_by_overrides. The old rule dropped only NaN
+    # rows, so a recovered row stayed beside the override ("override twin").
     if len(manual_rows):
-        manual_keys = set(zip(manual_rows["currency"], manual_rows["indicator_key"],
-                              pd.to_datetime(manual_rows["release_dt"])))
-        is_superseded_placeholder = scored.apply(
-            lambda r: bool(pd.isna(r["actual"])
-                          and (r["currency"], r["indicator_key"], r["release_dt"]) in manual_keys),
-            axis=1)
-        n_superseded = int(is_superseded_placeholder.sum())
-        if n_superseded:
-            log.info("history display dedup: dropping %d placeholder row(s) (actual still "
-                    "unknown to the automatic feed) superseded by a manual override at the "
-                    "same (currency, indicator_key, release_dt).", n_superseded)
-            scored = scored[~is_superseded_placeholder]
+        n0 = len(scored)
+        scored, manual_rows = supersede_by_overrides(scored, manual_rows, ff, matcher=matcher)
+        if len(scored) < n0:
+            log.info("history: %d feed row(s) superseded by a manual override of the same "
+                     "publication.", n0 - len(scored))
+        manual_rows = _with_source_ref(manual_rows, overrides)
 
     combined = pd.concat([scored, manual_rows], ignore_index=True) if len(manual_rows) else scored
     combined["release_dt"] = pd.to_datetime(combined["release_dt"])
-    return combined.reindex(columns=SCORING_COLUMNS)   # actual_origin may be absent (older frames)
+    return combined.reindex(columns=SCORING_COLUMNS + ["source_ref"])   # actual_origin may be absent (older frames)
 
 
 def quarantine_key_set(quarantine_df: pd.DataFrame) -> set:
@@ -287,7 +300,8 @@ def _score_one_point(clean_upto: pd.DataFrame, cfg: dict, defaults: dict,
 def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_key: str,
                            ind_cfg: dict, quarantine_keys: set) -> pd.DataFrame:
     """One row per release for (currency, indicator_key): release_dt, actual,
-    forecast, previous, z, bucket, revised_from, quarantined, has_override.
+    forecast, previous, z, bucket, revised_from, quarantined, has_override
+    (and source_ref on a scored manual point).
 
     Quarantined rows are NEVER fed into any OTHER row's z/bucket computation
     (the trailing-K sigma window is built exclusively from the clean
@@ -380,7 +394,7 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
                     "forecast": row["consensus"], "previous": row["previous"],
                     "z": z, "bucket": bucket, "score_status": status,
                     "quarantined": False, "has_override": bool(row["has_override"]),
-                        "recovered": False})
+                        "recovered": False, "source_ref": row.get("source_ref")})
 
     out = pd.DataFrame(rows)
     out["revised_from"] = None
@@ -614,7 +628,9 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                                 "previous": _json_num(r["previous"]), "z": _json_num(r["z"]),
                                 "bucket": _json_num(r["bucket"]), "score_status": r["score_status"],
                                 "revised_from": _json_num(r["revised_from"]),
-                                "recovered": bool(r.get("recovered", False))}
+                                "recovered": bool(r.get("recovered", False)),
+                                "manual": bool(r.get("has_override", False)),
+                                "source_ref": (r.get("source_ref") if isinstance(r.get("source_ref"), str) else None)}
                                 for _, r in sub.iterrows()
                             ],
                         }

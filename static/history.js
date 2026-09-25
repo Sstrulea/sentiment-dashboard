@@ -87,6 +87,22 @@
     insufficient_history: "Not enough history for a full score", quarantined: "Quarantined (data-quality)",
     recovered: "Revised value, not scored", telemetry: "Final revision, not scored",
   };
+  // Tooltip lines for a printed point (pure, exported for tests). "Actual" is
+  // the print AS PUBLISHED: what Delta and the score are computed from, so
+  // Actual - Forecast = Delta always reads true. A later revision is its own
+  // line — and it is what the bar shows. A manual value names its source.
+  function pointTooltipLines(p) {
+    if (p.recovered) return ["Revised: " + fmtNum(p.actual), "First print unavailable — not scored"];
+    if (p.score_status === "telemetry") return ["Final: " + fmtNum(p.actual), "The flash is the scored print — not scored"];
+    const published = originalActualOf(p);
+    const lines = ["Actual: " + fmtNum(published), "Forecast: " + fmtNum(p.forecast)];
+    if (published !== null && published !== undefined && p.forecast !== null && p.forecast !== undefined) {
+      lines.push("Delta: " + fmtNum(published - p.forecast));
+    }
+    if (p.revised_from !== null && p.revised_from !== undefined) lines.push("Revised: " + fmtNum(p.actual));
+    if (p.manual) lines.push("Source: manual entry" + (p.source_ref ? " · " + p.source_ref : ""));
+    return lines;
+  }
   // audit B2 / 7A: drawn hollow — a recovered (revised) value or a final/revision
   // publication the config does not score (the flash is the scored print).
   function isHollow(p) { return !!(p.recovered || p.score_status === "telemetry"); }
@@ -545,23 +561,7 @@
                   return (p.forecast !== null && p.forecast !== undefined)
                     ? "Forecast: " + fmtNum(p.forecast) + " (not printed yet)" : null;
                 }
-                const originalActual = originalActualOf(p);
-                if (p.recovered) {
-                  return ["Actual: " + fmtNum(p.actual) + " (revised value, from the next print's previous)",
-                          "Not a first release — not scored, not in sigma"];
-                }
-                if (p.score_status === "telemetry") {
-                  return ["Actual: " + fmtNum(p.actual) + " (final revision)",
-                          "The flash is the scored print — not scored, not in sigma"];
-                }
-                const lines = ["Actual: " + fmtNum(p.actual), "Forecast: " + fmtNum(p.forecast)];
-                if (originalActual !== null && p.forecast !== null) {
-                  lines.push("Delta: " + fmtNum(originalActual - p.forecast));
-                }
-                if (p.revised_from !== null && p.revised_from !== undefined) {
-                  lines.push("Revised from " + fmtNum(p.revised_from));
-                }
-                return lines;
+                return pointTooltipLines(p);
               },
             },
           },
@@ -609,21 +609,25 @@
   // "in-line" and "no score yet" now share the same neutral color and are
   // deliberately indistinguishable (both mean "nothing notable"), so there
   // is nothing left to explain a hatch pattern for.
-  // FAZA 2C 1/2 — two entries only: the single accent color for every
-  // "Actual" bar/step (no more Beat/In-line/Miss buckets), and the
-  // coral/red forecast line. A distinct swatch shape per kind (filled box
-  // vs. a line) so the legend itself hints at how each is drawn.
-  function renderLegend() {
+  // FAZA 2C 1/2 — the single accent color for every "Actual" bar/step (no
+  // more Beat/In-line/Miss buckets) and the coral/red forecast line, plus the
+  // hollow "not scored" bar when the window shows one. A distinct swatch shape
+  // per kind (filled box, line, outline) so the legend hints at how each is drawn.
+  function renderLegend(points) {
     const el = document.getElementById("historyLegend");
     if (!el) return;
     const colors = themeColors();
+    // A hollow bar is explained only when the window on screen has one.
+    const hollow = (points || []).some((p) => p.actual !== null && p.actual !== undefined && isHollow(p));
     el.innerHTML =
       '<span class="hl-item"><span class="hl-swatch" style="background:' + colors.accent + ';"></span>Actual</span>' +
-      '<span class="hl-item"><span class="hl-swatch hl-line" style="background:' + colors.forecastLine + ';"></span>Forecast</span>';
+      '<span class="hl-item"><span class="hl-swatch hl-line" style="background:' + colors.forecastLine + ';"></span>Forecast</span>' +
+      (hollow ? '<span class="hl-item"><span class="hl-swatch hl-hollow" style="border-color:' + colors.accent +
+        ';"></span>Not scored (revised or final value only)</span>' : "");
   }
 
   function renderChartAndStrip() {
-    renderLegend();
+    renderLegend([]);
     const wrapper = document.querySelector(".chart-wrapper");
     const resolved = resolveEntry(state.ccy, state.key);
 
@@ -659,6 +663,7 @@
     const points = w ? w.points : [];
 
     renderStrip(meta, points);
+    renderLegend(points);
 
     if (!points.length) {
       wrapper.innerHTML = '<p class="history-empty-window">No printed rows in this window.</p>';
@@ -777,6 +782,6 @@
   // or a DOM shim. No-op in the browser: `module` is undefined there.
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { state, resolveEntry, seriesEntries, availableCategories, allCurrencies,
-                       buildBarDatasets, buildStepDatasets };
+                       buildBarDatasets, buildStepDatasets, pointTooltipLines };
   }
 })();

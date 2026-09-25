@@ -474,3 +474,54 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
     remaining = actionable[~idx.isin(resolved_keys)].reset_index(drop=True)
     manual_df = pd.DataFrame(manual_rows, columns=SCORING_COLUMNS)
     return manual_df, remaining
+
+
+def supersede_by_overrides(scored: pd.DataFrame, manual_rows: pd.DataFrame, ff: pd.DataFrame,
+                           *, matcher: Optional[CompiledMatcher] = None
+                           ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """One publication = one row: the override's. For frames that DISPLAY every
+    row (/history); scoring already collapses a publication to one print
+    (economic_compute._dedup_flash_final) and never scores a recovered value.
+
+    A manual override is the value of the PUBLICATION it targets (the identity
+    release_integrity.publication_keys already gives the zero rule, audit 7D),
+    so every feed row of that publication leaves `scored`, whatever it holds:
+    NaN, a 0.0, or a value recovered from the next print's previous. If that
+    publication has since received a real non-zero feed print, the feed print
+    wins and the override row is dropped instead (apply_overrides' own
+    retirement rule, applied to the whole publication).
+
+    Returns (scored minus the superseded feed rows, manual_rows kept). Pure."""
+    if manual_rows is None or manual_rows.empty or scored is None or scored.empty:
+        return scored, manual_rows
+    from .release_integrity import publication_keys
+    mkeys = list(zip(manual_rows["currency"], manual_rows["indicator_key"],
+                     pd.to_datetime(manual_rows["release_dt"])))
+    exact: set = set(mkeys)                 # always: the override's own row
+    raw_ids: set = set()                    # (currency, name_raw, datetime_utc) of its publication
+    retired: set = set()
+    if ff is not None and not ff.empty:
+        matcher = matcher or build_matcher()
+        raw = ensure_provenance_columns(ff).copy()
+        raw["datetime_utc"] = pd.to_datetime(raw["datetime_utc"])
+        raw["_ik"] = [matcher.match(CCY2COUNTRY.get(c, ""), n)
+                      for c, n in zip(raw["currency"], raw["name_canonical"])]
+        raw["_pub"] = publication_keys(raw)
+        by_target = {(c, k, t): (cid, pub) for c, k, t, cid, pub in zip(
+            raw["currency"], raw["_ik"], raw["datetime_utc"], raw["canonical_id"], raw["_pub"])}
+        for mk in mkeys:
+            hit = by_target.get(mk)
+            if hit is None:
+                continue
+            pub_rows = raw[(raw["canonical_id"] == hit[0]) & (raw["_pub"] == hit[1])]
+            act = pd.to_numeric(pub_rows["actual"], errors="coerce")
+            if ((act.notna()) & (act != 0.0)).any():
+                retired.add(mk)             # a real print landed: the feed wins
+                continue
+            raw_ids |= set(zip(pub_rows["currency"], pub_rows["name_raw"], pub_rows["datetime_utc"]))
+    exact -= retired
+    rel = pd.to_datetime(scored["release_dt"])
+    drop = [(c, k, t) in exact or (c, n, t) in raw_ids
+            for c, k, n, t in zip(scored["currency"], scored["indicator_key"], scored["name_raw"], rel)]
+    kept_manual = manual_rows[[mk not in retired for mk in mkeys]]
+    return scored[[not d for d in drop]], kept_manual
