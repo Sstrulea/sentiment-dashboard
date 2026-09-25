@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German GfK Consumer Climate",
+    "actual": "-25.1",
+    "forecast": "-26.9",
+    "previous": "-27.6"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German PPI m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.3%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "3.9%",
+    "forecast": "4.3%",
+    "previous": "4.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "5.1%",
+    "forecast": "5.6%",
+    "previous": "5.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.6%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "5.3%",
+    "forecast": "5.6%",
+    "previous": "6.1%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "33.8B",
+    "forecast": "27.0B",
+    "previous": "31.2B"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "-1.2%",
+    "forecast": "0.0%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Current Account",
+    "actual": "-200B",
+    "forecast": "-197B",
+    "previous": "-217B"
+  },
+  {
+    "time": "9:00am",
+    "currency": "CHF",
+    "title": "SNB Quarterly Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-15",
+    "forecast": "-16",
+    "previous": "-17"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Consumer Confidence",
+    "actual": "110.7",
+    "forecast": "104.6",
+    "previous": "101.0"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Existing Home Sales",
+    "actual": "3.82M",
+    "forecast": "3.77M",
+    "previous": "3.79M"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "2.9M",
+    "forecast": "-2.3M",
+    "previous": "-4.3M"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:04pm",
+    "currency": "NZD",
+    "title": "Credit Card Spending y/y",
+    "actual": "3.3%",
+    "forecast": "",
+    "previous": "-2.8%"
+  }
+]

@@ -1,0 +1,61 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:13am",
+    "currency": "JPY",
+    "title": "Prelim Machine Tool Orders y/y",
+    "actual": "-13.6%",
+    "forecast": "",
+    "previous": "-20.6%"
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "10-y Bond Auction",
+    "actual": "4.30|2.5",
+    "forecast": "",
+    "previous": "4.52|2.5"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "-8.0%",
+    "forecast": "",
+    "previous": "2.3%"
+  },
+  {
+    "time": "5:20pm",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "AUD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "2.7%",
+    "forecast": "",
+    "previous": "-2.6%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "PPI y/y",
+    "actual": "0.3%",
+    "forecast": "0.1%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "NAB Business Confidence",
+    "actual": "-9",
+    "forecast": "",
+    "previous": "-3"
+  }
+]

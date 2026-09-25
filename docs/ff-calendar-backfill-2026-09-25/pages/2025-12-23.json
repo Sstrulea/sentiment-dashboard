@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "BOJ Core CPI y/y",
+    "actual": "2.2%",
+    "forecast": "2.2%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "0.5%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "6.2",
+    "forecast": "",
+    "previous": "12.2"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "11.5K",
+    "forecast": "",
+    "previous": "17.5K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP q/q",
+    "actual": "4.3%",
+    "forecast": "3.3%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Durable Goods Orders m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Durable Goods Orders m/m",
+    "actual": "-2.2%",
+    "forecast": "-1.5%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP Price Index q/q",
+    "actual": "3.8%",
+    "forecast": "2.7%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "Oct Data",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "75.9%",
+    "forecast": "",
+    "previous": "76.0%"
+  },
+  {
+    "time": "Oct Data",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "76.0%",
+    "forecast": "75.9%",
+    "previous": "75.9%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Consumer Confidence",
+    "actual": "89.1",
+    "forecast": "91.7",
+    "previous": "92.9"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "-7",
+    "forecast": "-8",
+    "previous": "-15"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "SPPI y/y",
+    "actual": "2.7%",
+    "forecast": "2.7%",
+    "previous": "2.7%"
+  }
+]

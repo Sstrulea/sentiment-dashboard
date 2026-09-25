@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:50am",
+    "currency": "USD",
+    "title": "FOMC Member Kashkari Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Gov Budget Balance",
+    "actual": "-69.6B",
+    "forecast": "",
+    "previous": "-42.9B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Unemployment Change",
+    "actual": "-36.3K",
+    "forecast": "-56.8K",
+    "previous": "-62.7K"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "M4 Money Supply m/m",
+    "actual": "0.2%",
+    "forecast": "0.6%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Mortgage Approvals",
+    "actual": "66K",
+    "forecast": "62K",
+    "previous": "64K"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Net Lending to Individuals m/m",
+    "actual": "6.2B",
+    "forecast": "7.1B",
+    "previous": "8.7B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.5%",
+    "forecast": "2.4%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "3.2%",
+    "forecast": "3.2%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "4.98|3.6",
+    "forecast": "",
+    "previous": "5.03|3.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "7.62M",
+    "forecast": "6.87M",
+    "previous": "6.89M"
+  },
+  {
+    "time": "10:02am",
+    "currency": "USD",
+    "title": "RCM/TIPP Economic Optimism",
+    "actual": "42.5",
+    "forecast": "44.5",
+    "previous": "42.6"
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Omdia Total Vehicle Sales",
+    "actual": "16.1M",
+    "forecast": "16.0M",
+    "previous": "15.9M"
+  },
+  {
+    "time": "11:00am",
+    "currency": "GBP",
+    "title": "MPC Member Greene Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:05am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "-0.6%",
+    "forecast": "",
+    "previous": "0.6%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "10.9%",
+    "forecast": "",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Overseas Trade Index q/q",
+    "actual": "-2.0%",
+    "forecast": "-1.2%",
+    "previous": "3.7%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.5%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "11:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

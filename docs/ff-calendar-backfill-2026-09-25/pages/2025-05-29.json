@@ -1,0 +1,221 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "32.8",
+    "forecast": "31.8",
+    "previous": "31.2"
+  },
+  {
+    "time": "All Day",
+    "currency": "CHF",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "French Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:11am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "3.57|1.5",
+    "forecast": "",
+    "previous": "3.62|1.6"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Current Account",
+    "actual": "-2.1B",
+    "forecast": "-3.4B",
+    "previous": "-3.6B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP q/q",
+    "actual": "-0.2%",
+    "forecast": "-0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "240K",
+    "forecast": "229K",
+    "previous": "226K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP Price Index q/q",
+    "actual": "3.7%",
+    "forecast": "3.7%",
+    "previous": "3.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-6.3%",
+    "forecast": "-0.9%",
+    "previous": "5.5%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "101B",
+    "forecast": "98B",
+    "previous": "120B"
+  },
+  {
+    "time": "10:40am",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-2.8M",
+    "forecast": "0.3M",
+    "previous": "1.3M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Kugler Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "-15.6%",
+    "forecast": "",
+    "previous": "10.7%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "3.6%",
+    "forecast": "3.5%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "-0.9%",
+    "forecast": "-1.4%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "3.3%",
+    "forecast": "2.9%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "8:25pm",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Retail Sales m/m",
+    "actual": "-0.1%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "-5.7%",
+    "forecast": "3.1%",
+    "previous": "-7.1%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.7%",
+    "forecast": "0.5%",
+    "previous": "0.5%"
+  }
+]

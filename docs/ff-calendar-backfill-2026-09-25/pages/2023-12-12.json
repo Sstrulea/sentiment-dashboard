@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.1%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Claimant Count Change",
+    "actual": "16.0K",
+    "forecast": "20.3K",
+    "previous": "8.9K"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Average Earnings Index 3m/y",
+    "actual": "7.2%",
+    "forecast": "7.7%",
+    "previous": "8.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Unemployment Rate",
+    "actual": "4.2%",
+    "forecast": "4.2%",
+    "previous": "4.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "ZEW Economic Sentiment",
+    "actual": "23.0",
+    "forecast": "13.3",
+    "previous": "13.8"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "German ZEW Economic Sentiment",
+    "actual": "12.8",
+    "forecast": "9.6",
+    "previous": "9.8"
+  },
+  {
+    "time": "6:00am",
+    "currency": "USD",
+    "title": "NFIB Small Business Index",
+    "actual": "90.6",
+    "forecast": "90.7",
+    "previous": "90.7"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI y/y",
+    "actual": "4.0%",
+    "forecast": "4.0%",
+    "previous": "4.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI y/y",
+    "actual": "3.1%",
+    "forecast": "3.1%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "4.34|2.4",
+    "forecast": "",
+    "previous": "4.77|2.2"
+  },
+  {
+    "time": "1:58pm",
+    "currency": "USD",
+    "title": "Federal Budget Balance",
+    "actual": "-314.0B",
+    "forecast": "-293.5B",
+    "previous": "-66.6B"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Current Account",
+    "actual": "-11.47B",
+    "forecast": "-12.15B",
+    "previous": "-4.65B"
+  },
+  {
+    "time": "6:00pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "-0.2%",
+    "forecast": "",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Tankan Manufacturing Index",
+    "actual": "12",
+    "forecast": "10",
+    "previous": "9"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Tankan Non-Manufacturing Index",
+    "actual": "30",
+    "forecast": "27",
+    "previous": "27"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Mid-Year Economic and Fiscal Outlook",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

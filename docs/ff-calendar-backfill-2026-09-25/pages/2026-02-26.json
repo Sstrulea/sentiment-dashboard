@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "M3 Money Supply y/y",
+    "actual": "3.3%",
+    "forecast": "2.9%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Private Loans y/y",
+    "actual": "3.0%",
+    "forecast": "3.1%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "GBP",
+    "title": "MPC Member Lombardelli Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:06am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "3.31|1.5",
+    "forecast": "",
+    "previous": "3.44|1.6"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Current Account",
+    "actual": "-0.7B",
+    "forecast": "-8.2B",
+    "previous": "-5.3B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "212K",
+    "forecast": "217K",
+    "previous": "208K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-52B",
+    "forecast": "-36B",
+    "previous": "-144B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "1.8%",
+    "forecast": "1.7%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "2.2%",
+    "forecast": "5.5%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "1.8%",
+    "forecast": "0.1%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-19",
+    "forecast": "-15",
+    "previous": "-16"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.5%",
+    "forecast": "0.7%",
+    "previous": "0.8%"
+  }
+]

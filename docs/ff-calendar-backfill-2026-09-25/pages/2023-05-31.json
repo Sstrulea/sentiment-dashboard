@@ -1,0 +1,213 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Consumer Confidence",
+    "actual": "36.0",
+    "forecast": "36.1",
+    "previous": "35.4"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "-11.9%",
+    "forecast": "-0.9%",
+    "previous": "-3.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "-1.7%",
+    "forecast": "-0.6%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "-3.7%",
+    "forecast": "-1.4%",
+    "previous": "-1.9%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "-1.0%",
+    "forecast": "0.3%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.3%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "9K",
+    "forecast": "14K",
+    "previous": "23k"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "-32.2",
+    "forecast": "",
+    "previous": "-33.3"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Financial Stability Review",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.3%",
+    "forecast": "-0.1%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:50am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:15am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "40.4",
+    "forecast": "47.1",
+    "previous": "48.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "10.10M",
+    "forecast": "9.41M",
+    "previous": "9.75M"
+  },
+  {
+    "time": "11:05am",
+    "currency": "CHF",
+    "title": "SNB Chairman Jordan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Harker Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Jefferson Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Beige Book",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Capital Spending q/y",
+    "actual": "11.0%",
+    "forecast": "6.1%",
+    "previous": "7.7%"
+  },
+  {
+    "time": "Tentative",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "50.6",
+    "forecast": "50.8",
+    "previous": "50.8"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Capital Expenditure q/q",
+    "actual": "2.4%",
+    "forecast": "1.1%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "10-y Bond Auction",
+    "actual": "0.44|3.7",
+    "forecast": "",
+    "previous": "0.43|3.6"
+  }
+]

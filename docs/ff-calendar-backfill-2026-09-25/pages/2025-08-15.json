@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "2.1%",
+    "forecast": "1.7%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "French Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "-1.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "0.7%",
+    "forecast": "0.7%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.5%",
+    "forecast": "0.6%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "11.9",
+    "forecast": "-1.2",
+    "previous": "5.5"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "0.4%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "77.5%",
+    "forecast": "77.6%",
+    "previous": "77.7%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "58.6",
+    "forecast": "61.9",
+    "previous": "61.7"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "4.9%",
+    "forecast": "",
+    "previous": "4.5%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "150.8B",
+    "forecast": "57.2B",
+    "previous": "266.8B"
+  },
+  {
+    "time": "6:55pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

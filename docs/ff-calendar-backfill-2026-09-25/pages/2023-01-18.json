@@ -1,0 +1,261 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "1:30am",
+  "currency": "JPY",
+  "title": "BOJ Press Conference",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "CPI y/y",
+  "actual": "10.5%",
+  "forecast": "10.5%",
+  "previous": "10.7%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Core CPI y/y",
+  "actual": "6.3%",
+  "forecast": "6.2%",
+  "previous": "6.3%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "RPI y/y",
+  "actual": "13.4%",
+  "forecast": "13.6%",
+  "previous": "14.0%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Italian Trade Balance",
+  "actual": "1.45B",
+  "forecast": "-1.80B",
+  "previous": "-2.06B"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Housing Equity Withdrawal q/q",
+  "actual": "-5.8B",
+  "forecast": "-7.9B",
+  "previous": "-6.1B"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "HPI y/y",
+  "actual": "10.3%",
+  "forecast": "10.4%",
+  "previous": "12.4%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Final Core CPI y/y",
+  "actual": "5.2%",
+  "forecast": "5.2%",
+  "previous": "5.2%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Final CPI y/y",
+  "actual": "9.2%",
+  "forecast": "9.2%",
+  "previous": "9.2%"
+ },
+ {
+  "time": "5:39am",
+  "currency": "EUR",
+  "title": "German 30-y Bond Auction",
+  "actual": "2.05|1.5",
+  "forecast": "",
+  "previous": "1.94|1.8"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "IPPI m/m",
+  "actual": "-1.1%",
+  "forecast": "0.7%",
+  "previous": "-0.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "RMPI m/m",
+  "actual": "-3.1%",
+  "forecast": "-0.9%",
+  "previous": "-0.8%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core PPI m/m",
+  "actual": "0.1%",
+  "forecast": "0.1%",
+  "previous": "0.2%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core Retail Sales m/m",
+  "actual": "-1.1%",
+  "forecast": "-0.5%",
+  "previous": "-0.6%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "PPI m/m",
+  "actual": "-0.5%",
+  "forecast": "-0.1%",
+  "previous": "0.2%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Retail Sales m/m",
+  "actual": "-1.1%",
+  "forecast": "-0.8%",
+  "previous": "-1.0%"
+ },
+ {
+  "time": "9:15am",
+  "currency": "USD",
+  "title": "Capacity Utilization Rate",
+  "actual": "78.8%",
+  "forecast": "79.6%",
+  "previous": "79.4%"
+ },
+ {
+  "time": "9:15am",
+  "currency": "USD",
+  "title": "Industrial Production m/m",
+  "actual": "-0.7%",
+  "forecast": "-0.1%",
+  "previous": "-0.6%"
+ },
+ {
+  "time": "9:30am",
+  "currency": "GBP",
+  "title": "CB Leading Index m/m",
+  "actual": "-0.6%",
+  "forecast": "",
+  "previous": "-0.9%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Business Inventories m/m",
+  "actual": "0.4%",
+  "forecast": "0.4%",
+  "previous": "0.2%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "NAHB Housing Market Index",
+  "actual": "35",
+  "forecast": "31",
+  "previous": "31"
+ },
+ {
+  "time": "2:00pm",
+  "currency": "USD",
+  "title": "Beige Book",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "3:15pm",
+  "currency": "USD",
+  "title": "FOMC Member Harker Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "4:00pm",
+  "currency": "USD",
+  "title": "TIC Long-Term Purchases",
+  "actual": "171.5B",
+  "forecast": "127.9B",
+  "previous": "67.8B"
+ },
+ {
+  "time": "4:30pm",
+  "currency": "USD",
+  "title": "API Weekly Statistical Bulletin",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "4:45pm",
+  "currency": "NZD",
+  "title": "FPI m/m",
+  "actual": "1.1%",
+  "forecast": "",
+  "previous": "0.0%"
+ },
+ {
+  "time": "5:00pm",
+  "currency": "USD",
+  "title": "FOMC Member Logan Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "Trade Balance",
+  "actual": "-1.72T",
+  "forecast": "-1.60T",
+  "previous": "-1.78T"
+ },
+ {
+  "time": "7:00pm",
+  "currency": "AUD",
+  "title": "MI Inflation Expectations",
+  "actual": "5.6%",
+  "forecast": "",
+  "previous": "5.2%"
+ },
+ {
+  "time": "7:01pm",
+  "currency": "GBP",
+  "title": "RICS House Price Balance",
+  "actual": "-42%",
+  "forecast": "-30%",
+  "previous": "-26%"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "Employment Change",
+  "actual": "-14.6K",
+  "forecast": "26.5K",
+  "previous": "58.3K"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "Unemployment Rate",
+  "actual": "3.5%",
+  "forecast": "3.4%",
+  "previous": "3.5%"
+ }
+]

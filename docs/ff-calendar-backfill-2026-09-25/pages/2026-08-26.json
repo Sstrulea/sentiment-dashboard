@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "12.1",
+    "forecast": "",
+    "previous": "10.0"
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Realized Sales",
+    "actual": "-48",
+    "forecast": "-35",
+    "previous": "-26"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP q/q",
+    "actual": "1.5%",
+    "forecast": "1.5%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP Price Index q/q",
+    "actual": "6.4%",
+    "forecast": "6.2%",
+    "previous": "6.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Durable Goods Orders m/m",
+    "actual": "0.4%",
+    "forecast": "0.6%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Durable Goods Orders m/m",
+    "actual": "1.1%",
+    "forecast": "0.4%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.4%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.2%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "0.1M",
+    "forecast": "1.6M",
+    "previous": "4.4M"
+  },
+  {
+    "time": "11:45am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:15pm",
+    "currency": "CHF",
+    "title": "Gov Board Member Martin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "1.1%",
+    "forecast": "0.3%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Capital Expenditure q/q",
+    "actual": "-3.6%",
+    "forecast": "0.8%",
+    "previous": "6.9%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "RBA Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "3.1%",
+    "forecast": "3.0%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "38.2",
+    "forecast": "40.4",
+    "previous": "39.7"
+  },
+  {
+    "time": "4:50am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.80|2.4",
+    "forecast": "",
+    "previous": "3.61|2.0"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.3%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "5:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "3.4%",
+    "forecast": "",
+    "previous": "-20.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "225K",
+    "forecast": "214K",
+    "previous": "212K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Revised Nonfarm Productivity q/q",
+    "actual": "0.3%",
+    "forecast": "0.5%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Revised Unit Labor Costs q/q",
+    "actual": "1.8%",
+    "forecast": "2.4%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Treasury Sec Bessent Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "95B",
+    "forecast": "99B",
+    "previous": "92B"
+  },
+  {
+    "time": "11:40am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:40am",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Schmid Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "3.5%",
+    "forecast": "3.1%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-0.5%",
+    "forecast": "-1.5%",
+    "previous": "-2.9%"
+  }
+]

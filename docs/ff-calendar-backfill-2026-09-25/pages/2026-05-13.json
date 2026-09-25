@@ -1,0 +1,189 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Economy Watchers Sentiment",
+    "actual": "40.8",
+    "forecast": "41.5",
+    "previous": "42.2"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "2.0%",
+    "forecast": "1.7%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "1.0%",
+    "forecast": "1.0%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash Employment Change q/q",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "5:35am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "3.62|1.3",
+    "forecast": "",
+    "previous": "3.58|1.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PPI m/m",
+    "actual": "1.0%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "PPI m/m",
+    "actual": "1.4%",
+    "forecast": "0.5%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.7%",
+    "forecast": "",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "GBP",
+    "title": "MPC Member Mann Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-4.3M",
+    "forecast": "-2.0M",
+    "previous": "-2.3M"
+  },
+  {
+    "time": "11:05am",
+    "currency": "CAD",
+    "title": "Gov Council Member Alexopoulos Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:30am",
+    "currency": "USD",
+    "title": "FOMC Member Collins Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "5.05|2.3",
+    "forecast": "",
+    "previous": "4.88|2.4"
+  },
+  {
+    "time": "1:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Kashkari Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:40pm",
+    "currency": "USD",
+    "title": "Fed Chair Nomination Vote",
+    "actual": "Pass",
+    "forecast": "Pass",
+    "previous": ""
+  },
+  {
+    "time": "3:15pm",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:50pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "-3.0%",
+    "forecast": "",
+    "previous": "2.1%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "RICS House Price Balance",
+    "actual": "-34%",
+    "forecast": "-25%",
+    "previous": "-25%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "M2 Money Stock y/y",
+    "actual": "2.3%",
+    "forecast": "1.9%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "3.84|3.5",
+    "forecast": "",
+    "previous": "3.70|3.1"
+  }
+]

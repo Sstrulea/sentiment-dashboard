@@ -1,0 +1,21 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "9:25am",
+    "currency": "NZD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "88.9",
+    "forecast": "",
+    "previous": "80.2"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Services Index",
+    "actual": "51.2",
+    "forecast": "",
+    "previous": "49.2"
+  }
+]

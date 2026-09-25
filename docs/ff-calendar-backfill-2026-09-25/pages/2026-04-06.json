@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "CHF",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "French Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Unemployment Change",
+    "actual": "-22.9K",
+    "forecast": "10.3K",
+    "previous": "3.6K"
+  },
+  {
+    "time": "All Day",
+    "currency": "GBP",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Services PMI",
+    "actual": "54.0",
+    "forecast": "54.8",
+    "previous": "56.1"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-1.8%",
+    "forecast": "-0.8%",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Gauge m/m",
+    "actual": "1.3%",
+    "forecast": "",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "ANZ Commodity Prices m/m",
+    "actual": "4.1%",
+    "forecast": "",
+    "previous": "4.2%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "ANZ Job Advertisements m/m",
+    "actual": "-3.1%",
+    "forecast": "",
+    "previous": "3.2%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "0.3%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "11:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "3.70|3.1",
+    "forecast": "",
+    "previous": "3.40|3.7"
+  }
+]

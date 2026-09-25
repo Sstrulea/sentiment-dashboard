@@ -1,0 +1,213 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "Leading Indicators",
+    "actual": "108.7%",
+    "forecast": "108.2%",
+    "previous": "108.9%"
+  },
+  {
+    "time": "1:45am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "2.1%",
+    "forecast": "2.1%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Industrial Production m/m",
+    "actual": "-0.4%",
+    "forecast": "0.1%",
+    "previous": "-1.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Lloyds HPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.3%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Trade Balance",
+    "actual": "-8.6B",
+    "forecast": "-8.5B",
+    "previous": "-8.9B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Foreign Currency Reserves",
+    "actual": "642B",
+    "forecast": "",
+    "previous": "658B"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Industrial Production m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.4%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Employment Change q/q",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Retail Sales m/m",
+    "actual": "0.4%",
+    "forecast": "-0.1%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Revised GDP q/q",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "5:01am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "2.75|3.0",
+    "forecast": "",
+    "previous": "3.32|2.0"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Eurogroup Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "-40.8%",
+    "forecast": "",
+    "previous": "8.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Building Permits m/m",
+    "actual": "2.3%",
+    "forecast": "1.1%",
+    "previous": "-8.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "220K",
+    "forecast": "221K",
+    "previous": "219K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-117B",
+    "forecast": "-110B",
+    "previous": "10B"
+  },
+  {
+    "time": "12:35pm",
+    "currency": "CAD",
+    "title": "Gov Council Member Gravelle Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "Consumer Credit m/m",
+    "actual": "5.1B",
+    "forecast": "8.3B",
+    "previous": "12.2B"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Manufacturing Sales q/q",
+    "actual": "-2.8%",
+    "forecast": "",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "1.5%",
+    "forecast": "1.0%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "-2.5%",
+    "forecast": "-2.9%",
+    "previous": "-2.8%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Bank Lending y/y",
+    "actual": "2.8%",
+    "forecast": "2.8%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Current Account",
+    "actual": "2.62T",
+    "forecast": "1.85T",
+    "previous": "2.01T"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Final GDP Price Index y/y",
+    "actual": "5.3%",
+    "forecast": "5.1%",
+    "previous": "5.1%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Final GDP q/q",
+    "actual": "-0.7%",
+    "forecast": "-0.5%",
+    "previous": "-0.5%"
+  }
+]

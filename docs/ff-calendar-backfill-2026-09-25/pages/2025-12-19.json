@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "-3.8%",
+    "forecast": "",
+    "previous": "-1.8%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German GfK Consumer Climate",
+    "actual": "-26.9",
+    "forecast": "-23.0",
+    "previous": "-23.4"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German PPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Retail Sales m/m",
+    "actual": "-0.1%",
+    "forecast": "0.3%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "11.7B",
+    "forecast": "10.0B",
+    "previous": "21.2B"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "25.7B",
+    "forecast": "19.6B",
+    "previous": "23.6B"
+  },
+  {
+    "time": "4:20am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "-0.6%",
+    "forecast": "0.0%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "-0.2%",
+    "forecast": "0.0%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "NHPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:43am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "-11.9",
+    "forecast": "-7.8",
+    "previous": "-8.2"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-15",
+    "forecast": "-14",
+    "previous": "-14"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Existing Home Sales",
+    "actual": "4.13M",
+    "forecast": "4.15M",
+    "previous": "4.11M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Consumer Sentiment",
+    "actual": "52.9",
+    "forecast": "53.5",
+    "previous": "53.3"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Inflation Expectations",
+    "actual": "4.2%",
+    "forecast": "",
+    "previous": "4.1%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

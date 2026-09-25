@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "Day 4",
+    "currency": "All",
+    "title": "WEF Annual Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-34",
+    "forecast": "-35",
+    "previous": "-40"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "-0.7%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "223K",
+    "forecast": "221K",
+    "previous": "217K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-14",
+    "forecast": "-14",
+    "previous": "-15"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-223B",
+    "forecast": "-270B",
+    "previous": "-258B"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-1.0M",
+    "forecast": "-0.1M",
+    "previous": "-2.0M"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "49.8",
+    "forecast": "",
+    "previous": "47.8"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "Flash Services PMI",
+    "actual": "50.4",
+    "forecast": "",
+    "previous": "50.8"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-22",
+    "forecast": "-18",
+    "previous": "-17"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "48.8",
+    "forecast": "48.9",
+    "previous": "49.6"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "Credit Card Spending y/y",
+    "actual": "-1.4%",
+    "forecast": "",
+    "previous": "-3.1%"
+  },
+  {
+    "time": "10:23pm",
+    "currency": "JPY",
+    "title": "BOJ Outlook Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:23pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.50%",
+    "forecast": "<0.50%",
+    "previous": "<0.25%"
+  },
+  {
+    "time": "10:23pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,77 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.5%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "SECO Economic Forecasts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "Day 1",
+    "currency": "All",
+    "title": "G7 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "280K",
+    "forecast": "248K",
+    "previous": "280K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-16.0",
+    "forecast": "-5.9",
+    "previous": "-9.2"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "0.5%",
+    "forecast": "",
+    "previous": "0.8%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.50%",
+    "forecast": "<0.50%",
+    "previous": "<0.50%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

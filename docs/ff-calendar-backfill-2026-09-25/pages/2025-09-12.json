@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "-1.2%",
+    "forecast": "-1.6%",
+    "previous": "-1.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "0.2%",
+    "forecast": "-0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-22.2B",
+    "forecast": "-21.6B",
+    "previous": "-22.2B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.9%",
+    "forecast": "0.0%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "-1.3%",
+    "forecast": "0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.4%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Quarterly Unemployment Rate",
+    "actual": "6.3%",
+    "forecast": "6.1%",
+    "previous": "6.1%"
+  },
+  {
+    "time": "4:15am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Consumer Inflation Expectations",
+    "actual": "3.6%",
+    "forecast": "",
+    "previous": "3.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Building Permits m/m",
+    "actual": "-0.1%",
+    "forecast": "3.7%",
+    "previous": "-9.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Capacity Utilization Rate",
+    "actual": "79.3%",
+    "forecast": "78.8%",
+    "previous": "79.9%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "55.4",
+    "forecast": "58.2",
+    "previous": "58.2"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "4.8%",
+    "forecast": "",
+    "previous": "4.8%"
+  }
+]

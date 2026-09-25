@@ -1,0 +1,189 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "2.2%",
+    "forecast": "2.2%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "3.6%",
+    "forecast": "3.6%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.4%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "2.2%",
+    "forecast": "2.8%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "2.8%",
+    "forecast": "2.8%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "2.2%",
+    "forecast": "2.2%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "5:36am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "2.44|2.7",
+    "forecast": "",
+    "previous": "2.45|2.8"
+  },
+  {
+    "time": "7:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Foreign Securities Purchases",
+    "actual": "10.98B",
+    "forecast": "11.50B",
+    "previous": "5.20B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Building Permits",
+    "actual": "1.48M",
+    "forecast": "1.41M",
+    "previous": "1.41M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Housing Starts",
+    "actual": "1.36M",
+    "forecast": "1.31M",
+    "previous": "1.24M"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-1.6M",
+    "forecast": "-0.2M",
+    "previous": "0.8M"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "5.00%",
+    "forecast": "5.25%",
+    "previous": "5.50%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Economic Projections",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "FOMC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "135.4B",
+    "forecast": "54.9B",
+    "previous": "80.5B"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "GDP q/q",
+    "actual": "-0.2%",
+    "forecast": "-0.4%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "47.5K",
+    "forecast": "26.4K",
+    "previous": "48.9K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.2%",
+    "forecast": "4.2%",
+    "previous": "4.2%"
+  }
+]

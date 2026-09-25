@@ -1,0 +1,53 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "JPY",
+    "title": "Lower House Elections",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:40am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "2.4%",
+    "forecast": "3.0%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Bank Lending y/y",
+    "actual": "4.5%",
+    "forecast": "4.5%",
+    "previous": "4.3%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Current Account",
+    "actual": "2.70T",
+    "forecast": "2.95T",
+    "previous": "3.14T"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "-0.4%",
+    "forecast": "0.2%",
+    "previous": "1.0%"
+  }
+]

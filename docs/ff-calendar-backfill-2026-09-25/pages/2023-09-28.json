@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash CPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.5%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "5:16am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "4.93|1.4",
+    "forecast": "",
+    "previous": "4.20|1.6"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Final GDP q/q",
+    "actual": "2.1%",
+    "forecast": "2.2%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "204K",
+    "forecast": "214K",
+    "previous": "202K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Final GDP Price Index q/q",
+    "actual": "1.7%",
+    "forecast": "2.0%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-7.1%",
+    "forecast": "-1.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "10:03am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "90B",
+    "forecast": "90B",
+    "previous": "64B"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Cook Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Powell Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "2.5%",
+    "forecast": "2.6%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.7%",
+    "forecast": "2.6%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "0.0%",
+    "forecast": "-0.7%",
+    "previous": "-1.8%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "7.0%",
+    "forecast": "6.6%",
+    "previous": "7.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  }
+]

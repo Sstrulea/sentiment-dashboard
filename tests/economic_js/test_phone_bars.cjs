@@ -25,11 +25,11 @@ for (const inst of payload.instruments) {
   assert.ok(g.every((x) => Math.abs(x.value) > 1e-12), inst.symbol + ": no zero group");
   for (let i = 1; i < g.length; i++) assert.ok(Math.abs(g[i - 1].value) >= Math.abs(g[i].value), inst.symbol + ": sorted by |value|");
 }
-// AUD/JPY, as on the board: Monetary · 2Y, COT, Labour, Inflation, Growth = +1.65
+// AUD/JPY, as on the board: Monetary · 2Y, COT, Labour, Inflation = +1.67 (Growth nets to 0: no bar)
 const aj = mod.scoreGroups(payload.instruments.find((i) => i.symbol === "AUDJPY"));
-assert.strictEqual(JSON.stringify(aj.map((x) => x.label)), JSON.stringify(["Monetary · 2Y", "COT", "Labour", "Inflation", "Growth"]));
-assert.strictEqual(aj.map((x) => x.value.toFixed(2)).join(","), "1.25,0.73,-0.63,0.19,0.10");
-assert.strictEqual(aj.reduce((s, x) => s + x.value, 0).toFixed(2), "1.65");
+assert.strictEqual(JSON.stringify(aj.map((x) => x.label)), JSON.stringify(["Monetary · 2Y", "COT", "Labour", "Inflation"]));
+assert.strictEqual(aj.map((x) => x.value.toFixed(2)).join(","), "1.25,0.73,-0.63,0.31");
+assert.strictEqual(aj.reduce((s, x) => s + x.value, 0).toFixed(2), "1.67");
 
 // cross-asset: bars iff exact
 const ca = (payload.crossasset || {}).instruments || [];

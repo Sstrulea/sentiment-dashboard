@@ -1,0 +1,125 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "12:00am",
+  "currency": "JPY",
+  "title": "Consumer Confidence",
+  "actual": "30.3",
+  "forecast": "28.2",
+  "previous": "28.6"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German Trade Balance",
+  "actual": "10.8B",
+  "forecast": "7.5B",
+  "previous": "6.8B"
+ },
+ {
+  "time": "4:30am",
+  "currency": "GBP",
+  "title": "Final Services PMI",
+  "actual": "49.9",
+  "forecast": "50.0",
+  "previous": "50.0"
+ },
+ {
+  "time": "4:58am",
+  "currency": "EUR",
+  "title": "French 10-y Bond Auction",
+  "actual": "2.77|1.9",
+  "forecast": "",
+  "previous": "2.19|2.2"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "PPI m/m",
+  "actual": "-0.9%",
+  "forecast": "-0.8%",
+  "previous": "-3.0%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Italian Prelim CPI m/m",
+  "actual": "0.3%",
+  "forecast": "0.2%",
+  "previous": "0.5%"
+ },
+ {
+  "time": "7:30am",
+  "currency": "USD",
+  "title": "Challenger Job Cuts y/y",
+  "actual": "129.1%",
+  "forecast": "",
+  "previous": "416.5%"
+ },
+ {
+  "time": "8:15am",
+  "currency": "USD",
+  "title": "ADP Non-Farm Employment Change",
+  "actual": "235K",
+  "forecast": "152K",
+  "previous": "182K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Trade Balance",
+  "actual": "0.0B",
+  "forecast": "1.3B",
+  "previous": "0.1B"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Unemployment Claims",
+  "actual": "204K",
+  "forecast": "230K",
+  "previous": "223K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Trade Balance",
+  "actual": "-61.5B",
+  "forecast": "-64.2B",
+  "previous": "-77.8B"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Final Services PMI",
+  "actual": "44.7",
+  "forecast": "44.4",
+  "previous": "44.4"
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Natural Gas Storage",
+  "actual": "-221B",
+  "forecast": "-230B",
+  "previous": "-213B"
+ },
+ {
+  "time": "11:00am",
+  "currency": "USD",
+  "title": "Crude Oil Inventories",
+  "actual": "1.7M",
+  "forecast": "1.5M",
+  "previous": "0.7M"
+ },
+ {
+  "time": "6:30pm",
+  "currency": "JPY",
+  "title": "Average Cash Earnings y/y",
+  "actual": "0.5%",
+  "forecast": "1.7%",
+  "previous": "1.4%"
+ }
+]

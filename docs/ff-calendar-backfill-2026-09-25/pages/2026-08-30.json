@@ -1,0 +1,77 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "Day 2",
+    "currency": "All",
+    "title": "G20 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "0.1%",
+    "forecast": "-0.7%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "4.0%",
+    "forecast": "3.2%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Gauge m/m",
+    "actual": "0.5%",
+    "forecast": "",
+    "previous": "1.0%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "ANZ Business Confidence",
+    "actual": "53.7",
+    "forecast": "",
+    "previous": "56.1"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Company Operating Profits q/q",
+    "actual": "1.8%",
+    "forecast": "2.0%",
+    "previous": "-1.5%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.6%",
+    "forecast": "0.7%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "CNY",
+    "title": "Manufacturing PMI",
+    "actual": "49.8",
+    "forecast": "49.5",
+    "previous": "49.2"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "CNY",
+    "title": "Non-Manufacturing PMI",
+    "actual": "49.0",
+    "forecast": "49.5",
+    "previous": "49.0"
+  }
+]

@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "50.3",
+    "forecast": "50.9",
+    "previous": "51.1"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "51.4",
+    "forecast": "48.3",
+    "previous": "48.0"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "53.8",
+    "forecast": "54.1",
+    "previous": "54.3"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "52.9",
+    "forecast": "49.9",
+    "previous": "49.7"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "52.7",
+    "forecast": "52.6",
+    "previous": "52.7"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "53.0",
+    "forecast": "51.4",
+    "previous": "51.6"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "52.0",
+    "forecast": "51.5",
+    "previous": "51.7"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "51.7",
+    "forecast": "52.0",
+    "previous": "52.5"
+  },
+  {
+    "time": "5:35am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "3.80|1.6",
+    "forecast": "",
+    "previous": "3.90|2.4"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "57.0",
+    "forecast": "53.6",
+    "previous": "53.9"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "58.7",
+    "forecast": "55.8",
+    "previous": "56.5"
+  },
+  {
+    "time": "10:05am",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "3.0M",
+    "forecast": "-0.7M",
+    "previous": "-0.6M"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "54.1",
+    "forecast": "55.0",
+    "previous": "54.9"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "39.5K",
+    "forecast": "21.5K",
+    "previous": "-15.9K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.6%",
+    "forecast": "4.5%",
+    "previous": "4.5%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "NAB Quarterly Business Confidence",
+    "actual": "-11",
+    "forecast": "",
+    "previous": "-19"
+  }
+]

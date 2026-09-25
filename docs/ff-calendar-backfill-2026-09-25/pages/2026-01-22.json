@@ -1,0 +1,93 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Final GDP q/q",
+  "actual": "4.4%",
+  "forecast": "4.3%",
+  "previous": "4.3%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Unemployment Claims",
+  "actual": "200K",
+  "forecast": "209K",
+  "previous": "199K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Final GDP Price Index q/q",
+  "actual": "3.8%",
+  "forecast": "3.8%",
+  "previous": "3.8%"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "Core PCE Price Index m/m",
+  "actual": "0.2%",
+  "forecast": "",
+  "previous": "0.2%"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "Personal Income m/m",
+  "actual": "0.1%",
+  "forecast": "",
+  "previous": "0.4%"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "Personal Spending m/m",
+  "actual": "0.5%",
+  "forecast": "",
+  "previous": "0.4%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Core PCE Price Index m/m",
+  "actual": "0.2%",
+  "forecast": "0.2%",
+  "previous": "0.2%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Personal Income m/m",
+  "actual": "0.3%",
+  "forecast": "0.4%",
+  "previous": "0.1%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Personal Spending m/m",
+  "actual": "0.5%",
+  "forecast": "0.5%",
+  "previous": "0.5%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Natural Gas Storage",
+  "actual": "-120B",
+  "forecast": "-90B",
+  "previous": "-71B"
+ },
+ {
+  "time": "12:00pm",
+  "currency": "USD",
+  "title": "Crude Oil Inventories",
+  "actual": "3.6M",
+  "forecast": "-1.0M",
+  "previous": "3.4M"
+ }
+]

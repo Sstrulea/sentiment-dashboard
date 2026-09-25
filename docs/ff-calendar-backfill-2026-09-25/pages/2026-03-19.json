@@ -1,0 +1,221 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "4.3%",
+    "forecast": "2.2%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Claimant Count Change",
+    "actual": "24.7K",
+    "forecast": "25.8K",
+    "previous": "4.7K"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Average Earnings Index 3m/y",
+    "actual": "3.9%",
+    "forecast": "3.9%",
+    "previous": "4.2%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Unemployment Rate",
+    "actual": "5.2%",
+    "forecast": "5.3%",
+    "previous": "5.2%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "CHF",
+    "title": "SNB Monetary Policy Assessment",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "CHF",
+    "title": "SNB Policy Rate",
+    "actual": "0.00%",
+    "forecast": "0.00%",
+    "previous": "0.00%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "CHF",
+    "title": "SNB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Euro Summit",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:44am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.48|2.3",
+    "forecast": "",
+    "previous": "3.17|2.5"
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "Monetary Policy Summary",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "MPC Official Bank Rate Votes",
+    "actual": "0-0-9",
+    "forecast": "0-2-7",
+    "previous": "0-4-5"
+  },
+  {
+    "time": "8:00am",
+    "currency": "GBP",
+    "title": "Official Bank Rate",
+    "actual": "3.75%",
+    "forecast": "3.75%",
+    "previous": "3.75%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "205K",
+    "forecast": "215K",
+    "previous": "213K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "18.1",
+    "forecast": "8.3",
+    "previous": "16.3"
+  },
+  {
+    "time": "9:15am",
+    "currency": "EUR",
+    "title": "Main Refinancing Rate",
+    "actual": "2.15%",
+    "forecast": "2.15%",
+    "previous": "2.15%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "EUR",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "EUR",
+    "title": "ECB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "New Home Sales",
+    "actual": "587K",
+    "forecast": "722K",
+    "previous": "712K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "-0.5%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "35B",
+    "forecast": "39B",
+    "previous": "-38B"
+  },
+  {
+    "time": "5:45pm",
+    "currency": "NZD",
+    "title": "Trade Balance",
+    "actual": "-257M",
+    "forecast": "-740M",
+    "previous": "-627M"
+  },
+  {
+    "time": "All Day",
+    "currency": "JPY",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00pm",
+    "currency": "CNY",
+    "title": "1-y Loan Prime Rate",
+    "actual": "3.00%",
+    "forecast": "3.00%",
+    "previous": "3.00%"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "CNY",
+    "title": "5-y Loan Prime Rate",
+    "actual": "3.50%",
+    "forecast": "3.50%",
+    "previous": "3.50%"
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "Credit Card Spending y/y",
+    "actual": "-1.1%",
+    "forecast": "",
+    "previous": "0.9%"
+  }
+]

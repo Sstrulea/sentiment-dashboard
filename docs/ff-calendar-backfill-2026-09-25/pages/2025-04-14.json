@@ -1,0 +1,93 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "2.3%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "2:35am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Harker Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "0.5%",
+    "forecast": "",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Retail Sales Monitor y/y",
+    "actual": "0.9%",
+    "forecast": "0.7%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "7:40pm",
+    "currency": "USD",
+    "title": "FOMC Member Bostic Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

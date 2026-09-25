@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Monetary Policy Assessment",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Policy Rate",
+    "actual": "0.00%",
+    "forecast": "0.00%",
+    "previous": "0.00%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "SNB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:03am",
+    "currency": "EUR",
+    "title": "Italian Quarterly Unemployment Rate",
+    "actual": "6.1%",
+    "forecast": "6.3%",
+    "previous": "6.3%"
+  },
+  {
+    "time": "4:52am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Eurogroup Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "0.2B",
+    "forecast": "-4.4B",
+    "previous": "-6.4B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "236K",
+    "forecast": "220K",
+    "previous": "192K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Goods Trade Balance",
+    "actual": "-79.0B",
+    "forecast": "",
+    "previous": "-86.1B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-52.8B",
+    "forecast": "-62.5B",
+    "previous": "-59.3B"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Final Wholesale Inventories m/m",
+    "actual": "0.5%",
+    "forecast": "0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-177B",
+    "forecast": "-170B",
+    "previous": "-12B"
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "4.77|2.4",
+    "forecast": "",
+    "previous": "4.69|2.3"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "51.4",
+    "forecast": "",
+    "previous": "51.2"
+  },
+  {
+    "time": "8:15pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "1.5%",
+    "forecast": "1.4%",
+    "previous": "1.4%"
+  }
+]

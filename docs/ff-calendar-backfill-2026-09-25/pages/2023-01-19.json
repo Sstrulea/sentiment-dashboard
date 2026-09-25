@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.4%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "13.6B",
+    "forecast": "-11.6B",
+    "previous": "-0.5B"
+  },
+  {
+    "time": "Day 4",
+    "currency": "All",
+    "title": "WEF Annual Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "BOE Credit Conditions Survey",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30am",
+    "currency": "EUR",
+    "title": "ECB Monetary Policy Meeting Accounts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "0.5%",
+    "forecast": "2.0%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "-8.9",
+    "forecast": "-10.9",
+    "previous": "-13.8"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "190K",
+    "forecast": "214K",
+    "previous": "205K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Building Permits",
+    "actual": "1.33M",
+    "forecast": "1.37M",
+    "previous": "1.35M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Housing Starts",
+    "actual": "1.38M",
+    "forecast": "1.36M",
+    "previous": "1.40M"
+  },
+  {
+    "time": "10:30am",
+    "currency": "AUD",
+    "title": "CB Leading Index m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.4%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-82B",
+    "forecast": "-76B",
+    "previous": "11B"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "8.4M",
+    "forecast": "-2.1M",
+    "previous": "19.0M"
+  },
+  {
+    "time": "1:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Brainard Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "47.2",
+    "forecast": "",
+    "previous": "47.2"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "43.1%",
+    "forecast": "",
+    "previous": "6.8%"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "4.0%",
+    "forecast": "4.0%",
+    "previous": "3.7%"
+  },
+  {
+    "time": "6:35pm",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-45",
+    "forecast": "-41",
+    "previous": "-42"
+  },
+  {
+    "time": "8:15pm",
+    "currency": "CNY",
+    "title": "1-y Loan Prime Rate",
+    "actual": "3.65%",
+    "forecast": "3.65%",
+    "previous": "3.65%"
+  },
+  {
+    "time": "8:15pm",
+    "currency": "CNY",
+    "title": "5-y Loan Prime Rate",
+    "actual": "4.30%",
+    "forecast": "4.30%",
+    "previous": "4.30%"
+  }
+]

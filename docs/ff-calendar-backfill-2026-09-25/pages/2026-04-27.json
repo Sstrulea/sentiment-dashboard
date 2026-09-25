@@ -1,0 +1,69 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German GfK Consumer Climate",
+    "actual": "-33.3",
+    "forecast": "-30.2",
+    "previous": "-28.1"
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Realized Sales",
+    "actual": "-68",
+    "forecast": "-42",
+    "previous": "-52"
+  },
+  {
+    "time": "9:00am",
+    "currency": "CNY",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.2%",
+    "forecast": "",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Shop Price Index y/y",
+    "actual": "1.0%",
+    "forecast": "1.4%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.7%",
+    "forecast": "2.6%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "11:04pm",
+    "currency": "JPY",
+    "title": "BOJ Outlook Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:04pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.75%",
+    "forecast": "<0.75%",
+    "previous": "<0.75%"
+  },
+  {
+    "time": "11:04pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

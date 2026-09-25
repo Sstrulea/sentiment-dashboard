@@ -1,0 +1,85 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "German ifo Business Climate",
+  "actual": "86.6",
+  "forecast": "86.1",
+  "previous": "85.7"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "M3 Money Supply y/y",
+  "actual": "3.3%",
+  "forecast": "3.2%",
+  "previous": "3.0%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Private Loans y/y",
+  "actual": "3.0%",
+  "forecast": "3.1%",
+  "previous": "3.0%"
+ },
+ {
+  "time": "All Day",
+  "currency": "EUR",
+  "title": "ECOFIN Meetings",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:00am",
+  "currency": "GBP",
+  "title": "CBI Realized Sales",
+  "actual": "-26",
+  "forecast": "-45",
+  "previous": "-54"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core Durable Goods Orders m/m",
+  "actual": "0.6%",
+  "forecast": "0.9%",
+  "previous": "1.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Durable Goods Orders m/m",
+  "actual": "0.3%",
+  "forecast": "1.6%",
+  "previous": "-4.0%"
+ },
+ {
+  "time": "2:50pm",
+  "currency": "USD",
+  "title": "President Trump Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "7:01pm",
+  "currency": "GBP",
+  "title": "BRC Shop Price Index y/y",
+  "actual": "0.9%",
+  "forecast": "1.1%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "11:05pm",
+  "currency": "AUD",
+  "title": "RBA Gov Bullock Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

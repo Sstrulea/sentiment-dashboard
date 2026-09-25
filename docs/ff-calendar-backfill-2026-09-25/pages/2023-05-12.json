@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "0.2%",
+    "forecast": "-0.4%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-16.4B",
+    "forecast": "-17.5B",
+    "previous": "-16.6B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "0.7%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "0.7%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim Business Investment q/q",
+    "actual": "0.7%",
+    "forecast": "-0.7%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.6%",
+    "forecast": "0.6%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:15am",
+    "currency": "GBP",
+    "title": "MPC Member Pill Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "57.7",
+    "forecast": "63.0",
+    "previous": "63.5"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "4.5%",
+    "forecast": "",
+    "previous": "4.6%"
+  },
+  {
+    "time": "7:45pm",
+    "currency": "USD",
+    "title": "FOMC Member Jefferson Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,213 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "-1.4%",
+    "forecast": "0.1%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-19.6B",
+    "forecast": "-14.2B",
+    "previous": "-14.0B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.9%",
+    "forecast": "0.8%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.9%",
+    "forecast": "-0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "-1.4%",
+    "forecast": "-0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Eurogroup Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:33am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.60|2.0",
+    "forecast": "",
+    "previous": "2.53|2.8"
+  },
+  {
+    "time": "7:01am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "0.7%",
+    "forecast": "",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI y/y",
+    "actual": "3.4%",
+    "forecast": "3.5%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI y/y",
+    "actual": "3.3%",
+    "forecast": "3.4%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "3.7M",
+    "forecast": "-1.2M",
+    "previous": "1.2M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "5.50%",
+    "forecast": "5.50%",
+    "previous": "5.50%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Economic Projections",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Budget Balance",
+    "actual": "-347.1B",
+    "forecast": "-279.6B",
+    "previous": "209.5B"
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "FOMC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:15pm",
+    "currency": "CAD",
+    "title": "BOC Gov Macklem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "RICS House Price Balance",
+    "actual": "-17%",
+    "forecast": "-5%",
+    "previous": "-7%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "BSI Manufacturing Index",
+    "actual": "-1.0",
+    "forecast": "-5.2",
+    "previous": "-6.7"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "39.7K",
+    "forecast": "30.5K",
+    "previous": "37.4K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.0%",
+    "forecast": "4.0%",
+    "previous": "4.1%"
+  }
+]

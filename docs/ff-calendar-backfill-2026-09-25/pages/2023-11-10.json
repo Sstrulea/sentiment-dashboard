@@ -1,0 +1,141 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.2%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim GDP q/q",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "0.4%",
+    "forecast": "-0.5%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-14.3B",
+    "forecast": "-15.3B",
+    "previous": "-15.5B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "-0.1%",
+    "forecast": "-0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim Business Investment q/q",
+    "actual": "-4.2%",
+    "forecast": "-3.2%",
+    "previous": "4.1%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Industrial Production m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "CHF",
+    "title": "Gov Board Member Schlegel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "Day 2",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:05am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.0%"
+  },
+  {
+    "time": "7:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "60.4",
+    "forecast": "63.7",
+    "previous": "63.8"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "4.4%",
+    "forecast": "",
+    "previous": "4.2%"
+  },
+  {
+    "time": "10:20am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

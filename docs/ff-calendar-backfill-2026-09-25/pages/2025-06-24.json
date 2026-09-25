@@ -1,0 +1,253 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "BOJ Core CPI y/y",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "88.4",
+    "forecast": "88.1",
+    "previous": "87.5"
+  },
+  {
+    "time": "4:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "MPC Member Greene Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-33",
+    "forecast": "-28",
+    "previous": "-30"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "0.6%",
+    "forecast": "0.5%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.4%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "0.6%",
+    "forecast": "",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Current Account",
+    "actual": "-450B",
+    "forecast": "-448B",
+    "previous": "-312B"
+  },
+  {
+    "time": "8:51am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "-10.1",
+    "forecast": "-13.1",
+    "previous": "-13.5"
+  },
+  {
+    "time": "9:00am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "HPI m/m",
+    "actual": "-0.4%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "S&P/CS Composite-20 HPI y/y",
+    "actual": "3.4%",
+    "forecast": "4.0%",
+    "previous": "4.1%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:35am",
+    "currency": "GBP",
+    "title": "MPC Member Ramsden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:59am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "-7",
+    "forecast": "-10",
+    "previous": "-9"
+  },
+  {
+    "time": "10:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Fed Chairman Powell Testifies",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Consumer Confidence",
+    "actual": "93.0",
+    "forecast": "99.4",
+    "previous": "98.4"
+  },
+  {
+    "time": "11:40am",
+    "currency": "GBP",
+    "title": "MPC Member Pill Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:50am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Collins Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Trade Balance",
+    "actual": "1235M",
+    "forecast": "1060M",
+    "previous": "1285M"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "BOJ Summary of Opinions",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "SPPI y/y",
+    "actual": "3.3%",
+    "forecast": "3.1%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "CPI y/y",
+    "actual": "2.1%",
+    "forecast": "2.3%",
+    "previous": "2.4%"
+  }
+]

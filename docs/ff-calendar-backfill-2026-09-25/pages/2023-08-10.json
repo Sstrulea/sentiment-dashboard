@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core CPI y/y",
+    "actual": "4.7%",
+    "forecast": "4.7%",
+    "previous": "4.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "CPI y/y",
+    "actual": "3.2%",
+    "forecast": "3.3%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "248K",
+    "forecast": "231K",
+    "previous": "227K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Mortgage Delinquencies",
+    "actual": "3.37%",
+    "forecast": "",
+    "previous": "3.56%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "29B",
+    "forecast": "24B",
+    "previous": "14B"
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "4.19|2.4",
+    "forecast": "",
+    "previous": "3.91|2.4"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Budget Balance",
+    "actual": "-220.8B",
+    "forecast": "-107.5B",
+    "previous": "-227.8B"
+  },
+  {
+    "time": "4:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Harker Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "46.3",
+    "forecast": "",
+    "previous": "47.4"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "-0.5%",
+    "forecast": "",
+    "previous": "1.6%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "RBA Gov Lowe Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "JPY",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,21 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "8:30pm",
+  "currency": "CNY",
+  "title": "Manufacturing PMI",
+  "actual": "49.0",
+  "forecast": "49.6",
+  "previous": "49.4"
+ },
+ {
+  "time": "8:30pm",
+  "currency": "CNY",
+  "title": "Non-Manufacturing PMI",
+  "actual": "50.4",
+  "forecast": "50.5",
+  "previous": "50.2"
+ }
+]

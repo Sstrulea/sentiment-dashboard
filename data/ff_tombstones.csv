@@ -1,0 +1,388 @@
+canonical_id,datetime_utc,reason,source
+aud_cpi,2023-01-10 00:30:00,wrong-year copy of the 2024-01-10 print (identical 4.3/4.4/4.9; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-11 00:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_cpi,2023-01-31 00:30:00,wrong-year copy of the 2024-01-31 print (identical 3.4/3.7/4.3; the JB archive dated part of Jan-2024 as Jan-2023); real Dec-2022 print of this release present at 2023-01-25 00:30 (8.4),migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_cpi,2024-01-07 00:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_employment_change,2023-01-18 00:30:00,wrong-year copy of the 2024-01-18 print (identical -65.1/15.4/72.6; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-19 00:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_employment_change,2024-01-16 00:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_import_prices,2023-02-01 00:30:00,wrong-year copy of the 2024-02-01 print (identical 1.1/0.6/0.8; the JB archive dated part of Jan-2024 as Jan-2023); real Q4-2022 print present at 2023-01-27 00:30 (1.8),migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_import_prices,2024-01-30 00:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_ppi,2024-01-31 00:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_rba_trimmed_mean_cpi,2023-01-31 00:30:00,wrong-year copy of the 2024-01-31 print (identical 0.8/0.9/1.2; the JB archive dated part of Jan-2024 as Jan-2023); real Q4-2022 print present at 2023-01-25 00:30 (1.7),migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_retail_sales,2023-01-09 00:30:00,wrong-year copy of the 2024-01-09 print (identical 2.0/1.2/-0.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-11 00:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_retail_sales,2023-01-30 00:30:00,wrong-year copy of the 2024-01-30 print (identical -2.7/-1.9/1.6; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-31 00:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_s_p_global_manufacturing_pmi,2026-02-19 21:00:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_s_p_global_services_pmi,2026-02-19 21:00:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+aud_unemployment_rate,2023-01-18 00:30:00,wrong-year copy of the 2024-01-18 print (identical 3.9/3.9/3.9; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-19 00:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_boc_interest_rate_decision,2023-01-24 14:45:00,wrong-year copy of the 2024-01-24 print (identical 5.0/5.0/5.0; the JB archive dated part of Jan-2024 as Jan-2023); the BoC decision of 2023-01-25 15:00 (4.50) is present,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_common_cpi,2023-01-16 13:30:00,wrong-year copy of the 2024-01-16 print (identical 3.9/3.8/3.9; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 13:32,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2023-01-16 13:30:00,purged earlier (see source),migrations/2026-07-31_purge_jan2023_duplicates.py
+cad_core_cpi,2025-04-14 21:00:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2025-04-15 12:30:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2025-05-19 21:00:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2025-05-20 12:30:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2025-11-16 22:00:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2025-11-17 13:30:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2026-02-16 22:00:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2026-02-17 13:30:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_core_cpi,2026-08-17 12:30:00,pre-print copy / re-listing (actual 0.0 or empty) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_cpi,2023-01-16 13:30:00,wrong-year copy of the 2024-01-16 print (identical -0.3/-0.3/0.1; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_employment_change,2023-01-05 13:30:00,wrong-year copy of the 2024-01-05 print (identical 0.1/12.2/24.9; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_ippi,2023-01-17 13:30:00,wrong-year copy of the 2024-01-17 print (identical -1.5/-0.7/-0.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-18 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_median_cpi,2023-01-16 13:30:00,wrong-year copy of the 2024-01-16 print (identical 3.6/3.3/3.6; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_retail_sales,2023-01-19 13:30:00,"wrong-year copy of the 2024 print (identical actual/forecast/previous, 365 days apart)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_s_p_global_manufacturing_pmi,2023-01-02 14:30:00,wrong-year copy of the 2024-01-02 print (45.4/0.0/47.7); FF lists a bank holiday / no such event that day; real Jan-2023 print present at 2023-01-03 14:30 (49.2),migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_s_p_global_manufacturing_pmi,2023-01-03 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-02-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-03-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-04-03 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-05-02 07:30:00,another country's PMI filed under CAD (release time 07:30 UTC = the CHF procure.ch PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_s_p_global_manufacturing_pmi,2023-06-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-07-03 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-08-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-09-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-10-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2023-11-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-01-02 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-01-03 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-02-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-03-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-04-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-05-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-06-03 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-07-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-08-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-09-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-10-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-11-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2024-12-02 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-01-02 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-01-03 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-02-03 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-03-03 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-04-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-05-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-06-02 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-07-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-08-04 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-09-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-10-01 07:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-11-03 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-12-01 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2025-12-04 08:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_s_p_global_manufacturing_pmi,2026-07-02 12:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+cad_trimmed_cpi,2023-01-16 13:30:00,wrong-year copy of the 2024-01-16 print (identical 3.7/3.4/3.5; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+cad_unemployment_rate,2023-01-05 13:30:00,wrong-year copy of the 2024-01-05 print (identical 5.8/5.9/5.8; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_cpi,2023-01-08 07:30:00,"wrong-year copy (no actual) of the 2024-01-08 release (same forecast -0.1 / previous -0.2), dated on a Sunday",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_cpi,2024-01-06 07:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_gdp,2026-02-25 08:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_ppi,2024-01-14 07:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_ppi,2025-04-13 21:00:00,pre-print copy / re-listing (actual 0.0) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_ppi,2025-04-14 06:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_procurech_manufacturing_pmi,2024-01-02 08:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_procurech_manufacturing_pmi,2025-01-02 08:30:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_procurech_manufacturing_pmi,2025-12-01 08:30:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2023-01-08 07:30:00,"wrong-year copy of the 2024 print (identical actual/forecast/previous, 365 days apart)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2024-01-30 07:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2025-01-05 22:00:00,pre-print copy / re-listing (actual 0.0) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2025-01-06 06:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2025-09-01 05:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2026-02-26 07:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_retail_sales,2026-09-01 06:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_unemployment_rate,2024-01-07 06:45:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_unemployment_rate,2025-06-04 21:00:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+chf_unemployment_rate,2025-06-05 05:45:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_core_cpi,2023-01-05 10:00:00,wrong-year copy of the 2024-01-05 print (identical 3.4/3.4/3.6; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 10:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_cpi,2023-01-05 10:00:00,wrong-year copy of the 2024-01-05 print (identical 2.9/3.0/2.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 10:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_ecb_interest_rate_decision,2023-01-25 13:15:00,"wrong-year copy of the 2024-01-25 print (identical 4.5/4.5/4.5; the JB archive dated part of Jan-2024 as Jan-2023); the ECB held no meeting in January 2023 (next: 2023-02-02, present)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_ecb_interest_rate_decision,2024-01-30 13:15:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_gdp,2023-01-30 10:00:00,"pre-print copy / re-listing with no actual, next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_retail_sales,2023-01-08 10:00:00,wrong-year copy of the 2024-01-08 print (identical -0.3/-0.3/0.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 10:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_s_p_global_manufacturing_pmi,2026-02-20 08:00:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_s_p_global_services_pmi,2026-02-20 08:00:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+eur_sp_global_services_pmi,2024-01-06 09:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_average_weekly_earnings_total_pay,2023-01-16 07:00:00,wrong-year copy of the 2024-01-16 print (identical 6.5/6.8/7.2; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_average_weekly_earnings_total_pay,2024-01-21 07:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_claimant_count_change,2023-01-16 07:00:00,wrong-year copy of the 2024-01-16 print (identical 11.7/18.1/0.6; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_claimant_count_change,2024-01-21 07:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_core_cpi,2023-01-17 07:00:00,wrong-year copy of the 2024-01-17 print (identical 5.1/4.9/5.1; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-18 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_cpi,2023-01-17 07:00:00,wrong-year copy of the 2024-01-17 print (identical 4.0/3.8/3.9; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-18 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_cpi,2024-01-15 07:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_gdp,2023-01-12 07:00:00,wrong-year copy of the 2024-01-12 print (identical 0.3/0.2/-0.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-13 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_industrial_production,2023-01-12 07:00:00,wrong-year copy of the 2024-01-12 print (identical 0.3/0.3/-1.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-13 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_ppi_output,2023-01-17 07:00:00,wrong-year copy of the 2024-01-17 print (identical -0.6/-0.2/0.0; the JB archive dated part of Jan-2024 as Jan-2023); real Dec-2022 print present at 2023-01-25 07:00 (-0.8; ONS published it late),migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_ppi_output,2025-10-22 06:00:00,pre-print copy / re-listing (actual 0.0) next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_retail_sales,2023-01-19 07:00:00,wrong-year copy of the 2024-01-19 print (identical -3.2/-0.5/1.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-20 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_retail_sales,2024-01-17 07:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2023-01-02 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-01-02 09:30:00,wrong-year copy of the 2024-01-02 print (46.2/46.4/46.4); FF lists a bank holiday / no such event that day; real Jan-2023 print present at 2023-01-03 09:30 (45.3),migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2023-01-02 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-01-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-01-04 00:30:00,"another country's PMI filed under GBP and dated a year early: identical to the JPY au Jibun Bank final PMI of 2024-01-04 00:30 (47.9/47.7/47.7, present as jpy_au_jibun_bank_manufacturing_pmi); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2023-02-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-02-01 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-02-01 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-03-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-03-01 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-03-01 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-04-03 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-04-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-04-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-05-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-05-01 13:45:00,another country's PMI filed under GBP (release time 13:45 UTC = the USD S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2023-05-02 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-05-30 21:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-06-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-06-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-07-03 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-07-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-07-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-08-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-08-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-08-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-09-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-09-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-09-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-10-02 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-10-02 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-10-02 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-11-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-11-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2023-11-02 09:00:00,another country's PMI filed under GBP (release time 09:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2023-12-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-01-02 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-01-02 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-01-02 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-01-04 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-02-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-02-01 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-02-01 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-02-29 12:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-03-01 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-03-01 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-04-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-04-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-04-02 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-05-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-05-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-05-02 08:00:00,another country's PMI filed under GBP (release time 08:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2024-06-03 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-06-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-06-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-07-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-07-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-07-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-08-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-08-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-08-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-09-02 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-09-02 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-09-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-10-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-10-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-10-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-11-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-11-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-11-04 09:00:00,another country's PMI filed under GBP (release time 09:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2024-12-02 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-12-02 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2024-12-30 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-01-02 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-01-02 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-02-03 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-02-03 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-02-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-03-03 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-03-03 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-03-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-04-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-04-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-04-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-05-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-05-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-05-02 08:00:00,another country's PMI filed under GBP (release time 08:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_manufacturing_pmi,2025-06-02 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-06-02 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-06-02 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-07-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-07-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-07-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-08-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-08-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-08-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-09-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-09-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-09-02 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-10-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-10-01 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-10-01 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-11-03 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-11-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-11-04 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-12-01 00:30:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-12-01 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_manufacturing_pmi,2025-12-01 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-01-04 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-01-04 09:30:00,"wrong-year copy of the 2024-01-04 print (53.4/52.7/52.7); real Jan-2023 print present at 2023-01-05 09:30 (49.9, FF jan5.2023)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_services_pmi,2023-01-04 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-01-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-02-03 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-02-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-03-03 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-03-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-04-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-04-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-05-03 13:45:00,another country's PMI filed under GBP (release time 13:45 UTC = the USD S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_services_pmi,2023-05-04 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-06-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-06-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-07-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-07-06 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-08-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-08-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-09-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-09-06 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-10-04 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-10-04 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-11-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2023-11-06 09:00:00,another country's PMI filed under GBP (release time 09:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_services_pmi,2024-01-04 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-01-04 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-01-06 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-01-06 09:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_services_pmi,2024-01-06 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-02-05 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-02-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-03-05 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-03-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-04-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-04-04 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-05-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-05-06 08:00:00,another country's PMI filed under GBP (release time 08:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_services_pmi,2024-06-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-06-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-07-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-07-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-08-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-08-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-09-04 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-09-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-10-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-10-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-11-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-11-06 09:00:00,another country's PMI filed under GBP (release time 09:00 UTC = the EUR S&P Global PMI slot); purged 2026-07-30 (docs/pmi-219-purged-rows.csv) and re-introduced later by an archive re-scan,migrations/2026-09-25_backfill_ff_calendar_pages.py
+gbp_s_p_global_cips_services_pmi,2024-12-04 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2024-12-04 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-01-06 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-01-06 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-02-05 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-02-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-03-05 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-03-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-04-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-04-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-05-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-05-06 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-06-04 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-06-04 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-07-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-07-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-08-05 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-08-05 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-09-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-09-04 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-10-03 08:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-10-03 13:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-11-05 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-11-05 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-12-03 09:00:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_s_p_global_cips_services_pmi,2025-12-03 14:45:00,purged earlier (see source),PMI cross-country purge 2026-07-30 (docs/pmi-219-purged-rows.csv)
+gbp_unemployment_rate,2023-01-16 07:00:00,wrong-year copy of the 2024-01-16 print (identical 4.2/4.2/4.2; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-17 07:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_au_jibun_bank_manufacturing_pmi,2024-01-02 00:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_au_jibun_bank_manufacturing_pmi,2026-02-19 23:30:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2023-01-23 03:09:00,"wrong-year copy of the 2024-01-23 print (identical -0.1/-0.1/-0.1; the JB archive dated part of Jan-2024 as Jan-2023); BoJ met 17-18 Jan 2023 (decision at 2023-01-18 02:40, present)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2024-12-17 22:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-01-22 22:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-03-17 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-04-29 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-06-15 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-07-29 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-09-17 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2025-12-17 22:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2026-04-26 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2026-07-29 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2026-07-31 02:30:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2026-07-31 02:50:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2026-09-16 21:00:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_boj_interest_rate_decision,2026-09-18 02:30:00,"BoJ placeholder row (JB 0.0/NaN at 00:00 server time or a pre-print re-listing), not the decision itself",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_core_cpi,2023-01-23 05:00:00,wrong-year copy of the 2024-01-23 print (identical 2.6/2.8/2.7; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-24 05:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_core_cpi,2024-01-21 05:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_core_cpi,2025-05-27 05:00:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_core_cpi,2025-08-26 05:00:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_core_cpi,2026-02-24 05:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_core_machinery_orders,2024-01-19 23:50:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_cpi,2023-01-18 23:30:00,wrong-year copy of the 2024-01-18 print (identical 2.3/2.3/2.5; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-19 23:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_cpi,2024-01-23 23:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_cpi,2026-02-19 22:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_labor_cash_earnings,2023-01-09 23:30:00,wrong-year copy of the 2024-01-09 print (identical 0.2/1.5/1.5; the JB archive dated part of Jan-2024 as Jan-2023); real Nov-2022 print present at 2023-01-05 23:30 (0.5),migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_labor_cash_earnings,2024-01-08 23:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_prelim_industrial_production,2026-02-26 22:50:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_prelim_industrial_production,2026-04-29 22:50:00,"same print listed one hour early (FF 7:50pm EDT = 23:50 UTC, kept there)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_prelim_industrial_production,2026-07-30 22:50:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_retail_sales,2026-02-26 22:50:00,JB 0.0 placeholder listed one hour early (8:50 JST = 23:50 UTC); re-inserted at 23:50 with the FF first print,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_retail_sales,2026-04-29 22:50:00,"same print listed one hour early (FF 7:50pm EDT = 23:50 UTC, kept there)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_sppi,2024-01-27 23:50:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_tokyo_core_cpi,2023-01-08 23:30:00,wrong-year copy of the 2024-01-08 print (identical 2.1/2.1/2.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-09 23:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_tokyo_core_cpi,2023-01-25 23:30:00,wrong-year copy of the 2024-01-25 print (identical 1.6/1.9/2.1; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-26 23:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_tokyo_core_cpi,2024-01-30 23:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_tokyo_core_cpi,2026-02-26 22:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_tokyo_core_cpi,2026-07-30 22:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_unemployment_rate,2023-01-29 23:30:00,wrong-year copy of the 2024-01-29 print (identical 2.4/2.5/2.5; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-30 23:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+jpy_unemployment_rate,2024-01-30 23:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+nzd_businessnz_manufacturing_index,2023-01-18 21:30:00,wrong-year copy of the 2024-01-18 print (identical 43.1/0.0/46.5; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-19 21:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+nzd_businessnz_services_index,2023-01-22 21:30:00,wrong-year copy of the 2024-01-22 print (identical 48.8/0.0/51.1; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-23 21:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+nzd_cpi,2023-01-23 21:45:00,wrong-year copy of the 2024-01-23 print (identical 0.5/0.5/1.8; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-24 21:45,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_adp_nonfarm_employment_change,2023-01-04 13:15:00,wrong-year copy of the 2024-01-04 print (identical 164.0/120.0/101.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-05 13:15,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_adp_nonfarm_employment_change,2023-01-31 13:15:00,wrong-year copy of the 2024-01-31 print (identical 107.0/148.0/158.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-02-01 13:15,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_adp_nonfarm_employment_change,2024-01-08 13:15:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_advance_gdp_price_index,2023-01-25 13:30:00,wrong-year copy of the 2024-01-25 print (identical 1.5/2.3/3.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-26 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_advance_gdp_price_index,2024-01-30 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_advance_gdp_price_index,2026-02-20 12:30:00,DST/pre-print copy (0.0 placeholder) <=2h from the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_average_hourly_earnings,2023-01-05 13:30:00,wrong-year copy of the 2024-01-05 print (identical 0.4/0.3/0.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_average_hourly_earnings,2024-01-10 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_average_hourly_earnings,2025-10-02 21:00:00,placeholder for the employment report postponed by the US shutdown; the September 2025 data was published 2025-11-20 (present),migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_core_cpi,2023-01-11 13:30:00,wrong-year copy of the 2024-01-11 print (identical 0.3/0.3/0.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-12 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_core_pce_price_index,2023-01-26 13:30:00,wrong-year copy of the 2024-01-26 print (identical 0.2/0.2/0.1; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-27 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_core_pce_price_index,2024-01-31 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_core_pce_price_index,2026-02-08 22:00:00,"JB mis-dated copy of the FF ""Oct Data"" catch-up row published 2026-01-22 (same values, blank consensus); FF lists no USD release on 2026-02-08/09; the October value stays as the previous of the 2026-01-22 print",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_cpi,2023-01-11 13:30:00,wrong-year copy of the 2024-01-11 print (identical 3.4/3.2/3.1; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-12 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_durable_goods_orders,2023-01-25 13:30:00,wrong-year copy of the 2024-01-25 print (identical 0.0/1.2/5.5; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-26 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_durable_goods_orders,2026-07-27 11:30:00,"second listing of the same print one hour early (FF lists one event, 8:30 ET = 12:30 UTC)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_fed_interest_rate_decision,2023-01-31 19:00:00,wrong-year copy of the 2024-01-31 print (identical 5.5/5.5/5.5; the JB archive dated part of Jan-2024 as Jan-2023); the FOMC decision of 2023-02-01 19:00 (4.75) is present,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_gdp,2023-01-25 13:30:00,wrong-year copy of the 2024-01-25 print (identical 3.3/2.0/4.9; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-26 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_import_prices,2023-01-17 13:30:00,wrong-year copy of the 2024-01-17 print (identical 0.0/-0.6/-0.5; the JB archive dated part of Jan-2024 as Jan-2023); real Dec-2022 print present at 2023-01-13 13:30 (0.4),migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_industrial_production,2023-01-17 14:15:00,"wrong-year copy of the 2024-01-17 print (0.1/-0.1/0.0), re-inserted at 2024-01-17 14:15; real Jan-2023 print present at 2023-01-18 14:15 (-0.7)",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2023-01-04 13:30:00,wrong-year copy of the 2024-01-04 print (identical 202.0/217.0/220.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-05 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2023-01-11 13:30:00,wrong-year copy of the 2024-01-11 print (identical 202.0/209.0/203.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-12 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2023-01-18 13:30:00,wrong-year copy of the 2024-01-18 print (identical 187.0/206.0/203.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-19 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2023-01-25 13:30:00,wrong-year copy of the 2024-01-25 print (identical 214.0/199.0/189.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-26 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2024-01-02 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2024-01-09 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2024-01-23 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_initial_jobless_claims,2026-02-19 12:30:00,JB 0.0 placeholder on a level/index series next to the real print of the same release,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_ism_manufacturing_pmi,2023-01-03 15:00:00,wrong-year copy of the 2024-01-03 print (identical 47.4/47.2/46.7; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-04 15:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_ism_non_manufacturing_pmi,2023-01-05 15:00:00,wrong-year copy of the 2024-01-05 print (identical 50.6/52.5/52.7; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 15:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_jolts_job_openings,2023-01-03 15:00:00,wrong-year copy of the 2024-01-03 print (identical 8.79/8.84/8.85; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-04 15:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_jolts_job_openings,2023-01-30 15:00:00,wrong-year copy of the 2024-01-30 print (identical 9.03/8.73/8.93; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-02-01 15:00,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_jolts_job_openings,2024-01-07 15:00:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_nonfarm_payrolls,2023-01-05 13:30:00,wrong-year copy of the 2024-01-05 print (identical 216.0/168.0/173.0; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_nonfarm_payrolls,2024-01-10 13:30:00,"JB placeholder 0/0/0 (actual, forecast and previous all 0.0) next to the real print of the same release",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_nonfarm_payrolls,2025-10-02 21:00:00,placeholder for the employment report postponed by the US shutdown; the September 2025 data was published 2025-11-20 (present),migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_personal_income,2023-01-26 13:30:00,wrong-year copy of the 2024-01-26 print (identical 0.3/0.3/0.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-27 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_personal_income,2026-02-08 22:00:00,"JB mis-dated copy of the FF ""Oct Data"" catch-up row published 2026-01-22 (same values, blank consensus); FF lists no USD release on 2026-02-08/09; the October value stays as the previous of the 2026-01-22 print",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_personal_spending,2023-01-26 13:30:00,wrong-year copy of the 2024-01-26 print (identical 0.7/0.5/0.4; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-27 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_personal_spending,2026-02-08 22:00:00,"JB mis-dated copy of the FF ""Oct Data"" catch-up row published 2026-01-22 (same values, blank consensus); FF lists no USD release on 2026-02-08/09; the October value stays as the previous of the 2026-01-22 print",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_ppi,2023-01-12 13:30:00,wrong-year copy of the 2024-01-12 print (identical -0.1/0.1/-0.1; the JB archive dated part of Jan-2024 as Jan-2023); real Dec-2022 print present at 2023-01-18 13:30 (-0.5),migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_ppi,2026-02-08 22:00:00,"JB mis-dated copy of the FF ""Oct Data"" catch-up row published 2026-01-14 (same values, blank consensus); FF lists no USD release on 2026-02-08/09; the October value stays as the previous of the 2026-01-14 print",migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_retail_sales,2023-01-17 13:30:00,wrong-year copy of the 2024-01-17 print (identical 0.6/0.4/0.3; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-18 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_unemployment_rate,2023-01-05 13:30:00,wrong-year copy of the 2024-01-05 print (identical 3.7/3.8/3.7; the JB archive dated part of Jan-2024 as Jan-2023); real Jan-2023 print present at 2023-01-06 13:30,migrations/2026-09-25_backfill_ff_calendar_pages.py
+usd_unemployment_rate,2025-10-02 21:00:00,placeholder for the employment report postponed by the US shutdown; the September 2025 data was published 2025-11-20 (present),migrations/2026-09-25_backfill_ff_calendar_pages.py

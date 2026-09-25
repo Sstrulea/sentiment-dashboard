@@ -1,0 +1,101 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "0.6%",
+    "forecast": "0.5%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "EU Economic Forecasts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Eurogroup Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:00am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "FPI m/m",
+    "actual": "1.7%",
+    "forecast": "",
+    "previous": "1.1%"
+  },
+  {
+    "time": "6:24pm",
+    "currency": "AUD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "-6.9%",
+    "forecast": "",
+    "previous": "5.0%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP Price Index y/y",
+    "actual": "1.1%",
+    "forecast": "1.1%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.5%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "2.8%",
+    "forecast": "",
+    "previous": "7.0%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "NAB Business Confidence",
+    "actual": "6",
+    "forecast": "",
+    "previous": "0"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "NZD",
+    "title": "Inflation Expectations q/q",
+    "actual": "3.30%",
+    "forecast": "",
+    "previous": "3.62%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "0.3%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  }
+]

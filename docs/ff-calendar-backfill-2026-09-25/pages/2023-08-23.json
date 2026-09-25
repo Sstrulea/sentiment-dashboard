@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "46.4",
+    "forecast": "45.1",
+    "previous": "45.1"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "46.7",
+    "forecast": "47.5",
+    "previous": "47.1"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "39.1",
+    "forecast": "38.9",
+    "previous": "38.8"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "47.3",
+    "forecast": "51.5",
+    "previous": "52.3"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "43.7",
+    "forecast": "42.8",
+    "previous": "42.7"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "48.3",
+    "forecast": "50.6",
+    "previous": "50.9"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "42.5",
+    "forecast": "45.1",
+    "previous": "45.3"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "48.7",
+    "forecast": "50.9",
+    "previous": "51.5"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "-0.8%",
+    "forecast": "0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "47.0",
+    "forecast": "48.9",
+    "previous": "49.0"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "51.0",
+    "forecast": "52.1",
+    "previous": "52.3"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-16",
+    "forecast": "-15",
+    "previous": "-15"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim Benchmark Payrolls Revision",
+    "actual": "-306K",
+    "forecast": "",
+    "previous": "462K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "New Home Sales",
+    "actual": "714K",
+    "forecast": "705K",
+    "previous": "684K"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-6.1M",
+    "forecast": "-2.9M",
+    "previous": "-6.0M"
+  }
+]

@@ -1,0 +1,109 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:00am",
+    "currency": "JPY",
+    "title": "Economy Watchers Sentiment",
+    "actual": "48.7",
+    "forecast": "49.5",
+    "previous": "49.1"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Industrial Production m/m",
+    "actual": "1.8%",
+    "forecast": "0.2%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "SECO Consumer Climate",
+    "actual": "-34",
+    "forecast": "-34",
+    "previous": "-37"
+  },
+  {
+    "time": "4:30am",
+    "currency": "EUR",
+    "title": "Sentix Investor Confidence",
+    "actual": "-6.2",
+    "forecast": "-6.2",
+    "previous": "-7.4"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "GBP",
+    "title": "MPC Member Taylor Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "GBP",
+    "title": "MPC Member Lombardelli Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "M2 Money Stock y/y",
+    "actual": "1.8%",
+    "forecast": "1.4%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Retail Sales Monitor y/y",
+    "actual": "1.2%",
+    "forecast": "2.6%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "NAB Business Confidence",
+    "actual": "1",
+    "forecast": "",
+    "previous": "6"
+  },
+  {
+    "time": "10:30pm",
+    "currency": "AUD",
+    "title": "Cash Rate",
+    "actual": "3.60%",
+    "forecast": "3.60%",
+    "previous": "3.60%"
+  },
+  {
+    "time": "10:30pm",
+    "currency": "AUD",
+    "title": "RBA Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:30pm",
+    "currency": "AUD",
+    "title": "RBA Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

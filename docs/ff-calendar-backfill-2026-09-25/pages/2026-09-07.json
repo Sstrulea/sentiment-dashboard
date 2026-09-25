@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Leading Indicators",
+    "actual": "117.9%",
+    "forecast": "117.9%",
+    "previous": "116.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Industrial Production m/m",
+    "actual": "-1.1%",
+    "forecast": "0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Lloyds HPI m/m",
+    "actual": "-0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Foreign Currency Reserves",
+    "actual": "770B",
+    "forecast": "",
+    "previous": "768B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "3.1%",
+    "forecast": "3.1%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "EUR",
+    "title": "Sentix Investor Confidence",
+    "actual": "5.1",
+    "forecast": "2.1",
+    "previous": "0.9"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Employment Change q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Revised GDP q/q",
+    "actual": "0.6%",
+    "forecast": "0.4%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Manufacturing Sales q/q",
+    "actual": "3.1%",
+    "forecast": "",
+    "previous": "3.1%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Retail Sales Monitor y/y",
+    "actual": "0.5%",
+    "forecast": "1.2%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "4.7%",
+    "forecast": "3.8%",
+    "previous": "4.0%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Bank Lending y/y",
+    "actual": "5.4%",
+    "forecast": "5.5%",
+    "previous": "5.4%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Current Account",
+    "actual": "2.52T",
+    "forecast": "2.48T",
+    "previous": "1.40T"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Final GDP Price Index y/y",
+    "actual": "2.6%",
+    "forecast": "2.6%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Final GDP q/q",
+    "actual": "0.4%",
+    "forecast": "0.4%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "AUD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "-5.2%",
+    "forecast": "",
+    "previous": "6.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "NAB Business Confidence",
+    "actual": "-8",
+    "forecast": "",
+    "previous": "-7"
+  }
+]

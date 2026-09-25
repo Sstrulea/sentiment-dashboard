@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-0.6%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "3K",
+    "forecast": "5K",
+    "previous": "1K"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "40.1",
+    "forecast": "42.4",
+    "previous": "39.4"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Housing Equity Withdrawal q/q",
+    "actual": "-10.9B",
+    "forecast": "-8.7B",
+    "previous": "-17.9B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.3%",
+    "forecast": "2.4%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.0%",
+    "forecast": "2.0%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "5:34am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.83|1.3",
+    "forecast": "",
+    "previous": "2.67|2.0"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "41K",
+    "forecast": "49K",
+    "previous": "-29K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "CAD",
+    "title": "Ivey PMI",
+    "actual": "51.9",
+    "forecast": "49.5",
+    "previous": "48.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Services PMI",
+    "actual": "54.4",
+    "forecast": "52.2",
+    "previous": "52.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "7.15M",
+    "forecast": "7.61M",
+    "previous": "7.45M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Factory Orders m/m",
+    "actual": "-1.3%",
+    "forecast": "-1.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-3.8M",
+    "forecast": "-1.2M",
+    "previous": "-1.9M"
+  },
+  {
+    "time": "4:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "0.5%",
+    "forecast": "2.3%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "2.94B",
+    "forecast": "5.14B",
+    "previous": "4.35B"
+  },
+  {
+    "time": "10:35pm",
+    "currency": "JPY",
+    "title": "30-y Bond Auction",
+    "actual": "3.45|3.1",
+    "forecast": "",
+    "previous": "3.43|4.0"
+  }
+]

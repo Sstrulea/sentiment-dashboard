@@ -1,0 +1,269 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "39.1%",
+    "forecast": "0.9%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "-1.0%",
+    "forecast": "0.0%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Flash GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "-1.0%",
+    "forecast": "-0.7%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.4%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "-0.6%",
+    "forecast": "-0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Prelim CPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.4%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "97.1",
+    "forecast": "101.8",
+    "previous": "103.2"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "4K",
+    "forecast": "16K",
+    "previous": "25K"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "-51.6",
+    "forecast": "",
+    "previous": "-10.7"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German Prelim GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Prelim Flash GDP q/q",
+    "actual": "0.4%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "62K",
+    "forecast": "114K",
+    "previous": "147K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "-0.2%",
+    "forecast": "0.0%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Advance GDP q/q",
+    "actual": "-0.3%",
+    "forecast": "0.2%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Employment Cost Index q/q",
+    "actual": "0.9%",
+    "forecast": "0.9%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Advance GDP Price Index q/q",
+    "actual": "3.7%",
+    "forecast": "3.1%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "44.6",
+    "forecast": "45.9",
+    "previous": "47.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "6.1%",
+    "forecast": "0.9%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.5%",
+    "forecast": "0.4%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.7%",
+    "forecast": "0.6%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-2.7M",
+    "forecast": "-0.6M",
+    "previous": "0.2M"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "48.7",
+    "forecast": "48.5",
+    "previous": "48.5"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Goods Trade Balance",
+    "actual": "6.90B",
+    "forecast": "3.23B",
+    "previous": "2.85B"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Import Prices q/q",
+    "actual": "3.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "11:03pm",
+    "currency": "JPY",
+    "title": "BOJ Outlook Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:03pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.50%",
+    "forecast": "<0.50%",
+    "previous": "<0.50%"
+  },
+  {
+    "time": "11:03pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

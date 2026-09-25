@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "CHF",
+    "title": "Trade Balance",
+    "actual": "4.01B",
+    "forecast": "5.22B",
+    "previous": "4.62B"
+  },
+  {
+    "time": "3:10am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "27.7B",
+    "forecast": "34.6B",
+    "previous": "35.8B"
+  },
+  {
+    "time": "4:41am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.23|1.9",
+    "forecast": "",
+    "previous": "3.20|2.1"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "German Buba Monthly Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Monetary Policy Summary",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "MPC Official Bank Rate Votes",
+    "actual": "0-2-7",
+    "forecast": "0-1-8",
+    "previous": "0-5-4"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "Official Bank Rate",
+    "actual": "4.00%",
+    "forecast": "4.00%",
+    "previous": "4.00%"
+  },
+  {
+    "time": "7:00am",
+    "currency": "GBP",
+    "title": "BOE Inflation Letter",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "231K",
+    "forecast": "241K",
+    "previous": "264K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "23.2",
+    "forecast": "1.7",
+    "previous": "-0.3"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "90B",
+    "forecast": "80B",
+    "previous": "71B"
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "49.2B",
+    "forecast": "97.2B",
+    "previous": "151.0B"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Trade Balance",
+    "actual": "-1185M",
+    "forecast": "-746M",
+    "previous": "-716M"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-19",
+    "forecast": "-18",
+    "previous": "-17"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "2.7%",
+    "forecast": "2.7%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "11:00pm",
+    "currency": "NZD",
+    "title": "Credit Card Spending y/y",
+    "actual": "3.5%",
+    "forecast": "",
+    "previous": "1.6%"
+  },
+  {
+    "time": "11:47pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.50%",
+    "forecast": "<0.50%",
+    "previous": "<0.50%"
+  },
+  {
+    "time": "11:47pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

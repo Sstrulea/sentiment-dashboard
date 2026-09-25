@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "0.9%",
+    "forecast": "0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Claimant Count Change",
+    "actual": "27.8K",
+    "forecast": "8.3K",
+    "previous": "-11.8K"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Average Earnings Index 3m/y",
+    "actual": "3.9%",
+    "forecast": "3.9%",
+    "previous": "4.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Unemployment Rate",
+    "actual": "4.9%",
+    "forecast": "5.0%",
+    "previous": "4.9%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.7%",
+    "forecast": "0.7%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "8.24B",
+    "forecast": "4.77B",
+    "previous": "4.34B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "5.0B",
+    "forecast": "3.7B",
+    "previous": "1.0B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "German ZEW Economic Sentiment",
+    "actual": "34.7",
+    "forecast": "39.8",
+    "previous": "34.2"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "ZEW Economic Sentiment",
+    "actual": "25.8",
+    "forecast": "39.2",
+    "previous": "31.4"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "16.3K",
+    "forecast": "",
+    "previous": "12.3K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "0.3%",
+    "forecast": "-0.5%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "7.6",
+    "forecast": "14.8",
+    "previous": "20.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Treasury Sec Bessent Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "11:39am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "-1.1%",
+    "forecast": "",
+    "previous": "0.9%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:04pm",
+    "currency": "NZD",
+    "title": "Westpac Consumer Sentiment",
+    "actual": "89.5",
+    "forecast": "",
+    "previous": "80.4"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Current Account",
+    "actual": "-1.67B",
+    "forecast": "-2.57B",
+    "previous": "-1.09B"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Core Machinery Orders m/m",
+    "actual": "-3.7%",
+    "forecast": "-1.2%",
+    "previous": "9.7%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Trade Balance",
+    "actual": "-0.84T",
+    "forecast": "-1.00T",
+    "previous": "-0.68T"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "0.0%",
+    "forecast": "",
+    "previous": "0.0%"
+  }
+]

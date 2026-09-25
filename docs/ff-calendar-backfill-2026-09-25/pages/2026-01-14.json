@@ -1,0 +1,133 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "Core PPI m/m",
+  "actual": "0.3%",
+  "forecast": "",
+  "previous": "0.4%"
+ },
+ {
+  "time": "Oct Data",
+  "currency": "USD",
+  "title": "PPI m/m",
+  "actual": "0.1%",
+  "forecast": "",
+  "previous": "0.6%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core PPI m/m",
+  "actual": "0.0%",
+  "forecast": "0.2%",
+  "previous": "0.3%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core Retail Sales m/m",
+  "actual": "0.5%",
+  "forecast": "0.4%",
+  "previous": "0.2%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "PPI m/m",
+  "actual": "0.2%",
+  "forecast": "0.2%",
+  "previous": "0.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Retail Sales m/m",
+  "actual": "0.6%",
+  "forecast": "0.5%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Current Account",
+  "actual": "-226B",
+  "forecast": "-235B",
+  "previous": "-249B"
+ },
+ {
+  "time": "9:50am",
+  "currency": "USD",
+  "title": "FOMC Member Paulson Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Business Inventories m/m",
+  "actual": "0.3%",
+  "forecast": "0.1%",
+  "previous": "0.3%"
+ },
+ {
+  "time": "10:00am",
+  "currency": "USD",
+  "title": "Existing Home Sales",
+  "actual": "4.35M",
+  "forecast": "4.21M",
+  "previous": "4.14M"
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Crude Oil Inventories",
+  "actual": "3.4M",
+  "forecast": "-1.7M",
+  "previous": "-3.8M"
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "FOMC Member Miran Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "12:00pm",
+  "currency": "USD",
+  "title": "FOMC Member Bostic Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "12:00pm",
+  "currency": "USD",
+  "title": "FOMC Member Kashkari Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "2:00pm",
+  "currency": "USD",
+  "title": "Beige Book",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "2:10pm",
+  "currency": "USD",
+  "title": "FOMC Member Williams Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

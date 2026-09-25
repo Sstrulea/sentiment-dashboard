@@ -1,0 +1,229 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "All Day",
+  "currency": "EUR",
+  "title": "German Prelim CPI m/m",
+  "actual": "0.6%",
+  "forecast": "0.7%",
+  "previous": "1.1%"
+ },
+ {
+  "time": "3:00am",
+  "currency": "EUR",
+  "title": "Spanish Flash CPI y/y",
+  "actual": "3.2%",
+  "forecast": "3.5%",
+  "previous": "3.3%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "CHF",
+  "title": "UBS Economic Expectations",
+  "actual": "-30.3",
+  "forecast": "",
+  "previous": "-35.0"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "M3 Money Supply y/y",
+  "actual": "3.2%",
+  "forecast": "3.1%",
+  "previous": "3.0%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Private Loans y/y",
+  "actual": "3.0%",
+  "forecast": "3.1%",
+  "previous": "3.0%"
+ },
+ {
+  "time": "5:17am",
+  "currency": "EUR",
+  "title": "Italian 10-y Bond Auction",
+  "actual": "3.77|1.7",
+  "forecast": "",
+  "previous": "4.09|1.7"
+ },
+ {
+  "time": "5:32am",
+  "currency": "EUR",
+  "title": "German 10-y Bond Auction",
+  "actual": "3.08|1.5",
+  "forecast": "",
+  "previous": "2.92|1.2"
+ },
+ {
+  "time": "Feb Data",
+  "currency": "USD",
+  "title": "Building Permits",
+  "actual": "1.54M",
+  "forecast": "",
+  "previous": "1.39M"
+ },
+ {
+  "time": "Feb Data",
+  "currency": "USD",
+  "title": "Housing Starts",
+  "actual": "1.36M",
+  "forecast": "",
+  "previous": "1.40M"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Building Permits",
+  "actual": "1.37M",
+  "forecast": "1.39M",
+  "previous": "1.54M"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core Durable Goods Orders m/m",
+  "actual": "0.9%",
+  "forecast": "0.4%",
+  "previous": "0.9%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Durable Goods Orders m/m",
+  "actual": "0.8%",
+  "forecast": "0.4%",
+  "previous": "-1.3%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Goods Trade Balance",
+  "actual": "-87.9B",
+  "forecast": "-87.5B",
+  "previous": "-83.5B"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Housing Starts",
+  "actual": "1.50M",
+  "forecast": "1.38M",
+  "previous": "1.36M"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Prelim Wholesale Inventories m/m",
+  "actual": "1.4%",
+  "forecast": "0.4%",
+  "previous": "0.9%"
+ },
+ {
+  "time": "9:45am",
+  "currency": "CAD",
+  "title": "BOC Monetary Policy Report",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "9:45am",
+  "currency": "CAD",
+  "title": "BOC Rate Statement",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "9:45am",
+  "currency": "CAD",
+  "title": "Overnight Rate",
+  "actual": "2.25%",
+  "forecast": "2.25%",
+  "previous": "2.25%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "CAD",
+  "title": "BOC Press Conference",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Crude Oil Inventories",
+  "actual": "-6.2M",
+  "forecast": "0.3M",
+  "previous": "1.9M"
+ },
+ {
+  "time": "2:00pm",
+  "currency": "USD",
+  "title": "Federal Funds Rate",
+  "actual": "3.75%",
+  "forecast": "3.75%",
+  "previous": "3.75%"
+ },
+ {
+  "time": "2:00pm",
+  "currency": "USD",
+  "title": "FOMC Statement",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "2:30pm",
+  "currency": "USD",
+  "title": "FOMC Press Conference",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "7:50pm",
+  "currency": "JPY",
+  "title": "Prelim Industrial Production m/m",
+  "actual": "-0.5%",
+  "forecast": "1.0%",
+  "previous": "-2.0%"
+ },
+ {
+  "time": "7:50pm",
+  "currency": "JPY",
+  "title": "Retail Sales y/y",
+  "actual": "1.7%",
+  "forecast": "0.9%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "9:00pm",
+  "currency": "NZD",
+  "title": "ANZ Business Confidence",
+  "actual": "-10.6",
+  "forecast": "",
+  "previous": "32.5"
+ },
+ {
+  "time": "9:30pm",
+  "currency": "AUD",
+  "title": "Import Prices q/q",
+  "actual": "0.1%",
+  "forecast": "0.4%",
+  "previous": "0.9%"
+ },
+ {
+  "time": "9:30pm",
+  "currency": "AUD",
+  "title": "Private Sector Credit m/m",
+  "actual": "0.7%",
+  "forecast": "0.6%",
+  "previous": "0.6%"
+ }
+]

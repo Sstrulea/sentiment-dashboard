@@ -1,0 +1,221 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final CPI m/m",
+    "actual": "0.8%",
+    "forecast": "0.8%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "2.4%",
+    "forecast": "0.9%",
+    "previous": "-1.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-17.5B",
+    "forecast": "-16.9B",
+    "previous": "-16.1B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Industrial Production m/m",
+    "actual": "-0.2%",
+    "forecast": "0.5%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "BOE Credit Conditions Survey",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:48am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.40|1.4",
+    "forecast": "",
+    "previous": "3.36|1.6"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "1.5%",
+    "forecast": "0.9%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "5:02am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "3.59|3.0",
+    "forecast": "",
+    "previous": "3.50|2.4"
+  },
+  {
+    "time": "7:08am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "7:45am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "PPI m/m",
+    "actual": "-0.5%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "239K",
+    "forecast": "233K",
+    "previous": "228K"
+  },
+  {
+    "time": "9:00am",
+    "currency": "CAD",
+    "title": "BOC Gov Macklem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "GBP",
+    "title": "MPC Member Pill Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.8%",
+    "forecast": "",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "Day 4",
+    "currency": "USD",
+    "title": "IMF Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "25B",
+    "forecast": "25B",
+    "previous": "-23B"
+  },
+  {
+    "time": "Day 2",
+    "currency": "USD",
+    "title": "G20 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "3.66|2.4",
+    "forecast": "",
+    "previous": "3.88|2.4"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "48.1",
+    "forecast": "",
+    "previous": "51.7"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "0.6%",
+    "forecast": "",
+    "previous": "-26.3%"
+  }
+]

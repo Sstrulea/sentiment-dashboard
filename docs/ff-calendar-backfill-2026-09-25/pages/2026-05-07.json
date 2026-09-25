@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Factory Orders m/m",
+    "actual": "5.0%",
+    "forecast": "1.0%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Trade Balance",
+    "actual": "-6.9B",
+    "forecast": "-6.7B",
+    "previous": "-5.5B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Foreign Currency Reserves",
+    "actual": "716B",
+    "forecast": "",
+    "previous": "721B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "GBP",
+    "title": "MPC Member Lombardelli Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "39.7",
+    "forecast": "45.8",
+    "previous": "45.6"
+  },
+  {
+    "time": "4:46am",
+    "currency": "EUR",
+    "title": "Spanish 10-y Bond Auction",
+    "actual": "3.39|2.1",
+    "forecast": "",
+    "previous": "3.44|2.0"
+  },
+  {
+    "time": "4:57am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.61|2.0",
+    "forecast": "",
+    "previous": "3.73|1.9"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "5:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "-20.9%",
+    "forecast": "",
+    "previous": "-78.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "200K",
+    "forecast": "205K",
+    "previous": "190K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Nonfarm Productivity q/q",
+    "actual": "0.8%",
+    "forecast": "0.7%",
+    "previous": "1.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Unit Labor Costs q/q",
+    "actual": "2.3%",
+    "forecast": "2.6%",
+    "previous": "4.4%"
+  },
+  {
+    "time": "8:40am",
+    "currency": "GBP",
+    "title": "MPC Member Taylor Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "Feb Data",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "-0.2%",
+    "forecast": "",
+    "previous": "-1.9%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "0.6%",
+    "forecast": "0.3%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "63B",
+    "forecast": "72B",
+    "previous": "79B"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Kashkari Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:05pm",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "Consumer Credit m/m",
+    "actual": "24.9B",
+    "forecast": "12.5B",
+    "previous": "8.8B"
+  },
+  {
+    "time": "3:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "2.7%",
+    "forecast": "3.2%",
+    "previous": "3.4%"
+  }
+]

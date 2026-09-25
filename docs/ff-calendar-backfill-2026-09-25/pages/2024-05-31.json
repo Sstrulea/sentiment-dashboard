@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "13.9%",
+    "forecast": "-0.2%",
+    "previous": "-12.8%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Final Private Payrolls q/q",
+    "actual": "0.3%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "0.7%",
+    "forecast": "0.5%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-1.2%",
+    "forecast": "-0.2%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.1%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "2.7%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "-0.8%",
+    "forecast": "0.2%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim GDP q/q",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "M4 Money Supply m/m",
+    "actual": "0.1%",
+    "forecast": "0.4%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Mortgage Approvals",
+    "actual": "61K",
+    "forecast": "62K",
+    "previous": "61K"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Net Lending to Individuals m/m",
+    "actual": "3.1B",
+    "forecast": "2.0B",
+    "previous": "1.9B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.9%",
+    "forecast": "2.7%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.6%",
+    "forecast": "2.5%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core PCE Price Index m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Income m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Personal Spending m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "35.4",
+    "forecast": "41.1",
+    "previous": "37.9"
+  },
+  {
+    "time": "6:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Bostic Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

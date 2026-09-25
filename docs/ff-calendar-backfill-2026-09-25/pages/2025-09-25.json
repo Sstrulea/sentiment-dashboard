@@ -1,0 +1,213 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German GfK Consumer Climate",
+    "actual": "-22.3",
+    "forecast": "-23.3",
+    "previous": "-23.5"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Monetary Policy Assessment",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "SNB Policy Rate",
+    "actual": "0.00%",
+    "forecast": "0.00%",
+    "previous": "0.00%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "SNB Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "M3 Money Supply y/y",
+    "actual": "2.9%",
+    "forecast": "3.3%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Private Loans y/y",
+    "actual": "2.5%",
+    "forecast": "2.3%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Realized Sales",
+    "actual": "-29",
+    "forecast": "-31",
+    "previous": "-32"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "FOMC Member Miran Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:20am",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Final GDP q/q",
+    "actual": "3.8%",
+    "forecast": "3.3%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "218K",
+    "forecast": "233K",
+    "previous": "232K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Durable Goods Orders m/m",
+    "actual": "0.4%",
+    "forecast": "-0.1%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Durable Goods Orders m/m",
+    "actual": "2.9%",
+    "forecast": "-0.3%",
+    "previous": "-2.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Final GDP Price Index q/q",
+    "actual": "2.1%",
+    "forecast": "2.0%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Goods Trade Balance",
+    "actual": "-85.5B",
+    "forecast": "-95.7B",
+    "previous": "-102.8B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim Wholesale Inventories m/m",
+    "actual": "-0.2%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Schmid Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Existing Home Sales",
+    "actual": "4.00M",
+    "forecast": "3.96M",
+    "previous": "4.01M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "75B",
+    "forecast": "76B",
+    "previous": "90B"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:40pm",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Daly Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "2.5%",
+    "forecast": "2.8%",
+    "previous": "2.5%"
+  }
+]

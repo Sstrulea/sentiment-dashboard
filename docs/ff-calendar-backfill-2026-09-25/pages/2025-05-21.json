@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.3%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "3.8%",
+    "forecast": "3.6%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "4.5%",
+    "forecast": "4.2%",
+    "previous": "3.2%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Financial Stability Review",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "6.4%",
+    "forecast": "5.2%",
+    "previous": "5.5%"
+  },
+  {
+    "time": "Day 2",
+    "currency": "All",
+    "title": "G7 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:34am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.66|2.4",
+    "forecast": "",
+    "previous": "2.47|1.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "NHPI m/m",
+    "actual": "-0.4%",
+    "forecast": "0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "1.3M",
+    "forecast": "-0.9M",
+    "previous": "3.5M"
+  },
+  {
+    "time": "12:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "51.7",
+    "forecast": "",
+    "previous": "51.7"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "Flash Services PMI",
+    "actual": "50.5",
+    "forecast": "",
+    "previous": "51.0"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Core Machinery Orders m/m",
+    "actual": "13.0%",
+    "forecast": "-1.5%",
+    "previous": "4.3%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "49.0",
+    "forecast": "49.0",
+    "previous": "48.7"
+  },
+  {
+    "time": "10:00pm",
+    "currency": "NZD",
+    "title": "Annual Budget Release",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

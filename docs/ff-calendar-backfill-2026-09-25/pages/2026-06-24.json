@@ -1,0 +1,181 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "AUD",
+    "title": "RBA Deputy Gov Hauser Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Gov Board Member Martin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "-25.0",
+    "forecast": "",
+    "previous": "-11.1"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "85.6",
+    "forecast": "85.6",
+    "previous": "85.0"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:40am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.96|1.7",
+    "forecast": "",
+    "previous": "3.06|1.7"
+  },
+  {
+    "time": "7:15am",
+    "currency": "CAD",
+    "title": "Gov Council Member Rogers Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:15am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Current Account",
+    "actual": "-227B",
+    "forecast": "-212B",
+    "previous": "-221B"
+  },
+  {
+    "time": "8:38am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "-12.4",
+    "forecast": "-12.0",
+    "previous": "-13.3"
+  },
+  {
+    "time": "9:00am",
+    "currency": "CHF",
+    "title": "SNB Quarterly Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "New Home Sales",
+    "actual": "580K",
+    "forecast": "638K",
+    "previous": "626K"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-6.1M",
+    "forecast": "-3.9M",
+    "previous": "-8.3M"
+  },
+  {
+    "time": "11:00am",
+    "currency": "GBP",
+    "title": "MPC Member Dhingra Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:30pm",
+    "currency": "GBP",
+    "title": "MPC Member Pill Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:30pm",
+    "currency": "CAD",
+    "title": "BOC Summary of Deliberations",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "Bank Stress Test Results",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "40.3K",
+    "forecast": "31.2K",
+    "previous": "-40.7K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.4%",
+    "forecast": "4.4%",
+    "previous": "4.5%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Household Spending m/m",
+    "actual": "1.3%",
+    "forecast": "0.5%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "11:50pm",
+    "currency": "AUD",
+    "title": "NAB Quarterly Business Confidence",
+    "actual": "-19",
+    "forecast": "",
+    "previous": "-5"
+  }
+]

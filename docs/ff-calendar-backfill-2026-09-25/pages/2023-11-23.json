@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "42.6",
+    "forecast": "43.2",
+    "previous": "42.8"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "45.3",
+    "forecast": "45.6",
+    "previous": "45.2"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "42.3",
+    "forecast": "41.1",
+    "previous": "40.8"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "48.7",
+    "forecast": "48.4",
+    "previous": "48.2"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "43.8",
+    "forecast": "43.3",
+    "previous": "43.1"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "48.2",
+    "forecast": "48.0",
+    "previous": "47.8"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "46.7",
+    "forecast": "45.0",
+    "previous": "44.8"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "50.5",
+    "forecast": "49.5",
+    "previous": "49.5"
+  },
+  {
+    "time": "7:30am",
+    "currency": "EUR",
+    "title": "ECB Monetary Policy Meeting Accounts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "USD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Corporate Profits q/q",
+    "actual": "4.7%",
+    "forecast": "",
+    "previous": "-2.0%"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Retail Sales q/q",
+    "actual": "0.0%",
+    "forecast": "-0.8%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Core Retail Sales q/q",
+    "actual": "1.0%",
+    "forecast": "-1.5%",
+    "previous": "-1.6%"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "JPY",
+    "title": "National Core CPI y/y",
+    "actual": "2.9%",
+    "forecast": "3.0%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "GfK Consumer Confidence",
+    "actual": "-24",
+    "forecast": "-28",
+    "previous": "-30"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Flash Manufacturing PMI",
+    "actual": "48.1",
+    "forecast": "48.8",
+    "previous": "48.7"
+  }
+]

@@ -1,0 +1,173 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German Final CPI m/m",
+  "actual": "-0.8%",
+  "forecast": "-0.8%",
+  "previous": "-0.8%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Claimant Count Change",
+  "actual": "19.7K",
+  "forecast": "19.8K",
+  "previous": "16.1K"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Average Earnings Index 3m/y",
+  "actual": "6.4%",
+  "forecast": "6.2%",
+  "previous": "6.2%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Unemployment Rate",
+  "actual": "3.7%",
+  "forecast": "3.7%",
+  "previous": "3.7%"
+ },
+ {
+  "time": "All Day",
+  "currency": "EUR",
+  "title": "ECOFIN Meetings",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "German ZEW Economic Sentiment",
+  "actual": "16.9",
+  "forecast": "-15.0",
+  "previous": "-23.3"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "ZEW Economic Sentiment",
+  "actual": "16.7",
+  "forecast": "-14.3",
+  "previous": "-23.6"
+ },
+ {
+  "time": "8:13am",
+  "currency": "CAD",
+  "title": "Housing Starts",
+  "actual": "249K",
+  "forecast": "257K",
+  "previous": "263K"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "CPI m/m",
+  "actual": "-0.6%",
+  "forecast": "-0.6%",
+  "previous": "0.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Median CPI y/y",
+  "actual": "5.0%",
+  "forecast": "4.9%",
+  "previous": "5.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Trimmed CPI y/y",
+  "actual": "5.3%",
+  "forecast": "5.2%",
+  "previous": "5.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Foreign Securities Purchases",
+  "actual": "12.76B",
+  "forecast": "2.73B",
+  "previous": "9.09B"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Empire State Manufacturing Index",
+  "actual": "-32.9",
+  "forecast": "-8.7",
+  "previous": "-11.2"
+ },
+ {
+  "time": "8:32am",
+  "currency": "CAD",
+  "title": "Common CPI y/y",
+  "actual": "6.6%",
+  "forecast": "6.6%",
+  "previous": "6.8%"
+ },
+ {
+  "time": "8:32am",
+  "currency": "CAD",
+  "title": "Core CPI m/m",
+  "actual": "-0.3%",
+  "forecast": "",
+  "previous": "0.0%"
+ },
+ {
+  "time": "9:39am",
+  "currency": "NZD",
+  "title": "GDT Price Index",
+  "actual": "-0.1%",
+  "forecast": "",
+  "previous": "-2.8%"
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "Core Machinery Orders m/m",
+  "actual": "-8.3%",
+  "forecast": "-1.3%",
+  "previous": "5.4%"
+ },
+ {
+  "time": "9:40pm",
+  "currency": "JPY",
+  "title": "BOJ Outlook Report",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "9:40pm",
+  "currency": "JPY",
+  "title": "Monetary Policy Statement",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "9:40pm",
+  "currency": "JPY",
+  "title": "BOJ Policy Rate",
+  "actual": "-0.10%",
+  "forecast": "-0.10%",
+  "previous": "-0.10%"
+ },
+ {
+  "time": "11:30pm",
+  "currency": "JPY",
+  "title": "Revised Industrial Production m/m",
+  "actual": "0.2%",
+  "forecast": "-0.1%",
+  "previous": "-0.1%"
+ }
+]

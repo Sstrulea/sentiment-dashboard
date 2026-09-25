@@ -1,0 +1,61 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "NZD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Capital Spending q/y",
+    "actual": "6.4%",
+    "forecast": "3.8%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "8:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "CNY",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "49.4",
+    "forecast": "49.0",
+    "previous": "49.0"
+  },
+  {
+    "time": "9:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Gauge m/m",
+    "actual": "-0.4%",
+    "forecast": "",
+    "previous": "0.6%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "ANZ Job Advertisements m/m",
+    "actual": "-1.2%",
+    "forecast": "",
+    "previous": "-0.3%"
+  }
+]

@@ -1,0 +1,285 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "-4.2%",
+    "forecast": "-3.6%",
+    "previous": "-3.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim GDP q/q",
+    "actual": "0.6%",
+    "forecast": "0.6%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "0.5%",
+    "forecast": "-0.3%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-18.9B",
+    "forecast": "-16.0B",
+    "previous": "-18.6B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.8%",
+    "forecast": "0.9%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "0.8%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "1.1%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Prelim Business Investment q/q",
+    "actual": "-0.1%",
+    "forecast": "0.4%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "French Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Italian Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "7:02am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "0.5%",
+    "forecast": "",
+    "previous": "0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "-0.6%",
+    "forecast": "-0.6%",
+    "previous": "-1.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.4%",
+    "forecast": "0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "1.0%",
+    "forecast": "0.4%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "227K",
+    "forecast": "236K",
+    "previous": "234K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-4.7",
+    "forecast": "-5.9",
+    "previous": "-6.6"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "-7.0",
+    "forecast": "5.4",
+    "previous": "13.9"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "9:10am",
+    "currency": "USD",
+    "title": "FOMC Member Musalem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "77.8%",
+    "forecast": "78.5%",
+    "previous": "78.4%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "-0.6%",
+    "forecast": "-0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "39",
+    "forecast": "43",
+    "previous": "41"
+  },
+  {
+    "time": "10:23am",
+    "currency": "USD",
+    "title": "Mortgage Delinquencies",
+    "actual": "3.97%",
+    "forecast": "",
+    "previous": "3.94%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "AUD",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "-6B",
+    "forecast": "3B",
+    "previous": "21B"
+  },
+  {
+    "time": "1:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Harker Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "96.1B",
+    "forecast": "56.3B",
+    "previous": "-54.1B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "NZD",
+    "title": "BusinessNZ Manufacturing Index",
+    "actual": "44.0",
+    "forecast": "",
+    "previous": "41.2"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "PPI Input q/q",
+    "actual": "1.4%",
+    "forecast": "0.5%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "PPI Output q/q",
+    "actual": "1.1%",
+    "forecast": "0.6%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30pm",
+    "currency": "NZD",
+    "title": "RBNZ Gov Orr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

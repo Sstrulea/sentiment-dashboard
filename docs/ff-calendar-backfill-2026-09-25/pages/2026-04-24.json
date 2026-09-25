@@ -1,0 +1,77 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Retail Sales m/m",
+    "actual": "0.7%",
+    "forecast": "0.0%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "SNB Chairman Schlegel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "84.4",
+    "forecast": "85.7",
+    "previous": "86.3"
+  },
+  {
+    "time": "5:01am",
+    "currency": "CNY",
+    "title": "Foreign Direct Investment ytd/y",
+    "actual": "-7.3%",
+    "forecast": "",
+    "previous": "-5.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.5%",
+    "forecast": "0.8%",
+    "previous": "1.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.7%",
+    "forecast": "0.9%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "8:32am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "-14.2",
+    "forecast": "-14.8",
+    "previous": "-13.7"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Consumer Sentiment",
+    "actual": "49.8",
+    "forecast": "48.5",
+    "previous": "47.6"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Revised UoM Inflation Expectations",
+    "actual": "4.7%",
+    "forecast": "",
+    "previous": "4.8%"
+  }
+]

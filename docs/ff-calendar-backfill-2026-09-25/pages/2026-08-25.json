@@ -1,0 +1,157 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "BOJ Core CPI y/y",
+    "actual": "1.6%",
+    "forecast": "1.4%",
+    "previous": "1.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "88.8",
+    "forecast": "87.2",
+    "previous": "86.7"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "11.8K",
+    "forecast": "",
+    "previous": "9.5K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:00am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "-13.2",
+    "forecast": "-11.0",
+    "previous": "-11.9"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "HPI m/m",
+    "actual": "0.0%",
+    "forecast": "0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "S&P/CS Composite-20 HPI y/y",
+    "actual": "2.1%",
+    "forecast": "1.8%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Consumer Confidence",
+    "actual": "89.4",
+    "forecast": "90.3",
+    "previous": "90.2"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "New Home Sales",
+    "actual": "607K",
+    "forecast": "620K",
+    "previous": "678K"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "4",
+    "forecast": "6",
+    "previous": "5"
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "SPPI y/y",
+    "actual": "3.6%",
+    "forecast": "3.2%",
+    "previous": "3.4%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "0.0%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "CPI m/m",
+    "actual": "1.0%",
+    "forecast": "0.9%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "CPI y/y",
+    "actual": "3.5%",
+    "forecast": "3.3%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Trimmed Mean CPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.4%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Construction Work Done q/q",
+    "actual": "-2.1%",
+    "forecast": "0.5%",
+    "previous": "4.3%"
+  }
+]

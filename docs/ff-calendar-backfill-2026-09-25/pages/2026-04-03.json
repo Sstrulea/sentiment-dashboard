@@ -1,0 +1,77 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "All Day",
+    "currency": "CHF",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "German Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Industrial Production m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "All Day",
+    "currency": "GBP",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "CAD",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Average Hourly Earnings m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Non-Farm Employment Change",
+    "actual": "178K",
+    "forecast": "65K",
+    "previous": "-133K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Rate",
+    "actual": "4.3%",
+    "forecast": "4.4%",
+    "previous": "4.4%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Services PMI",
+    "actual": "49.8",
+    "forecast": "51.1",
+    "previous": "51.1"
+  }
+]

@@ -1,0 +1,117 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "1:45am",
+  "currency": "CHF",
+  "title": "Unemployment Rate",
+  "actual": "1.9%",
+  "forecast": "2.1%",
+  "previous": "2.0%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German Industrial Production m/m",
+  "actual": "0.2%",
+  "forecast": "0.2%",
+  "previous": "-0.4%"
+ },
+ {
+  "time": "2:45am",
+  "currency": "EUR",
+  "title": "French Trade Balance",
+  "actual": "-13.8B",
+  "forecast": "-11.3B",
+  "previous": "-11.6B"
+ },
+ {
+  "time": "3:00am",
+  "currency": "CHF",
+  "title": "Foreign Currency Reserves",
+  "actual": "784B",
+  "forecast": "",
+  "previous": "790B"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Italian Monthly Unemployment Rate",
+  "actual": "7.8%",
+  "forecast": "7.8%",
+  "previous": "7.9%"
+ },
+ {
+  "time": "4:30am",
+  "currency": "EUR",
+  "title": "Sentix Investor Confidence",
+  "actual": "-17.5",
+  "forecast": "-18.1",
+  "previous": "-21.0"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Unemployment Rate",
+  "actual": "6.5%",
+  "forecast": "6.5%",
+  "previous": "6.5%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Building Permits m/m",
+  "actual": "14.1%",
+  "forecast": "0.4%",
+  "previous": "-5.3%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "GBP",
+  "title": "MPC Member Pill Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "3:00pm",
+  "currency": "USD",
+  "title": "Consumer Credit m/m",
+  "actual": "28.0B",
+  "forecast": "25.0B",
+  "previous": "29.1B"
+ },
+ {
+  "time": "6:30pm",
+  "currency": "JPY",
+  "title": "Household Spending y/y",
+  "actual": "-1.2%",
+  "forecast": "0.6%",
+  "previous": "1.2%"
+ },
+ {
+  "time": "6:30pm",
+  "currency": "JPY",
+  "title": "Tokyo Core CPI y/y",
+  "actual": "4.0%",
+  "forecast": "3.8%",
+  "previous": "3.6%"
+ },
+ {
+  "time": "7:01pm",
+  "currency": "GBP",
+  "title": "BRC Retail Sales Monitor y/y",
+  "actual": "6.5%",
+  "forecast": "2.4%",
+  "previous": "4.1%"
+ },
+ {
+  "time": "7:30pm",
+  "currency": "AUD",
+  "title": "Household Spending m/m",
+  "actual": "6.3%",
+  "forecast": "",
+  "previous": "0.2%"
+ }
+]

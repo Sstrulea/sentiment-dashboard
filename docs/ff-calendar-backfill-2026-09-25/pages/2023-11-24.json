@@ -1,0 +1,77 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Final GDP q/q",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German ifo Business Climate",
+    "actual": "87.3",
+    "forecast": "87.5",
+    "previous": "86.9"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "-0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.6%",
+    "forecast": "0.0%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "EUR",
+    "title": "Belgian NBB Business Climate",
+    "actual": "-15.0",
+    "forecast": "-15.0",
+    "previous": "-16.8"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "49.4",
+    "forecast": "49.9",
+    "previous": "50.0"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "50.8",
+    "forecast": "50.4",
+    "previous": "50.6"
+  }
+]

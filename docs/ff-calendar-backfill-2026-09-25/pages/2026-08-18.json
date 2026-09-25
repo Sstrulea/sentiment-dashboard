@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Claimant Count Change",
+    "actual": "-11.0K",
+    "forecast": "16.5K",
+    "previous": "-6.4K"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Average Earnings Index 3m/y",
+    "actual": "4.1%",
+    "forecast": "4.0%",
+    "previous": "4.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Unemployment Rate",
+    "actual": "4.9%",
+    "forecast": "4.8%",
+    "previous": "4.9%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "ZEW Economic Sentiment",
+    "actual": "31.4",
+    "forecast": "25.9",
+    "previous": "23.4"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "German ZEW Economic Sentiment",
+    "actual": "34.2",
+    "forecast": "30.1",
+    "previous": "26.3"
+  },
+  {
+    "time": "5:02am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "5.16|3.6",
+    "forecast": "",
+    "previous": "5.04|3.1"
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "229K",
+    "forecast": "249K",
+    "previous": "241K"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "9.5K",
+    "forecast": "",
+    "previous": "8.3K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Building Permits",
+    "actual": "1.44M",
+    "forecast": "1.37M",
+    "previous": "1.37M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Housing Starts",
+    "actual": "1.24M",
+    "forecast": "1.34M",
+    "previous": "1.42M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "-0.4%",
+    "forecast": "0.1%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "76.3%",
+    "forecast": "76.3%",
+    "previous": "76.2%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-2.3%",
+    "forecast": "0.1%",
+    "previous": "-4.8%"
+  },
+  {
+    "time": "11:31am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "2.3%",
+    "forecast": "",
+    "previous": "0.1%"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "PPI Input q/q",
+    "actual": "2.9%",
+    "forecast": "1.3%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "PPI Output q/q",
+    "actual": "1.6%",
+    "forecast": "0.8%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Core Machinery Orders m/m",
+    "actual": "9.7%",
+    "forecast": "7.2%",
+    "previous": "-12.4%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Wage Price Index q/q",
+    "actual": "0.8%",
+    "forecast": "0.8%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "10:45pm",
+    "currency": "AUD",
+    "title": "RBA Deputy Gov Hauser Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

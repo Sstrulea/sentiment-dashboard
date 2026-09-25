@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "42.0",
+    "forecast": "43.3",
+    "previous": "42.9"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "44.3",
+    "forecast": "46.1",
+    "previous": "45.4"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "43.1",
+    "forecast": "43.1",
+    "previous": "42.6"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "48.4",
+    "forecast": "49.9",
+    "previous": "49.6"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "44.2",
+    "forecast": "44.5",
+    "previous": "44.2"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "48.1",
+    "forecast": "49.0",
+    "previous": "48.7"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "46.4",
+    "forecast": "47.6",
+    "previous": "47.2"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "52.7",
+    "forecast": "51.0",
+    "previous": "50.9"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Trade Balance",
+    "actual": "10.9B",
+    "forecast": "10.3B",
+    "previous": "8.7B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "4.70B",
+    "forecast": "3.45B",
+    "previous": "2.39B"
+  },
+  {
+    "time": "5:00am",
+    "currency": "GBP",
+    "title": "MPC Member Ramsden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "213K",
+    "forecast": "262K",
+    "previous": "272K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Foreign Securities Purchases",
+    "actual": "-15.75B",
+    "forecast": "-3.98B",
+    "previous": "-15.06B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "-0.5%",
+    "forecast": "-1.1%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-14.5",
+    "forecast": "2.0",
+    "previous": "9.1"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.2%",
+    "forecast": "0.3%",
+    "previous": "-0.9%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "78.8%",
+    "forecast": "79.1%",
+    "previous": "78.7%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "48.2",
+    "forecast": "49.5",
+    "previous": "49.4"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "51.3",
+    "forecast": "50.7",
+    "previous": "50.8"
+  },
+  {
+    "time": "12:25pm",
+    "currency": "CAD",
+    "title": "BOC Gov Macklem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

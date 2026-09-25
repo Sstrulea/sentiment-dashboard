@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "18.3B",
+    "forecast": "15.2B",
+    "previous": "2.0B"
+  },
+  {
+    "time": "4:30am",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-9",
+    "forecast": "-33",
+    "previous": "-25"
+  },
+  {
+    "time": "7:00am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "20.0K",
+    "forecast": "",
+    "previous": "16.8K"
+  },
+  {
+    "time": "9:55am",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-17",
+    "forecast": "-16",
+    "previous": "-16"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "-2",
+    "forecast": "2",
+    "previous": "4"
+  },
+  {
+    "time": "10:05am",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:20am",
+    "currency": "USD",
+    "title": "FOMC Member Jefferson Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barkin Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:30pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "49.3",
+    "forecast": "",
+    "previous": "52.0"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "Flash Services PMI",
+    "actual": "51.4",
+    "forecast": "",
+    "previous": "53.2"
+  },
+  {
+    "time": "All Day",
+    "currency": "JPY",
+    "title": "Bank Holiday",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

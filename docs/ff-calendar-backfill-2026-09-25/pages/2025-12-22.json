@@ -1,0 +1,53 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Current Account",
+    "actual": "-12.1B",
+    "forecast": "-19.1B",
+    "previous": "-21.2B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Final GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Revised Business Investment q/q",
+    "actual": "1.5%",
+    "forecast": "-0.3%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "IPPI m/m",
+    "actual": "0.9%",
+    "forecast": "0.3%",
+    "previous": "1.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "RMPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.6%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Monetary Policy Meeting Minutes",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

@@ -1,0 +1,173 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "Unemployment Rate",
+    "actual": "2.9%",
+    "forecast": "2.9%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Construction PMI",
+    "actual": "45.5",
+    "forecast": "45.2",
+    "previous": "44.3"
+  },
+  {
+    "time": "4:57am",
+    "currency": "EUR",
+    "title": "French 10-y Bond Auction",
+    "actual": "3.57|2.2",
+    "forecast": "",
+    "previous": "3.41|2.9"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Retail Sales m/m",
+    "actual": "-0.5%",
+    "forecast": "-0.3%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "7:30am",
+    "currency": "USD",
+    "title": "Challenger Job Cuts y/y",
+    "actual": "13.3%",
+    "forecast": "",
+    "previous": "139.8%"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "54K",
+    "forecast": "73K",
+    "previous": "106K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trade Balance",
+    "actual": "-4.9B",
+    "forecast": "-5.2B",
+    "previous": "-6.0B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "237K",
+    "forecast": "230K",
+    "previous": "229K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Revised Nonfarm Productivity q/q",
+    "actual": "3.3%",
+    "forecast": "2.8%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Revised Unit Labor Costs q/q",
+    "actual": "1.0%",
+    "forecast": "1.2%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Trade Balance",
+    "actual": "-78.3B",
+    "forecast": "-77.7B",
+    "previous": "-59.1B"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Services PMI",
+    "actual": "54.5",
+    "forecast": "55.3",
+    "previous": "55.4"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Fed Gov Nomination Hearings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Services PMI",
+    "actual": "52.0",
+    "forecast": "50.9",
+    "previous": "50.1"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "55B",
+    "forecast": "54B",
+    "previous": "18B"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "2.4M",
+    "forecast": "-2.0M",
+    "previous": "-2.4M"
+  },
+  {
+    "time": "12:05pm",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Average Cash Earnings y/y",
+    "actual": "4.1%",
+    "forecast": "3.0%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Household Spending y/y",
+    "actual": "1.4%",
+    "forecast": "2.2%",
+    "previous": "1.3%"
+  }
+]

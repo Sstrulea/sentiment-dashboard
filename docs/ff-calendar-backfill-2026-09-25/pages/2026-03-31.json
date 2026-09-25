@@ -1,0 +1,245 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "-4.9%",
+    "forecast": "-4.5%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "0.3%",
+    "forecast": "0.7%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "-0.6%",
+    "forecast": "0.3%",
+    "previous": "-1.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Current Account",
+    "actual": "-18.4B",
+    "forecast": "-24.0B",
+    "previous": "-10.7B"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Final GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.9%",
+    "forecast": "0.0%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Revised Business Investment q/q",
+    "actual": "-2.5%",
+    "forecast": "-2.7%",
+    "previous": "-2.7%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "-1.4%",
+    "forecast": "-0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "2:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.9%",
+    "forecast": "0.9%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Unemployment Change",
+    "actual": "0K",
+    "forecast": "2K",
+    "previous": "1K"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.3%",
+    "forecast": "2.4%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.5%",
+    "forecast": "2.6%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "0.5%",
+    "forecast": "0.6%",
+    "previous": "0.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "HPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:00am",
+    "currency": "USD",
+    "title": "S&P/CS Composite-20 HPI y/y",
+    "actual": "1.2%",
+    "forecast": "1.4%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "52.8",
+    "forecast": "54.8",
+    "previous": "57.7"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "JOLTS Job Openings",
+    "actual": "6.88M",
+    "forecast": "6.89M",
+    "previous": "7.24M"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Consumer Confidence",
+    "actual": "91.8",
+    "forecast": "87.8",
+    "previous": "91.0"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Goolsbee Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "1:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Schmid Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:10pm",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:45pm",
+    "currency": "NZD",
+    "title": "Building Consents m/m",
+    "actual": "2.7%",
+    "forecast": "",
+    "previous": "2.0%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Tankan Manufacturing Index",
+    "actual": "17",
+    "forecast": "16",
+    "previous": "15"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Tankan Non-Manufacturing Index",
+    "actual": "36",
+    "forecast": "33",
+    "previous": "34"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "29.7%",
+    "forecast": "5.8%",
+    "previous": "-7.2%"
+  },
+  {
+    "time": "8:30pm",
+    "currency": "JPY",
+    "title": "Final Manufacturing PMI",
+    "actual": "51.6",
+    "forecast": "51.6",
+    "previous": "51.4"
+  },
+  {
+    "time": "9:45pm",
+    "currency": "CNY",
+    "title": "RatingDog Manufacturing PMI",
+    "actual": "50.8",
+    "forecast": "51.6",
+    "previous": "52.1"
+  }
+]

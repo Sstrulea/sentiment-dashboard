@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "0.3%",
+    "forecast": "0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "French Final CPI m/m",
+    "actual": "0.9%",
+    "forecast": "0.8%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "4:34am",
+    "currency": "CNY",
+    "title": "New Loans",
+    "actual": "1450B",
+    "forecast": "1540B",
+    "previous": "4920B"
+  },
+  {
+    "time": "4:34am",
+    "currency": "CNY",
+    "title": "M2 Money Supply y/y",
+    "actual": "8.7%",
+    "forecast": "8.8%",
+    "previous": "8.7%"
+  },
+  {
+    "time": "5:30am",
+    "currency": "GBP",
+    "title": "Consumer Inflation Expectations",
+    "actual": "3.0%",
+    "forecast": "",
+    "previous": "3.3%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Italian Retail Sales m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "7:00am",
+    "currency": "EUR",
+    "title": "Italian Trade Balance",
+    "actual": "2.66B",
+    "forecast": "6.22B",
+    "previous": "5.53B"
+  },
+  {
+    "time": "8:15am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "253K",
+    "forecast": "227K",
+    "previous": "223K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Foreign Securities Purchases",
+    "actual": "8.88B",
+    "forecast": "2.05B",
+    "previous": "10.80B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Wholesale Sales m/m",
+    "actual": "0.1%",
+    "forecast": "-0.6%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Empire State Manufacturing Index",
+    "actual": "-20.9",
+    "forecast": "-7.0",
+    "previous": "-2.4"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Import Prices m/m",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "78.3%",
+    "forecast": "78.5%",
+    "previous": "78.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Consumer Sentiment",
+    "actual": "76.5",
+    "forecast": "77.1",
+    "previous": "76.9"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Prelim UoM Inflation Expectations",
+    "actual": "3.0%",
+    "forecast": "",
+    "previous": "3.0%"
+  }
+]

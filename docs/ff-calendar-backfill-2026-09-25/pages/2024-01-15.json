@@ -1,0 +1,109 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "12:59am",
+  "currency": "JPY",
+  "title": "Prelim Machine Tool Orders y/y",
+  "actual": "-9.9%",
+  "forecast": "",
+  "previous": "-13.6%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "EUR",
+  "title": "German WPI m/m",
+  "actual": "-0.6%",
+  "forecast": "0.2%",
+  "previous": "-0.2%"
+ },
+ {
+  "time": "4:00am",
+  "currency": "EUR",
+  "title": "Italian Trade Balance",
+  "actual": "3.89B",
+  "forecast": "5.20B",
+  "previous": "4.73B"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Industrial Production m/m",
+  "actual": "-0.3%",
+  "forecast": "-0.3%",
+  "previous": "-0.7%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Trade Balance",
+  "actual": "14.8B",
+  "forecast": "11.2B",
+  "previous": "11.1B"
+ },
+ {
+  "time": "All Day",
+  "currency": "EUR",
+  "title": "Eurogroup Meetings",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "All Day",
+  "currency": "USD",
+  "title": "Bank Holiday",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Manufacturing Sales m/m",
+  "actual": "1.2%",
+  "forecast": "0.9%",
+  "previous": "-2.9%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Wholesale Sales m/m",
+  "actual": "0.9%",
+  "forecast": "0.9%",
+  "previous": "-0.3%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "CAD",
+  "title": "BOC Business Outlook Survey",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "4:00pm",
+  "currency": "NZD",
+  "title": "NZIER Business Confidence",
+  "actual": "-2",
+  "forecast": "",
+  "previous": "-52"
+ },
+ {
+  "time": "6:30pm",
+  "currency": "AUD",
+  "title": "Westpac Consumer Sentiment",
+  "actual": "-1.3%",
+  "forecast": "",
+  "previous": "2.7%"
+ },
+ {
+  "time": "6:50pm",
+  "currency": "JPY",
+  "title": "PPI y/y",
+  "actual": "0.0%",
+  "forecast": "-0.3%",
+  "previous": "0.3%"
+ }
+]

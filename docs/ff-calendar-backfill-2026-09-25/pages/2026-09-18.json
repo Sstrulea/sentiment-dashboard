@@ -1,0 +1,109 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German PPI m/m",
+    "actual": "1.1%",
+    "forecast": "0.6%",
+    "previous": "1.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Retail Sales m/m",
+    "actual": "0.5%",
+    "forecast": "-0.2%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "JPY",
+    "title": "BOJ Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Current Account",
+    "actual": "27.6B",
+    "forecast": "30.7B",
+    "previous": "35.1B"
+  },
+  {
+    "time": "5:02am",
+    "currency": "CNY",
+    "title": "Foreign Direct Investment ytd/y",
+    "actual": "-5.3%",
+    "forecast": "",
+    "previous": "-6.2%"
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "Eurogroup Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "76.3%",
+    "forecast": "76.4%",
+    "previous": "76.3%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "0.0%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "USD",
+    "title": "FOMC Member Bowman Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "0.1%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "11:45am",
+    "currency": "USD",
+    "title": "FOMC Member Schmid Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

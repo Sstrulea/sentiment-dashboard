@@ -1,0 +1,85 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "-0.2%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "PPI m/m",
+    "actual": "0.7%",
+    "forecast": "0.0%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "2.0%",
+    "forecast": "2.0%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "1.9%",
+    "forecast": "1.9%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.7%",
+    "previous": "2.7%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Manufacturing Sales m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.2%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "11:15am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

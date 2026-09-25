@@ -1,0 +1,189 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "GDP m/m",
+  "actual": "0.3%",
+  "forecast": "0.0%",
+  "previous": "0.0%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Prelim GDP q/q",
+  "actual": "0.4%",
+  "forecast": "0.4%",
+  "previous": "0.6%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Construction Output m/m",
+  "actual": "-0.1%",
+  "forecast": "-0.3%",
+  "previous": "-0.8%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Goods Trade Balance",
+  "actual": "-23.0B",
+  "forecast": "-20.6B",
+  "previous": "-21.1B"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Index of Services 3m/3m",
+  "actual": "0.5%",
+  "forecast": "0.5%",
+  "previous": "0.6%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Industrial Production m/m",
+  "actual": "-0.2%",
+  "forecast": "0.1%",
+  "previous": "-0.7%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Manufacturing Production m/m",
+  "actual": "-0.5%",
+  "forecast": "-0.1%",
+  "previous": "-0.2%"
+ },
+ {
+  "time": "2:00am",
+  "currency": "GBP",
+  "title": "Prelim Business Investment q/q",
+  "actual": "1.7%",
+  "forecast": "-0.3%",
+  "previous": "0.9%"
+ },
+ {
+  "time": "2:30am",
+  "currency": "CHF",
+  "title": "PPI m/m",
+  "actual": "-0.1%",
+  "forecast": "-0.2%",
+  "previous": "-0.3%"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Industrial Production m/m",
+  "actual": "0.0%",
+  "forecast": "-0.1%",
+  "previous": "0.3%"
+ },
+ {
+  "time": "8:15am",
+  "currency": "USD",
+  "title": "FOMC Member Hammack Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core PPI m/m",
+  "actual": "0.2%",
+  "forecast": "0.3%",
+  "previous": "0.4%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "PPI m/m",
+  "actual": "0.0%",
+  "forecast": "0.2%",
+  "previous": "-0.1%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Unemployment Claims",
+  "actual": "209K",
+  "forecast": "202K",
+  "previous": "200K"
+ },
+ {
+  "time": "8:40am",
+  "currency": "USD",
+  "title": "FOMC Member Barkin Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "9:30am",
+  "currency": "GBP",
+  "title": "CB Leading Index m/m",
+  "actual": "-0.4%",
+  "forecast": "",
+  "previous": "-0.4%"
+ },
+ {
+  "time": "10:29am",
+  "currency": "USD",
+  "title": "Mortgage Delinquencies",
+  "actual": "4.37%",
+  "forecast": "",
+  "previous": "4.44%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "AUD",
+  "title": "CB Leading Index m/m",
+  "actual": "0.3%",
+  "forecast": "",
+  "previous": "0.3%"
+ },
+ {
+  "time": "10:30am",
+  "currency": "USD",
+  "title": "Natural Gas Storage",
+  "actual": "36B",
+  "forecast": "31B",
+  "previous": "33B"
+ },
+ {
+  "time": "1:01pm",
+  "currency": "USD",
+  "title": "30-y Bond Auction",
+  "actual": "5.22|2.4",
+  "forecast": "",
+  "previous": "5.06|2.4"
+ },
+ {
+  "time": "6:00pm",
+  "currency": "USD",
+  "title": "FOMC Member Goolsbee Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "6:30pm",
+  "currency": "NZD",
+  "title": "BusinessNZ Manufacturing Index",
+  "actual": "54.3",
+  "forecast": "",
+  "previous": "60.1"
+ },
+ {
+  "time": "6:45pm",
+  "currency": "NZD",
+  "title": "Visitor Arrivals m/m",
+  "actual": "-0.1%",
+  "forecast": "",
+  "previous": "-2.4%"
+ }
+]

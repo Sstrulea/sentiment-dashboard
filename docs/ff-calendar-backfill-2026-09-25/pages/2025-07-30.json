@@ -1,0 +1,285 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Consumer Spending m/m",
+    "actual": "0.6%",
+    "forecast": "-0.3%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "1:30am",
+    "currency": "EUR",
+    "title": "French Flash GDP q/q",
+    "actual": "0.3%",
+    "forecast": "0.1%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "1.0%",
+    "forecast": "0.5%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "101.1",
+    "forecast": "97.9",
+    "previous": "96.3"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "Spanish Flash CPI y/y",
+    "actual": "2.7%",
+    "forecast": "2.3%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "CHF",
+    "title": "UBS Economic Expectations",
+    "actual": "2.4",
+    "forecast": "",
+    "previous": "-2.1"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "German Prelim GDP q/q",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim GDP q/q",
+    "actual": "-0.1%",
+    "forecast": "0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Prelim Flash GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.0%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "5:07am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "3.52|1.6",
+    "forecast": "",
+    "previous": "3.48|1.5"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Non-Farm Employment Change",
+    "actual": "104K",
+    "forecast": "77K",
+    "previous": "-23K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Advance GDP q/q",
+    "actual": "3.0%",
+    "forecast": "2.5%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Advance GDP Price Index q/q",
+    "actual": "2.0%",
+    "forecast": "2.2%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "BOC Monetary Policy Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "BOC Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "Overnight Rate",
+    "actual": "2.75%",
+    "forecast": "2.75%",
+    "previous": "2.75%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-0.8%",
+    "forecast": "0.2%",
+    "previous": "1.8%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "CAD",
+    "title": "BOC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "7.7M",
+    "forecast": "-2.3M",
+    "previous": "-3.2M"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "4.50%",
+    "forecast": "4.50%",
+    "previous": "4.50%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "FOMC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:20pm",
+    "currency": "AUD",
+    "title": "RBA Deputy Gov Hauser Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "1.7%",
+    "forecast": "-0.7%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "2.0%",
+    "forecast": "1.8%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Retail Sales m/m",
+    "actual": "1.2%",
+    "forecast": "0.4%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Building Approvals m/m",
+    "actual": "11.9%",
+    "forecast": "1.8%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Import Prices q/q",
+    "actual": "-0.8%",
+    "forecast": "-0.5%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.6%",
+    "forecast": "0.5%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "JPY",
+    "title": "Manufacturing PMI",
+    "actual": "49.3",
+    "forecast": "49.7",
+    "previous": "49.7"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "JPY",
+    "title": "Non-Manufacturing PMI",
+    "actual": "50.1",
+    "forecast": "50.3",
+    "previous": "50.5"
+  },
+  {
+    "time": "10:57pm",
+    "currency": "JPY",
+    "title": "BOJ Outlook Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:57pm",
+    "currency": "JPY",
+    "title": "BOJ Policy Rate",
+    "actual": "<0.50%",
+    "forecast": "<0.50%",
+    "previous": "<0.50%"
+  },
+  {
+    "time": "10:57pm",
+    "currency": "JPY",
+    "title": "Monetary Policy Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

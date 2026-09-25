@@ -1,0 +1,125 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "German WPI m/m",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "GDP m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Construction Output m/m",
+    "actual": "1.1%",
+    "forecast": "0.0%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Goods Trade Balance",
+    "actual": "-14.5B",
+    "forecast": "-14.9B",
+    "previous": "-14.0B"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Index of Services 3m/3m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Industrial Production m/m",
+    "actual": "-0.2%",
+    "forecast": "0.0%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Manufacturing Production m/m",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Italian Quarterly Unemployment Rate",
+    "actual": "7.4%",
+    "forecast": "7.3%",
+    "previous": "7.6%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "-3.2%",
+    "forecast": "-1.8%",
+    "previous": "1.6%"
+  },
+  {
+    "time": "6:33am",
+    "currency": "EUR",
+    "title": "German 10-y Bond Auction",
+    "actual": "2.31|2.3",
+    "forecast": "",
+    "previous": "2.38|2.1"
+  },
+  {
+    "time": "7:50am",
+    "currency": "GBP",
+    "title": "NIESR GDP Estimate",
+    "actual": "0.0%",
+    "forecast": "",
+    "previous": "-0.1%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-1.5M",
+    "forecast": "0.9M",
+    "previous": "1.4M"
+  },
+  {
+    "time": "1:01pm",
+    "currency": "USD",
+    "title": "30-y Bond Auction",
+    "actual": "4.33|2.5",
+    "forecast": "",
+    "previous": "4.36|2.4"
+  },
+  {
+    "time": "5:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "8.2%",
+    "forecast": "",
+    "previous": "-2.3%"
+  },
+  {
+    "time": "8:01pm",
+    "currency": "GBP",
+    "title": "RICS House Price Balance",
+    "actual": "-10%",
+    "forecast": "-10%",
+    "previous": "-19%"
+  }
+]

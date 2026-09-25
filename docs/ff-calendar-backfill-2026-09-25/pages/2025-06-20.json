@@ -1,0 +1,133 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "EUR",
+    "title": "German PPI m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.3%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Retail Sales m/m",
+    "actual": "-2.7%",
+    "forecast": "-0.5%",
+    "previous": "1.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Public Sector Net Borrowing",
+    "actual": "17.7B",
+    "forecast": "17.9B",
+    "previous": "20.1B"
+  },
+  {
+    "time": "2:40am",
+    "currency": "JPY",
+    "title": "BOJ Gov Ueda Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "ECB Economic Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "All Day",
+    "currency": "EUR",
+    "title": "ECOFIN Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:08am",
+    "currency": "CNY",
+    "title": "Foreign Direct Investment ytd/y",
+    "actual": "-13.2%",
+    "forecast": "",
+    "previous": "-10.9%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Core Retail Sales m/m",
+    "actual": "-0.3%",
+    "forecast": "-0.2%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Retail Sales m/m",
+    "actual": "0.3%",
+    "forecast": "0.4%",
+    "previous": "0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "IPPI m/m",
+    "actual": "-0.5%",
+    "forecast": "0.0%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "NHPI m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.2%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "RMPI m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.8%",
+    "previous": "-3.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Philly Fed Manufacturing Index",
+    "actual": "-4.0",
+    "forecast": "-1.7",
+    "previous": "-4.0"
+  },
+  {
+    "time": "10:00am",
+    "currency": "EUR",
+    "title": "Consumer Confidence",
+    "actual": "-15",
+    "forecast": "-15",
+    "previous": "-15"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "-0.1%",
+    "previous": "-1.4%"
+  },
+  {
+    "time": "11:00am",
+    "currency": "USD",
+    "title": "Fed Monetary Policy Report",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]

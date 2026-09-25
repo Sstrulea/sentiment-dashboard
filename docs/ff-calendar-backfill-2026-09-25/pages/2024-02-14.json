@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "4.0%",
+    "forecast": "4.1%",
+    "previous": "4.0%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "5.1%",
+    "forecast": "5.2%",
+    "previous": "5.1%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "-0.8%",
+    "forecast": "0.1%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "-0.2%",
+    "forecast": "-0.2%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "4.9%",
+    "forecast": "5.1%",
+    "previous": "5.2%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "-1.4%",
+    "forecast": "-1.8%",
+    "previous": "-2.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash Employment Change q/q",
+    "actual": "0.3%",
+    "forecast": "0.3%",
+    "previous": "0.2%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Flash GDP q/q",
+    "actual": "0.0%",
+    "forecast": "0.0%",
+    "previous": "0.0%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Industrial Production m/m",
+    "actual": "2.6%",
+    "forecast": "-0.2%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "5:33am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "2.53|2.8",
+    "forecast": "",
+    "previous": "2.45|2.5"
+  },
+  {
+    "time": "6:33am",
+    "currency": "GBP",
+    "title": "10-y Bond Auction",
+    "actual": "4.13|3.1",
+    "forecast": "",
+    "previous": "3.97|3.1"
+  },
+  {
+    "time": "9:30am",
+    "currency": "GBP",
+    "title": "CB Leading Index m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "GBP",
+    "title": "BOE Gov Bailey Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "12.0M",
+    "forecast": "3.3M",
+    "previous": "5.5M"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Visitor Arrivals m/m",
+    "actual": "-2.2%",
+    "forecast": "",
+    "previous": "-1.6%"
+  },
+  {
+    "time": "5:00pm",
+    "currency": "AUD",
+    "title": "RBA Gov Bullock Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP Price Index y/y",
+    "actual": "3.8%",
+    "forecast": "4.0%",
+    "previous": "5.3%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Prelim GDP q/q",
+    "actual": "-0.1%",
+    "forecast": "0.2%",
+    "previous": "-0.7%"
+  },
+  {
+    "time": "7:00pm",
+    "currency": "AUD",
+    "title": "MI Inflation Expectations",
+    "actual": "4.5%",
+    "forecast": "",
+    "previous": "4.5%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "0.5K",
+    "forecast": "26.4K",
+    "previous": "-62.7K"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.1%",
+    "forecast": "4.0%",
+    "previous": "3.9%"
+  },
+  {
+    "time": "11:30pm",
+    "currency": "JPY",
+    "title": "Revised Industrial Production m/m",
+    "actual": "1.4%",
+    "forecast": "1.8%",
+    "previous": "1.8%"
+  }
+]

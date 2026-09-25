@@ -427,11 +427,25 @@ categories:
         display_label: "GDP (QoQ)"
         unit: pct
         transform_real: QoQ
-    # CHF growth: OMITTED — see "OMITTED SERIES" at the bottom (gdp_qoq,
-    # n=11, below the 12-print catalog floor, FAZA 2D 1.1).
-    #
-    # JPY growth: OMITTED entirely — see "OMITTED SERIES" at the bottom
-    # (gdp_qoq n=3, below the 4-point minimum even on Max).
+    # CHF / JPY growth: RESTORED 2026-09-25 (migrations/2026-09-25_backfill_ff_
+    # calendar_pages.py). CHF: 16 real prints 2023-02..2026-09 (Q3-2023 filled
+    # from the FF page of 2023-12-01; its `previous` confirms Q2-2023's 0.0).
+    # JPY: the 12 Prelim GDP q/q prints 2023-2025 were never ingested (the JB
+    # archive carried them mislabelled USD); filled from the FF day pages.
+    CHF:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP (QoQ)"
+        unit: pct
+        transform_real: QoQ
+    JPY:
+      - indicator_key: gdp_qoq
+        role: market
+        rank: 1
+        display_label: "GDP Prelim (QoQ)"
+        unit: pct
+        transform_real: QoQ
 
   # FAZA 2C 4 — role is `market` here (renamed from `policy`), not because the
   # 2026-08-25 conversation decided a policy rate isn't policy — it obviously
@@ -494,29 +508,24 @@ categories:
         display_label: "RBNZ Official Cash Rate"
         unit: pct
         transform_real: none
-    # CHF rates: OMITTED — see "OMITTED SERIES" at the bottom (SNB rate decision
-    # STALE, last print 2025-06-19, no further value under any name since).
+    # CHF rates: RESTORED 2026-09-25 — the SNB decisions after 2025-06-19 (and
+    # Dec 2023) were filled from the FF day pages; 2026-09-24 from the SNB
+    # statement (data/manual_actuals_overrides.json, backfill-official).
+    CHF:
+      - indicator_key: interest_rate_decision
+        role: market
+        rank: 1
+        display_label: "SNB Policy Rate"
+        unit: pct
+        transform_real: none
 
 # -----------------------------------------------------------------------------
 # OMITTED SERIES (confirmed candidates that did NOT make it into the catalog)
 # -----------------------------------------------------------------------------
-# growth/JPY market (gdp_qoq, name_raw "Prelim GDP q/q"): n=3, spanning
-#   2026-02-15..2026-08-16 only — below the 4-point minimum even on the Max
-#   window. No substitute GDP series confirmed for JPY.
-#
-# growth/CHF market (gdp_qoq): REMOVED at FAZA 2D 1.1 — n=11 real prints as
-#   of 2026-08-25, below the 12-print catalog floor (FAZA 2C 5.3), with a
-#   275-day max gap against a ~91-day quarterly median (a real, isolated
-#   reporting gap, not a documented one-off like USD's below — too thin a
-#   series to carry either way). CHF has no growth-category series at all
-#   now. No substitute GDP series confirmed.
-#
-# rates/CHF market (interest_rate_decision, "SNB Policy Rate"): STALE — last
-#   print 2025-06-19, cadence quarterly, >2x cadence old as of 2026-08-20 (FAZA
-#   0.6 C1 / FAZA 1A Annex). SNB continues deciding rates (confirmed via
-#   "SNB Monetary Policy Assessment"/"SNB Press Conference" markers, quarterly,
-#   through 2026-06-18) but the feed has not emitted a numeric value under any
-#   name since 2025-06-19 — not a config/alias gap, a feed gap.
+# growth/JPY, growth/CHF, rates/CHF: were omitted here (JPY GDP n=3; CHF GDP
+#   n=11 with a 275-day gap; SNB stale after 2025-06-19). All three gaps were
+#   data holes, not missing series — filled 2026-09-25 from the FF day pages
+#   (migrations/2026-09-25_backfill_ff_calendar_pages.py) and restored above.
 #
 # inflation/AUD secondary — core_cpi (RBA Trimmed Mean CPI y/y, the ORIGINAL
 #   FAZA 0 candidate): STALE (last print 2025-10-29). Was replaced at FAZA 0.6

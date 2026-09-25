@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "3.8%",
+    "forecast": "3.8%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "3.6%",
+    "forecast": "3.7%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "4.6%",
+    "forecast": "4.7%",
+    "previous": "4.8%"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "ECB President Lagarde Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "2.8%",
+    "forecast": "3.6%",
+    "previous": "3.6%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final Core CPI y/y",
+    "actual": "2.3%",
+    "forecast": "2.3%",
+    "previous": "2.3%"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Final CPI y/y",
+    "actual": "2.0%",
+    "forecast": "2.1%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "5:34am",
+    "currency": "EUR",
+    "title": "German 30-y Bond Auction",
+    "actual": "3.25|1.8",
+    "forecast": "",
+    "previous": "3.28|1.0"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Foreign Securities Purchases",
+    "actual": "26.69B",
+    "forecast": "-1.32B",
+    "previous": "1.01B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Building Permits",
+    "actual": "1.31M",
+    "forecast": "1.37M",
+    "previous": "1.35M"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Housing Starts",
+    "actual": "1.31M",
+    "forecast": "1.37M",
+    "previous": "1.43M"
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "BOC Rate Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "CAD",
+    "title": "Overnight Rate",
+    "actual": "2.50%",
+    "forecast": "2.50%",
+    "previous": "2.75%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "CAD",
+    "title": "BOC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "-9.3M",
+    "forecast": "1.4M",
+    "previous": "3.9M"
+  },
+  {
+    "time": "1:00pm",
+    "currency": "EUR",
+    "title": "German Buba President Nagel Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "Federal Funds Rate",
+    "actual": "4.25%",
+    "forecast": "4.25%",
+    "previous": "4.50%"
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Economic Projections",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:00pm",
+    "currency": "USD",
+    "title": "FOMC Statement",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:30pm",
+    "currency": "USD",
+    "title": "FOMC Press Conference",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "GDP q/q",
+    "actual": "-0.9%",
+    "forecast": "-0.3%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Core Machinery Orders m/m",
+    "actual": "-4.6%",
+    "forecast": "-1.8%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "-5.4K",
+    "forecast": "21.2K",
+    "previous": "26.5K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.2%",
+    "forecast": "4.2%",
+    "previous": "4.2%"
+  }
+]

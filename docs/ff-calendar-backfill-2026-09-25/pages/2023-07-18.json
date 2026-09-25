@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "JPY",
+    "title": "Tertiary Industry Activity m/m",
+    "actual": "1.2%",
+    "forecast": "0.4%",
+    "previous": "0.9%"
+  },
+  {
+    "time": "Day 5",
+    "currency": "All",
+    "title": "G20 Meetings",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "5:03am",
+    "currency": "GBP",
+    "title": "30-y Bond Auction",
+    "actual": "4.48|2.3",
+    "forecast": "",
+    "previous": "4.39|2.6"
+  },
+  {
+    "time": "8:13am",
+    "currency": "CAD",
+    "title": "Housing Starts",
+    "actual": "281K",
+    "forecast": "221K",
+    "previous": "200K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.3%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Median CPI y/y",
+    "actual": "3.9%",
+    "forecast": "3.7%",
+    "previous": "4.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Trimmed CPI y/y",
+    "actual": "3.7%",
+    "forecast": "3.6%",
+    "previous": "3.8%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Common CPI y/y",
+    "actual": "5.1%",
+    "forecast": "5.0%",
+    "previous": "5.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "IPPI m/m",
+    "actual": "-0.6%",
+    "forecast": "-0.2%",
+    "previous": "-0.6%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "RMPI m/m",
+    "actual": "-1.5%",
+    "forecast": "-0.3%",
+    "previous": "-5.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Core Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "0.4%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "0.5%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "8:32am",
+    "currency": "CAD",
+    "title": "Core CPI m/m",
+    "actual": "-0.1%",
+    "forecast": "",
+    "previous": "0.4%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Industrial Production m/m",
+    "actual": "-0.5%",
+    "forecast": "0.0%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "9:15am",
+    "currency": "USD",
+    "title": "Capacity Utilization Rate",
+    "actual": "78.9%",
+    "forecast": "79.5%",
+    "previous": "79.4%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Business Inventories m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "FOMC Member Barr Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "NAHB Housing Market Index",
+    "actual": "56",
+    "forecast": "56",
+    "previous": "55"
+  },
+  {
+    "time": "10:17am",
+    "currency": "NZD",
+    "title": "GDT Price Index",
+    "actual": "-1.0%",
+    "forecast": "",
+    "previous": "-3.3%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "AUD",
+    "title": "CB Leading Index m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "4:00pm",
+    "currency": "USD",
+    "title": "TIC Long-Term Purchases",
+    "actual": "25.8B",
+    "forecast": "110.7B",
+    "previous": "127.8B"
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:45pm",
+    "currency": "NZD",
+    "title": "CPI q/q",
+    "actual": "1.1%",
+    "forecast": "0.9%",
+    "previous": "1.2%"
+  },
+  {
+    "time": "8:33pm",
+    "currency": "AUD",
+    "title": "MI Leading Index m/m",
+    "actual": "0.1%",
+    "forecast": "",
+    "previous": "-0.3%"
+  }
+]

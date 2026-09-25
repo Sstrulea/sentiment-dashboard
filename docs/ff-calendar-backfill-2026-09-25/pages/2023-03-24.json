@@ -1,0 +1,157 @@
+[
+ {
+  "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+ },
+ {
+  "time": "3:00am",
+  "currency": "GBP",
+  "title": "Retail Sales m/m",
+  "actual": "1.2%",
+  "forecast": "0.2%",
+  "previous": "0.9%"
+ },
+ {
+  "time": "4:15am",
+  "currency": "EUR",
+  "title": "French Flash Manufacturing PMI",
+  "actual": "47.7",
+  "forecast": "48.1",
+  "previous": "47.4"
+ },
+ {
+  "time": "4:15am",
+  "currency": "EUR",
+  "title": "French Flash Services PMI",
+  "actual": "55.5",
+  "forecast": "52.4",
+  "previous": "53.1"
+ },
+ {
+  "time": "4:30am",
+  "currency": "EUR",
+  "title": "German Flash Manufacturing PMI",
+  "actual": "44.4",
+  "forecast": "47.1",
+  "previous": "46.3"
+ },
+ {
+  "time": "4:30am",
+  "currency": "EUR",
+  "title": "German Flash Services PMI",
+  "actual": "53.9",
+  "forecast": "51.0",
+  "previous": "50.9"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Flash Manufacturing PMI",
+  "actual": "47.1",
+  "forecast": "48.9",
+  "previous": "48.5"
+ },
+ {
+  "time": "5:00am",
+  "currency": "EUR",
+  "title": "Flash Services PMI",
+  "actual": "55.6",
+  "forecast": "52.6",
+  "previous": "52.7"
+ },
+ {
+  "time": "5:15am",
+  "currency": "EUR",
+  "title": "German Buba President Nagel Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "5:30am",
+  "currency": "GBP",
+  "title": "Flash Manufacturing PMI",
+  "actual": "48.0",
+  "forecast": "49.8",
+  "previous": "49.3"
+ },
+ {
+  "time": "5:30am",
+  "currency": "GBP",
+  "title": "Flash Services PMI",
+  "actual": "52.8",
+  "forecast": "53.1",
+  "previous": "53.5"
+ },
+ {
+  "time": "All Day",
+  "currency": "EUR",
+  "title": "Euro Summit",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Core Retail Sales m/m",
+  "actual": "0.9%",
+  "forecast": "0.6%",
+  "previous": "-0.7%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "CAD",
+  "title": "Retail Sales m/m",
+  "actual": "1.4%",
+  "forecast": "0.7%",
+  "previous": "0.0%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Core Durable Goods Orders m/m",
+  "actual": "0.0%",
+  "forecast": "0.2%",
+  "previous": "0.8%"
+ },
+ {
+  "time": "8:30am",
+  "currency": "USD",
+  "title": "Durable Goods Orders m/m",
+  "actual": "-1.0%",
+  "forecast": "0.4%",
+  "previous": "-5.0%"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Flash Manufacturing PMI",
+  "actual": "49.3",
+  "forecast": "47.0",
+  "previous": "47.3"
+ },
+ {
+  "time": "9:45am",
+  "currency": "USD",
+  "title": "Flash Services PMI",
+  "actual": "53.8",
+  "forecast": "50.3",
+  "previous": "50.6"
+ },
+ {
+  "time": "10:00am",
+  "currency": "EUR",
+  "title": "Belgian NBB Business Climate",
+  "actual": "-7.6",
+  "forecast": "-12.5",
+  "previous": "-12.8"
+ },
+ {
+  "time": "10:30am",
+  "currency": "GBP",
+  "title": "MPC Member Mann Speaks",
+  "actual": "",
+  "forecast": "",
+  "previous": ""
+ }
+]

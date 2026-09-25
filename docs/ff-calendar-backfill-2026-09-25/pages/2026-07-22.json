@@ -1,0 +1,85 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.7%",
+    "previous": "2.8%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Core CPI y/y",
+    "actual": "2.6%",
+    "forecast": "2.5%",
+    "previous": "2.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Input m/m",
+    "actual": "-2.0%",
+    "forecast": "-0.7%",
+    "previous": "0.6%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "PPI Output m/m",
+    "actual": "0.0%",
+    "forecast": "-0.1%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "RPI y/y",
+    "actual": "3.0%",
+    "forecast": "3.0%",
+    "previous": "3.1%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "HPI y/y",
+    "actual": "2.7%",
+    "forecast": "3.2%",
+    "previous": "3.9%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Crude Oil Inventories",
+    "actual": "2.0M",
+    "forecast": "-2.0M",
+    "previous": "-1.7M"
+  },
+  {
+    "time": "3:00pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Employment Change",
+    "actual": "76.3K",
+    "forecast": "16.4K",
+    "previous": "44.0K"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Unemployment Rate",
+    "actual": "4.4%",
+    "forecast": "4.4%",
+    "previous": "4.4%"
+  }
+]

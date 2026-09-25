@@ -1,0 +1,205 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "BOJ Core CPI y/y",
+    "actual": "1.4%",
+    "forecast": "1.5%",
+    "previous": "1.4%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Manufacturing PMI",
+    "actual": "50.7",
+    "forecast": "50.2",
+    "previous": "49.7"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "French Flash Services PMI",
+    "actual": "47.4",
+    "forecast": "45.9",
+    "previous": "44.3"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Manufacturing PMI",
+    "actual": "50.0",
+    "forecast": "50.3",
+    "previous": "50.1"
+  },
+  {
+    "time": "3:30am",
+    "currency": "EUR",
+    "title": "German Flash Services PMI",
+    "actual": "46.8",
+    "forecast": "49.0",
+    "previous": "48.1"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Manufacturing PMI",
+    "actual": "51.3",
+    "forecast": "51.6",
+    "previous": "51.6"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Flash Services PMI",
+    "actual": "48.9",
+    "forecast": "48.6",
+    "previous": "47.7"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Manufacturing PMI",
+    "actual": "53.1",
+    "forecast": "53.5",
+    "previous": "53.9"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Flash Services PMI",
+    "actual": "48.7",
+    "forecast": "50.1",
+    "previous": "49.3"
+  },
+  {
+    "time": "4:55am",
+    "currency": "GBP",
+    "title": "MPC Member Breeden Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "6:00am",
+    "currency": "GBP",
+    "title": "CBI Industrial Order Expectations",
+    "actual": "-45",
+    "forecast": "-33",
+    "previous": "-41"
+  },
+  {
+    "time": "8:15am",
+    "currency": "USD",
+    "title": "ADP Weekly Employment Change",
+    "actual": "30.8K",
+    "forecast": "",
+    "previous": "26.5K"
+  },
+  {
+    "time": "9:15am",
+    "currency": "GBP",
+    "title": "MPC Member Taylor Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:25am",
+    "currency": "CAD",
+    "title": "BOC Gov Macklem Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Manufacturing PMI",
+    "actual": "55.7",
+    "forecast": "54.6",
+    "previous": "55.1"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Flash Services PMI",
+    "actual": "51.3",
+    "forecast": "51.1",
+    "previous": "50.7"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Richmond Manufacturing Index",
+    "actual": "4",
+    "forecast": "8",
+    "previous": "13"
+  },
+  {
+    "time": "1:30pm",
+    "currency": "GBP",
+    "title": "MPC Member Dhingra Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "2:05pm",
+    "currency": "USD",
+    "title": "President Trump Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "API Weekly Statistical Bulletin",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "BOJ Summary of Opinions",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "SPPI y/y",
+    "actual": "3.3%",
+    "forecast": "3.3%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "CPI m/m",
+    "actual": "-0.7%",
+    "forecast": "-0.4%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "CPI y/y",
+    "actual": "4.0%",
+    "forecast": "4.3%",
+    "previous": "4.2%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Trimmed Mean CPI m/m",
+    "actual": "0.4%",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  }
+]

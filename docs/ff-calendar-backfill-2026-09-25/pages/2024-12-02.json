@@ -1,0 +1,197 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "12:30am",
+    "currency": "AUD",
+    "title": "Commodity Prices y/y",
+    "actual": "-11.8%",
+    "forecast": "",
+    "previous": "-9.3%"
+  },
+  {
+    "time": "2:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "1.2%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "2:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "1.4%",
+    "forecast": "2.6%",
+    "previous": "1.8%"
+  },
+  {
+    "time": "3:15am",
+    "currency": "EUR",
+    "title": "Spanish Manufacturing PMI",
+    "actual": "53.1",
+    "forecast": "53.9",
+    "previous": "54.5"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Manufacturing PMI",
+    "actual": "48.5",
+    "forecast": "49.6",
+    "previous": "49.9"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "Italian Manufacturing PMI",
+    "actual": "44.5",
+    "forecast": "46.1",
+    "previous": "46.9"
+  },
+  {
+    "time": "3:50am",
+    "currency": "EUR",
+    "title": "French Final Manufacturing PMI",
+    "actual": "43.1",
+    "forecast": "43.3",
+    "previous": "43.2"
+  },
+  {
+    "time": "3:55am",
+    "currency": "EUR",
+    "title": "German Final Manufacturing PMI",
+    "actual": "43.0",
+    "forecast": "43.2",
+    "previous": "43.2"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Final Manufacturing PMI",
+    "actual": "45.2",
+    "forecast": "45.2",
+    "previous": "45.2"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Italian Monthly Unemployment Rate",
+    "actual": "5.8%",
+    "forecast": "6.1%",
+    "previous": "6.0%"
+  },
+  {
+    "time": "4:30am",
+    "currency": "GBP",
+    "title": "Final Manufacturing PMI",
+    "actual": "48.0",
+    "forecast": "48.6",
+    "previous": "48.6"
+  },
+  {
+    "time": "5:00am",
+    "currency": "EUR",
+    "title": "Unemployment Rate",
+    "actual": "6.3%",
+    "forecast": "6.3%",
+    "previous": "6.3%"
+  },
+  {
+    "time": "9:30am",
+    "currency": "CAD",
+    "title": "Manufacturing PMI",
+    "actual": "52.0",
+    "forecast": "",
+    "previous": "51.1"
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Final Manufacturing PMI",
+    "actual": "49.7",
+    "forecast": "48.8",
+    "previous": "48.8"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing PMI",
+    "actual": "48.4",
+    "forecast": "47.7",
+    "previous": "46.5"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "ISM Manufacturing Prices",
+    "actual": "50.3",
+    "forecast": "55.2",
+    "previous": "54.8"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Construction Spending m/m",
+    "actual": "0.4%",
+    "forecast": "0.2%",
+    "previous": "0.1%"
+  },
+  {
+    "time": "3:15pm",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Williams Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "4:45pm",
+    "currency": "NZD",
+    "title": "Overseas Trade Index q/q",
+    "actual": "2.4%",
+    "forecast": "1.2%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "6:50pm",
+    "currency": "JPY",
+    "title": "Monetary Base y/y",
+    "actual": "-0.3%",
+    "forecast": "0.2%",
+    "previous": "-0.3%"
+  },
+  {
+    "time": "7:01pm",
+    "currency": "GBP",
+    "title": "BRC Retail Sales Monitor y/y",
+    "actual": "-3.4%",
+    "forecast": "0.7%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "AUD",
+    "title": "Current Account",
+    "actual": "-14.1B",
+    "forecast": "-10.3B",
+    "previous": "-16.4B"
+  },
+  {
+    "time": "10:35pm",
+    "currency": "JPY",
+    "title": "10-y Bond Auction",
+    "actual": "1.08|3.1",
+    "forecast": "",
+    "previous": "1.00|3.1"
+  }
+]

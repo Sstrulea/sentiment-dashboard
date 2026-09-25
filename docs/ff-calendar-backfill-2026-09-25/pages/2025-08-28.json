@@ -1,0 +1,149 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "GDP q/q",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "0.4%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "CHF",
+    "title": "KOF Economic Barometer",
+    "actual": "97.4",
+    "forecast": "97.9",
+    "previous": "101.3"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "M3 Money Supply y/y",
+    "actual": "3.4%",
+    "forecast": "3.5%",
+    "previous": "3.3%"
+  },
+  {
+    "time": "4:00am",
+    "currency": "EUR",
+    "title": "Private Loans y/y",
+    "actual": "2.4%",
+    "forecast": "2.4%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "5:09am",
+    "currency": "EUR",
+    "title": "Italian 10-y Bond Auction",
+    "actual": "3.58|1.6",
+    "forecast": "",
+    "previous": "3.52|1.6"
+  },
+  {
+    "time": "7:30am",
+    "currency": "EUR",
+    "title": "ECB Monetary Policy Meeting Accounts",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "Current Account",
+    "actual": "-21.2B",
+    "forecast": "-18.8B",
+    "previous": "-1.3B"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP q/q",
+    "actual": "3.3%",
+    "forecast": "3.1%",
+    "previous": "3.0%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Unemployment Claims",
+    "actual": "229K",
+    "forecast": "231K",
+    "previous": "234K"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "Prelim GDP Price Index q/q",
+    "actual": "2.0%",
+    "forecast": "2.0%",
+    "previous": "2.0%"
+  },
+  {
+    "time": "10:00am",
+    "currency": "USD",
+    "title": "Pending Home Sales m/m",
+    "actual": "-0.4%",
+    "forecast": "-0.4%",
+    "previous": "-0.8%"
+  },
+  {
+    "time": "10:30am",
+    "currency": "USD",
+    "title": "Natural Gas Storage",
+    "actual": "18B",
+    "forecast": "27B",
+    "previous": "13B"
+  },
+  {
+    "time": "6:30pm",
+    "currency": "USD",
+    "title": "FOMC Member Waller Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Tokyo Core CPI y/y",
+    "actual": "2.5%",
+    "forecast": "2.5%",
+    "previous": "2.9%"
+  },
+  {
+    "time": "7:30pm",
+    "currency": "JPY",
+    "title": "Unemployment Rate",
+    "actual": "2.3%",
+    "forecast": "2.5%",
+    "previous": "2.5%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Prelim Industrial Production m/m",
+    "actual": "-1.6%",
+    "forecast": "-1.1%",
+    "previous": "2.1%"
+  },
+  {
+    "time": "7:50pm",
+    "currency": "JPY",
+    "title": "Retail Sales y/y",
+    "actual": "0.3%",
+    "forecast": "1.6%",
+    "previous": "1.9%"
+  },
+  {
+    "time": "9:30pm",
+    "currency": "AUD",
+    "title": "Private Sector Credit m/m",
+    "actual": "0.7%",
+    "forecast": "0.6%",
+    "previous": "0.6%"
+  }
+]

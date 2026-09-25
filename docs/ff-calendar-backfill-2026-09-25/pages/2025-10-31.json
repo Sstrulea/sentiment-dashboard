@@ -1,0 +1,117 @@
+[
+  {
+    "timezone_note": "Calendar Time Zone: America/New York (GMT -4)"
+  },
+  {
+    "time": "1:00am",
+    "currency": "JPY",
+    "title": "Housing Starts y/y",
+    "actual": "-7.3%",
+    "forecast": "-7.8%",
+    "previous": "-9.8%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "German Import Prices m/m",
+    "actual": "0.2%",
+    "forecast": "-0.2%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "EUR",
+    "title": "German Retail Sales m/m",
+    "actual": "0.2%",
+    "forecast": "0.2%",
+    "previous": "-0.5%"
+  },
+  {
+    "time": "3:00am",
+    "currency": "GBP",
+    "title": "Nationwide HPI m/m",
+    "actual": "0.3%",
+    "forecast": "0.0%",
+    "previous": "0.5%"
+  },
+  {
+    "time": "3:30am",
+    "currency": "CHF",
+    "title": "Retail Sales y/y",
+    "actual": "1.5%",
+    "forecast": "0.3%",
+    "previous": "-0.4%"
+  },
+  {
+    "time": "3:45am",
+    "currency": "EUR",
+    "title": "French Prelim CPI m/m",
+    "actual": "0.1%",
+    "forecast": "0.1%",
+    "previous": "-1.0%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Core CPI Flash Estimate y/y",
+    "actual": "2.4%",
+    "forecast": "2.3%",
+    "previous": "2.4%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "CPI Flash Estimate y/y",
+    "actual": "2.1%",
+    "forecast": "2.1%",
+    "previous": "2.2%"
+  },
+  {
+    "time": "6:00am",
+    "currency": "EUR",
+    "title": "Italian Prelim CPI m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "-0.2%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "CAD",
+    "title": "GDP m/m",
+    "actual": "-0.3%",
+    "forecast": "0.0%",
+    "previous": "0.3%"
+  },
+  {
+    "time": "8:30am",
+    "currency": "USD",
+    "title": "FOMC Member Logan Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "9:45am",
+    "currency": "USD",
+    "title": "Chicago PMI",
+    "actual": "43.8",
+    "forecast": "42.3",
+    "previous": "40.6"
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Bostic Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  },
+  {
+    "time": "12:00pm",
+    "currency": "USD",
+    "title": "FOMC Member Hammack Speaks",
+    "actual": "",
+    "forecast": "",
+    "previous": ""
+  }
+]
