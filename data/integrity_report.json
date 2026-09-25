@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-25T09:12:27.558849",
+ "as_of": "2026-09-25T11:50:01.940449",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -337,7 +337,7 @@
      "release_dt": "2023-05-31T12:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2023-06-30T12:30:00",
      "next_previous": 0.1,
      "next_from": "parquet",
@@ -375,7 +375,7 @@
      "release_dt": "2023-06-30T12:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2023-07-28T12:30:00",
      "next_previous": 0.1,
      "next_from": "parquet",
@@ -546,7 +546,7 @@
      "release_dt": "2023-11-23T21:45:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2024-02-22T21:45:00",
      "next_previous": -0.8,
      "next_from": "parquet",
@@ -554,7 +554,7 @@
      "tolerance": 0.54478,
      "threshold": 0.54478,
      "n_revision_pairs": 13,
-     "level": "INFO",
+     "level": "WARN",
      "new": false
     },
     {
@@ -641,7 +641,7 @@
      "release_dt": "2024-01-17T13:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2024-02-15T13:30:00",
      "next_previous": -0.7,
      "next_from": "parquet",
@@ -660,7 +660,7 @@
      "release_dt": "2024-01-25T13:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2024-02-27T13:30:00",
      "next_previous": -0.3,
      "next_from": "parquet",
@@ -755,7 +755,7 @@
      "release_dt": "2024-02-29T13:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2024-03-28T12:30:00",
      "next_previous": -0.1,
      "next_from": "parquet",
@@ -869,7 +869,7 @@
      "release_dt": "2024-08-30T01:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2024-10-01T01:30:00",
      "next_previous": 0.1,
      "next_from": "parquet",
@@ -945,7 +945,7 @@
      "release_dt": "2024-09-26T12:30:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2024-10-25T12:30:00",
      "next_previous": -0.8,
      "next_from": "parquet",
@@ -1078,7 +1078,7 @@
      "release_dt": "2025-04-30T14:00:00",
      "kind": "zero",
      "scored_actual": 0.0,
-     "scored_source": "quarantined",
+     "scored_source": "manual",
      "next_release_dt": "2025-05-30T12:30:00",
      "next_previous": 0.1,
      "next_from": "parquet",
@@ -1662,8 +1662,8 @@
    ],
    "findings_by_source": {
     "ff": 71,
-    "quarantined": 10,
-    "manual": 6
+    "manual": 15,
+    "quarantined": 1
    },
    "findings_by_kind": {
     "value": 73,
@@ -2100,13 +2100,13 @@
    "INFO": 0
   },
   "previous_consistency": {
-   "WARN": 23,
-   "INFO": 64
+   "WARN": 24,
+   "INFO": 63
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-09-25T09:12:36+00:00"
+ "generated_at": "2026-09-25T11:50:06+00:00"
 }
