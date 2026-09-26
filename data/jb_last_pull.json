@@ -3,9 +3,9 @@
  "last_success_at": "2026-09-26T00:05:51.803330",
  "rows": 11,
  "actuals": 11,
- "last_attempt_at": "2026-09-26T00:05:51.803330",
- "last_status": "ok",
- "last_http_status": 200,
- "last_error": null,
+ "last_attempt_at": "2026-09-26T20:05:41.486656",
+ "last_status": "fetch_failed",
+ "last_http_status": 401,
+ "last_error": "{\"message\":\"This endpoint requires credits, and you currently do not have any. You can purchase some at https://www.jblanked.com/api/billing/\"}",
  "last_rate_limit_headers": {}
 }
