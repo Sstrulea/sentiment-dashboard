@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-25T11:50:01.940449",
+ "as_of": "2026-09-27T08:06:04.053696",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -171,9 +171,9 @@
      "next_previous": 5.0,
      "next_from": "parquet",
      "diff": -1.3,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 43,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -192,7 +192,7 @@
      "diff": 19.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -211,7 +211,7 @@
      "diff": 48.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -228,9 +228,9 @@
      "next_previous": 7.3,
      "next_from": "parquet",
      "diff": 0.7,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 43,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -325,7 +325,7 @@
      "diff": -17.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -344,7 +344,7 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32,
+     "n_revision_pairs": 33,
      "level": "INFO",
      "new": false
     },
@@ -363,7 +363,7 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -382,7 +382,7 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32,
+     "n_revision_pairs": 33,
      "level": "INFO",
      "new": false
     },
@@ -401,7 +401,7 @@
      "diff": -42.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -420,7 +420,7 @@
      "diff": -0.41,
      "tolerance": 0.356868,
      "threshold": 0.356868,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -439,7 +439,7 @@
      "diff": 47.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -482,6 +482,25 @@
      "new": false
     },
     {
+     "canonical_id": "jpy_retail_sales",
+     "currency": "JPY",
+     "indicator_key": "retail_sales",
+     "name_raw": "Retail Sales y/y",
+     "release_dt": "2023-10-30T23:50:00",
+     "kind": "value",
+     "scored_actual": 5.8,
+     "scored_source": "ff",
+     "next_release_dt": "2023-11-29T23:50:00",
+     "next_previous": 6.3,
+     "next_from": "parquet",
+     "diff": 0.5,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": true
+    },
+    {
      "canonical_id": "usd_initial_jobless_claims",
      "currency": "USD",
      "indicator_key": "jobless_claims",
@@ -496,7 +515,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -589,9 +608,9 @@
      "next_previous": 333.0,
      "next_from": "parquet",
      "diff": 117.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
-     "n_revision_pairs": 44,
+     "tolerance": 92.717,
+     "threshold": 92.717,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -610,7 +629,7 @@
      "diff": -2.2,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 42,
+     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -705,7 +724,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -722,9 +741,9 @@
      "next_previous": 229.0,
      "next_from": "parquet",
      "diff": -124.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
-     "n_revision_pairs": 44,
+     "tolerance": 92.717,
+     "threshold": 92.717,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -762,7 +781,7 @@
      "diff": -0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 32,
+     "n_revision_pairs": 33,
      "level": "INFO",
      "new": false
     },
@@ -781,7 +800,7 @@
      "diff": -7.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -800,7 +819,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -819,7 +838,7 @@
      "diff": 24.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -838,7 +857,7 @@
      "diff": -221.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -860,6 +879,25 @@
      "n_revision_pairs": 41,
      "level": "INFO",
      "new": false
+    },
+    {
+     "canonical_id": "jpy_retail_sales",
+     "currency": "JPY",
+     "indicator_key": "retail_sales",
+     "name_raw": "Retail Sales y/y",
+     "release_dt": "2024-05-30T23:50:00",
+     "kind": "value",
+     "scored_actual": 2.4,
+     "scored_source": "ff",
+     "next_release_dt": "2024-06-26T23:50:00",
+     "next_previous": 2.0,
+     "next_from": "parquet",
+     "diff": -0.4,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -933,7 +971,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -971,7 +1009,7 @@
      "diff": -49.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -1009,7 +1047,7 @@
      "diff": 54.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -1033,6 +1071,25 @@
      "new": false
     },
     {
+     "canonical_id": "jpy_retail_sales",
+     "currency": "JPY",
+     "indicator_key": "retail_sales",
+     "name_raw": "Retail Sales y/y",
+     "release_dt": "2025-02-27T23:50:00",
+     "kind": "value",
+     "scored_actual": 3.9,
+     "scored_source": "ff",
+     "next_release_dt": "2025-03-30T23:50:00",
+     "next_previous": 4.4,
+     "next_from": "parquet",
+     "diff": 0.5,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 44,
+     "level": "INFO",
+     "new": true
+    },
+    {
      "canonical_id": "chf_retail_sales",
      "currency": "CHF",
      "indicator_key": "retail_sales",
@@ -1047,7 +1104,7 @@
      "diff": 1.6,
      "tolerance": 1.28956,
      "threshold": 1.28956,
-     "n_revision_pairs": 42,
+     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -1071,6 +1128,25 @@
      "new": false
     },
     {
+     "canonical_id": "jpy_prelim_industrial_production",
+     "currency": "JPY",
+     "indicator_key": "industrial_production_mm",
+     "name_raw": "Prelim Industrial Production m/m",
+     "release_dt": "2025-04-29T23:50:00",
+     "kind": "value",
+     "scored_actual": -1.1,
+     "scored_source": "ff",
+     "next_release_dt": "2025-05-29T23:50:00",
+     "next_previous": 0.2,
+     "next_from": "parquet",
+     "diff": 1.3,
+     "tolerance": 1.18956,
+     "threshold": 1.18956,
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": true
+    },
+    {
      "canonical_id": "usd_core_pce_price_index",
      "currency": "USD",
      "indicator_key": "core_pce",
@@ -1085,7 +1161,7 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 39,
+     "n_revision_pairs": 40,
      "level": "INFO",
      "new": false
     },
@@ -1140,9 +1216,9 @@
      "next_previous": 14.0,
      "next_from": "parquet",
      "diff": -133.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
-     "n_revision_pairs": 44,
+     "tolerance": 92.717,
+     "threshold": 92.717,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -1178,9 +1254,9 @@
      "next_previous": 49.6,
      "next_from": "parquet",
      "diff": 3.4,
-     "tolerance": 3.00151,
-     "threshold": 3.00151,
-     "n_revision_pairs": 44,
+     "tolerance": 3.2239,
+     "threshold": 3.2239,
+     "n_revision_pairs": 45,
      "level": "WARN",
      "new": false
     },
@@ -1218,7 +1294,7 @@
      "diff": -10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -1237,7 +1313,7 @@
      "diff": -6.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -1294,7 +1370,7 @@
      "diff": -0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "WARN",
      "new": false
     },
@@ -1311,9 +1387,9 @@
      "next_previous": 56.0,
      "next_from": "parquet",
      "diff": 161.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
-     "n_revision_pairs": 44,
+     "tolerance": 92.717,
+     "threshold": 92.717,
+     "n_revision_pairs": 45,
      "level": "WARN",
      "new": false
     },
@@ -1351,7 +1427,7 @@
      "diff": 10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -1406,9 +1482,9 @@
      "next_previous": 4.3,
      "next_from": "parquet",
      "diff": 2.1,
-     "tolerance": 1.46195,
-     "threshold": 1.46195,
-     "n_revision_pairs": 42,
+     "tolerance": 1.18956,
+     "threshold": 1.18956,
+     "n_revision_pairs": 43,
      "level": "WARN",
      "new": false
     },
@@ -1541,7 +1617,7 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "INFO",
      "new": false
     },
@@ -1558,9 +1634,9 @@
      "next_previous": 2.8,
      "next_from": "parquet",
      "diff": 0.7,
-     "tolerance": 0.64478,
-     "threshold": 0.64478,
-     "n_revision_pairs": 43,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 44,
      "level": "WARN",
      "new": false
     },
@@ -1655,25 +1731,25 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 189,
+     "n_revision_pairs": 190,
      "level": "WARN",
      "new": false
     }
    ],
    "findings_by_source": {
-    "ff": 71,
+    "ff": 75,
     "manual": 15,
     "quarantined": 1
    },
    "findings_by_kind": {
-    "value": 73,
+    "value": 77,
     "zero": 14
    },
-   "n_checked": 3326,
+   "n_checked": 3354,
    "n_series": 107,
-   "n_scored_zero": 93,
+   "n_scored_zero": 94,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-09-25.json"
+   "weekly_feed": "ff_weekly_2026-09-27.json"
   },
   "missing_release": {
    "findings": [
@@ -2101,12 +2177,12 @@
   },
   "previous_consistency": {
    "WARN": 24,
-   "INFO": 63
+   "INFO": 67
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-09-25T11:50:06+00:00"
+ "generated_at": "2026-09-27T08:06:13+00:00"
 }
