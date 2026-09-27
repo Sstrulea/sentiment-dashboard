@@ -1208,5 +1208,16 @@
   "entered_by": "backfill-official",
   "entered_at": "2026-09-25T11:28:22+00:00",
   "note": "ForexFactory https://www.forexfactory.com/calendar?day=jul1.2025 (actual 0.0%); FSO 2025-07-01 (May 2025, first release): real retail sales y/y 0.0%; official FSO page not retrieved; reported the same day: 'Retail sales in Switzerland stalled year-on-year in May 2025' https://tradingeconomics.com/switzerland/retail-sales-annual/news/466869"
+ },
+ {
+  "canonical_id": "usd_durable_goods_orders",
+  "currency": "USD",
+  "indicator_key": "durable_goods_orders_mm",
+  "datetime_utc": "2026-09-25 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "ZERO_CONFIRM",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-27T09:49:35+00:00",
+  "note": ""
  }
 ]
