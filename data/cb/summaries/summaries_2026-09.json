@@ -6756,6 +6756,236 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     9,
+     13,
+     19,
+     21,
+     22,
+     26,
+     32,
+     33
+    ],
+    "paragraphs_sent": 45,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:279aa2af0206",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-28T18:41:48Z",
+   "input_sha256": "4e46ffabd813cc85e329c514752f35088645ce0955253e9fd106451775891fac",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3795,
+     "point": 1,
+     "source_text": "2 percent",
+     "start": 3786,
+     "text": "2 percent"
+    },
+    {
+     "end": 13391,
+     "point": 5,
+     "source_text": "71 percent",
+     "start": 13381,
+     "text": "71 percent"
+    },
+    {
+     "end": 16660,
+     "point": 6,
+     "source_text": "25 basis points",
+     "start": 16645,
+     "text": "25 basis points"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-28",
+   "quotes": [
+    {
+     "end": 3900,
+     "paragraph": 9,
+     "start": 3829,
+     "text": "Over the past year, one of these factors has been AI-driven investment."
+    },
+    {
+     "end": 6463,
+     "paragraph": 13,
+     "start": 6356,
+     "text": "Currently, I anticipate that productivity gains will provide modest disinflation within the next few years."
+    },
+    {
+     "end": 9981,
+     "paragraph": 19,
+     "start": 9931,
+     "text": "Both the unemployment rate and layoffs remain low."
+    },
+    {
+     "end": 16693,
+     "paragraph": 32,
+     "start": 16577,
+     "text": "As you know, I voted along with the rest of the FOMC to raise rates 25 basis points at the recent September meeting."
+    }
+   ],
+   "source": {
+    "chars": 20614,
+    "chars_sent": 20615,
+    "method": "html-selector",
+    "paragraphs_sent": 45,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3828,
+        "paragraph": 9,
+        "start": 3713,
+        "text": "A broad range of factors have caused inflation to remain above the Fed's 2 percent target over the past five years."
+       },
+       {
+        "end": 3900,
+        "paragraph": 9,
+        "start": 3829,
+        "text": "Over the past year, one of these factors has been AI-driven investment."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Governor Cook says AI-driven investment has been one factor in inflation remaining above the Fed's 2 percent target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6584,
+        "paragraph": 13,
+        "start": 6356,
+        "text": "Currently, I anticipate that productivity gains will provide modest disinflation within the next few years. However, I do not expect those effects to arrive in time to offset the broadening inflationary pressure later this year."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "Governor Cook anticipates that productivity gains will provide modest disinflation within the next few years, but she does not expect the effects to offset broadening inflationary pressure later this year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9904,
+        "paragraph": 19,
+        "start": 9786,
+        "text": "At the moment, there is limited evidence that AI is yielding significant changes to the structure of the labor market."
+       },
+       {
+        "end": 9981,
+        "paragraph": 19,
+        "start": 9931,
+        "text": "Both the unemployment rate and layoffs remain low."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governor Cook says there is limited evidence that AI is yielding significant changes to the labor market's structure, while the unemployment rate and layoffs remain low."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10512,
+        "paragraph": 21,
+        "start": 10356,
+        "text": "There is evidence in some sectors, including coding jobs in the software industry and in simultaneous translation, that AI might be decreasing labor demand."
+       },
+       {
+        "end": 11042,
+        "paragraph": 22,
+        "start": 10907,
+        "text": "In the future, I continue to expect AI to fundamentally change business practices and transform the labor market in a commensurate way."
+       }
+      ],
+      "paragraphs": [
+       21,
+       22
+      ]
+     },
+     "text": "Governor Cook says AI might be decreasing labor demand in coding jobs and simultaneous translation, and she expects it to fundamentally change business practices and the labor market."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 13300,
+        "paragraph": 26,
+        "start": 13203,
+        "text": "Take the findings in the Federal Reserve Small Business Credit Survey released earlier this year."
+       },
+       {
+        "end": 13434,
+        "paragraph": 26,
+        "start": 13301,
+        "text": "That study found that nearly half of small employer firms are using AI and that 71 percent report increased productivity as a result."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Governor Cook cites a Federal Reserve Small Business Credit Survey finding that nearly half of small employer firms are using AI and that 71 percent report increased productivity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16693,
+        "paragraph": 32,
+        "start": 16577,
+        "text": "As you know, I voted along with the rest of the FOMC to raise rates 25 basis points at the recent September meeting."
+       },
+       {
+        "end": 16771,
+        "paragraph": 33,
+        "start": 16694,
+        "text": "This increase was to address inflation, which has been too high for too long."
+       }
+      ],
+      "paragraphs": [
+       32,
+       33
+      ]
+     },
+     "text": "Governor Cook says she voted with the rest of the FOMC to raise rates 25 basis points at the recent September meeting to address inflation that has been too high for too long."
+    }
+   ],
+   "title": "Cook, An Update on AI and the Economy",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/cook20260928a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5624,
+    "output_tokens": 2713,
+    "reasoning_tokens": 2041
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      6,
      12,
      17,
