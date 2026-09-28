@@ -1219,5 +1219,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-27T09:49:35+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_sppi",
+  "currency": "JPY",
+  "indicator_key": "sppi_yoy",
+  "datetime_utc": "2026-09-27 23:50:00",
+  "actual": 3.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-28T08:09:37+00:00",
+  "note": ""
  }
 ]
