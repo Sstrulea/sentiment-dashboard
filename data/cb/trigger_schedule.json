@@ -5,43 +5,6 @@
  },
  "events": [
   {
-   "at": "2026-09-24T07:30:00Z",
-   "bank": "CHF",
-   "date": "2026-09-24",
-   "dispatch": {
-    "inputs": {
-     "bank": "CHF",
-     "date": "2026-09-24",
-     "event": "decision"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-09-24T07:31:00Z",
-   "grace_minutes": 90,
-   "id": "decision:CHF:2026-09-24",
-   "kind": "decision",
-   "lead_minutes": 5
-  },
-  {
-   "at": "2026-09-24T08:00:00Z",
-   "at_basis": "conference",
-   "bank": "CHF",
-   "date": "2026-09-24",
-   "dispatch": {
-    "inputs": {
-     "bank": "CHF",
-     "date": "2026-09-24",
-     "event": "conference"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-09-24T10:00:00Z",
-   "grace_minutes": 240,
-   "id": "conference:CHF:2026-09-24",
-   "kind": "conference",
-   "lead_minutes": 0
-  },
-  {
    "at": "2026-09-29T04:30:00Z",
    "bank": "AUD",
    "date": "2026-09-29",
@@ -302,8 +265,8 @@
   }
  ],
  "horizon": {
-  "from": "2026-09-24",
-  "to": "2026-11-26"
+  "from": "2026-09-25",
+  "to": "2026-11-27"
  },
  "regular": [
   {
