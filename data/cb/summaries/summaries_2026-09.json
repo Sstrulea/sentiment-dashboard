@@ -4146,6 +4146,278 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     14,
+     17,
+     20,
+     24,
+     25,
+     32
+    ],
+    "paragraphs_sent": 60,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:testimony:fa813bf32a64",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-28T14:41:30Z",
+   "input_sha256": "2f6fad79cd25deb075bc0d340f6e7e2c8a7dcacb5ebdb4366fd8828baa06793b",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3901,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 3886,
+     "text": "25 basis points"
+    },
+    {
+     "end": 2344,
+     "point": 2,
+     "source_text": "0.9%",
+     "start": 2340,
+     "text": "0.9%"
+    },
+    {
+     "end": 170,
+     "point": 2,
+     "source_text": "2026",
+     "start": 166,
+     "text": "2026"
+    },
+    {
+     "end": 2358,
+     "point": 2,
+     "source_text": "1.4%",
+     "start": 2354,
+     "text": "1.4%"
+    },
+    {
+     "end": 2366,
+     "point": 2,
+     "source_text": "2027",
+     "start": 2362,
+     "text": "2027"
+    },
+    {
+     "end": 2375,
+     "point": 2,
+     "source_text": "1.5%",
+     "start": 2371,
+     "text": "1.5%"
+    },
+    {
+     "end": 2383,
+     "point": 2,
+     "source_text": "2028",
+     "start": 2379,
+     "text": "2028"
+    },
+    {
+     "end": 3181,
+     "point": 3,
+     "source_text": "3.0%",
+     "start": 3177,
+     "text": "3.0%"
+    },
+    {
+     "end": 170,
+     "point": 3,
+     "source_text": "2026",
+     "start": 166,
+     "text": "2026"
+    },
+    {
+     "end": 3195,
+     "point": 3,
+     "source_text": "2.5%",
+     "start": 3191,
+     "text": "2.5%"
+    },
+    {
+     "end": 2366,
+     "point": 3,
+     "source_text": "2027",
+     "start": 2362,
+     "text": "2027"
+    },
+    {
+     "end": 3212,
+     "point": 3,
+     "source_text": "2.1%",
+     "start": 3208,
+     "text": "2.1%"
+    },
+    {
+     "end": 2383,
+     "point": 3,
+     "source_text": "2028",
+     "start": 2379,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-28",
+   "quotes": [
+    {
+     "end": 3952,
+     "paragraph": 20,
+     "start": 3727,
+     "text": "In line with our commitment to ensuring that inflation stabilises at our 2% target in the medium term, we decided to raise the three key ECB interest rates by 25 basis points at our monetary policy meeting earlier this month."
+    },
+    {
+     "end": 4735,
+     "paragraph": 24,
+     "start": 4620,
+     "text": "Looking at these three criteria today, we see higher inflation ahead but no signs yet that it is becoming embedded."
+    },
+    {
+     "end": 5398,
+     "paragraph": 25,
+     "start": 5266,
+     "text": "This means that while the shock is too large to look through, we view a measured response as appropriate to keep inflation in check."
+    },
+    {
+     "end": 6110,
+     "paragraph": 32,
+     "start": 6004,
+     "text": "AI has the potential to help firms produce more, and, over time, higher productivity could lower costs.[3]"
+    }
+   ],
+   "source": {
+    "chars": 11169,
+    "chars_sent": 11170,
+    "method": "html-selector",
+    "paragraphs_sent": 60,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3952,
+        "paragraph": 20,
+        "start": 3830,
+        "text": "we decided to raise the three key ECB interest rates by 25 basis points at our monetary policy meeting earlier this month."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "President Lagarde says the ECB decided to raise the three key ECB interest rates by 25 basis points at its monetary policy meeting earlier this month."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2384,
+        "paragraph": 14,
+        "start": 2257,
+        "text": "The baseline of the September ECB staff projections expects the economy to grow by 0.9% in 2026, 1.4% in 2027 and 1.5% in 2028."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "President Lagarde says the September ECB staff projections expect the economy to grow by 0.9% in 2026, 1.4% in 2027 and 1.5% in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3221,
+        "paragraph": 17,
+        "start": 3091,
+        "text": "The baseline of the September ECB staff projections sees headline inflation averaging 3.0% in 2026, 2.5% in 2027 and 2.1% in 2028."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "President Lagarde says the September ECB staff projections see headline inflation averaging 3.0% in 2026, 2.5% in 2027 and 2.1% in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4735,
+        "paragraph": 24,
+        "start": 4659,
+        "text": "we see higher inflation ahead but no signs yet that it is becoming embedded."
+       },
+       {
+        "end": 4945,
+        "paragraph": 24,
+        "start": 4861,
+        "text": "But we do not see evidence at this stage of energy prices feeding into higher wages."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "President Lagarde says the ECB sees higher inflation ahead but no signs yet that it is becoming embedded, and does not see evidence at this stage of energy prices feeding into higher wages."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5398,
+        "paragraph": 25,
+        "start": 5282,
+        "text": "while the shock is too large to look through, we view a measured response as appropriate to keep inflation in check."
+       }
+      ],
+      "paragraphs": [
+       25
+      ]
+     },
+     "text": "President Lagarde says the shock is too large to look through, while the ECB views a measured response as appropriate to keep inflation in check."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6107,
+        "paragraph": 32,
+        "start": 6004,
+        "text": "AI has the potential to help firms produce more, and, over time, higher productivity could lower costs."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "President Lagarde says AI has the potential to help firms produce more and, over time, higher productivity could lower costs."
+    }
+   ],
+   "title": "Christine Lagarde: Hearing of the Committee on Economic and Monetary Affairs of the European Parliament",
+   "type": "testimony",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260928~a875675544.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3899,
+    "output_tokens": 809,
+    "reasoning_tokens": 144
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      8,
      9,
      12,

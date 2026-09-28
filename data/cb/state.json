@@ -148,26 +148,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-09-24T10:41:37Z",
-      "calls": 0,
-      "cost_usd": 0.0,
+      "at": "2026-09-28T14:41:30Z",
+      "calls": 1,
+      "cost_usd": 0.0175,
       "failed_validation": 0,
-      "input_tokens": 0,
-      "new": 0,
+      "input_tokens": 3899,
+      "new": 1,
       "no_text": 0,
-      "output_tokens": 0,
+      "output_tokens": 809,
       "pending": 0,
-      "reasoning_tokens": 0,
+      "reasoning_tokens": 144,
       "source_errors": 0,
       "stopped": null,
       "unchanged": 98,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 166,
-      "input_tokens": 1025944,
-      "output_tokens": 189755,
-      "summaries": 108
+      "calls": 167,
+      "input_tokens": 1029843,
+      "output_tokens": 190564,
+      "summaries": 109
     }
   }
 }
