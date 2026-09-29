@@ -5549,6 +5549,248 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     25,
+     26,
+     33,
+     39,
+     40,
+     68,
+     69,
+     70
+    ],
+    "paragraphs_sent": 70,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:minutes:2026-07-31",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 2 is not verbatim in the paragraph(s) it cites [25] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Members agreed that financial conditions in Japan had been accommodative, with short-term real interest rates negative, demand for funds increasing, and lending attitudes proactive."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-09-29T00:42:00Z",
+   "input_sha256": "cec85a50ca56f8925dcb0111547f265844bb3f876cb48779c7097c4b933bc3a6",
+   "meeting_date": "2026-07-31",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 687,
+     "point": 2,
+     "source_text": "2",
+     "start": 686,
+     "text": "2 percent"
+    },
+    {
+     "end": 84,
+     "point": 2,
+     "source_text": "2026",
+     "start": 80,
+     "text": "2026"
+    },
+    {
+     "end": 534,
+     "point": 4,
+     "source_text": "1",
+     "start": 533,
+     "text": "1.0 percent"
+    },
+    {
+     "end": 56081,
+     "point": 4,
+     "source_text": "1.25 percent",
+     "start": 56069,
+     "text": "1.25 percent"
+    },
+    {
+     "end": 26,
+     "point": 5,
+     "source_text": "8",
+     "start": 25,
+     "text": "8"
+    },
+    {
+     "end": 534,
+     "point": 5,
+     "source_text": "1",
+     "start": 533,
+     "text": "1"
+    },
+    {
+     "end": 534,
+     "point": 5,
+     "source_text": "1",
+     "start": 533,
+     "text": "1.0 percent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-09-25",
+   "quotes": [
+    {
+     "end": 23182,
+     "paragraph": 26,
+     "start": 22963,
+     "text": "With regard to economic activity, members shared the recognition that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "end": 20402,
+     "paragraph": 25,
+     "start": 20329,
+     "text": "Members agreed that financial conditions in Japan had been accommodative."
+    },
+    {
+     "end": 38452,
+     "paragraph": 33,
+     "start": 38266,
+     "text": "They agreed that the year-on-year rate of increase in the CPI (all items less fresh food) was likely to accelerate to a level clearly above 2 percent from the second half of fiscal 2026."
+    },
+    {
+     "end": 54378,
+     "paragraph": 39,
+     "start": 54159,
+     "text": "With regard to the risk balance , members shared the recognition that, taking their risk assessments as a whole, (1) risks to economic activity were generally balanced, and (2) risks to prices were skewed to the upside."
+    },
+    {
+     "end": 72199,
+     "paragraph": 68,
+     "start": 71990,
+     "text": "At the Monetary Policy Meeting held today, the Policy Board of the Bank of Japan decided, by an 8-1 majority vote, to set the following guideline for money market operations for the intermeeting period: [Note]"
+    }
+   ],
+   "source": {
+    "chars": 72985,
+    "chars_sent": 72986,
+    "method": "pypdf",
+    "paragraphs_sent": 70,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23182,
+        "paragraph": 26,
+        "start": 23033,
+        "text": "Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the impact of the situation in the Middle East."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Members shared the view that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 38452,
+        "paragraph": 33,
+        "start": 38283,
+        "text": "the year-on-year rate of increase in the CPI (all items less fresh food) was likely to accelerate to a level clearly above 2 percent from the second half of fiscal 2026."
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "Members agreed that the CPI inflation rate was likely to accelerate to a level clearly above 2 percent from the second half of fiscal 2026."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 54378,
+        "paragraph": 39,
+        "start": 54276,
+        "text": "risks to economic activity were generally balanced, and (2) risks to prices were skewed to the upside."
+       }
+      ],
+      "paragraphs": [
+       39
+      ]
+     },
+     "text": "Members shared the recognition that risks to economic activity were generally balanced and risks to prices were skewed to the upside."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 54709,
+        "paragraph": 40,
+        "start": 54618,
+        "text": "most members shared the view that it was appropriate for the Bank to maintain the guideline"
+       },
+       {
+        "end": 56098,
+        "paragraph": 40,
+        "start": 55995,
+        "text": "it was desirable for the Bank to raise the policy interest rate to around 1.25 percent at this meeting."
+       }
+      ],
+      "paragraphs": [
+       40
+      ]
+     },
+     "text": "Most members shared the view that it was appropriate to maintain the guideline at around 1.0 percent, while one member expressed the view that it was desirable to raise it to around 1.25 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 72103,
+        "paragraph": 68,
+        "start": 72033,
+        "text": "the Policy Board of the Bank of Japan decided, by an 8-1 majority vote"
+       },
+       {
+        "end": 72297,
+        "paragraph": 69,
+        "start": 72200,
+        "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 1.0 percent."
+       },
+       {
+        "end": 72486,
+        "paragraph": 70,
+        "start": 72445,
+        "text": "Voting against the action: TAKATA Hajime."
+       }
+      ],
+      "paragraphs": [
+       68,
+       69,
+       70
+      ]
+     },
+     "text": "The Policy Board decided by an 8-1 majority vote to encourage the uncollateralized overnight call rate to remain at around 1.0 percent; Takata Hajime voted against."
+    }
+   ],
+   "title": "Bank of Japan minutes of the 31 July 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260731.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 32116,
+    "output_tokens": 1672,
+    "reasoning_tokens": 119
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      10,
      23,
      25,
