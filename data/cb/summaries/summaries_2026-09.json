@@ -5135,6 +5135,204 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     17,
+     18,
+     105,
+     253,
+     264,
+     265,
+     268
+    ],
+    "paragraphs_sent": 319,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:53178ae41d60",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-29T16:41:37Z",
+   "input_sha256": "1daddb08619d901681ee2d0710b5d131a2040ebcf5c61187bc9a150b89fd1dd8",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 6263,
+     "point": 2,
+     "source_text": "2022",
+     "start": 6259,
+     "text": "2022"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-29",
+   "quotes": [
+    {
+     "end": 5224,
+     "paragraph": 18,
+     "start": 5129,
+     "text": "But monetary policy cannot look through the emergence of more persistent inflationary pressure."
+    },
+    {
+     "end": 30615,
+     "paragraph": 105,
+     "start": 30437,
+     "text": "We should not treat every rise in those expectations as evidence of a wage-price spiral, but neither should we dismiss them simply because they are noisy or imperfectly measured."
+    },
+    {
+     "end": 58197,
+     "paragraph": 265,
+     "start": 58126,
+     "text": "Evidence for significant second-round effects remains scant at present."
+    },
+    {
+     "end": 59670,
+     "paragraph": 268,
+     "start": 59382,
+     "text": "Against that backdrop, the case for further rate increases is not compelling to me unless energy prices remain high for an extended period and also generate clearer signals of a transmission into broader inflation persistence, as revealed by the signposts that we are actively monitoring."
+    }
+   ],
+   "source": {
+    "chars": 72184,
+    "chars_sent": 72185,
+    "method": "html-selector",
+    "paragraphs_sent": 319,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5102,
+        "paragraph": 17,
+        "start": 4974,
+        "text": "policy can ‘look through’ short-lived relative-price shocks, which is the relevant case for most external commodity price shocks"
+       },
+       {
+        "end": 5223,
+        "paragraph": 18,
+        "start": 5133,
+        "text": "monetary policy cannot look through the emergence of more persistent inflationary pressure"
+       }
+      ],
+      "paragraphs": [
+       17,
+       18
+      ]
+     },
+     "text": "Taylor says monetary policy can ‘look through’ short-lived relative-price shocks, but cannot look through the emergence of more persistent inflationary pressure."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30436,
+        "paragraph": 105,
+        "start": 30337,
+        "text": "Household and firm expectations may now respond more strongly to inflation shocks than before 2022."
+       },
+       {
+        "end": 30524,
+        "paragraph": 105,
+        "start": 30437,
+        "text": "We should not treat every rise in those expectations as evidence of a wage-price spiral"
+       }
+      ],
+      "paragraphs": [
+       105
+      ]
+     },
+     "text": "Taylor says household and firm expectations may respond more strongly to inflation shocks than before 2022, but every rise in expectations should not be treated as evidence of a wage-price spiral."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 54835,
+        "paragraph": 253,
+        "start": 54698,
+        "text": "The Bank is monitoring a broad set of signposts, including inflation expectations, wage settlements, firms’ pricing behaviour and margins"
+       },
+       {
+        "end": 54888,
+        "paragraph": 253,
+        "start": 54837,
+        "text": "alongside demand conditions and labour-market slack"
+       }
+      ],
+      "paragraphs": [
+       253
+      ]
+     },
+     "text": "Taylor says the Bank is monitoring inflation expectations, wage settlements, firms’ pricing behaviour and margins, demand conditions and labour-market slack."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 57881,
+        "paragraph": 264,
+        "start": 57746,
+        "text": "higher energy costs still appear largely concentrated within the energy complex itself rather than spreading widely through the economy"
+       },
+       {
+        "end": 58196,
+        "paragraph": 265,
+        "start": 58126,
+        "text": "Evidence for significant second-round effects remains scant at present"
+       }
+      ],
+      "paragraphs": [
+       264,
+       265
+      ]
+     },
+     "text": "Taylor says higher energy costs appear largely concentrated within the energy complex, and evidence for significant second-round effects remains scant at present."
+    },
+    {
+     "evidence": {
+      "coverage": 0.944,
+      "fragments": [
+       {
+        "end": 59520,
+        "paragraph": 268,
+        "start": 59405,
+        "text": "the case for further rate increases is not compelling to me unless energy prices remain high for an extended period"
+       },
+       {
+        "end": 59607,
+        "paragraph": 268,
+        "start": 59521,
+        "text": "and also generate clearer signals of a transmission into broader inflation persistence"
+       }
+      ],
+      "paragraphs": [
+       268
+      ]
+     },
+     "text": "Taylor says the case for further rate increases is not compelling to him unless energy prices remain high for an extended period and generate clearer signals of transmission into broader inflation persistence."
+    }
+   ],
+   "title": "Searching for signposts − speech by Alan Taylor",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/september/searching-for-signposts-speech-by-alan-taylor",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 17981,
+    "output_tokens": 937,
+    "reasoning_tokens": 364
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      5,
      9,
      43,
@@ -7607,6 +7805,206 @@
     "input_tokens": 5624,
     "output_tokens": 2713,
     "reasoning_tokens": 2041
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     10,
+     12,
+     14,
+     17,
+     23,
+     27,
+     28
+    ],
+    "paragraphs_sent": 34,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:96198714a74b",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-29T16:41:37Z",
+   "input_sha256": "aec44ce53499a9d821a74e1779f3f060280cdd8d35046fcb18ddefa210181412",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2922,
+     "point": 1,
+     "source_text": "2026",
+     "start": 2918,
+     "text": "2026"
+    },
+    {
+     "end": 3012,
+     "point": 2,
+     "source_text": "2 percent",
+     "start": 3003,
+     "text": "2 percent"
+    },
+    {
+     "end": 3012,
+     "point": 2,
+     "source_text": "2 percent",
+     "start": 3003,
+     "text": "2 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-29",
+   "quotes": [
+    {
+     "end": 4127,
+     "paragraph": 12,
+     "start": 3961,
+     "text": "Inflation, which has been a problem for consumers and businesses, has run above the Federal Open Market Committee's (FOMC) 2 percent target for five and a half years."
+    },
+    {
+     "end": 7807,
+     "paragraph": 17,
+     "start": 7703,
+     "text": "Those price increases are spreading to other products that require chips and related goods and services."
+    },
+    {
+     "end": 13505,
+     "paragraph": 26,
+     "start": 13451,
+     "text": "What is clear right now is that inflation is too high."
+    },
+    {
+     "end": 14237,
+     "paragraph": 28,
+     "start": 14108,
+     "text": "In my base case, further policy adjustments are likely to be needed to ensure inflation comes down to target in a timely fashion."
+    }
+   ],
+   "source": {
+    "chars": 16355,
+    "chars_sent": 16356,
+    "method": "html-selector",
+    "paragraphs_sent": 34,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2956,
+        "paragraph": 10,
+        "start": 2850,
+        "text": "Economic activity in the United States has grown at a solid pace in 2026 and has recently gained momentum."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governor Michael S. Barr says economic activity in the United States has grown at a solid pace in 2026 and has recently gained momentum."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4127,
+        "paragraph": 12,
+        "start": 3961,
+        "text": "Inflation, which has been a problem for consumers and businesses, has run above the Federal Open Market Committee's (FOMC) 2 percent target for five and a half years."
+       },
+       {
+        "end": 5524,
+        "paragraph": 14,
+        "start": 5454,
+        "text": "And I don't yet see a clear trend toward a timely return to 2 percent."
+       }
+      ],
+      "paragraphs": [
+       12,
+       14
+      ]
+     },
+     "text": "Governor Michael S. Barr says inflation has run above the FOMC's 2 percent target for five and a half years, and he does not yet see a clear trend toward a timely return to 2 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7702,
+        "paragraph": 17,
+        "start": 7489,
+        "text": "the most important effects of the AI buildout on the U.S. economy are likely to be a strong boost to economic activity from business fixed investment and a surge in prices for computer chips and related equipment."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Governor Michael S. Barr says the most important near-term effects of the AI buildout are likely to be a strong boost to economic activity from business fixed investment and a surge in prices for computer chips and related equipment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10714,
+        "paragraph": 23,
+        "start": 10586,
+        "text": "We are already seeing signs that AI may be a labor substitute in some sectors, especially for younger, less experienced workers."
+       },
+       {
+        "end": 10832,
+        "paragraph": 23,
+        "start": 10715,
+        "text": "Other evidence points to the labor-augmenting effects of AI, suggesting a more sanguine outlook for the labor market."
+       }
+      ],
+      "paragraphs": [
+       23
+      ]
+     },
+     "text": "Governor Michael S. Barr says AI may be a labor substitute in some sectors, especially for younger, less experienced workers, while other evidence points to labor-augmenting effects."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13733,
+        "paragraph": 27,
+        "start": 13565,
+        "text": "Earlier this month, the FOMC unanimously agreed to raise short-term policy interest rates to support achieving our dual mandate of maximum employment and stable prices."
+       },
+       {
+        "end": 14237,
+        "paragraph": 28,
+        "start": 14108,
+        "text": "In my base case, further policy adjustments are likely to be needed to ensure inflation comes down to target in a timely fashion."
+       }
+      ],
+      "paragraphs": [
+       27,
+       28
+      ]
+     },
+     "text": "Governor Michael S. Barr says the FOMC unanimously agreed earlier this month to raise short-term policy interest rates, and his base case is that further policy adjustments are likely to be needed."
+    }
+   ],
+   "title": "Barr, Economic Conditions and Monetary Policy",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/barr20260929a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10535,
+    "output_tokens": 1624,
+    "reasoning_tokens": 323
    }
   },
   {
