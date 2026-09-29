@@ -659,6 +659,391 @@
    }
   },
   {
+   "changes_vs_previous": {
+    "added_words": 271,
+    "changes": [
+     {
+      "added": "increase",
+      "paragraph": 1,
+      "removed": "leave"
+     },
+     {
+      "added": "by 25 basis points to 4.60",
+      "paragraph": 1,
+      "removed": "unchanged at 4.35"
+     },
+     {
+      "added": "Inflation remains elevated and some of the upside risks flagged in August are materialising. The conflict in the Middle East has broadened and global energy prices are now much higher than had been assumed in the August forecasts. AI-related demand is driving rapid growth in global prices for technology-related goods. And there remains pressure on domestic capacity. Liaison indicates that firms are experiencing cost pressures and are either increasing the prices of their goods and services or looking to do so. Short-term measures of inflation expectations remain elevated. And recent inflation outcomes in Australia were stronger than expected at the previous meeting.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "Growth",
+      "paragraph": 3,
+      "removed": "Financial conditions have tightened"
+     },
+     {
+      "added": "output has slowed but, at the margin, was stronger than expected",
+      "paragraph": 3,
+      "removed": "response to three increases"
+     },
+     {
+      "added": "June quarter.",
+      "paragraph": 3,
+      "removed": "cash rate target this year. Money market interest rates and government bond yields have risen, and the exchange rate has appreciated."
+     },
+     {
+      "added": "growth in",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": 3,
+      "removed": "growth"
+     },
+     {
+      "added": "easing",
+      "paragraph": 3,
+      "removed": "slowing"
+     },
+     {
+      "added": "although",
+      "paragraph": 3,
+      "removed": "while growth in business debt and investment is strong. Momentum in the housing market has shifted, with"
+     },
+     {
+      "added": "have fallen",
+      "paragraph": 3,
+      "removed": "falling"
+     },
+     {
+      "added": "most",
+      "paragraph": 3,
+      "removed": "some"
+     },
+     {
+      "added": "have declined",
+      "paragraph": 3,
+      "removed": "declining"
+     },
+     {
+      "added": "broadly as",
+      "paragraph": 3,
+      "removed": "by a little more than"
+     },
+     {
+      "added": "months, and labour",
+      "paragraph": 3,
+      "removed": "months. Labour"
+     },
+     {
+      "added": "are broadly stable. Meanwhile, growth",
+      "paragraph": 3,
+      "removed": "point to only limited easing"
+     },
+     {
+      "added": "business investment and debt is strong.",
+      "paragraph": 3,
+      "removed": "the near term."
+     },
+     {
+      "added": "The",
+      "paragraph": 4,
+      "removed": "Resolution of the"
+     },
+     {
+      "added": "unresolved,",
+      "paragraph": 4,
+      "removed": "uncertain,"
+     },
+     {
+      "added": "disruptions are",
+      "paragraph": 4,
+      "removed": "will take time to recover,"
+     },
+     {
+      "added": "and domestic",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "inflation.",
+      "paragraph": 4,
+      "removed": "inflation, in which case domestic inflationary pressures could be higher than expected."
+     },
+     {
+      "added": "To date, however,",
+      "paragraph": 4,
+      "removed": "So far,"
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "historically"
+     },
+     {
+      "added": "growth and there are uncertainties about the economic effects of the downturn in the housing market.",
+      "paragraph": 4,
+      "removed": "growth."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Inflation picked up materially in the second half of 2025, and information since the beginning of this year confirms that some of the increase reflected greater capacity pressures. While the impact of the Middle East conflict on inflation has so far been less than expected, headline inflation is still too high. Trimmed mean inflation also remains elevated and is little changed from the March quarter. Oil and most related commodity prices remain higher than they were prior to the Middle East conflict. Some firms experiencing cost pressures are increasing the prices of their goods and services and others are looking to do so. Short-term measures of inflation expectations have eased but remain higher than earlier in the year."
+     },
+     {
+      "added": "Since the previous meeting, some of the upside risks to inflation are materialising. There have been further disruptions",
+      "paragraph": 6,
+      "removed": "The disruption"
+     },
+     {
+      "added": "and recent data suggest that growth and",
+      "paragraph": 6,
+      "removed": "is adding directly to"
+     },
+     {
+      "added": "in Australia have been",
+      "paragraph": 6,
+      "removed": "and there are indications that"
+     },
+     {
+      "added": "than expected. Higher",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "have partially been",
+      "paragraph": 6,
+      "removed": "are being"
+     },
+     {
+      "added": "services.",
+      "paragraph": 6,
+      "removed": "services, so inflation is likely to remain high for some time."
+     },
+     {
+      "added": "for a period",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "The",
+      "paragraph": 7,
+      "removed": "Following"
+     },
+     {
+      "added": "year have tightened",
+      "paragraph": 7,
+      "removed": "year,"
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "are now tighter than they were,"
+     },
+     {
+      "added": "slowing.",
+      "paragraph": 7,
+      "removed": "slowing as expected."
+     },
+     {
+      "added": "high",
+      "paragraph": 7,
+      "removed": "high. It is not expected to return to around the midpoint of the target range until late 2027"
+     },
+     {
+      "added": "",
+      "paragraph": 7,
+      "removed": "there are upside risks to this projection. With monetary policy judged to be somewhat restrictive,"
+     },
+     {
+      "added": "judged that, in light of recent developments, a further tightening in financial conditions is warranted",
+      "paragraph": 7,
+      "removed": "decided"
+     }
+    ],
+    "removed_words": 324,
+    "truncated": true,
+    "vs_doc_id": "AUD:statement:2026-08-11",
+    "vs_meeting": "2026-08-11"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     6,
+     7,
+     8,
+     9
+    ],
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:statement:2026-09-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-29T04:31:15Z",
+   "input_sha256": "2b8b2352b073d1873e922fec0f690194c028fc56c89ccd019165367e102785a5",
+   "meeting_date": "2026-09-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 91,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 76,
+     "text": "25 basis points"
+    },
+    {
+     "end": 108,
+     "point": 1,
+     "source_text": "4.60 per cent",
+     "start": 95,
+     "text": "4.60 per cent"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-09-29",
+   "quotes": [
+    {
+     "end": 109,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At its meeting today, the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+    },
+    {
+     "end": 2176,
+     "paragraph": 6,
+     "start": 2092,
+     "text": "Since the previous meeting, some of the upside risks to inflation are materialising."
+    },
+    {
+     "end": 3109,
+     "paragraph": 7,
+     "start": 2893,
+     "text": "But inflation is still too high and the Board judged that, in light of recent developments, a further tightening in financial conditions is warranted to support a return of inflation to target in a reasonable period."
+    },
+    {
+     "end": 3275,
+     "paragraph": 8,
+     "start": 3110,
+     "text": "The Board will continue to do what it considers necessary to bring inflation sustainably back to target, including increasing the cash rate target further if needed."
+    },
+    {
+     "end": 3591,
+     "paragraph": 9,
+     "start": 3553,
+     "text": "Today’s policy decision was unanimous."
+    }
+   ],
+   "source": {
+    "chars": 3591,
+    "chars_sent": 3592,
+    "method": "stored",
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 109,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At its meeting today, the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 2328,
+        "paragraph": 6,
+        "start": 2177,
+        "text": "There have been further disruptions to global oil supply and recent data suggest that growth and inflation in Australia have been higher than expected."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Board states that further global oil supply disruptions and data indicate that growth and inflation in Australia have been higher than expected."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3109,
+        "paragraph": 7,
+        "start": 2893,
+        "text": "But inflation is still too high and the Board judged that, in light of recent developments, a further tightening in financial conditions is warranted to support a return of inflation to target in a reasonable period."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Board judged that a further tightening in financial conditions is warranted to support a return of inflation to target in a reasonable period."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3275,
+        "paragraph": 8,
+        "start": 3110,
+        "text": "The Board will continue to do what it considers necessary to bring inflation sustainably back to target, including increasing the cash rate target further if needed."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The Board will continue to do what it considers necessary to bring inflation sustainably back to target, including increasing the cash rate target further if needed."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3591,
+        "paragraph": 9,
+        "start": 3553,
+        "text": "Today’s policy decision was unanimous."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Today’s policy decision was unanimous."
+    }
+   ],
+   "title": "Reserve Bank of Australia monetary policy statement, 29 September 2026",
+   "type": "statement",
+   "url": "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2151,
+    "output_tokens": 493,
+    "reasoning_tokens": 0
+   }
+  },
+  {
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
