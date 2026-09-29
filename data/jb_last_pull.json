@@ -1,11 +1,11 @@
 {
- "last_success_utc_date": "2026-09-28",
- "last_success_at": "2026-09-28T00:05:42.715690",
- "rows": 11,
+ "last_success_utc_date": "2026-09-29",
+ "last_success_at": "2026-09-29T00:05:46.879052",
+ "rows": 15,
  "actuals": 11,
- "last_attempt_at": "2026-09-28T23:05:50.080124",
- "last_status": "fetch_failed",
- "last_http_status": 401,
- "last_error": "{\"message\":\"This endpoint requires credits, and you currently do not have any. You can purchase some at https://www.jblanked.com/api/billing/\"}",
+ "last_attempt_at": "2026-09-29T00:05:46.879052",
+ "last_status": "ok",
+ "last_http_status": 200,
+ "last_error": null,
  "last_rate_limit_headers": {}
 }
