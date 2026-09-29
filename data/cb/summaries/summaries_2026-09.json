@@ -1468,6 +1468,254 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     13,
+     17,
+     23,
+     25,
+     27,
+     28,
+     32,
+     33,
+     35,
+     39
+    ],
+    "paragraphs_sent": 42,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:04077b5e208d",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-29T18:41:45Z",
+   "input_sha256": "06d6f57a4c6ac72a3e17d667f7dec04e0c381f3d8674400ce3020a80e49774e6",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2432,
+     "point": 1,
+     "source_text": "2027",
+     "start": 2428,
+     "text": "2027"
+    },
+    {
+     "end": 3340,
+     "point": 2,
+     "source_text": "2028",
+     "start": 3336,
+     "text": "2028"
+    },
+    {
+     "end": 7283,
+     "point": 5,
+     "source_text": "50",
+     "start": 7281,
+     "text": "50"
+    },
+    {
+     "end": 7298,
+     "point": 5,
+     "source_text": "70",
+     "start": 7296,
+     "text": "70"
+    },
+    {
+     "end": 7801,
+     "point": 6,
+     "source_text": "5 basis points",
+     "start": 7787,
+     "text": "5 basis points"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-29",
+   "quotes": [
+    {
+     "end": 2433,
+     "paragraph": 13,
+     "start": 2314,
+     "text": "Today I can confirm the Bank will start using this infrastructure for our repo operations in the first quarter of 2027."
+    },
+    {
+     "end": 5854,
+     "paragraph": 28,
+     "start": 5773,
+     "text": "Offering ORs on a discretionary basis means we tolerate some deviations in CORRA."
+    },
+    {
+     "end": 7611,
+     "paragraph": 34,
+     "start": 7392,
+     "text": "What matters most is deploying our operations as needed to control our policy rate when imbalances in the repo market shift and push repo rates up or down, even if doing so temporarily pushes reserves outside the range."
+    },
+    {
+     "end": 9035,
+     "paragraph": 39,
+     "start": 8749,
+     "text": "Today, we issued a joint statement with the Office of the Superintendent of Financial Institutions to make it clear that we view an institution’s use of the SLF for overnight liquidity as a normal part of day-to-day liquidity management, not as an exceptional event or a sign of stress."
+    }
+   ],
+   "source": {
+    "chars": 9420,
+    "chars_sent": 9421,
+    "method": "html-selector",
+    "paragraphs_sent": 42,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2433,
+        "paragraph": 13,
+        "start": 2314,
+        "text": "Today I can confirm the Bank will start using this infrastructure for our repo operations in the first quarter of 2027."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "The Bank of Canada confirms it will start using the Canadian Collateral Management Service for its repo operations in the first quarter of 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3341,
+        "paragraph": 17,
+        "start": 3206,
+        "text": "Central clearing infrastructure and services in Canada are being modernized, a process that is expected to be largely complete in 2028."
+       },
+       {
+        "end": 3473,
+        "paragraph": 17,
+        "start": 3342,
+        "text": "Once everything is ready, we plan to centrally clear our own repo operations through the Canadian Derivatives Clearing Corporation."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "The Bank of Canada says central clearing infrastructure and services in Canada are expected to be largely complete in 2028, after which it plans to centrally clear its repo operations through the Canadian Derivatives Clearing Corporation."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 4553,
+        "paragraph": 23,
+        "start": 4503,
+        "text": "we target a secured rate: the overnight repo rate."
+       },
+       {
+        "end": 5482,
+        "paragraph": 25,
+        "start": 5343,
+        "text": "When funding pressures push CORRA away from our policy rate, we have tools to limit such deviations and guide CORRA back toward the target."
+       }
+      ],
+      "paragraphs": [
+       23,
+       25
+      ]
+     },
+     "text": "The Bank of Canada says it targets the overnight repo rate and uses tools to limit deviations of CORRA from its policy rate and guide CORRA back toward the target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5729,
+        "paragraph": 27,
+        "start": 5636,
+        "text": "Overnight repo operations, ORs, are our main tool for responding to upward pressure on CORRA."
+       },
+       {
+        "end": 5981,
+        "paragraph": 28,
+        "start": 5855,
+        "text": "That’s deliberate—we want to maintain incentives for market participants to trade and manage their day-to-day liquidity needs."
+       }
+      ],
+      "paragraphs": [
+       27,
+       28
+      ]
+     },
+     "text": "The Bank of Canada says overnight repo operations are its main tool for upward pressure on CORRA, while some deviations are tolerated to maintain incentives for market participants to manage liquidity needs."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6997,
+        "paragraph": 32,
+        "start": 6793,
+        "text": "We now regularly increase the size of our two-week repo operations to get ahead of expected or seasonal pressures around quarter-end reporting dates for Canadian banks or large government bond maturities."
+       },
+       {
+        "end": 7307,
+        "paragraph": 33,
+        "start": 7175,
+        "text": "It could mean they sometimes exceed our best estimate of steady-state demand for reserves, which remains $50 billion to $70 billion."
+       }
+      ],
+      "paragraphs": [
+       32,
+       33
+      ]
+     },
+     "text": "The Bank of Canada says it regularly increases two-week repo operations ahead of expected or seasonal pressures, and its best estimate of steady-state reserve demand remains $50 billion to $70 billion."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7937,
+        "paragraph": 35,
+        "start": 7765,
+        "text": "It’s currently set at 5 basis points below our policy rate, a change we made in January 2025 to encourage institutions to redistribute reserves rather than hold on to them."
+       },
+       {
+        "end": 9035,
+        "paragraph": 39,
+        "start": 8870,
+        "text": "we view an institution’s use of the SLF for overnight liquidity as a normal part of day-to-day liquidity management, not as an exceptional event or a sign of stress."
+       }
+      ],
+      "paragraphs": [
+       35,
+       39
+      ]
+     },
+     "text": "The Bank of Canada says its deposit rate is 5 basis points below its policy rate, and it views an institution’s use of overnight liquidity as a normal part of day-to-day liquidity management."
+    }
+   ],
+   "title": "Repo markets and monetary policy implementation",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/09/repo-markets-monetary-policy-implementation/",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 7810,
+    "output_tokens": 1985,
+    "reasoning_tokens": 417
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      4,
      18,
      21,
