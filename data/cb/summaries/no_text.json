@@ -6,6 +6,12 @@
    "reason": "no container of the page holds the document text",
    "url": "https://www.bankofcanada.ca/multimedia/speech-halifax-partnership-2026-09-21/"
   },
+  "EUR:speech:1691bdf7a5d6": {
+   "at": "2026-09-30T16:41:40Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260916-listening-households-expectations-behaviour-and-monetary-policy"
+  },
   "EUR:speech:320dbc76f248": {
    "at": "2026-09-21T18:28:22Z",
    "kind": "non_prose",
@@ -17,6 +23,12 @@
    "kind": "non_prose",
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260914~0ffd556bc8.en.pdf"
+  },
+  "EUR:speech:7b0a67af2117": {
+   "at": "2026-09-30T16:41:40Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260916-bank-resilience-and-sustainable-growth-two-sides-same-coin"
   },
   "EUR:speech:96186ee52de7": {
    "at": "2026-09-23T16:41:36Z",

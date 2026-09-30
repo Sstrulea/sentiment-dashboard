@@ -4576,6 +4576,296 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     10,
+     21,
+     22,
+     23,
+     37,
+     46,
+     47,
+     61,
+     62,
+     67,
+     68,
+     75,
+     101
+    ],
+    "paragraphs_sent": 104,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:9e3a13c4decf",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 6 has a negation but the closest clause of the paragraph(s) it cites has none: “Central banks must form a judgement about the transmission of shocks to underlying inflation and calibrate their policy accordingly.” (its clause: “Member of the Executive Board Isabel Schnabel says central banks cannot wait for these effects to ma”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Member of the Executive Board Isabel Schnabel says central banks cannot wait for these effects to materialise and must form a judgement about the transmission of shocks to underlying inflation and calibrate their policy accordingly."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-30T16:41:40Z",
+   "input_sha256": "fabd8f16bca6905257cfb0499eb6b2504411bb160d8cd63917eb0fa29dd2ef98",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1462,
+     "point": 1,
+     "source_text": "50 basis points",
+     "start": 1447,
+     "text": "50 basis points"
+    },
+    {
+     "end": 1023,
+     "point": 1,
+     "source_text": "2",
+     "start": 1022,
+     "text": "2%"
+    },
+    {
+     "end": 1513,
+     "point": 1,
+     "source_text": "2.5%",
+     "start": 1509,
+     "text": "2.5%"
+    },
+    {
+     "end": 2124,
+     "point": 5,
+     "source_text": "3",
+     "start": 2123,
+     "text": "3.0%"
+    },
+    {
+     "end": 11765,
+     "point": 5,
+     "source_text": "2.1%",
+     "start": 11761,
+     "text": "2.1%"
+    },
+    {
+     "end": 11773,
+     "point": 5,
+     "source_text": "2028",
+     "start": 11769,
+     "text": "2028"
+    },
+    {
+     "end": 12131,
+     "point": 5,
+     "source_text": "2.6%",
+     "start": 12127,
+     "text": "2.6%"
+    },
+    {
+     "end": 12139,
+     "point": 5,
+     "source_text": "2027",
+     "start": 12135,
+     "text": "2027"
+    },
+    {
+     "end": 12162,
+     "point": 5,
+     "source_text": "2.3%",
+     "start": 12158,
+     "text": "2.3%"
+    },
+    {
+     "end": 11773,
+     "point": 5,
+     "source_text": "2028",
+     "start": 11769,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-30",
+   "quotes": [
+    {
+     "end": 1616,
+     "paragraph": 10,
+     "start": 1372,
+     "text": "Since June, the Governing Council has raised the key ECB interest rates by 50 basis points, lifting the deposit facility rate from 2% to 2.5%, to ensure that inflation will return to our 2% target over the medium term (Slide 2, left-hand side)."
+    },
+    {
+     "end": 3650,
+     "paragraph": 22,
+     "start": 3504,
+     "text": "What matters instead is the effect of the shock – be it demand or supply – on the projected path of inflation over the relevant policy horizon.[5]"
+    },
+    {
+     "end": 8320,
+     "paragraph": 46,
+     "start": 8175,
+     "text": "In this complex environment, it would be misleading to describe the ECB’s recent policy decisions as responding to an adverse supply shock alone."
+    },
+    {
+     "end": 13743,
+     "paragraph": 75,
+     "start": 13561,
+     "text": "Central banks cannot wait for these effects to materialise. If policymakers waited for firms to visibly raise prices and wage negotiations to conclude, they would be acting too late."
+    },
+    {
+     "end": 18327,
+     "paragraph": 101,
+     "start": 18106,
+     "text": "This is what the ECB is doing. Faced with a renewed deterioration in the inflation outlook, we adjusted policy rates in a timely manner to limit the pass-through to underlying inflation and bring inflation back to target."
+    }
+   ],
+   "source": {
+    "chars": 18796,
+    "chars_sent": 18797,
+    "method": "html-selector",
+    "paragraphs_sent": 104,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1513,
+        "paragraph": 10,
+        "start": 1372,
+        "text": "Since June, the Governing Council has raised the key ECB interest rates by 50 basis points, lifting the deposit facility rate from 2% to 2.5%"
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says that since June the Governing Council has raised the key ECB interest rates by 50 basis points, lifting the deposit facility rate from 2% to 2.5%."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 3500,
+        "paragraph": 21,
+        "start": 3391,
+        "text": "the distinction between supply and demand shocks does not alter the direction of the optimal policy response."
+       },
+       {
+        "end": 3613,
+        "paragraph": 22,
+        "start": 3504,
+        "text": "What matters instead is the effect of the shock – be it demand or supply – on the projected path of inflation"
+       },
+       {
+        "end": 3807,
+        "paragraph": 23,
+        "start": 3651,
+        "text": "If a supply shock is sufficiently large or persistent to raise the projected inflation path above target, the optimal response is to tighten monetary policy"
+       }
+      ],
+      "paragraphs": [
+       21,
+       22,
+       23
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says that the effect of a shock on the projected path of inflation, rather than whether it is demand or supply, matters for the optimal policy response."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6605,
+        "paragraph": 37,
+        "start": 6461,
+        "text": "Central banks are facing a sequence of overlapping shocks, with the effects of earlier disturbances still working their way through the economy."
+       },
+       {
+        "end": 8320,
+        "paragraph": 46,
+        "start": 8204,
+        "text": "it would be misleading to describe the ECB’s recent policy decisions as responding to an adverse supply shock alone."
+       },
+       {
+        "end": 8543,
+        "paragraph": 47,
+        "start": 8375,
+        "text": "ECB staff is devoted to assessing the size, persistence and transmission of the different shocks and their implications for the inflation outlook and economic activity."
+       }
+      ],
+      "paragraphs": [
+       37,
+       46,
+       47
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says that the ECB’s recent policy decisions respond to overlapping shocks, and ECB staff assess their size, persistence, transmission and implications for inflation and economic activity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10849,
+        "paragraph": 61,
+        "start": 10702,
+        "text": "we have complemented the baseline with scenario analysis, exploring alternative assumptions about the intensity and persistence of the energy shock"
+       },
+       {
+        "end": 11043,
+        "paragraph": 62,
+        "start": 10936,
+        "text": "we are placing greater emphasis on measures of underlying inflation in both our communication and analysis."
+       }
+      ],
+      "paragraphs": [
+       61,
+       62
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says that the ECB complements the baseline with scenario analysis and places greater emphasis on measures of underlying inflation in its communication and analysis."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11774,
+        "paragraph": 67,
+        "start": 11642,
+        "text": "The September staff macroeconomic projections for the euro area foresee HICP inflation dropping from 3.0% this year to 2.1% in 2028."
+       },
+       {
+        "end": 12170,
+        "paragraph": 68,
+        "start": 12023,
+        "text": "HICP inflation excluding energy and food – one measure of underlying inflation – is expected to rise to 2.6% in 2027 before falling to 2.3% in 2028"
+       }
+      ],
+      "paragraphs": [
+       67,
+       68
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says that September staff projections foresee HICP inflation dropping from 3.0% this year to 2.1% in 2028, while HICP inflation excluding energy and food is expected to rise to 2.6% in 2027 before falling to 2.3% in 2028."
+    }
+   ],
+   "title": "Isabel Schnabel: Monetary policy in a world of overlapping shocks",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260930_1~7c6c120482.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 11792,
+    "output_tokens": 2470,
+    "reasoning_tokens": 512
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      3,
      9,
      15,
