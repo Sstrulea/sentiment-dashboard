@@ -1,5 +1,5 @@
 {
- "as_of": "2026-09-29T00:06:08.314818",
+ "as_of": "2026-09-30T18:06:12.250726",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -171,8 +171,8 @@
      "next_previous": 5.0,
      "next_from": "parquet",
      "diff": -1.3,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
+     "tolerance": 0.64478,
+     "threshold": 0.64478,
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
@@ -228,8 +228,8 @@
      "next_previous": 7.3,
      "next_from": "parquet",
      "diff": 0.7,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
+     "tolerance": 0.64478,
+     "threshold": 0.64478,
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
@@ -478,25 +478,6 @@
      "tolerance": 0.1,
      "threshold": 0.2,
      "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "jpy_retail_sales",
-     "currency": "JPY",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2023-10-30T23:50:00",
-     "kind": "value",
-     "scored_actual": 5.8,
-     "scored_source": "ff",
-     "next_release_dt": "2023-11-29T23:50:00",
-     "next_previous": 6.3,
-     "next_from": "parquet",
-     "diff": 0.5,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
-     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -881,25 +862,6 @@
      "new": false
     },
     {
-     "canonical_id": "jpy_retail_sales",
-     "currency": "JPY",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2024-05-30T23:50:00",
-     "kind": "value",
-     "scored_actual": 2.4,
-     "scored_source": "ff",
-     "next_release_dt": "2024-06-26T23:50:00",
-     "next_previous": 2.0,
-     "next_from": "parquet",
-     "diff": -0.4,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
-     "n_revision_pairs": 44,
-     "level": "INFO",
-     "new": false
-    },
-    {
      "canonical_id": "aud_retail_sales",
      "currency": "AUD",
      "indicator_key": "retail_sales",
@@ -1067,25 +1029,6 @@
      "tolerance": 0.1,
      "threshold": 0.2,
      "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "jpy_retail_sales",
-     "currency": "JPY",
-     "indicator_key": "retail_sales",
-     "name_raw": "Retail Sales y/y",
-     "release_dt": "2025-02-27T23:50:00",
-     "kind": "value",
-     "scored_actual": 3.9,
-     "scored_source": "ff",
-     "next_release_dt": "2025-03-30T23:50:00",
-     "next_previous": 4.4,
-     "next_from": "parquet",
-     "diff": 0.5,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
-     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -1634,8 +1577,8 @@
      "next_previous": 2.8,
      "next_from": "parquet",
      "diff": 0.7,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
+     "tolerance": 0.64478,
+     "threshold": 0.64478,
      "n_revision_pairs": 44,
      "level": "WARN",
      "new": false
@@ -1737,19 +1680,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 75,
+    "ff": 72,
     "manual": 15,
     "quarantined": 1
    },
    "findings_by_kind": {
-    "value": 77,
+    "value": 74,
     "zero": 14
    },
    "n_checked": 3354,
    "n_series": 107,
-   "n_scored_zero": 94,
+   "n_scored_zero": 97,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-09-29.json"
+   "weekly_feed": "ff_weekly_2026-09-30.json"
   },
   "missing_release": {
    "findings": [
@@ -2177,12 +2120,12 @@
   },
   "previous_consistency": {
    "WARN": 24,
-   "INFO": 67
+   "INFO": 64
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-09-29T00:06:18+00:00"
+ "generated_at": "2026-09-30T18:06:18+00:00"
 }
