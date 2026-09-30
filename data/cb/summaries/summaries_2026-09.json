@@ -4,6 +4,384 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     6,
+     7,
+     14,
+     23,
+     27,
+     47
+    ],
+    "paragraphs_sent": 153,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:presser_transcript:2026-09-29",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 4 is not supported by the paragraph(s) it cites [23]: 80% of its content words are there (85% needed); not found: 'recession' - say only what those paragraphs say, or cite the paragraphs that say it"
+     ],
+     "text": "Michele Bullock said a recession was not the RBA’s central base case at this moment."
+    },
+    {
+     "errors": [
+      "evidence fragment 2 of summary point 6 is not verbatim in the paragraph(s) it cites [47] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Michele Bullock said the Middle East conflict was not the only reason for the decision, but it was making things much worse."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-30T02:41:43Z",
+   "input_sha256": "982704e72d885e57ee2682e02a3f1e33b987fb130c48cb5656a95de23fac8b98",
+   "meeting_date": "2026-09-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 214,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 199,
+     "text": "25 basis points"
+    },
+    {
+     "end": 231,
+     "point": 1,
+     "source_text": "4.60 per cent",
+     "start": 218,
+     "text": "4.60 per cent"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-09-29",
+   "quotes": [
+    {
+     "end": 232,
+     "paragraph": 6,
+     "start": 139,
+     "text": "Today the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+    },
+    {
+     "end": 2450,
+     "paragraph": 14,
+     "start": 2359,
+     "text": "The Board will increase interest rates again if that’s what’s needed to get inflation down."
+    },
+    {
+     "end": 4332,
+     "paragraph": 23,
+     "start": 4283,
+     "text": "That is not our central base case at this moment."
+    },
+    {
+     "end": 12254,
+     "paragraph": 47,
+     "start": 12208,
+     "text": "This isn’t all about the Middle East conflict."
+    }
+   ],
+   "source": {
+    "chars": 50576,
+    "chars_sent": 50577,
+    "method": "html-selector",
+    "paragraphs_sent": 153,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 232,
+        "paragraph": 6,
+        "start": 139,
+        "text": "Today the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Michele Bullock said the Board increased the cash rate target by 25 basis points to 4.60 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 378,
+        "paragraph": 7,
+        "start": 305,
+        "text": "Inflation is too high and has been driven by domestic capacity pressures."
+       },
+       {
+        "end": 454,
+        "paragraph": 7,
+        "start": 379,
+        "text": "The inflation impulse from the Middle East conflict is in addition to this."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Michele Bullock said inflation is too high, driven by domestic capacity pressures, with an additional inflation impulse from the Middle East conflict."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2450,
+        "paragraph": 14,
+        "start": 2359,
+        "text": "The Board will increase interest rates again if that’s what’s needed to get inflation down."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "Michele Bullock said the Board will increase interest rates again if needed to get inflation down."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5697,
+        "paragraph": 27,
+        "start": 5654,
+        "text": "I’m not going to give you forward guidance."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Michele Bullock said she would not give forward guidance."
+    }
+   ],
+   "title": "Reserve Bank of Australia press conference transcript, 29 September 2026",
+   "type": "presser_transcript",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-09-29.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 26986,
+    "output_tokens": 1790,
+    "reasoning_tokens": 756
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     7,
+     9,
+     11,
+     19,
+     23,
+     93
+    ],
+    "paragraphs_sent": 153,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:07162134027e",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 2 of summary point 5 is not verbatim in the paragraph(s) it cites [47] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Governor Bullock says the Middle East conflict is not the only reason for the decision, but it is making things much worse."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-09-30T02:41:43Z",
+   "input_sha256": "982704e72d885e57ee2682e02a3f1e33b987fb130c48cb5656a95de23fac8b98",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 214,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 199,
+     "text": "25 basis points"
+    },
+    {
+     "end": 231,
+     "point": 1,
+     "source_text": "4.60 per cent",
+     "start": 218,
+     "text": "4.60 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-09-29",
+   "quotes": [
+    {
+     "end": 232,
+     "paragraph": 6,
+     "start": 139,
+     "text": "Today the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+    },
+    {
+     "end": 1792,
+     "paragraph": 11,
+     "start": 1696,
+     "text": "Today’s increase in interest rates is needed to slow the economy and return inflation to target."
+    },
+    {
+     "end": 4332,
+     "paragraph": 23,
+     "start": 4283,
+     "text": "That is not our central base case at this moment."
+    },
+    {
+     "end": 29892,
+     "paragraph": 93,
+     "start": 29823,
+     "text": "So, I concur with his view that, no, this is not a wage price spiral."
+    }
+   ],
+   "source": {
+    "chars": 50576,
+    "chars_sent": 50577,
+    "method": "html-selector",
+    "paragraphs_sent": 153,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 232,
+        "paragraph": 6,
+        "start": 139,
+        "text": "Today the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Bullock says the Board decided to increase the cash rate target by 25 basis points to 4.60 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 378,
+        "paragraph": 7,
+        "start": 305,
+        "text": "Inflation is too high and has been driven by domestic capacity pressures."
+       },
+       {
+        "end": 454,
+        "paragraph": 7,
+        "start": 379,
+        "text": "The inflation impulse from the Middle East conflict is in addition to this."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Bullock says inflation is too high, driven by domestic capacity pressures, with the inflation impulse from the Middle East conflict adding to this."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1205,
+        "paragraph": 9,
+        "start": 1098,
+        "text": "the global AI investment boom has driven significant price rises for some inputs within the AI supply chain"
+       },
+       {
+        "end": 1467,
+        "paragraph": 9,
+        "start": 1354,
+        "text": "The AI boom is also adding to demand in the Australian economy at a time when we already have capacity pressures."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Governor Bullock says the global AI investment boom has driven significant price rises for some inputs and is adding to demand in the Australian economy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3499,
+        "paragraph": 19,
+        "start": 3356,
+        "text": "was to bring inflation back down to target in a reasonable time while trying to preserve as many of the gains in the labour market as possible."
+       },
+       {
+        "end": 3532,
+        "paragraph": 19,
+        "start": 3500,
+        "text": "That still remains the strategy."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governor Bullock says the Board's strategy remains to bring inflation back to target in a reasonable time while preserving as many labour-market gains as possible."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 29588,
+        "paragraph": 93,
+        "start": 29536,
+        "text": "there is no wage price spiral going on in Australia."
+       },
+       {
+        "end": 29641,
+        "paragraph": 93,
+        "start": 29589,
+        "text": "Rises in wages are not driving these cost pressures."
+       }
+      ],
+      "paragraphs": [
+       93
+      ]
+     },
+     "text": "Governor Bullock says there is no wage price spiral in Australia and that wages are not driving these cost pressures."
+    }
+   ],
+   "title": "Monetary Policy Decision",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-09-29.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 26411,
+    "output_tokens": 1482,
+    "reasoning_tokens": 357
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      14,
      15,
      21,

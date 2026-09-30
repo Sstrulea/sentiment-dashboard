@@ -134,6 +134,7 @@
     "AUD:2026-05-05": "video",
     "AUD:2026-06-16": "video",
     "AUD:2026-08-11": "video",
+    "AUD:2026-09-29": "video",
     "CAD:2026-04-29": "video",
     "CAD:2026-06-10": "video",
     "CAD:2026-07-15": "video",
@@ -153,26 +154,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-09-29T18:41:45Z",
-      "calls": 2,
-      "cost_usd": 0.0394,
+      "at": "2026-09-30T02:41:43Z",
+      "calls": 4,
+      "cost_usd": 0.1461,
       "failed_validation": 0,
-      "input_tokens": 7810,
-      "new": 1,
+      "input_tokens": 53397,
+      "new": 2,
       "no_text": 0,
-      "output_tokens": 1985,
+      "output_tokens": 3272,
       "pending": 0,
-      "reasoning_tokens": 417,
+      "reasoning_tokens": 1113,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 99,
+      "unchanged": 100,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 176,
-      "input_tokens": 1106060,
-      "output_tokens": 199988,
-      "summaries": 115
+      "calls": 180,
+      "input_tokens": 1159457,
+      "output_tokens": 203260,
+      "summaries": 117
     }
   }
 }
