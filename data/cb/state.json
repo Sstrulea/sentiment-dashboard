@@ -35,6 +35,11 @@
       "HOLIDAYS CH: the official file changed (97613 -> 154362 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
     ]
   },
+  "_no_new_values": {
+    "mx_corra": {
+      "2026-09-30": "2026-09-29"
+    }
+  },
   "atlantafed_mpt": {
     "etag": "e077ddb3aa694f57b0498fd304388e05",
     "last_modified": "Mon, 21 Sep 2026 14:00:39 GMT"
