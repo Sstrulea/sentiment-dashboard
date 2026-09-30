@@ -1241,5 +1241,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-09-29T08:28:33+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_prelim_industrial_production",
+  "currency": "JPY",
+  "indicator_key": "industrial_production_mm",
+  "datetime_utc": "2026-09-29 23:50:00",
+  "actual": -1.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-09-30T07:37:55+00:00",
+  "note": ""
  }
 ]
