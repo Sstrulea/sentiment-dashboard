@@ -424,6 +424,267 @@
     "output_tokens": 1925,
     "reasoning_tokens": 609
    }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
+     9,
+     11,
+     13,
+     16,
+     17
+    ],
+    "paragraphs_sent": 26,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:0f8a88c61725",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-01T18:41:33Z",
+   "input_sha256": "0119c7f0b376f8d7248ff99c63d646f7c466eea91b7c1fe6176254e910f7e2d5",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2049,
+     "point": 2,
+     "source_text": "2.4 percent",
+     "start": 2038,
+     "text": "2.4 percent"
+    },
+    {
+     "end": 3453,
+     "point": 3,
+     "source_text": "4.1 percent",
+     "start": 3442,
+     "text": "4.1 percent"
+    },
+    {
+     "end": 5115,
+     "point": 4,
+     "source_text": "12",
+     "start": 5113,
+     "text": "12"
+    },
+    {
+     "end": 5225,
+     "point": 4,
+     "source_text": "3.4 percent",
+     "start": 5214,
+     "text": "3.4 percent"
+    },
+    {
+     "end": 1329,
+     "point": 5,
+     "source_text": "2 percent",
+     "start": 1320,
+     "text": "2 percent"
+    },
+    {
+     "end": 7668,
+     "point": 6,
+     "source_text": "1/4 percentage point",
+     "start": 7648,
+     "text": "1/4 percentage point"
+    },
+    {
+     "end": 7677,
+     "point": 6,
+     "source_text": "3-3/4",
+     "start": 7672,
+     "text": "3-3/4"
+    },
+    {
+     "end": 3581,
+     "point": 6,
+     "source_text": "4",
+     "start": 3580,
+     "text": "4 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-01",
+   "quotes": [
+    {
+     "end": 1362,
+     "paragraph": 7,
+     "start": 1250,
+     "text": "However, inflation is too high and has exceeded the Federal Reserve's 2 percent target for more than five years."
+    },
+    {
+     "end": 3510,
+     "paragraph": 11,
+     "start": 3465,
+     "text": "I view that level as near maximum employment."
+    },
+    {
+     "end": 7323,
+     "paragraph": 16,
+     "start": 7148,
+     "text": "As my base case, I expect inflation to be elevated in the short run before resuming its decline toward our 2 percent goal as the effects of energy and other price shocks fade."
+    },
+    {
+     "end": 7815,
+     "paragraph": 17,
+     "start": 7713,
+     "text": "I supported that decision because I saw it as the appropriate policy to pursue the Fed's dual mandate."
+    }
+   ],
+   "source": {
+    "chars": 10077,
+    "chars_sent": 10078,
+    "method": "html-selector",
+    "paragraphs_sent": 26,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1249,
+        "paragraph": 7,
+        "start": 1099,
+        "text": "I see the economy as likely to show continued resilience, despite these challenges, by adding jobs and extending a six-and-a-half-year-long expansion."
+       },
+       {
+        "end": 1362,
+        "paragraph": 7,
+        "start": 1250,
+        "text": "However, inflation is too high and has exceeded the Federal Reserve's 2 percent target for more than five years."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Jefferson says the economy is likely to show continued resilience by adding jobs and extending a six-and-a-half-year-long expansion, while inflation is too high."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2145,
+        "paragraph": 9,
+        "start": 2020,
+        "text": "GDP expanded at a 2.4 percent pace in the first half of this year, roughly consistent with growth for the previous two years."
+       },
+       {
+        "end": 2232,
+        "paragraph": 9,
+        "start": 2146,
+        "text": "Business investment has been quite strong, primarily supported by AI-related spending."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Governor Jefferson reports that GDP expanded at a 2.4 percent pace in the first half of this year, while business investment was primarily supported by AI-related spending."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3464,
+        "paragraph": 11,
+        "start": 3364,
+        "text": "the unemployment rate has moved roughly sideways this year and ticked down to 4.1 percent in August."
+       },
+       {
+        "end": 3510,
+        "paragraph": 11,
+        "start": 3465,
+        "text": "I view that level as near maximum employment."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Governor Jefferson says the unemployment rate ticked down to 4.1 percent in August, a level he views as near maximum employment."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 5236,
+        "paragraph": 13,
+        "start": 5109,
+        "text": "The 12-month change in the personal consumption expenditures price index, the blue line in figure 6, was 3.4 percent in August."
+       },
+       {
+        "end": 5862,
+        "paragraph": 13,
+        "start": 5749,
+        "text": "I remain concerned about the risk of higher energy prices leading to a persistent rise in inflation more broadly."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "Governor Jefferson says the 12-month change in the personal consumption expenditures price index was 3.4 percent in August and remains concerned about higher energy prices raising inflation more broadly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7323,
+        "paragraph": 16,
+        "start": 7148,
+        "text": "As my base case, I expect inflation to be elevated in the short run before resuming its decline toward our 2 percent goal as the effects of energy and other price shocks fade."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Governor Jefferson expects inflation to be elevated in the short run before resuming its decline toward the 2 percent goal as the effects of energy and other price shocks fade."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7690,
+        "paragraph": 17,
+        "start": 7564,
+        "text": "the FOMC voted last month to raise the target range for the federal funds rate by a 1/4 percentage point to 3-3/4 to 4 percent"
+       },
+       {
+        "end": 7815,
+        "paragraph": 17,
+        "start": 7713,
+        "text": "I supported that decision because I saw it as the appropriate policy to pursue the Fed's dual mandate."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Governor Jefferson says the FOMC voted last month to raise the target range for the federal funds rate by a 1/4 percentage point to 3-3/4 to 4 percent, and he supported the decision."
+    }
+   ],
+   "title": "Jefferson, The U.S. Economy and Monetary Policy",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/jefferson20261001a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3514,
+    "output_tokens": 1219,
+    "reasoning_tokens": 499
+   }
   }
  ],
  "version": 1
