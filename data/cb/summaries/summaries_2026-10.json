@@ -1,0 +1,235 @@
+{
+ "summaries": [
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     12,
+     17,
+     33,
+     75,
+     103,
+     106
+    ],
+    "paragraphs_sent": 151,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:cf08be27b6a5",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-01T12:41:42Z",
+   "input_sha256": "3106fd4456e47392db213d14004e4a4e8eac819f9f8a8b5475d862fcf9368163",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2801,
+     "point": 1,
+     "source_text": "25 basis point",
+     "start": 2787,
+     "text": "25 basis point"
+    },
+    {
+     "end": 4715,
+     "point": 2,
+     "source_text": "100 basis points",
+     "start": 4699,
+     "text": "100 basis points"
+    },
+    {
+     "end": 4488,
+     "point": 2,
+     "source_text": "12",
+     "start": 4486,
+     "text": "12"
+    },
+    {
+     "end": 8753,
+     "point": 3,
+     "source_text": "24 basis points",
+     "start": 8738,
+     "text": "24 basis points"
+    },
+    {
+     "end": 5756,
+     "point": 3,
+     "source_text": "4",
+     "start": 5755,
+     "text": "4 basis points"
+    },
+    {
+     "end": 5756,
+     "point": 5,
+     "source_text": "4",
+     "start": 5755,
+     "text": "4%"
+    },
+    {
+     "end": 26508,
+     "point": 5,
+     "source_text": "2027",
+     "start": 26504,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-01",
+   "quotes": [
+    {
+     "end": 2824,
+     "paragraph": 12,
+     "start": 2661,
+     "text": "In my view, our current monetary policy stance is not sufficiently tight, which is why I voted in the last two meetings for a 25 basis point increase in Bank Rate."
+    },
+    {
+     "end": 4769,
+     "paragraph": 17,
+     "start": 4644,
+     "text": "Since then, the gap has widened further, implying over 100 basis points of tightening in Bank Rate over the coming 12 months."
+    },
+    {
+     "end": 19813,
+     "paragraph": 75,
+     "start": 19522,
+     "text": "I plot the estimated monetary policy uncertainty factor in the right panel of Chart 8, which shows that monetary policy uncertainty increased significantly following the March decision, which cannot simply be attributed to uncertainty around the economic outlook resulting from the conflict."
+    },
+    {
+     "end": 27988,
+     "paragraph": 106,
+     "start": 27925,
+     "text": "In my view, real financial conditions are insufficiently tight."
+    }
+   ],
+   "source": {
+    "chars": 34846,
+    "chars_sent": 34847,
+    "method": "html-selector",
+    "paragraphs_sent": 151,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2824,
+        "paragraph": 12,
+        "start": 2748,
+        "text": "I voted in the last two meetings for a 25 basis point increase in Bank Rate."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Catherine Mann says she voted in the last two meetings for a 25 basis point increase in Bank Rate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4769,
+        "paragraph": 17,
+        "start": 4644,
+        "text": "Since then, the gap has widened further, implying over 100 basis points of tightening in Bank Rate over the coming 12 months."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Catherine Mann says the gap between the OIS curve and survey expectations widened further, implying over 100 basis points of tightening in Bank Rate over the coming 12 months."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 8826,
+        "paragraph": 33,
+        "start": 8660,
+        "text": "According to this term structure model, higher term premia account for around 24 basis points of the increase in the UK, compared with just 4 basis points in Germany."
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "Catherine Mann says a term structure model attributes around 24 basis points of the UK yield increase to higher term premia, compared with just 4 basis points in Germany."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19813,
+        "paragraph": 75,
+        "start": 19626,
+        "text": "monetary policy uncertainty increased significantly following the March decision, which cannot simply be attributed to uncertainty around the economic outlook resulting from the conflict."
+       }
+      ],
+      "paragraphs": [
+       75
+      ]
+     },
+     "text": "Catherine Mann says monetary policy uncertainty increased significantly following the March decision and cannot simply be attributed to uncertainty around the economic outlook resulting from the conflict."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 26509,
+        "paragraph": 103,
+        "start": 26392,
+        "text": "the Bank’s updated short-term inflation forecast from September projects inflation to increase to over 4% in Q1 2027."
+       }
+      ],
+      "paragraphs": [
+       103
+      ]
+     },
+     "text": "Catherine Mann says the Bank’s updated short-term inflation forecast from September projects inflation to increase to over 4% in Q1 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 27988,
+        "paragraph": 106,
+        "start": 27925,
+        "text": "In my view, real financial conditions are insufficiently tight."
+       },
+       {
+        "end": 28231,
+        "paragraph": 106,
+        "start": 27989,
+        "text": "The appropriate response therefore is not to rely on risk premia to do the work of policy, but to reduce inflation risk and policy uncertainty through a clearly communicated reaction function and a sufficiently restrictive path for Bank Rate."
+       }
+      ],
+      "paragraphs": [
+       106
+      ]
+     },
+     "text": "Catherine Mann says real financial conditions are insufficiently tight and calls for a clearly communicated reaction function and a sufficiently restrictive path for Bank Rate."
+    }
+   ],
+   "title": "Financial conditions: what’s priced in? − speech by Catherine L. Mann",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/october/catherine-mann-nomura-investor-conference",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 18895,
+    "output_tokens": 1925,
+    "reasoning_tokens": 609
+   }
+  }
+ ],
+ "version": 1
+}

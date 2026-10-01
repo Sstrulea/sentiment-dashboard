@@ -12,11 +12,29 @@
    "reason": "no container of the page holds the document text",
    "url": "https://www.bis.org/speeches/20260916-listening-households-expectations-behaviour-and-monetary-policy"
   },
+  "EUR:speech:229de05d6842": {
+   "at": "2026-10-01T12:41:42Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260922-europe-seen-normandy"
+  },
+  "EUR:speech:26f4e5ac4a2f": {
+   "at": "2026-10-01T12:41:42Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260930-hearing-committee-economic-and-monetary-affairs-european-parliament"
+  },
   "EUR:speech:320dbc76f248": {
    "at": "2026-09-21T18:28:22Z",
    "kind": "non_prose",
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260911~a4d6526f00.en.pdf"
+  },
+  "EUR:speech:3858a9dc2f96": {
+   "at": "2026-10-01T12:41:42Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260930-digital-innovation-hindrance-or-booster-banks-business-models"
   },
   "EUR:speech:419f8df75f1f": {
    "at": "2026-09-21T18:28:22Z",
@@ -30,11 +48,23 @@
    "reason": "no container of the page holds the document text",
    "url": "https://www.bis.org/speeches/20260916-bank-resilience-and-sustainable-growth-two-sides-same-coin"
   },
+  "EUR:speech:7c5890400cb8": {
+   "at": "2026-10-01T12:41:42Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260924-new-age-capital-growth-sovereignty-and-ai"
+  },
   "EUR:speech:96186ee52de7": {
    "at": "2026-09-23T16:41:36Z",
    "kind": "non_prose",
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf"
+  },
+  "EUR:speech:a2d1191a289b": {
+   "at": "2026-10-01T12:41:42Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20260922-future-euro-cash-trusted-today-designed-tomorrow"
   },
   "EUR:speech:b3344232334c": {
    "at": "2026-09-21T18:33:38Z",
