@@ -46,7 +46,7 @@
     },
     "latest": {
       "etag": null,
-      "last_modified": "Wed, 30 Sep 2026 10:39:35 GMT"
+      "last_modified": "Thu, 01 Oct 2026 14:59:26 GMT"
     }
   },
   "http_validators": {
@@ -154,26 +154,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-01T12:41:42Z",
-      "calls": 2,
-      "cost_usd": 0.0609,
+      "at": "2026-10-01T16:41:44Z",
+      "calls": 1,
+      "cost_usd": 0.0105,
       "failed_validation": 0,
-      "input_tokens": 18895,
+      "input_tokens": 2479,
       "new": 1,
-      "no_text": 5,
-      "output_tokens": 1925,
+      "no_text": 0,
+      "output_tokens": 462,
       "pending": 0,
-      "reasoning_tokens": 609,
+      "reasoning_tokens": 0,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 105,
+      "unchanged": 111,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 184,
-      "input_tokens": 1190144,
-      "output_tokens": 207655,
-      "summaries": 119
+      "calls": 185,
+      "input_tokens": 1192623,
+      "output_tokens": 208117,
+      "summaries": 120
     }
   }
 }

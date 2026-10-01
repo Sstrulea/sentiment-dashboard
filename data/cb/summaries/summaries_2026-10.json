@@ -4,6 +4,201 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     5,
+     7,
+     8,
+     9,
+     11
+    ],
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:406c6781f2cd",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-10-01T16:41:44Z",
+   "input_sha256": "2496ac4ef5fe58fd2051aa5ec14612887a43d78717e435131ea44af6a260ce13",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 989,
+     "point": 5,
+     "source_text": "21",
+     "start": 987,
+     "text": "21"
+    },
+    {
+     "end": 167,
+     "point": 5,
+     "source_text": "2026",
+     "start": 163,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-01",
+   "quotes": [
+    {
+     "end": 314,
+     "paragraph": 2,
+     "start": 254,
+     "text": "Tokenisation allows for faster, safer and smarter settlement"
+    },
+    {
+     "end": 1854,
+     "paragraph": 7,
+     "start": 1777,
+     "text": "ECB aims to preserve anchor role of central bank money in a digitalised world"
+    },
+    {
+     "end": 2841,
+     "paragraph": 8,
+     "start": 2763,
+     "text": "Central banks could modernise monetary policy implementation by going on-chain"
+    },
+    {
+     "end": 3353,
+     "paragraph": 9,
+     "start": 3273,
+     "text": "Launched on 21 September 2026, offering dual settlement model via TARGET2 or DLT"
+    },
+    {
+     "end": 3839,
+     "paragraph": 11,
+     "start": 3769,
+     "text": "Eurosystem’s project Appia explores a range of tokenised architectures"
+    }
+   ],
+   "source": {
+    "chars": 4131,
+    "chars_sent": 4132,
+    "method": "pypdf",
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 314,
+        "paragraph": 2,
+        "start": 254,
+        "text": "Tokenisation allows for faster, safer and smarter settlement"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says tokenisation allows for faster, safer and smarter settlement."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 728,
+        "paragraph": 5,
+        "start": 666,
+        "text": "Modern fiat monetary systems are built on a two-tier structure"
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says modern fiat monetary systems are built on a two-tier structure."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1854,
+        "paragraph": 7,
+        "start": 1777,
+        "text": "ECB aims to preserve anchor role of central bank money in a digitalised world"
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says the ECB aims to preserve the anchor role of central bank money in a digitalised world."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2841,
+        "paragraph": 8,
+        "start": 2763,
+        "text": "Central banks could modernise monetary policy implementation by going on-chain"
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says central banks could modernise monetary policy implementation by going on-chain."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3353,
+        "paragraph": 9,
+        "start": 3273,
+        "text": "Launched on 21 September 2026, offering dual settlement model via TARGET2 or DLT"
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says Pontes was launched on 21 September 2026, offering a dual settlement model via TARGET2 or DLT."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3839,
+        "paragraph": 11,
+        "start": 3769,
+        "text": "Eurosystem’s project Appia explores a range of tokenised architectures"
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says the Eurosystem’s project Appia explores a range of tokenised architectures."
+    }
+   ],
+   "title": "Isabel Schnabel: Central banks on-chain",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261001_1~a0be67193b.en.pdf",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2479,
+    "output_tokens": 462,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      12,
      17,
      33,
