@@ -1384,5 +1384,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-02T08:03:50+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_ism_manufacturing_pmi",
+  "currency": "USD",
+  "indicator_key": "manufacturing_pmi",
+  "datetime_utc": "2026-10-01 14:00:00",
+  "actual": 54.5,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-02T08:04:02+00:00",
+  "note": ""
  }
 ]
