@@ -1406,5 +1406,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-02T08:04:22+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_unemployment_rate",
+  "currency": "JPY",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-01 23:30:00",
+  "actual": 2.5,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-02T08:04:32+00:00",
+  "note": ""
  }
 ]
