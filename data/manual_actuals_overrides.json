@@ -1362,5 +1362,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-02T08:03:22+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "eur_unemployment_rate",
+  "currency": "EUR",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-01 09:00:00",
+  "actual": 6.4,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-02T08:03:42+00:00",
+  "note": ""
  }
 ]
