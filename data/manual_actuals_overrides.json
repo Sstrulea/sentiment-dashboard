@@ -1395,5 +1395,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-02T08:04:02+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_tokyo_core_cpi",
+  "currency": "JPY",
+  "indicator_key": "tokyo_core_cpi_yoy",
+  "datetime_utc": "2026-10-01 23:30:00",
+  "actual": 2.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-02T08:04:22+00:00",
+  "note": ""
  }
 ]
