@@ -1329,5 +1329,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-02T08:02:41+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "chf_retail_sales",
+  "currency": "CHF",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2026-10-01 06:30:00",
+  "actual": 3.2,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-02T08:02:47+00:00",
+  "note": ""
  }
 ]
