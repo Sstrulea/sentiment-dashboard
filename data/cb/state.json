@@ -94,6 +94,11 @@
       "etag": "\"w178520-1786088042745\"",
       "last_modified": "Fri, 07 Aug 2026 07:34:02 GMT"
     },
+    "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260918.pdf": {
+      "etag": "\"w232171-1790752675582\"",
+      "last_modified": "Wed, 30 Sep 2026 07:17:55 GMT",
+      "sha256": "000e7ae534c14e0c9bb2095df42b55dc703132def7ca89d1c5f940a29ca7745e"
+    },
     "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260430~81b7179e6f.en.html": {},
     "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html": {},
     "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260723~29f24d99bc.en.html": {},
@@ -127,7 +132,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Wed, 30 Sep 2026 23:01:50 GMT"
+    "last_modified": "Thu, 01 Oct 2026 23:02:08 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -150,30 +155,30 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Wed, 30 Sep 2026 23:01:50 GMT"
+    "last_modified": "Thu, 01 Oct 2026 23:02:08 GMT"
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-01T18:41:33Z",
-      "calls": 1,
-      "cost_usd": 0.0217,
+      "at": "2026-10-02T00:41:45Z",
+      "calls": 2,
+      "cost_usd": 0.0386,
       "failed_validation": 0,
-      "input_tokens": 3514,
+      "input_tokens": 8625,
       "new": 1,
       "no_text": 0,
-      "output_tokens": 1219,
+      "output_tokens": 1780,
       "pending": 0,
-      "reasoning_tokens": 499,
+      "reasoning_tokens": 516,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 112,
+      "unchanged": 113,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 186,
-      "input_tokens": 1196137,
-      "output_tokens": 209336,
-      "summaries": 121
+      "calls": 188,
+      "input_tokens": 1204762,
+      "output_tokens": 211116,
+      "summaries": 122
     }
   }
 }

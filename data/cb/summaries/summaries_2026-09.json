@@ -8249,6 +8249,191 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     4,
+     6,
+     7,
+     9,
+     11
+    ],
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:summary_of_opinions:2026-09-18",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'expected' of summary point 1 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee expected ...' (never in your own voice)"
+     ],
+     "text": "The opinions state that Japan's economy has recovered moderately, although some weakness has been seen in part due partly to the situation in the Middle East, and that it is expected to continue growing moderately."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-10-02T00:41:45Z",
+   "input_sha256": "000e7ae534c14e0c9bb2095df42b55dc703132def7ca89d1c5f940a29ca7745e",
+   "meeting_date": "2026-09-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 85,
+     "point": 2,
+     "source_text": "2026",
+     "start": 81,
+     "text": "2026"
+    },
+    {
+     "end": 3091,
+     "point": 2,
+     "source_text": "2027",
+     "start": 3087,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-09-30",
+   "quotes": [
+    {
+     "end": 424,
+     "paragraph": 4,
+     "start": 275,
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "end": 2732,
+     "paragraph": 6,
+     "start": 2655,
+     "text": "Over the past few months , this regime shift has become increasingly evident."
+    },
+    {
+     "end": 3092,
+     "paragraph": 7,
+     "start": 2920,
+     "text": "Underlying CPI inflation is expected to come to a level that is generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+    },
+    {
+     "end": 6932,
+     "paragraph": 9,
+     "start": 6846,
+     "text": "it is desirable for the Bank to maintain the current policy interest rate at this MPM."
+    },
+    {
+     "end": 10978,
+     "paragraph": 11,
+     "start": 10929,
+     "text": "Financial conditions have remained accommodative."
+    }
+   ],
+   "source": {
+    "chars": 12714,
+    "chars_sent": 12715,
+    "method": "pypdf",
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 2371,
+        "paragraph": 6,
+        "start": 2247,
+        "text": "With concerns over an economic slowdown subsiding in reflection of factors such as the global expansion in AI-related demand"
+       },
+       {
+        "end": 2732,
+        "paragraph": 6,
+        "start": 2655,
+        "text": "Over the past few months , this regime shift has become increasingly evident."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The opinions say concerns over an economic slowdown have subsided and that a significant regime shift in financial conditions surrounding Japan has become increasingly evident over the past few months."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 2919,
+        "paragraph": 7,
+        "start": 2742,
+        "text": "Underlying CPI inflation is likely to increase gradually, as the mechanism in which wages and prices rise moderately in interaction with each other is expected to be maintained."
+       },
+       {
+        "end": 3092,
+        "paragraph": 7,
+        "start": 2920,
+        "text": "Underlying CPI inflation is expected to come to a level that is generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The opinions state that underlying CPI inflation is expected to increase gradually and to reach a level generally consistent with the price stability target between the second half of fiscal 2026 and fiscal 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 5620,
+        "paragraph": 9,
+        "start": 5507,
+        "text": "it is appropriate for the Bank to raise the policy interest rate and adjust the degree of monetary accommodation."
+       },
+       {
+        "end": 6932,
+        "paragraph": 9,
+        "start": 6846,
+        "text": "it is desirable for the Bank to maintain the current policy interest rate at this MPM."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Opinions included that it was appropriate for the Bank to raise the policy interest rate and adjust monetary accommodation, while another view said it was desirable to maintain the current policy interest rate at this MPM."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 11104,
+        "paragraph": 11,
+        "start": 10929,
+        "text": "Financial conditions have remained accommodative. This is partly attributable to the easing effects of the monetary accommodation to date being amplified through asset prices."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "The opinions state that financial conditions have remained accommodative, partly because easing effects of monetary accommodation to date have been amplified through asset prices."
+    }
+   ],
+   "title": "Bank of Japan summary of opinions of the 18 September 2026 meeting",
+   "type": "summary_of_opinions",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260918.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 8625,
+    "output_tokens": 1780,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      3,
      4,
