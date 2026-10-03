@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-03T11:09:11.491801",
+ "as_of": "2026-10-03T20:06:11.100910",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -589,8 +589,8 @@
      "next_previous": 333.0,
      "next_from": "parquet",
      "diff": 117.0,
-     "tolerance": 92.717,
-     "threshold": 92.717,
+     "tolerance": 89.2692,
+     "threshold": 89.2692,
      "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
@@ -722,8 +722,8 @@
      "next_previous": 229.0,
      "next_from": "parquet",
      "diff": -124.0,
-     "tolerance": 92.717,
-     "threshold": 92.717,
+     "tolerance": 89.2692,
+     "threshold": 89.2692,
      "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
@@ -1159,8 +1159,8 @@
      "next_previous": 14.0,
      "next_from": "parquet",
      "diff": -133.0,
-     "tolerance": 92.717,
-     "threshold": 92.717,
+     "tolerance": 89.2692,
+     "threshold": 89.2692,
      "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
@@ -1330,8 +1330,8 @@
      "next_previous": 56.0,
      "next_from": "parquet",
      "diff": 161.0,
-     "tolerance": 92.717,
-     "threshold": 92.717,
+     "tolerance": 89.2692,
+     "threshold": 89.2692,
      "n_revision_pairs": 45,
      "level": "WARN",
      "new": false
@@ -1690,7 +1690,7 @@
    },
    "n_checked": 3353,
    "n_series": 107,
-   "n_scored_zero": 99,
+   "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
    "weekly_feed": "ff_weekly_2026-10-03.json"
   },
@@ -2127,5 +2127,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-03T11:09:21+00:00"
+ "generated_at": "2026-10-03T20:06:18+00:00"
 }
