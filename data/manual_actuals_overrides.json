@@ -1430,17 +1430,6 @@
   "note": ""
  },
  {
-  "canonical_id": "usd_unemployment_rate",
-  "currency": "USD",
-  "indicator_key": "unemployment_rate",
-  "datetime_utc": "2026-10-02 12:30:00",
-  "actual": 4.2,
-  "state_resolved": "MISSING",
-  "entered_by": "dolce",
-  "entered_at": "2026-10-03T11:08:03+00:00",
-  "note": ""
- },
- {
   "canonical_id": "eur_core_cpi",
   "currency": "EUR",
   "indicator_key": "core_cpi",
@@ -1471,6 +1460,17 @@
   "state_resolved": "MISSING",
   "entered_by": "dolce",
   "entered_at": "2026-10-03T11:21:14+00:00",
+  "note": ""
+ },
+ {
+  "canonical_id": "usd_unemployment_rate",
+  "currency": "USD",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-02 12:30:00",
+  "actual": 4.2,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-03T11:21:17+00:00",
   "note": ""
  }
 ]
