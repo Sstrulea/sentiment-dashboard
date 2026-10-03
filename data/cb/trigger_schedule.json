@@ -5,43 +5,6 @@
  },
  "events": [
   {
-   "at": "2026-09-29T04:30:00Z",
-   "bank": "AUD",
-   "date": "2026-09-29",
-   "dispatch": {
-    "inputs": {
-     "bank": "AUD",
-     "date": "2026-09-29",
-     "event": "decision"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-09-29T04:31:00Z",
-   "grace_minutes": 90,
-   "id": "decision:AUD:2026-09-29",
-   "kind": "decision",
-   "lead_minutes": 5
-  },
-  {
-   "at": "2026-09-29T05:30:00Z",
-   "at_basis": "conference",
-   "bank": "AUD",
-   "date": "2026-09-29",
-   "dispatch": {
-    "inputs": {
-     "bank": "AUD",
-     "date": "2026-09-29",
-     "event": "conference"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-09-29T07:30:00Z",
-   "grace_minutes": 240,
-   "id": "conference:AUD:2026-09-29",
-   "kind": "conference",
-   "lead_minutes": 0
-  },
-  {
    "at": "2026-10-28T13:45:00Z",
    "bank": "CAD",
    "date": "2026-10-28",
@@ -265,8 +228,8 @@
   }
  ],
  "horizon": {
-  "from": "2026-09-29",
-  "to": "2026-12-01"
+  "from": "2026-09-30",
+  "to": "2026-12-02"
  },
  "regular": [
   {
