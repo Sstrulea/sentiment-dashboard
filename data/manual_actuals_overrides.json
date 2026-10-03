@@ -1417,5 +1417,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-02T08:04:32+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_average_hourly_earnings",
+  "currency": "USD",
+  "indicator_key": "wage_growth",
+  "datetime_utc": "2026-10-02 12:30:00",
+  "actual": 0.1,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-03T11:07:58+00:00",
+  "note": ""
  }
 ]
