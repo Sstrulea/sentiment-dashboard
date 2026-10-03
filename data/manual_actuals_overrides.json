@@ -1428,5 +1428,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-03T11:07:58+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_nonfarm_payrolls",
+  "currency": "USD",
+  "indicator_key": "employment_change",
+  "datetime_utc": "2026-10-02 12:30:00",
+  "actual": 29.0,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-03T11:08:00+00:00",
+  "note": ""
  }
 ]
