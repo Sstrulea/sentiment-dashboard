@@ -1,11 +1,11 @@
 {
   "_calendar_check": {
-    "checked": "2026-09-27",
+    "checked": "2026-10-04",
     "failed": {},
     "signatures": {
       "CH": {
-        "etag": "\"25afa-65c5a660219c2\"",
-        "length": 154362
+        "etag": "\"25b6b-65ce6ed59bfd7\"",
+        "length": 154475
       }
     },
     "warnings": [
@@ -32,7 +32,7 @@
       "HOLIDAYS NZ: 2027-04-26 (Anzac Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2027-12-27 (Christmas Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2027-12-28 (Boxing Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
-      "HOLIDAYS CH: the official file changed (97613 -> 154362 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
+      "HOLIDAYS CH: the official file changed (154362 -> 154475 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
     ]
   },
   "atlantafed_mpt": {
