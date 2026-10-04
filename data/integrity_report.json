@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-04T00:06:27.773258",
+ "as_of": "2026-10-04T08:06:08.641163",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -19,9 +19,9 @@
      "next_previous": 1.9,
      "next_from": "parquet",
      "diff": 1.4,
-     "tolerance": 1.01717,
-     "threshold": 1.01717,
-     "n_revision_pairs": 44,
+     "tolerance": 1.18956,
+     "threshold": 1.18956,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -116,7 +116,7 @@
      "diff": 1.0,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41,
+     "n_revision_pairs": 42,
      "level": "INFO",
      "new": false
     },
@@ -211,7 +211,7 @@
      "diff": 48.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -268,7 +268,7 @@
      "diff": 0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -306,7 +306,7 @@
      "diff": 0.8,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41,
+     "n_revision_pairs": 42,
      "level": "INFO",
      "new": false
     },
@@ -325,7 +325,7 @@
      "diff": -17.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -363,7 +363,7 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -496,7 +496,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -705,7 +705,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -781,7 +781,7 @@
      "diff": -7.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -800,7 +800,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -838,7 +838,7 @@
      "diff": -221.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -933,7 +933,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -1237,7 +1237,7 @@
      "diff": -10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -1256,7 +1256,7 @@
      "diff": -6.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -1294,7 +1294,7 @@
      "diff": -0.4,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "WARN",
      "new": false
     },
@@ -1349,9 +1349,9 @@
      "next_previous": 1.7,
      "next_from": "parquet",
      "diff": 1.2,
-     "tolerance": 1.01717,
-     "threshold": 1.01717,
-     "n_revision_pairs": 44,
+     "tolerance": 1.18956,
+     "threshold": 1.18956,
+     "n_revision_pairs": 45,
      "level": "WARN",
      "new": false
     },
@@ -1370,7 +1370,7 @@
      "diff": 10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -1503,7 +1503,7 @@
      "diff": 0.9,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 41,
+     "n_revision_pairs": 42,
      "level": "WARN",
      "new": false
     },
@@ -1560,7 +1560,7 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "INFO",
      "new": false
     },
@@ -1674,7 +1674,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 190,
+     "n_revision_pairs": 191,
      "level": "WARN",
      "new": false
     }
@@ -1688,11 +1688,11 @@
     "value": 74,
     "zero": 14
    },
-   "n_checked": 3354,
+   "n_checked": 3363,
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-03.json"
+   "weekly_feed": "ff_weekly_2026-10-04.json"
   },
   "missing_release": {
    "findings": [
@@ -2127,5 +2127,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-04T00:06:37+00:00"
+ "generated_at": "2026-10-04T08:06:14+00:00"
 }
