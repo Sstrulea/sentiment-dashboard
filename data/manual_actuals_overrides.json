@@ -1494,5 +1494,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-05T15:52:11+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_ism_non_manufacturing_pmi",
+  "currency": "USD",
+  "indicator_key": "services_pmi",
+  "datetime_utc": "2026-10-05 14:00:00",
+  "actual": 54.9,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-05T20:22:12+00:00",
+  "note": ""
  }
 ]
