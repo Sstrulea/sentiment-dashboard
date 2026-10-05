@@ -199,6 +199,260 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     4,
+     14,
+     16,
+     17,
+     45,
+     47,
+     48
+    ],
+    "paragraphs_sent": 48,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:517b42d1a3c0",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-05T08:42:32Z",
+   "input_sha256": "e0299ff6e3b60d3e4da9bb75d9b0c7bb3bab23d1229b1bd04911cd93f336d7f3",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 5755,
+     "point": 2,
+     "source_text": "3.8 per cent",
+     "start": 5743,
+     "text": "3.8 per cent"
+    },
+    {
+     "end": 5881,
+     "point": 3,
+     "source_text": "2.3 per cent",
+     "start": 5869,
+     "text": "2.3 per cent"
+    },
+    {
+     "end": 121,
+     "point": 3,
+     "source_text": "2026",
+     "start": 117,
+     "text": "2026"
+    },
+    {
+     "end": 7417,
+     "point": 3,
+     "source_text": "2.6 per cent",
+     "start": 7405,
+     "text": "2.6 per cent"
+    },
+    {
+     "end": 7425,
+     "point": 3,
+     "source_text": "2027",
+     "start": 7421,
+     "text": "2027"
+    },
+    {
+     "end": 5881,
+     "point": 3,
+     "source_text": "2.3 per cent",
+     "start": 5869,
+     "text": "2.3 per cent"
+    },
+    {
+     "end": 7469,
+     "point": 3,
+     "source_text": "2028",
+     "start": 7465,
+     "text": "2028"
+    },
+    {
+     "end": 852,
+     "point": 5,
+     "source_text": "2",
+     "start": 851,
+     "text": "2.00"
+    },
+    {
+     "end": 6177,
+     "point": 5,
+     "source_text": "2.5 per cent",
+     "start": 6165,
+     "text": "2.50 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-05",
+   "quotes": [
+    {
+     "end": 703,
+     "paragraph": 4,
+     "start": 420,
+     "text": "Our interest rate decisions are based on three criteria: (i) our assessment of the inflation outlook and the risks surrounding it, in light of the incoming economic and financial data; (ii) the dynamics of underlying inflation; and (iii) the strength of monetary policy transmission."
+    },
+    {
+     "end": 7068,
+     "paragraph": 16,
+     "start": 6908,
+     "text": "With non-energy inflation remaining contained so far, underlying inflation indicators indicate that an upward shift in medium-term inflation has not taken hold."
+    },
+    {
+     "end": 7474,
+     "paragraph": 17,
+     "start": 7277,
+     "text": "However, our September projections do anticipate an increase in non-energy inflation from 2.3 per cent in 2026 to an average of 2.6 per cent in 2027 before falling back to 2.3 per cent in 2028.[10]"
+    },
+    {
+     "end": 21270,
+     "paragraph": 45,
+     "start": 21094,
+     "text": "This means that the appropriate monetary policy should not be interpreted as solely driven by the energy supply shock but rather requires a multi-pronged diagnostic assessment."
+    },
+    {
+     "end": 22261,
+     "paragraph": 47,
+     "start": 22212,
+     "text": "However, we are not on a pre-committed rate path."
+    }
+   ],
+   "source": {
+    "chars": 22869,
+    "chars_sent": 22870,
+    "method": "html-selector",
+    "paragraphs_sent": 48,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 550,
+        "paragraph": 4,
+        "start": 420,
+        "text": "Our interest rate decisions are based on three criteria: (i) our assessment of the inflation outlook and the risks surrounding it,"
+       },
+       {
+        "end": 703,
+        "paragraph": 4,
+        "start": 605,
+        "text": "(ii) the dynamics of underlying inflation; and (iii) the strength of monetary policy transmission."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says ECB interest rate decisions are based on the inflation outlook and its risks, underlying inflation, and the strength of monetary policy transmission."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5756,
+        "paragraph": 14,
+        "start": 5673,
+        "text": "the just-released September inflation data show headline inflation at 3.8 per cent."
+       },
+       {
+        "end": 7068,
+        "paragraph": 16,
+        "start": 6962,
+        "text": "underlying inflation indicators indicate that an upward shift in medium-term inflation has not taken hold."
+       }
+      ],
+      "paragraphs": [
+       14,
+       16
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the September inflation data show headline inflation at 3.8 per cent, while underlying inflation indicators show no upward shift in medium-term inflation has taken hold."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 7470,
+        "paragraph": 17,
+        "start": 7286,
+        "text": "our September projections do anticipate an increase in non-energy inflation from 2.3 per cent in 2026 to an average of 2.6 per cent in 2027 before falling back to 2.3 per cent in 2028."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says September projections anticipate non-energy inflation rising from 2.3 per cent in 2026 to an average of 2.6 per cent in 2027 before falling back to 2.3 per cent in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21093,
+        "paragraph": 45,
+        "start": 20876,
+        "text": "a collection of other driving forces (fiscal policy, AI and financial conditions) are also shaping output and inflation dynamics in the euro area, both directly and via their interactions with the energy supply shock."
+       },
+       {
+        "end": 21270,
+        "paragraph": 45,
+        "start": 21110,
+        "text": "the appropriate monetary policy should not be interpreted as solely driven by the energy supply shock but rather requires a multi-pronged diagnostic assessment."
+       }
+      ],
+      "paragraphs": [
+       45
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says fiscal policy, AI and financial conditions are shaping euro area output and inflation dynamics, requiring a multi-pronged diagnostic assessment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22153,
+        "paragraph": 47,
+        "start": 22023,
+        "text": "It was prudent to raise the policy rate from 2.00 to 2.50 per cent over the course of two projection rounds in June and September,"
+       },
+       {
+        "end": 22417,
+        "paragraph": 48,
+        "start": 22262,
+        "text": "We will base our future interest rate decisions on a meeting-by-meeting, data-dependent basis, drawing on a comprehensive and rigorous analytical framework"
+       }
+      ],
+      "paragraphs": [
+       47,
+       48
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says it was prudent to raise the policy rate from 2.00 to 2.50 per cent in June and September, and future decisions will be meeting-by-meeting and data-dependent."
+    }
+   ],
+   "title": "Philip R. Lane: Diagnostic Challenges for ECB Monetary Policy",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261005~1d8d998ef4.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5951,
+    "output_tokens": 1323,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      12,
      17,
      33,
