@@ -28,6 +28,7 @@ import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from src.economic_compute import build_payload, bias_label
+from src.ff_corrections import read_ff_parquet
 from src.cot_score import (
     load_currencies_history,
     load_metals_history,
@@ -1262,7 +1263,7 @@ def _load_calendar_frame(as_of: pd.Timestamp) -> pd.DataFrame:
             log.warning("FF calendar parquet missing — empty Economic page.")
             return pd.DataFrame(columns=_EMPTY_CAL_COLUMNS)
         from src.ff_scoring import build_matcher, to_scoring_frame
-        ffdf = pd.read_parquet(FF_PARQUET)
+        ffdf = read_ff_parquet(FF_PARQUET, overrides_path=MANUAL_ACTUALS_OVERRIDES)
         ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
         cal = to_scoring_frame(ffdf, build_matcher())
         cal["release_dt"] = pd.to_datetime(cal["release_dt"])
@@ -1331,7 +1332,7 @@ def _load_actionable_rows(as_of: pd.Timestamp) -> pd.DataFrame:
     if source != "ff" or not FF_PARQUET.exists():
         return pd.DataFrame(columns=_MANUAL_ACTUALS_COLUMNS)
     from src.manual_actuals import apply_overrides, load_overrides
-    ffdf = pd.read_parquet(FF_PARQUET)
+    ffdf = read_ff_parquet(FF_PARQUET, overrides_path=MANUAL_ACTUALS_OVERRIDES)
     ffdf["datetime_utc"] = pd.to_datetime(ffdf["datetime_utc"])
     overrides = load_overrides(MANUAL_ACTUALS_OVERRIDES)
     _manual_rows, remaining = apply_overrides(ffdf, overrides, now_utc=as_of)
@@ -1572,7 +1573,7 @@ def _integrity_report(cal: pd.DataFrame, as_of: pd.Timestamp,
         from src.ff_scoring import build_matcher, load_zero_possible
         from src.release_integrity import (explain_gap, find_series_gaps, find_unfed_scheduled, load_known_gaps,
                                            resolve_conflicts)
-        ffdf = pd.read_parquet(FF_PARQUET)
+        ffdf = read_ff_parquet(FF_PARQUET, overrides_path=MANUAL_ACTUALS_OVERRIDES)
         zp = load_zero_possible()
         matcher = build_matcher()
         excluded, conflicts = resolve_conflicts(ffdf, zp)

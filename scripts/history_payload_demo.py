@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src import history_compute as hc  # noqa: E402
+from src.ff_corrections import read_ff_parquet  # noqa: E402
 from src.data_integrity import (  # noqa: E402
     build_quarantine_proposal, detect_ghost_rows, detect_implausible_zeros,
 )
@@ -92,7 +93,7 @@ def audit_p1(series_cache: dict) -> None:
 
 
 def main() -> int:
-    ff = pd.read_parquet(FF_PARQUET)
+    ff = read_ff_parquet(FF_PARQUET, overrides_path=hc.MANUAL_ACTUALS_OVERRIDES)
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
     catalog = hc.load_catalog()
     ind_cfg = hc.load_indicators_cfg()

@@ -40,7 +40,7 @@ def main() -> None:
     bis = parse_bis(requests.get(BIS_URL.format(areas="+".join(AREA.values()), since=a.since.replace(day=1)), timeout=90).text, a.since)
     store = cc.load_official_store(cc.Paths())
     series = lambda sid: [(r["date"], r["value"]) for r in store.values() if r["series_id"] == sid]      # noqa: E731
-    ff = pd.read_parquet(ds.FF_PARQUET)
+    ff = ds.read_ff_parquet(ds.FF_PARQUET)
 
     print("== 1. BIS vs the official series: days between the change dates (0 = BIS is dated by the effective date)")
     for cur, sid in OFFICIAL.items():

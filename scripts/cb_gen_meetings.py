@@ -40,7 +40,7 @@ def main() -> int:
         if page is None:
             sys.exit(f"{bank}: calendar page unavailable ({src.last_status} {src.last_note}) - nothing written")
         parsed[bank] = page
-    ff = pd.read_parquet(ds.FF_PARQUET)
+    ff = ds.read_ff_parquet(ds.FF_PARQUET)
     ecb = ff[(ff["currency"] == "EUR") & (ff["name_raw"] == banks["EUR"]["policy_rate"]["ff_name"]) & ff["actual"].notna()]
     ecb_days = local_days([t.to_pydatetime() for t in ecb["datetime_utc"]], banks["EUR"]["tz"])
     rbnz = ds.load_rbnz(ROOT / "data" / "cb" / "manual" / "rbnz.yaml")["published_calendar"]["meetings"]

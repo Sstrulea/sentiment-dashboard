@@ -20,6 +20,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from . import history_compute as hc
 from .data_integrity import build_quarantine_proposal, detect_ghost_rows, detect_implausible_zeros
 from .economic_fetch import CompiledMatcher
+from .ff_corrections import read_ff_parquet
 from .ff_scoring import CCY2COUNTRY, build_matcher
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,7 +52,7 @@ def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
                         "as_of": as_of.isoformat()}, "categories": {},
                "health": {"no_data": [], "stale": []}}
 
-    ff = pd.read_parquet(FF_PARQUET)
+    ff = read_ff_parquet(FF_PARQUET, overrides_path=hc.MANUAL_ACTUALS_OVERRIDES)
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
     ind_cfg = hc.load_indicators_cfg()
     matcher = build_matcher()

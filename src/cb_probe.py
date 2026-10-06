@@ -911,7 +911,8 @@ class FfConsensus(CbSource):
 
     def _load(self):
         if "pq" not in self._cache:
-            self._cache["pq"] = pd.read_parquet(DATA_DIR / "economic_calendar_ff.parquet")
+            from .ff_corrections import read_ff_parquet
+            self._cache["pq"] = read_ff_parquet(DATA_DIR / "economic_calendar_ff.parquet")
             rng = json.loads((DATA_DIR / "archive" / "ff_calendar_range.json").read_text())
             self._cache["rng"] = pd.DataFrame(rng)
         return self._cache["pq"], self._cache["rng"]

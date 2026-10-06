@@ -318,3 +318,47 @@ def test_refresh_dispatch_non_204_is_reported_as_not_triggered(server):
 
     assert r.status_code == 200
     assert r.json()["refresh_triggered"] is False
+
+
+# --- CORRECTION (fix/jb-duplicate-forecast-guard, 2026-10) ---------------------
+
+BEA_URL_NOTE = "BEA release: core PCE +0.2% m/m — https://www.bea.gov/news/2026/x"
+
+
+def test_correction_accepted_on_a_row_with_a_real_actual(server):
+    """A CORRECTION skips the 'still actionable' check: usd_ppi holds 3.2."""
+    with patch.object(endpoint.requests, "get") as mget, patch.object(endpoint.requests, "put") as mput, \
+         patch.object(endpoint.requests, "post") as mpost:
+        mget.return_value.status_code = 404
+        mput.return_value.status_code = 201
+        mput.return_value.json.return_value = {"commit": {"html_url": "https://github.com/x/y/commit/c"}}
+        mpost.return_value.status_code = 204
+        r = _post(server, _payload(canonical_id="usd_ppi", datetime_utc="2026-07-02T12:30:00",
+                                   indicator_key="ppi_yoy", actual=3.0, state_resolved="CORRECTION",
+                                   note=BEA_URL_NOTE))
+    assert r.status_code == 200
+    committed = json.loads(base64.b64decode(mput.call_args.kwargs["json"]["content"]))
+    assert committed[-1]["state_resolved"] == "CORRECTION" and committed[-1]["actual"] == 3.0
+    assert committed[-1]["note"] == BEA_URL_NOTE
+
+
+@pytest.mark.parametrize("note", ["", "per BEA", "www.bea.gov/news"])
+def test_correction_without_source_url_rejected(server, note):
+    with patch.object(endpoint.requests, "put") as mput:
+        r = _post(server, _payload(canonical_id="usd_ppi", datetime_utc="2026-07-02T12:30:00",
+                                   actual=3.0, state_resolved="CORRECTION", note=note))
+    assert r.status_code == 400 and "URL" in r.json()["error"]
+    mput.assert_not_called()
+
+
+def test_correction_for_a_row_not_in_the_parquet_rejected(server):
+    with patch.object(endpoint.requests, "put") as mput:
+        r = _post(server, _payload(canonical_id="usd_ppi", datetime_utc="2026-07-02T11:30:00",
+                                   actual=3.0, state_resolved="CORRECTION", note=BEA_URL_NOTE))
+    assert r.status_code == 404
+    mput.assert_not_called()
+
+
+def test_correction_needs_the_token_too(server):
+    r = _post(server, _payload(state_resolved="CORRECTION", note=BEA_URL_NOTE), token="nope")
+    assert r.status_code == 401

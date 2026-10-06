@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src import history_compute as hc  # noqa: E402
+from src.ff_corrections import read_ff_parquet  # noqa: E402
 from src.data_integrity import build_quarantine_proposal, detect_ghost_rows, detect_implausible_zeros  # noqa: E402
 from src.economic_compute import compute_indicator_score  # noqa: E402
 from src.ff_scoring import CCY2COUNTRY, build_matcher  # noqa: E402
@@ -116,7 +117,7 @@ def part_2_2(full_frame: pd.DataFrame, ind_cfg: dict, quarterly_keys: list[tuple
 
 
 def main() -> int:
-    ff = pd.read_parquet(FF_PARQUET)
+    ff = read_ff_parquet(FF_PARQUET, overrides_path=hc.MANUAL_ACTUALS_OVERRIDES)
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
     ind_cfg = hc.load_indicators_cfg()
     matcher = build_matcher()

@@ -51,6 +51,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
@@ -66,7 +67,12 @@ ZERO_POSSIBLE_YAML = ROOT / "config" / "ff_zero_possible.yaml"
 
 REQUIRED_FIELDS = ("canonical_id", "currency", "indicator_key", "datetime_utc",
                    "actual", "state_resolved")
-VALID_STATES = ("MISSING", "ZERO_CONFIRM")
+VALID_STATES = ("MISSING", "ZERO_CONFIRM", "CORRECTION")
+# CORRECTION (2026-10): a documented official value that replaces a WRONG feed
+# print, whatever the row holds (src/ff_corrections.py applies it when the
+# parquet is read). The row must exist and `note` must cite the official source.
+CORRECTION = "CORRECTION"
+SOURCE_URL_RE = re.compile(r"https?://\S+")
 NOTE_MAX = 500
 ENTERED_BY_MAX = 80
 REFRESH_WORKFLOW_FILE = "econ-refresh.yml"
@@ -125,7 +131,11 @@ class handler(BaseHTTPRequestHandler):
 
         entry = self._validate(payload)
         self._reject_impossible_zero(entry["canonical_id"], entry["actual"])
-        self._sanity_check_still_actionable(entry["canonical_id"], entry["datetime_utc"])
+        if entry["state_resolved"] == CORRECTION:
+            if self._find_row(entry["canonical_id"], entry["datetime_utc"]) is None:
+                raise _HttpError(503, "FF parquet unavailable — cannot verify the row a CORRECTION targets")
+        else:
+            self._sanity_check_still_actionable(entry["canonical_id"], entry["datetime_utc"])
         gh_token, repo, branch = self._github_config()
         commit_url = self._commit_override(gh_token, repo, branch, entry)
         refresh_triggered = self._trigger_refresh(gh_token, repo, branch)
@@ -145,7 +155,9 @@ class handler(BaseHTTPRequestHandler):
         except (TypeError, ValueError):
             raise _HttpError(400, "actual must be a number")
         if payload["state_resolved"] not in VALID_STATES:
-            raise _HttpError(400, "state_resolved must be MISSING or ZERO_CONFIRM")
+            raise _HttpError(400, "state_resolved must be MISSING, ZERO_CONFIRM or CORRECTION")
+        if payload["state_resolved"] == CORRECTION and not SOURCE_URL_RE.search(str(payload.get("note") or "")):
+            raise _HttpError(400, "a CORRECTION needs a note with the http(s) URL of the official source")
         try:
             dt_norm = str(pd.Timestamp(payload["datetime_utc"]))
         except Exception:
@@ -179,16 +191,24 @@ class handler(BaseHTTPRequestHandler):
         an immediate error instead of a silently-ignored commit, for the
         common cases: typo'd id/time, or the row already resolved with a
         real (non-zero) actual since the panel was last rendered."""
-        if not FF_PARQUET.exists():
+        match = self._find_row(canonical_id, datetime_utc)
+        if match is None:
             return
+        row_actual = match.iloc[0]["actual"]
+        if pd.notna(row_actual) and row_actual != 0.0:
+            raise _HttpError(409, "this row already has a real actual — refusing to overwrite")
+
+    def _find_row(self, canonical_id: str, datetime_utc: str):
+        """The parquet row(s) of that key; 404 when there are none. None when
+        the parquet is absent (best-effort, like the check above)."""
+        if not FF_PARQUET.exists():
+            return None
         ff = pd.read_parquet(FF_PARQUET, columns=["canonical_id", "datetime_utc", "actual"])
         dt = pd.Timestamp(datetime_utc)
         match = ff[(ff["canonical_id"] == canonical_id) & (ff["datetime_utc"] == dt)]
         if match.empty:
             raise _HttpError(404, "no matching row in the FF parquet for that canonical_id/datetime_utc")
-        row_actual = match.iloc[0]["actual"]
-        if pd.notna(row_actual) and row_actual != 0.0:
-            raise _HttpError(409, "this row already has a real actual — refusing to overwrite")
+        return match
 
     # ---- GitHub Contents API commit ------------------------------------------
 

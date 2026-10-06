@@ -1516,5 +1516,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-06T13:12:56+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_core_pce_price_index",
+  "currency": "USD",
+  "indicator_key": "core_pce",
+  "datetime_utc": "2026-09-30 12:30:00",
+  "actual": 0.2,
+  "state_resolved": "CORRECTION",
+  "entered_by": "audit-1004",
+  "entered_at": "2026-10-06T13:47:11+00:00",
+  "note": "BEA Personal Income and Outlays, August 2026: core PCE +0.2% m/m \u2014 https://www.bea.gov/news/2026/personal-income-and-outlays-august-2026"
  }
 ]

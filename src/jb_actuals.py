@@ -118,6 +118,52 @@ def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
 # Payload cleaning (pure) — validated empirically 2026-07-12
 # ---------------------------------------------------------------------------
 
+FF_FORECAST_TOL = 1e-6           # JB forecast == FF consensus (both normalized)
+
+
+def _ff_forecasts_by_key(schedule: Optional[pd.DataFrame]) -> dict[tuple, float]:
+    """{(canonical_id, UTC date): FF consensus} from the parquet rows FF itself
+    delivered a forecast for. A key with two different FF forecasts is left
+    out (ambiguous → the guard does not apply)."""
+    if schedule is None or schedule.empty:
+        return {}
+    s = ensure_provenance_columns(schedule)
+    s = s[(s["forecast_origin"] == "ff") & s["forecast"].notna()]
+    if s.empty:
+        return {}
+    dates = pd.to_datetime(s["datetime_utc"]).dt.date
+    out: dict[tuple, float] = {}
+    for key, fc in s.groupby([s["canonical_id"], dates], sort=False)["forecast"]:
+        vals = fc.unique()
+        if len(vals) == 1:
+            out[key] = float(vals[0])
+    return out
+
+
+def _forecast_guard(real: pd.DataFrame, ff_fc: Optional[float],
+                    key: tuple) -> tuple[pd.DataFrame, bool]:
+    """(rows to pick from, rejected) for one group's REAL-actual rows — see the
+    forecast guard in clean_jblanked_actuals' docstring."""
+    if ff_fc is None or not len(real):
+        return real, False
+    matches = (real["forecast"] - ff_fc).abs() <= FF_FORECAST_TOL   # NaN → False
+    if len(real) == 1:
+        if matches.iloc[0]:
+            return real, False
+        log.warning("JB pull: forecast mismatch %s %s — JB forecast %s vs FF %s; "
+                    "actual %s not ingested.", key[0], key[1], real["forecast"].iloc[0],
+                    ff_fc, real["actual"].iloc[0])
+        return real, True
+    if real["actual"].nunique() == 1:
+        return real, False
+    kept = real[matches]
+    if kept["actual"].nunique() == 1:
+        return kept, False
+    log.warning("JB pull: conflicting duplicates %s %s — actuals %s with forecasts %s "
+                "vs FF %s; no actual ingested.", key[0], key[1], list(real["actual"]),
+                list(real["forecast"]), ff_fc)
+    return real, True
+
 def clean_jblanked_actuals(jb: pd.DataFrame,
                            schedule: Optional[pd.DataFrame] = None, *,
                            preserve_zero_actuals: bool = False) -> pd.DataFrame:
@@ -151,19 +197,33 @@ def clean_jblanked_actuals(jb: pd.DataFrame,
          the parquet for the same (canonical_id, date) — the faireconomy hour
          is the correct UTC one, so at merge time the actual lands ON the
          existing schedule row instead of inserting a ±1h phantom sibling.
+
+    Forecast guard (fix/jb-duplicate-forecast-guard, 2026-10): the payload can
+    also carry a NEIGHBOUR's numbers under an event's name — on 2026-09-30 the
+    12:30 "Core PCE Price Index m/m" copy held Personal Spending's 0.9/0.8,
+    and "last real row" picked it over the real 0.2/0.3. When `schedule` holds
+    an FF consensus for the (canonical_id, date) key (forecast_origin "ff",
+    non-NaN, one distinct value), the JB forecast must match it (FF_FORECAST_TOL):
+      a. several real rows with DIFFERENT actuals → keep the matching rows; one
+         value left → that one, otherwise no actual (NaN) + WARNING;
+      b. a single real row whose forecast differs → no actual (NaN) + WARNING;
+      c. identical actuals, or no FF consensus for the key → unchanged.
+    A nulled group lands as a schedule row (MISSING in the manual panel).
     """
     if jb is None or jb.empty:
         return pd.DataFrame(columns=CANON_COLUMNS)
     df = ensure_provenance_columns(jb.copy())
     df["datetime_utc"] = pd.to_datetime(df["datetime_utc"])
     df["_date"] = df["datetime_utc"].dt.date
+    ff_forecast = _ff_forecasts_by_key(schedule)
 
     picked: list[pd.Series] = []
-    for _key, g in df.groupby(["canonical_id", "_date"], sort=False):
+    for key, g in df.groupby(["canonical_id", "_date"], sort=False):
         real = g[g["actual"].notna() & (g["actual"] != 0.0)]
+        real, rejected = _forecast_guard(real, ff_forecast.get(key), key)
         pick = (real if len(real) else g).sort_values("datetime_utc").iloc[-1].copy()
-        if not len(real) and not preserve_zero_actuals:
-            pick["actual"] = float("nan")   # placeholder 0.0 → schedule row
+        if rejected or (not len(real) and not preserve_zero_actuals):
+            pick["actual"] = float("nan")   # placeholder 0.0 / rejected print → schedule row
         picked.append(pick)
     out = pd.DataFrame(picked)
 

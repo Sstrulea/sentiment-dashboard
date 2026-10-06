@@ -98,6 +98,7 @@ import pandas as pd
 from .economic_compute import effective_frequency
 from .economic_fetch import CompiledMatcher
 from .econ_calendar_ff import JB_NOT_LOADED, ensure_provenance_columns
+from .ff_corrections import CORRECTION
 from .ff_scoring import (CCY2COUNTRY, SCORING_COLUMNS, build_matcher,
                          effective_consensus, load_can_be_zero, load_configs,
                          load_zero_possible, zero_verdicts)
@@ -453,6 +454,8 @@ def apply_overrides(ff: pd.DataFrame, overrides: list[dict], *, now_utc: pd.Time
     manual_rows: list[dict] = []
     resolved_keys: set[tuple] = set()
     for entry in overrides:
+        if entry.get("state_resolved") == CORRECTION:
+            continue   # applied when the parquet is read (ff_corrections), not here
         key = _key(entry["canonical_id"], entry["datetime_utc"])
         row = by_key.get(key)
         if row is None:

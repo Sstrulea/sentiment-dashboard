@@ -23,6 +23,7 @@ from .cb_calendar import load_calendars
 from .cb_compute.decisions import SeriesView, compute_all, ff_rows_from_frame
 from .cb_sources.calendar import PARSERS, CalendarPages, check_meetings
 from .cb_sources import holidays as hol
+from .ff_corrections import read_ff_parquet
 from .cb_sources.fed_sep import FedSepSource, parse_sep
 
 log = logging.getLogger("cb_datasets")
@@ -105,7 +106,7 @@ def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: d
     calendars = calendars or load_calendars()
     meetings = meetings or load_meetings(paths.meetings)
     view = SeriesView(list(load_official_store(paths).values()))
-    ff = pd.read_parquet(ff_path or FF_PARQUET)
+    ff = read_ff_parquet(ff_path or FF_PARQUET)
     rows, unresolved = compute_all(banks, meetings, calendars, view, ff_by_bank(banks, ff), today,
                                    load_manual_decisions(paths.manual / "decisions.yaml"), n, statement_rates(paths))
     keep = {(r["currency"], r["meeting_date"]): r for r in cs.read_table_file(paths.decisions)}
