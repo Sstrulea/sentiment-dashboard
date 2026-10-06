@@ -617,6 +617,15 @@ def bias_label(score: float, thresholds: dict) -> str:
     return "Bullish" if direction_bull else "Bearish"
 
 
+def active_thresholds(cfg: dict) -> dict:
+    """The bias thresholds in force: `bias_thresholds_scaled` under rule N-c
+    (re-derived p55/p90 of the new |score|), else `bias_thresholds` (v1)."""
+    scaled = cfg.get("bias_thresholds_scaled")
+    if scaled and (cfg.get("factor_scales") or cfg.get("factor_scales_single")):
+        return scaled
+    return cfg.get("bias_thresholds", {}) or {}
+
+
 def _augmented_index(card: dict | None, sentiment_value, sentiment_weight: float,
                      scale: float) -> float:
     """Currency index × scale with the SENTIMENT factor folded into the weighted
@@ -886,7 +895,8 @@ def compute_instrument(
     score bit-identical to the no-trend baseline.
     """
     pair_divisor = float(instruments_cfg.get("pair_divisor", 2))
-    thresholds = instruments_cfg.get("bias_thresholds", {}) or {}
+    thresholds_v1 = instruments_cfg.get("bias_thresholds", {}) or {}
+    thresholds = active_thresholds(instruments_cfg)
     scale = float(instruments_cfg.get("scale", 5))
     sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
     trend_weight = float(instruments_cfg.get("trend_weight", 0.5))
@@ -1021,6 +1031,7 @@ def compute_instrument(
     cat_factor = None
     mon_override = None      # (contribution, signal) of the monetary row
     factor_inputs = None
+    macro_score_v1 = macro_score
     if itype == "single" and single_scales:
         pres = _present_categories(base_card)
         inputs = {}
@@ -1149,6 +1160,11 @@ def compute_instrument(
     }
     if factor_inputs is not None:
         out["factor_inputs"] = factor_inputs        # rule N-c: value, σ, value in σ per factor
+        # v1 shadow (not displayed; kept 26 weeks after the switch, until 2027-04):
+        # the same instrument on the v1 formula and the v1 thresholds.
+        score_v1 = _fold_trend(macro_score_v1, macro_weight, trend_value, trend_weight, scale)
+        out["score_v1"] = float(score_v1)
+        out["bias_v1"] = bias_label(score_v1, thresholds_v1)
         if out["monetary_pair"] is not None and "monetary" in factor_inputs:
             out["monetary_pair"]["signal"] = factor_inputs["monetary"]["value"]
     return out

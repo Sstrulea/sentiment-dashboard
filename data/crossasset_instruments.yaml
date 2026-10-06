@@ -52,6 +52,15 @@ factor_clip: 3
 # Continuous rate signal clip(z/unit, ±cap): unit 0.87 = p60 of |z| over
 # 2005-2026, cap 2 ≈ p87.5 — the indicator z rule without the steps.
 rate_signal: { unit: 0.87, cap: 2 }
+# Rule N-c thresholds (feat/factor-scales, 2026-10-06), used only together with
+# factor_scales: p55/p90 of |score| on the new scale, cross-asset board (6
+# indices + 2 metals), last 53 weeks of the reconstruction (2025-10-03 ..
+# 2026-10-02), scripts/measure/factor_scales.py report. Re-derived because the
+# score's scale changed by construction — the structural jump the GUARDRAIL
+# above asks for; `bias_thresholds` stays the v1 set (score_v1 / bias_v1).
+bias_thresholds_scaled:
+  mild: 1.70    # p55 of |score|, rule N-c, 53-week window (1.702)
+  very: 3.68    # p90 of |score|, rule N-c, 53-week window (3.676)
 bias_thresholds:
   mild: 1.50    # §Q1 (2026-07-28): p55 of |score|, post-D, 53-week window
   very: 3.33    # §Q1 (2026-07-28): p90 of |score|, post-D, 53-week window

@@ -73,6 +73,16 @@ rate_signal: { unit: 0.87, cap: 2 }   # clip(z/0.87, ±2): 0.87 = p60 of |z| 200
 # distribution (like the quarantine-commit discontinuity), not merely "the
 # split has drifted from 55/10". A gradual decline does not qualify; if you
 # are re-deriving without a jump to point to, stop and ask first.
+# Rule N-c thresholds (feat/factor-scales, 2026-10-06), used only together with
+# factor_scales: p55/p90 of |score| on the new scale, FX board (28 pairs + US
+# Dollar), last 53 weeks of the reconstruction (2025-10-03 .. 2026-10-02),
+# scripts/measure/factor_scales.py report. Re-derived because the score's scale
+# changed by construction (σ-normalised factors, continuous rates) — the
+# structural jump the GUARDRAIL below asks for; `bias_thresholds` stays the v1
+# set (score_v1 / bias_v1).
+bias_thresholds_scaled:
+  very: 1.99    # p90 of |score|, rule N-c, 53-week window (1.993)
+  mild: 0.90    # p55 of |score|, rule N-c, 53-week window (0.896)
 bias_thresholds:
   very: 2.41    # §Q1 (2026-07-28): p90 of |score_precise|, post-D, 53-week window
   mild: 1.12    # §Q1 (2026-07-28): p55 of |score_precise|, post-D, 53-week window

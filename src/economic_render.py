@@ -27,7 +27,7 @@ import pandas as pd
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.economic_compute import build_payload, bias_label
+from src.economic_compute import active_thresholds, build_payload, bias_label
 from src.ff_corrections import read_ff_parquet
 from src.cot_score import (
     load_currencies_history,
@@ -475,7 +475,7 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
         "indicator_direction_overrides": direction_overrides,
         "categories_display": instruments_cfg.get("categories_display", []),
         "table_layout": table_layout,
-        "bias_thresholds": instruments_cfg.get("bias_thresholds", {}),
+        "bias_thresholds": active_thresholds(instruments_cfg),
         "scale": instruments_cfg.get("scale"),
         "pair_divisor": instruments_cfg.get("pair_divisor"),
         # /strength.html: single source of truth for the pct<->index relationship
@@ -667,7 +667,7 @@ def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: d
     (pair thresholds, bias_label — the same function /economic reads).
     `strength_pairs` feeds the divergence matrix. `index`, N (`coverage`) and the
     own monetary state stay informative. /economic is untouched.""" 
-    thresholds = instruments_cfg.get("bias_thresholds", {})
+    thresholds = active_thresholds(instruments_cfg)
     agg = strength_from_pairs(payload)
     for ccy, card in payload.get("currencies", {}).items():
         score = float(agg["scores"].get(ccy, 0.0))
@@ -1236,7 +1236,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         "factor_labels": dict(CROSSASSET_FACTOR_LABELS),
         "real_yield": real_yield_meta,
         "net_liquidity": liquidity_meta,
-        "bias_thresholds": cfg.get("bias_thresholds", {}),
+        "bias_thresholds": (cfg.get("bias_thresholds_scaled") if cfg.get("factor_scales")
+                            and cfg.get("bias_thresholds_scaled") else cfg.get("bias_thresholds", {})),
         "scale": cfg.get("scale"),
     }
 

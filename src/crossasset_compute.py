@@ -502,14 +502,25 @@ def compute_crossasset_scores(
             "realyield": (ry_sig, ry_stale, ry_label),
             "liquidity": (liq_raw, liq_stale, liq_label),
         }
-        return {
-            sym: compute_instrument_score_scaled(
-                sym, cfg, categories_by_ccy, scale, thresholds,
+        thresholds_v2 = config.get("bias_thresholds_scaled") or thresholds
+        out = {}
+        for sym, cfg in instruments.items():
+            r = compute_instrument_score_scaled(
+                sym, cfg, categories_by_ccy, scale, thresholds_v2,
                 factor_scales.get(cfg.get("type"), {}) or {}, rate_sig, clip, globals_by_kind,
                 sentiment_value=sentiment_by_symbol.get(sym),
                 trend_value=trend_by_symbol.get(sym))
-            for sym, cfg in instruments.items()
-        }
+            # v1 shadow (not displayed; kept 26 weeks after the switch, until 2027-04)
+            v1 = compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw, scale, thresholds,
+                                          realyield_label=ry_label, realyield_stale=ry_stale,
+                                          liquidity_raw=liq_raw, liquidity_label=liq_label,
+                                          liquidity_stale=liq_stale,
+                                          sentiment_value=sentiment_by_symbol.get(sym),
+                                          trend_value=trend_by_symbol.get(sym))
+            r["score_v1"] = v1["score_precise"]
+            r["bias_v1"] = v1["bias_label"]
+            out[sym] = r
+        return out
 
     return {
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,

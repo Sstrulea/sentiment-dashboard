@@ -22,9 +22,9 @@ Per board it records the factor INPUTS, signed for the instrument:
              DFII10); sentiment = COT / P-C cell
 sigma = std (ddof=1) of each input over every instrument-week of the window.
 
-Influence of a factor = mean over instrument-weeks of |contribution| divided by
-the sum of those means over the board's factors (macro = growth + inflation +
-labour), for the v1 formula (production) and the v2 rule (N-c).
+Influence of a factor = mean over instrument-weeks of |contribution_f| /
+Σ|contributions| (macro = growth + inflation + labour), for the v1 formula
+(production) and the v2 rule (N-c).
 
 Usage:
   python scripts/measure/factor_scales.py validate [--indicators PATH]
@@ -354,16 +354,21 @@ def sigmas(df: pd.DataFrame) -> dict:
 
 
 def influence(df: pd.DataFrame, inp: Inputs, version: str, sigma=None) -> dict:
+    """Mean over instrument-weeks of |contribution_f| / Σ|contributions| (a week
+    with an all-zero score is skipped); macro = growth + inflation + labour."""
     out = {}
     for board in BOARDS:
         sub = df[df["board"] == board]
-        acc = {f: 0.0 for f in FACTORS[board]}
+        acc = {f: [] for f in FACTORS[board]}
         for _, r in sub.iterrows():
             row = {"board": board, "sign": r["sign"], "v1": r["v1"], "v2": r["v2"], "w": r["w"]}
-            for f, c in contributions(row, inp, version, sigma).items():
-                acc[f] += abs(c)
-        tot = sum(acc.values())
-        share = {f: acc[f] / tot for f in acc}
+            c = contributions(row, inp, version, sigma)
+            tot = sum(abs(x) for x in c.values())
+            if tot == 0:
+                continue
+            for f in acc:
+                acc[f].append(abs(c.get(f, 0.0)) / tot)
+        share = {f: float(np.mean(v)) for f, v in acc.items()}
         rates_key = "monetary" if board in ("fx_pairs", "us_dollar") else "rates"
         out[board] = {"macro": sum(share[f] for f in CATS), "rates": share[rates_key],
                       "sentiment": share["sentiment"], **{f"_{f}": share[f] for f in share}}
@@ -376,10 +381,178 @@ def scores(df: pd.DataFrame, inp: Inputs, version: str, sigma=None) -> pd.Series
                       for _, r in df.iterrows()], index=df.index)
 
 
+# ---------------------------------------------------------------------------
+# Report (thresholds, C3/C4, informative hit rate) — on the cached weeks
+# ---------------------------------------------------------------------------
+
+FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
+# H.10: True = quoted as units of the currency per USD
+FRED_FX = {"EUR": ("DEXUSEU", False), "GBP": ("DEXUSUK", False), "AUD": ("DEXUSAL", False),
+           "NZD": ("DEXUSNZ", False), "JPY": ("DEXJPUS", True), "CAD": ("DEXCAUS", True),
+           "CHF": ("DEXSZUS", True)}
+FRED_OTHER = {"US-DOLLAR": "DTWEXBGS", "SP500": "SP500", "DJIA": "DJIA", "NASDAQ": "NASDAQCOM",
+              "NIKKEI": "NIKKEI225"}
+GROUPS = {"FX": ("fx_pairs", "us_dollar"), "cross": ("index", "metal")}
+
+
+def config_sigmas(inp) -> dict:
+    return {"fx_pairs": inp.inst.get("factor_scales"), "us_dollar": inp.inst.get("factor_scales_single"),
+            "index": (inp.xcfg.get("factor_scales") or {}).get("index"),
+            "metal": (inp.xcfg.get("factor_scales") or {}).get("metal")}
+
+
+def _fred(series: str, cache_dir: Path) -> pd.Series:
+    path = cache_dir / f"fred_{series}.csv"
+    if not path.exists():
+        import requests
+        r = requests.get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}",
+                         headers={"User-Agent": FRED_UA}, timeout=60)
+        r.raise_for_status()
+        path.write_text(r.text)
+    df = pd.read_csv(path)
+    df.columns = ["date", "v"]
+    df["v"] = pd.to_numeric(df["v"], errors="coerce")
+    return df.dropna().set_index(pd.to_datetime(df.dropna()["date"]))["v"]
+
+
+def price_table(symbols: dict, cache_dir: Path) -> dict[str, pd.Series]:
+    """{symbol: daily price}: FRED H.10 crosses for FX, FRED for DXY-proxy and US
+    indices, data/price_history.parquet for the rest."""
+    usd = {c: (1.0 / s if inv else s) for c, (sid, inv) in FRED_FX.items()
+           for s in [_fred(sid, cache_dir)]}
+    out = {}
+    hist = pd.read_parquet(ROOT / "data" / "price_history.parquet")
+    for sym, (kind, base, quote) in symbols.items():
+        if kind == "fx":
+            b = usd.get(base) if base != "USD" else None
+            q = usd.get(quote) if quote != "USD" else None
+            if base == "USD":
+                out[sym] = (1.0 / q).dropna()
+            elif quote == "USD":
+                out[sym] = b
+            else:
+                out[sym] = (b / q).dropna()
+        elif sym in FRED_OTHER:
+            out[sym] = _fred(FRED_OTHER[sym], cache_dir)
+        else:
+            h = hist[hist["symbol"] == sym]
+            out[sym] = pd.Series(h["close"].values, index=pd.to_datetime(h["date"])).sort_index()
+    return out
+
+
+def _at(series: pd.Series, d: pd.Timestamp):
+    s = series[series.index <= d]
+    return None if s.empty else float(s.iloc[-1])
+
+
+def _labels(scores: pd.Series, mild: float, very: float) -> pd.Series:
+    return scores.map(lambda x: bias_label(x, {"mild": mild, "very": very}))
+
+
+def _bucket(lbl: str) -> str:
+    return "Neutral" if lbl == "Neutral" else ("Very" if lbl.startswith("Very") else "Bull/Bear")
+
+
+def _weeks_between_changes(df: pd.DataFrame, col: str) -> float:
+    changes = steps = 0
+    for _, g in df.sort_values("week").groupby("symbol"):
+        lab = list(g[col])
+        steps += len(lab) - 1
+        changes += sum(1 for a, b in zip(lab, lab[1:]) if a != b)
+    return steps / changes if changes else float("inf")
+
+
+def report(inp, cache: Path, out_csv: Path | None, measured_sigma: bool = False) -> dict:
+    d = pickle.load(open(cache, "rb"))
+    df, weeks = d["df"], d["weeks"]
+    sig = sigmas(df) if measured_sigma else config_sigmas(inp)
+    df = df.assign(s1=scores(df, inp, "v1"), s2=scores(df, inp, "v2", sig))
+    last53 = set(weeks[-53:])
+    res: dict = {"window": [str(weeks[0].date()), str(weeks[-1].date()), len(weeks)]}
+    res["sigma_config"] = sig
+    res["influence_v1"] = influence(df, inp, "v1")
+    res["influence_v2"] = influence(df, inp, "v2", sig)
+    thr = {}
+    for grp, boards in GROUPS.items():
+        a = df[df["board"].isin(boards) & df["week"].isin(last53)]["s2"].abs()
+        thr[grp] = {"mild": round(float(a.quantile(.55)), 2), "very": round(float(a.quantile(.90)), 2),
+                    "mild_exact": float(a.quantile(.55)), "very_exact": float(a.quantile(.90))}
+    res["thresholds_v2"] = thr
+    old_thr = {"FX": inp.inst["bias_thresholds"], "cross": inp.xcfg["bias_thresholds"]}
+    grp_of = {b: g for g, bs in GROUPS.items() for b in bs}
+    df["label_v1"] = [bias_label(x, old_thr[grp_of[b]]) for x, b in zip(df["s1"], df["board"])]
+    df["label_v2"] = [bias_label(x, thr[grp_of[b]]) for x, b in zip(df["s2"], df["board"])]
+    # C3 — split on the last 53 weeks, per board and per group
+    c3 = {}
+    for name, boards in [(b, (b,)) for b in BOARDS] + list(GROUPS.items()):
+        sub = df[df["board"].isin(boards) & df["week"].isin(last53)]
+        for v in ("label_v1", "label_v2"):
+            vc = sub[v].map(_bucket).value_counts(normalize=True)
+            c3.setdefault(name, {})[v] = {k: round(100 * float(vc.get(k, 0.0)), 1)
+                                          for k in ("Neutral", "Bull/Bear", "Very")}
+    res["C3"] = c3
+    # C4 — weeks between label changes, each formula with its OWN p55/p90 per
+    # board (FX = pairs + US Dollar, indices, metals) over the whole window
+    c4 = {}
+    for name, boards in (("FX", GROUPS["FX"]), ("index", ("index",)), ("metal", ("metal",))):
+        sub = df[df["board"].isin(boards)].copy()
+        for v in ("s1", "s2"):
+            a = sub[v].abs()
+            m, vy = float(a.quantile(.55)), float(a.quantile(.90))
+            sub["own"] = [bias_label(x, {"mild": m, "very": vy}) for x in sub[v]]
+            c4.setdefault(name, {})[v] = round(_weeks_between_changes(sub, "own"), 2)
+    res["C4"] = c4
+    if out_csv is not None:
+        flat = df[["week", "symbol", "board", "s1", "s2", "label_v1", "label_v2"]].rename(
+            columns={"s1": "score_v1", "s2": "score_v2"})
+        for f in ("growth", "inflation", "labour", "monetary", "rates", "sentiment"):
+            flat[f"in_{f}"] = [r.get(f) for r in df["v2"]]
+        flat.to_csv(out_csv, index=False, float_format="%.6f")
+    res["_df"] = df
+    return res
+
+
+def hit_rates(df: pd.DataFrame, inp, cache_dir: Path) -> dict:
+    """Informative: sign hit rate (non-Neutral labels) and mean weekly Spearman
+    rank correlation of score vs forward return, 1 and 4 weeks, v1 vs v2."""
+    syms = {s: ("fx" if c.get("type") == "fx" else "x", c.get("base"), c.get("quote"))
+            for s, c in inp.inst["instruments"].items()}
+    syms.update({s: ("x", None, None) for s in inp.xcfg["instruments"]})
+    px = price_table(syms, cache_dir)
+    rows = []
+    for (sym, t), _ in df.groupby(["symbol", "week"]).groups.items():
+        s = px.get(sym)
+        if s is None or s.empty:
+            continue
+        p0 = _at(s, t.normalize())
+        for h in (1, 4):
+            p1 = _at(s, (t + pd.Timedelta(days=7 * h)).normalize())
+            if p0 and p1 and (t + pd.Timedelta(days=7 * h)) <= s.index.max():
+                rows.append({"symbol": sym, "week": t, "h": h, "ret": p1 / p0 - 1})
+    r = pd.DataFrame(rows).merge(df[["symbol", "week", "board", "s1", "s2", "label_v1", "label_v2"]],
+                                 on=["symbol", "week"])
+    grp = {"fx_pairs": "FX", "us_dollar": "FX", "index": "index", "metal": "metal"}
+    r["grp"] = r["board"].map(grp)
+    out = {}
+    for (g, h), sub in r.groupby(["grp", "h"]):
+        o = {}
+        for v, lab in (("s1", "label_v1"), ("s2", "label_v2")):
+            nn = sub[sub[lab] != "Neutral"]
+            hit = float((np.sign(nn[v]) == np.sign(nn["ret"])).mean()) if len(nn) else float("nan")
+            rho = sub.groupby("week").apply(lambda w: w[v].rank().corr(w["ret"].rank())
+                                            if len(w) > 2 else np.nan).mean()
+            o[v] = {"hit": round(100 * hit, 1), "n": int(len(nn)), "rank_corr": round(float(rho), 3)}
+        out[f"{g} {h}w"] = o
+    return out
+
+
 def main() -> int:
     logging.basicConfig(level=logging.WARNING, format="%(message)s")
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["validate", "measure"])
+    ap.add_argument("cmd", choices=["validate", "measure", "report"])
+    ap.add_argument("--csv", default=None)
+    ap.add_argument("--hits", action="store_true")
+    ap.add_argument("--measured-sigma", action="store_true", help="σ from the cached weeks, not the config")
     ap.add_argument("--indicators", default=str(er.INDICATORS_YAML))
     ap.add_argument("--now", default=None, help="calendar load instant (default: public as_of)")
     ap.add_argument("--cache", default=str(CACHE))
@@ -388,6 +561,13 @@ def main() -> int:
     inp = Inputs(Path(args.indicators), pd.Timestamp(args.now) if args.now else pub_as_of)
     if args.cmd == "validate":
         return validate(inp)
+    if args.cmd == "report":
+        res = report(inp, Path(args.cache), Path(args.csv) if args.csv else None, args.measured_sigma)
+        df = res.pop("_df")
+        if args.hits:
+            res["hit_rates"] = hit_rates(df, inp, Path(args.cache).parent)
+        print(json.dumps(res, indent=1, default=str))
+        return 0
     last = pub_as_of.normalize() - pd.Timedelta(days=(pub_as_of.weekday() - 4) % 7) + pd.Timedelta(hours=21)
     if last > pub_as_of:
         last -= pd.Timedelta(days=7)

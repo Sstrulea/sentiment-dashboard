@@ -6,3 +6,6 @@ versions:
   - version: "2026.09.24"
     since: 2026-09-24
     changes: "monetary on the 2Y spread (5-observation averaged ends, common dates) + symmetric sentiment fold"
+  - version: "2026.10.06"
+    since: 2026-10-06   # set to the day it reaches main (merge)
+    changes: "factors on the same scale (σ), continuous rates, cross-asset macro on category means, re-derived thresholds"

@@ -124,3 +124,25 @@ def test_without_the_keys_crossasset_is_v1():
     v1 = compute_crossasset_scores(cats, _RY(), _v1(X_CFG), sentiment_by_symbol={"GOLD": 2})
     gold = {f["name"]: f for f in v1["GOLD"]["factors"]}
     assert gold["inflation"]["raw"] == 1 and "value_sigma" not in gold["inflation"]   # the rounded cell
+
+
+def test_fx_v1_shadow_and_scaled_thresholds():
+    inst = {"type": "fx", "base": "EUR", "quote": "USD"}
+    v2 = compute_instrument("EURUSD", inst, CARDS, FX_CFG, sentiment_cells=SENT, pair_monetary=PM)
+    v1 = compute_instrument("EURUSD", inst, CARDS, _v1(FX_CFG), sentiment_cells=SENT, pair_monetary=PM)
+    assert v2["score_v1"] == v1["score"] and v2["bias_v1"] == v1["bias"]
+    from src.economic_compute import bias_label
+    assert v2["bias"] == bias_label(v2["score"], FX_CFG["bias_thresholds_scaled"])
+    assert "score_v1" not in v1
+
+
+def test_crossasset_v1_shadow_and_scaled_thresholds():
+    cats = categories_by_currency({c: {"categories": v["categories"], "breakdown": v["breakdown"]}
+                                   for c, v in CARDS.items()}, X_CFG)
+    v2 = compute_crossasset_scores(cats, _RY(), X_CFG, sentiment_by_symbol={"GOLD": 2})
+    v1 = compute_crossasset_scores({c: v["categories"] for c, v in CARDS.items()}, _RY(), _v1(X_CFG),
+                                   sentiment_by_symbol={"GOLD": 2})
+    from src.economic_compute import bias_label
+    for sym in v2:
+        assert v2[sym]["score_v1"] == v1[sym]["score_precise"] and v2[sym]["bias_v1"] == v1[sym]["bias_label"]
+        assert v2[sym]["bias_label"] == bias_label(v2[sym]["score_precise"], X_CFG["bias_thresholds_scaled"])
