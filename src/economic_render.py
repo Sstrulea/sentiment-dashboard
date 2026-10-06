@@ -522,10 +522,14 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
         if inst.get("type") == "single":
             sign = float(cfg.get("sign", 1))
             bd = _bd(base_ccy)
+            fi = inst.get("factor_inputs") or {}
             for k in TABLE_COLUMN_KEYS:
                 e = bd.get(k)
                 if e is None:
                     cells[k] = {"v": None, "stale": False}
+                elif k == "rate_expectations" and "monetary" in fi:
+                    # rule N-c: the continuous 2Y signal the score uses
+                    cells[k] = {"v": fi["monetary"]["value"] * sign, "stale": bool(e.get("stale"))}
                 else:
                     cells[k] = {"v": int(round(e["score"] * sign)), "stale": bool(e.get("stale"))}
         else:
@@ -534,8 +538,10 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
             for k in TABLE_COLUMN_KEYS:
                 eb, eq = bb.get(k), bq.get(k)
                 if k == "rate_expectations" and mp:
-                    # audit 5B: the pair's monetary cell is its 2y-spread m
-                    cells[k] = {"v": int(mp["m"]), "stale": False, "pair_spread": True}
+                    # audit 5B: the pair's monetary cell is its 2y-spread m;
+                    # rule N-c: the continuous signal the score actually uses
+                    v = mp["signal"] if mp.get("signal") is not None else int(mp["m"])
+                    cells[k] = {"v": v, "stale": False, "pair_spread": True}
                     continue
                 if eb is None and eq is None:
                     cells[k] = {"v": None, "stale": False}
