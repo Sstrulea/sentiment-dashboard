@@ -412,7 +412,10 @@ def test_a_disagreeing_ff_row_shows_up_as_a_conflict_in_the_report_and_in_status
 def test_policy_diff_against_carry(tmp_path):
     paths = stage_paths(tmp_path)
     ds.run_decisions(paths, TODAY, ff_path=FIX / "decisions_ff_cut.parquet")
-    diff = {d["currency"]: d for d in ds.policy_diff(ds.load_decisions(paths))}
+    # the Carry yaml as committed on TODAY (c8500e15) — the live data/policy_rates.yaml
+    # moves on with every new decision, this fixture's decisions do not
+    diff = {d["currency"]: d for d in ds.policy_diff(ds.load_decisions(paths),
+                                                     FIX / "policy_rates_2026-09-20.yaml")}
     assert set(diff) == set(BANKS) and all(d["diff_bp"] == 0 for d in diff.values()), diff
     yml = tmp_path / "carry.yaml"
     yml.write_text("rates:\n  USD: {rate_pct: 3.625}\n  JPY: {rate_pct: 1.00}\n  CHF: {rate_pct: null}\n")
