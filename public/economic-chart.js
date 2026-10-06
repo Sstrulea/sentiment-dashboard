@@ -44,9 +44,14 @@
     const s = n.toFixed(dp === undefined ? 2 : dp);
     return (n > 0 ? "+" : "") + s;
   }
+  // A cell shows the value used in the score: integers as-is, a continuous
+  // value (rule N-c rate signal) with one decimal.
   function fmtScoreCell(v) {
     if (v === null || v === undefined) return "—";
-    return (v > 0 ? "+" : "") + v;
+    const n = Number(v);
+    if (Number.isInteger(n)) return (n > 0 ? "+" : "") + n;
+    const t = n.toFixed(1);
+    return t === "-0.0" || t === "0.0" ? "0.0" : (n > 0 ? "+" : "") + t;
   }
   function fmtScoreInt(v) {
     if (v === null || v === undefined || Number.isNaN(v)) return "—";
@@ -1201,6 +1206,13 @@
   function caFactor(inst, name) {
     return (inst.factors || []).find(f => f.name === name) || null;
   }
+  // Rule N-c: the factor's input, the same input in σ units (÷σ, clipped ±3)
+  // and the σ itself — the contribution next to it is weight × that ÷ Σweight × scale.
+  function caScaleTxt(f) {
+    if (!f || !f.present || f.value_sigma === null || f.value_sigma === undefined) return "";
+    return ' <span class="muted">· value ' + fmtSigned(f.value, 2) + ' · in σ ' +
+      fmtSigned(f.value_sigma, 2) + (f.sigma ? ' (σ ' + Number(f.sigma).toFixed(3) + ')' : '') + '</span>';
+  }
 
   // Sub-column cell = the PER-ASSET signed score (home-ccy raw × category sign),
   // so blue = bullish-for-this-asset, red = bearish. Sign is applied once in the
@@ -1420,7 +1432,7 @@
     const nTxt = (group.key === "rates" || n === null) ? "" : ' <span class="muted">· N ' + n + '</span>';
     const head =
       '<div class="econ-cat-head">' + group.label +
-      ' <span class="econ-cat-sub ' + cls + '">contrib ' + contrib + "</span>" + nTxt + signTxt + "</div>";
+      ' <span class="econ-cat-sub ' + cls + '">contrib ' + contrib + "</span>" + nTxt + signTxt + caScaleTxt(f) + "</div>";
 
     let table, note = "";
     if (group.key === "rates") {
@@ -1490,7 +1502,7 @@
     }
     const head = '<div class="econ-cat-head">Sentiment ' +
       '<span class="econ-cat-sub ' + cls + '">contrib ' + contrib + '</span>' +
-      ' <span class="muted">· weight ' + Number(f.weight).toFixed(1) + '</span></div>';
+      ' <span class="muted">· weight ' + Number(f.weight).toFixed(1) + '</span>' + caScaleTxt(f) + '</div>';
     const table =
       '<thead><tr><th>Source</th><th>Cell</th><th>Sign</th><th>Weight</th><th>Contribution</th></tr></thead>' +
       '<tbody><tr>' +
@@ -1524,7 +1536,8 @@
       '<span class="pill ' + biasClass(inst.bias_label) + '">' + inst.bias_label + '</span> ' +
       '<span class="modal-score">Score ' + fmtSigned(inst.score_precise, 2) + '</span>' +
       '<span class="modal-formula">' + inst.type + ' · weighted mean over ' + inst.coverage +
-      ' present factor(s) × scale</span></div>' +
+      ((inst.factors || []).some(f => f.value_sigma !== null && f.value_sigma !== undefined) ? ' present factor(s), each ÷σ (clip ±3), × scale' : ' present factor(s) × scale') +
+      '</span></div>' +
       '</header>' +
       '<p class="muted econ-modal-note">Each Score is the per-asset directional score for ' +
       (inst.display || inst.symbol) + ' (' + inst.home_ccy +

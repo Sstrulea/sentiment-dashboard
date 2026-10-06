@@ -40,7 +40,8 @@ from src.sentiment_compute import compute_pc_metrics, pc_index_score
 from src.rate_compute import compute_pair_spread_scores, compute_rate_scores
 from src.realyield_compute import compute_realyield_score
 from src.liquidity_compute import compute_liquidity_score
-from src.crossasset_compute import compute_crossasset_scores, LIQUIDITY_SERIES_LABELS
+from src.crossasset_compute import (categories_by_currency, compute_crossasset_scores,
+                                     LIQUIDITY_SERIES_LABELS)
 from src.trend_score import score_all as trend_score_all
 from src.static_assets import copy_static_assets
 from src.price_fetch import SYMBOLS_YAML as PRICE_SYMBOLS_YAML, load_symbol_map as _load_price_symbol_map
@@ -1095,10 +1096,7 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
     except FileNotFoundError:
         return {}
 
-    categories_by_ccy = {
-        ccy: card.get("categories", {})
-        for ccy, card in payload.get("currencies", {}).items()
-    }
+    categories_by_ccy = categories_by_currency(payload.get("currencies", {}), cfg)
 
     real_yield_score = None
     real_yield_meta = {"present": False, "series": "DFII10"}
