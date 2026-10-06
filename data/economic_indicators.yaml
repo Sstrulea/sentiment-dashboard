@@ -481,11 +481,14 @@ indicators:
     weight: 1.0
     currencies: [JPY]
     frequency: monthly
-  gdp_price_index:                     # JPY Prelim y/y + USD Advance q/q (flash-scored)
+  # DISPLAY-ONLY since 2026-10 (feat/factor-scales, part C): the GDP deflator
+  # duplicates the monthly inflation prints already in the score — same
+  # `inflation_display` isolation as median_cpi_yoy (shown, never scored).
+  gdp_price_index:                     # JPY Prelim y/y + USD Advance q/q (flash)
     pillar: inflation
-    category: inflation
+    category: inflation_display
     direction: 1
-    weight: 1.0
+    weight: 0.0
     currencies: [USD, JPY]
     frequency: quarterly
   unit_labor_costs_qoq:
