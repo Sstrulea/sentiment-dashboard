@@ -507,10 +507,41 @@
   // category, in place of the previous pass's separate <div class="econ-
   // cat-head">+<table> per category. Keeps the same content (label,
   // score_cell, N) — see style.css for the row's look.
+  // v3 header: score_precise (2 dp) · its value in σ (score_precise / σ(currency,
+  // category)) · N — e.g. "−0.43 · −1.44σ · N7"; null without card.v3 (v2 payload).
+  const tminus = (t) => String(t).replace(/^-/, "\u2212").replace(/ -/g, " \u2212");
+  function catSigmaText(card, catKey) {
+    const sub = (card.categories || {})[catKey];
+    const ins = card.v3 && card.v3.in_sigma;
+    if (!sub || !ins) return null;
+    const v = ins[catKey];
+    return tminus(fmtSigned(sub.score_precise, 2)) +
+      (v === null || v === undefined ? "" : " · " + tminus(fmtSigned(v, 2)) + "σ") + " · N" + (sub.coverage || 0);
+  }
+  function macroSigmaText(card) {
+    const m = card.v3 && card.v3.blocks ? card.v3.blocks.macro : undefined;
+    return (m === null || m === undefined) ? null : "Macro " + tminus(fmtSigned(m, 2)) + "σ";
+  }
+  // The drilldown's groups: the macro categories (TABLE_LAYOUT order), then any
+  // other category present — except "rates" (the policy rate feeds Carry, which
+  // does not enter /strength; it stays on /economic).
+  function drilldownCats(card) {
+    const breakdown = card.breakdown || {};
+    const cats = tableLayout().map(g => g.category);
+    Object.keys(breakdown).forEach(k => {
+      const c = indMeta(k).category;
+      if (c && cats.indexOf(c) === -1) cats.push(c);
+    });
+    return cats.filter(c => c !== "rates");
+  }
+
   function categoryHeaderRowHtml(catKey, card) {
     const sub = (card.categories || {})[catKey];
+    const sigTxt = catSigmaText(card, catKey);
     let subHtml;
-    if (sub) {
+    if (sub && sigTxt) {
+      subHtml = '<span class="econ-cat-sub ' + cellClass(Math.round(sub.score_precise)) + '">' + sigTxt + '</span>';
+    } else if (sub) {
       subHtml = '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' +
         fmtScoreCell(sub.score_cell) + '</span>' +
         '<span class="muted"> &middot; N' + (sub.coverage || 0) + '</span>';
@@ -531,11 +562,7 @@
   // regression test that guards this at the scoring layer).
   function drilldownGroupsHtml(card, ccy) {
     const breakdown = card.breakdown || {};
-    const cats = tableLayout().map(g => g.category);
-    Object.keys(breakdown).forEach(k => {
-      const c = indMeta(k).category;
-      if (c && cats.indexOf(c) === -1) cats.push(c);
-    });
+    const cats = drilldownCats(card);
 
     let rows = "";
     cats.forEach(catKey => {
@@ -548,8 +575,10 @@
     });
 
     if (!rows) return '<p class="muted">No indicators within the lookback window.</p>';
+    const macroTxt = macroSigmaText(card);
 
     return (
+      (macroTxt ? '<p class="strength-dd-macro" title="Mean of the category values in σ, / σ_macro">' + macroTxt + '</p>' : '') +
       phoneDrilldownHtml(card, ccy, cats) +
       '<div class="econ-ind-scroll strength-dd-scroll desk-only"><table class="econ-ind-table">' +
       DRILLDOWN_COLGROUP +
@@ -597,8 +626,10 @@
       if (!keys.length) return;
       keys.sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
       const sub = (card.categories || {})[catKey];
+      const sigTxt = catSigmaText(card, catKey);
       html += '<div class="sdd-head"><span class="sdd-cat">' + catLabel(catKey) + "</span>" +
-        (sub ? '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' + fmtScoreCell(sub.score_cell) + '</span><span class="muted">N ' + (sub.coverage || 0) + "</span>"
+        (sub && sigTxt ? '<span class="econ-cat-sub ' + cellClass(Math.round(sub.score_precise)) + '">' + sigTxt + "</span>"
+         : sub ? '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' + fmtScoreCell(sub.score_cell) + '</span><span class="muted">N ' + (sub.coverage || 0) + "</span>"
              : '<span class="econ-flag flag-fb">not scored</span>') + "</div>" +
         keys.map(k => phoneRowHtml(k, breakdown[k], ccy)).join("");
     });
@@ -712,6 +743,7 @@
       sortedCurrencies, divergence, impactState, hasCoverage,
       drilldownGroupsHtml, indicatorRowHtml, cadranHtml, tableRowHtml,
       matrixOrder, matrixCellStyle, strengthK, monetaryText,
+      catSigmaText, macroSigmaText, drilldownCats,
       _setPayloadForTest: (p) => { state.payload = p; },
     };
   }

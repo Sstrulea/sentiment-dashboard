@@ -42,3 +42,13 @@ def test_actuals_badge_reads_the_data_not_the_source():
     r = subprocess.run(["node", str(ACTUALS)], cwd=ROOT, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
     assert "3 states ok" in r.stdout
+
+
+SIGMA = ROOT / "tests" / "economic_js" / "test_sigma_headers.cjs"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_drilldown_headers_show_sigma_and_strength_has_no_rates_group():
+    r = subprocess.run(["node", str(SIGMA)], cwd=ROOT, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    assert "sigma headers ok" in r.stdout

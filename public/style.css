@@ -2563,3 +2563,8 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
   .cb-pm-val { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 11px; }
   .cb-pm-detail { grid-column: 1; font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; min-width: 0; }
 }
+
+/* v3 drilldown: the Macro block above the categories ("Macro −1.04σ") */
+.econ-macro-line, .strength-dd-macro { margin: 4px 0 8px; font-size: 12px; font-weight: 600; color: var(--muted, #666); }
+/* the σ values in a category header keep their case (σ, not Σ) */
+.strength-cat-header .econ-cat-sub, .econ-cat-head .econ-cat-sub { text-transform: none; }
