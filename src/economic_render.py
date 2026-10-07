@@ -216,7 +216,11 @@ INDICATOR_UNITS: dict[str, dict] = {
 # observations, snapshot 4ace910 + audit phases 1-2): p95(|score|) = 1.817 ->
 # K_raw = 22.017 -> K = 22.0. Saturation at |score| >= 2.273. (Was 10.5 on the
 # old per-currency index.) Changing it requires re-running that script.
-STRENGTH_PCT_K = 22.0
+# Rule N-c (feat/factor-scales, 2026-10-06): same script on the new pair fund
+# scores, 53 weeks to 2026-10-02: p95(|score|) = 1.717 -> K_raw = 23.29 -> K = 23.5
+# (the same method on v1 that day gave 25.0). The US Dollar row does not enter
+# Strength, so its move to the pairs' scale leaves K unchanged.
+STRENGTH_PCT_K = 23.5
 
 # Per-currency label overrides for cpi_yoy / core_cpi / ppi_yoy — the global
 # INDICATOR_LABELS text ("CPI (YoY)", "Core CPI", "PPI") is accurate for SOME

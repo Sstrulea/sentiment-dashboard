@@ -146,3 +146,20 @@ def test_crossasset_v1_shadow_and_scaled_thresholds():
     for sym in v2:
         assert v2[sym]["score_v1"] == v1[sym]["score_precise"] and v2[sym]["bias_v1"] == v1[sym]["bias_label"]
         assert v2[sym]["bias_label"] == bias_label(v2[sym]["score_precise"], X_CFG["bias_thresholds_scaled"])
+
+
+def test_us_dollar_row_is_on_the_pairs_scale():
+    """N-c: same σ units as the pairs → scale / pair_divisor, not scale."""
+    s, clip = FX_CFG["factor_scales_single"], float(FX_CFG["factor_clip"])
+    p = compute_instrument("US-DOLLAR", {"type": "single", "currency": "USD", "sign": 1}, CARDS, FX_CFG,
+                           sentiment_cells=SENT)
+    x = {"growth": -0.5, "inflation": 4 / 3, "labour": 0.0, "monetary": -2.0}   # z −2.4 → capped −2
+    y = {f: max(-clip, min(clip, v / s[f])) for f, v in x.items()}
+    ys = max(-clip, min(clip, -2 / s["sentiment"]))                       # DXY cell
+    w_sent = float(FX_CFG["sentiment_weight"])
+    eff = float(FX_CFG["scale"]) / float(FX_CFG["pair_divisor"])
+    assert p["score"] == pytest.approx((sum(y.values()) + w_sent * ys) / (4 + w_sent) * eff, abs=1e-12)
+    assert abs(p["contrib_residual"]) < 1e-12
+    v1 = compute_instrument("US-DOLLAR", {"type": "single", "currency": "USD", "sign": 1}, CARDS, _v1(FX_CFG),
+                            sentiment_cells=SENT)
+    assert p["score_v1"] == v1["score"]

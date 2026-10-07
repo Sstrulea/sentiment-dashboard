@@ -1032,6 +1032,7 @@ def compute_instrument(
     mon_override = None      # (contribution, signal) of the monetary row
     factor_inputs = None
     macro_score_v1 = macro_score
+    eff_scale = scale        # the single row moves onto the pairs' scale under N-c
     if itype == "single" and single_scales:
         pres = _present_categories(base_card)
         inputs = {}
@@ -1042,15 +1043,19 @@ def compute_instrument(
         if v_s is not None:
             inputs["sentiment"] = float(v_s)
         ys, ks = _scale_inputs(inputs, single_scales, clip)
+        # Same σ units as the pairs → same scale: a pair is (base − quote) ×
+        # scale / pair_divisor, so the single row uses scale / pair_divisor too
+        # (with scale alone the same number of σ scored twice a pair's).
+        eff_scale = scale / pair_divisor
         W = sum(w.values())
         num = sum(w[c] * ys[c] for c in w)
         den = W + (sentiment_weight if v_s is not None else 0.0)
         num_s = num + (sentiment_weight * ys["sentiment"] if v_s is not None else 0.0)
-        macro_score = (num_s / den) * scale * sign if den else 0.0
-        macro_score_no_sentiment = (num / W) * scale * sign if W else 0.0
+        macro_score = (num_s / den) * eff_scale * sign if den else 0.0
+        macro_score_no_sentiment = (num / W) * eff_scale * sign if W else 0.0
         cat_factor = {c: ks[c] for c in w}
         if "monetary" in w:
-            mon_override = (w["monetary"] * ys["monetary"] / W * scale * sign, inputs["monetary"])
+            mon_override = (w["monetary"] * ys["monetary"] / W * eff_scale * sign, inputs["monetary"])
         factor_inputs = _factor_inputs(inputs, ys, single_scales)
     elif itype == "fx" and fx_scales:
         inputs = {}
@@ -1085,7 +1090,7 @@ def compute_instrument(
 
     # Fold TREND directly into the pair/instrument score (one more weighted-mean
     # member). trend_value None → score == macro_score (bit-identical baseline).
-    score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, scale)
+    score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, eff_scale)
 
     # --- Contribution breakdown (display-only; NEVER feeds `score` — it is
     # derived FROM the already-computed score/macro_score/macro_score_no_sentiment
@@ -1098,7 +1103,7 @@ def compute_instrument(
     # (floating-point noise in practice, ~1e-13) — computed here, once, so a
     # bug in a later render/display layer can never mask itself by
     # recomputing its own "Σ" from a different code path. ---
-    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, scale,
+    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, eff_scale,
                                         fund_base_wsum, fund_base_allowed, fund_quote_wsum, fund_quote_allowed,
                                         relevant_categories=set(categories_display),
                                         cat_factor=cat_factor)

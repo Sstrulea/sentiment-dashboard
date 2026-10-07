@@ -80,9 +80,11 @@ rate_signal: { unit: 0.87, cap: 2 }   # clip(z/0.87, ±2): 0.87 = p60 of |z| 200
 # changed by construction (σ-normalised factors, continuous rates) — the
 # structural jump the GUARDRAIL below asks for; `bias_thresholds` stays the v1
 # set (score_v1 / bias_v1).
+# 2026-10-07: re-derived after putting the US Dollar row on the pairs' scale
+# (scale / pair_divisor under N-c).
 bias_thresholds_scaled:
-  very: 1.99    # p90 of |score|, rule N-c, 53-week window (1.993)
-  mild: 0.90    # p55 of |score|, rule N-c, 53-week window (0.896)
+  very: 1.93    # p90 of |score|, rule N-c, 53-week window (1.935)
+  mild: 0.89    # p55 of |score|, rule N-c, 53-week window (0.887)
 bias_thresholds:
   very: 2.41    # §Q1 (2026-07-28): p90 of |score_precise|, post-D, 53-week window
   mild: 1.12    # §Q1 (2026-07-28): p55 of |score_precise|, post-D, 53-week window

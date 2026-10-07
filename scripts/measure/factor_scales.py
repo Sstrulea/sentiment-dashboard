@@ -292,7 +292,13 @@ def contributions(row: dict, inp: Inputs, version: str, sigma: dict | None = Non
         if "sentiment" in vals:
             out["sentiment"] = w_s * vals["sentiment"] / (1 + w_s) * scale / div
         return out
-    scale = float(inp.inst.get("scale", 5)) if row["board"] == "us_dollar" else float(inp.xcfg.get("scale", 5))
+    if row["board"] == "us_dollar":
+        # v2: the single row on the pairs' scale (scale / pair_divisor), v1 unchanged
+        scale = float(inp.inst.get("scale", 5))
+        if version == "v2":
+            scale /= float(inp.inst.get("pair_divisor", 2))
+    else:
+        scale = float(inp.xcfg.get("scale", 5))
     sign = row.get("sign", 1.0)
     W = sum(w[f] for f in vals)
     return {f: (sign * w[f] * vals[f] / W * scale if W else 0.0) for f in vals}
