@@ -27,7 +27,7 @@ import pandas as pd
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.economic_compute import active_thresholds, build_payload, bias_label
+from src.economic_compute import active_thresholds, build_payload, bias_label, v3_label
 from src.ff_corrections import read_ff_parquet
 from src.cot_score import (
     load_currencies_history,
@@ -41,6 +41,7 @@ from src.rate_compute import compute_pair_spread_scores, compute_rate_scores
 from src.realyield_compute import compute_realyield_score
 from src.liquidity_compute import compute_liquidity_score
 from src.crossasset_compute import (categories_by_currency, compute_crossasset_scores,
+                                     compute_crossasset_scores_v3, v3_yield_signals,
                                      LIQUIDITY_SERIES_LABELS)
 from src.trend_score import score_all as trend_score_all
 from src.static_assets import copy_static_assets
@@ -106,6 +107,12 @@ CROSSASSET_TABLE_LAYOUT = [
     {"key": "rates", "label": "Rates & Liquidity", "columns": [
         ("rate_exp_2y", "Rate Exp 2Y"), ("real_yield_10y", "10Y Real Yield"),
         ("balance_sheet", "Bank Reserves")]},
+]
+# Scoring v3: the Rates group shows the 3-month signals that are scored (home 2Y
+# and, at indices, the US real 10Y); Bank Reserves (weight 0) is gone.
+CROSSASSET_TABLE_LAYOUT_V3 = [g for g in CROSSASSET_TABLE_LAYOUT if g["key"] != "rates"] + [
+    {"key": "rates", "label": "Rates", "columns": [
+        ("rate_exp_2y", "2Y (3m)"), ("real_yield_10y", "10Y Real (3m)")]},
 ]
 # Home-ccy indicator keys to read from the FX breakdown for the sub-columns.
 CROSSASSET_CATEGORY_KEYS = [
@@ -220,7 +227,10 @@ INDICATOR_UNITS: dict[str, dict] = {
 # scores, 53 weeks to 2026-10-02: p95(|score|) = 1.717 -> K_raw = 23.29 -> K = 23.5
 # (the same method on v1 that day gave 25.0). The US Dollar row does not enter
 # Strength, so its move to the pairs' scale leaves K unchanged.
-STRENGTH_PCT_K = 23.5
+# Scoring v3 (2026-10-07): /strength = mean over the 7 pairs of 2.5 × (Macro_base −
+# Macro_quote); same script and method, 53 weeks to 2026-10-02: p95(|score|) = 5.053
+# -> K_raw = 7.916 -> K = 8.0.
+STRENGTH_PCT_K = 8.0
 
 # Per-currency label overrides for cpi_yoy / core_cpi / ppi_yoy — the global
 # INDICATOR_LABELS text ("CPI (YoY)", "Core CPI", "PPI") is accurate for SOME
@@ -489,6 +499,47 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
     }
 
 
+# Scoring v3: what is not scored is not displayed. The 2Y repricing
+# (rate_expectations / the monetary category) and the weight-0 indicators leave
+# every view; the policy rate (interest_rate_decision) stays — it is the carry input.
+V3_KEEP_WEIGHT0 = {"interest_rate_decision"}
+
+
+def _v3_display(payload: dict, meta: dict, indicators_cfg: dict, instruments_cfg: dict) -> None:
+    """In place, after every score (v3 and the v2 shadow) is computed."""
+    from src.economic_compute import V3_MACRO_CATS
+    inds = indicators_cfg.get("indicators", {}) or {}
+    hidden = {k for k, v in inds.items()
+              if float(v.get("weight", 1.0)) == 0.0 and k not in V3_KEEP_WEIGHT0} | {"rate_expectations"}
+    for card in payload.get("currencies", {}).values():
+        for k in hidden:
+            (card.get("breakdown") or {}).pop(k, None)
+        (card.get("categories") or {}).pop("monetary", None)
+        card.pop("monetary", None)
+        card.pop("monetary_available", None)
+    for inst in payload.get("instruments", []):
+        inst["monetary_pair"] = None
+        for leg in ("base", "quote"):
+            ind = ((inst.get("breakdown") or {}).get(leg) or {}).get("indicators")
+            for k in hidden:
+                (ind or {}).pop(k, None)
+        for k in hidden:
+            (inst.get("indicator_cells") or {}).pop(k, None)
+        mc = (inst.get("v3") or {}).get("macro_cats")
+        if inst.get("type") == "fx" and mc is not None:
+            both = set(mc["base"]) & set(mc["quote"])
+            inst["categories_used"] = len(both)
+            inst["categories_total"] = len(V3_MACRO_CATS)
+            inst["categories_excluded"] = [c for c in V3_MACRO_CATS if c not in both]
+    meta["categories_display"] = list(V3_MACRO_CATS)
+    meta["table_layout"] = [g for g in meta.get("table_layout", []) if g.get("category") != "monetary"]
+    meta["scoring"] = "v3"
+    v3 = instruments_cfg.get("v3") or {}
+    meta["v3"] = {"thresholds": v3.get("thresholds"), "thresholds_strength": v3.get("thresholds_strength"),
+                  "sigma_carry": v3.get("sigma_carry")}
+    meta["bias_thresholds"] = v3.get("thresholds")
+
+
 def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
     """Attach a per-indicator cell to each instrument for the dense table.
 
@@ -622,10 +673,14 @@ def _enrich_breakdowns(payload: dict, ind_meta: dict, as_of: pd.Timestamp,
 FUND_EXCLUDED_KEYS = ("sentiment", "trend")
 
 
-def _pair_fund_score(inst: dict) -> float:
+def _pair_fund_score(inst: dict) -> float | None:
     """A pair's FUNDAMENTAL score: compute_instrument's `fund_score`
     (= macro_score_no_sentiment: D1=D intersection, no COT, no trend), which the
-    sum of its fund contributions reconstructs (the fallback)."""
+    sum of its fund contributions reconstructs (the fallback). Scoring v3:
+    2.5 × (Macro_base − Macro_quote), None when a leg has no macro block."""
+    if "v3" in inst:
+        v = inst["v3"].get("strength_pair")
+        return None if v is None else float(v)
     if inst.get("fund_score") is not None:
         return float(inst["fund_score"])
     return float(sum(c["contribution"] for c in inst.get("contributions", [])
@@ -649,6 +704,8 @@ def strength_from_pairs(payload: dict) -> dict:
         base = inst["breakdown"]["base"]["currency"]
         quote = inst["breakdown"]["quote"]["currency"]
         v = _pair_fund_score(inst)
+        if v is None:
+            continue
         pairs.setdefault(base, {})[quote] = v
         pairs.setdefault(quote, {})[base] = -v
     scores = {ccy: sum(o.values()) / len(o) for ccy, o in pairs.items() if o}
@@ -676,6 +733,7 @@ def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: d
     `strength_pairs` feeds the divergence matrix. `index`, N (`coverage`) and the
     own monetary state stay informative. /economic is untouched.""" 
     thresholds = active_thresholds(instruments_cfg)
+    v3 = instruments_cfg.get("v3") or {}
     agg = strength_from_pairs(payload)
     for ccy, card in payload.get("currencies", {}).items():
         score = float(agg["scores"].get(ccy, 0.0))
@@ -684,7 +742,12 @@ def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: d
         card["strength_pairs"] = agg["matrix"].get(ccy, {})
         card["pct_clamped"] = raw_pct < 0.0 or raw_pct > 100.0
         card["pct"] = round(max(0.0, min(100.0, raw_pct)), 1)
-        card["bias_label"] = bias_label(score, thresholds)
+        if v3:
+            # v3: z = score / RMS(currency), the /strength thresholds
+            card["bias_label"] = v3_label(score, (v3.get("rms_strength") or {}).get(ccy),
+                                          v3.get("thresholds_strength") or {})
+        else:
+            card["bias_label"] = bias_label(score, thresholds)
         card["monetary"] = _monetary_state(card)
         card["monetary_available"] = card["monetary"]["state"] == "ok"
 
@@ -1179,6 +1242,20 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
                                        liquidity_score=liquidity_score,
                                        sentiment_by_symbol=sentiment_by_symbol,
                                        trend_by_symbol=trend_by_symbol)
+    v3 = bool(cfg.get("v3"))
+    if v3:
+        # Scoring v3 (2026-10-07): v2 stays as score_v2 / bias_v2 (shadow).
+        v2_scores = scores
+        fx_sigma = (_load_yaml(INSTRUMENTS_YAML).get("v3") or {}).get("sigma_ccy") or {}
+        rates_df = pd.read_parquet(RATES_PARQUET) if RATES_PARQUET.exists() else None
+        real_df = pd.read_parquet(REAL_YIELDS_PARQUET) if REAL_YIELDS_PARQUET.exists() else None
+        ysig = v3_yield_signals(rates_df, real_df, as_of, (cfg["v3"].get("sigma_y") or {}))
+        scores = compute_crossasset_scores_v3(
+            categories_by_ccy, cfg, fx_sigma, ysig,
+            metal_cot={sym: d["cell"] for sym, d in metal_cot.items()})
+        for sym, r in scores.items():
+            r["score_v2"] = v2_scores[sym]["score_precise"]
+            r["bias_v2"] = v2_scores[sym]["bias_label"]
 
     currencies = payload.get("currencies", {}) or {}
 
@@ -1211,6 +1288,11 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         # Shown even when stale (greyed); the stale exclusion happens in the mean.
         rates_factor = next((f for f in r.get("factors", []) if f.get("name") == "rates"), None)
         for c in (rates_factor.get("components", []) if rates_factor else []):
+            if v3:
+                # the 3-month signal −Δ63/σ_y (positive = falling yields = bullish)
+                cells[c["name"]] = {"score": c.get("signal"), "stale": bool(c.get("stale")),
+                                   "continuous": True}
+                continue
             raw = c.get("raw")
             signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
             cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale")),
@@ -1231,6 +1313,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         # above: COT for metals, P/C for US indices. Foreign indices get neither.
         if sym in metal_cot:
             r["cot"] = metal_cot[sym]
+        elif v3:
+            pass                      # v3: P/C is not scored, so not shown
         elif pc_cell is not None and sym in pc_syms:
             r["sentiment"] = {
                 "source": "pc", "cell": pc_cell,
@@ -1242,17 +1326,20 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
 
     instruments.sort(key=lambda r: r.get("score_precise", 0.0), reverse=True)
 
+    layout = CROSSASSET_TABLE_LAYOUT_V3 if v3 else CROSSASSET_TABLE_LAYOUT
     return {
         "instruments": instruments,
         "table_layout": [
             {"key": g["key"], "label": g["label"],
              "columns": [{"key": k, "label": lbl} for k, lbl in g["columns"]]}
-            for g in CROSSASSET_TABLE_LAYOUT
+            for g in layout
         ],
-        "factor_labels": dict(CROSSASSET_FACTOR_LABELS),
+        "factor_labels": dict(CROSSASSET_FACTOR_LABELS, **({"rates": "Rates"} if v3 else {})),
+        "model": "v3" if v3 else "v2",
         "real_yield": real_yield_meta,
         "net_liquidity": liquidity_meta,
-        "bias_thresholds": (cfg.get("bias_thresholds_scaled") if cfg.get("factor_scales")
+        "bias_thresholds": ((cfg["v3"].get("thresholds") or {}) if v3 else
+                            cfg.get("bias_thresholds_scaled") if cfg.get("factor_scales")
                             and cfg.get("bias_thresholds_scaled") else cfg.get("bias_thresholds", {})),
         "scale": cfg.get("scale"),
     }
@@ -1522,6 +1609,21 @@ def _attach_actuals_status(freshness: dict, manual_actuals: dict, as_of: pd.Time
                                  for k, v in freshness.items() if k != "integrity")
 
 
+POLICY_RATES_YAML = ROOT / "data" / "policy_rates.yaml"
+
+
+def _policy_rates_now(decisions: pd.DataFrame | None, as_of: pd.Timestamp) -> dict[str, float]:
+    """The v3 carry input: decisions.parquet (latest decision at as_of), the
+    manual data/policy_rates.yaml only per currency as the fallback (as /carry)."""
+    from src.policy_rate import policy_rates_with_fallback
+    try:
+        manual = (_load_yaml(POLICY_RATES_YAML).get("rates") or {}) if POLICY_RATES_YAML.exists() else {}
+    except Exception as e:  # noqa: BLE001
+        log.warning("policy_rates.yaml unreadable (%s); no manual fallback.", e)
+        manual = {}
+    return policy_rates_with_fallback(decisions, as_of, manual)
+
+
 def _policy_rate_decisions() -> pd.DataFrame | None:
     """data/cb/decisions.parquet (src.policy_rate) — None if unreadable."""
     from src.policy_rate import DECISIONS_PARQUET, load_decisions
@@ -1788,7 +1890,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
                             as_of=as_of, rate_scores=rate_scores or None,
                             sentiment_cells=fx_cells or None,
                             trend_cells=trend_by_symbol or None,
-                            pair_monetary=pair_monetary or None)
+                            pair_monetary=pair_monetary or None,
+                            policy_rates=_policy_rates_now(decisions, as_of))
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     meta["trend_enabled"] = trend_on
@@ -1827,6 +1930,8 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     # Cross-Asset block (indices + metals) — separate key, FX payload untouched.
     payload["crossasset"] = _build_crossasset_block(payload, as_of, trend_full,
                                                      trend_enabled=trend_on)
+    if instruments_cfg.get("v3"):
+        _v3_display(payload, meta, indicators_cfg, instruments_cfg)
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)

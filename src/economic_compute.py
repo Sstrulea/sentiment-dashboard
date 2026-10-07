@@ -895,7 +895,6 @@ def compute_instrument(
     score bit-identical to the no-trend baseline.
     """
     pair_divisor = float(instruments_cfg.get("pair_divisor", 2))
-    thresholds_v1 = instruments_cfg.get("bias_thresholds", {}) or {}
     thresholds = active_thresholds(instruments_cfg)
     scale = float(instruments_cfg.get("scale", 5))
     sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
@@ -1031,7 +1030,6 @@ def compute_instrument(
     cat_factor = None
     mon_override = None      # (contribution, signal) of the monetary row
     factor_inputs = None
-    macro_score_v1 = macro_score
     eff_scale = scale        # the single row moves onto the pairs' scale under N-c
     if itype == "single" and single_scales:
         pres = _present_categories(base_card)
@@ -1165,11 +1163,6 @@ def compute_instrument(
     }
     if factor_inputs is not None:
         out["factor_inputs"] = factor_inputs        # rule N-c: value, σ, value in σ per factor
-        # v1 shadow (not displayed; kept 26 weeks after the switch, until 2027-04):
-        # the same instrument on the v1 formula and the v1 thresholds.
-        score_v1 = _fold_trend(macro_score_v1, macro_weight, trend_value, trend_weight, scale)
-        out["score_v1"] = float(score_v1)
-        out["bias_v1"] = bias_label(score_v1, thresholds_v1)
         if out["monetary_pair"] is not None and "monetary" in factor_inputs:
             out["monetary_pair"]["signal"] = factor_inputs["monetary"]["value"]
     return out
@@ -1210,6 +1203,7 @@ def build_payload(
     sentiment_cells: dict | None = None,
     trend_cells: dict | None = None,
     pair_monetary: dict | None = None,
+    policy_rates: dict | None = None,
 ) -> dict:
     """Compute every currency scorecard and every instrument payload.
 
@@ -1262,8 +1256,229 @@ def build_payload(
         for sym, cfg in instruments.items()
     ]
 
-    return {
+    payload = {
         "as_of": as_of.isoformat(),
         "currencies": scorecards,
         "instruments": instrument_payloads,
     }
+    # Scoring v3 (2026-10-07): with a `v3` block in the config the board scores
+    # v3 and keeps v2 as score_v2 / bias_v2; without it, v2 exactly as before.
+    if instruments_cfg.get("v3"):
+        apply_v3_fx(payload, instruments_cfg, indicators_cfg, sentiment_cells, policy_rates)
+    return payload
+
+
+# ---------------------------------------------------------------------------
+# Scoring v3 "swing" (2026-10-07) — pure blocks, shared by the FX board, the
+# /strength page and scripts/measure/v3_scales.py (which measures the constants)
+# ---------------------------------------------------------------------------
+
+V3_MACRO_CATS = ("growth", "inflation", "labour")
+V3_FX_WEIGHTS = {"macro": 0.51, "carry": 0.34, "cot": 0.15}
+V3_DISPLAY_SCALE = 2.5
+
+
+def v3_macro_mean(categories: dict | None, sigmas: dict | None) -> float | None:
+    """Mean, over the macro categories present (coverage > 0), of
+    score_precise / σ(currency, category) — before dividing by σ_macro.
+    None when no macro category is present (or has no σ)."""
+    vals = []
+    for cat in V3_MACRO_CATS:
+        cell = (categories or {}).get(cat)
+        sg = (sigmas or {}).get(cat)
+        if cell is None or not sg or (cell.get("coverage") or 0) <= 0:
+            continue
+        vals.append(float(cell["score_precise"]) / float(sg))
+    return (sum(vals) / len(vals)) if vals else None
+
+
+def v3_combine(blocks: dict, weights: dict) -> tuple[float | None, dict]:
+    """Weighted sum of the PRESENT blocks (None = missing), the weights of the
+    missing ones rescaled away so the rest sum to 1 — never zero-filled.
+    Returns (S or None when no block is present, {block: contribution})."""
+    present = {b: v for b, v in blocks.items() if v is not None and b in weights}
+    wsum = sum(weights[b] for b in present)
+    if not present or wsum <= 0:
+        return None, {}
+    contrib = {b: weights[b] / wsum * float(v) for b, v in present.items()}
+    return float(sum(contrib.values())), contrib
+
+
+def v3_currency_blocks(macro_mean: float | None, carry_raw: float | None,
+                       cot_cell: float | None, k: dict) -> dict:
+    """{macro, carry, cot} on the common scale: macro_mean / σ_macro,
+    (policy − mean of the 8) / σ_carry, COT cell / σ_cot."""
+    def div(v, s):
+        return None if v is None or not s else float(v) / float(s)
+    return {"macro": div(macro_mean, k.get("sigma_macro")),
+            "carry": div(carry_raw, k.get("sigma_carry")),
+            "cot": div(cot_cell, k.get("sigma_cot"))}
+
+
+def v3_label(score: float, rms: float | None, thresholds: dict) -> str:
+    """z = score / RMS(instrument); |z| < mild → Neutral, < very → Bullish/
+    Bearish, otherwise Very. No RMS → Neutral."""
+    if not rms:
+        return "Neutral"
+    return bias_label(float(score) / float(rms), thresholds)
+
+
+def _counted_entries(card: dict, category: str, indicators_cfg: dict) -> list[tuple[str, float, float]]:
+    """(key, score, weight) of the breakdown entries that entered `category`'s
+    score_precise — the same rule as compute_currency_scorecard (not stale, not
+    no_consensus / direction_mismatch), so Σ w·s / Σ w == score_precise."""
+    inds = (indicators_cfg or {}).get("indicators", {}) or {}
+    out = []
+    for key, e in ((card or {}).get("breakdown") or {}).items():
+        if e.get("category") != category or e.get("stale"):
+            continue
+        if e.get("flag") in ("no_consensus", "direction_mismatch"):
+            continue
+        if key not in inds:
+            continue
+        out.append((key, float(e["score"]), float(inds[key].get("weight", 1.0))))
+    return out
+
+
+def _v3_currency(card: dict, k: dict, carry_raw, cot_cell) -> dict:
+    """{S, blocks, contrib, macro_terms} for one currency. macro_terms: per
+    indicator key, its share of the macro contribution (sums to contrib['macro'])."""
+    sig = (k.get("sigma_ccy") or {}).get(card.get("currency"), {})
+    mmean = v3_macro_mean(card.get("categories"), sig)
+    blocks = v3_currency_blocks(mmean, carry_raw, cot_cell, k)
+    s, contrib = v3_combine(blocks, V3_FX_WEIGHTS)
+    return {"S": s, "blocks": blocks, "contrib": contrib, "sig": sig}
+
+
+def _v3_macro_rows(card: dict, cur: dict, k: dict, indicators_cfg: dict, sign: float) -> dict[str, float]:
+    """{indicator key: contribution to (sign × S) of the macro block} — exact:
+    weight_macro × (1/n_cats) × (1/σ(c,cat)) × (1/σ_macro) × w_k s_k / Σw."""
+    if "macro" not in cur["contrib"]:
+        return {}
+    cats = [c for c in V3_MACRO_CATS
+            if ((card.get("categories") or {}).get(c) or {}).get("coverage", 0) > 0 and cur["sig"].get(c)]
+    if not cats:
+        return {}
+    w_macro = V3_FX_WEIGHTS["macro"] / sum(V3_FX_WEIGHTS[b] for b in cur["contrib"])
+    out: dict[str, float] = {}
+    for cat in cats:
+        ent = _counted_entries(card, cat, indicators_cfg)
+        wsum = sum(w for _, _, w in ent)
+        if not wsum:
+            continue
+        coef = sign / len(cats) / float(cur["sig"][cat]) / float(k["sigma_macro"])
+        for key, s, w in ent:
+            out[key] = out.get(key, 0.0) + w_macro * coef * w * s / wsum
+    return out
+
+
+def apply_v3_fx(payload: dict, instruments_cfg: dict, indicators_cfg: dict,
+                sentiment_cells: dict | None, policy_rates: dict | None) -> None:
+    """Scoring v3 on the FX board (in place). The v2 fields computed by
+    compute_instrument move to score_v2 / bias_v2 (shadow, not displayed); the
+    instrument's score, bias, contributions and fund_score become v3's.
+
+      S_c   = 0.51 Macro + 0.34 Carry + 0.15 COT (weights rescaled over present blocks)
+      pair  = (S_base − S_quote) × 2.5;  US Dollar = S_USD (DXY COT) × 2.5
+      label = v3_label(score, rms[symbol], thresholds)
+    Per currency: score_v3 = S_c, score_v2_ccy = mean of its pairs' score_v2 (±).
+    /strength reads v3.strength_pair = 2.5 × (Macro_base − Macro_quote)."""
+    k = instruments_cfg.get("v3") or {}
+    cards = payload.get("currencies", {})
+    rates = {c: float(v) for c, v in (policy_rates or {}).items() if v is not None and c in cards}
+    mean8 = (sum(rates.values()) / len(rates)) if rates else None
+    cells = sentiment_cells or {}
+
+    def cot_of(c, single=False):
+        if not sentiment_cells:
+            return None
+        if c == "USD":
+            return cells.get("DXY") if single else 0.0
+        return cells.get(c)
+
+    cur = {c: _v3_currency(card, k, (rates[c] - mean8) if c in rates else None, cot_of(c))
+           for c, card in cards.items()}
+    for c, card in cards.items():
+        card["score_v3"] = cur[c]["S"]
+        card["v3"] = {"blocks": cur[c]["blocks"], "policy_rate": rates.get(c),
+                      "policy_mean": mean8}
+
+    thresholds = k.get("thresholds") or {}
+    rms = k.get("rms") or {}
+    sig_carry = k.get("sigma_carry")
+    for inst in payload.get("instruments", []):
+        inst["score_v2"], inst["bias_v2"] = inst.get("score"), inst.get("bias")
+        for key in ("factor_inputs",):
+            inst.pop(key, None)
+        sym = inst["symbol"]
+        if inst.get("type") == "single":
+            ccy = inst["breakdown"]["base"]["currency"]
+            row = _v3_currency(cards[ccy], k, (rates[ccy] - mean8) if ccy in rates else None,
+                               cot_of(ccy, single=True))
+            s = row["S"]
+            score = 0.0 if s is None else s * V3_DISPLAY_SCALE
+            macro = _v3_macro_rows(cards[ccy], row, k, indicators_cfg, V3_DISPLAY_SCALE)
+            contrib = [{"key": key, "category": (cards[ccy]["breakdown"][key] or {}).get("category"),
+                        "contribution": float(v), "raw": int(cards[ccy]["breakdown"][key]["score"])}
+                       for key, v in sorted(macro.items())]
+            for b in ("carry", "cot"):
+                if b in row["contrib"]:
+                    contrib.append({"key": b, "category": b, "raw": None,
+                                    "contribution": float(V3_DISPLAY_SCALE * row["contrib"][b])})
+            carry_cell = row["blocks"]["carry"]
+            inst["v3"] = {"blocks": row["blocks"], "carry": carry_cell,
+                          "carry_rates": {ccy: rates.get(ccy), "mean8": mean8},
+                          "strength_pair": None}
+            inst["fund_score"] = None
+        else:
+            b_ccy = inst["breakdown"]["base"]["currency"]
+            q_ccy = inst["breakdown"]["quote"]["currency"]
+            sb, sq = cur[b_ccy]["S"], cur[q_ccy]["S"]
+            score = 0.0 if (sb is None or sq is None) else (sb - sq) * V3_DISPLAY_SCALE
+            macro_b = _v3_macro_rows(cards[b_ccy], cur[b_ccy], k, indicators_cfg, V3_DISPLAY_SCALE)
+            macro_q = _v3_macro_rows(cards[q_ccy], cur[q_ccy], k, indicators_cfg, -V3_DISPLAY_SCALE)
+            keys = sorted(set(macro_b) | set(macro_q))
+            bd_b, bd_q = cards[b_ccy]["breakdown"], cards[q_ccy]["breakdown"]
+            contrib = []
+            for key in keys:
+                e = bd_b.get(key) or bd_q.get(key)
+                raw = (int(bd_b[key]["score"]) if key in bd_b else 0) - (int(bd_q[key]["score"]) if key in bd_q else 0)
+                contrib.append({"key": key, "category": e.get("category"), "raw": raw,
+                                "contribution": float(macro_b.get(key, 0.0) + macro_q.get(key, 0.0))})
+            for b in ("carry", "cot"):
+                cb_, cq_ = cur[b_ccy]["contrib"].get(b), cur[q_ccy]["contrib"].get(b)
+                if cb_ is None and cq_ is None:
+                    continue
+                contrib.append({"key": b, "category": b, "raw": None,
+                                "contribution": float(V3_DISPLAY_SCALE * ((cb_ or 0.0) - (cq_ or 0.0)))})
+            if sb is None or sq is None:
+                contrib = []
+            mb, mq = cur[b_ccy]["blocks"]["macro"], cur[q_ccy]["blocks"]["macro"]
+            pair_macro = None if (mb is None or mq is None) else V3_DISPLAY_SCALE * (mb - mq)
+            pb, pq = rates.get(b_ccy), rates.get(q_ccy)
+            inst["v3"] = {"blocks": {"base": cur[b_ccy]["blocks"], "quote": cur[q_ccy]["blocks"]},
+                          "carry": (None if (pb is None or pq is None or not sig_carry)
+                                    else (pb - pq) / float(sig_carry)),
+                          "carry_rates": {b_ccy: pb, q_ccy: pq},
+                          "strength_pair": pair_macro,
+                          "macro_cats": {"base": [c for c in V3_MACRO_CATS
+                                                  if (cards[b_ccy]["categories"].get(c) or {}).get("coverage", 0) > 0],
+                                         "quote": [c for c in V3_MACRO_CATS
+                                                   if (cards[q_ccy]["categories"].get(c) or {}).get("coverage", 0) > 0]}}
+            inst["fund_score"] = pair_macro
+        inst["score"] = float(score)
+        inst["bias"] = v3_label(score, rms.get(sym), thresholds)
+        inst["contributions"] = contrib
+        inst["contrib_sum"] = float(sum(r["contribution"] for r in contrib))
+        inst["contrib_residual"] = float(score) - inst["contrib_sum"]
+    # per currency: the mean of its pairs' score_v2 (+ as base, − as quote)
+    acc: dict[str, list[float]] = {}
+    for inst in payload.get("instruments", []):
+        if inst.get("type") != "fx" or inst.get("score_v2") is None:
+            continue
+        b = inst["breakdown"]["base"]["currency"]
+        q = inst["breakdown"]["quote"]["currency"]
+        acc.setdefault(b, []).append(float(inst["score_v2"]))
+        acc.setdefault(q, []).append(-float(inst["score_v2"]))
+    for c, card in cards.items():
+        card["score_v2_ccy"] = (sum(acc[c]) / len(acc[c])) if acc.get(c) else None

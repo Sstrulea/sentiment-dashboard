@@ -91,13 +91,14 @@ def _scores(payload: dict) -> dict:
 def test_trend_disabled_scores_are_the_trendless_scores(monkeypatch):
     monkeypatch.setattr(economic_render, "_trend_enabled", lambda cfg=None: False)
     payload = economic_render.build_economic_payload(as_of=_AS_OF)
-    from src.economic_compute import bias_label
-    th = payload["meta"]["bias_thresholds"]
+    # scoring v3 (2026-10-07): the label is z = score / RMS(instrument) on the v3 thresholds
+    from src.economic_compute import v3_label
+    v3 = economic_render._load_yaml(economic_render.INSTRUMENTS_YAML)["v3"]
     for inst in payload["instruments"]:
         keys = {c["key"] for c in inst["contributions"]}
         assert "trend" not in keys, inst["symbol"]
         assert inst["contrib_sum"] == pytest.approx(inst["score"], abs=1e-9), inst["symbol"]
-        assert inst["bias"] == bias_label(inst["score"], th), inst["symbol"]
+        assert inst["bias"] == v3_label(inst["score"], v3["rms"][inst["symbol"]], v3["thresholds"]), inst["symbol"]
 
 
 def test_trend_enabled_without_cells_is_bit_identical_to_disabled(monkeypatch):
@@ -120,14 +121,15 @@ def test_trend_enabled_folds_the_trend_cell_in_its_direction(monkeypatch):
     cells = {sym: {"trend_cell": 3} for sym in fx}
     monkeypatch.setattr(economic_render, "trend_score_all", lambda: cells)
     on = economic_render.build_economic_payload(as_of=_AS_OF)
+    monkeypatch.setattr(economic_render, "_trend_enabled", lambda cfg=None: False)
+    off_v2 = {i["symbol"]: i["score_v2"] for i in economic_render.build_economic_payload(as_of=_AS_OF)["instruments"]}
     for inst in on["instruments"]:
         if inst["symbol"] not in cells or inst["type"] != "fx":
             continue
         assert "trend" in inst and "trend_detail" in inst, inst["symbol"]
-        assert inst["score"] >= off[inst["symbol"]][0] - 1e-12, inst["symbol"]
-        trend = [c for c in inst["contributions"] if c["key"] == "trend"]
-        assert trend and trend[0]["contribution"] == pytest.approx(
-            inst["score"] - off[inst["symbol"]][0], abs=1e-9), inst["symbol"]
+        # scoring v3: TREND is out of the score; the v2 shadow still folds it in
+        assert inst["score"] == pytest.approx(off[inst["symbol"]][0], abs=1e-12), inst["symbol"]
+        assert inst["score_v2"] >= off_v2[inst["symbol"]] - 1e-12, inst["symbol"]
 
 
 # --- _freshness()'s "price" entry ---------------------------------------------

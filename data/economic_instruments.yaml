@@ -132,3 +132,34 @@ instruments:
   NZDCAD: { type: fx, base: NZD, quote: CAD, display: "NZD/CAD" }
   NZDCHF: { type: fx, base: NZD, quote: CHF, display: "NZD/CHF" }
   CADCHF: { type: fx, base: CAD, quote: CHF, display: "CAD/CHF" }
+
+# --- Scoring v3 "swing" (2026-10-07; plan confirmed 2026-10-07 after FRED H.10 tests) ---
+# Constants measured ONCE by scripts/measure/v3_scales.py on the weekly reconstruction
+# (Fridays 21:00 UTC, 2023-09-22 .. 2026-10-02, 159 weeks, production functions; policy
+# rates from src.policy_rate.policy_rate_history), data of 2026-10-07. Re-derive only on a
+# structural change, never to pass a check. Without this block the board scores v2.
+#   S_c = 0.51 Macro + 0.34 Carry + 0.15 COT (missing block -> weights rescaled)
+#   Macro = mean over present categories of score_precise / sigma_ccy, / sigma_macro
+#   Carry = (policy_c - mean of the 8) / sigma_carry;  COT = cell / sigma_cot (USD 0)
+#   pair = (S_base - S_quote) x 2.5; US Dollar = S_USD (DXY COT) x 2.5
+#   label: z = score / rms[symbol]; |z| < mild Neutral, < very Bullish/Bearish, else Very
+v3:
+  sigma_ccy:
+    USD: { growth: 0.279, inflation: 0.528, labour: 0.298 }
+    EUR: { growth: 0.52, inflation: 0.648, labour: 0.571 }
+    GBP: { growth: 0.44, inflation: 0.515, labour: 0.443 }
+    JPY: { growth: 0.359, inflation: 0.393, labour: 0.709 }
+    AUD: { growth: 0.588, inflation: 0.554, labour: 0.504 }
+    NZD: { growth: 0.728, inflation: 0.61, labour: 0.692 }
+    CAD: { growth: 0.597, inflation: 0.654, labour: 0.782 }
+    CHF: { growth: 0.551, inflation: 0.716, labour: 0.999 }
+  sigma_macro: 0.585
+  sigma_carry: 1.622
+  sigma_cot: 1.773
+  # RMS = sqrt(mean(score^2)) per instrument over the last 156 weeks of the window;
+  # thresholds = p55 / p90 of |score / RMS| over the last 53 weeks (FX board: 28 pairs + US Dollar).
+  rms: { US-DOLLAR: 1.666, EURUSD: 1.653, GBPUSD: 1.996, USDJPY: 3.019, USDCHF: 2.822, USDCAD: 1.817, AUDUSD: 2.199, NZDUSD: 1.544, EURGBP: 1.975, EURJPY: 2.697, EURCHF: 2.489, EURAUD: 1.984, EURNZD: 1.523, EURCAD: 1.815, GBPJPY: 3.098, GBPCHF: 3.173, GBPAUD: 1.866, GBPNZD: 1.85, GBPCAD: 2.272, AUDJPY: 2.491, NZDJPY: 2.849, CADJPY: 2.585, CHFJPY: 1.984, AUDNZD: 1.738, AUDCAD: 2.107, AUDCHF: 2.635, NZDCAD: 1.617, NZDCHF: 2.719, CADCHF: 2.349 }
+  thresholds: { mild: 0.7, very: 1.51 }   # (0.6994 / 1.5072)
+  # /strength (8 currencies, the macro-only pair aggregate): RMS per currency, its own thresholds.
+  rms_strength: { USD: 2.674, EUR: 2.47, GBP: 2.817, JPY: 2.706, AUD: 2.879, NZD: 2.253, CAD: 2.616, CHF: 2.572 }
+  thresholds_strength: { mild: 0.67, very: 1.52 }   # (0.6698 / 1.5177)

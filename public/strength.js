@@ -275,13 +275,17 @@
 
   // Own 2y monetary sub-score — INFORMATIVE only (the Strength score comes
   // from the pairs, where monetary counts only when both legs have it).
+  // Scoring v3: the 2Y repricing is not scored, so the payload carries no
+  // `monetary` state any more and nothing about it is shown.
   function monetaryText(card) {
+    if (!card.monetary) return "";
     const m = card.monetary || {};
     if (m.state === "ok") return "2Y " + fmtSigned(Number(m.score) || 0, 0);
     if (m.state === "stale") return "2Y stale";
     return "no 2Y";
   }
   function monetaryBadge(card) {
+    if (!card.monetary) return "";
     const m = card.monetary || {};
     const cls = m.state === "ok" ? "badge-rate-ok" : (m.state === "stale" ? "badge-rate-stale" : "badge-no-rate");
     const tip = m.state === "ok"
@@ -294,7 +298,6 @@
   function tableRowHtml(ccy, card) {
     const noData = !hasCoverage(card);
     const bias = card.bias_label || "Neutral";
-    const monetary = monetaryText(card);
     return (
       '<tr' + (noData ? ' class="strength-row-nodata"' : "") + ' data-ccy="' + escAttr(ccy) + '">' +
       '<td class="strength-ccy">' + ccy + '</td>' +
@@ -302,7 +305,6 @@
       '<td class="strength-num">' + (noData ? "—" : fmtSigned(score(card), 2)) + '</td>' +
       '<td>' + (noData ? "—" : bias) + '</td>' +
       '<td class="strength-num">' + (card.coverage || 0) + '</td>' +
-      '<td>' + (noData ? "—" : monetary) + '</td>' +
       '</tr>'
     );
   }
@@ -353,7 +355,7 @@
         if (v === null) return '<td class="matrix-cell">—</td>';
         const style = matrixCellStyle(v, maxAbs);
         const tip = base + "/" + quote + " fundamental score " + fmtSigned(v, 2) +
-          " (no COT, no trend; categories both legs have)";
+          " (macro only: 2.5 × (Macro base − Macro quote); no carry, no COT)";
         return '<td class="matrix-cell" data-pair="' + escAttr(base + "/" + quote) + '"' + (style ? ' style="' + style + '"' : "") +
           ' title="' + escAttr(tip) + '">' + fmtSigned(v, 2) + '</td>';
       }).join("");
@@ -412,7 +414,7 @@
       const row = h("button", { type: "button", class: "ph-row strength-ph-grid" },
         h("span", { class: "strength-ph-rank", text: String(i + 1) }),
         h("span", { class: "strength-ph-ccy" }, h("b", { text: ccy }),
-          h("span", { class: "strength-ph-sub", text: "N " + (card.coverage || 0) + " · " + monetaryText(card) })),
+          h("span", { class: "strength-ph-sub", text: "N " + (card.coverage || 0) + (monetaryText(card) ? " · " + monetaryText(card) : "") })),
         track,
         h("span", { class: "strength-ph-pct", text: noData ? "—" : card.pct.toFixed(1) + "%" }),
         h("span", { class: "strength-ph-score" }, h("span", { text: noData ? "—" : pm(fmtSigned(score(card), 2)) }),
@@ -621,7 +623,7 @@
       '<h2>' + ccy + '</h2>' +
       (hasCoverage(card)
         ? '<span class="strength-dd-meta">' + card.pct.toFixed(1) + '% &middot; score ' + fmtSigned(score(card), 2) +
-          ' &middot; ' + monetaryText(card) + ' &middot; N=' + (card.coverage || 0) + '</span>' +
+          (monetaryText(card) ? ' &middot; ' + monetaryText(card) : '') + ' &middot; N=' + (card.coverage || 0) + '</span>' +
           '<span class="bias-pill ' + biasClass(bias) + '">' + bias + '</span>' + note
         : '<span class="strength-dd-meta">no data</span>') +
       '</div>' +

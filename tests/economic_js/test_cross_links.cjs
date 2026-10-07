@@ -1,4 +1,6 @@
-// The RATE EXP (2Y) cell of every pair row of /economic links to the Central Banks pair page, the DXY row to the USD bank page.
+// The central-bank cell of every pair row of /economic links to the Central Banks pair page, the DXY row to the USD bank page.
+// Scoring v3 (2026-10-07): that cell is CARRY (the policy-rate differential); the RATE EXP (2Y) column is gone.
+// On a v2 payload (no meta.scoring) it is still the RATE EXP (2Y) cell.
 // Plain Node, no jsdom: static/economic-chart.js exposes indicatorCellHtml through its `module.exports` guard. The data is the real public/data/economic.json.
 "use strict";
 
@@ -25,7 +27,9 @@ const fx = payload.instruments.filter((i) => i.type === "fx");
 const singles = payload.instruments.filter((i) => i.type !== "fx");
 assert.strictEqual(fx.length, 28, "the page has 28 pairs");
 
-const linksOf = (inst) => (mod.indicatorCellHtml(inst, "rate_expectations").match(/<a class="cb-xlink" href="([^"]+)"/g) || []).map((a) => a.split('href="')[1].slice(0, -1));
+const v3 = (payload.meta || {}).scoring === "v3";
+const cbCell = (inst) => (v3 ? mod.carryCellHtml(inst) : mod.indicatorCellHtml(inst, "rate_expectations"));
+const linksOf = (inst) => (cbCell(inst).match(/<a class="cb-xlink" href="([^"]+)"/g) || []).map((a) => a.split('href="')[1].slice(0, -1));
 
 // every pair: exactly one link, to its own page, which exists
 const all = [];
@@ -45,10 +49,13 @@ assert.strictEqual(all.length, 29, "28 pairs + DXY");
 assert.strictEqual(new Set(all).size, 29, "no link twice");
 
 // the pair without a 2Y value (n/a) keeps the link on its dash, in a cell that is still marked n/a
-const na = fx.filter((i) => ((i.indicator_cells || {}).rate_expectations || {}).v === null);
-assert.ok(na.length >= 1, "at least one pair has no RATE EXP value in the real payload");
+const na = fx.filter((i) => (v3 ? (i.v3 || {}).carry : ((i.indicator_cells || {}).rate_expectations || {}).v) === null);
+if (!v3) assert.ok(na.length >= 1, "at least one pair has no RATE EXP value in the real payload");
+// v3: a pair without a carry value (a leg with no policy rate) keeps the link on its dash, like the 2Y cell did
+const noCarry = JSON.parse(JSON.stringify(fx[0]));
+if (v3) { noCarry.v3.carry = null; na.push(noCarry); }
 for (const inst of na) {
-  const html = mod.indicatorCellHtml(inst, "rate_expectations");
+  const html = cbCell(inst);
   assert.ok(html.startsWith('<td class="econ-cell cell-na"') && html.includes(">—</a>"), inst.symbol + ": the dash is the link");
 }
 
