@@ -683,6 +683,294 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     28,
+     30,
+     31,
+     32,
+     33,
+     34,
+     36,
+     37,
+     43,
+     45
+    ],
+    "paragraphs_sent": 122,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:minutes:2026-09-16",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-07T18:42:01Z",
+   "input_sha256": "7c7aac7c2653810277e9b8908a18c003b44632285db3fd75de1c40bd68231469",
+   "meeting_date": "2026-09-16",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1743,
+     "point": 1,
+     "source_text": "2",
+     "start": 1742,
+     "text": "2 percent"
+    },
+    {
+     "end": 22205,
+     "point": 5,
+     "source_text": "1/4 percentage point",
+     "start": 22185,
+     "text": "1/4 percentage point"
+    },
+    {
+     "end": 22214,
+     "point": 5,
+     "source_text": "3-3/4",
+     "start": 22209,
+     "text": "3-3/4"
+    },
+    {
+     "end": 22227,
+     "point": 5,
+     "source_text": "4 percent",
+     "start": 22218,
+     "text": "4 percent"
+    },
+    {
+     "end": 5388,
+     "point": 6,
+     "source_text": "12",
+     "start": 5386,
+     "text": "12"
+    },
+    {
+     "end": 26995,
+     "point": 6,
+     "source_text": "0",
+     "start": 26994,
+     "text": "0"
+    },
+    {
+     "end": 22205,
+     "point": 6,
+     "source_text": "1/4 percentage point",
+     "start": 22185,
+     "text": "1/4 percentage point"
+    },
+    {
+     "end": 22214,
+     "point": 6,
+     "source_text": "3-3/4",
+     "start": 22209,
+     "text": "3-3/4"
+    },
+    {
+     "end": 22227,
+     "point": 6,
+     "source_text": "4 percent",
+     "start": 22218,
+     "text": "4 percent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-10-07",
+   "quotes": [
+    {
+     "end": 14622,
+     "paragraph": 28,
+     "start": 14484,
+     "text": "Participants noted that inflation remained elevated and that they had not seen sufficient progress on lowering inflation in recent months."
+    },
+    {
+     "end": 17865,
+     "paragraph": 31,
+     "start": 17735,
+     "text": "Participants judged that labor market conditions were stable and generally viewed the labor market as close to maximum employment."
+    },
+    {
+     "end": 19458,
+     "paragraph": 33,
+     "start": 19191,
+     "text": "Many participants commented that, despite the recent rise in longer-term Treasury yields, financial conditions appeared to be supportive of economic growth, with equity prices having risen substantially this year and spreads on corporate bonds having remained narrow."
+    },
+    {
+     "end": 22228,
+     "paragraph": 36,
+     "start": 22047,
+     "text": "In their consideration of monetary policy at this meeting, all participants supported raising the target range for the federal funds rate 1/4 percentage point to 3-3/4 to 4 percent."
+    },
+    {
+     "end": 27173,
+     "paragraph": 43,
+     "start": 26907,
+     "text": "The Federal Open Market Committee approved the following statement for release by a 12–0 vote: The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate."
+    }
+   ],
+   "source": {
+    "chars": 35875,
+    "chars_sent": 35876,
+    "method": "html-selector",
+    "paragraphs_sent": 122,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14622,
+        "paragraph": 28,
+        "start": 14484,
+        "text": "Participants noted that inflation remained elevated and that they had not seen sufficient progress on lowering inflation in recent months."
+       },
+       {
+        "end": 16460,
+        "paragraph": 30,
+        "start": 16285,
+        "text": "Participants generally expected that inflation would remain elevated in the near term and then decline toward 2 percent over the medium term under appropriate monetary policy."
+       }
+      ],
+      "paragraphs": [
+       28,
+       30
+      ]
+     },
+     "text": "Participants noted that inflation remained elevated and that they had not seen sufficient progress lowering inflation in recent months, and generally expected it to decline toward 2 percent over the medium term under appropriate monetary policy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17865,
+        "paragraph": 31,
+        "start": 17735,
+        "text": "Participants judged that labor market conditions were stable and generally viewed the labor market as close to maximum employment."
+       },
+       {
+        "end": 18771,
+        "paragraph": 32,
+        "start": 18638,
+        "text": "Participants generally expected labor market conditions to remain stable, with the unemployment rate staying close to current levels."
+       }
+      ],
+      "paragraphs": [
+       31,
+       32
+      ]
+     },
+     "text": "Participants judged that labor market conditions were stable and close to maximum employment, and generally expected the unemployment rate to stay close to current levels."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19934,
+        "paragraph": 34,
+        "start": 19849,
+        "text": "Participants generally assessed that economic activity was expanding at a solid pace."
+       },
+       {
+        "end": 20104,
+        "paragraph": 34,
+        "start": 19935,
+        "text": "Robust business investment and resilient consumer spending had supported economic activity, even as adverse supply shocks from geopolitical developments had intensified."
+       }
+      ],
+      "paragraphs": [
+       34
+      ]
+     },
+     "text": "Participants generally assessed that economic activity was expanding at a solid pace, supported by robust business investment and resilient consumer spending."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19458,
+        "paragraph": 33,
+        "start": 19191,
+        "text": "Many participants commented that, despite the recent rise in longer-term Treasury yields, financial conditions appeared to be supportive of economic growth, with equity prices having risen substantially this year and spreads on corporate bonds having remained narrow."
+       },
+       {
+        "end": 19848,
+        "paragraph": 33,
+        "start": 19675,
+        "text": "A few participants commented that housing was a sector in which financial conditions did not appear supportive of activity, with mortgage rates remaining at elevated levels."
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "Many participants commented that financial conditions appeared supportive of economic growth despite the rise in longer-term Treasury yields, while a few commented that housing conditions did not appear supportive of activity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 22228,
+        "paragraph": 36,
+        "start": 22047,
+        "text": "In their consideration of monetary policy at this meeting, all participants supported raising the target range for the federal funds rate 1/4 percentage point to 3-3/4 to 4 percent."
+       },
+       {
+        "end": 24236,
+        "paragraph": 37,
+        "start": 24025,
+        "text": "With regard to the outlook for monetary policy beyond the current meeting, most participants assessed that another increase in the target range for the federal funds rate would likely be appropriate by year end."
+       }
+      ],
+      "paragraphs": [
+       36,
+       37
+      ]
+     },
+     "text": "All participants supported raising the target range 1/4 percentage point to 3-3/4 to 4 percent, and most assessed that another increase would likely be appropriate by year end."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 27173,
+        "paragraph": 43,
+        "start": 27002,
+        "text": "The Committee decided to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate."
+       },
+       {
+        "end": 28017,
+        "paragraph": 45,
+        "start": 27984,
+        "text": "Voting against this action: None."
+       }
+      ],
+      "paragraphs": [
+       43,
+       45
+      ]
+     },
+     "text": "The Committee decided by a 12–0 vote to raise the target range for the federal funds rate by 1/4 percentage point to 3-3/4 to 4 percent; none voted against the action."
+    }
+   ],
+   "title": "Federal Reserve minutes of the 16 September 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 18081,
+    "output_tokens": 2281,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      7,
      9,
      11,

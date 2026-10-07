@@ -113,6 +113,10 @@
     "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260729.htm": {
       "last_modified": "Wed, 19 Aug 2026 18:01:21 GMT"
     },
+    "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm": {
+      "last_modified": "Wed, 07 Oct 2026 18:00:16 GMT",
+      "sha256": "7c7aac7c2653810277e9b8908a18c003b44632285db3fd75de1c40bd68231469"
+    },
     "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm": {
       "last_modified": "Wed, 29 Apr 2026 18:00:15 GMT"
     },
@@ -159,26 +163,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-05T08:42:32Z",
-      "calls": 1,
-      "cost_usd": 0.0278,
+      "at": "2026-10-07T18:42:01Z",
+      "calls": 2,
+      "cost_usd": 0.0635,
       "failed_validation": 0,
-      "input_tokens": 5951,
+      "input_tokens": 18081,
       "new": 1,
       "no_text": 0,
-      "output_tokens": 1323,
+      "output_tokens": 2281,
       "pending": 0,
       "reasoning_tokens": 516,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 114,
+      "unchanged": 115,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 189,
-      "input_tokens": 1210713,
-      "output_tokens": 212439,
-      "summaries": 123
+      "calls": 191,
+      "input_tokens": 1228794,
+      "output_tokens": 214720,
+      "summaries": 124
     }
   }
 }
