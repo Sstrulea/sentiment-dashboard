@@ -19,7 +19,7 @@ Every 200 response is written raw to data/jb_raw/ BEFORE any parsing (newest
 2026-10-07 — /calendar/today/: since 2026-10-02 JBlanked's free daily request
 applies ONLY to /calendar/today/; the range endpoint answers 401 "requires
 credits" (last range success 2026-10-05 01:06 UTC). `pull_actuals` now makes ONE
-today call per day inside TODAY_WINDOW_UTC (19:30-20:50 UTC) and NEVER retries —
+today call per day inside TODAY_WINDOW_UTC (19:00-20:50 UTC) and NEVER retries —
 the guard is on the last ATTEMPT (`should_attempt_today`), not the last success.
 The range path (`pull_actuals_range`, `should_pull` above) is kept but not called.
 
@@ -64,7 +64,7 @@ DEFAULT_RANGE_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/ra
 # that would ask for tomorrow — nothing released yet, the free call lost. A
 # missed window (CI late or off) skips the day; the manual panel covers it.
 DEFAULT_TODAY_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/today/"
-TODAY_WINDOW_UTC = ((19, 30), (20, 50))   # 22:30-23:50 Romania (UTC+3)
+TODAY_WINDOW_UTC = ((19, 0), (20, 50))    # 22:00-23:50 Romania (UTC+3): two Worker ticks (~19:07, ~20:07)
 # Fields ingestion needs; extra fields (e.g. "Trend", added by JB 2026-10-06) are ignored.
 REQUIRED_FIELDS = ("Name", "Currency", "Date", "Actual", "Forecast", "Previous")
 
@@ -552,13 +552,13 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
                  force: bool = False) -> dict:
     """The daily pull on the FREE /calendar/today/ endpoint (2026-10-07).
 
-    One attempt per day inside TODAY_WINDOW_UTC (19:30-20:50 UTC), never retried:
+    One attempt per day inside TODAY_WINDOW_UTC (19:00-20:50 UTC), never retried:
     every attempt — 200 or not — is recorded in data/jb_last_pull.json
     (last_attempt_at/status/http_status/error) and its body saved to
     data/jb_raw/jb_today_*.json, so the next tick of the same window skips.
     A 200 is ingested only when every event carries REQUIRED_FIELDS (extra
-    fields ignored); otherwise status `format_mismatch`, nothing ingested. Its
-    events must all be dated the current JB day (jb_day), else `wrong_day`.
+    fields ignored); otherwise status `format_mismatch`, nothing ingested. Only
+    its events dated the current JB day (jb_day) are ingested; none → `wrong_day`.
     Ingestion is the range path's: parse → clean_jblanked_actuals (forecast
     guard) → field-aware merge; CORRECTION overrides apply at read time.
     Never raises. `fetcher() -> raw text` is injectable for tests; `force`
@@ -614,14 +614,21 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
                         "payload is not a list of events with " + ", ".join(REQUIRED_FIELDS))
         return {"status": "format_mismatch", "raw": str(raw_path)}
 
+    # Only the events of the current JB day are ingested; others are ignored.
+    # wrong_day only when NONE is from the current JB day.
     want = jb_day(now).strftime("%Y.%m.%d")
     days = payload_days(data)
-    if data and days != {want}:
-        log.warning("JB pull: today payload carries %s, not the JB day %s; NOT ingested; raw kept at %s.",
+    if data and want not in days:
+        log.warning("JB pull: today payload carries %s, none of the JB day %s; NOT ingested; raw kept at %s.",
                     sorted(days), want, raw_path.name)
         _record_attempt(state_path, now, "wrong_day",
                         f"payload days {sorted(days)[:3]} != JB day {want}")
         return {"status": "wrong_day", "raw": str(raw_path)}
+    if len(days) > 1:
+        log.info("JB pull: ignoring %d event(s) not dated the JB day %s (%s).",
+                 sum(1 for e in data if str(e.get("Date", "")).strip()[:10] != want), want,
+                 sorted(days - {want}))
+    data = [e for e in data if str(e.get("Date", "")).strip()[:10] == want]
 
     try:
         jb = parse_jblanked_range([{f: e[f] for f in REQUIRED_FIELDS + ("Quality", "Strength") if f in e}

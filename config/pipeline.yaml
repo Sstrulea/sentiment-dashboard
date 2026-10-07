@@ -20,13 +20,13 @@ fred_crosscheck_tol_pp: 0.15
 # (schedule + forecast only), so actuals come from JBlanked. Since 2026-10-02 the
 # free daily request covers ONLY /calendar/today/ (range answers 401 "requires
 # credits"), so the pull (python -m src.jb_actuals) makes ONE attempt per day, only
-# between 19:30 and 20:50 UTC (before the JB day turns at 21:00 UTC — 22:00 from
+# between 19:00 and 20:50 UTC (two Worker ticks, ~19:07 and ~20:07) (before the JB day turns at 21:00 UTC — 22:00 from
 # 1 November), and never retries, whatever the outcome; every attempt
 # is recorded in data/jb_last_pull.json, its body in data/jb_raw/jb_today_*.json.
 # Auth: JBLANKED_API_KEY (never call during dev/tests). jb_today_not_before holds
 # the first call back (the range retries of 2026-10-07 may have spent that day's request).
 jb_today_url: "https://www.jblanked.com/news/api/forex-factory/calendar/today/"
-jb_today_not_before: "2026-10-08T19:30:00"
+jb_today_not_before: "2026-10-08T19:00:00"
 # range endpoint (paid credits) — kept for the code path, NOT called.
 jb_range_url: "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
 
