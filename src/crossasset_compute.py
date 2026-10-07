@@ -576,13 +576,16 @@ def v3_index_combine(m_block: Optional[float], r_block: Optional[float]) -> tupl
     """Indices: m = 0.67 × Macro, r = 0.33 × Rates; s = m + r when r ≥ 0; when
     r < 0, s = max(m + r, 0) if m > 0, otherwise s = m (falling rates lift, rising
     rates only erase a bullish macro, never push it negative). A missing block:
-    the other alone (weight rescaled to 1). Returns (s, {block: contribution})."""
+    the other alone at full weight — Macro alone as is; Rates alone floored at 0
+    (s = max(Rates, 0): rates on their own never make an index bearish).
+    Returns (s, {block: contribution})."""
     if m_block is None and r_block is None:
         return None, {}
     if r_block is None:
         return float(m_block), {"macro": float(m_block), "rates": 0.0}
     if m_block is None:
-        return float(r_block), {"macro": 0.0, "rates": float(r_block)}
+        s = max(float(r_block), 0.0)
+        return s, {"macro": 0.0, "rates": s}
     m = V3_INDEX_WEIGHTS["macro"] * float(m_block)
     r = V3_INDEX_WEIGHTS["rates"] * float(r_block)
     if r >= 0:

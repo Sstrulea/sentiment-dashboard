@@ -131,9 +131,16 @@ def test_index_rule_negative_macro_ignores_rising_rates():
     assert s == pytest.approx(-0.67) and parts["rates"] == pytest.approx(0.0)
 
 
-def test_index_with_a_missing_block_uses_the_other_alone():
-    assert v3_index_combine(1.0, None)[0] == 1.0
-    assert v3_index_combine(None, -1.0)[0] == -1.0
+def test_index_with_macro_missing_rates_alone_floored_at_zero():
+    s, parts = v3_index_combine(None, -1.0)
+    assert s == 0.0 and parts == {"macro": 0.0, "rates": 0.0}
+    s, parts = v3_index_combine(None, 1.2)                # full weight, not × 0.33
+    assert s == pytest.approx(1.2) and sum(parts.values()) == pytest.approx(1.2)
+
+
+def test_index_with_rates_missing_macro_alone_unchanged():
+    assert v3_index_combine(1.0, None) == (1.0, {"macro": 1.0, "rates": 0.0})
+    assert v3_index_combine(-1.5, None)[0] == -1.5       # macro alone may stay negative
 
 
 def test_crossasset_contributions_sum_and_rates_signal():
