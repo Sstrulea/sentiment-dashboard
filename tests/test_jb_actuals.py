@@ -209,7 +209,7 @@ def _seeded_parquet(tmp_path):
 
 def test_pull_actuals_end_to_end(tmp_path):
     parquet, state, raw = _seeded_parquet(tmp_path), tmp_path / "s.json", tmp_path / "raw"
-    rep = J.pull_actuals(now_utc=NOW, parquet_path=parquet, state_path=state,
+    rep = J.pull_actuals_range(now_utc=NOW, parquet_path=parquet, state_path=state,
                          raw_dir=raw, fetcher=lambda f, t: FIXTURE.read_text(), cfg={})
     assert rep["status"] == "ok"
     assert len(list(raw.glob("jb_range_*.json"))) == 1          # raw saved before parse
@@ -223,7 +223,7 @@ def test_pull_actuals_end_to_end(tmp_path):
     assert pd.isna(out[out["canonical_id"] == "usd_cpi"].iloc[0]["actual"])
 
     # same evening, next hourly tick → skipped (one successful pull per UTC day)
-    rep2 = J.pull_actuals(now_utc=NOW + pd.Timedelta(hours=1), parquet_path=parquet,
+    rep2 = J.pull_actuals_range(now_utc=NOW + pd.Timedelta(hours=1), parquet_path=parquet,
                           state_path=state, raw_dir=raw,
                           fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")),
                           cfg={})
@@ -232,7 +232,7 @@ def test_pull_actuals_end_to_end(tmp_path):
 
 def test_pull_skips_when_window_covered_without_fetching(tmp_path):
     (tmp_path / "s.json").write_text('{"last_success_at": "2026-07-11T19:00:00"}')
-    rep = J.pull_actuals(now_utc=pd.Timestamp("2026-07-12 05:05"),
+    rep = J.pull_actuals_range(now_utc=pd.Timestamp("2026-07-12 05:05"),
                          parquet_path=tmp_path / "ff.parquet",
                          state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                          fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")),
@@ -243,7 +243,7 @@ def test_pull_skips_when_window_covered_without_fetching(tmp_path):
 def test_pull_fetch_failure_is_fail_open_and_retryable(tmp_path):
     parquet, state = _seeded_parquet(tmp_path), tmp_path / "s.json"
     before = pd.read_parquet(parquet)
-    rep = J.pull_actuals(now_utc=NOW, parquet_path=parquet, state_path=state,
+    rep = J.pull_actuals_range(now_utc=NOW, parquet_path=parquet, state_path=state,
                          raw_dir=tmp_path / "raw",
                          fetcher=lambda f, t: (_ for _ in ()).throw(RuntimeError("HTTP 500")),
                          cfg={})
@@ -258,7 +258,7 @@ def test_pull_fetch_failure_is_fail_open_and_retryable(tmp_path):
 def test_pull_empty_payload_does_not_advance_state(tmp_path):
     parquet, state, raw = _seeded_parquet(tmp_path), tmp_path / "s.json", tmp_path / "raw"
     before = pd.read_parquet(parquet)
-    rep = J.pull_actuals(now_utc=NOW, parquet_path=parquet, state_path=state,
+    rep = J.pull_actuals_range(now_utc=NOW, parquet_path=parquet, state_path=state,
                          raw_dir=raw, fetcher=lambda f, t: "[]", cfg={})
     assert rep["status"] == "empty"
     assert "last_success_at" not in J.load_state(state)
@@ -273,7 +273,7 @@ def test_pull_requests_trailing_7_day_range(tmp_path):
         seen["from"], seen["to"] = from_d, to_d
         return FIXTURE.read_text()
 
-    J.pull_actuals(now_utc=NOW, parquet_path=tmp_path / "ff.parquet",
+    J.pull_actuals_range(now_utc=NOW, parquet_path=tmp_path / "ff.parquet",
                    state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                    fetcher=fetcher, cfg={})
     assert seen["to"].isoformat() == "2026-07-13"  # JB to este EXCLUSIV -> cere ziua+1
@@ -423,19 +423,19 @@ def test_range_span_is_gap_aware(tmp_path, monkeypatch):
     def fake(f, t):
         seen["from"], seen["to"] = f, t
         raise RuntimeError("stop after span check")
-    J.pull_actuals(now_utc=pd.Timestamp("2026-07-15 10:00"),
+    J.pull_actuals_range(now_utc=pd.Timestamp("2026-07-15 10:00"),
                    parquet_path=tmp_path / "ff.parquet",
                    state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                    fetcher=fake, cfg={}, force=True)
     assert seen["from"] == date(2026, 7, 8)                             # no state -> 7d floor
     (tmp_path / "s.json").write_text('{"last_success_at": "2026-07-03T18:00:00"}')
-    J.pull_actuals(now_utc=pd.Timestamp("2026-07-15 10:00"),
+    J.pull_actuals_range(now_utc=pd.Timestamp("2026-07-15 10:00"),
                    parquet_path=tmp_path / "ff.parquet",
                    state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                    fetcher=fake, cfg={}, force=True)
     assert seen["from"] == date(2026, 7, 2)                             # 12d gap -> 13d span
     (tmp_path / "s.json").write_text('{"last_success_at": "2025-01-01T18:00:00"}')
-    J.pull_actuals(now_utc=pd.Timestamp("2026-07-15 10:00"),
+    J.pull_actuals_range(now_utc=pd.Timestamp("2026-07-15 10:00"),
                    parquet_path=tmp_path / "ff.parquet",
                    state_path=tmp_path / "s.json", raw_dir=tmp_path / "raw",
                    fetcher=fake, cfg={}, force=True)
@@ -470,7 +470,7 @@ def test_401_body_and_rate_limit_headers_are_persisted_without_the_key(tmp_path,
     monkeypatch.setenv("JBLANKED_API_KEY", key)
     state = tmp_path / "s.json"
     (state).write_text('{"last_success_at": "2026-07-10T19:00:00", "rows": 5}')
-    rep = J.pull_actuals(now_utc=NOW, parquet_path=_seeded_parquet(tmp_path),
+    rep = J.pull_actuals_range(now_utc=NOW, parquet_path=_seeded_parquet(tmp_path),
                          state_path=state, raw_dir=tmp_path / "raw", cfg={})
     assert rep == {"status": "fetch_failed"}
     st = J.load_state(state)
@@ -488,7 +488,7 @@ def test_success_records_the_attempt_too(tmp_path, monkeypatch):
     _patch_requests(monkeypatch, _FakeResp(200, FIXTURE.read_text(), {"X-RateLimit-Limit": "1"}))
     monkeypatch.setenv("JBLANKED_API_KEY", "k" * 32)
     state = tmp_path / "s.json"
-    rep = J.pull_actuals(now_utc=NOW, parquet_path=_seeded_parquet(tmp_path),
+    rep = J.pull_actuals_range(now_utc=NOW, parquet_path=_seeded_parquet(tmp_path),
                          state_path=state, raw_dir=tmp_path / "raw", cfg={})
     st = J.load_state(state)
     assert rep["status"] == "ok" and st["last_status"] == "ok" and st["last_error"] is None
@@ -499,7 +499,7 @@ def test_success_records_the_attempt_too(tmp_path, monkeypatch):
 def test_skipped_tick_writes_nothing(tmp_path):
     state = tmp_path / "s.json"
     state.write_text('{"last_success_at": "2026-07-11T19:00:00"}')
-    J.pull_actuals(now_utc=pd.Timestamp("2026-07-12 05:05"), parquet_path=tmp_path / "ff.parquet",
+    J.pull_actuals_range(now_utc=pd.Timestamp("2026-07-12 05:05"), parquet_path=tmp_path / "ff.parquet",
                    state_path=state, raw_dir=tmp_path / "raw", cfg={},
                    fetcher=lambda f, t: (_ for _ in ()).throw(AssertionError("must not fetch")))
     assert state.read_text() == '{"last_success_at": "2026-07-11T19:00:00"}'

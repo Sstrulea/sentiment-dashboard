@@ -177,6 +177,15 @@
   // calendar-stale (the weekly calendar feed carries no actuals, so the pull can
   // freeze while the calendar itself keeps updating); age_days === null means no
   // successful pull was EVER recorded ("never").
+  // Last ATTEMPT of the daily JBlanked pull (2026-10-07): "ok", or the failure
+  // with its HTTP code — a pull can fail every day while the age only says "old".
+  function attemptTxt(v) {
+    const a = v && v.last_attempt;
+    if (!a || !a.status) return "";
+    if (a.status === "ok") return "last try ok";
+    if (a.status === "format_mismatch") return "last try failed (format)";
+    return "last try failed" + (a.http_status ? " (HTTP " + a.http_status + ")" : "");
+  }
   function freshnessBadges(f) {
     if (!f) return "";
     let out = "";
@@ -186,9 +195,11 @@
       const age = (v.age_days === null || v.age_days === undefined) ? "never"
         : (v.age_days <= 0 ? "today" : v.age_days + "d ago");
       const cls = v.stale ? "fresh-badge stale" : "fresh-badge ok";
-      const txt = (v.stale ? "⚠ STALE " : "") + pair[1] + " " + age;
-      out += ' <span class="' + cls + '" title="last update ' + escAttr(v.last_update || "never") +
-        '">' + txt + "</span>";
+      const at = attemptTxt(v);
+      const txt = (v.stale ? "⚠ STALE " : "") + pair[1] + " " + age + (at ? " · " + at : "");
+      const tip = "last update " + (v.last_update || "never") +
+        (at ? " · " + at + " at " + v.last_attempt.at : "");
+      out += ' <span class="' + cls + '" title="' + escAttr(tip) + '">' + txt + "</span>";
     });
     out += priceBadge(f.price);
     return out;
@@ -1675,7 +1686,8 @@
       const v = f[k];
       if (!v) return;
       const age = v.age_days === null || v.age_days === undefined ? "never" : v.age_days <= 0 ? "today" : v.age_days + "d ago";
-      badges.appendChild(ph("span", { class: "econ-ph-badge" + (v.stale ? " is-stale" : ""), text: (v.stale ? "Stale: " : "") + label + " " + age }));
+      const at = attemptTxt(v);
+      badges.appendChild(ph("span", { class: "econ-ph-badge" + (v.stale ? " is-stale" : ""), text: (v.stale ? "Stale: " : "") + label + " " + age + (at ? " · " + at : "") }));
     });
     if (f.price && f.price.stale) badges.appendChild(ph("span", { class: "econ-ph-badge is-stale", text: "Stale prices" }));
     if (badges.childNodes.length) el.appendChild(badges);

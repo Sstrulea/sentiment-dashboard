@@ -119,7 +119,7 @@ def test_reingest_through_pull_actuals_overwrites_the_wrong_value(tmp_path):
     payload, ends at 0.2."""
     parquet = tmp_path / "ff.parquet"
     _schedule(pce_actual=0.9).to_parquet(parquet, index=False)
-    rep = J.pull_actuals(now_utc=NOW, parquet_path=parquet, state_path=tmp_path / "s.json",
+    rep = J.pull_actuals_range(now_utc=NOW, parquet_path=parquet, state_path=tmp_path / "s.json",
                          raw_dir=tmp_path / "raw", fetcher=lambda f, t: FIXTURE.read_text(),
                          cfg={}, force=True)
     assert rep["status"] == "ok"
@@ -168,7 +168,7 @@ def test_correction_survives_a_jb_reingest(tmp_path):
     parquet, overrides = tmp_path / "ff.parquet", tmp_path / "ov.json"
     _schedule(origin="jb", pce_actual=0.2).to_parquet(parquet, index=False)
     overrides.write_text(json.dumps([_correction()], indent=1) + "\n")
-    J.pull_actuals(now_utc=NOW, parquet_path=parquet, state_path=tmp_path / "s.json",
+    J.pull_actuals_range(now_utc=NOW, parquet_path=parquet, state_path=tmp_path / "s.json",
                    raw_dir=tmp_path / "raw", fetcher=lambda f, t: FIXTURE.read_text(),
                    cfg={}, force=True)
     raw = pd.read_parquet(parquet)

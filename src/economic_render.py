@@ -942,6 +942,12 @@ def _freshness(as_of: pd.Timestamp | None = None,
             else:
                 out["actuals_pull"] = {"last_update": None, "age_days": None,
                                        "stale": True}
+            # The LAST ATTEMPT next to the last success (2026-10-07): a pull can
+            # fail every day (401, bad payload) while the age only says "old".
+            if st.get("last_attempt_at"):
+                out["actuals_pull"]["last_attempt"] = {
+                    "at": st.get("last_attempt_at"), "status": st.get("last_status"),
+                    "http_status": st.get("last_http_status")}
         except Exception as e:  # noqa: BLE001
             log.warning("freshness(actuals_pull) unavailable: %s", e)
 

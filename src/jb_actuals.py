@@ -16,6 +16,13 @@ failed attempt leaves the state untouched so the next hourly tick retries.
 Every 200 response is written raw to data/jb_raw/ BEFORE any parsing (newest
 ~14 kept) so a bad payload stays reproducible after the fact.
 
+2026-10-07 — /calendar/today/: since 2026-10-02 JBlanked's free daily request
+applies ONLY to /calendar/today/; the range endpoint answers 401 "requires
+credits" (last range success 2026-10-05 01:06 UTC). `pull_actuals` now makes ONE
+today call per window (first tick after TODAY_PULL_UTC, 20:30) and NEVER retries —
+the guard is on the last ATTEMPT (`should_attempt_today`), not the last success.
+The range path (`pull_actuals_range`, `should_pull` above) is kept but not called.
+
 The payload needs cleaning (validated empirically on 2026-07-12, reproduced
 here as the pure `clean_jblanked_actuals` — see its docstring). Everything is
 fail-open, mirroring the pipeline contract: a JBlanked failure never degrades
@@ -48,6 +55,14 @@ PULL_HOUR_UTC = 18               # end-of-day window opens here (21:00 local, UT
 RANGE_DAYS = 7                   # MINIMUM range span [today-RANGE_DAYS, today] (UTC)
 MAX_RANGE_DAYS = 60              # cap when catching up after a long absence
 DEFAULT_RANGE_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
+# Since 2026-10-02 JBlanked's free daily request applies ONLY to /calendar/today/
+# (the range endpoint answers 401 "requires credits"). One ATTEMPT per day, at the
+# first tick after TODAY_PULL_UTC — after the last release of the JB day — and
+# never a retry, whatever the outcome: a retry could spend the one free request.
+DEFAULT_TODAY_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/today/"
+TODAY_PULL_UTC = (20, 30)        # 23:30 Romania (UTC+3)
+# Fields ingestion needs; extra fields (e.g. "Trend", added by JB 2026-10-06) are ignored.
+REQUIRED_FIELDS = ("Name", "Currency", "Date", "Actual", "Forecast", "Previous")
 
 
 # ---------------------------------------------------------------------------
@@ -112,6 +127,39 @@ def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
     if last is not None and last >= due:
         return False                                    # window already covered
     return True                                         # behind → retry on every tick
+
+
+def attempt_window_start(now_utc: pd.Timestamp) -> pd.Timestamp:
+    """The most recent TODAY_PULL_UTC instant at or before `now` (UTC-naive)."""
+    now = pd.Timestamp(now_utc)
+    anchor = now.normalize() + pd.Timedelta(hours=TODAY_PULL_UTC[0], minutes=TODAY_PULL_UTC[1])
+    return anchor if now >= anchor else anchor - pd.Timedelta(days=1)
+
+
+def should_attempt_today(now_utc: pd.Timestamp, state: dict,
+                         not_before: Optional[pd.Timestamp] = None) -> bool:
+    """At most ONE attempt per window — judged on the last ATTEMPT, not the last
+    success, so a failure (401, network, bad payload) waits for the next day.
+    `not_before` (config jb_today_not_before) holds the first call back."""
+    now = pd.Timestamp(now_utc)
+    if not_before is not None and now < pd.Timestamp(not_before):
+        return False
+    raw = state.get("last_attempt_at")
+    if raw:
+        try:
+            last = pd.Timestamp(raw)
+            last = last.tz_convert(None) if last.tzinfo is not None else last
+            if last >= attempt_window_start(now):
+                return False
+        except Exception:  # noqa: BLE001 — unreadable → treat as never attempted
+            pass
+    return True
+
+
+def payload_format_ok(data) -> bool:
+    """A list of event objects, each carrying REQUIRED_FIELDS (extras ignored)."""
+    return isinstance(data, list) and all(
+        isinstance(e, dict) and all(f in e for f in REQUIRED_FIELDS) for e in data)
 
 
 # ---------------------------------------------------------------------------
@@ -323,6 +371,18 @@ def fetch_range_raw(from_date: date, to_date: date, *, api_key: str,
     return r.text
 
 
+def fetch_today_raw(*, api_key: str, url: str = DEFAULT_TODAY_URL, timeout: int = 30) -> str:
+    """ONE authenticated /calendar/today/ call → raw response text (unparsed).
+    The free tier's single daily request — callers gate through should_attempt_today()."""
+    global _last_response_meta
+    import requests
+    r = requests.get(url, headers={"Authorization": f"Api-Key {api_key}",
+                                   "User-Agent": "macro-data-analysis/1.0"}, timeout=timeout)
+    _last_response_meta = _response_meta(r, api_key)
+    r.raise_for_status()
+    return r.text
+
+
 def _record_attempt(state_path: Path, now: pd.Timestamp, status: str,
                     error: Optional[str] = None) -> None:
     """Persist the outcome of a REAL call next to the last-success fields, which
@@ -342,13 +402,13 @@ def _record_attempt(state_path: Path, now: pd.Timestamp, status: str,
 
 
 def save_raw(text: str, now_utc: pd.Timestamp, raw_dir: Path = RAW_DIR,
-             keep: int = RAW_KEEP) -> Path:
-    """Persist a 200 payload to disk BEFORE any parsing; prune to newest `keep`."""
+             keep: int = RAW_KEEP, prefix: str = "jb_range") -> Path:
+    """Persist a payload to disk BEFORE any parsing; prune to newest `keep`."""
     raw_dir = Path(raw_dir)
     raw_dir.mkdir(parents=True, exist_ok=True)
-    p = raw_dir / f"jb_range_{pd.Timestamp(now_utc).strftime('%Y-%m-%dT%H%M%SZ')}.json"
+    p = raw_dir / f"{prefix}_{pd.Timestamp(now_utc).strftime('%Y-%m-%dT%H%M%SZ')}.json"
     p.write_text(text)
-    for f in sorted(raw_dir.glob("jb_range_*.json"))[:-keep]:   # ISO names sort by time
+    for f in sorted(raw_dir.glob(f"{prefix}_*.json"))[:-keep]:   # ISO names sort by time
         try:
             f.unlink()
         except OSError:
@@ -367,14 +427,17 @@ def _safe_cfg() -> dict:
         return {}
 
 
-def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
+def pull_actuals_range(*, now_utc: Optional[pd.Timestamp] = None,
                  parquet_path: Path = FF_PARQUET,
                  state_path: Path = STATE_JSON,
                  raw_dir: Path = RAW_DIR,
                  fetcher: Optional[Callable[[date, date], str]] = None,
                  cfg: Optional[dict] = None,
                  force: bool = False) -> dict:
-    """Window-gated daily pull → save raw → parse → clean → field-aware merge.
+    """RANGE endpoint (kept, NOT called since 2026-10-07 — it needs paid
+    credits since JBlanked's 2026-10-02 change; see pull_actuals for the free
+    /calendar/today/ path). Window-gated daily pull → save raw → parse → clean →
+    field-aware merge.
 
     Never raises: every failure is logged ("JB pull:" prefix), keeps the
     last-good parquet AND leaves the state untouched (→ the next hourly tick
@@ -454,13 +517,117 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
             "rows_before": n_before, "rows_after": len(merged), "raw": str(raw_path)}
 
 
+def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
+                 parquet_path: Path = FF_PARQUET,
+                 state_path: Path = STATE_JSON,
+                 raw_dir: Path = RAW_DIR,
+                 fetcher: Optional[Callable[[], str]] = None,
+                 cfg: Optional[dict] = None,
+                 force: bool = False) -> dict:
+    """The daily pull on the FREE /calendar/today/ endpoint (2026-10-07).
+
+    One attempt per window (first tick after TODAY_PULL_UTC), never retried:
+    every attempt — 200 or not — is recorded in data/jb_last_pull.json
+    (last_attempt_at/status/http_status/error) and its body saved to
+    data/jb_raw/jb_today_*.json, so the next tick of the same window skips.
+    A 200 is ingested only when every event carries REQUIRED_FIELDS (extra
+    fields ignored); otherwise status `format_mismatch`, nothing ingested.
+    Ingestion is the range path's: parse → clean_jblanked_actuals (forecast
+    guard) → field-aware merge; CORRECTION overrides apply at read time.
+    Never raises. `fetcher() -> raw text` is injectable for tests; `force`
+    bypasses the window guard (manual recovery only — it spends the request).
+    """
+    now = (pd.Timestamp(now_utc) if now_utc is not None
+           else pd.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None)))
+    cfg = cfg if cfg is not None else _safe_cfg()
+    state = load_state(state_path)
+    nb = cfg.get("jb_today_not_before")
+    not_before = None
+    if nb:
+        not_before = pd.Timestamp(nb)
+        not_before = not_before.tz_convert(None) if not_before.tzinfo is not None else not_before
+    if not force and not should_attempt_today(now, state, not_before):
+        log.info("JB pull: skipped (attempt window %s already tried, or before %s).",
+                 attempt_window_start(now).isoformat(), not_before)
+        return {"status": "skipped", "reason": "window_attempted"}
+
+    if fetcher is None:
+        key = _api_key()
+        if not key:
+            log.warning("JB pull: JBLANKED_API_KEY missing — skipped; calendar "
+                        "actuals WILL go stale (watch the dashboard badge).")
+            return {"status": "no_api_key"}
+        url = cfg.get("jb_today_url", DEFAULT_TODAY_URL)
+        fetcher = lambda: fetch_today_raw(api_key=key, url=url)  # noqa: E731
+
+    global _last_response_meta
+    _last_response_meta = None
+    try:
+        raw_text = fetcher()
+    except Exception as e:  # noqa: BLE001 — HTTP/network/auth failure: no retry today
+        meta = _last_response_meta or {}
+        if meta.get("body") is not None:
+            save_raw(meta["body"], now, raw_dir=raw_dir, prefix="jb_today")
+        log.warning("JB pull: today fetch FAILED (HTTP %s: %s); next attempt in the next window.",
+                    meta.get("http_status"), str(meta.get("body") or e)[:160])
+        _record_attempt(state_path, now, "fetch_failed", f"{type(e).__name__}: {e}")
+        return {"status": "fetch_failed", "http_status": meta.get("http_status")}
+
+    raw_path = save_raw(raw_text, now, raw_dir=raw_dir, prefix="jb_today")
+    try:
+        data = json.loads(raw_text)
+    except Exception as e:  # noqa: BLE001
+        log.warning("JB pull: today payload is not JSON (%s); raw kept at %s.", str(e)[:120], raw_path.name)
+        _record_attempt(state_path, now, "format_mismatch", f"not JSON: {e}")
+        return {"status": "format_mismatch", "raw": str(raw_path)}
+    if not payload_format_ok(data):
+        log.warning("JB pull: today payload lacks %s; NOT ingested; raw kept at %s.",
+                    "/".join(REQUIRED_FIELDS), raw_path.name)
+        _record_attempt(state_path, now, "format_mismatch",
+                        "payload is not a list of events with " + ", ".join(REQUIRED_FIELDS))
+        return {"status": "format_mismatch", "raw": str(raw_path)}
+
+    try:
+        jb = parse_jblanked_range([{f: e[f] for f in REQUIRED_FIELDS + ("Quality", "Strength") if f in e}
+                                   for e in data], now_utc=now)
+    except Exception as e:  # noqa: BLE001
+        log.warning("JB pull: today parse FAILED (%s); raw kept at %s.", str(e)[:120], raw_path.name)
+        _record_attempt(state_path, now, "parse_failed", f"{type(e).__name__}: {e}")
+        return {"status": "parse_failed", "raw": str(raw_path)}
+    if jb.empty:
+        log.warning("JB pull: today payload mapped 0 events; raw kept at %s.", raw_path.name)
+        _record_attempt(state_path, now, "empty", "payload mapped 0 events")
+        return {"status": "empty", "raw": str(raw_path)}
+
+    parquet_path = Path(parquet_path)
+    from .ff_provenance import ensure_provenance
+    ensure_provenance(parquet_path)
+    existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
+    cleaned = clean_jblanked_actuals(jb, schedule=existing, preserve_zero_actuals=True)
+    merged = merge_weekly(existing, cleaned)
+    parquet_path.parent.mkdir(parents=True, exist_ok=True)
+    merged.to_parquet(parquet_path, index=False)
+
+    n_before = 0 if existing is None else len(existing)
+    n_act = int(cleaned["actual"].notna().sum())
+    save_state({"last_success_utc_date": str(now.date()),
+                "last_success_at": now.isoformat(), "endpoint": "today",
+                "rows": len(cleaned), "actuals": n_act}, state_path)
+    _record_attempt(state_path, now, "ok")
+    log.info("JB pull: OK (today) — %d cleaned row(s), %d with actuals; parquet %d -> %d rows; raw %s.",
+             len(cleaned), n_act, n_before, len(merged), raw_path.name)
+    return {"status": "ok", "rows": len(cleaned), "actuals": n_act,
+            "rows_before": n_before, "rows_after": len(merged), "raw": str(raw_path)}
+
+
 def main() -> int:
     import argparse
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
-    ap = argparse.ArgumentParser(description="Daily JBlanked actuals pull (window-gated)")
+    ap = argparse.ArgumentParser(description="Daily JBlanked actuals pull (/calendar/today/, "
+                                             "one attempt per window)")
     ap.add_argument("--force", action="store_true",
-                    help="bypass the due-window guard (manual recovery)")
+                    help="bypass the attempt-window guard (manual recovery — spends the free request)")
     args = ap.parse_args()
     rep = pull_actuals(force=args.force)
     extra = (f" — parquet {rep['rows_before']} -> {rep['rows_after']} rows"
