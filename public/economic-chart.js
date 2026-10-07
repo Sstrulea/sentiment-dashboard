@@ -106,6 +106,17 @@
     const m = card.v3 && card.v3.blocks ? card.v3.blocks.macro : undefined;
     return (m === null || m === undefined) ? null : "Macro " + tminus(fmtSigned(m, 2)) + "σ";
   }
+  // z = score / RMS of the instrument (payload field `z`, set by the backend): the
+  // value the bias is read from. Falls back to the score on a payload without z.
+  function zOf(inst) {
+    return (inst.z !== null && inst.z !== undefined) ? inst.z : (inst.score_precise !== undefined ? inst.score_precise : inst.score);
+  }
+  function zHeaderTip(th) {
+    if (!th || th.mild === undefined) return "z = score / the instrument's RMS";
+    const f = (x) => Number(x).toFixed(2);
+    return "z = score / the instrument's RMS (its usual size), the value the bias is read from: " +
+      "Neutral below " + f(th.mild) + ", Bullish/Bearish from " + f(th.mild) + ", Very from " + f(th.very) + ".";
+  }
   function findContribution(inst, key) {
     const list = inst.contributions || [];
     for (let i = 0; i < list.length; i++) {
@@ -277,9 +288,10 @@
     return ' <span class="' + cls + '" title="' + escAttr(title) +
       '">⚠ STALE Price: ' + label + "</span>";
   }
+  // payload.as_of / generated_at: a value without an offset is UTC (parseUtc), never local.
   function fmtAsOf(iso) {
     if (!iso) return "—";
-    const d = new Date(iso);
+    const d = parseUtc(iso);
     if (isNaN(d.getTime())) return iso;
     return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
   }
@@ -637,7 +649,7 @@
   // ---- Sorting ------------------------------------------------------------
   function rowSortValue(inst, key) {
     if (key === "symbol") return inst.display || inst.symbol;
-    if (key === "bias" || key === "score") return inst.score;          // precise float
+    if (key === "bias" || key === "score") return zOf(inst);           // z: the order the bias follows
     if (key === "contrib_sum") {
       return (inst.contrib_sum !== null && inst.contrib_sum !== undefined) ? inst.contrib_sum : -Infinity;
     }
@@ -662,7 +674,7 @@
   }
   function compareInstruments(a, b) {
     const key = state.sortKey;
-    if (!key) return b.score - a.score;                                // most bullish on top, most bearish bottom
+    if (!key) return zOf(b) - zOf(a);                                  // by z: most bullish on top, the bias follows the rows
     const av = rowSortValue(a, key);
     const bv = rowSortValue(b, key);
     let cmp;
@@ -890,15 +902,16 @@
 
   function renderRow(inst) {
     const cells = columnKeys().map(k => indicatorCellHtml(inst, k)).join("");
-    // Symbol / Bias / Score share one continuous gradient driven by the precise
-    // score (saturates near ±6) → a smooth top-to-bottom column gradient.
-    const sg = styleAttr(gradientStyle(inst.score, 6));
+    // Symbol / Bias / z share one continuous gradient driven by z (saturates at
+    // ±2, past the Very threshold) → a smooth top-to-bottom column gradient in
+    // the z order of the rows.
+    const sg = styleAttr(gradientStyle(zOf(inst), 2));
     return (
       '<tr data-symbol="' + escAttr(inst.symbol) + '">' +
-      '<td class="sym"' + styleAttr(tintAsShadow(gradientStyle(inst.score, 6))) + ' title="' + escAttr(categoriesNTooltip(inst)) + '">' +
+      '<td class="sym"' + styleAttr(tintAsShadow(gradientStyle(zOf(inst), 2))) + ' title="' + escAttr(categoriesNTooltip(inst)) + '">' +
       (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
-      '<td class="score-cell"' + sg + ">" + fmtScoreInt(inst.score) + "</td>" +
+      '<td class="score-cell"' + sg + ' title="score ' + escAttr(fmtSigned(inst.score, 2)) + '">' + fmtSigned(zOf(inst), 2) + "</td>" +
       contribSumCellHtml(inst) +
       (trendEnabled() ? trendCellHtml(inst) : "") +
       fxCotCellHtml(inst) +
@@ -964,7 +977,7 @@
       '<tr>' +
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
-      '<th rowspan="2" data-sort="score">Score</th>' +
+      '<th rowspan="2" data-sort="score" title="' + escAttr(zHeaderTip((state.payload.meta || {}).bias_thresholds)) + '">z</th>' +
       '<th rowspan="2" data-sort="contrib_sum" title="' + escAttr(sumTip) + '">Σ</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
@@ -1390,7 +1403,7 @@
     section.hidden = false;
 
     const layout = caLayout();
-    const insts = ca.instruments.slice().sort((a, b) => b.score_precise - a.score_precise);
+    const insts = ca.instruments.slice().sort((a, b) => zOf(b) - zOf(a));
 
     const groupHeaders = layout.map(g =>
       '<th colspan="' + g.columns.length + '" class="grp-head grp-' + g.key +
@@ -1428,7 +1441,7 @@
         '<td class="sym biasfill ' + bcls + '" title="' + escAttr(caCategoriesNTooltip(inst)) + '">' +
         (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
-        '<td class="score-cell biasfill ' + bcls + '">' + fmtScoreInt(inst.score_precise) + '</td>' +
+        '<td class="score-cell biasfill ' + bcls + '" title="score ' + escAttr(fmtSigned(inst.score_precise, 2)) + '">' + fmtSigned(zOf(inst), 2) + '</td>' +
         (trendEnabled() ? caTrendCellHtml(inst) : "") + caCotCellHtml(inst) + cells + '</tr>'
       );
     }).join("");
@@ -1437,7 +1450,7 @@
       '<div class="retail-table-scroll econ-scroll">' +
       '<table class="retail-table econ-table">' +
       '<thead>' +
-      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2">Score</th>' +
+      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2" title="' + escAttr(zHeaderTip(ca.bias_thresholds)) + '">z</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaders + '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaders + '</tr>' +
       '</thead>' +
@@ -1769,13 +1782,17 @@
     buildChipGroup("econBiasChips", BIAS_GROUPS, state.biasSel);
     updateAllButtons();
   }
+  // "7 Oct, 18:12 UTC" — the as_of read as UTC when it carries no offset.
+  function phoneAsOfText(iso) {
+    const d = parseUtc(iso);
+    return isNaN(d.getTime()) ? String(iso) : d.getUTCDate() + " " + MONTHS_SHORT[d.getUTCMonth()] + ", " +
+      String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0") + " UTC";
+  }
   function renderPhoneMeta() {
     const el = document.getElementById("econPhoneMeta");
     if (!el) return;
     const p = state.payload;
-    const d = new Date(p.as_of);
-    const asOf = isNaN(d.getTime()) ? String(p.as_of) : d.getUTCDate() + " " + MONTHS_SHORT[d.getUTCMonth()] + ", " +
-      String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0") + " UTC";
+    const asOf = phoneAsOfText(p.as_of);
     const nCa = ((p.crossasset || {}).instruments || []).length;
     el.textContent = "";
     el.appendChild(ph("div", { class: "econ-ph-asof", text: "As of " + asOf + " · " + p.instruments.length + " pairs" + (nCa ? " · " + nCa + " cross-asset" : "") }));
@@ -2134,6 +2151,8 @@
 
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
   if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml,
+    fmtAsOf: fmtAsOf, phoneAsOfText: phoneAsOfText, zOf: zOf, zHeaderTip: zHeaderTip,
+    _setPayloadForTest: function (p) { state.payload = p; }, compareInstruments: function (a, b) { return compareInstruments(a, b); },
     catSigmaText: catSigmaText, macroSigmaText: macroSigmaText, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
     actualsBadge: actualsBadge, freshnessBadges: freshnessBadges };
 })();

@@ -732,6 +732,7 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
         out[sym] = {"symbol": sym, "home_ccy": home, "type": itype,
                     "score": int(round(score)), "score_precise": score,
                     "bias_label": "Neutral" if not rms else _bl(score / float(rms), thresholds),
+                    "z": None if not rms else score / float(rms),   # the value the bias is read from
                     "coverage": int(sum(1 for r in rows if r["present"])), "factors": rows,
                     "v3": {"macro": m_block, "rates": r_block, "cot": cot_block}}
     return out

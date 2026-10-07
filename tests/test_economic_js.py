@@ -52,3 +52,23 @@ def test_drilldown_headers_show_sigma_and_strength_has_no_rates_group():
     r = subprocess.run(["node", str(SIGMA)], cwd=ROOT, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
     assert "sigma headers ok" in r.stdout
+
+
+UTC_ASOF = ROOT / "tests" / "economic_js" / "test_utc_asof.cjs"
+Z_COLUMN = ROOT / "tests" / "economic_js" / "test_z_column.cjs"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_as_of_is_read_as_utc_at_utc_plus_3():
+    import os
+    env = dict(os.environ, TZ="Europe/Bucharest")
+    r = subprocess.run(["node", str(UTC_ASOF)], cwd=ROOT, capture_output=True, text=True, timeout=60, env=env)
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    assert "utc as_of ok" in r.stdout
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_tables_show_z_and_sort_by_it():
+    r = subprocess.run(["node", str(Z_COLUMN)], cwd=ROOT, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    assert "z column ok" in r.stdout

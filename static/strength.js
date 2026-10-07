@@ -32,6 +32,12 @@
   // viewer's local date. A date-only value ("2026-09-23", or an entry flagged
   // `date_only`, e.g. a BoJ decision with no time) is shown as-is: there is no
   // instant to convert, and inventing 00:00 would shift it a day west of UTC.
+  // "7 Oct" — payload.as_of read as UTC when it carries no offset.
+  function modelDateText(iso) {
+    const d = parseUtc(iso);
+    return isNaN(d.getTime()) ? String(iso).slice(0, 10) :
+      d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()];
+  }
   function parseUtc(iso) {
     const s = String(iso);
     return new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(s) ? s : s + "Z");
@@ -383,9 +389,7 @@
     const meta = document.getElementById("strengthPhoneMeta");
     if (meta) {
       const n = CCY_ORDER.filter(c => currencies[c]).length;
-      const d = new Date(state.payload.as_of);
-      meta.textContent = "Model of " + (isNaN(d.getTime()) ? String(state.payload.as_of).slice(0, 10) :
-        d.getUTCDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getUTCMonth()]) +
+      meta.textContent = "Model of " + modelDateText(state.payload.as_of) +
         " · " + n + " currencies · pair units";
     }
     const dv = divergence(currencies);
@@ -743,7 +747,7 @@
       sortedCurrencies, divergence, impactState, hasCoverage,
       drilldownGroupsHtml, indicatorRowHtml, cadranHtml, tableRowHtml,
       matrixOrder, matrixCellStyle, strengthK, monetaryText,
-      catSigmaText, macroSigmaText, drilldownCats,
+      catSigmaText, macroSigmaText, drilldownCats, modelDateText, parseUtc,
       _setPayloadForTest: (p) => { state.payload = p; },
     };
   }
