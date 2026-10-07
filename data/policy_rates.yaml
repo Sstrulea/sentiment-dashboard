@@ -1,13 +1,19 @@
-# Manual policy-rate inputs for the Carry page (/carry). No fetcher, no
-# broker/MT5 feed — a human fills these in and commits the change.
+# Manual policy-rate FALLBACK for the Carry page (/carry). Since 2026-10-07 /carry
+# reads each currency's rate from data/cb/decisions.parquet (the official CB
+# pipeline — the latest decision at as_of, src.policy_rate.policy_rates_at); this
+# file is used only for a currency the parquet cannot give (parquet missing or
+# unreadable, or no decision for that currency at or before as_of). No fetcher,
+# no broker/MT5 feed — a human fills these in and commits the change; source_url
+# stays the link shown on /carry for every leg.
 #
 #   rate_pct    — the central bank's current overnight/policy rate, in percent
 #                 (e.g. 4.25, not 0.0425).
 #   effective   — the date this rate took effect (ISO date, unquoted so YAML
 #                 parses it as a real date).
 #   verified    — the date a human last checked this value against the source
-#                 below. src.carry_compute flags a row `stale` once `verified`
-#                 is older than meta.stale_after_days.
+#                 below. A FALLBACK leg is flagged `stale` once `verified` is
+#                 older than meta.stale_after_days (a decisions.parquet leg is
+#                 stale only when its bank has a past meeting without a decision).
 #   source_name — short label for the source (e.g. "Fed", "ECB Governing
 #                 Council").
 #   source_url  — link to the source page.

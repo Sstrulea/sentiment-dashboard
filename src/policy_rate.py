@@ -6,14 +6,17 @@ read: there a 0.00 is quarantined as a placeholder and rows are missing (CHF
 showed 0.25% from March 2025 while the SNB was at 0.00%), and the conventions
 differ (FF: ECB main refinancing rate, Fed upper bound).
 
-Conventions are the decisions.parquet ones (= data/policy_rates.yaml, the
-Carry page): Fed = midpoint of the target range (lower/upper kept for display),
+Conventions are the decisions.parquet ones (= data/policy_rates.yaml, now only
+the Carry page's fallback): Fed = midpoint of the target range (lower/upper kept for display),
 ECB = deposit facility rate. One decision -> one calendar row:
   release_dt = decision_time_utc (naive UTC); when the pipeline has no time
                (BoJ, status 'statement'), meeting_date 00:00 UTC
   actual     = rate_after,  consensus = consensus,  previous = rate_before
   source     = "cb"
 Rows after `as_of` are dropped (no lookahead).
+
+`policy_rates_at` gives the rate in force per currency at `as_of` (the latest
+decision at or before it) — the /carry page's source (2026-10-07).
 """
 from __future__ import annotations
 
@@ -33,6 +36,36 @@ def load_decisions(path: Path = DECISIONS_PARQUET) -> pd.DataFrame:
     df["time_known"] = t.notna()
     df["release_dt"] = t.fillna(pd.to_datetime(df["meeting_date"]))
     return df.sort_values(["currency", "release_dt"]).reset_index(drop=True)
+
+
+def policy_rates_at(decisions: pd.DataFrame | None, as_of: pd.Timestamp) -> dict[str, dict]:
+    """Per currency, the policy rate in force at `as_of`: rate_after of the
+    latest decision with release_dt <= as_of — the same rule as the /economic
+    display (decision_rows). Pure, no rendering; reused by /carry and, later,
+    by the carry factor in the score.
+
+    {CCY: {"rate_pct", "release_dt", "meeting_date", "effective_date",
+           "rate_source", "status", "bank", ["lower", "upper"]}}
+    A currency with no decision at or before `as_of` is absent. A 0.00 rate
+    (CHF) is a real rate, kept as 0.0."""
+    if decisions is None or decisions.empty:
+        return {}
+    d = decisions[decisions["release_dt"] <= pd.Timestamp(as_of)]
+    out: dict[str, dict] = {}
+    for ccy, g in d.groupby("currency", sort=True):
+        r = g.sort_values("release_dt").iloc[-1]
+        if pd.isna(r["rate_after"]):
+            continue
+        entry = {"rate_pct": float(r["rate_after"]),
+                 "release_dt": pd.Timestamp(r["release_dt"]).isoformat(),
+                 "meeting_date": str(pd.Timestamp(r["meeting_date"]).date()),
+                 "effective_date": str(pd.Timestamp(r["effective_date"]).date()),
+                 "rate_source": str(r["rate_source"]), "status": str(r["status"]),
+                 "bank": str(r["bank"])}
+        if pd.notna(r.get("lower")) and pd.notna(r.get("upper")):
+            entry["lower"], entry["upper"] = float(r["lower"]), float(r["upper"])
+        out[str(ccy)] = entry
+    return out
 
 
 def decision_rows(decisions: pd.DataFrame, as_of: pd.Timestamp,

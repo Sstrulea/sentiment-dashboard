@@ -80,21 +80,20 @@
   }
 
   // ---- Meta-bar -----------------------------------------------------------
+  // Staleness is decided on the server, per leg (src/carry_render.build_legs):
+  // a decisions.parquet leg only when its bank has a past meeting without a
+  // decision; a manual (policy_rates.yaml) leg when `verified` is too old.
+  function legConfigured(leg) {
+    if (!leg || leg.rate_pct === null || leg.rate_pct === undefined) return false;   // 0.00 is a rate
+    return leg.source === "cb_decisions" || !!leg.verified;
+  }
   function currencyStatus() {
     const rates = state.payload.rates || {};
-    const asOf = new Date(state.payload.as_of);
-    const staleDays = state.payload.stale_after_days;
     let missing = 0, stale = 0;
     Object.keys(rates).forEach(function (ccy) {
       const leg = rates[ccy] || {};
-      if (leg.rate_pct === null || leg.rate_pct === undefined || !leg.verified) {
-        missing += 1;
-        return;
-      }
-      const verified = new Date(leg.verified);
-      if (isNaN(verified.getTime())) return;
-      const ageDays = Math.floor((asOf - verified) / 86400000);
-      if (ageDays > staleDays) stale += 1;
+      if (!legConfigured(leg)) { missing += 1; return; }
+      if (leg.stale === true) stale += 1;
     });
     return { missing: missing, stale: stale };
   }
@@ -203,27 +202,40 @@
   }
 
   // ---- Table --------------------------------------------------------------
+  // Where the rate comes from: a CB decision (bank, meeting, effective date, the
+  // Fed's range) or the manual fallback (policy_rates.yaml, verified date).
   function legTip(ccy) {
     const leg = (state.payload.rates || {})[ccy] || {};
     const parts = [];
-    if (leg.source_name) parts.push(leg.source_name);
-    if (leg.effective) parts.push("effective " + leg.effective);
-    if (leg.verified) parts.push("verified " + leg.verified);
+    if (leg.source === "cb_decisions") {
+      parts.push(String(leg.bank || "").toUpperCase() + " decision of " + leg.meeting_date);
+      if (leg.range) parts.push("range " + fmtRate(leg.range.lower) + "–" + fmtRate(leg.range.upper) + "%");
+      parts.push("effective " + leg.effective_date);
+    } else if (leg.rate_pct !== null && leg.rate_pct !== undefined) {
+      parts.push("manual (policy_rates.yaml)");
+      if (leg.verified) parts.push("verified " + leg.verified);
+    }
+    if (leg.stale && leg.stale_reason) parts.push("STALE: " + leg.stale_reason);
     return parts.length ? parts.join(" · ") : "no data";
   }
 
   function legCellHtml(ccy, ratePct) {
     const r = fmtRate(ratePct);
-    const text = r === null ? "—" : ccy + " " + r + "%";
+    const leg = (state.payload.rates || {})[ccy] || {};
+    let text = r === null ? "—" : ccy + " " + r + "%";
+    if (r !== null && leg.source_url) {
+      text = '<a href="' + escAttr(leg.source_url) + '" target="_blank" rel="noopener">' + text + "</a>";
+    }
     return '<td class="carry-leg-col" title="' + escAttr(legTip(ccy)) + '">' + text + "</td>";
   }
 
-  function verifiedTip(row) {
+  function staleTip(row) {
     const rates = state.payload.rates || {};
-    const b = rates[row.base] || {}, q = rates[row.quote] || {};
     const bits = [];
-    if (b.verified) bits.push(row.base + " verified " + b.verified);
-    if (q.verified) bits.push(row.quote + " verified " + q.verified);
+    [row.base, row.quote].forEach(function (c) {
+      const leg = rates[c] || {};
+      if (leg.stale) bits.push(c + ": " + (leg.stale_reason || "stale"));
+    });
     return bits.length ? bits.join(" · ") : "stale";
   }
 
@@ -252,7 +264,7 @@
     const v = directedCarry(row);
     const symStyle = (row.available && v !== null) ? styleAttr(gradientStyle(v, scale)) : "";
     const staleBadge = row.stale
-      ? ' <span class="flag-stale" title="' + escAttr(verifiedTip(row)) + '">STALE</span>'
+      ? ' <span class="flag-stale" title="' + escAttr(staleTip(row)) + '">STALE</span>'
       : "";
     const trCls = row.available ? "" : ' class="carry-row-na"';
     return "<tr" + trCls + ">" +

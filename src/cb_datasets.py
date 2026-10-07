@@ -268,7 +268,8 @@ def rbnz_warnings(doc: dict, nz_meetings: list, today: date) -> list:
 # ---------------------------------------------------------------------------
 
 def policy_diff(decisions: list, policy_path: Path | str | None = None) -> list:
-    """Per currency: data/policy_rates.yaml (Carry) vs the latest decision of the CB module, in bp."""
+    """Per currency: data/policy_rates.yaml (the /carry manual fallback — /carry reads
+    decisions.parquet first) vs the latest decision of the CB module, in bp."""
     doc = yaml.safe_load(Path(policy_path or POLICY_RATES).read_text())["rates"]
     latest: dict = {}
     for r in decisions:
@@ -586,7 +587,7 @@ def extra_status(paths, today: date, *, banks: dict | None = None, official_cfg:
 
     if dec and Path(POLICY_RATES).exists():
         diff = policy_diff(dec)
-        add("Carry (data/policy_rates.yaml) vs CB module", ["cur", "carry", "cb", "diff bp", "cb status", "cb meeting", "cb effective"],
+        add("Carry fallback (data/policy_rates.yaml) vs CB module", ["cur", "carry", "cb", "diff bp", "cb status", "cb meeting", "cb effective"],
             [[d["currency"], d["carry"], "" if d["cb"] is None else d["cb"], "" if d["diff_bp"] is None else d["diff_bp"],
               d["cb_status"] or "", d["cb_meeting"] or "", d["cb_effective"] or ""] for d in diff],
             [f"DIFF {d['currency']}: Carry {d['carry']} vs CB {d['cb']} ({d['diff_bp']} bp)" for d in diff if d["diff_bp"]])

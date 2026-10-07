@@ -2,21 +2,26 @@
 
     compute_carry(rates: dict, pairs: list[str], as_of: date) -> list[CarryRow]
 
-`rates` is the full parsed contents of data/policy_rates.yaml
-(`{"meta": {"stale_after_days": ...}, "rates": {CCY: {rate_pct, effective,
-verified, source_name, source_url}}}`). `pairs` is a list of 6-character FX
+`rates` is `{"meta": {"stale_after_days": ...}, "rates": {CCY: leg}}`, built by
+src/carry_render.py: each leg comes from data/cb/decisions.parquet (the latest
+decision at as_of, src.policy_rate.policy_rates_at — `source: "cb_decisions"`)
+or, per currency, from the manual fallback data/policy_rates.yaml (`source:
+"manual"`, with rate_pct/effective/verified). `pairs` is a list of 6-character FX
 symbols ("EURUSD", "USDJPY", ...) — base = symbol[:3], quote = symbol[3:6];
 this module never hardcodes a pair list itself.
 
 carry_pct = base_rate - quote_rate, the LONG-the-pair perspective (long the
 base, short the quote): positive means the long side earns the differential.
 
-A leg missing `rate_pct` or `verified` makes the ROW unavailable
+A leg that is not configured (leg_configured) makes the ROW unavailable
 (available=False, carry_pct=None) — but base_rate/quote_rate still surface
 whatever raw rate_pct each leg has, so a render layer can display a lone leg
-even when the pair as a whole can't be scored. A leg's `verified` older than
-meta.stale_after_days marks the row `stale=True` without excluding it from
-scoring — it stays visible and sorted, just flagged.
+even when the pair as a whole can't be scored. Staleness is decided per leg on
+the server: a leg carrying a `stale` flag (set by carry_render — the meeting
+check for decision legs, the `verified` rule for fallback legs) is taken as
+is; a leg without it falls back to `verified` older than meta.stale_after_days.
+A stale leg marks the row `stale=True` without excluding it from scoring — it
+stays visible and sorted, just flagged.
 """
 from __future__ import annotations
 
@@ -40,12 +45,15 @@ class CarryRow:
 
 
 def leg_configured(leg: Optional[dict]) -> bool:
-    """A leg counts as configured once both rate_pct and verified are set —
+    """A leg counts as configured when it has a rate (0.00 included) and either
+    comes from data/cb/decisions.parquet or, as a manual leg, has `verified` —
     the same bar compute_carry uses to mark a row's legs available, reused by
     the render layer for the "N/8 configured" badge."""
     if not leg:
         return False
-    return leg.get("rate_pct") is not None and leg.get("verified") is not None
+    if leg.get("rate_pct") is None:
+        return False
+    return leg.get("source") == "cb_decisions" or leg.get("verified") is not None
 
 
 def _to_date(v: Any) -> Optional[date]:
@@ -59,6 +67,13 @@ def _to_date(v: Any) -> Optional[date]:
 
 
 def _leg_stale(leg: dict, as_of: date, stale_after_days: int) -> bool:
+    if leg.get("stale") is not None:          # decided on the server (carry_render)
+        return bool(leg["stale"])
+    return verified_stale(leg, as_of, stale_after_days)
+
+
+def verified_stale(leg: dict, as_of: date, stale_after_days: int) -> bool:
+    """The manual rule: `verified` older than stale_after_days."""
     verified = _to_date(leg.get("verified"))
     if verified is None:
         return False
