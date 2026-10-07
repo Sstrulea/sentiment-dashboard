@@ -89,6 +89,23 @@
   function isV3() {
     return !!(state.payload && state.payload.meta) && state.payload.meta.scoring === "v3";
   }
+  // Category header on the per-currency breakdown (v3): score_precise (2 dp), its
+  // value in σ (score_precise / σ(currency, category)) and N — e.g.
+  // "−0.43 · −1.44σ · N7". null on a v2 payload (no card.v3) → the old header.
+  const tminus = (t) => String(t).replace(/^-/, "\u2212").replace(/ -/g, " \u2212");
+  function catSigmaText(card, catKey) {
+    const sub = (card.categories || {})[catKey];
+    const ins = card.v3 && card.v3.in_sigma;
+    if (!sub || !ins) return null;
+    const v = ins[catKey];
+    return tminus(fmtSigned(sub.score_precise, 2)) +
+      (v === null || v === undefined ? "" : " · " + tminus(fmtSigned(v, 2)) + "σ") + " · N" + (sub.coverage || 0);
+  }
+  // "Macro −1.04σ": the mean of the category values in σ, / σ_macro (the v3 Macro block).
+  function macroSigmaText(card) {
+    const m = card.v3 && card.v3.blocks ? card.v3.blocks.macro : undefined;
+    return (m === null || m === undefined) ? null : "Macro " + tminus(fmtSigned(m, 2)) + "σ";
+  }
   function findContribution(inst, key) {
     const list = inst.contributions || [];
     for (let i = 0; i < list.length; i++) {
@@ -1066,7 +1083,10 @@
       keys.sort((a, b) => (indMeta(a).label || a).localeCompare(indMeta(b).label || b));
       const sub = (card.categories || {})[catKey];
       let subHtml = "";
-      if (sub) {
+      const sigTxt = catSigmaText(card, catKey);
+      if (sub && sigTxt) {
+        subHtml = '<span class="econ-cat-sub ' + cellClass(Math.round(sub.score_precise)) + '">' + sigTxt + '</span>';
+      } else if (sub) {
         subHtml = '<span class="econ-cat-sub ' + cellClass(sub.score_cell) + '">' +
           fmtScoreCell(sub.score_cell) + '</span>' +
           '<span class="muted"> · precise ' + fmtSigned(sub.score_precise, 2) +
@@ -1109,6 +1129,8 @@
     });
 
     if (!groups) groups = '<p class="muted">No indicators within the lookback window.</p>';
+    const macroTxt = macroSigmaText(card);
+    if (macroTxt) groups = '<div class="econ-macro-line" title="Mean of the category values in σ, / σ_macro">' + macroTxt + '</div>' + groups;
 
     const idx = card.index;
     return (
@@ -1901,15 +1923,19 @@
     if (!card) return null;
     const bd = card.breakdown || {};
     const body = ph("div", { class: "econ-ph-indbody" });
+    const macroTxt = macroSigmaText(card);
+    if (macroTxt) body.appendChild(ph("p", { class: "econ-ph-muted econ-macro-line", text: macroTxt }));
     // a pair scores monetary on the 2Y spread (its own card above), so the leg's own 2Y group is left out here
     CATS().filter((cat) => !(pairSpread && cat === "monetary")).forEach((cat) => {
       const keys = Object.keys(bd).filter((k) => indMeta(k).category === cat && bd[k]);
       if (!keys.length) return;
       keys.sort((a, b) => Math.abs(bd[b].score || 0) - Math.abs(bd[a].score || 0));   // stable: payload order within a level
       const sub = (card.categories || {})[cat];
+      const sigTxt = catSigmaText(card, cat);
       const gh = ph("div", { class: "econ-ph-grouphead" }, ph("span", { class: "econ-ph-strong", text: GROUP_LABELS[cat] && cat !== "monetary" ? GROUP_LABELS[cat] : catLabel(cat) }),
         (excluded || []).indexOf(cat) !== -1 ? ph("span", { class: "ph-tag", text: "excluded here" }) : null,
-        ph("span", { class: "econ-ph-gc" }, ph("span", { class: "econ-ph-muted", text: sub ? "group cell" : "display-only" }), sub ? chipEl(sub.score_cell, 3) : null));
+        sigTxt ? ph("span", { class: "econ-ph-gc" }, ph("span", { class: "econ-ph-muted", text: sigTxt }))
+          : ph("span", { class: "econ-ph-gc" }, ph("span", { class: "econ-ph-muted", text: sub ? "group cell" : "display-only" }), sub ? chipEl(sub.score_cell, 3) : null));
       body.appendChild(gh);
       keys.forEach((k) => body.appendChild(indRowEl(k, bd[k], ccy, cat, e => e.score)));
     });
@@ -2107,6 +2133,7 @@
   }
 
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
-  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
+  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml,
+    catSigmaText: catSigmaText, macroSigmaText: macroSigmaText, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
     actualsBadge: actualsBadge, freshnessBadges: freshnessBadges };
 })();

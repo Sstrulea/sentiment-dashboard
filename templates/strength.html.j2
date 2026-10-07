@@ -55,7 +55,7 @@
       <section class="strength-matrix-wrap">
         <h2>Divergence matrix <span class="phone-only strength-ph-cap">row = base, column = quote</span></h2>
         <p class="strength-context desk-only" style="margin-bottom:10px;">Rows = base currency, columns = quoted currency.
-        Cell = fundamental score of the pair row/column (as on Economic, without COT and trend).
+        Cell = the macro part of the pair: 2.5 × (Macro row − Macro column); no carry, no COT.
         Currencies with no coverage are excluded from the matrix entirely.</p>
         <div class="strength-matrix-scroll">
           <table class="strength-matrix" id="strengthMatrix"></table>

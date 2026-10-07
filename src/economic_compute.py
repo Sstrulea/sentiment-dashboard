@@ -568,8 +568,9 @@ def compute_currency_scorecard(
             "weight": monetary_weight,
             "stale": is_stale,
         }
+        # N (`coverage`) counts the macro indicators only (growth + inflation +
+        # labour, the ones that enter Macro) — the 2Y entry is not one of them.
         if not is_stale:
-            total_coverage += 1
             cat_scores_for_index.append((float(rscore), monetary_weight))
 
     if cat_scores_for_index:
@@ -1400,8 +1401,14 @@ def apply_v3_fx(payload: dict, instruments_cfg: dict, indicators_cfg: dict,
            for c, card in cards.items()}
     for c, card in cards.items():
         card["score_v3"] = cur[c]["S"]
+        sig = cur[c]["sig"]
+        # display: each macro category's score_precise in σ (score_precise / σ(c, cat))
+        in_sigma = {cat: float(cell["score_precise"]) / float(sig[cat])
+                    for cat, cell in (card.get("categories") or {}).items()
+                    if cat in V3_MACRO_CATS and (cell.get("coverage") or 0) > 0 and sig.get(cat)}
         card["v3"] = {"blocks": cur[c]["blocks"], "policy_rate": rates.get(c),
-                      "policy_mean": mean8}
+                      "policy_mean": mean8, "sigma": dict(sig), "in_sigma": in_sigma,
+                      "sigma_macro": k.get("sigma_macro")}
 
     thresholds = k.get("thresholds") or {}
     rms = k.get("rms") or {}
