@@ -184,6 +184,7 @@
     if (!a || !a.status) return "";
     if (a.status === "ok") return "last try ok";
     if (a.status === "format_mismatch") return "last try failed (format)";
+    if (a.status === "wrong_day") return "last try failed (wrong day)";
     return "last try failed" + (a.http_status ? " (HTTP " + a.http_status + ")" : "");
   }
   function freshnessBadges(f) {

@@ -19,7 +19,7 @@ Every 200 response is written raw to data/jb_raw/ BEFORE any parsing (newest
 2026-10-07 — /calendar/today/: since 2026-10-02 JBlanked's free daily request
 applies ONLY to /calendar/today/; the range endpoint answers 401 "requires
 credits" (last range success 2026-10-05 01:06 UTC). `pull_actuals` now makes ONE
-today call per window (first tick after TODAY_PULL_UTC, 20:30) and NEVER retries —
+today call per day inside TODAY_WINDOW_UTC (19:30-20:50 UTC) and NEVER retries —
 the guard is on the last ATTEMPT (`should_attempt_today`), not the last success.
 The range path (`pull_actuals_range`, `should_pull` above) is kept but not called.
 
@@ -56,11 +56,15 @@ RANGE_DAYS = 7                   # MINIMUM range span [today-RANGE_DAYS, today] 
 MAX_RANGE_DAYS = 60              # cap when catching up after a long absence
 DEFAULT_RANGE_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
 # Since 2026-10-02 JBlanked's free daily request applies ONLY to /calendar/today/
-# (the range endpoint answers 401 "requires credits"). One ATTEMPT per day, at the
-# first tick after TODAY_PULL_UTC — after the last release of the JB day — and
-# never a retry, whatever the outcome: a retry could spend the one free request.
+# (the range endpoint answers 401 "requires credits"). One ATTEMPT per day, never
+# a retry whatever the outcome (a retry could spend the one free request), and
+# only inside TODAY_WINDOW_UTC: after the day's last releases, BEFORE the JB day
+# turns. The JB day runs on US-Eastern+7h (UTC+3 in summer time, UTC+2 from
+# 1 November), so "today" switches at 21:00 UTC (22:00 in winter); a tick after
+# that would ask for tomorrow — nothing released yet, the free call lost. A
+# missed window (CI late or off) skips the day; the manual panel covers it.
 DEFAULT_TODAY_URL = "https://www.jblanked.com/news/api/forex-factory/calendar/today/"
-TODAY_PULL_UTC = (20, 30)        # 23:30 Romania (UTC+3)
+TODAY_WINDOW_UTC = ((19, 30), (20, 50))   # 22:30-23:50 Romania (UTC+3)
 # Fields ingestion needs; extra fields (e.g. "Trend", added by JB 2026-10-06) are ignored.
 REQUIRED_FIELDS = ("Name", "Currency", "Date", "Actual", "Forecast", "Previous")
 
@@ -130,19 +134,28 @@ def should_pull(now_utc: pd.Timestamp, state: dict) -> bool:
 
 
 def attempt_window_start(now_utc: pd.Timestamp) -> pd.Timestamp:
-    """The most recent TODAY_PULL_UTC instant at or before `now` (UTC-naive)."""
-    now = pd.Timestamp(now_utc)
-    anchor = now.normalize() + pd.Timedelta(hours=TODAY_PULL_UTC[0], minutes=TODAY_PULL_UTC[1])
-    return anchor if now >= anchor else anchor - pd.Timedelta(days=1)
+    """The start of `now`'s UTC day attempt window (TODAY_WINDOW_UTC[0])."""
+    (h, m), _ = TODAY_WINDOW_UTC
+    return pd.Timestamp(now_utc).normalize() + pd.Timedelta(hours=h, minutes=m)
+
+
+def in_attempt_window(now_utc: pd.Timestamp) -> bool:
+    (h0, m0), (h1, m1) = TODAY_WINDOW_UTC
+    day = pd.Timestamp(now_utc).normalize()
+    return (day + pd.Timedelta(hours=h0, minutes=m0) <= pd.Timestamp(now_utc)
+            < day + pd.Timedelta(hours=h1, minutes=m1))
 
 
 def should_attempt_today(now_utc: pd.Timestamp, state: dict,
                          not_before: Optional[pd.Timestamp] = None) -> bool:
-    """At most ONE attempt per window — judged on the last ATTEMPT, not the last
-    success, so a failure (401, network, bad payload) waits for the next day.
-    `not_before` (config jb_today_not_before) holds the first call back."""
+    """Only inside TODAY_WINDOW_UTC, and at most ONE attempt per window — judged
+    on the last ATTEMPT, not the last success, so a failure (401, network, bad
+    payload, wrong day) waits for the next day. `not_before` (config
+    jb_today_not_before) holds the first call back."""
     now = pd.Timestamp(now_utc)
     if not_before is not None and now < pd.Timestamp(not_before):
+        return False
+    if not in_attempt_window(now):
         return False
     raw = state.get("last_attempt_at")
     if raw:
@@ -154,6 +167,19 @@ def should_attempt_today(now_utc: pd.Timestamp, state: dict,
         except Exception:  # noqa: BLE001 — unreadable → treat as never attempted
             pass
     return True
+
+
+def jb_day(now_utc: pd.Timestamp) -> date:
+    """The JB calendar day at `now` — its wall clock is US-Eastern + 7h (the
+    same rule jblanked_to_utc inverts), i.e. UTC+3 in summer, UTC+2 in winter."""
+    from .econ_calendar_ff import ET, JBLANKED_ET_OFFSET_HOURS
+    aware = pd.Timestamp(now_utc).tz_localize("UTC").tz_convert(ET)
+    return (aware + pd.Timedelta(hours=JBLANKED_ET_OFFSET_HOURS)).date()
+
+
+def payload_days(data: list) -> set[str]:
+    """The JB days ('YYYY.MM.DD') the events of a payload carry."""
+    return {str(e.get("Date", "")).strip()[:10] for e in data}
 
 
 def payload_format_ok(data) -> bool:
@@ -526,12 +552,13 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
                  force: bool = False) -> dict:
     """The daily pull on the FREE /calendar/today/ endpoint (2026-10-07).
 
-    One attempt per window (first tick after TODAY_PULL_UTC), never retried:
+    One attempt per day inside TODAY_WINDOW_UTC (19:30-20:50 UTC), never retried:
     every attempt — 200 or not — is recorded in data/jb_last_pull.json
     (last_attempt_at/status/http_status/error) and its body saved to
     data/jb_raw/jb_today_*.json, so the next tick of the same window skips.
     A 200 is ingested only when every event carries REQUIRED_FIELDS (extra
-    fields ignored); otherwise status `format_mismatch`, nothing ingested.
+    fields ignored); otherwise status `format_mismatch`, nothing ingested. Its
+    events must all be dated the current JB day (jb_day), else `wrong_day`.
     Ingestion is the range path's: parse → clean_jblanked_actuals (forecast
     guard) → field-aware merge; CORRECTION overrides apply at read time.
     Never raises. `fetcher() -> raw text` is injectable for tests; `force`
@@ -547,9 +574,9 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
         not_before = pd.Timestamp(nb)
         not_before = not_before.tz_convert(None) if not_before.tzinfo is not None else not_before
     if not force and not should_attempt_today(now, state, not_before):
-        log.info("JB pull: skipped (attempt window %s already tried, or before %s).",
-                 attempt_window_start(now).isoformat(), not_before)
-        return {"status": "skipped", "reason": "window_attempted"}
+        log.info("JB pull: skipped (outside %s-%s UTC, window already tried, or before %s).",
+                 "%02d:%02d" % TODAY_WINDOW_UTC[0], "%02d:%02d" % TODAY_WINDOW_UTC[1], not_before)
+        return {"status": "skipped", "reason": "outside_or_attempted"}
 
     if fetcher is None:
         key = _api_key()
@@ -586,6 +613,15 @@ def pull_actuals(*, now_utc: Optional[pd.Timestamp] = None,
         _record_attempt(state_path, now, "format_mismatch",
                         "payload is not a list of events with " + ", ".join(REQUIRED_FIELDS))
         return {"status": "format_mismatch", "raw": str(raw_path)}
+
+    want = jb_day(now).strftime("%Y.%m.%d")
+    days = payload_days(data)
+    if data and days != {want}:
+        log.warning("JB pull: today payload carries %s, not the JB day %s; NOT ingested; raw kept at %s.",
+                    sorted(days), want, raw_path.name)
+        _record_attempt(state_path, now, "wrong_day",
+                        f"payload days {sorted(days)[:3]} != JB day {want}")
+        return {"status": "wrong_day", "raw": str(raw_path)}
 
     try:
         jb = parse_jblanked_range([{f: e[f] for f in REQUIRED_FIELDS + ("Quality", "Strength") if f in e}

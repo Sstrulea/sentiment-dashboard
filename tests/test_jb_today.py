@@ -1,6 +1,7 @@
 """JBlanked /calendar/today/ pull (2026-10-07): the free daily request now covers
-only /calendar/today/. One attempt per window (first tick after 20:30 UTC), never
-retried; every attempt recorded; a payload without the needed fields is saved
+only /calendar/today/. One attempt per day, only between 19:30 and 20:50 UTC
+(before the JB day — US-Eastern+7h — turns), never retried; the payload must be
+the current JB day; every attempt recorded; a payload without the needed fields is saved
 and marked format_mismatch, not ingested. NO network: requests.get is patched
 or the fetcher injected — a test that reached JBlanked would fail on the guard
 below."""
@@ -17,8 +18,8 @@ from src.econ_calendar_ff import CANON_COLUMNS
 from src.economic_render import _freshness
 
 FIX = Path(__file__).parent / "fixtures" / "jb_range_raw_2026-10-03.json"
-NOW = pd.Timestamp("2026-10-08 21:05")          # first tick after the 20:30 window
-CFG = {"jb_today_not_before": "2026-10-08T20:30:00"}
+NOW = pd.Timestamp("2026-10-08 19:35")          # a tick inside the 19:30-20:50 window
+CFG = {"jb_today_not_before": "2026-10-08T19:30:00"}
 NFP = "usd_nonfarm_payrolls"
 
 
@@ -31,10 +32,11 @@ def _no_network(monkeypatch):
     monkeypatch.setattr(requests, "get", boom)
 
 
-def _today_payload(extra_field=True):
-    """The NFP day of the real 2026-10-03 payload, as /today would return it
-    (+ the 'Trend' field JB added on 2026-10-06)."""
-    events = [e for e in json.loads(FIX.read_text()) if e["Date"].startswith("2026.10.02")]
+def _today_payload(extra_field=True, day="2026.10.08"):
+    """The NFP day of the real 2026-10-03 payload re-dated to the JB day of NOW,
+    as /today would return it (+ the 'Trend' field JB added on 2026-10-06)."""
+    events = [dict(e, Date=e["Date"].replace("2026.10.02", day))
+              for e in json.loads(FIX.read_text()) if e["Date"].startswith("2026.10.02")]
     if extra_field:
         events = [dict(e, Trend="Bullish") for e in events]
     return events
@@ -43,7 +45,7 @@ def _today_payload(extra_field=True):
 def _schedule(tmp_path):
     p = tmp_path / "ff.parquet"
     pd.DataFrame([{"canonical_id": NFP, "currency": "USD", "name_raw": "Non-Farm Employment Change",
-                   "name_canonical": "Nonfarm Payrolls", "datetime_utc": pd.Timestamp("2026-10-02 12:30"),
+                   "name_canonical": "Nonfarm Payrolls", "datetime_utc": pd.Timestamp("2026-10-08 12:30"),
                    "actual": float("nan"), "forecast": 89.0, "previous": 133.0, "released": True,
                    "source": "ff", "forecast_origin": "ff", "jb_status": None}],
                  columns=CANON_COLUMNS).to_parquet(p, index=False)
@@ -56,21 +58,47 @@ def _pull(tmp_path, fetcher, now=NOW, cfg=CFG, state=None):
                           fetcher=fetcher, cfg=cfg)
 
 
-def test_window_is_20_30_utc_and_one_attempt_per_window():
-    assert J.attempt_window_start(pd.Timestamp("2026-10-08 21:05")) == pd.Timestamp("2026-10-08 20:30")
-    assert J.attempt_window_start(pd.Timestamp("2026-10-09 10:00")) == pd.Timestamp("2026-10-08 20:30")
-    tried = {"last_attempt_at": "2026-10-08T21:05:00", "last_status": "fetch_failed"}
-    assert not J.should_attempt_today(pd.Timestamp("2026-10-08 22:05"), tried)   # failed: no retry
-    assert not J.should_attempt_today(pd.Timestamp("2026-10-09 20:05"), tried)   # same window
-    assert J.should_attempt_today(pd.Timestamp("2026-10-09 20:35"), tried)       # next window
-    assert J.should_attempt_today(pd.Timestamp("2026-10-08 21:05"),
+@pytest.mark.parametrize("tick,expected", [
+    ("2026-10-08 19:29", False), ("2026-10-08 19:30", True), ("2026-10-08 19:35", True),
+    ("2026-10-08 20:49", True), ("2026-10-08 20:50", False), ("2026-10-08 20:55", False),
+    ("2026-10-08 21:05", False), ("2026-10-09 03:05", False)])
+def test_attempts_only_inside_19_30_20_50_utc(tick, expected):
+    assert J.should_attempt_today(pd.Timestamp(tick), {}) is expected
+
+
+def test_one_attempt_per_window_whatever_the_outcome():
+    tried = {"last_attempt_at": "2026-10-08T19:35:00", "last_status": "fetch_failed"}
+    assert not J.should_attempt_today(pd.Timestamp("2026-10-08 20:35"), tried)   # same window
+    assert J.should_attempt_today(pd.Timestamp("2026-10-09 19:35"), tried)       # next day
+    assert J.should_attempt_today(pd.Timestamp("2026-10-08 19:35"),
                                   {"last_attempt_at": "2026-10-07T08:30:29.892866"})
 
 
 def test_not_before_holds_the_first_call():
-    nb = pd.Timestamp("2026-10-08 20:30")
-    assert not J.should_attempt_today(pd.Timestamp("2026-10-07 21:05"), {}, nb)
-    assert J.should_attempt_today(pd.Timestamp("2026-10-08 21:05"), {}, nb)
+    nb = pd.Timestamp("2026-10-08 19:30")
+    assert not J.should_attempt_today(pd.Timestamp("2026-10-07 19:35"), {}, nb)
+    assert J.should_attempt_today(pd.Timestamp("2026-10-08 19:35"), {}, nb)
+
+
+@pytest.mark.parametrize("now,day", [
+    ("2026-10-08 19:35", "2026-10-08"), ("2026-10-08 20:59", "2026-10-08"),
+    ("2026-10-08 21:00", "2026-10-09"),          # summer: JB = UTC+3
+    ("2026-11-10 20:49", "2026-11-10"), ("2026-11-10 21:59", "2026-11-10"),
+    ("2026-11-10 22:00", "2026-11-11")])         # from 1 Nov: JB = UTC+2
+def test_jb_day_follows_us_eastern_plus_7(now, day):
+    assert str(J.jb_day(pd.Timestamp(now))) == day
+
+
+def test_wrong_day_is_saved_and_not_ingested(tmp_path):
+    p = _schedule(tmp_path)
+    before = pd.read_parquet(p)
+    rep = _pull(tmp_path, lambda: json.dumps(_today_payload(day="2026.10.09")))
+    assert rep["status"] == "wrong_day"
+    assert pd.read_parquet(p).equals(before)
+    st = J.load_state(tmp_path / "s.json")
+    assert st["last_status"] == "wrong_day" and "2026.10.08" in st["last_error"]
+    assert len(list((tmp_path / "raw").glob("jb_today_*.json"))) == 1
+    assert _pull(tmp_path, lambda: pytest.fail("retried"), now=NOW + pd.Timedelta(minutes=30))["status"] == "skipped"
 
 
 def test_ok_ingests_and_ignores_extra_fields(tmp_path):
@@ -99,8 +127,8 @@ def test_401_is_recorded_saved_and_not_retried(tmp_path):
     assert "requires credits" in st["last_error"] and "last_success_at" not in st
     assert [p.read_text() for p in (tmp_path / "raw").glob("jb_today_*.json")] == [body]
     # every later tick of the window skips without calling
-    for h in (1, 2, 12, 23):
-        rep = _pull(tmp_path, lambda: pytest.fail("retried"), now=NOW + pd.Timedelta(hours=h))
+    for m in (5, 30, 70, 90, 12 * 60):          # same window, after it, next morning
+        rep = _pull(tmp_path, lambda: pytest.fail("retried"), now=NOW + pd.Timedelta(minutes=m))
         assert rep["status"] == "skipped"
 
 
@@ -114,7 +142,7 @@ def test_format_mismatch_saves_and_does_not_ingest(tmp_path):
     st = J.load_state(tmp_path / "s.json")
     assert st["last_status"] == "format_mismatch" and "Actual" in st["last_error"]
     assert len(list((tmp_path / "raw").glob("jb_today_*.json"))) == 1
-    assert _pull(tmp_path, lambda: pytest.fail("retried"), now=NOW + pd.Timedelta(hours=1))["status"] == "skipped"
+    assert _pull(tmp_path, lambda: pytest.fail("retried"), now=NOW + pd.Timedelta(minutes=40))["status"] == "skipped"
     rep = _pull(tmp_path, lambda: json.dumps({"events": []}), now=NOW + pd.Timedelta(days=1))
     assert rep["status"] == "format_mismatch"                              # not a list
 
@@ -145,9 +173,9 @@ def test_main_uses_the_today_path(monkeypatch):
 def test_badge_carries_the_last_attempt(tmp_path, monkeypatch):
     sp = tmp_path / "jb_last_pull.json"
     monkeypatch.setattr(J, "STATE_JSON", sp)
-    J.save_state({"last_success_at": "2026-10-05T01:06:15", "last_attempt_at": "2026-10-08T21:05:00",
-                  "last_status": "fetch_failed", "last_http_status": 401}, sp)
+    J.save_state({"last_success_at": "2026-10-05T01:06:15", "last_attempt_at": "2026-10-08T19:35:00",
+                  "last_status": "wrong_day", "last_http_status": 200}, sp)
     f = _freshness(as_of=pd.Timestamp("2026-10-08 22:00"))
     assert f["actuals_pull"]["stale"] is True
-    assert f["actuals_pull"]["last_attempt"] == {"at": "2026-10-08T21:05:00", "status": "fetch_failed",
-                                                 "http_status": 401}
+    assert f["actuals_pull"]["last_attempt"] == {"at": "2026-10-08T19:35:00", "status": "wrong_day",
+                                                 "http_status": 200}
