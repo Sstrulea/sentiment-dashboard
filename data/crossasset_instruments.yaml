@@ -202,12 +202,18 @@ instruments:
 #   Rates = per yield -(mean last 5 - mean of 5 ending 63 obs earlier) / sigma_y; indices: mean
 #           of home 2Y and US real 10Y; metals: US 2Y; / sigma_rates[symbol]
 #   indices: m = 0.67 Macro, r = 0.33 Rates; s = m + r if r >= 0; r < 0: max(m + r, 0) if m > 0 else m
-#   metals:  s = 0.56 Macro + 0.33 Rates + 0.11 COT / sigma_cot_metal;  score = s x 2.5
+#   metals:  s = 0.67 Rates + 0.33 Macro (since 2026-10-07; was 0.56 Macro + 0.33 Rates + 0.11 COT);
+#            a missing block is left out and the other counts alone;  score = s x 2.5
 v3:
   sigma_y: { USD: 0.448, EUR: 0.459, JPY: 0.1, GBP: 0.419, REAL10: 0.329 }
   sigma_macro: { DJIA: 0.53, SP500: 0.53, NASDAQ: 0.53, DAX: 0.589, NIKKEI: 0.516, FTSE100: 0.54, GOLD: 0.609, SILVER: 0.609 }
   sigma_rates: { DJIA: 0.94, SP500: 0.94, NASDAQ: 0.94, DAX: 0.743, NIKKEI: 0.919, FTSE100: 0.776, GOLD: 0.967, SILVER: 0.967 }
-  sigma_cot_metal: 1.858
+  sigma_cot_metal: 1.858   # not scored since 2026-10-07 (COT left the metal score); kept for the v2 shadow record
   # RMS per instrument over the last 156 weeks; thresholds = p55 / p90 of |score / RMS| over the last 53 weeks.
-  rms: { DJIA: 1.735, SP500: 1.735, NASDAQ: 1.735, DAX: 1.817, NIKKEI: 1.465, FTSE100: 1.876, GOLD: 1.763, SILVER: 1.759 }
+  rms: { DJIA: 1.735, SP500: 1.735, NASDAQ: 1.735, DAX: 1.817, NIKKEI: 1.465, FTSE100: 1.876, GOLD: 2.004, SILVER: 2.004 }
   thresholds: { mild: 0.65, very: 1.59 }   # (0.6493 / 1.5946)
+  # Metals (2026-10-07, score = 0.67 Rates + 0.33 Macro): GOLD/SILVER RMS above re-measured over the last
+  # 156 weeks and their own thresholds = p55 / p90 of |score / RMS| over GOLD and SILVER, last 53 weeks of the
+  # reconstruction (2023-09-22 .. 2026-10-02), scripts/measure/v3_metals.py, data of 2026-10-07. The index
+  # thresholds above are unchanged, so the index labels do not move.
+  thresholds_metal: { mild: 0.71, very: 1.44 }   # (0.7135 / 1.4404)

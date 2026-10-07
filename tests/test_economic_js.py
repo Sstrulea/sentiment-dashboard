@@ -72,3 +72,13 @@ def test_tables_show_z_and_sort_by_it():
     r = subprocess.run(["node", str(Z_COLUMN)], cwd=ROOT, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
     assert "z column ok" in r.stdout
+
+
+CA_NO_COT = ROOT / "tests" / "economic_js" / "test_ca_no_cot.cjs"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_crossasset_table_has_no_cot_column_in_v3():
+    r = subprocess.run(["node", str(CA_NO_COT)], cwd=ROOT, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    assert "cross-asset no cot ok" in r.stdout

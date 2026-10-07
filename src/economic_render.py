@@ -1311,10 +1311,10 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
 
         # SENTIMENT display sub-cell, reusing the SAME cells folded into the score
         # above: COT for metals, P/C for US indices. Foreign indices get neither.
-        if sym in metal_cot:
+        if v3:
+            pass                      # v3: neither COT (metals, since 2026-10-07) nor P/C is scored, so neither is shown
+        elif sym in metal_cot:
             r["cot"] = metal_cot[sym]
-        elif v3:
-            pass                      # v3: P/C is not scored, so not shown
         elif pc_cell is not None and sym in pc_syms:
             r["sentiment"] = {
                 "source": "pc", "cell": pc_cell,
@@ -1338,6 +1338,7 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         "model": "v3" if v3 else "v2",
         "real_yield": real_yield_meta,
         "net_liquidity": liquidity_meta,
+        "bias_thresholds_metal": ((cfg["v3"].get("thresholds_metal") or None) if v3 else None),
         "bias_thresholds": ((cfg["v3"].get("thresholds") or {}) if v3 else
                             cfg.get("bias_thresholds_scaled") if cfg.get("factor_scales")
                             and cfg.get("bias_thresholds_scaled") else cfg.get("bias_thresholds", {})),

@@ -400,7 +400,9 @@ def main() -> int:
         rms_inst.update(k.get("rms", {}))
         rms_str.update(k.get("rms_strength", {}))
     thr = {}
+    metal_syms = [s for s in x_syms if xcfg["instruments"][s]["type"] == "metal"]
     for board, syms, getter, rm in (("fx", fx_syms, "scores", rms_inst), ("cross", x_syms, "scores", rms_inst),
+                                    ("metal", metal_syms, "scores", rms_inst),
                                     ("strength", CCYS, "strength", rms_str)):
         z = [abs(per_week[w][getter][s] / rm[s]) for w in last53 for s in syms
              if per_week[w][getter][s] is not None and rm.get(s)]
@@ -416,7 +418,7 @@ def main() -> int:
         pw = per_week[w]
         r = next(x for x in recs if x["week"] == w)
         for s in fx_syms + x_syms:
-            board = "fx" if s in fx_syms else "cross"
+            board = "fx" if s in fx_syms else ("metal" if s in metal_syms and "metal" in thr else "cross")
             sc = pw["scores"][s]
             t = thr[board]
             lab = bias_label(sc / rms_inst[s], {"mild": round(t["mild"], 2), "very": round(t["very"], 2)}) \
@@ -452,7 +454,8 @@ def config_constants(inst_cfg, xcfg, sigma_only: bool = False) -> dict:
             "sigma_cot": v3["sigma_cot"], "sigma_y": xv3["sigma_y"], "sigma_macro_inst": xv3["sigma_macro"],
             "sigma_rates_inst": xv3["sigma_rates"], "sigma_cot_metal": xv3["sigma_cot_metal"],
             "rms": {**v3.get("rms", {}), **xv3.get("rms", {})}, "rms_strength": v3.get("rms_strength", {}),
-            "thresholds": {"fx": v3["thresholds"], "cross": xv3["thresholds"], "strength": v3["thresholds_strength"]}}
+            "thresholds": {"fx": v3["thresholds"], "cross": xv3["thresholds"], "strength": v3["thresholds_strength"],
+                           **({"metal": xv3["thresholds_metal"]} if xv3.get("thresholds_metal") else {})}}
 
 
 if __name__ == "__main__":

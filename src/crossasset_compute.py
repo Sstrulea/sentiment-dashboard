@@ -532,7 +532,9 @@ def compute_crossasset_scores(
 V3_RATE_W = 63          # observations: ~3 months
 V3_RATE_END_N = 5       # averaged ends, as src/rate_compute.py does for 21
 V3_INDEX_WEIGHTS = {"macro": 0.67, "rates": 0.33}
-V3_METAL_WEIGHTS = {"macro": 0.56, "rates": 0.33, "cot": 0.11}
+# Metals (2026-10-07, after the metals test on Stooq prices): 67% US 2Y 3-month
+# rates + 33% US macro; COT left the metal score (was 0.56 / 0.33 / 0.11 COT).
+V3_METAL_WEIGHTS = {"rates": 0.67, "macro": 0.33}
 V3_SCALE = 2.5
 
 
@@ -646,11 +648,13 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
     cat) / σ(home, cat) (the FX per-currency σ), / σ_Macro[symbol]. Rates =
     mean of the PRESENT signals — indices: home 2Y and US real 10Y; metals: US
     2Y — / σ_Rates[symbol]. Indices: the asymmetric 0.67 / 0.33 rule
-    (v3_index_combine); metals: 0.56 Macro + 0.33 Rates + 0.11 COT/σ_cot_metal.
-    score_precise = s × 2.5; label from RMS[symbol] and the board thresholds.
-    Factor rows (growth/inflation/labour, rates with its components, cot) carry
-    contributions that add up to score_precise exactly. P/C, the real yield at
-    metals, balance_sheet and TREND are not in the score."""
+    (v3_index_combine); metals: 0.67 Rates + 0.33 Macro (2026-10-07; a missing
+    block is left out and the other counts alone). score_precise = s × 2.5; label
+    from RMS[symbol] and the board thresholds (metals: `thresholds_metal`).
+    Factor rows (growth/inflation/labour, rates with its components) carry
+    contributions that add up to score_precise exactly. COT, P/C, the real yield
+    at metals, balance_sheet and TREND are not in the score; `metal_cot` is
+    accepted and ignored (kept for callers)."""
     from .economic_compute import bias_label as _bl, v3_combine
     k = config.get("v3") or {}
     thresholds = k.get("thresholds") or {}
@@ -674,10 +678,6 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
         r_raw = (sum(present) / len(present)) if present else None
         s_rat = (k.get("sigma_rates") or {}).get(sym)
         r_block = None if (r_raw is None or not s_rat) else r_raw / float(s_rat)
-        cot_block = None
-        cell = (metal_cot or {}).get(sym) if itype == "metal" else None
-        if cell is not None and k.get("sigma_cot_metal"):
-            cot_block = float(cell) / float(k["sigma_cot_metal"])
         if itype == "index":
             s, parts = v3_index_combine(m_block, r_block)
             w_m = (V3_INDEX_WEIGHTS["macro"] if r_block is not None else 1.0) if m_block is not None else 0.0
@@ -685,10 +685,11 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
             rates_part = parts.get("rates", 0.0)
             cot_part = None
         else:
-            s, parts = v3_combine({"macro": m_block, "rates": r_block, "cot": cot_block}, V3_METAL_WEIGHTS)
+            # a missing block is left out and the other counts alone (weights rescaled)
+            s, parts = v3_combine({"macro": m_block, "rates": r_block}, V3_METAL_WEIGHTS)
             wsum = sum(V3_METAL_WEIGHTS[b] for b in parts)
             w_m = (V3_METAL_WEIGHTS["macro"] / wsum) if "macro" in parts else 0.0
-            macro_part, rates_part, cot_part = parts.get("macro", 0.0), parts.get("rates"), parts.get("cot")
+            macro_part, rates_part = parts.get("macro", 0.0), parts.get("rates")
         score = 0.0 if s is None else float(s) * V3_SCALE
         # macro split per category (exact: Σ = macro_part × 2.5)
         rows = []
@@ -724,15 +725,12 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
                      "present": r_block is not None, "value": r_block, "raw": r_raw,
                      "contribution": None if r_block is None or rates_part is None else V3_SCALE * rates_part,
                      "components": comps})
-        if itype == "metal":
-            rows.append({"name": "cot", "sign": 1.0, "weight": V3_METAL_WEIGHTS["cot"], "present": cot_block is not None,
-                         "raw": None if cell is None else int(cell), "value": cot_block,
-                         "contribution": None if cot_part is None else V3_SCALE * cot_part, "source": "COT"})
         rms = (k.get("rms") or {}).get(sym)
+        th = (k.get("thresholds_metal") or thresholds) if itype == "metal" else thresholds
         out[sym] = {"symbol": sym, "home_ccy": home, "type": itype,
                     "score": int(round(score)), "score_precise": score,
-                    "bias_label": "Neutral" if not rms else _bl(score / float(rms), thresholds),
+                    "bias_label": "Neutral" if not rms else _bl(score / float(rms), th),
                     "z": None if not rms else score / float(rms),   # the value the bias is read from
                     "coverage": int(sum(1 for r in rows if r["present"])), "factors": rows,
-                    "v3": {"macro": m_block, "rates": r_block, "cot": cot_block}}
+                    "v3": {"macro": m_block, "rates": r_block}}
     return out
