@@ -533,7 +533,8 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
                     cells[k] = {"v": None, "stale": False}
                 elif k == "rate_expectations" and "monetary" in fi:
                     # rule N-c: the continuous 2Y signal the score uses
-                    cells[k] = {"v": fi["monetary"]["value"] * sign, "stale": bool(e.get("stale"))}
+                    cells[k] = {"v": fi["monetary"]["value"] * sign, "stale": bool(e.get("stale")),
+                                "continuous": True}
                 else:
                     cells[k] = {"v": int(round(e["score"] * sign)), "stale": bool(e.get("stale"))}
         else:
@@ -544,8 +545,11 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
                 if k == "rate_expectations" and mp:
                     # audit 5B: the pair's monetary cell is its 2y-spread m;
                     # rule N-c: the continuous signal the score actually uses
-                    v = mp["signal"] if mp.get("signal") is not None else int(mp["m"])
-                    cells[k] = {"v": v, "stale": False, "pair_spread": True}
+                    if mp.get("signal") is not None:
+                        cells[k] = {"v": mp["signal"], "stale": False, "pair_spread": True,
+                                    "continuous": True}
+                    else:
+                        cells[k] = {"v": int(mp["m"]), "stale": False, "pair_spread": True}
                     continue
                 if eb is None and eq is None:
                     cells[k] = {"v": None, "stale": False}
@@ -1205,6 +1209,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
             signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
             cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale")),
                                "excluded": bool(c.get("excluded"))}
+            if cfg.get("factor_scales") and c.get("name") != "balance_sheet":
+                cells[c["name"]]["continuous"] = True   # rule N-c: clip(z/0.87, ±2)
         r["cells"] = cells
 
         # TREND decomposition for the pop-up (column shows the final cell only).

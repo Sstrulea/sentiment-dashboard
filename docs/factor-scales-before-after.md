@@ -12,6 +12,15 @@ cross-asset read the rounded category cell, the rate engine's 1.0/0.5 steps put 
 of days (12.5% for a macro indicator), and the COT (±4) / P-C (±3) cells have a 2-5× larger std than
 a macro category.
 
+## Correction 2026-10-07 — US Dollar on the pairs' scale
+
+Under N-c every input is in σ, but pairs score × scale / pair_divisor (2.5) while the US Dollar row
+scored × scale (5): the same number of σ gave the dollar twice a pair's score (Very in ~47% of the
+last 53 weeks). With `factor_scales_single` the row now scores (scale / pair_divisor) × its
+normalised weighted mean; contributions follow (residual < 1e-9); score_v1 unchanged. The FX
+thresholds were re-derived after the fix: **0.89 / 1.93** (0.887 / 1.935). The tables below that
+involve the FX board are the post-fix numbers.
+
 ## Rule N-c
 
 1. Macro = the category's `score_precise` (not `score_cell`) on both boards.
@@ -70,29 +79,29 @@ currencies. The config carries the with-C σ (the distribution the score now see
 
 | board | v1 (config) | v2 without C | **v2 with C (config)** |
 |---|---|---|---|
-| FX (28 pairs + US Dollar) | 1.12 / 2.41 | 0.90 / 2.00 | **0.90 / 1.99** (0.896 / 1.993) |
+| FX (28 pairs + US Dollar) | 1.12 / 2.41 | 0.90 / 2.00 (before the fix) | **0.89 / 1.93** (0.887 / 1.935, after the fix) |
 | cross-asset (6 indices + 2 metals) | 1.50 / 3.33 | 1.92 / 3.75 | **1.70 / 3.68** (1.702 / 3.676) |
 
 ## Label split on the last 53 weeks — Neutral / Bull-Bear / Very, %
 
 | | v1 | v2 (with C) |
 |---|---|---|
-| FX table | 61.4 / 32.7 / 5.9 | **55.2 / 34.7 / 10.1** |
+| FX table | 61.4 / 32.7 / 5.9 | **55.2 / 34.5 / 10.3** |
 | cross-asset table | 49.5 / 42.0 / 8.5 | **55.0 / 35.1 / 9.9** |
-| — FX pairs only | 62.3 / 32.3 / 5.4 | 56.2 / 35.0 / 8.8 |
-| — US Dollar only (53 obs) | 37.7 / 43.4 / 18.9 | 28.3 / 24.5 / 47.2 |
+| — FX pairs only | 62.3 / 32.3 / 5.4 | 55.5 / 34.4 / 10.1 |
+| — US Dollar only (53 obs) | 37.7 / 43.4 / 18.9 | 47.2 / 37.7 / **15.1** (8 of 53 weeks Very; criterion ≤ 15%) |
 | — indices only | 51.3 / 40.3 / 8.5 | 57.5 / 35.8 / 6.6 |
 | — metals only (106 obs) | 44.3 / 47.2 / 8.5 | 47.2 / 33.0 / 19.8 |
 
-The thresholds are pooled per table, so the 55/35/10 split holds per table, not per sub-board: the
-US Dollar row's v2 score has a wider spread than the pairs (its σ-scaled factors do not cancel
-between two legs) and sits in Very ~47% of the last year.
+The thresholds are pooled per table, so the 55/35/10 split holds per table. After the scale fix the
+US Dollar row is Very in 8 of the last 53 weeks (|score| 2.52, 2.41, 2.18, 2.17, 2.17, 2.05, 2.03,
+1.98 vs very 1.93 — the 8th is not a rounding case); the reference was 7 (49 / 38 / 13).
 
 ## Stability — weeks between label changes, each formula with its own p55/p90 per board, whole window
 
 | board | v1 | v2 without C | v2 with C | reference |
 |---|---|---|---|---|
-| FX | 2.77 (with C 2.82) | 2.91 | 2.91 | 2.8 → 2.9 |
+| FX | 2.77 (with C 2.82) | 2.91 | 2.86 (after the fix) | 2.8 → 2.9 |
 | indices | 1.67 (1.69) | 2.39 | 2.41 | 1.7 → 2.4 |
 | metals | 2.03 (2.04) | 2.19 | 2.29 | 2.0 → 2.2 |
 
@@ -101,7 +110,10 @@ per-board definition is the one that reproduces the reference.)
 
 ## Labels that change today (as_of 2026-10-06 15:06:51, main vs branch)
 
-With C (branch as committed): **8 of 37**
+After the US Dollar fix and the FX re-derivation (0.89 / 1.93): **9 of 37** — the 8 below plus
+AUD/CHF Neutral −0.01 → Bearish −0.89. US Dollar stays Neutral (main +0.82, branch −0.18).
+
+Before the fix (thresholds 0.90 / 1.99), with C: **8 of 37**
 
 | instrument | main | branch |
 |---|---|---|
@@ -143,12 +155,16 @@ FX matches the reference (56.4 → 54.2). Indices and metals do not (ref 43.3 �
 ## STRENGTH_PCT_K (scripts/measure/strength_pairs_distribution.py, 53 weeks to 2026-10-02)
 
 Constant in `src/economic_render.py`: 22.0. Same method today on v1: p95 |score| 1.605 → K 25.0.
-On v2: p95 1.717 → K_raw 23.29 → **23.5**. Reported, not changed.
+On v2: p95 1.717 → K_raw 23.29 → **23.5** — set in `src/economic_render.py` (2026-10-07). The US
+Dollar row does not enter Strength, so the scale fix leaves K unchanged.
 
 ## Checks
 
 - C1: branch code with the N-c keys stripped and the main indicators config = main, bit for bit, on
   every score of the economic and history payloads (the only differences: `meta.model` from the
-  appended model version, and wall-clock timestamps).
+  appended model version, `/strength` pct + `meta.strength_pct_k` from K 23.5, and timestamps).
+- Visual (headless Chromium, 2026-10-07): /economic and /strength load with no console errors; the
+  cross-asset popup shows value, value in σ and contribution, Σ = score (Gold −0.626 = −0.626); rate
+  cells with one decimal; the model note shows on /economic and /strength.
 - C6: max |contrib_residual| 4.4e-16 (FX), 0 (cross-asset).
 - C7: `score_v1` / `bias_v1` on 37 / 37 instruments, not read by any page script.

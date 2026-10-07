@@ -46,10 +46,10 @@
   }
   // A cell shows the value used in the score: integers as-is, a continuous
   // value (rule N-c rate signal) with one decimal.
-  function fmtScoreCell(v) {
+  function fmtScoreCell(v, continuous) {
     if (v === null || v === undefined) return "—";
     const n = Number(v);
-    if (Number.isInteger(n)) return (n > 0 ? "+" : "") + n;
+    if (Number.isInteger(n) && !continuous) return (n > 0 ? "+" : "") + n;
     const t = n.toFixed(1);
     return t === "-0.0" || t === "0.0" ? "0.0" : (n > 0 ? "+" : "") + t;
   }
@@ -656,11 +656,11 @@
     if (c.stale) {
       const staleTip = "stale — latest release is outside the lookback window; excluded from scoring" +
         (tip ? " " + tip : "");
-      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + cbLink(inst, key, fmtScoreCell(v)) + mark + '</td>';
+      return '<td class="econ-cell ec-stale" title="' + escAttr(staleTip) + '">' + cbLink(inst, key, fmtScoreCell(v, c.continuous)) + mark + '</td>';
     }
     // Continuous gradient on the per-indicator differential (saturates at ±4).
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
-      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + cbLink(inst, key, fmtScoreCell(v)) + mark + "</td>";
+      (tip ? ' title="' + escAttr(tip) + '"' : "") + ">" + cbLink(inst, key, fmtScoreCell(v, c.continuous)) + mark + "</td>";
   }
 
   // TREND sub-cell for an FX row (display-only). Same divergent color engine as
@@ -1226,13 +1226,13 @@
     if (c.excluded) {
       const tip = "Weight set to 0 — excluded from the composite (accepted degradation, see docs/accepted-degradations.md). Value shown is still live.";
       return '<td class="econ-cell ec-excluded" title="' + escAttr(tip) + '">' +
-        fmtScoreCell(v) + ' <span class="econ-flag flag-excluded">excluded from composite</span></td>';
+        fmtScoreCell(v, c.continuous) + ' <span class="econ-flag flag-excluded">excluded from composite</span></td>';
     }
     if (c.stale) {
       return '<td class="econ-cell ec-stale" title="stale — outside the lookback window; excluded from scoring">' +
-        fmtScoreCell(v) + "</td>";
+        fmtScoreCell(v, c.continuous) + "</td>";
     }
-    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ">" + fmtScoreCell(v) + "</td>";
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ">" + fmtScoreCell(v, c.continuous) + "</td>";
   }
 
   // TREND sub-cell (display-only) for a cross-asset row. Direct on the asset's
