@@ -11,6 +11,10 @@ from src.economic_compute import compute_instrument
 
 ROOT = Path(__file__).resolve().parents[1]
 INST_CFG = yaml.safe_load((ROOT / "data" / "economic_instruments.yaml").read_text())
+# the v1 formula (rule N-c keys stripped — feat/factor-scales keeps v1 as score_v1)
+INST_CFG = {k: v for k, v in INST_CFG.items()
+            if k not in ("factor_scales", "factor_scales_single", "factor_clip", "rate_signal",
+                         "bias_thresholds_scaled")}
 
 
 def _card(g, i, l, m=None):

@@ -27,7 +27,7 @@ import pandas as pd
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.economic_compute import build_payload, bias_label
+from src.economic_compute import active_thresholds, build_payload, bias_label
 from src.ff_corrections import read_ff_parquet
 from src.cot_score import (
     load_currencies_history,
@@ -40,7 +40,8 @@ from src.sentiment_compute import compute_pc_metrics, pc_index_score
 from src.rate_compute import compute_pair_spread_scores, compute_rate_scores
 from src.realyield_compute import compute_realyield_score
 from src.liquidity_compute import compute_liquidity_score
-from src.crossasset_compute import compute_crossasset_scores, LIQUIDITY_SERIES_LABELS
+from src.crossasset_compute import (categories_by_currency, compute_crossasset_scores,
+                                     LIQUIDITY_SERIES_LABELS)
 from src.trend_score import score_all as trend_score_all
 from src.static_assets import copy_static_assets
 from src.price_fetch import SYMBOLS_YAML as PRICE_SYMBOLS_YAML, load_symbol_map as _load_price_symbol_map
@@ -215,7 +216,11 @@ INDICATOR_UNITS: dict[str, dict] = {
 # observations, snapshot 4ace910 + audit phases 1-2): p95(|score|) = 1.817 ->
 # K_raw = 22.017 -> K = 22.0. Saturation at |score| >= 2.273. (Was 10.5 on the
 # old per-currency index.) Changing it requires re-running that script.
-STRENGTH_PCT_K = 22.0
+# Rule N-c (feat/factor-scales, 2026-10-06): same script on the new pair fund
+# scores, 53 weeks to 2026-10-02: p95(|score|) = 1.717 -> K_raw = 23.29 -> K = 23.5
+# (the same method on v1 that day gave 25.0). The US Dollar row does not enter
+# Strength, so its move to the pairs' scale leaves K unchanged.
+STRENGTH_PCT_K = 23.5
 
 # Per-currency label overrides for cpi_yoy / core_cpi / ppi_yoy — the global
 # INDICATOR_LABELS text ("CPI (YoY)", "Core CPI", "PPI") is accurate for SOME
@@ -474,7 +479,7 @@ def _build_meta(indicators_cfg: dict, instruments_cfg: dict) -> dict:
         "indicator_direction_overrides": direction_overrides,
         "categories_display": instruments_cfg.get("categories_display", []),
         "table_layout": table_layout,
-        "bias_thresholds": instruments_cfg.get("bias_thresholds", {}),
+        "bias_thresholds": active_thresholds(instruments_cfg),
         "scale": instruments_cfg.get("scale"),
         "pair_divisor": instruments_cfg.get("pair_divisor"),
         # /strength.html: single source of truth for the pct<->index relationship
@@ -521,10 +526,15 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
         if inst.get("type") == "single":
             sign = float(cfg.get("sign", 1))
             bd = _bd(base_ccy)
+            fi = inst.get("factor_inputs") or {}
             for k in TABLE_COLUMN_KEYS:
                 e = bd.get(k)
                 if e is None:
                     cells[k] = {"v": None, "stale": False}
+                elif k == "rate_expectations" and "monetary" in fi:
+                    # rule N-c: the continuous 2Y signal the score uses
+                    cells[k] = {"v": fi["monetary"]["value"] * sign, "stale": bool(e.get("stale")),
+                                "continuous": True}
                 else:
                     cells[k] = {"v": int(round(e["score"] * sign)), "stale": bool(e.get("stale"))}
         else:
@@ -533,8 +543,13 @@ def _build_indicator_cells(payload: dict, instruments_cfg: dict) -> None:
             for k in TABLE_COLUMN_KEYS:
                 eb, eq = bb.get(k), bq.get(k)
                 if k == "rate_expectations" and mp:
-                    # audit 5B: the pair's monetary cell is its 2y-spread m
-                    cells[k] = {"v": int(mp["m"]), "stale": False, "pair_spread": True}
+                    # audit 5B: the pair's monetary cell is its 2y-spread m;
+                    # rule N-c: the continuous signal the score actually uses
+                    if mp.get("signal") is not None:
+                        cells[k] = {"v": mp["signal"], "stale": False, "pair_spread": True,
+                                    "continuous": True}
+                    else:
+                        cells[k] = {"v": int(mp["m"]), "stale": False, "pair_spread": True}
                     continue
                 if eb is None and eq is None:
                     cells[k] = {"v": None, "stale": False}
@@ -660,7 +675,7 @@ def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: d
     (pair thresholds, bias_label — the same function /economic reads).
     `strength_pairs` feeds the divergence matrix. `index`, N (`coverage`) and the
     own monetary state stay informative. /economic is untouched.""" 
-    thresholds = instruments_cfg.get("bias_thresholds", {})
+    thresholds = active_thresholds(instruments_cfg)
     agg = strength_from_pairs(payload)
     for ccy, card in payload.get("currencies", {}).items():
         score = float(agg["scores"].get(ccy, 0.0))
@@ -1095,10 +1110,7 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
     except FileNotFoundError:
         return {}
 
-    categories_by_ccy = {
-        ccy: card.get("categories", {})
-        for ccy, card in payload.get("currencies", {}).items()
-    }
+    categories_by_ccy = categories_by_currency(payload.get("currencies", {}), cfg)
 
     real_yield_score = None
     real_yield_meta = {"present": False, "series": "DFII10"}
@@ -1197,6 +1209,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
             signed = (float(c.get("sign", 1)) * raw) if raw is not None else None
             cells[c["name"]] = {"score": signed, "stale": bool(c.get("stale")),
                                "excluded": bool(c.get("excluded"))}
+            if cfg.get("factor_scales") and c.get("name") != "balance_sheet":
+                cells[c["name"]]["continuous"] = True   # rule N-c: clip(z/0.87, ±2)
         r["cells"] = cells
 
         # TREND decomposition for the pop-up (column shows the final cell only).
@@ -1232,7 +1246,8 @@ def _build_crossasset_block(payload: dict, as_of: pd.Timestamp,
         "factor_labels": dict(CROSSASSET_FACTOR_LABELS),
         "real_yield": real_yield_meta,
         "net_liquidity": liquidity_meta,
-        "bias_thresholds": cfg.get("bias_thresholds", {}),
+        "bias_thresholds": (cfg.get("bias_thresholds_scaled") if cfg.get("factor_scales")
+                            and cfg.get("bias_thresholds_scaled") else cfg.get("bias_thresholds", {})),
         "scale": cfg.get("scale"),
     }
 

@@ -45,6 +45,23 @@ trend_weight: 0.5
 # Signed, calibrated constants — DO NOT retune to change a result (prereg §18 PA-D).
 d2c_sentiment_w_s: 0.125                    # -> constant 11.11% effective SENTIMENT weight (prereg §10.1)
 d2c_trend_macro_weight_target: 4.371794871794871   # -> constant 10.2632% effective TREND weight (prereg §13.3)
+# --- Rule N-c, factors on the same scale (feat/factor-scales, 2026-10-06) ---
+# Pairs: each pair-level input — category = score_precise(base) − score_precise
+# (quote) on the D1=D intersection; monetary = clip(z_spread/unit, ±cap) (the
+# 2Y-spread m stays in the payload for display); sentiment = COT(base) − COT
+# (quote), USD = 0 — is divided by its σ and clipped to ±factor_clip, then the
+# intersection mean and the D2-c fold run exactly as before. US Dollar: the
+# same on the USD categories (monetary = clip(z_2Y/unit, ±cap)) and DXY COT,
+# inside the existing weighted mean (categories 1.0, sentiment 0.5).
+# σ = std (ddof=1) of each input over every instrument-week of the board,
+# weekly Friday 21:00 UTC reconstruction 2023-09-22 .. 2026-10-02 (159 weeks),
+# scripts/measure/factor_scales.py on the 2026-10-06 data, gdp_price_index
+# display-only (part C). Removing these keys restores the v1 scores exactly.
+# Re-derive only on a structural change, not to chase a result.
+factor_scales:        { growth: 0.775, inflation: 0.848, labour: 0.932, monetary: 1.026, sentiment: 2.182 }
+factor_scales_single: { growth: 0.279, inflation: 0.528, labour: 0.298, monetary: 1.024, sentiment: 2.190 }
+factor_clip: 3
+rate_signal: { unit: 0.87, cap: 2 }   # clip(z/0.87, ±2): 0.87 = p60 of |z| 2005-2026, cap 2 ≈ p87.5
 # §Q1 recalibration (2026-07-28): re-derived on the post-D distribution
 # (dead code removed, contributions shipped, D1=D + D2-c merged — the FIRST
 # stable distribution since the D2 calibration below, which was measured on
@@ -56,6 +73,18 @@ d2c_trend_macro_weight_target: 4.371794871794871   # -> constant 10.2632% effect
 # distribution (like the quarantine-commit discontinuity), not merely "the
 # split has drifted from 55/10". A gradual decline does not qualify; if you
 # are re-deriving without a jump to point to, stop and ask first.
+# Rule N-c thresholds (feat/factor-scales, 2026-10-06), used only together with
+# factor_scales: p55/p90 of |score| on the new scale, FX board (28 pairs + US
+# Dollar), last 53 weeks of the reconstruction (2025-10-03 .. 2026-10-02),
+# scripts/measure/factor_scales.py report. Re-derived because the score's scale
+# changed by construction (σ-normalised factors, continuous rates) — the
+# structural jump the GUARDRAIL below asks for; `bias_thresholds` stays the v1
+# set (score_v1 / bias_v1).
+# 2026-10-07: re-derived after putting the US Dollar row on the pairs' scale
+# (scale / pair_divisor under N-c).
+bias_thresholds_scaled:
+  very: 1.93    # p90 of |score|, rule N-c, 53-week window (1.935)
+  mild: 0.89    # p55 of |score|, rule N-c, 53-week window (0.887)
 bias_thresholds:
   very: 2.41    # §Q1 (2026-07-28): p90 of |score_precise|, post-D, 53-week window
   mild: 1.12    # §Q1 (2026-07-28): p55 of |score_precise|, post-D, 53-week window

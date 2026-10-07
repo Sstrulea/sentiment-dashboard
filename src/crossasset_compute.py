@@ -67,6 +67,40 @@ def _cell(v: Any) -> Optional[int]:
         return None
 
 
+def _precise(v: Any) -> Optional[float]:
+    """A category's score_precise (rule N-c), or None when absent — same
+    presence test as `_cell` (coverage 0 → absent)."""
+    if v is None:
+        return None
+    if isinstance(v, dict):
+        if "coverage" in v and (v.get("coverage") or 0) == 0:
+            return None
+        p = v.get("score_precise", v.get("score_cell"))
+        return None if p is None else float(p)
+    if isinstance(v, float) and math.isnan(v):
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def rate_signal(z: Any, fallback: Any, unit: float, cap: float) -> Optional[float]:
+    """Continuous rate signal clip(z/unit, −cap, cap) (rule N-c: unit 0.87 = p60
+    of |z|, cap 2 ≈ p87.5 — the indicator rule without the steps). A series with
+    no z (fallback/insufficient method) keeps its bucketed score, already ±2."""
+    if z is not None and not (isinstance(z, float) and math.isnan(z)):
+        return float(max(-cap, min(cap, float(z) / unit)))
+    if fallback is None or (isinstance(fallback, float) and math.isnan(fallback)):
+        return None
+    return float(fallback)
+
+
+def _scaled(value: float, sigma: float, clip: float) -> float:
+    """value / σ, clipped to ±clip — one factor on the common scale."""
+    return float(max(-clip, min(clip, value / sigma)))
+
+
 def _realyield_raw(ry: Any) -> Optional[int]:
     """Coerce a real-yield input to its int score, or None."""
     if ry is None:
@@ -135,8 +169,19 @@ def _subcell_display(v: Any) -> tuple[Optional[int], bool, bool]:
         return None, False, False
 
 
+def _subcell_signal(v: Any, rate_sig: dict) -> tuple[Optional[float], bool, bool]:
+    """`_subcell_display` on the continuous rate signal: the monetary cell's z
+    (attached by the caller from the rate engine) → clip(z/unit, ±cap)."""
+    raw, stale, present = _subcell_display(v)
+    if raw is None or not isinstance(v, dict):
+        return raw, stale, present
+    sig = rate_signal(v.get("z"), raw, float(rate_sig["unit"]), float(rate_sig["cap"]))
+    return sig, stale, present
+
+
 def _rates_factor(rates_cfg: dict, cats: dict, home: str,
-                  globals_by_kind: dict) -> tuple[Optional[float], list[dict]]:
+                  globals_by_kind: dict, rate_sig: Optional[dict] = None
+                  ) -> tuple[Optional[float], list[dict]]:
     """Composite rates value = weighted mean of PRESENT (non-stale), non-zero-
     weight sub-components (signed), bounded at ±2 regardless of how many
     components there are. Stale sub-components are kept in the rows for display
@@ -159,7 +204,10 @@ def _rates_factor(rates_cfg: dict, cats: dict, home: str,
             raw, stale, source = globals_by_kind[kind]
             present = (raw is not None) and not stale
         else:
-            raw, stale, present = _subcell_display(cats.get(key))
+            if rate_sig is not None:
+                raw, stale, present = _subcell_signal(cats.get(key), rate_sig)
+            else:
+                raw, stale, present = _subcell_display(cats.get(key))
             source = f"{home} {key}"
         # Display contribution whenever a value exists (even if stale/excluded).
         contribution = (sign * weight * raw) if (raw is not None) else None
@@ -296,6 +344,105 @@ def compute_instrument_score(
     }
 
 
+def categories_by_currency(currencies: dict, config: Optional[dict] = None) -> dict:
+    """{CCY: categories} for compute_crossasset_scores from a payload's
+    `currencies`. Under rule N-c (`factor_scales` in the config) each monetary
+    cell is a COPY carrying the rate engine's z (breakdown.rate_expectations),
+    which the 2Y component turns into its continuous signal; the payload itself
+    is never modified."""
+    out = {ccy: card.get("categories", {}) for ccy, card in (currencies or {}).items()}
+    if not (config or {}).get("factor_scales"):
+        return out
+    for ccy, card in (currencies or {}).items():
+        mon = (card.get("categories") or {}).get("monetary")
+        entry = (card.get("breakdown") or {}).get("rate_expectations")
+        if mon is not None and entry is not None:
+            out[ccy] = dict(out[ccy], monetary=dict(mon, z=entry.get("z")))
+    return out
+
+
+def compute_instrument_score_scaled(
+    symbol: str,
+    inst_cfg: dict,
+    categories_by_ccy: dict,
+    scale: float,
+    thresholds: dict,
+    sigmas: dict,
+    rate_sig: dict,
+    clip: float,
+    globals_by_kind: dict,
+    sentiment_value: Optional[int] = None,
+    trend_value: Optional[int] = None,
+) -> dict:
+    """Rule N-c (feat/factor-scales): every factor on the same scale.
+
+    Inputs, signed for the asset: growth/inflation/labour = sign × the home
+    currency's category score_precise (not the rounded cell); rates = the
+    weighted mean of the present, non-stale components, each sign ×
+    clip(z/unit, ±cap) (home 2Y, DFII10); sentiment = sign × the COT / P-C cell.
+    Each input is divided by its σ (`factor_scales[type]`, the historical std
+    on this board) and clipped to ±clip; score = weighted mean × scale, with the
+    same weights/signs as v1. A factor without a σ (trend — off) enters unscaled.
+
+    Each factor row carries raw, value (signed input), sigma, value_sigma and a
+    contribution = weight × value_sigma / Σweight × scale, so the contributions
+    add up to score_precise exactly.
+    """
+    home = inst_cfg.get("home_ccy")
+    factors_cfg = inst_cfg.get("factors", {}) or {}
+    cats = (categories_by_ccy or {}).get(home, {}) or {}
+
+    factor_rows: list[dict] = []
+    for name, fc in factors_cfg.items():
+        weight = float(fc.get("weight", 1.0))
+        sign = float(fc.get("sign", 1))
+        row: dict = {"name": name, "weight": weight}
+        if name == RATES_FACTOR:
+            value, sub_rows = _rates_factor(fc, cats, home, globals_by_kind, rate_sig)
+            row["components"] = sub_rows
+            raw = value
+        elif name == SENTIMENT_FACTOR:
+            raw = sentiment_value
+            value = None if raw is None else sign * raw
+            row.update(sign=sign, source="sentiment")
+        elif name == TREND_FACTOR:
+            raw = trend_value
+            value = None if raw is None else sign * raw
+            row.update(sign=sign, source="trend")
+        else:
+            raw = _precise(cats.get(name))
+            value = None if raw is None else sign * raw
+            row.update(sign=sign, source=f"{home} {name}")
+        sigma = sigmas.get(name)
+        present = value is not None
+        y = None
+        if present:
+            y = _scaled(value, float(sigma), clip) if sigma else float(value)
+        row.update(raw=None if raw is None else float(raw),
+                   value=None if value is None else float(value),
+                   sigma=None if sigma is None else float(sigma),
+                   value_sigma=y, present=present)
+        factor_rows.append(row)
+
+    wsum = sum(r["weight"] for r in factor_rows if r["present"])
+    for r in factor_rows:
+        r["contribution"] = (r["weight"] * r["value_sigma"] / wsum * scale
+                             if r["present"] and wsum > 0 else None)
+    score_precise = (float(sum(r["contribution"] for r in factor_rows if r["present"]))
+                     if wsum > 0 else 0.0)
+    return {
+        "symbol": symbol,
+        "home_ccy": home,
+        "type": inst_cfg.get("type"),
+        "score": int(round(score_precise)),
+        "score_precise": score_precise,
+        "bias_label": bias_label(score_precise, thresholds),
+        "coverage": int(sum(1 for f in factor_rows if f["present"])),
+        "factors": factor_rows,
+        "trend": None if trend_value is None else int(trend_value),
+    }
+
+
 def compute_crossasset_scores(
     categories_by_ccy: dict,
     realyield_score: Any = None,
@@ -341,6 +488,39 @@ def compute_crossasset_scores(
     liq_stale = bool(getattr(liquidity_score, "stale", False))
     sentiment_by_symbol = sentiment_by_symbol or {}
     trend_by_symbol = trend_by_symbol or {}
+
+    # Rule N-c (feat/factor-scales) — only when the config carries the scales;
+    # without them every score is exactly the v1 path below.
+    factor_scales = config.get("factor_scales")
+    if factor_scales:
+        rate_sig = config.get("rate_signal") or {"unit": 0.87, "cap": 2}
+        clip = float(config.get("factor_clip", 3))
+        unit, cap = float(rate_sig["unit"]), float(rate_sig["cap"])
+        ry_sig = (rate_signal(getattr(realyield_score, "z", None), ry_raw, unit, cap)
+                  if ry_raw is not None else None)
+        globals_by_kind = {
+            "realyield": (ry_sig, ry_stale, ry_label),
+            "liquidity": (liq_raw, liq_stale, liq_label),
+        }
+        thresholds_v2 = config.get("bias_thresholds_scaled") or thresholds
+        out = {}
+        for sym, cfg in instruments.items():
+            r = compute_instrument_score_scaled(
+                sym, cfg, categories_by_ccy, scale, thresholds_v2,
+                factor_scales.get(cfg.get("type"), {}) or {}, rate_sig, clip, globals_by_kind,
+                sentiment_value=sentiment_by_symbol.get(sym),
+                trend_value=trend_by_symbol.get(sym))
+            # v1 shadow (not displayed; kept 26 weeks after the switch, until 2027-04)
+            v1 = compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw, scale, thresholds,
+                                          realyield_label=ry_label, realyield_stale=ry_stale,
+                                          liquidity_raw=liq_raw, liquidity_label=liq_label,
+                                          liquidity_stale=liq_stale,
+                                          sentiment_value=sentiment_by_symbol.get(sym),
+                                          trend_value=trend_by_symbol.get(sym))
+            r["score_v1"] = v1["score_precise"]
+            r["bias_v1"] = v1["bias_label"]
+            out[sym] = r
+        return out
 
     return {
         sym: compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw,

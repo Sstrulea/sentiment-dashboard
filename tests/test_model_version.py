@@ -4,9 +4,11 @@ from src.economic_render import _model_meta
 
 def test_model_meta_is_the_newest_version():
     m = _model_meta()
-    assert m["version"] == "2026.09.24" and m["since"] == "2026-09-24" and m["notice_days"] == 14
-    assert "2Y spread" in m["changes"] and "symmetric sentiment fold" in m["changes"]
+    assert m["version"] == "2026.10.07" and m["since"] == "2026-10-07" and m["notice_days"] == 14
+    assert "same scale" in m["changes"] and "re-derived thresholds" in m["changes"]
     assert m["history"][-1]["version"] == m["version"]
+    prev = m["history"][-2]
+    assert prev["version"] == "2026.09.24" and "2Y spread" in prev["changes"]
 
 
 def test_newest_by_date_wins(tmp_path):

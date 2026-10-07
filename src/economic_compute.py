@@ -617,6 +617,15 @@ def bias_label(score: float, thresholds: dict) -> str:
     return "Bullish" if direction_bull else "Bearish"
 
 
+def active_thresholds(cfg: dict) -> dict:
+    """The bias thresholds in force: `bias_thresholds_scaled` under rule N-c
+    (re-derived p55/p90 of the new |score|), else `bias_thresholds` (v1)."""
+    scaled = cfg.get("bias_thresholds_scaled")
+    if scaled and (cfg.get("factor_scales") or cfg.get("factor_scales_single")):
+        return scaled
+    return cfg.get("bias_thresholds", {}) or {}
+
+
 def _augmented_index(card: dict | None, sentiment_value, sentiment_weight: float,
                      scale: float) -> float:
     """Currency index × scale with the SENTIMENT factor folded into the weighted
@@ -704,6 +713,7 @@ def _leg_indicator_multiplier(
     scale: float,
     wsum: float,
     allowed_categories,
+    cat_factor: dict | None = None,
 ) -> float:
     """Exact marginal effect of a one-unit change in ONE indicator's score on
     this leg's contribution to the pair/instrument score: d(mean)/d(score_k) =
@@ -723,7 +733,10 @@ def _leg_indicator_multiplier(
         return 0.0
     weight = float(cell.get("weight", 1.0))
     coverage = int(cell["coverage"])
-    return (weight / (wsum * coverage)) * scale
+    # Rule N-c: the category enters as clip(x/σ, ±3) = k·x, so each of its
+    # indicators carries the same k (1/σ, or the clip ratio) — rows still sum exactly.
+    k = 1.0 if cat_factor is None else float(cat_factor.get(category, 1.0))
+    return (weight / (wsum * coverage)) * scale * k
 
 
 def _fund_contributions(
@@ -738,6 +751,7 @@ def _fund_contributions(
     quote_wsum: float = 0.0,
     quote_allowed=frozenset(),
     relevant_categories=frozenset(),
+    cat_factor: dict | None = None,
 ) -> list[dict]:
     """Per-indicator contribution to the FUND-only (pre-sentiment, pre-trend)
     score — an EXACT linear decomposition: summing every row's `contribution`
@@ -758,13 +772,13 @@ def _fund_contributions(
     for key in keys:
         eb, eq = base_bd.get(key), quote_bd.get(key)
         category = (eb or eq).get("category")
-        base_mult = _leg_indicator_multiplier(base_card, category, scale, base_wsum, base_allowed)
+        base_mult = _leg_indicator_multiplier(base_card, category, scale, base_wsum, base_allowed, cat_factor)
         base_term = (float(eb["score"]) * base_mult) if (eb is not None and not eb.get("stale")) else 0.0
         raw_base = int(eb["score"]) if eb is not None else 0
 
         excluded = False
         if is_fx:
-            quote_mult = _leg_indicator_multiplier(quote_card, category, scale, quote_wsum, quote_allowed)
+            quote_mult = _leg_indicator_multiplier(quote_card, category, scale, quote_wsum, quote_allowed, cat_factor)
             quote_term = (float(eq["score"]) * quote_mult) if (eq is not None and not eq.get("stale")) else 0.0
             raw_quote = int(eq["score"]) if eq is not None else 0
             contribution = (base_term - quote_term) / pair_divisor
@@ -807,6 +821,44 @@ def _fold_trend(macro_score: float, macro_weight: float, trend_value,
     return new_mean * scale
 
 
+def rate_signal(z, fallback, unit: float, cap: float) -> float | None:
+    """Continuous rate signal clip(z/unit, ±cap) (rule N-c). A series with no z
+    (fallback/insufficient method) keeps its bucketed score, already ±2."""
+    if z is not None and not (isinstance(z, float) and math.isnan(z)):
+        return float(max(-cap, min(cap, float(z) / unit)))
+    return None if fallback is None else float(fallback)
+
+
+def _card_rate_signal(card: dict | None, rate_sig: dict) -> float | None:
+    """A currency's own 2Y signal from its rate_expectations breakdown entry."""
+    e = ((card or {}).get("breakdown") or {}).get("rate_expectations")
+    if e is None:
+        return None
+    return rate_signal(e.get("z"), e.get("score"), float(rate_sig["unit"]), float(rate_sig["cap"]))
+
+
+def _scale_inputs(inputs: dict[str, float], sigmas: dict, clip: float) -> tuple[dict, dict]:
+    """({factor: clip(x/σ, ±clip)}, {factor: y/x}) — the second is the per-unit
+    factor the contribution rows use (1/σ when x is 0). A factor with no σ
+    enters unscaled."""
+    ys, ks = {}, {}
+    for f, x in inputs.items():
+        sg = sigmas.get(f)
+        if not sg:
+            ys[f], ks[f] = float(x), 1.0
+            continue
+        y = max(-clip, min(clip, float(x) / float(sg)))
+        ys[f] = float(y)
+        ks[f] = (y / x) if x else 1.0 / float(sg)
+    return ys, ks
+
+
+def _factor_inputs(inputs: dict, ys: dict, sigmas: dict) -> dict:
+    """Payload view of rule N-c's per-factor numbers (display)."""
+    return {f: {"value": float(inputs[f]), "sigma": (None if not sigmas.get(f) else float(sigmas[f])),
+                "value_sigma": float(ys[f])} for f in inputs}
+
+
 def compute_instrument(
     symbol: str,
     inst_cfg: dict,
@@ -843,7 +895,8 @@ def compute_instrument(
     score bit-identical to the no-trend baseline.
     """
     pair_divisor = float(instruments_cfg.get("pair_divisor", 2))
-    thresholds = instruments_cfg.get("bias_thresholds", {}) or {}
+    thresholds_v1 = instruments_cfg.get("bias_thresholds", {}) or {}
+    thresholds = active_thresholds(instruments_cfg)
     scale = float(instruments_cfg.get("scale", 5))
     sentiment_weight = float(instruments_cfg.get("sentiment_weight", 0.5))
     trend_weight = float(instruments_cfg.get("trend_weight", 0.5))
@@ -966,9 +1019,78 @@ def compute_instrument(
     else:
         raise ValueError(f"Unknown instrument type {itype!r} for {symbol}")
 
+    # Rule N-c (feat/factor-scales): every factor on the same scale — the input
+    # divided by its σ (factor_scales / factor_scales_single) and clipped to
+    # ±factor_clip, with monetary on the continuous 2Y signal clip(z/unit, ±cap).
+    # Same means, weights, D1=D intersection and D2-c fold as above; without the
+    # config keys this block is skipped and every number is the v1 one.
+    fx_scales = instruments_cfg.get("factor_scales")
+    single_scales = instruments_cfg.get("factor_scales_single")
+    rate_sig = instruments_cfg.get("rate_signal") or {"unit": 0.87, "cap": 2}
+    clip = float(instruments_cfg.get("factor_clip", 3))
+    cat_factor = None
+    mon_override = None      # (contribution, signal) of the monetary row
+    factor_inputs = None
+    macro_score_v1 = macro_score
+    eff_scale = scale        # the single row moves onto the pairs' scale under N-c
+    if itype == "single" and single_scales:
+        pres = _present_categories(base_card)
+        inputs = {}
+        for cat, cell in pres.items():
+            sig = _card_rate_signal(base_card, rate_sig) if cat == "monetary" else None
+            inputs[cat] = float(cell["score_precise"]) if sig is None else sig
+        w = {cat: float(cell.get("weight", 1.0)) for cat, cell in pres.items()}
+        if v_s is not None:
+            inputs["sentiment"] = float(v_s)
+        ys, ks = _scale_inputs(inputs, single_scales, clip)
+        # Same σ units as the pairs → same scale: a pair is (base − quote) ×
+        # scale / pair_divisor, so the single row uses scale / pair_divisor too
+        # (with scale alone the same number of σ scored twice a pair's).
+        eff_scale = scale / pair_divisor
+        W = sum(w.values())
+        num = sum(w[c] * ys[c] for c in w)
+        den = W + (sentiment_weight if v_s is not None else 0.0)
+        num_s = num + (sentiment_weight * ys["sentiment"] if v_s is not None else 0.0)
+        macro_score = (num_s / den) * eff_scale * sign if den else 0.0
+        macro_score_no_sentiment = (num / W) * eff_scale * sign if W else 0.0
+        cat_factor = {c: ks[c] for c in w}
+        if "monetary" in w:
+            mon_override = (w["monetary"] * ys["monetary"] / W * eff_scale * sign, inputs["monetary"])
+        factor_inputs = _factor_inputs(inputs, ys, single_scales)
+    elif itype == "fx" and fx_scales:
+        inputs = {}
+        for cat in intersection:
+            if cat == "monetary":
+                if pair_monetary is not None:
+                    x = rate_signal(pair_monetary.get("z"), pair_monetary.get("m"),
+                                    float(rate_sig["unit"]), float(rate_sig["cap"]))
+                else:
+                    sb = _card_rate_signal(base_card, rate_sig)
+                    sq = _card_rate_signal(quote_card, rate_sig)
+                    x = (sb - sq) if (sb is not None and sq is not None) else (
+                        float(base_card["categories"][cat]["score_precise"])
+                        - float(quote_card["categories"][cat]["score_precise"]))
+            else:
+                x = (float(base_card["categories"][cat]["score_precise"])
+                     - float(quote_card["categories"][cat]["score_precise"]))
+            inputs[cat] = float(x)
+        w = {cat: float(base_card["categories"][cat].get("weight", 1.0)) for cat in intersection}
+        if sentiment_on:
+            inputs["sentiment"] = float(v_s_base) - float(v_s_quote)
+        ys, ks = _scale_inputs(inputs, fx_scales, clip)
+        W = sum(w.values())
+        mean = (sum(w[c] * ys[c] for c in w) / W) if W else 0.0
+        folded = _d2c_sentiment_fold(mean, ys["sentiment"], d2c_w_s) if sentiment_on else mean
+        macro_score = folded * scale / pair_divisor
+        macro_score_no_sentiment = mean * scale / pair_divisor
+        cat_factor = {c: ks[c] for c in w}
+        if "monetary" in w:
+            mon_override = (w["monetary"] * ys["monetary"] / W * scale / pair_divisor, inputs["monetary"])
+        factor_inputs = _factor_inputs(inputs, ys, fx_scales)
+
     # Fold TREND directly into the pair/instrument score (one more weighted-mean
     # member). trend_value None → score == macro_score (bit-identical baseline).
-    score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, scale)
+    score = _fold_trend(macro_score, macro_weight, trend_value, trend_weight, eff_scale)
 
     # --- Contribution breakdown (display-only; NEVER feeds `score` — it is
     # derived FROM the already-computed score/macro_score/macro_score_no_sentiment
@@ -981,10 +1103,20 @@ def compute_instrument(
     # (floating-point noise in practice, ~1e-13) — computed here, once, so a
     # bug in a later render/display layer can never mask itself by
     # recomputing its own "Σ" from a different code path. ---
-    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, scale,
+    contributions = _fund_contributions(base_card, quote_card, sign, is_fx, pair_divisor, eff_scale,
                                         fund_base_wsum, fund_base_allowed, fund_quote_wsum, fund_quote_allowed,
-                                        relevant_categories=set(categories_display))
-    if spread_m is not None:
+                                        relevant_categories=set(categories_display),
+                                        cat_factor=cat_factor)
+    if mon_override is not None:
+        # rule N-c: the monetary row is ONE row on the continuous signal
+        for r in contributions:
+            if r["category"] == "monetary":
+                r["contribution"] = float(mon_override[0])
+                r["value"] = float(mon_override[1])
+                if spread_m is not None:
+                    r["raw"] = spread_m
+                    r["pair_spread"] = True
+    elif spread_m is not None:
         # the monetary row is ONE pair row: m × the leg multiplier / pair_divisor
         mult = _leg_indicator_multiplier(base_card, "monetary", scale, fund_base_wsum, fund_base_allowed)
         for r in contributions:
@@ -1005,7 +1137,7 @@ def compute_instrument(
     contrib_sum = float(sum(r["contribution"] for r in contributions))
     contrib_residual = float(score) - contrib_sum
 
-    return {
+    out = {
         "symbol": symbol,
         "display": inst_cfg.get("display", symbol),
         "type": itype,
@@ -1031,6 +1163,16 @@ def compute_instrument(
         # a leg without a fresh 2y, or not an fx pair).
         "monetary_pair": (dict(pair_monetary, used=True) if spread_m is not None else None),
     }
+    if factor_inputs is not None:
+        out["factor_inputs"] = factor_inputs        # rule N-c: value, σ, value in σ per factor
+        # v1 shadow (not displayed; kept 26 weeks after the switch, until 2027-04):
+        # the same instrument on the v1 formula and the v1 thresholds.
+        score_v1 = _fold_trend(macro_score_v1, macro_weight, trend_value, trend_weight, scale)
+        out["score_v1"] = float(score_v1)
+        out["bias_v1"] = bias_label(score_v1, thresholds_v1)
+        if out["monetary_pair"] is not None and "monetary" in factor_inputs:
+            out["monetary_pair"]["signal"] = factor_inputs["monetary"]["value"]
+    return out
 
 
 # ---------------------------------------------------------------------------

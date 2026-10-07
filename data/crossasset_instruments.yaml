@@ -34,6 +34,33 @@
 # decline does not qualify.
 
 scale: 5
+# --- Rule N-c, factors on the same scale (feat/factor-scales, 2026-10-06) ---
+# Each factor input (growth/inflation/labour = sign × home score_precise; rates =
+# mean of sign × clip(z/unit, ±cap) over the present 2Y/DFII10 components;
+# sentiment = COT / P-C cell) is divided by its σ below and clipped to
+# ±factor_clip before the existing weighted mean × scale. Weights and signs are
+# unchanged. Removing `factor_scales` restores the v1 scores exactly.
+# σ = std (ddof=1) of each input over every instrument-week of the board,
+# weekly Friday 21:00 UTC reconstruction 2023-09-22 .. 2026-10-02 (159 weeks),
+# scripts/measure/factor_scales.py on the 2026-10-06 data, gdp_price_index
+# display-only (part C). Re-derive only on a structural change (a new factor,
+# a changed input definition), not to chase a result.
+factor_scales:
+  index: { growth: 0.377, inflation: 0.530, labour: 0.466, rates: 0.937, sentiment: 1.809 }
+  metal: { growth: 0.279, inflation: 0.527, labour: 0.298, rates: 0.976, sentiment: 1.858 }
+factor_clip: 3
+# Continuous rate signal clip(z/unit, ±cap): unit 0.87 = p60 of |z| over
+# 2005-2026, cap 2 ≈ p87.5 — the indicator z rule without the steps.
+rate_signal: { unit: 0.87, cap: 2 }
+# Rule N-c thresholds (feat/factor-scales, 2026-10-06), used only together with
+# factor_scales: p55/p90 of |score| on the new scale, cross-asset board (6
+# indices + 2 metals), last 53 weeks of the reconstruction (2025-10-03 ..
+# 2026-10-02), scripts/measure/factor_scales.py report. Re-derived because the
+# score's scale changed by construction — the structural jump the GUARDRAIL
+# above asks for; `bias_thresholds` stays the v1 set (score_v1 / bias_v1).
+bias_thresholds_scaled:
+  mild: 1.70    # p55 of |score|, rule N-c, 53-week window (1.702)
+  very: 3.68    # p90 of |score|, rule N-c, 53-week window (3.676)
 bias_thresholds:
   mild: 1.50    # §Q1 (2026-07-28): p55 of |score|, post-D, 53-week window
   very: 3.33    # §Q1 (2026-07-28): p90 of |score|, post-D, 53-week window
