@@ -1475,6 +1475,8 @@ def apply_v3_fx(payload: dict, instruments_cfg: dict, indicators_cfg: dict,
             inst["fund_score"] = pair_macro
         inst["score"] = float(score)
         inst["bias"] = v3_label(score, rms.get(sym), thresholds)
+        # z = score / RMS(instrument): the value the bias is read from (display/sort)
+        inst["z"] = (float(score) / float(rms[sym])) if rms.get(sym) else None
         inst["contributions"] = contrib
         inst["contrib_sum"] = float(sum(r["contribution"] for r in contrib))
         inst["contrib_residual"] = float(score) - inst["contrib_sum"]
