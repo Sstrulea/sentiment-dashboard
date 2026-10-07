@@ -9,3 +9,6 @@ versions:
   - version: "2026.10.07"
     since: 2026-10-07
     changes: "factors on the same scale (σ), continuous rates, cross-asset macro on category means, re-derived thresholds"
+  - version: "2026.10.07-v3"
+    since: 2026-10-07
+    changes: "scoring v3: currency score = 51% macro + 34% carry (policy-rate differential) + 15% COT; indices 67% macro + 33% 3-month rates (asymmetric); metals 56/33/11; bias from each instrument's usual size; 2Y repricing, P/C and bank reserves no longer scored"

@@ -510,15 +510,6 @@ def compute_crossasset_scores(
                 factor_scales.get(cfg.get("type"), {}) or {}, rate_sig, clip, globals_by_kind,
                 sentiment_value=sentiment_by_symbol.get(sym),
                 trend_value=trend_by_symbol.get(sym))
-            # v1 shadow (not displayed; kept 26 weeks after the switch, until 2027-04)
-            v1 = compute_instrument_score(sym, cfg, categories_by_ccy, ry_raw, scale, thresholds,
-                                          realyield_label=ry_label, realyield_stale=ry_stale,
-                                          liquidity_raw=liq_raw, liquidity_label=liq_label,
-                                          liquidity_stale=liq_stale,
-                                          sentiment_value=sentiment_by_symbol.get(sym),
-                                          trend_value=trend_by_symbol.get(sym))
-            r["score_v1"] = v1["score_precise"]
-            r["bias_v1"] = v1["bias_label"]
             out[sym] = r
         return out
 
@@ -532,3 +523,215 @@ def compute_crossasset_scores(
                                       trend_value=trend_by_symbol.get(sym))
         for sym, cfg in instruments.items()
     }
+
+
+# ---------------------------------------------------------------------------
+# Scoring v3 "swing" (2026-10-07) — pure pieces of the cross-asset score
+# ---------------------------------------------------------------------------
+
+V3_RATE_W = 63          # observations: ~3 months
+V3_RATE_END_N = 5       # averaged ends, as src/rate_compute.py does for 21
+V3_INDEX_WEIGHTS = {"macro": 0.67, "rates": 0.33}
+V3_METAL_WEIGHTS = {"macro": 0.56, "rates": 0.33, "cot": 0.11}
+V3_SCALE = 2.5
+
+
+def v3_yield_change(dates: list, ys: list, as_of, W: int = V3_RATE_W, k: int = V3_RATE_END_N
+                    ) -> tuple[Optional[float], Any]:
+    """(Δ, latest date) at as_of: mean of the last k observations − mean of the
+    k observations ending W observations earlier; (None, latest) when the
+    series is too short."""
+    import pandas as pd
+    cut = pd.Timestamp(as_of)
+    idx = [i for i, d in enumerate(dates) if pd.Timestamp(d) <= cut]
+    if not idx:
+        return None, None
+    n = idx[-1] + 1
+    if n < W + k:
+        return None, dates[n - 1]
+    last = sum(ys[n - k:n]) / k
+    prev = sum(ys[n - W - k:n - W]) / k
+    return float(last - prev), dates[n - 1]
+
+
+def v3_macro_raw(inst_cfg: dict, categories: dict, sigmas_home: dict) -> Optional[float]:
+    """Weighted mean (today's weights and signs) of sign × score_precise(home,
+    category) / σ(home, category) over the present macro categories — before
+    dividing by the instrument's σ_Macro. None when none is present."""
+    num = wsum = 0.0
+    for name, fc in (inst_cfg.get("factors") or {}).items():
+        if name not in ("growth", "inflation", "labour"):
+            continue
+        cell = (categories or {}).get(name)
+        sg = (sigmas_home or {}).get(name)
+        if cell is None or not sg or (cell.get("coverage") or 0) <= 0:
+            continue
+        w = float(fc.get("weight", 1.0))
+        num += w * float(fc.get("sign", 1)) * float(cell["score_precise"]) / float(sg)
+        wsum += w
+    return (num / wsum) if wsum > 0 else None
+
+
+def v3_index_combine(m_block: Optional[float], r_block: Optional[float]) -> tuple[Optional[float], dict]:
+    """Indices: m = 0.67 × Macro, r = 0.33 × Rates; s = m + r when r ≥ 0; when
+    r < 0, s = max(m + r, 0) if m > 0, otherwise s = m (falling rates lift, rising
+    rates only erase a bullish macro, never push it negative). A missing block:
+    the other alone at full weight — Macro alone as is; Rates alone floored at 0
+    (s = max(Rates, 0): rates on their own never make an index bearish).
+    Returns (s, {block: contribution})."""
+    if m_block is None and r_block is None:
+        return None, {}
+    if r_block is None:
+        return float(m_block), {"macro": float(m_block), "rates": 0.0}
+    if m_block is None:
+        s = max(float(r_block), 0.0)
+        return s, {"macro": 0.0, "rates": s}
+    m = V3_INDEX_WEIGHTS["macro"] * float(m_block)
+    r = V3_INDEX_WEIGHTS["rates"] * float(r_block)
+    if r >= 0:
+        s = m + r
+    elif m > 0:
+        s = max(m + r, 0.0)
+    else:
+        s = m
+    return float(s), {"macro": m, "rates": float(s - m)}
+
+
+V3_YIELD_SOURCES = {"USD": "USD", "EUR": "EUR", "JPY": "JPY", "GBP": "GBP", "REAL10": "DFII10"}
+V3_REAL_MAX_AGE_BD = 7      # = src.realyield_compute.MAX_AGE_BD
+
+
+def v3_yield_signals(rates_df, real_df, as_of, sigma_y: dict) -> dict:
+    """{name: {signal, delta, latest, stale}} for the v3 yields — the home-currency
+    2Y (data/rates.parquet) and the US real 10Y DFII10 (data/real_yields.parquet):
+    signal = −Δ63 / σ_y (rising yields = bearish), None when the series is too
+    short or stale (latest obs older than its source's max age, as the rate
+    pillar judges it). Pure given the frames."""
+    import pandas as pd
+    from .momentum_common import bday_lag
+    from .rate_compute import _latest_source, _series_for, max_age_for
+    ref = pd.Timestamp(as_of).date()
+    out = {}
+    for name, key in V3_YIELD_SOURCES.items():
+        if name == "REAL10":
+            if real_df is None or real_df.empty:
+                continue
+            s = real_df[(real_df["series"] == key) & real_df["yield_pct"].notna()].sort_values("date")
+            s = s[pd.to_datetime(s["date"]) <= pd.Timestamp(ref)]
+            dates = [pd.Timestamp(d).date() for d in s["date"]]
+            ys = [float(v) for v in s["yield_pct"]]
+            max_age = V3_REAL_MAX_AGE_BD
+        else:
+            if rates_df is None or rates_df.empty:
+                continue
+            r = rates_df[pd.to_datetime(rates_df["date"], errors="coerce") <= pd.Timestamp(ref)]
+            dates, ys = _series_for(r, key)
+            max_age = max_age_for(_latest_source(r, key))
+        if not ys:
+            continue
+        delta, latest = v3_yield_change(dates, ys, ref)
+        stale = latest is None or bday_lag(latest, ref) > max_age
+        sg = (sigma_y or {}).get(name)
+        signal = None if (delta is None or stale or not sg) else -float(delta) / float(sg)
+        out[name] = {"signal": signal, "delta": delta, "stale": bool(stale),
+                     "latest": None if latest is None else str(latest), "latest_yield": ys[-1]}
+    return out
+
+
+def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma_ccy: dict,
+                                 yield_signals: dict, metal_cot: Optional[dict] = None) -> dict:
+    """Scoring v3 for indices + metals (2026-10-07).
+
+    Macro = weighted mean (config weights/signs) of sign × score_precise(home,
+    cat) / σ(home, cat) (the FX per-currency σ), / σ_Macro[symbol]. Rates =
+    mean of the PRESENT signals — indices: home 2Y and US real 10Y; metals: US
+    2Y — / σ_Rates[symbol]. Indices: the asymmetric 0.67 / 0.33 rule
+    (v3_index_combine); metals: 0.56 Macro + 0.33 Rates + 0.11 COT/σ_cot_metal.
+    score_precise = s × 2.5; label from RMS[symbol] and the board thresholds.
+    Factor rows (growth/inflation/labour, rates with its components, cot) carry
+    contributions that add up to score_precise exactly. P/C, the real yield at
+    metals, balance_sheet and TREND are not in the score."""
+    from .economic_compute import bias_label as _bl, v3_combine
+    k = config.get("v3") or {}
+    thresholds = k.get("thresholds") or {}
+    out = {}
+    for sym, cfg in (config.get("instruments") or {}).items():
+        home, itype = cfg.get("home_ccy"), cfg.get("type")
+        cats = (categories_by_ccy or {}).get(home, {}) or {}
+        sig_home = (fx_sigma_ccy or {}).get(home, {}) or {}
+        m_raw = v3_macro_raw(cfg, cats, sig_home)
+        s_mac = (k.get("sigma_macro") or {}).get(sym)
+        m_block = None if (m_raw is None or not s_mac) else m_raw / float(s_mac)
+        comp_names = ["USD"] if itype == "metal" else [home, "REAL10"]
+        comps = []
+        for n in comp_names:
+            y = (yield_signals or {}).get(n) or {}
+            comps.append({"name": "real_yield_10y" if n == "REAL10" else "rate_exp_2y",
+                          "series": "DFII10" if n == "REAL10" else f"{n} 2Y",
+                          "signal": y.get("signal"), "delta": y.get("delta"),
+                          "stale": bool(y.get("stale")), "present": y.get("signal") is not None})
+        present = [c["signal"] for c in comps if c["present"]]
+        r_raw = (sum(present) / len(present)) if present else None
+        s_rat = (k.get("sigma_rates") or {}).get(sym)
+        r_block = None if (r_raw is None or not s_rat) else r_raw / float(s_rat)
+        cot_block = None
+        cell = (metal_cot or {}).get(sym) if itype == "metal" else None
+        if cell is not None and k.get("sigma_cot_metal"):
+            cot_block = float(cell) / float(k["sigma_cot_metal"])
+        if itype == "index":
+            s, parts = v3_index_combine(m_block, r_block)
+            w_m = (V3_INDEX_WEIGHTS["macro"] if r_block is not None else 1.0) if m_block is not None else 0.0
+            macro_part = parts.get("macro", 0.0)
+            rates_part = parts.get("rates", 0.0)
+            cot_part = None
+        else:
+            s, parts = v3_combine({"macro": m_block, "rates": r_block, "cot": cot_block}, V3_METAL_WEIGHTS)
+            wsum = sum(V3_METAL_WEIGHTS[b] for b in parts)
+            w_m = (V3_METAL_WEIGHTS["macro"] / wsum) if "macro" in parts else 0.0
+            macro_part, rates_part, cot_part = parts.get("macro", 0.0), parts.get("rates"), parts.get("cot")
+        score = 0.0 if s is None else float(s) * V3_SCALE
+        # macro split per category (exact: Σ = macro_part × 2.5)
+        rows = []
+        wsum_c = sum(float(fc.get("weight", 1.0)) for n, fc in (cfg.get("factors") or {}).items()
+                     if n in ("growth", "inflation", "labour") and (cats.get(n) or {}).get("coverage", 0) > 0
+                     and sig_home.get(n))
+        for name, fc in (cfg.get("factors") or {}).items():
+            if name not in ("growth", "inflation", "labour"):
+                continue
+            cell_c = cats.get(name) or {}
+            sg = sig_home.get(name)
+            present_c = (cell_c.get("coverage") or 0) > 0 and bool(sg) and m_block is not None
+            sign, w = float(fc.get("sign", 1)), float(fc.get("weight", 1.0))
+            value = sign * float(cell_c["score_precise"]) / float(sg) if present_c else None
+            contribution = (V3_SCALE * w_m * w * value / wsum_c / float(s_mac)) if present_c else None
+            rows.append({"name": name, "sign": sign, "weight": w, "present": present_c,
+                         "raw": None if not present_c else float(cell_c["score_precise"]),
+                         "value": value, "sigma": sg, "contribution": contribution,
+                         "source": f"{home} {name}"})
+        # display fields on the components: raw = the signal, a share of the rates
+        # contribution proportional to it (Σ components = the rates contribution)
+        rc = None if r_block is None or rates_part is None else V3_SCALE * rates_part
+        tot = sum(c["signal"] for c in comps if c["present"])
+        n_p = sum(1 for c in comps if c["present"])
+        for c in comps:
+            c.update(raw=c["signal"], sign=1.0, weight=(1.0 / n_p) if (c["present"] and n_p) else 0.0,
+                     source=c["series"] + " · 63-obs change / σ_y")
+            if rc is None or not c["present"]:
+                c["contribution"] = None
+            else:
+                c["contribution"] = rc * (c["signal"] / tot if tot else 1.0 / n_p)
+        rows.append({"name": "rates", "weight": V3_INDEX_WEIGHTS["rates"] if itype == "index" else V3_METAL_WEIGHTS["rates"],
+                     "present": r_block is not None, "value": r_block, "raw": r_raw,
+                     "contribution": None if r_block is None or rates_part is None else V3_SCALE * rates_part,
+                     "components": comps})
+        if itype == "metal":
+            rows.append({"name": "cot", "sign": 1.0, "weight": V3_METAL_WEIGHTS["cot"], "present": cot_block is not None,
+                         "raw": None if cell is None else int(cell), "value": cot_block,
+                         "contribution": None if cot_part is None else V3_SCALE * cot_part, "source": "COT"})
+        rms = (k.get("rms") or {}).get(sym)
+        out[sym] = {"symbol": sym, "home_ccy": home, "type": itype,
+                    "score": int(round(score)), "score_precise": score,
+                    "bias_label": "Neutral" if not rms else _bl(score / float(rms), thresholds),
+                    "coverage": int(sum(1 for r in rows if r["present"])), "factors": rows,
+                    "v3": {"macro": m_block, "rates": r_block, "cot": cot_block}}
+    return out

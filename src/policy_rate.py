@@ -68,6 +68,68 @@ def policy_rates_at(decisions: pd.DataFrame | None, as_of: pd.Timestamp) -> dict
     return out
 
 
+def policy_rates_with_fallback(decisions: pd.DataFrame | None, as_of: pd.Timestamp,
+                               manual: dict | None) -> dict[str, float]:
+    """{CCY: rate} — policy_rates_at (decisions.parquet), and for a currency it
+    cannot give, the manual data/policy_rates.yaml leg (`manual` = its `rates`
+    mapping) — the same per-currency rule as /carry. 0.00 is a rate."""
+    out = {c: d["rate_pct"] for c, d in policy_rates_at(decisions, as_of).items()}
+    for c, leg in (manual or {}).items():
+        if c not in out and (leg or {}).get("rate_pct") is not None:
+            out[c] = float(leg["rate_pct"])
+    return out
+
+
+# FF calendar conventions -> decisions.parquet conventions (policy_rate_history).
+FED_MIDPOINT_OFFSET = 0.125                 # FF shows the Fed's upper bound
+ECB_DFR_SWITCH = pd.Timestamp("2024-09-12")  # the ECB narrows MRO - DFR from 0.50 to 0.15
+ECB_MRO_TO_DFR = (0.50, 0.15)               # (before the switch, from the switch on)
+
+
+def policy_rate_history(ff: pd.DataFrame, decisions: pd.DataFrame | None = None) -> pd.DataFrame:
+    """The policy-rate decisions per currency over time — pure; never reads
+    data/policy_rates.yaml. Columns: currency, release_dt, rate, source.
+
+    The interest_rate_decision rows of the FF calendar parquet (a missing
+    actual takes the next row's `previous`), converted to the decisions.parquet
+    conventions — Fed: upper bound − 0.125 (midpoint); ECB: main refinancing
+    rate − 0.50 for decisions announced before 2024-09-12, − 0.15 from the
+    2024-09-12 decision on (deposit facility rate) — and replaced by
+    data/cb/decisions.parquet (load_decisions frame) from each currency's
+    first decision there. See rate_at() for the rate in force at t."""
+    f = ff[ff["canonical_id"].astype(str).str.endswith("interest_rate_decision")].copy()
+    f["release_dt"] = pd.to_datetime(f["datetime_utc"])
+    f = f.sort_values(["currency", "release_dt"])
+    nxt_prev = f.groupby("currency")["previous"].shift(-1)
+    f["rate"] = f["actual"].where(f["actual"].notna(), nxt_prev).astype(float)
+    usd = f["currency"] == "USD"
+    f.loc[usd, "rate"] = f.loc[usd, "rate"] - FED_MIDPOINT_OFFSET
+    eur = f["currency"] == "EUR"
+    before = f["release_dt"] < ECB_DFR_SWITCH
+    f.loc[eur & before, "rate"] = f.loc[eur & before, "rate"] - ECB_MRO_TO_DFR[0]
+    f.loc[eur & ~before, "rate"] = f.loc[eur & ~before, "rate"] - ECB_MRO_TO_DFR[1]
+    f = f[f["rate"].notna()]
+    out = f[["currency", "release_dt", "rate"]].assign(source="ff")
+    if decisions is not None and not decisions.empty:
+        d = decisions[decisions["rate_after"].notna()]
+        first = d.groupby("currency")["release_dt"].min()
+        cut = out["currency"].map(first)
+        out = out[cut.isna() | (out["release_dt"] < cut)]
+        dec = pd.DataFrame({"currency": d["currency"].to_numpy(), "release_dt": d["release_dt"].to_numpy(),
+                            "rate": d["rate_after"].astype(float).to_numpy(), "source": "cb_decisions"})
+        out = pd.concat([out, dec], ignore_index=True)
+    return out.sort_values(["currency", "release_dt"], kind="stable").reset_index(drop=True)
+
+
+def rate_at(history: pd.DataFrame, t: pd.Timestamp) -> dict[str, float]:
+    """{CCY: rate} — the last decision announced at or before t."""
+    h = history[history["release_dt"] <= pd.Timestamp(t)]
+    if h.empty:
+        return {}
+    last = h.sort_values("release_dt", kind="stable").groupby("currency").tail(1)
+    return {str(c): float(r) for c, r in zip(last["currency"], last["rate"])}
+
+
 def decision_rows(decisions: pd.DataFrame, as_of: pd.Timestamp,
                   columns: list[str]) -> pd.DataFrame:
     """decisions -> scoring-calendar rows (`columns` = ff_scoring.SCORING_COLUMNS)."""

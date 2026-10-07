@@ -85,6 +85,10 @@
   // Surfaced via `title` tooltip ONLY — cell box/row height must stay
   // pixel-identical to the raw-score-only layout; a title attribute never
   // affects layout.
+  // Scoring v3 (2026-10-07): the payload says which model scored it.
+  function isV3() {
+    return !!(state.payload && state.payload.meta) && state.payload.meta.scoring === "v3";
+  }
   function findContribution(inst, key) {
     const list = inst.contributions || [];
     for (let i = 0; i < list.length; i++) {
@@ -627,6 +631,10 @@
       const c = inst.cot;
       return (c && c.cell !== null && c.cell !== undefined) ? c.cell : -Infinity;
     }
+    if (key === "carry") {
+      const v = (inst.v3 || {}).carry;
+      return (v !== null && v !== undefined) ? v : -Infinity;
+    }
     if (key.indexOf("ind:") === 0) {
       const k = key.slice(4);
       const c = (inst.indicator_cells || {})[k];
@@ -673,7 +681,7 @@
     return ccy ? "/central-banks/" + String(ccy).toLowerCase() : null;
   }
   function cbLink(inst, key, inner) {
-    if (key !== "rate_expectations") return inner;
+    if (key !== "rate_expectations" && key !== "carry") return inner;   // v3: the link lives on Carry
     const href = cbHref(inst);
     if (!href) return inner;
     return '<a class="cb-xlink" href="' + escAttr(href) + '" title="Open the central-bank rate outlook">' + inner + "</a>";
@@ -740,7 +748,7 @@
       return '<td class="econ-cell cell-empty"></td>';
     }
     const v = cot.cell;
-    const contrib = findContribution(inst, "sentiment");
+    const contrib = findContribution(inst, isV3() ? "cot" : "sentiment");
     function legTxt(ccy, cell, det) {
       let t = ccy + " " + fmtScoreCell(cell === null || cell === undefined ? 0 : cell);
       if (det) t += " (" + cotPartsTxt(det) + ")";
@@ -753,6 +761,32 @@
       : baseTxt + " = cell " + fmtScoreCell(v)) + ". " + contribTip(contrib);
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
       ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
+  }
+
+  // CARRY (v3): (policy_base − policy_quote) / σ_carry for a pair; the US Dollar
+  // row shows its own carry, (policy_USD − mean of the 8) / σ_carry. Both rates
+  // and the raw differential in the tooltip.
+  function carryCellHtml(inst) {
+    const v3 = inst.v3 || {};
+    const v = v3.carry;
+    if (v === null || v === undefined) return '<td class="econ-cell cell-na" title="no policy rate">' + cbLink(inst, "carry", "—") + "</td>";
+    const r = v3.carry_rates || {};
+    const pct = (x) => (x === null || x === undefined) ? "—" : Number(x).toFixed(2) + "%";
+    let tip;
+    if (inst.type === "fx") {
+      const b = inst.breakdown.base.currency, q = inst.breakdown.quote.currency;
+      const diff = (r[b] !== null && r[b] !== undefined && r[q] !== null && r[q] !== undefined)
+        ? fmtSigned((r[b] - r[q]) * 100, 0) + " bp" : "—";
+      tip = "Carry · policy " + b + " " + pct(r[b]) + " − " + q + " " + pct(r[q]) + " = " + diff +
+        " → " + fmtSigned(v, 2) + " σ";
+    } else {
+      const c = inst.breakdown.base.currency;
+      tip = "Carry · policy " + c + " " + pct(r[c]) + " vs the 8-currency mean " + pct(r.mean8) +
+        " → " + fmtSigned(v, 2) + " σ";
+    }
+    tip += ". " + contribTip(findContribution(inst, "carry"));
+    return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 2)) + ' title="' + escAttr(tip) + '">' +
+      cbLink(inst, "carry", fmtSigned(v, 1)) + "</td>";
   }
 
   // Σ column: the backend-computed sum of every displayed contribution
@@ -768,7 +802,7 @@
     }
     const mismatch = Math.abs(sum - inst.score) > CONTRIB_SUM_TOLERANCE;
     const cls = "contrib-sum-cell" + (mismatch ? " contrib-mismatch" : "");
-    const parts = trendEnabled() ? "FUND + SENTIMENT + TREND" : "FUND + SENTIMENT";
+    const parts = isV3() ? "MACRO + CARRY + COT" : trendEnabled() ? "FUND + SENTIMENT + TREND" : "FUND + SENTIMENT";
     const tip = mismatch
       ? "Σ (" + fmtSigned(sum, 2) + ") differs from Score (" + fmtSigned(inst.score, 2) + ") by more than " +
         CONTRIB_SUM_TOLERANCE + " — a displayed contribution is missing or wrong"
@@ -794,8 +828,11 @@
     if (used === null || used === undefined || total === null || total === undefined) return "";
     if (used >= total) return "";
     const excluded = inst.categories_excluded || [];
-    const tip = "Scored on " + used + "/" + total + " categories (intersection of both legs)" +
-      (excluded.length ? " — " + excluded.map(catLabel).join(", ") + " excluded from this pair" : "");
+    const tip = isV3()
+      ? "Macro on " + used + "/" + total + " categories — " + excluded.map(catLabel).join(", ") +
+        " missing on a leg (each currency's Macro averages the categories it has)"
+      : "Scored on " + used + "/" + total + " categories (intersection of both legs)" +
+        (excluded.length ? " — " + excluded.map(catLabel).join(", ") + " excluded from this pair" : "");
     return ' <span class="econ-flag flag-reduced" title="' + escAttr(tip) + '">' + used + "/" + total + "</span>";
   }
 
@@ -848,6 +885,7 @@
       contribSumCellHtml(inst) +
       (trendEnabled() ? trendCellHtml(inst) : "") +
       fxCotCellHtml(inst) +
+      (isV3() ? carryCellHtml(inst) : "") +
       cells +
       "</tr>"
     );
@@ -881,10 +919,14 @@
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
-    const sentimentGroupHeader =
-      '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment: currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
-    const sentimentSubHeader =
-      '<th data-sort="cot" class="ind-head grp-sentiment" title="COT positioning (weight 0.5 in score)">COT</th>';
+    const sentimentGroupHeader = isV3()
+      ? '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning: currency vs-USD extreme + 4-week flow, base − quote (USD = 0; the US Dollar row uses the DXY contract). 15% of each currency\'s score.">COT</th>' +
+        '<th colspan="1" class="grp-head grp-carry" title="Policy-rate differential (latest CB decision), in σ. 34% of each currency\'s score.">CARRY</th>'
+      : '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment: currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
+    const sentimentSubHeader = isV3()
+      ? '<th data-sort="cot" class="ind-head grp-sentiment" title="COT cell, base − quote">COT</th>' +
+        '<th data-sort="carry" class="ind-head grp-carry" title="(policy base − policy quote) / σ_carry">Δ policy</th>'
+      : '<th data-sort="cot" class="ind-head grp-sentiment" title="COT positioning (weight 0.5 in score)">COT</th>';
 
     let subHeaderCells = "";
     layout.forEach(g => g.columns.forEach(c => {
@@ -892,7 +934,9 @@
         '" title="' + escAttr(indMeta(c.key).label || c.key) + '">' + c.label + '</th>';
     }));
 
-    const sumTip = trendEnabled()
+    const sumTip = isV3()
+      ? "Sum of every displayed contribution (MACRO indicators + CARRY + COT) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent"
+      : trendEnabled()
       ? "Sum of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent"
       : "Sum of every displayed contribution (FUND + SENTIMENT) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent";
 
@@ -1122,7 +1166,8 @@
     const cls = cellClass(cot.cell);
     const head = head0 +
       '<span class="econ-cat-sub ' + cls + '">cell ' + fmtScoreCell(cot.cell) + '</span>' +
-      ' <span class="muted">· weight 0.5 · positioning, base − quote (vs-USD)</span></div>';
+      (isV3() ? ' <span class="muted">· 15% of each currency\'s score · positioning, base − quote (vs-USD)</span></div>'
+              : ' <span class="muted">· weight 0.5 · positioning, base − quote (vs-USD)</span></div>');
     const legRow = (role, ccy, cell, det) => {
       if (ccy === null || ccy === undefined) return "";
       const extra = det ? (" · " + cotPartsTxt(det))
@@ -1342,9 +1387,10 @@
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
-    const sentimentGroupHeader =
-      '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Foreign indices (DAX/Nikkei/FTSE, marked *) take the US equity P/C as a global-risk PROXY. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
-    const sentimentSubHeader = '<th class="ind-head grp-sentiment">COT / P/C</th>';
+    const sentimentGroupHeader = isV3()
+      ? '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning (metals only), contrarian. 11% of a metal\'s score; indices have no positioning factor.">COT</th>'
+      : '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Foreign indices (DAX/Nikkei/FTSE, marked *) take the US equity P/C as a global-risk PROXY. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
+    const sentimentSubHeader = '<th class="ind-head grp-sentiment">' + (isV3() ? "COT" : "COT / P/C") + '</th>';
 
     let subHeaders = "";
     layout.forEach(g => g.columns.forEach(c => {
@@ -1389,8 +1435,9 @@
     const hasVal = c.raw !== null && c.raw !== undefined;
     const contrib = hasVal ? fmtSigned((Math.abs(c.contribution) < 0.05 ? 0 : c.contribution), 1) : "—";
     const cls = hasVal ? cellClass(Math.round(c.contribution)) : "";
-    const label = ({rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield",
-                    balance_sheet: "Bank Reserves"})[c.name] || c.name;
+    const label = (isV3() ? {rate_exp_2y: "2Y yield · 3-month signal", real_yield_10y: "US 10Y real yield · 3-month signal"}
+      : {rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield",
+         balance_sheet: "Bank Reserves"})[c.name] || c.name;
     const flag = c.excluded
       ? '<span class="econ-flag flag-excluded" title="weight set to 0 — accepted degradation, see docs/accepted-degradations.md">excluded from composite</span>'
       : c.stale
@@ -1399,7 +1446,7 @@
     return (
       "<tr" + ((c.present && !c.excluded) ? "" : ' class="ei-stale"') + ">" +
       '<td class="ei-name">' + label + '</td>' +
-      '<td class="ei-num">' + (hasVal ? fmtSigned(c.raw, 0) : "—") + '</td>' +
+      '<td class="ei-num">' + (hasVal ? fmtSigned(c.raw, isV3() ? 2 : 0) : "—") + '</td>' +
       '<td class="ei-num">' + fmtSigned(c.sign, 0) + '</td>' +
       '<td class="ei-num">' + Number(c.weight).toFixed(1) + '</td>' +
       '<td class="ei-score ' + cls + '">' + contrib + '</td>' +
@@ -1475,13 +1522,14 @@
       table =
         '<thead><tr><th>Sub-component</th><th>Raw</th><th>Sign</th><th>Weight</th><th>Contribution</th><th></th><th>Source</th></tr></thead>' +
         '<tbody>' + comps.map(caRateRow).join("") + "</tbody>";
-      const nl = (state.payload.crossasset || {}).net_liquidity || {};
+      const nl = isV3() ? {} : ((state.payload.crossasset || {}).net_liquidity || {});
       // series reflects what's ACTUALLY scored: reserves (WRBWFRBL) by default,
       // or the net_liquidity (WALCL − TGA − RRP) fallback when reserves is
       // unresolved — never label one while showing the other's numbers. The
       // visible label is plain "Bank Reserves"; the FRED series id is a
       // tooltip-only detail, shown alongside the roc/level line below.
-      const bits = [nl.series === "NET_LIQUIDITY"
+      const bits = isV3() ? ["signal = −(mean of the last 5 − mean of the 5 ending 63 observations earlier) / σ_y; rising yields = bearish"]
+        : [nl.series === "NET_LIQUIDITY"
         ? "Net Liquidity (fallback) = WALCL − TGA − RRP"
         : "Bank Reserves"];
       if (nl.present) {
@@ -1520,7 +1568,7 @@
   // rendered when the instrument carries a sentiment factor (metals + US idx);
   // foreign indices return "" → no section (score identical to baseline).
   function caSentimentSection(inst) {
-    const f = caFactor(inst, "sentiment");
+    const f = (caFactor(inst, "sentiment") || caFactor(inst, "cot"));
     if (!f) return "";
     const present = f.present;
     const contrib = present ? fmtSigned((Math.abs(f.contribution) < 0.05 ? 0 : f.contribution), 2) : "—";
@@ -1570,14 +1618,19 @@
       '<div class="muted modal-subhead">' +
       '<span class="pill ' + biasClass(inst.bias_label) + '">' + inst.bias_label + '</span> ' +
       '<span class="modal-score">Score ' + fmtSigned(inst.score_precise, 2) + '</span>' +
-      '<span class="modal-formula">' + inst.type + ' · weighted mean over ' + inst.coverage +
-      ((inst.factors || []).some(f => f.value_sigma !== null && f.value_sigma !== undefined) ? ' present factor(s), each ÷σ (clip ±3), × scale' : ' present factor(s) × scale') +
+      '<span class="modal-formula">' + (isV3()
+        ? (inst.type === "metal" ? "metal · 0.56 Macro + 0.33 Rates + 0.11 COT, each in σ, × 2.5"
+                                 : "index · 0.67 Macro + 0.33 Rates (rising rates only erase a positive macro), × 2.5")
+        : inst.type + ' · weighted mean over ' + inst.coverage +
+          ((inst.factors || []).some(f => f.value_sigma !== null && f.value_sigma !== undefined)
+            ? ' present factor(s), each ÷σ (clip ±3), × scale' : ' present factor(s) × scale')) +
       '</span></div>' +
       '</header>' +
       '<p class="muted econ-modal-note">Each Score is the per-asset directional score for ' +
       (inst.display || inst.symbol) + ' (' + inst.home_ccy +
       ' reading × category sign); blue = bullish, red = bearish. Act / Cons / Surp / z stay raw. ' +
-      'The category header shows the signed contribution; Rates groups the 2Y and 10Y-real components (bounded).</p>' +
+      (isV3() ? 'The category header shows the signed contribution; Rates shows the 3-month yield signals that are scored.</p>'
+              : 'The category header shows the signed contribution; Rates groups the 2Y and 10Y-real components (bounded).</p>') +
       '<div class="modal-grid econ-leg-grid one-col"><div class="modal-card econ-leg">' +
       sections + '</div></div>';
 
@@ -1604,7 +1657,7 @@
     const d = /^\d{4}-\d{2}-\d{2}$/.test(String(iso)) ? new Date(iso + "T00:00:00Z") : parseUtc(iso);
     return isNaN(d.getTime()) ? String(iso) : d.getUTCDate() + " " + MONTHS_SHORT[d.getUTCMonth()];
   }
-  const GROUP_LABELS = { cot: "COT", trend: "Trend", monetary: "Monetary · 2Y", growth: "Growth",
+  const GROUP_LABELS = { cot: "COT", carry: "Carry", trend: "Trend", monetary: "Monetary · 2Y", growth: "Growth",
     inflation: "Inflation", labour: "Labour", rates: "Rates" };
 
   // "What moves the score": the pair's contributions summed per group (the
@@ -1928,7 +1981,7 @@
       t.innerHTML = trendSectionHtml(inst.trend_detail);
       out.push(t);
     }
-    const sf = caFactor(inst, "sentiment");
+    const sf = (caFactor(inst, "sentiment") || caFactor(inst, "cot"));
     if (sf) {
       const card = ph("section", { class: "econ-ph-card" });
       const why = "weight " + Number(sf.weight).toFixed(1) + " · sign " + pmStr(fmtSigned(sf.sign, 0));
@@ -1964,17 +2017,18 @@
         present ? contribPill(f.contribution) : ph("span", { class: "econ-ph-muted", text: "—" })));
       const body = ph("div", { class: "econ-ph-indbody" });
       if (g.key === "rates") {
-        const labels = { rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield", balance_sheet: "Bank Reserves" };
+        const labels = isV3() ? { rate_exp_2y: "2Y yield · 3-month signal", real_yield_10y: "US 10Y real · 3-month signal" }
+          : { rate_exp_2y: "Rate Expectations (2Y)", real_yield_10y: "10Y Real Yield", balance_sheet: "Bank Reserves" };
         ((f && f.components) || []).forEach((c) => {
           const has = c.raw !== null && c.raw !== undefined;
           const tags = c.excluded ? ["excluded from composite"] : c.stale ? ["stale"] : has ? [] : ["absent"];
           body.appendChild(ph("div", { class: "econ-ph-ind" + ((c.present && !c.excluded) ? "" : " is-stale") },
             ph("span", { class: "econ-ph-indname" }, ph("span", { text: labels[c.name] || c.name }), tags.map((t) => ph("span", { class: "ph-tag", text: t }))),
             chipEl(has ? Math.round(c.contribution) : null, 3),
-            ph("span", { class: "econ-ph-indline", text: "raw " + (has ? pmStr(fmtSigned(c.raw, 0)) : "—") + " · sign " + pmStr(fmtSigned(c.sign, 0)) +
+            ph("span", { class: "econ-ph-indline", text: (isV3() ? "signal " : "raw ") + (has ? pmStr(fmtSigned(c.raw, isV3() ? 2 : 0)) : "—") + " · sign " + pmStr(fmtSigned(c.sign, 0)) +
               " · weight " + Number(c.weight).toFixed(1) + (c.source ? " · " + c.source : "") })));
         });
-        const nl = (state.payload.crossasset || {}).net_liquidity || {};
+        const nl = isV3() ? {} : ((state.payload.crossasset || {}).net_liquidity || {});
         if (nl.present) {
           const bits = [nl.series === "NET_LIQUIDITY" ? "Net Liquidity (fallback)" : "Bank Reserves",
             "21d roc " + (nl.roc == null ? "—" : pmStr(fmtSigned(nl.roc * 100, 2)) + "%/mo")];
@@ -2053,6 +2107,6 @@
   }
 
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
-  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
+  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
     actualsBadge: actualsBadge, freshnessBadges: freshnessBadges };
 })();
