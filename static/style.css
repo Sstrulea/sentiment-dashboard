@@ -1025,8 +1025,10 @@ tr.ma-done { opacity: 0.6; }
   font-size: 11px; font-weight: 600; vertical-align: middle; }
 .fresh-badge.ok { background: rgba(38,166,154,0.15); color: #1a7f72; }
 .fresh-badge.stale { background: rgba(211,47,47,0.18); color: #d32f2f; }
+.fresh-badge.pending { background: rgba(245,166,35,0.20); color: #a35f00; }
 html.dark body .fresh-badge.ok { color: #4db6ac; }
 html.dark body .fresh-badge.stale { color: #ef9a9a; }
+html.dark body .fresh-badge.pending { color: #ffcc80; }
 .econ-legend { font-size: 12px; line-height: 1.5; margin: 0 0 16px 0; max-width: 900px; }
 .econ-legend b { color: var(--fg); }
 
@@ -2286,6 +2288,8 @@ html.ph-locked body { position: fixed; left: 0; right: 0; overflow: hidden; }
   .econ-ph-badges { display: flex; flex-wrap: wrap; gap: 6px; }
   .econ-ph-badge { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--success-fg); background: var(--success-bg); }
   .econ-ph-badge.is-stale { color: var(--warning-fg); background: var(--warning-bg); }
+  .econ-ph-badge.is-pending { color: #a35f00; background: rgba(245,166,35,0.20); }
+  html.dark body .econ-ph-badge.is-pending { color: #ffcc80; }
   .econ-phone { display: flex; flex-direction: column; gap: 12px; }
   .econ-ph-controls { display: flex; flex-direction: column; gap: 10px; }
   .econ-ph-grid { grid-template-columns: minmax(0, 1fr) 84px 50px 40px 24px; column-gap: 6px; }

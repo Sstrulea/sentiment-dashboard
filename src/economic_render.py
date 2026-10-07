@@ -1493,6 +1493,35 @@ def _build_manual_actuals_block(as_of: pd.Timestamp, scoring: pd.DataFrame | Non
     }
 
 
+ACTUALS_PENDING_HOURS = 24
+
+
+def _attach_actuals_status(freshness: dict, manual_actuals: dict, as_of: pd.Timestamp) -> None:
+    """The "Actuals" badge reads the DATA, not the source (2026-10-07): the same
+    rows as "Needs review" (manual_actuals rows — MISSING / ZERO_CONFIRM still
+    unresolved after overrides, that change a current score).
+      0 rows                         -> state "ok"      (green, even if JB failed)
+      rows, all released < 24h ago   -> state "pending" (amber: evening pull / panel)
+      a row released >= 24h ago      -> state "missing" (red, the only `stale` one)
+    The JB pull's own status (last success / last attempt / HTTP) stays in the
+    entry for the tooltip only. In place on payload["freshness"]."""
+    entry = freshness.get("actuals_pull")
+    if entry is None:
+        return
+    rows = (manual_actuals or {}).get("rows") or []
+    ages = [(pd.Timestamp(as_of) - pd.Timestamp(r["datetime_utc"])) / pd.Timedelta(hours=1)
+            for r in rows]
+    if not rows:
+        state = "ok"
+    elif all(a < ACTUALS_PENDING_HOURS for a in ages):
+        state = "pending"
+    else:
+        state = "missing"
+    entry.update(state=state, n=len(rows), stale=(state == "missing"))
+    freshness["any_stale"] = any(isinstance(v, dict) and v.get("stale")
+                                 for k, v in freshness.items() if k != "integrity")
+
+
 def _policy_rate_decisions() -> pd.DataFrame | None:
     """data/cb/decisions.parquet (src.policy_rate) — None if unreadable."""
     from src.policy_rate import DECISIONS_PARQUET, load_decisions
@@ -1807,6 +1836,7 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
     payload["_integrity_report"] = integrity   # popped by render_economic_page
     payload["manual_actuals"] = _build_manual_actuals_block(
         as_of, scoring=_sv(cal))
+    _attach_actuals_status(payload["freshness"], payload["manual_actuals"], as_of)
     payload["generated_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     return _jsonable(payload)
 

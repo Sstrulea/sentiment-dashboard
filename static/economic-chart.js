@@ -187,12 +187,35 @@
     if (a.status === "wrong_day") return "last try failed (wrong day)";
     return "last try failed" + (a.http_status ? " (HTTP " + a.http_status + ")" : "");
   }
+  // "Actuals" badge (2026-10-07): it reads the DATA — the same rows as "Needs
+  // review" — not the source. ok → green, pending (all < 24h old) → amber,
+  // missing (one ≥ 24h) → red. The JB pull's status lives in the tooltip only.
+  function actualsBadge(v) {
+    const n = v.n || 0;
+    const txt = v.state === "missing" ? "⚠ " + n + " actual" + (n === 1 ? "" : "s") + " missing"
+      : v.state === "pending" ? n + " actual" + (n === 1 ? "" : "s") + " pending"
+      : "Actuals up to date";
+    const cls = v.state === "missing" ? "stale" : v.state === "pending" ? "pending" : "ok";
+    return { txt: txt, cls: cls, tip: jbPullTip(v) };
+  }
+  function jbPullTip(v) {
+    const age = (v.age_days === null || v.age_days === undefined) ? "never"
+      : (v.age_days <= 0 ? "today" : v.age_days + "d ago");
+    const at = attemptTxt(v);
+    return "JB pull: last success " + age + (v.last_update ? " (" + v.last_update + ")" : "") +
+      (at ? " · " + at + " at " + v.last_attempt.at : "");
+  }
   function freshnessBadges(f) {
     if (!f) return "";
     let out = "";
     [["calendar", "Calendar"], ["actuals_pull", "Actuals pull"]].forEach(function (pair) {
       const v = f[pair[0]];
       if (!v) return;
+      if (pair[0] === "actuals_pull" && v.state) {
+        const b = actualsBadge(v);
+        out += ' <span class="fresh-badge ' + b.cls + '" title="' + escAttr(b.tip) + '">' + b.txt + "</span>";
+        return;
+      }
       const age = (v.age_days === null || v.age_days === undefined) ? "never"
         : (v.age_days <= 0 ? "today" : v.age_days + "d ago");
       const cls = v.stale ? "fresh-badge stale" : "fresh-badge ok";
@@ -1687,6 +1710,12 @@
       const v = f[k];
       if (!v) return;
       const age = v.age_days === null || v.age_days === undefined ? "never" : v.age_days <= 0 ? "today" : v.age_days + "d ago";
+      if (k === "actuals_pull" && v.state) {
+        const b = actualsBadge(v);
+        badges.appendChild(ph("span", { class: "econ-ph-badge" + (b.cls === "stale" ? " is-stale" : b.cls === "pending" ? " is-pending" : ""),
+          text: b.txt, title: b.tip }));
+        return;
+      }
       const at = attemptTxt(v);
       badges.appendChild(ph("span", { class: "econ-ph-badge" + (v.stale ? " is-stale" : ""), text: (v.stale ? "Stale: " : "") + label + " " + age + (at ? " · " + at : "") }));
     });
@@ -2024,5 +2053,6 @@
   }
 
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
-  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars };
+  if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
+    actualsBadge: actualsBadge, freshnessBadges: freshnessBadges };
 })();
