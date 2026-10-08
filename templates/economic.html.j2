@@ -26,8 +26,9 @@
     </header>
 
     <div class="econ-legend" data-htr>
-      <span class="muted">Score = 51% Macro + 34% Carry + 15% COT per currency, base − quote for a pair;
-      the bias compares it with the pair&rsquo;s usual size. Cells are indicator scores on a
+      <span class="muted">Each currency = 51% Macro + 34% Carry + 15% COT, base − quote for a pair; that raw
+      score divided by the pair&rsquo;s usual size (z) gives the Score −10..+10: 0–2 Neutral, 3–5 Bullish/Bearish,
+      6–10 Very. Cells are indicator scores on a
       blue (bullish) ↔ red (bearish) scale; for a pair each indicator cell is the base − quote
       differential, Carry the policy-rate differential in σ. Click a row for the per-indicator breakdown.</span>
     </div>
@@ -67,7 +68,7 @@
         home 2Y and US real 10Y yields, falling yields bullish; rising yields only erase a positive macro.
         Metals: 67% Rates (US 2Y, 3-month change) + 33% US Macro; positioning (COT) is not scored here. Each macro sub-cell is the per-asset directional
         score (home reading × category sign), each Rates cell the yield signal in σ — blue = bullish for
-        the asset, red = bearish. Click a row for the full breakdown.</span>
+        the asset, red = bearish. The Score −10..+10 reads the same way as above. Click a row for the full breakdown.</span>
       </div>
       <div id="crossassetContent"></div>
     </section>

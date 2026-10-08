@@ -21,7 +21,8 @@
       <span class="muted">A currency's score = the mean over the 7 pairs on
       <a href="/economic">Economic</a> it belongs to of 2.5 × (Macro base − Macro quote) (+ as base, − as
       quote): the macro part only — no carry, no COT. The 8 scores sum to 0. The bias compares the score
-      with that currency's usual size (its RMS over 3 years). Position (arc + %) = 50 + score × K. Click a
+      with that currency's usual size (its RMS over 3 years): z = score / RMS, shown as a Score −10..+10
+      (0–2 Neutral, 3–5 Bullish/Bearish, 6–10 Very). Position (arc + %) = 50 + 5 × the Score before truncation. Click a
       card or table row for the per-indicator drilldown.</span>
     </div>
     {% include '_help_scoring_modal.html.j2' %}

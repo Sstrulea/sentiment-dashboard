@@ -172,6 +172,18 @@
   // `strength_score` is the mean of the fundamental score of its 7 pairs, in
   // pair units. The divergence is strongest − weakest in those same units.
   function score(card) { return Number(card.strength_score) || 0; }
+  // The final Score (2026-10-08): −10..+10 integer from z and the /strength
+  // thresholds (backend `final_score`); falls back to the raw score on an older payload.
+  function finalText(card) {
+    const f = card.final_score;
+    if (f === null || f === undefined) return fmtSigned(score(card), 2);
+    return (f > 0 ? "+" : "") + f;
+  }
+  function finalTip(card) {
+    return "raw score " + fmtSigned(score(card), 2) +
+      (card.strength_z !== null && card.strength_z !== undefined ? " · z " + fmtSigned(card.strength_z, 2) : "") +
+      " — Score −10..+10: 0–2 Neutral, 3–5 Bullish/Bearish, 6–10 Very";
+  }
 
   // {spread, strongest, weakest} over coverage>0 currencies only, or null if
   // fewer than 2 qualify.
@@ -254,7 +266,7 @@
         '</div>'
       );
 
-    const indexLine = noData ? "" : '<div class="cadran-index">score ' + fmtSigned(score(card), 2) + '</div>';
+    const indexLine = noData ? "" : '<div class="cadran-index" title="' + escAttr(finalTip(card)) + '">Score ' + finalText(card) + '</div>';
     const nCls = (!noData && n > 0 && n <= LOW_N_THRESHOLD) ? " cadran-n-low" : "";
     const nTitle = (!noData && n > 0 && n <= LOW_N_THRESHOLD) ? ' title="Low coverage — read with caution"' : "";
 
@@ -308,7 +320,7 @@
       '<tr' + (noData ? ' class="strength-row-nodata"' : "") + ' data-ccy="' + escAttr(ccy) + '">' +
       '<td class="strength-ccy">' + ccy + '</td>' +
       '<td class="strength-num">' + (noData ? "—" : card.pct.toFixed(1) + "%") + '</td>' +
-      '<td class="strength-num">' + (noData ? "—" : fmtSigned(score(card), 2)) + '</td>' +
+      '<td class="strength-num" title="' + escAttr(finalTip(card)) + '">' + (noData ? "—" : finalText(card)) + '</td>' +
       '<td>' + (noData ? "—" : bias) + '</td>' +
       '<td class="strength-num">' + (card.coverage || 0) + '</td>' +
       '</tr>'
@@ -421,7 +433,7 @@
           h("span", { class: "strength-ph-sub", text: "N " + (card.coverage || 0) + (monetaryText(card) ? " · " + monetaryText(card) : "") })),
         track,
         h("span", { class: "strength-ph-pct", text: noData ? "—" : card.pct.toFixed(1) + "%" }),
-        h("span", { class: "strength-ph-score" }, h("span", { text: noData ? "—" : pm(fmtSigned(score(card), 2)) }),
+        h("span", { class: "strength-ph-score" }, h("span", { text: noData ? "—" : pm(finalText(card)) }),
           h("span", { class: "strength-ph-sub", text: noData ? "no data" : (card.bias_label || "Neutral") })));
       row.addEventListener("click", () => goToDrilldown(ccy));
       list.appendChild(row);
@@ -657,7 +669,7 @@
       '<div class="strength-dd-head">' +
       '<h2>' + ccy + '</h2>' +
       (hasCoverage(card)
-        ? '<span class="strength-dd-meta">' + card.pct.toFixed(1) + '% &middot; score ' + fmtSigned(score(card), 2) +
+        ? '<span class="strength-dd-meta" title="' + escAttr(finalTip(card)) + '">' + card.pct.toFixed(1) + '% &middot; Score ' + finalText(card) +
           (monetaryText(card) ? ' &middot; ' + monetaryText(card) : '') + ' &middot; N=' + (card.coverage || 0) + '</span>' +
           '<span class="bias-pill ' + biasClass(bias) + '">' + bias + '</span>' + note
         : '<span class="strength-dd-meta">no data</span>') +
@@ -747,7 +759,7 @@
       sortedCurrencies, divergence, impactState, hasCoverage,
       drilldownGroupsHtml, indicatorRowHtml, cadranHtml, tableRowHtml,
       matrixOrder, matrixCellStyle, strengthK, monetaryText,
-      catSigmaText, macroSigmaText, drilldownCats, modelDateText, parseUtc,
+      catSigmaText, macroSigmaText, drilldownCats, modelDateText, parseUtc, finalText,
       _setPayloadForTest: (p) => { state.payload = p; },
     };
   }
