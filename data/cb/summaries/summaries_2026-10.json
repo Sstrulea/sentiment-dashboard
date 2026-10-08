@@ -4,6 +4,245 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     36,
+     39,
+     62,
+     68,
+     69,
+     73,
+     74
+    ],
+    "paragraphs_sent": 141,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:account:2026-09-10",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 2 of summary point 2 is not verbatim in the paragraph(s) it cites [62] (that text is not in the document verbatim - copy it character for character, curly quotes included)"
+     ],
+     "text": "Members largely agreed that the inflation outlook had deteriorated, with the September staff projections revised up for 2027 and 2028."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-08T12:42:19Z",
+   "input_sha256": "5824e21ca58cb930f1cc21ccfe56faa904a5264bdf5f89f1543892158653155c",
+   "meeting_date": "2026-09-10",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 154,
+     "point": 1,
+     "source_text": "2026",
+     "start": 150,
+     "text": "2026"
+    },
+    {
+     "end": 1848,
+     "point": 1,
+     "source_text": "2027",
+     "start": 1844,
+     "text": "2027"
+    },
+    {
+     "end": 9254,
+     "point": 2,
+     "source_text": "2.4%",
+     "start": 9250,
+     "text": "2.4%"
+    },
+    {
+     "end": 10189,
+     "point": 2,
+     "source_text": "2.5%",
+     "start": 10185,
+     "text": "2.5%"
+    },
+    {
+     "end": 1848,
+     "point": 3,
+     "source_text": "2027",
+     "start": 1844,
+     "text": "2027"
+    },
+    {
+     "end": 16768,
+     "point": 4,
+     "source_text": "25 basis points",
+     "start": 16753,
+     "text": "25 basis points"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-10-08",
+   "quotes": [
+    {
+     "end": 22912,
+     "paragraph": 36,
+     "start": 22747,
+     "text": "The economy had proved resilient in the second quarter, performing better than expected despite headwinds from the energy shock and ongoing geopolitical instability."
+    },
+    {
+     "end": 48181,
+     "paragraph": 62,
+     "start": 47962,
+     "text": "Members largely agreed that the inflation outlook had deteriorated, as the conflict in the Middle East and recent developments in Russia’s unjustified war against Ukraine had pushed the path of energy prices up further."
+    },
+    {
+     "end": 54744,
+     "paragraph": 68,
+     "start": 54627,
+     "text": "Although all measures continued to stand above 2%, underlying inflation was judged to have remained contained so far."
+    },
+    {
+     "end": 58400,
+     "paragraph": 73,
+     "start": 58263,
+     "text": "Against this background, all members supported the proposal made by Mr Lane to raise the three key ECB interest rates by 25 basis points."
+    },
+    {
+     "end": 60875,
+     "paragraph": 74,
+     "start": 60670,
+     "text": "The Governing Council would also continue to follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance, without pre-committing to a particular rate path."
+    }
+   ],
+   "source": {
+    "chars": 64390,
+    "chars_sent": 64391,
+    "method": "html-selector",
+    "paragraphs_sent": 141,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 22912,
+        "paragraph": 36,
+        "start": 22747,
+        "text": "The economy had proved resilient in the second quarter, performing better than expected despite headwinds from the energy shock and ongoing geopolitical instability."
+       },
+       {
+        "end": 26565,
+        "paragraph": 39,
+        "start": 26421,
+        "text": "Compared with June, the staff baseline projection for economic growth had been revised up for both 2026 and 2027, to 0.9% and 1.4% respectively."
+       }
+      ],
+      "paragraphs": [
+       36,
+       39
+      ]
+     },
+     "text": "Members assessed that the euro area economy had proved resilient in the second quarter, and the staff growth projections were revised up for 2026 and 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 54744,
+        "paragraph": 68,
+        "start": 54627,
+        "text": "Although all measures continued to stand above 2%, underlying inflation was judged to have remained contained so far."
+       },
+       {
+        "end": 54953,
+        "paragraph": 68,
+        "start": 54841,
+        "text": "core inflation edging down to 2.4% in August from 2.5% in July, little evidence of effects on domestic inflation"
+       }
+      ],
+      "paragraphs": [
+       68
+      ]
+     },
+     "text": "Members judged underlying inflation to have remained contained so far, while core inflation edged down to 2.4% in August from 2.5% in July."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 56261,
+        "paragraph": 69,
+        "start": 56200,
+        "text": "Finally, the transmission of monetary policy had been smooth."
+       },
+       {
+        "end": 56387,
+        "paragraph": 69,
+        "start": 56262,
+        "text": "The effects of higher interest rates would support the expected return of inflation to around target towards the end of 2027."
+       }
+      ],
+      "paragraphs": [
+       69
+      ]
+     },
+     "text": "Members assessed that monetary policy transmission had been smooth, and that higher interest rates would support inflation’s return to around target towards the end of 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 58400,
+        "paragraph": 73,
+        "start": 58288,
+        "text": "all members supported the proposal made by Mr Lane to raise the three key ECB interest rates by 25 basis points."
+       },
+       {
+        "end": 59577,
+        "paragraph": 73,
+        "start": 59423,
+        "text": "Overall, another 25 basis point rate hike was therefore warranted by the incoming data, the September staff projections and the evolving inflation outlook"
+       }
+      ],
+      "paragraphs": [
+       73
+      ]
+     },
+     "text": "All members supported raising the three key ECB interest rates by 25 basis points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 60875,
+        "paragraph": 74,
+        "start": 60670,
+        "text": "The Governing Council would also continue to follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance, without pre-committing to a particular rate path."
+       }
+      ],
+      "paragraphs": [
+       74
+      ]
+     },
+     "text": "Members reiterated that future interest rate decisions would be data-dependent and meeting-by-meeting, without pre-committing to a particular rate path."
+    }
+   ],
+   "title": "Meeting of 9-10 September 2026",
+   "type": "account",
+   "url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261008~a10153d090.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 28999,
+    "output_tokens": 1907,
+    "reasoning_tokens": 285
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      5,
      7,
@@ -447,6 +686,210 @@
     "input_tokens": 5951,
     "output_tokens": 1323,
     "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     10,
+     12,
+     13,
+     14,
+     19,
+     23,
+     25,
+     31
+    ],
+    "paragraphs_sent": 33,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:7023fb334466",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-08T12:42:19Z",
+   "input_sha256": "4a71fbfb772d71d774ded9c84e35e070020bf50fac94d4ffba86785e3ef4056f",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-08",
+   "quotes": [
+    {
+     "end": 82,
+     "paragraph": 2,
+     "start": 7,
+     "text": "The financial system has so far weathered the latest period of uncertainty."
+    },
+    {
+     "end": 3232,
+     "paragraph": 14,
+     "start": 3140,
+     "text": "But looking through a shock is possible only if inflation expectations remain well anchored."
+    },
+    {
+     "end": 4365,
+     "paragraph": 19,
+     "start": 4206,
+     "text": "Strong banks and sound household and corporate balance sheets give policymakers room to respond without turning an economic adjustment into a financial crisis."
+    },
+    {
+     "end": 6034,
+     "paragraph": 25,
+     "start": 5956,
+     "text": "Deleveraging that begins in one market can therefore spread quickly to others."
+    },
+    {
+     "end": 7631,
+     "paragraph": 31,
+     "start": 7464,
+     "text": "But the direction is clear: raise sustainable growth, maintain credible policy frameworks, and ensure that financial markets can absorb shocks without amplifying them."
+    }
+   ],
+   "source": {
+    "chars": 7859,
+    "chars_sent": 7860,
+    "method": "html-selector",
+    "paragraphs_sent": 33,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 204,
+        "paragraph": 2,
+        "start": 83,
+        "text": "But lower growth, repeated supply shocks and changing market structures mean that resilience cannot be taken for granted."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Governor Bailey says lower growth, repeated supply shocks and changing market structures mean that resilience cannot be taken for granted."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2068,
+        "paragraph": 10,
+        "start": 1905,
+        "text": "The first is weaker potential growth, driven in many economies by slowing productivity, which determines how rapidly national income and living standards can rise."
+       },
+       {
+        "end": 2776,
+        "paragraph": 12,
+        "start": 2689,
+        "text": "We should therefore prepare for a world in which larger shocks are not rare exceptions."
+       }
+      ],
+      "paragraphs": [
+       10,
+       12
+      ]
+     },
+     "text": "Governor Bailey says potential growth is weaker in many economies, and central bankers should prepare for a world in which larger shocks are not rare exceptions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2956,
+        "paragraph": 13,
+        "start": 2835,
+        "text": "A negative supply shock pushes inflation and output in opposite directions, producing weaker output but higher inflation."
+       },
+       {
+        "end": 3232,
+        "paragraph": 14,
+        "start": 3140,
+        "text": "But looking through a shock is possible only if inflation expectations remain well anchored."
+       }
+      ],
+      "paragraphs": [
+       13,
+       14
+      ]
+     },
+     "text": "Governor Bailey says a negative supply shock produces weaker output but higher inflation, while looking through a shock is possible only if inflation expectations remain well anchored."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4365,
+        "paragraph": 19,
+        "start": 4206,
+        "text": "Strong banks and sound household and corporate balance sheets give policymakers room to respond without turning an economic adjustment into a financial crisis."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governor Bailey says strong banks and sound household and corporate balance sheets give policymakers room to respond without turning an economic adjustment into a financial crisis."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5463,
+        "paragraph": 23,
+        "start": 5279,
+        "text": "Today, leveraged investors play a much larger role, while traditional demand for long-duration debt has declined, partly because of changes in pension provision and ageing populations."
+       },
+       {
+        "end": 6034,
+        "paragraph": 25,
+        "start": 5956,
+        "text": "Deleveraging that begins in one market can therefore spread quickly to others."
+       }
+      ],
+      "paragraphs": [
+       23,
+       25
+      ]
+     },
+     "text": "Governor Bailey says leveraged investors play a much larger role in government bond markets, and deleveraging in one market can spread quickly to others."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7631,
+        "paragraph": 31,
+        "start": 7464,
+        "text": "But the direction is clear: raise sustainable growth, maintain credible policy frameworks, and ensure that financial markets can absorb shocks without amplifying them."
+       }
+      ],
+      "paragraphs": [
+       31
+      ]
+     },
+     "text": "Governor Bailey says policy must raise sustainable growth, maintain credible policy frameworks, and ensure that financial markets can absorb shocks without amplifying them."
+    }
+   ],
+   "title": "Financial resilience in an age of repeated shocks - speech by Andrew Bailey",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/october/andrew-bailey-speech-at-the-istanbul-economic-forum-central-bank-of-the-republic-of-turkey-istanbul",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 6750,
+    "output_tokens": 2468,
+    "reasoning_tokens": 1189
    }
   },
   {
