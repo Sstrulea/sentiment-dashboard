@@ -1227,6 +1227,216 @@
     "output_tokens": 1219,
     "reasoning_tokens": 499
    }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     11,
+     12,
+     19,
+     21
+    ],
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:f5d6fc297d1a",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-08T08:41:51Z",
+   "input_sha256": "5b10f2a0a70b01912b42e88f3540d2140b5d3038c97330b38dce97db96ea5251",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 676,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 661,
+     "text": "25 basis points"
+    },
+    {
+     "end": 692,
+     "point": 1,
+     "source_text": "3.75 percent",
+     "start": 680,
+     "text": "3.75 percent"
+    },
+    {
+     "end": 705,
+     "point": 1,
+     "source_text": "4 percent",
+     "start": 696,
+     "text": "4 percent"
+    },
+    {
+     "end": 1477,
+     "point": 4,
+     "source_text": "16",
+     "start": 1475,
+     "text": "16"
+    },
+    {
+     "end": 10147,
+     "point": 4,
+     "source_text": "18",
+     "start": 10145,
+     "text": "18"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-08",
+   "quotes": [
+    {
+     "end": 4705,
+     "paragraph": 11,
+     "start": 4508,
+     "text": "Instead, it was a preponderance of evidence over several months that the risks for monetary policy had shifted, reflecting a strengthened labor market and a range of persistent inflationary forces."
+    },
+    {
+     "end": 6468,
+     "paragraph": 12,
+     "start": 6370,
+     "text": "Overall, the new data reinforce my view that the labor market is stable and inflation is too high."
+    },
+    {
+     "end": 9952,
+     "paragraph": 19,
+     "start": 9862,
+     "text": "The Summary of Economic Projections (SEP) is serving that signaling role for policymakers."
+    },
+    {
+     "end": 11456,
+     "paragraph": 21,
+     "start": 11308,
+     "text": "If the economic data continue to come in as expected, I anticipate additional hikes to support a timelier return of inflation to our 2 percent goal."
+    }
+   ],
+   "source": {
+    "chars": 11884,
+    "chars_sent": 11885,
+    "method": "html-selector",
+    "paragraphs_sent": 23,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 755,
+        "paragraph": 6,
+        "start": 576,
+        "text": "in September the Federal Open Market Committee (FOMC) voted to raise our policy rate 25 basis points to 3.75 percent to 4 percent after nine months during which we held it steady."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Waller says the FOMC raised the policy rate 25 basis points to 3.75 percent to 4 percent in September after holding it steady for nine months."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 4705,
+        "paragraph": 11,
+        "start": 4508,
+        "text": "Instead, it was a preponderance of evidence over several months that the risks for monetary policy had shifted, reflecting a strengthened labor market and a range of persistent inflationary forces."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Governor Waller says his September decision reflected several months of evidence, including a strengthened labor market and persistent inflationary forces."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6468,
+        "paragraph": 12,
+        "start": 6370,
+        "text": "Overall, the new data reinforce my view that the labor market is stable and inflation is too high."
+       },
+       {
+        "end": 6557,
+        "paragraph": 12,
+        "start": 6469,
+        "text": "For at least the near term, policy will be focused on the inflation side of our mandate."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Governor Waller says new data reinforce his view that the labor market is stable and inflation is too high, and policy will focus on inflation for at least the near term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9952,
+        "paragraph": 19,
+        "start": 9862,
+        "text": "The Summary of Economic Projections (SEP) is serving that signaling role for policymakers."
+       },
+       {
+        "end": 10259,
+        "paragraph": 19,
+        "start": 10130,
+        "text": "Sixteen of the 18 participants who submitted dots anticipated at least one more hike during the two remaining meetings this year."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Governor Waller calls the Summary of Economic Projections a signaling role, with 16 of 18 participants anticipating at least one more hike during the two remaining meetings this year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11456,
+        "paragraph": 21,
+        "start": 11308,
+        "text": "If the economic data continue to come in as expected, I anticipate additional hikes to support a timelier return of inflation to our 2 percent goal."
+       },
+       {
+        "end": 11637,
+        "paragraph": 21,
+        "start": 11522,
+        "text": "The hikes do not need to come at consecutive meetings, but they should be in place in an acceptable period of time."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Governor Waller anticipates additional hikes if economic data continue to come in as expected, but says the timing has flexibility and hikes do not need to occur at consecutive meetings."
+    }
+   ],
+   "title": "Waller, The Signaling Value of the Summary of Economic Projections",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/waller20261008a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3911,
+    "output_tokens": 615,
+    "reasoning_tokens": 0
+   }
   }
  ],
  "version": 1
