@@ -1395,13 +1395,8 @@
       ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
   }
 
-  function renderCrossAsset() {
-    const ca = state.payload.crossasset;
-    const section = document.getElementById("crossassetSection");
-    const wrap = document.getElementById("crossassetContent");
-    if (!section || !wrap || !ca || !(ca.instruments || []).length) return;
-    section.hidden = false;
-
+  // The cross-asset table's HTML (pure: the payload's crossasset block in, a string out).
+  function caTableHtml(ca) {
     const layout = caLayout();
     const insts = ca.instruments.slice().sort((a, b) => zOf(b) - zOf(a));
 
@@ -1422,10 +1417,11 @@
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
-    const sentimentGroupHeader = isV3()
-      ? '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning (metals only), contrarian. 11% of a metal\'s score; indices have no positioning factor.">COT</th>'
+    // v3: no positioning factor is scored on the cross-asset board (COT left the
+    // metal score on 2026-10-07; P/C never entered v3) → no SENTIMENT/COT column.
+    const sentimentGroupHeader = isV3() ? ""
       : '<th colspan="1" class="grp-head grp-sentiment" title="Positioning sentiment (COT for metals, P/C equity for US indices), contrarian. Foreign indices (DAX/Nikkei/FTSE, marked *) take the US equity P/C as a global-risk PROXY. Blue = bullish for the asset, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
-    const sentimentSubHeader = '<th class="ind-head grp-sentiment">' + (isV3() ? "COT" : "COT / P/C") + '</th>';
+    const sentimentSubHeader = isV3() ? "" : '<th class="ind-head grp-sentiment">COT / P/C</th>';
 
     let subHeaders = "";
     layout.forEach(g => g.columns.forEach(c => {
@@ -1442,19 +1438,39 @@
         (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
         '<td class="score-cell biasfill ' + bcls + '" title="score ' + escAttr(fmtSigned(inst.score_precise, 2)) + '">' + fmtSigned(zOf(inst), 2) + '</td>' +
-        (trendEnabled() ? caTrendCellHtml(inst) : "") + caCotCellHtml(inst) + cells + '</tr>'
+        (trendEnabled() ? caTrendCellHtml(inst) : "") + (isV3() ? "" : caCotCellHtml(inst)) + cells + '</tr>'
       );
     }).join("");
 
-    wrap.innerHTML =
+    return (
       '<div class="retail-table-scroll econ-scroll">' +
       '<table class="retail-table econ-table">' +
       '<thead>' +
-      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2" title="' + escAttr(zHeaderTip(ca.bias_thresholds)) + '">z</th>' +
+      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2" title="' + escAttr(caZTip(ca)) + '">z</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaders + '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaders + '</tr>' +
       '</thead>' +
-      '<tbody>' + rows + '</tbody></table></div>';
+      '<tbody>' + rows + '</tbody></table></div>'
+    );
+  }
+  // z tooltip: indices and metals carry their own thresholds (metals since 2026-10-07).
+  function caZTip(ca) {
+    const m = ca.bias_thresholds_metal;
+    if (!m) return zHeaderTip(ca.bias_thresholds);
+    const f = (x) => Number(x).toFixed(2);
+    return zHeaderTip(ca.bias_thresholds).replace(/: Neutral/, " — indices: Neutral") +
+      " Metals: Neutral below " + f(m.mild) + ", Bullish/Bearish from " + f(m.mild) + ", Very from " + f(m.very) + ".";
+  }
+
+  function renderCrossAsset() {
+    const ca = state.payload.crossasset;
+    const section = document.getElementById("crossassetSection");
+    const wrap = document.getElementById("crossassetContent");
+    if (!section || !wrap || !ca || !(ca.instruments || []).length) return;
+    section.hidden = false;
+
+    wrap.innerHTML = caTableHtml(ca);
+
 
     wrap.querySelectorAll("tbody tr").forEach(tr => {
       tr.addEventListener("click", () => openCrossAssetModal(tr.dataset.caSymbol));
@@ -1654,7 +1670,7 @@
       '<span class="pill ' + biasClass(inst.bias_label) + '">' + inst.bias_label + '</span> ' +
       '<span class="modal-score">Score ' + fmtSigned(inst.score_precise, 2) + '</span>' +
       '<span class="modal-formula">' + (isV3()
-        ? (inst.type === "metal" ? "metal · 0.56 Macro + 0.33 Rates + 0.11 COT, each in σ, × 2.5"
+        ? (inst.type === "metal" ? "metal · 0.67 Rates (US 2Y, 3 months) + 0.33 Macro, each in σ, × 2.5"
                                  : "index · 0.67 Macro + 0.33 Rates (rising rates only erase a positive macro), × 2.5")
         : inst.type + ' · weighted mean over ' + inst.coverage +
           ((inst.factors || []).some(f => f.value_sigma !== null && f.value_sigma !== undefined)
@@ -2152,6 +2168,7 @@
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
   if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml,
     fmtAsOf: fmtAsOf, phoneAsOfText: phoneAsOfText, zOf: zOf, zHeaderTip: zHeaderTip,
+    caTableHtml: function (ca) { return caTableHtml(ca); },
     _setPayloadForTest: function (p) { state.payload = p; }, compareInstruments: function (a, b) { return compareInstruments(a, b); },
     catSigmaText: catSigmaText, macroSigmaText: macroSigmaText, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
     actualsBadge: actualsBadge, freshnessBadges: freshnessBadges };
