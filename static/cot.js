@@ -193,9 +193,19 @@
     return "Crowding " + signed(String(Math.abs(sc.level)), sc.level) + " + Flow " + signed(String(Math.abs(sc.flow)), sc.flow) +
       " = " + signed(String(Math.abs(sc.cell)), sc.cell) + ". Same value as the COT column on Economic.";
   }
-  const NOT_IN_MODEL = "Not in the model: only the 8 currencies, the dollar index, gold and silver are scored";
+  // What /economic scores with COT, from index.json's in_model (src/cot_payload.IN_MODEL).
+  function scoredText() {
+    const m = (data.index && data.index.in_model) || [];
+    const parts = [];
+    if (m.some((s) => s !== "DXY" && s !== "GOLD" && s !== "SILVER")) parts.push("the 8 currencies");
+    if (m.includes("DXY")) parts.push("the dollar index");
+    if (m.includes("GOLD")) parts.push("gold");
+    if (m.includes("SILVER")) parts.push("silver");
+    if (!parts.length) return "no instrument is";
+    return (parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " : "") + parts[parts.length - 1] + " are";
+  }
   function cotChip(inst) {
-    if (!inst.in_model || !inst.score) return chip(null, { noneTitle: NOT_IN_MODEL });
+    if (!inst.in_model || !inst.score) return chip(null, { noneTitle: "Not in the model: only " + scoredText() + " scored" });
     return chip(inst.score.cell, { title: crowdTitle(inst.score) });
   }
   function triangle(up, rgb) {
@@ -800,7 +810,7 @@
       body.appendChild(section("Why COT is " + signed(String(Math.abs(inst.score.cell)), inst.score.cell) + " for " + inst.symbol, [box, toggle, rules]));
     } else {
       body.appendChild(section("Not in the COT score", h("p", { class: "cot-step-desc",
-        text: describeSide(inst.symbol, inst.spec, "Speculators") + ". Only the 8 currencies, the dollar index, gold and silver are scored; for the others this page shows the positioning only." })));
+        text: describeSide(inst.symbol, inst.spec, "Speculators") + ". Only " + scoredText() + " scored; for the others this page shows the positioning only." })));
     }
     body.appendChild(chartSection(inst));
     body.appendChild(thisWeek(inst));

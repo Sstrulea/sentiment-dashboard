@@ -31,6 +31,8 @@ import pandas as pd
 
 from .compute import compute_metrics, load_meta
 from .cot_score import cot_cell, flow_score
+from .crossasset_compute import V3_METAL_WEIGHTS
+from .economic_compute import V3_FX_WEIGHTS
 
 log = logging.getLogger(__name__)
 
@@ -43,8 +45,15 @@ DATE = "report_date_as_yyyy_mm_dd"
 CODE = "cftc_contract_market_code"
 MIN_P3_SHARE = 0.90
 SERIES_POINTS = 156
-# What /economic scores (the SENTIMENT column and the cross-asset metals).
-IN_MODEL = ("EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "DXY", "GOLD", "SILVER")
+# What /economic scores with COT, derived from the model weights so this list
+# cannot drift from the model again: the 7 currency futures and the dollar index
+# (each currency's COT block, the US Dollar row's DXY cell) while V3_FX_WEIGHTS
+# weights COT; gold and silver only while V3_METAL_WEIGHTS does (COT left the
+# metal score with model 2026.10.08-metals).
+FX_COT = ("EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "DXY")
+METAL_COT = ("GOLD", "SILVER")
+IN_MODEL = ((FX_COT if V3_FX_WEIGHTS.get("cot", 0) > 0 else ())
+            + (METAL_COT if V3_METAL_WEIGHTS.get("cot", 0) > 0 else ()))
 SOURCE = ("CFTC Commitments of Traders, Legacy, Futures and Options Combined "
           "(publicreporting.cftc.gov, dataset jun7-fc8e)")
 NY = ZoneInfo("America/New_York")

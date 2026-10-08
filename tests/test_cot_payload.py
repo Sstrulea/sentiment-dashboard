@@ -24,9 +24,10 @@ def _by_symbol(week):
 
 
 def test_a_latest_week_scores_match_economic(built):
-    """(a) last week, the 10 in_model instruments: level and flow identical to
-    public/data/economic.json (FX legs + US-DOLLAR + cross-asset GOLD/SILVER),
-    blend within ±0.1."""
+    """(a) last week, the in_model instruments: exactly the ones
+    public/data/economic.json scores with COT (FX legs + US-DOLLAR's DXY, plus a
+    cross-asset metal only while it carries a cot block), level and flow
+    identical, blend within ±0.1."""
     econ = json.loads((ROOT / "public" / "data" / "economic.json").read_text())
     ref = {}
     for inst in econ["instruments"]:
@@ -42,6 +43,8 @@ def test_a_latest_week_scores_match_economic(built):
             ref[inst["symbol"]] = inst["cot"]
     week = _by_symbol(built["weeks"][built["index"]["latest"]])
     assert {s for s, i in week.items() if i.get("in_model")} == set(IN_MODEL)
+    assert set(ref) == set(IN_MODEL)              # the COT page labels exactly what /economic scores
+    assert built["index"]["in_model"] == list(IN_MODEL)
     for sym in IN_MODEL:
         got, want = week[sym]["score"], ref[sym]
         assert (got["level"], got["flow"]) == (want["level"], want["flow"]), sym
