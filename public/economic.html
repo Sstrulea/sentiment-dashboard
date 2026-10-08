@@ -101,8 +101,9 @@
     </header>
 
     <div class="econ-legend" data-htr>
-      <span class="muted">Score = 51% Macro + 34% Carry + 15% COT per currency, base − quote for a pair;
-      the bias compares it with the pair&rsquo;s usual size. Cells are indicator scores on a
+      <span class="muted">Each currency = 51% Macro + 34% Carry + 15% COT, base − quote for a pair; that raw
+      score divided by the pair&rsquo;s usual size (z) gives the Score −10..+10: 0–2 Neutral, 3–5 Bullish/Bearish,
+      6–10 Very. Cells are indicator scores on a
       blue (bullish) ↔ red (bearish) scale; for a pair each indicator cell is the base − quote
       differential, Carry the policy-rate differential in σ. Click a row for the per-indicator breakdown.</span>
     </div>
@@ -138,8 +139,9 @@
     yields; rising yields only erase a positive macro). <b>Metals</b>: 67% Rates (the 3-month change of the US 2Y
     yield) + 33% US Macro.</p>
 
-    <p><b>Bias</b> compares the score with that instrument&rsquo;s usual size (its RMS over 3 years):
-    about 55% of weeks are Neutral, 10% Very. <b>Strength</b> uses the macro part only.</p>
+    <p><b>Score and bias</b>: the raw score divided by that instrument&rsquo;s usual size (its RMS over
+    3 years) gives z, shown as a Score from &minus;10 to +10 &mdash; 0&ndash;2 Neutral, 3&ndash;5 Bullish/Bearish,
+    6&ndash;10 Very (about 55% of weeks are Neutral, 10% Very). <b>Strength</b> uses the macro part only.</p>
 
     <p>N = how many indicators actually entered. A small N = less confidence.</p>
   </div>
@@ -179,7 +181,7 @@
         home 2Y and US real 10Y yields, falling yields bullish; rising yields only erase a positive macro.
         Metals: 67% Rates (US 2Y, 3-month change) + 33% US Macro; positioning (COT) is not scored here. Each macro sub-cell is the per-asset directional
         score (home reading × category sign), each Rates cell the yield signal in σ — blue = bullish for
-        the asset, red = bearish. Click a row for the full breakdown.</span>
+        the asset, red = bearish. The Score −10..+10 reads the same way as above. Click a row for the full breakdown.</span>
       </div>
       <div id="crossassetContent"></div>
     </section>

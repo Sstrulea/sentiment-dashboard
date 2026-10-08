@@ -96,7 +96,8 @@
       <span class="muted">A currency's score = the mean over the 7 pairs on
       <a href="/economic">Economic</a> it belongs to of 2.5 × (Macro base − Macro quote) (+ as base, − as
       quote): the macro part only — no carry, no COT. The 8 scores sum to 0. The bias compares the score
-      with that currency's usual size (its RMS over 3 years). Position (arc + %) = 50 + score × K. Click a
+      with that currency's usual size (its RMS over 3 years): z = score / RMS, shown as a Score −10..+10
+      (0–2 Neutral, 3–5 Bullish/Bearish, 6–10 Very). Position (arc + %) = 50 + 5 × the Score before truncation. Click a
       card or table row for the per-indicator drilldown.</span>
     </div>
     <!-- Shared "How the score is computed" help button + modal — included from both
@@ -131,8 +132,9 @@
     yields; rising yields only erase a positive macro). <b>Metals</b>: 67% Rates (the 3-month change of the US 2Y
     yield) + 33% US Macro.</p>
 
-    <p><b>Bias</b> compares the score with that instrument&rsquo;s usual size (its RMS over 3 years):
-    about 55% of weeks are Neutral, 10% Very. <b>Strength</b> uses the macro part only.</p>
+    <p><b>Score and bias</b>: the raw score divided by that instrument&rsquo;s usual size (its RMS over
+    3 years) gives z, shown as a Score from &minus;10 to +10 &mdash; 0&ndash;2 Neutral, 3&ndash;5 Bullish/Bearish,
+    6&ndash;10 Very (about 55% of weeks are Neutral, 10% Very). <b>Strength</b> uses the macro part only.</p>
 
     <p>N = how many indicators actually entered. A small N = less confidence.</p>
   </div>
