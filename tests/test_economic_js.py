@@ -82,3 +82,13 @@ def test_crossasset_table_has_no_cot_column_in_v3():
     r = subprocess.run(["node", str(CA_NO_COT)], cwd=ROOT, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
     assert "cross-asset no cot ok" in r.stdout
+
+
+FINAL_SCORE = ROOT / "tests" / "economic_js" / "test_final_score.cjs"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
+def test_tables_show_the_final_score():
+    r = subprocess.run(["node", str(FINAL_SCORE)], cwd=ROOT, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
+    assert "final score ok" in r.stdout

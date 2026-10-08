@@ -27,7 +27,8 @@ import pandas as pd
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.economic_compute import active_thresholds, build_payload, bias_label, v3_label
+from src.economic_compute import (active_thresholds, build_payload, bias_label, final_score,
+                                  final_score_precise, v3_label)
 from src.ff_corrections import read_ff_parquet
 from src.cot_score import (
     load_currencies_history,
@@ -744,8 +745,18 @@ def _attach_strength_fields(payload: dict, instruments_cfg: dict, rate_scores: d
         card["pct"] = round(max(0.0, min(100.0, raw_pct)), 1)
         if v3:
             # v3: z = score / RMS(currency), the /strength thresholds
-            card["bias_label"] = v3_label(score, (v3.get("rms_strength") or {}).get(ccy),
-                                          v3.get("thresholds_strength") or {})
+            rms_c = (v3.get("rms_strength") or {}).get(ccy)
+            th_s = v3.get("thresholds_strength") or {}
+            card["bias_label"] = v3_label(score, rms_c, th_s)
+            z = (score / float(rms_c)) if rms_c else None
+            fsp = final_score_precise(z, th_s)
+            card["strength_z"] = z
+            card["final_score"] = final_score(z, th_s)
+            # the arc: 50 + 5 × the signed Score before truncation (K no longer used)
+            if fsp is not None:
+                raw_pct = 50.0 + 5.0 * fsp
+                card["pct_clamped"] = raw_pct < 0.0 or raw_pct > 100.0
+                card["pct"] = round(max(0.0, min(100.0, raw_pct)), 1)
         else:
             card["bias_label"] = bias_label(score, thresholds)
         card["monetary"] = _monetary_state(card)

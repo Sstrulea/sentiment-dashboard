@@ -655,7 +655,7 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
     contributions that add up to score_precise exactly. COT, P/C, the real yield
     at metals, balance_sheet and TREND are not in the score; `metal_cot` is
     accepted and ignored (kept for callers)."""
-    from .economic_compute import bias_label as _bl, v3_combine
+    from .economic_compute import bias_label as _bl, final_score as _fs, v3_combine
     k = config.get("v3") or {}
     thresholds = k.get("thresholds") or {}
     out = {}
@@ -731,6 +731,8 @@ def compute_crossasset_scores_v3(categories_by_ccy: dict, config: dict, fx_sigma
                     "score": int(round(score)), "score_precise": score,
                     "bias_label": "Neutral" if not rms else _bl(score / float(rms), th),
                     "z": None if not rms else score / float(rms),   # the value the bias is read from
+                    "rms": None if not rms else float(rms),
+                    "final_score": _fs(None if not rms else score / float(rms), th),
                     "coverage": int(sum(1 for r in rows if r["present"])), "factors": rows,
                     "v3": {"macro": m_block, "rates": r_block}}
     return out

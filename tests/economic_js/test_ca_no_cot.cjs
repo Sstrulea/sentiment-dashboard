@@ -21,7 +21,7 @@ const ca = {
 ec._setPayloadForTest({ meta: { scoring: "v3" }, crossasset: ca, instruments: [] });
 const html = ec.caTableHtml(ca);
 assert.ok(!/grp-sentiment|>COT<|COT \/ P\/C|SENTIMENT/.test(html), "no COT column in v3: " + html);
-assert.ok(html.includes("Metals: Neutral below 0.71") && html.includes("Very from 1.44"), "metal thresholds in the z tooltip");
+assert.ok(html.includes(ec.SCORE_HEADER_TIP) && !html.includes(">z</th>"), "Score header (−10..+10 bands) replaces the z column");
 // a v2 payload keeps its SENTIMENT column
 ec._setPayloadForTest({ meta: {}, crossasset: ca, instruments: [] });
 assert.ok(/SENTIMENT/.test(ec.caTableHtml(ca)), "v2 keeps the column");

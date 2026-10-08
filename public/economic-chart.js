@@ -111,6 +111,29 @@
   function zOf(inst) {
     return (inst.z !== null && inst.z !== undefined) ? inst.z : (inst.score_precise !== undefined ? inst.score_precise : inst.score);
   }
+  // The final Score (2026-10-08): an integer −10..+10 from z and the board's
+  // thresholds (backend `final_score`), always consistent with the bias.
+  const SCORE_HEADER_TIP = "Score −10..+10: 0–2 Neutral, 3–5 Bullish/Bearish, 6–10 Very";
+  function fsOf(inst) {
+    return (inst.final_score !== null && inst.final_score !== undefined) ? inst.final_score : null;
+  }
+  function rawOf(inst) { return inst.score_precise !== undefined ? inst.score_precise : inst.score; }
+  function fmtFinal(v) { return (v === null || v === undefined) ? "—" : (v > 0 ? "+" : "") + v; }
+  function scoreTip(inst) {
+    return "raw score " + fmtSigned(rawOf(inst), 2) +
+      (inst.rms ? " · usual size (RMS) " + Number(inst.rms).toFixed(2) : "") +
+      (inst.z !== null && inst.z !== undefined ? " · z " + fmtSigned(inst.z, 2) : "");
+  }
+  // raw score → z → Score, for the row details
+  function chainText(inst) {
+    return "raw score " + fmtSigned(rawOf(inst), 2) + " → z " +
+      (inst.z === null || inst.z === undefined ? "—" : fmtSigned(inst.z, 2)) + " → Score " + fmtFinal(fsOf(inst));
+  }
+  // sort key: final_score, ties by z
+  function finalSortKey(inst) {
+    const f = fsOf(inst);
+    return (f === null ? 0 : f) * 1000 + zOf(inst);
+  }
   function zHeaderTip(th) {
     if (!th || th.mild === undefined) return "z = score / the instrument's RMS";
     const f = (x) => Number(x).toFixed(2);
@@ -649,7 +672,7 @@
   // ---- Sorting ------------------------------------------------------------
   function rowSortValue(inst, key) {
     if (key === "symbol") return inst.display || inst.symbol;
-    if (key === "bias" || key === "score") return zOf(inst);           // z: the order the bias follows
+    if (key === "bias" || key === "score") return finalSortKey(inst);  // final Score, ties by z
     if (key === "contrib_sum") {
       return (inst.contrib_sum !== null && inst.contrib_sum !== undefined) ? inst.contrib_sum : -Infinity;
     }
@@ -674,7 +697,7 @@
   }
   function compareInstruments(a, b) {
     const key = state.sortKey;
-    if (!key) return zOf(b) - zOf(a);                                  // by z: most bullish on top, the bias follows the rows
+    if (!key) return finalSortKey(b) - finalSortKey(a);                // final Score (ties by z): the bias follows the rows
     const av = rowSortValue(a, key);
     const bv = rowSortValue(b, key);
     let cmp;
@@ -818,28 +841,6 @@
       cbLink(inst, "carry", fmtSigned(v, 1)) + "</td>";
   }
 
-  // Σ column: the backend-computed sum of every displayed contribution
-  // (FUND + SENTIMENT + TREND), which by construction reconstructs Score
-  // exactly (see compute_instrument's `contrib_sum`/`contrib_residual`). JS
-  // does NOT sum the cells itself — it only compares two numbers the backend
-  // already computed, so a summing bug here can't hide by "agreeing with itself".
-  const CONTRIB_SUM_TOLERANCE = 0.15;
-  function contribSumCellHtml(inst) {
-    const sum = inst.contrib_sum;
-    if (sum === null || sum === undefined || Number.isNaN(sum)) {
-      return '<td class="contrib-sum-cell cell-na"></td>';
-    }
-    const mismatch = Math.abs(sum - inst.score) > CONTRIB_SUM_TOLERANCE;
-    const cls = "contrib-sum-cell" + (mismatch ? " contrib-mismatch" : "");
-    const parts = isV3() ? "MACRO + CARRY + COT" : trendEnabled() ? "FUND + SENTIMENT + TREND" : "FUND + SENTIMENT";
-    const tip = mismatch
-      ? "Σ (" + fmtSigned(sum, 2) + ") differs from Score (" + fmtSigned(inst.score, 2) + ") by more than " +
-        CONTRIB_SUM_TOLERANCE + " — a displayed contribution is missing or wrong"
-      : "Σ of every displayed contribution (" + parts + ") — reconstructs Score";
-    return '<td class="' + cls + '" title="' + escAttr(tip) + '">' + fmtSigned(sum, 2) +
-      (mismatch ? ' <span class="econ-flag flag-stale" title="' + escAttr(tip) + '">⚠</span>' : "") + "</td>";
-  }
-
   // §M D1=D: FX pairs score on the INTERSECTION of both legs' present
   // categories (categories_used/categories_total on the instrument). When
   // the intersection is reduced, flag it with the exact count — never an
@@ -911,8 +912,7 @@
       '<td class="sym"' + styleAttr(tintAsShadow(gradientStyle(zOf(inst), 2))) + ' title="' + escAttr(categoriesNTooltip(inst)) + '">' +
       (inst.display || inst.symbol) + categoriesFlagHtml(inst) + "</td>" +
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
-      '<td class="score-cell"' + sg + ' title="score ' + escAttr(fmtSigned(inst.score, 2)) + '">' + fmtSigned(zOf(inst), 2) + "</td>" +
-      contribSumCellHtml(inst) +
+      '<td class="score-cell"' + sg + ' title="' + escAttr(scoreTip(inst)) + '">' + fmtFinal(fsOf(inst)) + "</td>" +
       (trendEnabled() ? trendCellHtml(inst) : "") +
       fxCotCellHtml(inst) +
       (isV3() ? carryCellHtml(inst) : "") +
@@ -964,11 +964,6 @@
         '" title="' + escAttr(indMeta(c.key).label || c.key) + '">' + c.label + '</th>';
     }));
 
-    const sumTip = isV3()
-      ? "Sum of every displayed contribution (MACRO indicators + CARRY + COT) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent"
-      : trendEnabled()
-      ? "Sum of every displayed contribution (FUND + SENTIMENT + TREND) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent"
-      : "Sum of every displayed contribution (FUND + SENTIMENT) — reconstructs Score exactly; a mismatch beyond 0.15 is flagged, never silent";
 
     wrap.innerHTML =
       '<div class="retail-table-scroll econ-scroll">' +
@@ -977,8 +972,7 @@
       '<tr>' +
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
       '<th rowspan="2" data-sort="bias">Bias</th>' +
-      '<th rowspan="2" data-sort="score" title="' + escAttr(zHeaderTip((state.payload.meta || {}).bias_thresholds)) + '">z</th>' +
-      '<th rowspan="2" data-sort="contrib_sum" title="' + escAttr(sumTip) + '">Σ</th>' +
+      '<th rowspan="2" data-sort="score" title="' + escAttr(SCORE_HEADER_TIP) + '">Score</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaderCells +
       '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaderCells + '</tr>' +
@@ -1270,9 +1264,10 @@
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ')</small></h2>' +
       '<div class="muted modal-subhead">' +
       '<span class="pill ' + biasClass(inst.bias) + '">' + inst.bias + '</span> ' +
-      '<span class="modal-score">Score ' + fmtSigned(inst.score, 2) + '</span>' +
+      '<span class="modal-score" title="' + escAttr(scoreTip(inst)) + '">Score ' + fmtFinal(fsOf(inst)) + '</span>' +
       '<span class="modal-formula">' + sub + '</span></div>' +
       '</header>' +
+      '<p class="muted econ-score-chain">' + escAttr(chainText(inst)) + '</p>' +
       // TREND first (matches column order), then Sentiment (COT), then the macro legs.
       (trendEnabled() ? trendSectionHtml(inst.trend_detail) : "") +
       fxCotSectionHtml(inst.cot) +
@@ -1398,7 +1393,7 @@
   // The cross-asset table's HTML (pure: the payload's crossasset block in, a string out).
   function caTableHtml(ca) {
     const layout = caLayout();
-    const insts = ca.instruments.slice().sort((a, b) => zOf(b) - zOf(a));
+    const insts = ca.instruments.slice().sort((a, b) => finalSortKey(b) - finalSortKey(a));
 
     const groupHeaders = layout.map(g =>
       '<th colspan="' + g.columns.length + '" class="grp-head grp-' + g.key +
@@ -1437,7 +1432,7 @@
         '<td class="sym biasfill ' + bcls + '" title="' + escAttr(caCategoriesNTooltip(inst)) + '">' +
         (inst.display || inst.symbol) + '</td>' +
         '<td class="bias-cell biasfill ' + bcls + '">' + inst.bias_label + '</td>' +
-        '<td class="score-cell biasfill ' + bcls + '" title="score ' + escAttr(fmtSigned(inst.score_precise, 2)) + '">' + fmtSigned(zOf(inst), 2) + '</td>' +
+        '<td class="score-cell biasfill ' + bcls + '" title="' + escAttr(scoreTip(inst)) + '">' + fmtFinal(fsOf(inst)) + '</td>' +
         (trendEnabled() ? caTrendCellHtml(inst) : "") + (isV3() ? "" : caCotCellHtml(inst)) + cells + '</tr>'
       );
     }).join("");
@@ -1446,22 +1441,13 @@
       '<div class="retail-table-scroll econ-scroll">' +
       '<table class="retail-table econ-table">' +
       '<thead>' +
-      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2" title="' + escAttr(caZTip(ca)) + '">z</th>' +
+      '<tr><th rowspan="2" class="col-sym">Symbol</th><th rowspan="2">Bias</th><th rowspan="2" title="' + escAttr(SCORE_HEADER_TIP) + '">Score</th>' +
       trendGroupHeader + sentimentGroupHeader + groupHeaders + '</tr>' +
       '<tr>' + trendSubHeader + sentimentSubHeader + subHeaders + '</tr>' +
       '</thead>' +
       '<tbody>' + rows + '</tbody></table></div>'
     );
   }
-  // z tooltip: indices and metals carry their own thresholds (metals since 2026-10-07).
-  function caZTip(ca) {
-    const m = ca.bias_thresholds_metal;
-    if (!m) return zHeaderTip(ca.bias_thresholds);
-    const f = (x) => Number(x).toFixed(2);
-    return zHeaderTip(ca.bias_thresholds).replace(/: Neutral/, " — indices: Neutral") +
-      " Metals: Neutral below " + f(m.mild) + ", Bullish/Bearish from " + f(m.mild) + ", Very from " + f(m.very) + ".";
-  }
-
   function renderCrossAsset() {
     const ca = state.payload.crossasset;
     const section = document.getElementById("crossassetSection");
@@ -1668,7 +1654,7 @@
       '<h2>' + (inst.display || inst.symbol) + ' <small class="muted">(' + inst.symbol + ' · ' + inst.home_ccy + ')</small></h2>' +
       '<div class="muted modal-subhead">' +
       '<span class="pill ' + biasClass(inst.bias_label) + '">' + inst.bias_label + '</span> ' +
-      '<span class="modal-score">Score ' + fmtSigned(inst.score_precise, 2) + '</span>' +
+      '<span class="modal-score" title="' + escAttr(scoreTip(inst)) + '">Score ' + fmtFinal(fsOf(inst)) + '</span>' +
       '<span class="modal-formula">' + (isV3()
         ? (inst.type === "metal" ? "metal · 0.67 Rates (US 2Y, 3 months) + 0.33 Macro, each in σ, × 2.5"
                                  : "index · 0.67 Macro + 0.33 Rates (rising rates only erase a positive macro), × 2.5")
@@ -1677,6 +1663,7 @@
             ? ' present factor(s), each ÷σ (clip ±3), × scale' : ' present factor(s) × scale')) +
       '</span></div>' +
       '</header>' +
+      '<p class="muted econ-score-chain">' + escAttr(chainText(inst)) + '</p>' +
       '<p class="muted econ-modal-note">Each Score is the per-asset directional score for ' +
       (inst.display || inst.symbol) + ' (' + inst.home_ccy +
       ' reading × category sign); blue = bullish, red = bearish. Act / Cons / Surp / z stay raw. ' +
@@ -1830,12 +1817,17 @@
     if (f.price && f.price.stale) badges.appendChild(ph("span", { class: "econ-ph-badge is-stale", text: "Stale prices" }));
     if (badges.childNodes.length) el.appendChild(badges);
   }
-  function phoneRow(label, tag, bias, exact, chipVal, onOpen) {
+  // phone row: Pair · Bias · Score (the final −10..+10 integer, tinted on ±10).
+  function phoneRow(label, tag, bias, inst, chipVal, onOpen) {
+    const f = fsOf(inst);
+    const chip = ph("span", { class: "ph-chip", text: pmStr(fmtFinal(f)), title: scoreTip(inst) });
+    const st = gradientStyle(f === null ? 0 : f, 10);
+    if (st) chip.setAttribute("style", st);
     const row = ph("button", { type: "button", class: "ph-row " + ECON_GRID, "aria-haspopup": "dialog" },
       ph("span", { class: "econ-ph-pair" }, ph("span", { class: "econ-ph-name", text: label }), tag ? ph("span", { class: "ph-tag", text: tag }) : null),
       ph("span", { class: "econ-ph-bias " + biasTone(bias), text: bias || "—" }),
-      ph("span", { class: "econ-ph-exact", text: pmStr(fmtSigned(exact, 2)) }),
-      chipEl(null, 6, exact),
+      ph("span", { class: "econ-ph-exact", text: "z " + pmStr(fmtSigned(zOf(inst), 2)) }),
+      chip,
       ph("span", { class: "ph-chev" }, P().icon(P().ICON.chevronRight, 16)));
     row.addEventListener("click", () => onOpen(row));
     return row;
@@ -1847,20 +1839,20 @@
     const fx = p.instruments.filter(passesFilters).sort(compareInstruments);
     const card = ph("div", { class: "ph-list econ-ph-list" },
       ph("div", { class: "ph-list-head " + ECON_GRID }, ph("span", { text: "Pair" }), ph("span", { text: "Bias" }),
-        ph("span", { class: "econ-ph-exact", text: "Exact" }), ph("span", { class: "econ-ph-sc", text: "Score" }), ph("span")),
+        ph("span", { class: "econ-ph-exact", text: "z" }), ph("span", { class: "econ-ph-sc", text: "Score", title: SCORE_HEADER_TIP }), ph("span")),
       ph("div", { class: "ph-group-head" }, "FX pairs", ph("span", { class: "ph-count", text: String(fx.length) })));
     if (!fx.length) card.appendChild(ph("p", { class: "econ-ph-empty", text: "No pairs match these filters." }));
     fx.forEach((inst) => {
       const tag = inst.categories_used < inst.categories_total ? inst.categories_used + "/" + inst.categories_total : null;
-      card.appendChild(phoneRow(inst.display || inst.symbol, tag, inst.bias, inst.score, null,
+      card.appendChild(phoneRow(inst.display || inst.symbol, tag, inst.bias, inst, null,
         (row) => openPhoneDetail(inst, row)));
     });
     list.appendChild(card);
-    const ca = ((p.crossasset || {}).instruments || []).slice().sort((a, b) => b.score_precise - a.score_precise);
+    const ca = ((p.crossasset || {}).instruments || []).slice().sort((a, b) => finalSortKey(b) - finalSortKey(a));
     if (ca.length) {
       const c2 = ph("div", { class: "ph-list econ-ph-list" },
         ph("div", { class: "ph-group-head" }, "Cross-asset", ph("span", { class: "ph-count", text: ca.length + " indices and metals" })));
-      ca.forEach((inst) => c2.appendChild(phoneRow(inst.display || inst.symbol, null, inst.bias_label, inst.score_precise, null,
+      ca.forEach((inst) => c2.appendChild(phoneRow(inst.display || inst.symbol, null, inst.bias_label, inst, null,
         (row) => openPhoneCaDetail(inst, row))));
       list.appendChild(c2);
     }
@@ -1871,10 +1863,11 @@
     return ph("h2", { class: "ph-sheet-title econ-ph-title" }, ph("span", { text: name }),
       ph("span", { class: "econ-ph-pill " + biasTone(bias), text: bias || "—" }));
   }
-  function scoreLine(exact, label) {
-    return ph("div", { class: "econ-ph-scoreline" }, chipEl(null, 6, exact),
-      ph("span", { class: "econ-ph-big", text: pmStr(fmtSigned(exact, 2)) }),
-      ph("span", { class: "econ-ph-muted", text: "score · blue = bullish for " + label }));
+  function scoreLine(inst, label) {
+    const f = fsOf(inst);
+    return ph("div", { class: "econ-ph-scoreline" },
+      ph("span", { class: "econ-ph-big", text: "Score " + pmStr(fmtFinal(f)) }),
+      ph("span", { class: "econ-ph-muted", text: pmStr(chainText(inst)) + " · blue = bullish for " + label }));
   }
   function barsCard(groups, total, label, note) {
     const max = Math.max.apply(null, groups.map((g) => Math.abs(g.value)).concat([1e-9]));
@@ -2010,7 +2003,7 @@
     const label = inst.display || inst.symbol;
     const base = inst.breakdown && inst.breakdown.base ? inst.breakdown.base.currency : null;
     const quote = inst.breakdown && inst.breakdown.quote ? inst.breakdown.quote.currency : null;
-    const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst.score, label), barsCard(scoreGroups(inst), inst.score, label));
+    const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst, label), barsCard(scoreGroups(inst), inst.score, label));
     if (trendEnabled() && inst.trend_detail) {
       const t = ph("section", { class: "econ-ph-card econ-ph-legacy" });
       t.innerHTML = trendSectionHtml(inst.trend_detail);
@@ -2111,7 +2104,7 @@
   }
   function openPhoneCaDetail(inst, row) {
     const label = inst.display || inst.symbol;
-    const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst.score_precise, label));
+    const body = ph("div", { class: "econ-ph-detail" }, scoreLine(inst, label));
     const bars = caBars(inst);
     if (bars) body.appendChild(barsCard(bars, inst.score_precise, label));
     caPhoneSections(inst).forEach((el) => body.appendChild(el));
@@ -2168,6 +2161,7 @@
   // DOM-free seam for tests/economic_js (plain Node, no jsdom); nothing in the page reads it.
   if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml,
     fmtAsOf: fmtAsOf, phoneAsOfText: phoneAsOfText, zOf: zOf, zHeaderTip: zHeaderTip,
+    fsOf: fsOf, scoreTip: scoreTip, chainText: chainText, finalSortKey: finalSortKey, SCORE_HEADER_TIP: SCORE_HEADER_TIP,
     caTableHtml: function (ca) { return caTableHtml(ca); },
     _setPayloadForTest: function (p) { state.payload = p; }, compareInstruments: function (a, b) { return compareInstruments(a, b); },
     catSigmaText: catSigmaText, macroSigmaText: macroSigmaText, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,

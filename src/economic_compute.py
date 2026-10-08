@@ -1316,6 +1316,33 @@ def v3_currency_blocks(macro_mean: float | None, carry_raw: float | None,
             "cot": div(cot_cell, k.get("sigma_cot"))}
 
 
+def final_score_precise(z: float | None, thresholds: dict) -> float | None:
+    """The −10..+10 Score from z and the board's thresholds, before truncation —
+    the same cut points on every board (display only, 2026-10-08):
+      |z| < mild         → 3 × |z| / mild
+      mild ≤ |z| < very  → 3 + 3 × (|z| − mild) / (very − mild)
+      |z| ≥ very         → 6 + 4 × min((|z| − very) / very, 1)
+    with the sign of z. None when z is None."""
+    if z is None or not thresholds:
+        return None
+    mild, very = float(thresholds["mild"]), float(thresholds["very"])
+    a = abs(float(z))
+    if a < mild:
+        v = 3.0 * a / mild
+    elif a < very:
+        v = 3.0 + 3.0 * (a - mild) / (very - mild)
+    else:
+        v = 6.0 + 4.0 * min((a - very) / very, 1.0)
+    return v if z >= 0 else -v
+
+
+def final_score(z: float | None, thresholds: dict) -> int | None:
+    """final_score_precise truncated toward zero (never rounded): 0–2 is always
+    Neutral, 3–5 Bullish/Bearish, 6–10 Very — the bias of the same z."""
+    v = final_score_precise(z, thresholds)
+    return None if v is None else int(v)
+
+
 def v3_label(score: float, rms: float | None, thresholds: dict) -> str:
     """z = score / RMS(instrument); |z| < mild → Neutral, < very → Bullish/
     Bearish, otherwise Very. No RMS → Neutral."""
@@ -1477,6 +1504,8 @@ def apply_v3_fx(payload: dict, instruments_cfg: dict, indicators_cfg: dict,
         inst["bias"] = v3_label(score, rms.get(sym), thresholds)
         # z = score / RMS(instrument): the value the bias is read from (display/sort)
         inst["z"] = (float(score) / float(rms[sym])) if rms.get(sym) else None
+        inst["rms"] = float(rms[sym]) if rms.get(sym) else None
+        inst["final_score"] = final_score(inst["z"], thresholds)
         inst["contributions"] = contrib
         inst["contrib_sum"] = float(sum(r["contribution"] for r in contrib))
         inst["contrib_residual"] = float(score) - inst["contrib_sum"]
