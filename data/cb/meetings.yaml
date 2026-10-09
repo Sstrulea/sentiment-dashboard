@@ -53,23 +53,23 @@ meetings:
     - {date: 2027-09-09, first_day: 2027-09-08, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2027-10-28, first_day: 2027-10-27, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2027-12-16, first_day: 2027-12-15, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
-  GBP:     # dates from the BoE MPC page (2026 confirmed, 2027 PROVISIONAL); projections = Monetary Policy Report days; presser = MPR days only (config)
-    - {date: 2026-02-05, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
-    - {date: 2026-03-19, has_projections: false, has_presser: false, source: official, verified: 2026-09-20}
-    - {date: 2026-04-30, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
-    - {date: 2026-06-18, has_projections: false, has_presser: false, source: official, verified: 2026-09-20}
-    - {date: 2026-07-30, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
-    - {date: 2026-09-17, has_projections: false, has_presser: false, source: official, verified: 2026-09-20}
-    - {date: 2026-11-05, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
-    - {date: 2026-12-17, has_projections: false, has_presser: false, source: official, verified: 2026-09-20}
-    - {date: 2027-02-04, has_projections: true, has_presser: true, source: official, verified: false}
-    - {date: 2027-03-18, has_projections: false, has_presser: false, source: official, verified: false}
-    - {date: 2027-04-29, has_projections: true, has_presser: true, source: official, verified: false}
-    - {date: 2027-06-17, has_projections: false, has_presser: false, source: official, verified: false}
-    - {date: 2027-07-29, has_projections: true, has_presser: true, source: official, verified: false}
-    - {date: 2027-09-16, has_projections: false, has_presser: false, source: official, verified: false}
-    - {date: 2027-11-04, has_projections: true, has_presser: true, source: official, verified: false}
-    - {date: 2027-12-16, has_projections: false, has_presser: false, source: official, verified: false}
+  GBP:     # dates from the BoE MPC page (2026 and 2027 confirmed - the page re-read 2026-10-09; 2027 was provisional until then); projections = Monetary Policy Report days; presser = MPR days only (config)
+    - {date: 2026-02-05, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2026-03-19, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2026-04-30, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2026-06-18, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2026-07-30, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2026-09-17, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2026-11-05, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2026-12-17, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2027-02-04, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2027-03-18, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2027-04-29, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2027-06-17, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2027-07-29, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2027-09-16, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
+    - {date: 2027-11-04, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
+    - {date: 2027-12-16, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
   JPY:     # dates + Outlook Report (projections) from the BoJ schedule page; presser: every meeting (config), not stated on the schedule page
     - {date: 2026-01-23, first_day: 2026-01-22, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-03-19, first_day: 2026-03-18, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}

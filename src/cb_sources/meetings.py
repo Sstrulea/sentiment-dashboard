@@ -24,7 +24,7 @@ CHF_FROM = date(2025, 9, 1)                     # the last 4 SNB decisions
 BASIS = {
     "USD": "dates + projections (SEP asterisk) from the FOMC calendar page; presser: every meeting (config), the page announces it only for past/near meetings",
     "EUR": "decision dates from the ECB GC calendar page (it lists upcoming meetings only): 2026 meetings already held come from FF decision rows (source: ff, NOT official); presser from the page; projections derived (Mar/Jun/Sep/Dec staff projections, ECB practice, not stated on the page)",
-    "GBP": "dates from the BoE MPC page (2026 confirmed, 2027 PROVISIONAL); projections = Monetary Policy Report days; presser = MPR days only (config)",
+    "GBP": "dates from the BoE MPC page (2026 and 2027 confirmed - the page re-read 2026-10-09; 2027 was provisional until then); projections = Monetary Policy Report days; presser = MPR days only (config)",
     "JPY": "dates + Outlook Report (projections) from the BoJ schedule page; presser: every meeting (config), not stated on the schedule page",
     "CAD": "dates + MPR from the BoC schedule page; presser at every decision (BoC blackout page)",
     "AUD": "two-day board meetings, decision on day 2; dates from the RBA schedule page; projections derived (Statement on Monetary Policy Feb/May/Aug/Nov, RBA practice); presser every meeting (config)",
@@ -105,6 +105,8 @@ def render(rows_by_bank: dict, evidence: date) -> str:
 
 
 def build(parsed: dict, banks: dict, evidence: date, ff_ecb_days: Optional[list] = None,
-          rbnz_manual: Optional[list] = None) -> str:
-    """`parsed` = {bank: parsed page meetings} for USD, EUR, GBP, JPY, CAD, AUD, CHF."""
-    return render({b: build_rows(b, parsed.get(b, []), banks, evidence, ff_ecb_days, rbnz_manual) for b in ORDER}, evidence)
+          rbnz_manual: Optional[list] = None, evidence_by_bank: Optional[dict] = None) -> str:
+    """`parsed` = {bank: parsed page meetings} for USD, EUR, GBP, JPY, CAD, AUD, CHF. `evidence_by_bank` = the date a bank's
+    page was read when it is not the common evidence date (BoE re-read 2026-10-09)."""
+    ev = evidence_by_bank or {}
+    return render({b: build_rows(b, parsed.get(b, []), banks, ev.get(b, evidence), ff_ecb_days, rbnz_manual) for b in ORDER}, evidence)

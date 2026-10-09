@@ -109,7 +109,7 @@ sources:
     naming: "CRA contract = 'Contract Reference Month' = START month of the Reference Quarter (3rd Wednesday of that month to the 3rd Wednesday 3 months later); COA = calendar month"
     exchange_tz: America/Toronto
     eod_cutoff: "22:00"
-    intraday_utc: ["13:00", "22:00"]
+    intraday_utc: ["06:00", "22:00"]          # MX rate futures trade from 02:00 ET (06:00 UTC): fetches in 06:00-22:00 UTC see the NEXT session (was 13:00-22:00 until 2026-10-09)
     asof_stamp: none                     # the page carries no as-of; inferred from fetch time + cutoff (asof_inferred=true)
     availability: "HTML tables, no validators (Cache-Control: no-store); update time unknown"
     download: {conditional: false, size_mb: 0.08}

@@ -111,7 +111,7 @@ def test_history_and_download_policy_match_what_the_spikes_measured(sources):
     assert cond == {"atlantafed_mpt", "boe_ois", "jpx_tona", "rba_bank_bills"}
     assert "etag" in s["atlantafed_mpt"]["download"]["validators"] and s["atlantafed_mpt"]["download"]["size_mb"] == 6.9
     assert {i for i, c in s.items() if c["proxy"]} == {"ust_bills", "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"}
-    assert s["mx_corra"]["intraday_utc"] == ["13:00", "22:00"] and s["mx_corra"]["asof_stamp"] == "none"
+    assert s["mx_corra"]["intraday_utc"] == ["06:00", "22:00"] and s["mx_corra"]["asof_stamp"] == "none"
     assert date.fromisoformat(str(sources["meta"]["backfill_from"])) == date(2026, 3, 1)
     assert {i for i, c in s.items() if c["history"] == "official"} == {
         "atlantafed_mpt", "boe_ois", "ust_bills", "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"}
@@ -169,10 +169,10 @@ def test_meeting_sources_and_verification_are_honest(meetings):
     assert date(2027, 2, 17) not in {r["date"] for r in meetings["NZD"]}                         # the old release's date, replaced by 2027-02-10
     assert {b for b, rows in meetings.items() if any(r["source"] == "ff" for r in rows)} == {"EUR"}
     assert all(r["date"] < date(2026, 10, 1) and r["verified"] is False for r in meetings["EUR"] if r["source"] == "ff")
-    assert all(r["verified"] is False for r in meetings["GBP"] if r["date"].year == 2027)       # BoE 2027 is provisional
+    assert all(r["verified"] == date(2026, 10, 9) for r in meetings["GBP"])                      # BoE page re-read: 2027 confirmed
     for b, rows in meetings.items():
         for r in rows:
-            if r["source"] == "official" and not (b == "GBP" and r["date"].year == 2027):
+            if r["source"] == "official" and b != "GBP":
                 assert r["verified"] == date(2026, 9, 20), (b, r["date"])
 
 

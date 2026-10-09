@@ -71,18 +71,23 @@ def parse_ecb(page: str) -> list:
     return out
 
 
+BOE_HEADING = re.compile(r"\b(20\d\d) ((?:[a-z]+ )*)dates\b")              # "2026 confirmed dates", "2027 provisional dates", ...
+
+
 def parse_boe(page: str) -> list:
+    """The year of a row comes only from the heading above it (the rows carry no year); a heading that says
+    "provisional" marks its rows provisional - any other wording ("confirmed") does not."""
     txt = _text(page)
     out = []
-    for year, blk in ((2026, txt[txt.find("2026 confirmed dates"):txt.find("2027 provisional dates")]),
-                      (2027, txt[txt.find("2027 provisional dates"):])):
-        if not blk:
-            continue
+    heads = list(BOE_HEADING.finditer(txt))
+    for k, h in enumerate(heads):
+        year, provisional = int(h.group(1)), "provisional" in h.group(2)
+        blk = txt[h.end():heads[k + 1].start() if k + 1 < len(heads) else len(txt)]
         for mm in re.finditer(r"(?:Monday|Tuesday|Wednesday|Thursday|Friday) (\d{1,2}) ([A-Z][a-z]+) (.*?)"
                               r"(?=(?:Monday|Tuesday|Wednesday|Thursday|Friday) \d{1,2} [A-Z][a-z]+ |Current Bank Rate|"
-                              r"Monetary Policy Committee voting|Monetary Policy Committee Reports|2027 provisional|$)", blk):
+                              r"Monetary Policy Committee voting|Monetary Policy Committee Reports|$)", blk):
             d, mon, desc = mm.groups()
-            out.append(_m(_dm(int(d), mon, year), None, "Monetary Policy Report" in desc, provisional=(year == 2027)))
+            out.append(_m(_dm(int(d), mon, year), None, "Monetary Policy Report" in desc, provisional=provisional))
     return out
 
 

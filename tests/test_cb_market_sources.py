@@ -267,11 +267,14 @@ def test_mx_label_and_code_mismatch_is_rejected():
 
 
 @pytest.mark.parametrize("now, expected", [
-    (datetime(2026, 9, 18, 15, 0, tzinfo=timezone.utc), None),                       # Fri inside 13:00-22:00 UTC -> skip
+    (datetime(2026, 9, 18, 15, 0, tzinfo=timezone.utc), None),                       # Fri inside 06:00-22:00 UTC -> skip
+    (datetime(2026, 10, 9, 12, 41, tzinfo=timezone.utc), None),                      # Fri 12:41Z: the Friday session (after the 12:30Z data) - skip
+    (datetime(2026, 10, 9, 8, 41, tzinfo=timezone.utc), None),                       # Fri 08:41Z: the session opened at 06:00Z - skip
+    (datetime(2026, 9, 21, 5, 59, tzinfo=timezone.utc), date(2026, 9, 18)),          # Mon before the open -> last Friday
     (datetime(2026, 9, 18, 22, 0, tzinfo=timezone.utc), date(2026, 9, 18)),          # Fri after the window -> today
     (datetime(2026, 9, 19, 16, 35, tzinfo=timezone.utc), date(2026, 9, 18)),         # Sat: no session, window n/a
     (datetime(2026, 9, 20, 15, 0, tzinfo=timezone.utc), date(2026, 9, 18)),          # Sun
-    (datetime(2026, 9, 21, 6, 0, tzinfo=timezone.utc), date(2026, 9, 18)),           # Mon morning -> last Friday
+    (datetime(2026, 9, 21, 6, 0, tzinfo=timezone.utc), None),                        # Mon 06:00Z = 02:00 ET: the Monday session is open
     (datetime(2026, 9, 22, 5, 0, tzinfo=timezone.utc), date(2026, 9, 21)),           # Tue morning -> Monday
 ])
 def test_mx_asof_is_inferred_from_fetch_time(now, expected):

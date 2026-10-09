@@ -19,15 +19,17 @@ ROOT = Path(__file__).resolve().parents[1]
 D = date
 BANKS = ds.load_banks()
 EVIDENCE = D(2026, 9, 20)
+BOE_EVIDENCE = D(2026, 10, 9)                     # the BoE page re-read: 2027 confirmed (cal_boe_cut_20261009.htm)
+BY_BANK = {"GBP": BOE_EVIDENCE}
 
 
-def cut(name):
-    return (FIX / f"cal_{name}_cut.htm").read_text()
+def cut(name, suffix=""):
+    return (FIX / f"cal_{name}_cut{suffix}.htm").read_text()
 
 
 @pytest.fixture(scope="module")
 def parsed():
-    return {"USD": C.parse_fed(cut("fed")), "EUR": C.parse_ecb(cut("ecb")), "GBP": C.parse_boe(cut("boe")),
+    return {"USD": C.parse_fed(cut("fed")), "EUR": C.parse_ecb(cut("ecb")), "GBP": C.parse_boe(cut("boe", "_20261009")),
             "JPY": C.parse_boj(cut("boj")), "CAD": C.parse_boc(cut("boc")), "AUD": C.parse_rba(cut("rba")),
             "CHF": C.parse_snb(cut("snb_schedule"), cut("snb_archive"))}
 
@@ -45,7 +47,7 @@ def rbnz():
 
 
 def test_the_generator_reproduces_the_committed_file_byte_for_byte(parsed, ecb_days, rbnz):
-    text = M.build(parsed, BANKS, EVIDENCE, ecb_days, rbnz)
+    text = M.build(parsed, BANKS, EVIDENCE, ecb_days, rbnz, BY_BANK)
     assert text == (ROOT / "data" / "cb" / "meetings.yaml").read_text()
 
 
@@ -59,11 +61,25 @@ def test_ecb_meetings_already_held_come_only_from_ff_and_only_from_2026(parsed, 
     assert len({r[0] for r in rows}) == len(rows) == 16
 
 
-def test_boe_2027_is_provisional_and_needs_no_hand_correction(parsed):
-    rows = {r[0]: r for r in M.build_rows("GBP", parsed["GBP"], BANKS, EVIDENCE)}
+def test_boe_2027_was_provisional_on_the_old_page(parsed):
+    rows = {r[0]: r for r in M.build_rows("GBP", C.parse_boe(cut("boe")), BANKS, EVIDENCE)}
     assert all(r[5] is False for d, r in rows.items() if d.year == 2027) and all(r[5] == EVIDENCE for d, r in rows.items() if d.year == 2026)
     assert rows[D(2027, 12, 16)][2:4] == (False, False)                                # no MPR, hence no press conference
     assert rows[D(2027, 11, 4)][2:4] == (True, True) and rows[D(2026, 9, 17)][2:4] == (False, False)
+
+
+def test_boe_year_comes_from_the_heading_and_2027_is_now_confirmed(parsed):
+    """The rows carry no year: 'Thursday 4 February' under '2027 confirmed dates' is 2027-02-04 (the old parser looked for
+    '2027 provisional dates', found nothing and read every row as 2026)."""
+    new = parsed["GBP"]
+    assert [m["date"] for m in new] == [m["date"] for m in C.parse_boe(cut("boe"))]       # the same 16 dates as on the old page
+    assert [m["date"] for m in new if m["date"].year == 2027] == [D(2027, 2, 4), D(2027, 3, 18), D(2027, 4, 29), D(2027, 6, 17), D(2027, 7, 29),
+                                                                  D(2027, 9, 16), D(2027, 11, 4), D(2027, 12, 16)]
+    assert not any(m.get("provisional") for m in new)
+    rows = {r[0]: r for r in M.build_rows("GBP", new, BANKS, BOE_EVIDENCE)}
+    assert all(r[5] == BOE_EVIDENCE for r in rows.values()) and rows[D(2027, 12, 16)][2:4] == (False, False)
+    page = "<p>2028 provisional dates Thursday 3 February x 2027 confirmed dates Thursday 4 February y</p>"
+    assert [(m["date"], m.get("provisional")) for m in C.parse_boe(page)] == [(D(2028, 2, 3), True), (D(2027, 2, 4), False)]
 
 
 def test_flags_come_from_the_page_where_it_states_them_else_from_the_config_months(parsed):
@@ -91,8 +107,8 @@ def test_rbnz_rows_are_the_manual_calendar_and_never_verified(rbnz):
 
 
 def test_a_new_evidence_date_changes_only_the_verified_dates_and_the_meta_line(parsed, ecb_days, rbnz):
-    a = M.build(parsed, BANKS, EVIDENCE, ecb_days, rbnz)
-    b = M.build(parsed, BANKS, D(2026, 10, 1), ecb_days, rbnz)
+    a = M.build(parsed, BANKS, EVIDENCE, ecb_days, rbnz, BY_BANK)
+    b = M.build(parsed, BANKS, D(2026, 10, 1), ecb_days, rbnz, BY_BANK)
     diff = [(x, y) for x, y in zip(a.splitlines(), b.splitlines()) if x != y]
     assert diff and all(("verified: 2026-09-20" in x and "verified: 2026-10-01" in y) or x.startswith("meta:") for x, y in diff)
     assert len(a.splitlines()) == len(b.splitlines())

@@ -710,3 +710,17 @@ def test_status_shows_the_lag_with_the_same_convention(env):
     assert lag == {"a": "0", "b": "1", "c": "2"}
     reps = cc.run(paths, cfg=cfg, now=clock())
     assert {r.id: r.lag_bd for r in reps} == {"a": 0, "b": 1, "c": 2}                       # the run report uses it too
+
+
+def test_mx_fetch_during_the_next_session_writes_nothing(tmp_path, monkeypatch):
+    """2026-10-09 12:41Z (after the 12:30Z Canadian data) used to overwrite as-of 2026-10-08 with Friday's prices: the
+    06:00-22:00 UTC window now skips it - no request, no row, no raw, no state."""
+    def boom(*a, **k):
+        raise AssertionError("no request inside the intraday window")
+    monkeypatch.setattr("src.rate_sources.requests.get", boom)
+    paths = cc.Paths(tmp_path / "cb")
+    for t in ((12, 41), (8, 41)):
+        (rep,) = cc.run(paths, now=clock(datetime(2026, 10, 9, *t, tzinfo=timezone.utc)), only=["mx_corra"])
+        assert rep.status == "skipped" and rep.merge.new == rep.merge.updated == 0
+    assert not paths.quotes.exists() or not list(paths.quotes.iterdir())
+    assert not paths.raw.exists()
