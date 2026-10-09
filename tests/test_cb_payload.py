@@ -251,7 +251,7 @@ def test_html_is_a_shell_nothing_hardcoded(site):
     for forbidden in ("3.875", "4.290", "Federal Reserve", "+41.5"):
         assert forbidden not in html
     over = (pub / "central-banks.html").read_text()
-    assert 'data-page="overview"' in over and "/chart.umd.min.js" not in over
+    assert 'data-page="overview"' in over and "/chart.umd.min.js" in over and "/chartjs-plugin-annotation.min.js" in over      # the Compare chart (stage 3)
     pair = (pub / "central-banks" / "pair" / "eurusd.html").read_text()
     assert 'data-page="pair"' in pair and '"pair": "EURUSD"' in pair and "<title>EUR/USD | Central Banks | Dashboard</title>" in pair
 

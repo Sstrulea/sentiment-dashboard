@@ -22,10 +22,8 @@
   </main>
 
   <script>window.CB = {{ cfg | tojson }};</script>
-  {% if cfg.page != 'overview' %}
   <script src="/chart.umd.min.js"></script>
   <script src="/chartjs-plugin-annotation.min.js"></script>
-  {% endif %}
   <script src="/score-palette.js"></script>
   <script src="/cb.js"></script>
 </body>

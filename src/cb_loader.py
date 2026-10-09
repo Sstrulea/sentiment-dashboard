@@ -60,6 +60,7 @@ def load_context(data_dir: Path | str | None = None) -> Context:
         decisions=decisions,
         meetings=build_meetings(ds.load_meetings(paths.meetings), banks, calendars),
         series_calendar={sid: s.get("calendar_id") for sid, s in official["series"].items()},
+        series_names={sid: s.get("name") or sid for sid, s in official["series"].items()},
         projections=ds.load_projections(paths),
         rbnz=ds.load_rbnz(paths.manual / "rbnz.yaml"),
         documents=sorted(dst.load_documents(paths).values(), key=lambda r: (r["currency"], r["published_date"], r["doc_id"])),
