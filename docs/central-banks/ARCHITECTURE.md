@@ -85,6 +85,7 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **2a** | texte oficiale fără AI: comunicate, voturi, redline, discursuri, conferințe (URL + video), rata din comunicat; UI pentru blocurile de text |
 | **2b** | rezumate AI peste textele din 2a (sloturile „summary pending”) |
 | **4** | trigger extern + verificări finale: **scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`**, 3 reîncercări cu backoff, alertă la eșec (Vercel Cron pe Hobby rulează o dată pe zi) |
+| **E1** | preț pe ședință din curbele OIS Eurex Clearing pentru USD, EUR, GBP, JPY, CHF (metoda `OIS`, §17); fostele instrumente principale devin cross-check; spread-uri noi USD / EUR / CHF; calendarul RBNZ până în feb 2028 |
 
 ## 8. Ce există după 1B-1
 
@@ -679,3 +680,124 @@ neschimbate de FAZA 4 — Worker-ul păstrează exact cadența de dinainte, doar
 min/lună — acestea existau deja înainte de FAZA 4. Ce adaugă FAZA 4: job-urile `guard` de pe schedulurile backup (≈ 328 rulări scurte/lună, ~330 min) + evenimentele de decizie/conferință (~5-6 decizii şi ~5
 conferinţe/lună, ≤ 15 min fiecare cel mult, tipic mult mai puţin) ≈ ~35-90 min. Total ipotetic ≈ **2 000-2 100 min/lună**: la limita planului Free, încape confortabil în Pro. Dacă ar trebui să încapă strict în
 Free pe repo privat, reducerea de propus ar fi pe **schedulurile backup** (mai rare: cb la 8 h, econ la 6 h în loc de 3 h/6 h), nu pe cadența Worker-ului, care ține prospeţimea datelor.
+
+## 17. ETAPA E1 — curbele OIS Eurex Clearing: preț pe ședință pentru USD, EUR, GBP, JPY, CHF
+
+Prima din trei etape (urmează CAD + NZD, apoi pagina nouă cu graficul comun și liniile 1w / 3w). Până aici, probabilitate la
+următoarea ședință aveau doar CAD (MX COA) și AUD (ASX IB): MPT (USD) dădea ferestre de 3 luni și nu mai avea as-of nou din 18 sep,
+curba AAA (EUR) e PROXY fără capăt scurt, curba BoE (GBP) începe la 1 lună, JPX (JPY) dă ferestre, CHF nu avea sursă. O singură sursă
+nouă le acoperă pe toate cinci, cu rezoluție pe ședință. **Această secțiune înlocuiește, pentru aceste cinci valute, tabelul „instrumentul
+principal per valută” din §12.**
+
+### Sursa
+
+- **Pagina** https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices are un singur link, `settlement-prices_YYYYMMDD.csv`, sub
+  `/resource/blob/<id>/<hash>/data/`; calea se schimbă zilnic, deci linkul se citește mereu din pagină. robots.txt permite pagina și
+  `/resource/blob/`; pagina Eurex „Automatic file services” spune că fișierele de pe site se pot descărca automat.
+- **Fișierul** (~65 MB, ~660 000 de rânduri, toate curbele): `Value DateTime,Curve ID,Maturity Offset,Maturity Date,Value Type,Value,Fact DateTime`;
+  `Value DateTime` = `YYYY-MM-DD 23:59:00` = as-of; `S` = factor de discount, `Z` = rată zero; grila e zilnică (`Maturity Offset` = 1…N zile
+  calendaristice, `Maturity Date` = as-of + offset). Fișierul pentru ziua d apare a doua zi (cel din 2026-10-08 era online pe 2026-10-09 la
+  ~10:45 UTC). Doar ultima zi e online, fără arhivă: `history: snapshot`.
+- **Curbele folosite** (doar `S`): `USD.FEDFUNDS.1D` (ACT/360, primar), `USD.SOFR.1D` (ACT/360, cross-check), `EUR.ESTR.1D` (ACT/360),
+  `GBP.SONIA.1D` (ACT/365), `JPY.TONAR.1D` (ACT/365), `CHF.SARON.1D` (ACT/360). Restul (EURIBOR, inflație, BRL / CLP / INR / KRW / TWD / IDR, FX,
+  DKK, NOK, SEK, PLN, CZK, HUF) se ignoră; fișierul nu are CAD, AUD sau NZD.
+- **Licența** (câmpul `license`, afișat în UI): „Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed -
+  display stays behind the access gate, with attribution.”
+
+### Colectarea
+
+- Adaptorul `EurexOis` (`src/cb_sources/market.py`): o singură clasă în spatele a șase intrări din `config/cb_sources.yaml` (`eurex_ois_usd`,
+  `eurex_ois_usd_sofr`, `eurex_ois_eur`, `eurex_ois_gbp`, `eurex_ois_jpy`, `eurex_ois_chf`), fiecare cu `curve_id` și `day_count`; înregistrată în
+  `ADAPTERS` pe fiecare id. Colectorul îi dă adaptorului id-ul intrării (`sid`) și ultimul as-of stocat (`stored_asof`).
+- O rulare: GET pe pagină → linkul și data din numele fișierului; dacă data ≤ ultimul as-of stocat (sau cel din `state.json`) → `not_modified`, fără
+  descărcare. Altfel **o singură descărcare pe proces**, în flux, cu cache în proces pentru cele șase intrări (și eșecul se ține în cache: a doua
+  intrare nu mai încearcă 65 MB). Parsare în flux cu `csv`; se păstrează doar rândurile `S` ale curbelor configurate, la piloni.
+- **Piloni:** as-of + 7 / 14 / 21 de zile (`1W`–`3W`) și `add_months_date(as-of, n)`, n = 1…36 (`1M`–`36M`), zile calendaristice, fără ajustare —
+  39 de rânduri pe curbă, valorile exact cum sunt publicate. Rândul: `instrument` = `<ccy>_<index>_ois_df` (`usd_fedfunds_ois_df`), `contract` =
+  eticheta pilonului, `field: df`, `unit: discount_factor`, `ref_start` = as-of, `ref_end` = data maturității, `tenor_months` = zile / 30.4375 la
+  `1W`–`3W` și n la luni.
+- Fișierul **nu** se păstrează în `data/cb/raw/` (65 MB; pilonii stocați sunt rândurile lui relevante — notat în config). **Seed:** fișierul din
+  2026-10-08 (descărcat de mână de pe pagină) a intrat ca primul as-of Eurex, într-un commit separat, cu `scripts/cb_seed_eurex.py` (același parser,
+  `fetched_at` fix, idempotent). Fixture-ul parserului se taie cu `scripts/cb_cut_eurex_fixture.py`.
+- **`--status`**: secțiunea „Eurex settlement curves”: data fișierului de pe pagină (un GET de ~100 KB), as-of-ul stocat și lag-ul (calendar EU),
+  curbele găsite (din 6) cu numărul de piloni; avertizare când pagina nu are link sau lipsește o curbă la as-of-ul stocat.
+
+### Metoda `OIS` (pură)
+
+`methods.ois_step_fit(dfs, t0, boundaries, basis, lam=0.03, tail_days=56)`, apelată de `engine._ois` (în `_METHODS["OIS"]`, ordinea din
+`trajectory()`: `EXACT`, `OIS`, `CURVE`, `PROXY_CURVE`, `WINDOW`). Ipoteza: **rata overnight e constantă între datele efective**.
+
+- **Granițe:** `t0` = as-of (DF = 1); datele efective ale deciziilor anunțate dar neintrate în vigoare (graniță în plus, nu se raportează ca ședință);
+  datele efective ale ședințelor viitoare `e_1 … e_K` aflate înaintea ultimului pilon; la final `e_K + 56 de zile`.
+- **Necunoscute:** `g_k = ln(1 + r_k / basis)` pe zi, una pe segment. **Ecuații:** câte una pe pilon `T ≤ capătul ultimului segment`:
+  `−ln DF(T) = Σ_k g_k · zile(segment_k ∩ [t0, T))`. **Regularizare:** rânduri `lam · (g_k − g_{k−1})`, `lam = 0.03`, doar ca sistemul să fie bine pus
+  (alege împărțirea cea mai netedă când doi piloni nu pot separa două segmente; nu mută un sistem identificat — test). `numpy.linalg.lstsq` pe
+  sistemul extins; `r_k = (e^{g_k} − 1) · basis · 100` (%).
+- **Ieșiri pe ședință:** `rate` = `level` = `r_k − spread` (`level_kind: policy`); `step_bp` = `(r_k − r_{k−1}) · 100`, prima ședință față de `r_0`
+  (nivelul curbei înaintea ei, nu baza); `cum_bp` față de bază; probabilitatea cu regula existentă (pași de 25 bp). Punctele poartă `method: "CURVE"`,
+  flag CURVE și `extra["how"] = "ois_step"` (+ `r_raw`, `r_prev_raw`, `spread`, intervalul): toate verificările care testează metoda
+  (`engine.next_meeting`, `payload.horizon_json`, `analysis.PER_MEETING`, `static/cb.js`) merg neschimbate. `_raw_rate` nu se aplică.
+- **Consistență și acoperire:** reziduul fiecărui pilon, în bp de rată medie pe `[t0, T)`, intră în `tr.consistency` (`OIS <sursă>`); notă dacă
+  depășește 2 bp. `r_0` comparat cu overnight-ul observat (baza + spread) intră în note. O ședință cu data efectivă după ultimul pilon e n/a, cu
+  motivul „beyond the curve pillars”. `tr.extra`: `ois_path` (traiectoria în trepte, spațiu de politică), `ois_end`, `ois_r0`, `ois_source`,
+  `ois_max_residual_bp` — pentru cross-check-uri.
+- Teste cu mutații (ca la EXACT): cale sintetică în trepte → DF-uri → fit-ul reface ratele (± 0.01 bp) pe pilonii Eurex; regularizarea nu schimbă un
+  sistem identificat și dă minimizatorul analitic pe unul neidentificat; regula de acoperire; granița deciziei neintrate în vigoare; `r_0` ≠ bază +
+  spread; baza de zile din config. 21 de mutații (metodă, motor, adaptor, colector, cross-check-ul SOFR) — toate omorâte.
+
+### Roluri, spread-uri, cross-check-uri
+
+- **Primary:** `eurex_ois_usd`, `eurex_ois_eur`, `eurex_ois_gbp`, `eurex_ois_jpy`, `eurex_ois_chf`. **Devin cross-check:** `atlantafed_mpt`,
+  `ecb_aaa_fwd`, `boe_ois`, `jpx_tona`; rămân cross-check `ust_bills` și `eurex_ois_usd_sofr`. CAD, AUD, NZD: neschimbate.
+- **Spread-uri** (`config/central_banks.yaml`, `spread:`; aceeași regulă, mediana pe 20 de zile lucrătoare): USD `fred:EFFR` față de midpoint
+  (`fred:DFEDTARL`, `fred:DFEDTARU`) — primarul e curba fed funds; EUR `ecb:ESTR` față de `ecb:DFR`; CHF `snb:SARON` față de `snb:LZ` (cubul SNB are
+  câteva zile de lag, mediana îl acoperă); GBP și JPY neschimbate. Câmp nou `crosscheck_spread` (USD: `fred:SOFR` față de midpoint) pentru
+  cross-check-urile pe SOFR (curba Eurex SOFR, MPT) și pentru fallback-ul MPT al GAP-ului 2028. Pe 2026-10-08 ambele spread-uri USD sunt +0.5 bp.
+- **`analysis.crosschecks`:** USD fed funds vs SOFR (ambele Eurex, pe ședință, fiecare cu spread-ul ei) și vs MPT când MPT nu e stale (altfel n/a cu
+  motivul); USD MPT vs Treasury rămâne (cu spread-ul SOFR); GBP Eurex SONIA vs BoE OIS la end-2026 / end-2027; JPY Eurex TONA vs ferestrele JPX (media
+  traiectoriei pe fereastră); EUR Eurex €STR vs AAA la end-2026 / end-2027, informativ (PROXY, niveluri brute; diferența conține baza
+  guvern–OIS). CAD și AUD neschimbate.
+- **Fixture-ul vechi** (`tests/fixtures/cb_engine`, 2026-09-18) e dinainte de Eurex: testele care fixează cifrele 1B-2 / 3a pe el rulează cu rolurile și
+  spread-urile acelei date (`tests/cb_legacy.py`). Acceptanța Eurex rulează pe `tests/fixtures/cb_engine_1008` (`scripts/cb_freeze_engine_fixture.py
+  --asof 2026-10-08`).
+
+### Acceptanța (pre-înregistrată, fișierul din 2026-10-08, ședințele din `meetings.yaml`)
+
+Rata overnight după fiecare ședință (`r_k`, înainte de spread), toleranță ± 1.0 bp — măsurat: abaterea maximă față de valorile de mai jos e 0.005 bp (rotunjirea la 4 zecimale); reziduul maxim cerut: < 0.6 bp la USD, EUR, GBP, JPY și < 1.6 bp la CHF:
+
+| curbă | pre (`r_0`) | după ședințe | reziduu max |
+|---|---|---|---|
+| USD FEDFUNDS | 3.8783 | 28 oct 3.9322 · 9 dec 4.1407 · 27 ian 4.2232 · 17 mar 4.4224 · 28 apr 4.5135 · 9 iun 4.6013 | 0.54 bp |
+| EUR €STR | 2.4395 | 29 oct 2.4737 · 17 dec 2.6724 · 4 feb 2.7603 · 18 mar 2.9338 · 29 apr 2.9856 · 10 iun 3.0966 | 0.14 bp |
+| GBP SONIA | 3.7355 | 5 nov 3.9522 · 17 dec 4.0934 · 4 feb 4.3020 · 18 mar 4.4432 · 29 apr 4.5799 · 17 iun 4.6725 | 0.19 bp |
+| JPY TONA | 1.2273 | 30 oct 1.2481 · 18 dec 1.4777 · 22 ian 1.5145 · 18 mar 1.6938 · 28 apr 1.7409 · 11 iun 1.8734 | 0.09 bp |
+| CHF SARON | −0.0528 | 10 dec 0.0222 · 18 mar 0.1485 · 24 iun 0.3528 · 23 sep 0.4915 · 16 dec 0.5604 | 1.54 bp |
+| USD SOFR (cross-check) | 3.8880 | 28 oct 3.9507 · 9 dec 4.1717 | 0.48 bp |
+
+Referință externă (nu e test): RateProbability, 2026-10-09 07:00, Fed cumulat față de EFFR: +7.5 / +28.3 / +36.2 / +51.2 / +59.8; aici, față de `r_0`:
++5.4 / +26.2 / +34.5 / +54.4 / +63.5.
+
+### Lipsa istoricului
+
+Eurex e snapshot: istoricul începe la 2026-10-08. Pentru cele cinci valute, repricing-ul 1s / 1l și (în etapa a treia) liniile „acum o săptămână” /
+„acum trei săptămâni” apar după **5, 15 și 21 de zile lucrătoare** de colectare; până atunci n/a cu motivul („history starts 2026-10-08”).
+
+### Corectura calendarului RBNZ
+
+Repo-ul avea 2027-02-17, din anunțul RBNZ din octombrie 2025. RBNZ a trecut la 8 ședințe pe an din 2027. Sursa: „OCR decision dates and Financial
+Stability Report dates to February 2028” (https://www.rbnz.govt.nz/news-and-events/how-we-release-information/ocr-decision-dates-and-financial-stability-report-dates-to-feb-2028),
+publicată pe 19 feb 2026, actualizată pe 18 sep 2026, transcrisă de mână pe 2026-10-09 (site blocat pentru scripturi): 2026 — 28 oct (Review), 9 dec
+(Statement); 2027 — 10 feb (R), 17 mar (S), 5 mai (R), 16 iun (S), 4 aug (R), 15 sep (S), 27 oct (R), 8 dec (S); 2028 — 9 feb (R).
+`data/cb/manual/rbnz.yaml`: `published_calendar` cu sursa nouă, `calendar_2027` → `entered`, `published_until: 2028-02-09`, `has_projections: true`
+doar la Statement. `meetings.yaml` (regenerat cu regulile din `src/cb_sources/meetings.py`, din aceleași tăieturi de pagini ca testul octet-cu-octet)
+are rândurile RBNZ până la capătul intervalului (2027-12-31): 15 ședințe. `calendar_url` NZD și lunile de proiecții (`[2, 3, 5, 6, 9, 12]`) actualizate.
+Rularea live a generatorului pe 2026-10-09 arată că parserul paginii BoE citește acum datele din 2027 cu anul 2026 (o zi mai devreme) — problemă
+separată, nerezolvată aici; verificarea săptămânală o semnalează.
+
+### Atlanta Fed MPT
+
+Ultimul as-of stocat: 2026-09-18. Cauza: pagina s-a mutat la `/research-and-data/data/market-probability-tracker`, iar fișierul la
+`…/Documents/research-and-data/data/market-probability-tracker/mpt_histdata.xlsx`; vechiul URL (`…/cenfis/…`) răspunde 200 cu o pagină HTML, deci
+parsarea pica din 21 sep. URL-ul e actualizat (fișierul nou: as-of până la 2026-10-07, Last-Modified 8 oct), iar un răspuns care nu e xlsx dă acum
+PARSE-FAIL cu motivul „not an xlsx (HTML page?)”. MPT rămâne doar cross-check. Rularea normală (10 zile înapoi) reia de la ~29 sep; golul 21–28 sep se
+umple doar cu un backfill (`--source atlantafed_mpt --backfill-from 2026-09-18`) rulat în CI.

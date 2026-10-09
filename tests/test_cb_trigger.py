@@ -346,7 +346,8 @@ def test_only_the_last_statements_of_each_bank_and_only_statements():
     assert len(rs) == 4 and [r["meeting"] for r in rs] == ["2026-01-09", "2026-01-08", "2026-01-07", "2026-01-06"]
 
 
-def test_the_status_command_shows_the_latency_section(capsys):
+def test_the_status_command_shows_the_latency_section(capsys, monkeypatch):
+    monkeypatch.setattr(cc, "eurex_page_file", lambda cfg: (D(2026, 10, 8), ""))         # no network in the tests
     assert cc.main(["--status", "--data-dir", str(ROOT / "data" / "cb")]) == 0
     out = capsys.readouterr().out
     assert "decision -> site latency" in out and "official (UTC)" in out

@@ -14,7 +14,7 @@ import pyarrow.parquet as pq
 from requests.structures import CaseInsensitiveDict
 
 from src import cb_collect as cc
-from src.cb_sources.base import FetchResult, MarketSource
+from src.cb_sources.base import FetchResult, MarketSource, load_sources
 
 FIX = Path(__file__).parent / "fixtures" / "cb"
 NOW = datetime(2026, 9, 19, 16, 35, tzinfo=timezone.utc)          # Saturday
@@ -357,6 +357,8 @@ def _router(monkeypatch):
             ("valet/observations", "boc_tbills_cut.json", {}),
             ("data-api.ecb.europa.eu", "ecb_if_cut.csv", {}),
             ("f1-data.csv", "rba_f1_cut.csv", {"Last-Modified": "Thu, 17 Sep 2026 23:00:50 GMT"}),
+            ("eurex-otc-clear/settlement-prices", "eurex_settlement_page_cut.htm", {}),
+            ("settlement-prices_20261008.csv", "eurex_settlement_20261008_cut.csv", {"ETag": '"d5a768aed8873e65d125533f04ef3f2c"'}),
         ]
         for needle, name, hdrs in table:
             if needle in url:
@@ -379,12 +381,21 @@ class _Resp:
     def json(self):
         return json.loads(self.text)
 
+    def iter_lines(self, chunk_size=512):
+        yield from self.content.splitlines()
+
+    def close(self):
+        pass
+
+
+TEN = ["atlantafed_mpt", "boe_ois", "jpx_tona", "mx_corra", "asx_ib", "asx_bb", "ust_bills", "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"]
+
 
 def test_end_to_end_all_ten_adapters_over_fixtures(tmp_path, monkeypatch):
     monkeypatch.setattr("src.rate_sources.time.sleep", lambda s: None)
     _router(monkeypatch)
     paths = cc.Paths(tmp_path / "cb")
-    reps = cc.run(paths, now=clock(), lookback_days=45)                   # real config, real adapters
+    reps = cc.run(paths, now=clock(), lookback_days=45, only=TEN)         # real config, real adapters (Eurex: its own test, its as-of is later)
     by = {r.id: r for r in reps}
     assert set(by) == {"atlantafed_mpt", "boe_ois", "jpx_tona", "mx_corra", "asx_ib", "asx_bb", "ust_bills",
                        "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"}
@@ -403,12 +414,81 @@ def test_end_to_end_all_ten_adapters_over_fixtures(tmp_path, monkeypatch):
 
     # second run: idempotent, and the conditional GETs come back 304
     before = (parts(paths), sha(paths.state))
-    reps2 = cc.run(paths, now=clock(NOW + timedelta(hours=2)), lookback_days=45)
+    reps2 = cc.run(paths, now=clock(NOW + timedelta(hours=2)), lookback_days=45, only=TEN)
     by2 = {r.id: r for r in reps2}
     assert all(r.merge.new == 0 and r.merge.updated == 0 for r in reps2)
     assert {i for i, r in by2.items() if r.status == "not_modified"} == {"atlantafed_mpt", "boe_ois", "jpx_tona", "rba_bank_bills"}
     assert (parts(paths), sha(paths.state)) == before
     assert cc.exit_code(reps2) == 0
+
+
+def test_eurex_end_to_end_one_download_for_six_entries_then_not_modified(tmp_path, monkeypatch):
+    """The six eurex_ois_* entries share one file: one page read each, ONE csv download for all of them; the next run sees the same
+    file date on the page and downloads nothing (status not_modified, no diff)."""
+    from src.cb_sources.market import EUREX_IDS, EurexOis
+    EurexOis.clear_cache()
+    monkeypatch.setattr("src.rate_sources.time.sleep", lambda s: None)
+    _router(monkeypatch)
+    calls = []
+    real = __import__("requests").get
+    monkeypatch.setattr("src.rate_sources.requests.get", lambda url, **kw: (calls.append(url), real(url, **kw))[1])
+    paths = cc.Paths(tmp_path / "cb")
+    now = datetime(2026, 10, 9, 11, 0, tzinfo=timezone.utc)
+    reps = cc.run(paths, now=clock(now), only=list(EUREX_IDS))
+    assert {r.id: (r.status, r.merge.new, r.dropped) for r in reps} == {i: ("ok", 39, 0) for i in EUREX_IDS}
+    assert sum(".csv" in u for u in calls) == 1 and sum("eurex-otc-clear" in u for u in calls) == 6
+    assert not paths.raw.exists()                                                       # the 65 MB file is not kept
+    assert cc.load_state(paths)["eurex_ois_usd"] == {"asof": "2026-10-08"}
+    before = (parts(paths), sha(paths.state))
+    EurexOis.clear_cache()
+    calls.clear()
+    reps2 = cc.run(paths, now=clock(now + timedelta(hours=2)), only=list(EUREX_IDS))
+    assert {r.status for r in reps2} == {"not_modified"} and not any(".csv" in u for u in calls)
+    assert (parts(paths), sha(paths.state)) == before
+    EurexOis.clear_cache()
+
+
+def test_eurex_seed_without_state_is_not_downloaded_again(tmp_path, monkeypatch):
+    """The seeded as-of is in the store but not in state.json (single writer: the first CI run writes the validators): the
+    stored as-of alone stops the download."""
+    from src.cb_sources.market import EUREX_IDS, EurexOis
+    EurexOis.clear_cache()
+    _router(monkeypatch)
+    paths = cc.Paths(tmp_path / "cb")
+    now = datetime(2026, 10, 9, 11, 0, tzinfo=timezone.utc)
+    cc.run(paths, now=clock(now), only=list(EUREX_IDS))
+    paths.state.unlink()
+    EurexOis.clear_cache()
+    calls = []
+    real = __import__("requests").get
+    monkeypatch.setattr("src.rate_sources.requests.get", lambda url, **kw: (calls.append(url), real(url, **kw))[1])
+    reps = cc.run(paths, now=clock(now), only=list(EUREX_IDS))
+    assert {r.status for r in reps} == {"not_modified"} and not any(".csv" in u for u in calls)
+    EurexOis.clear_cache()
+
+
+def test_status_eurex_section_page_date_asof_lag_curves_and_warnings(tmp_path, monkeypatch):
+    from src.cb_sources.market import EUREX_IDS, EurexOis
+    EurexOis.clear_cache()
+    _router(monkeypatch)
+    paths = cc.Paths(tmp_path / "cb")
+    cc.run(paths, now=clock(datetime(2026, 10, 9, 11, 0, tzinfo=timezone.utc)), only=list(EUREX_IDS))
+    EurexOis.clear_cache()
+    assert cc.eurex_page_file(load_sources()) == (date(2026, 10, 8), "")                  # read from the (routed) page
+    text, md = cc.status(paths, date(2026, 10, 12), eurex_page=lambda cfg: (date(2026, 10, 9), ""))
+    sec = text.split("Eurex settlement curves (one shared file)")[1]
+    assert "page file: 2026-10-09" in sec and "stored as-of: 2026-10-08, lag 2 bd (EU) - the page has a newer file (2026-10-09)" in sec
+    assert "curves: 6/6" in sec and "eurex_ois_chf CHF.SARON.1D 39 pillars" in sec and "WARN" not in sec
+    assert "#### Eurex settlement curves" in md
+    store = cc.load_store(paths)                                                           # a curve missing from the stored as-of
+    store = {k: r for k, r in store.items() if r["source"] != "eurex_ois_jpy"}
+    per: dict = {}
+    for r in store.values():
+        per.setdefault(r["source"], []).append(r)
+    lines, warn = cc.eurex_status(per, load_sources(), date(2026, 10, 9), {}, (None, "no settlement-prices_YYYYMMDD.csv link on the page"))
+    assert "curves: 5/6" in lines[-1] and lines[0].startswith("page file: n/a")
+    assert warn == ["WARN Eurex: no settlement-prices_YYYYMMDD.csv link on the page",
+                    "WARN Eurex: eurex_ois_jpy (JPY.TONAR.1D) has no rows at the stored as-of 2026-10-08"]
 
 
 # ---------------------------------------------------------------------------

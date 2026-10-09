@@ -12,13 +12,15 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Callable, Iterable, Optional
 
+import numpy as np
+
 from ..cb_calendar import Calendar, weekends_only
 from .decisions import SeriesView
 from .methods import (Curve, TenorCurve, Window, chain_path, exact_chain, interior_meetings, interval_ends, months_between,
-                      path_average, pick_window, pre_days, proxy_basis, step_probabilities)
+                      ois_step_fit, path_average, pick_window, pre_days, proxy_basis, step_probabilities)
 from .spread import Spread, compute_spread
 
-FLAG_OF = {"EXACT": "EXACT", "CURVE": "CURVE", "WINDOW": "UPPER_BOUND", "PROXY_CURVE": "PROXY", "PROXY_TENOR": "PROXY"}
+FLAG_OF = {"EXACT": "EXACT", "OIS": "CURVE", "CURVE": "CURVE", "WINDOW": "UPPER_BOUND", "PROXY_CURVE": "PROXY", "PROXY_TENOR": "PROXY"}
 STRENGTH = {"EXACT": 0, "CURVE": 1, "UPPER_BOUND": 2, "PROXY": 3, "DECIDED": -1}      # higher = weaker
 LEVEL_KINDS = ("policy", "bkbm", "sovereign_proxy")
 YEAR_ENDS = (2026, 2027)
@@ -218,8 +220,10 @@ def _finish(ctx: Context, pt: Point, asof: date) -> Point:
 # Spread of a currency at an as-of
 # ---------------------------------------------------------------------------
 
-def spread_for(ctx: Context, cur: str, asof: date) -> Spread:
-    cfg = ctx.banks[cur].get("spread")
+def spread_for(ctx: Context, cur: str, asof: date, key: str = "spread") -> Spread:
+    """`key` = spread (the primary instrument's benchmark) | crosscheck_spread (USD: SOFR, for the SOFR-based cross-checks;
+    a bank without one uses its `spread`)."""
+    cfg = ctx.banks[cur].get(key) or (ctx.banks[cur].get("spread") if key != "spread" else None)
     if not cfg:
         return Spread(None, reason="no spread pair for this bank")
     cal = ctx.cal(ctx.series_calendar.get(cfg["benchmark"]))
@@ -248,7 +252,7 @@ def trajectory(ctx: Context, cur: str, asof: date) -> Trajectory:
         for inst, ic in cfg["instruments"].items():
             by_method.setdefault(ic["method"], []).append((sid, inst))
     pts: dict = {}
-    for method in ("EXACT", "CURVE", "PROXY_CURVE", "WINDOW"):                 # exact first: the windows only fill the rest
+    for method in ("EXACT", "OIS", "CURVE", "PROXY_CURVE", "WINDOW"):          # exact first: the windows only fill the rest
         for sid, inst in by_method.get(method, []):
             snap = ctx.market.latest(sid, asof)
             if snap is None:
@@ -324,6 +328,66 @@ def _exact(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
     tr.extra.update(exact_path=chain_path(chain, r_start, S0, known), exact_start=S0,
                     exact_end=date(last[0] + (last[1] == 12), last[1] % 12 + 1, 1))
     tr.consistency += [("EXACT " + sid, f"{c.month[0]}-{c.month[1]:02d}", c.dev_bp, f"contract {c.actual:.3f} vs path {c.expected:.3f}") for c in chain.consistency]
+    return out
+
+
+# ---- OIS (Eurex discount factors) ------------------------------------------
+
+OIS_RESIDUAL_NOTE_BP = 2.0
+BEYOND_PILLARS = "beyond the curve pillars: the effective date is after the last discount-factor pillar"
+
+
+def ois_fit(ctx, tr, unknown, sid, snap, rows):
+    """The step fit of one OIS source at its snapshot: (fit, in-range meetings) or (None, reason). Boundaries = effective dates of
+    decided-but-pending changes (not reported) + those of the meetings before the last pillar."""
+    dfs = [(r["ref_end"], r["value"]) for r in rows if r["ref_end"] and r["value"] and r["value"] > 0]
+    if not dfs:
+        return None, "no discount factors"
+    last = max(T for T, _ in dfs)
+    inside = [u for u in unknown if u.eff < last]
+    pend = [e for e, _ in pending_steps(ctx.decisions.get(tr.currency, []), tr.asof, snap.asof)]
+    try:
+        fit = ois_step_fit(dfs, snap.asof, pend + [u.eff for u in inside], float(ctx.sources[sid]["day_count"]))
+    except (ValueError, np.linalg.LinAlgError) as e:
+        return None, f"OIS fit failed: {e}"
+    return (fit, inside), ""
+
+
+def _ois(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
+    todo = [u for u in unknown if u.decision not in covered]
+    if not todo:
+        return {}
+    sp = tr.spread.value if tr.spread and tr.spread.value is not None else None
+    if sp is None:
+        return {u.decision: _pt(sid, snap, u, method="CURVE", reason=f"spread unavailable ({tr.spread.reason if tr.spread else 'none'})") for u in todo}
+    got, why = ois_fit(ctx, tr, unknown, sid, snap, rows)
+    if got is None:
+        tr.notes.append(f"{sid}: {why}")
+        return {u.decision: _pt(sid, snap, u, method="CURVE", reason=why) for u in todo}
+    fit, inside = got
+    label = {r["ref_end"]: r["contract"] for r in rows}
+    tr.consistency += [("OIS " + sid, label.get(T, str(T)), bp, f"pillar {T}: fitted vs published average rate") for T, bp in fit.residuals]
+    if fit.max_residual_bp > OIS_RESIDUAL_NOTE_BP:
+        worst = max(fit.residuals, key=lambda x: abs(x[1]))
+        tr.notes.append(f"OIS {sid}: pillar residual up to {worst[1]:+.2f} bp ({label.get(worst[0], worst[0])}) - above {OIS_RESIDUAL_NOTE_BP:g} bp")
+    first = inside[0].eff if inside else fit.bounds[-1]
+    r0 = fit.rates[fit.bounds.index(first) - 1] if first in fit.bounds else fit.rates[-1]
+    observed = tr.base.rate + sp
+    tr.notes.append(f"OIS {sid}: r_0 {r0:.4f} (overnight before the first meeting) vs observed base + spread {observed:.4f} ({(r0 - observed) * 100:+.1f} bp)")
+    tr.extra.update(ois_path=[(d, r - sp) for d, r in fit.path()], ois_end=fit.bounds[-1], ois_r0=r0, ois_source=sid,
+                    ois_max_residual_bp=fit.max_residual_bp)
+    out, prev = {}, r0
+    for u in inside:
+        r = fit.rate_from(u.eff)
+        e1 = fit.bounds[fit.bounds.index(u.eff) + 1]                          # the next effective date, or the 56-day tail
+        if u.decision not in covered:
+            out[u.decision] = _pt(sid, snap, u, method="CURVE", rate=r - sp, level=r - sp, level_kind="policy", cum_bp=_cum(r - sp, tr.base.rate),
+                                  step_bp=(r - prev) * 100, window=(u.eff, e1),
+                                  extra={"how": "ois_step", "interval": (u.eff, e1), "r_raw": r, "r_prev_raw": prev, "spread": sp})
+        prev = r
+    for u in todo:
+        if u.decision not in out and u not in inside:
+            out[u.decision] = _pt(sid, snap, u, method="CURVE", reason=BEYOND_PILLARS, extra={"how": "ois_step"})
     return out
 
 
@@ -443,7 +507,7 @@ def _window(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
     return out
 
 
-_METHODS = {"EXACT": _exact, "CURVE": _curve, "PROXY_CURVE": _proxy_curve, "WINDOW": _window}
+_METHODS = {"EXACT": _exact, "OIS": _ois, "CURVE": _curve, "PROXY_CURVE": _proxy_curve, "WINDOW": _window}
 
 
 # ---------------------------------------------------------------------------

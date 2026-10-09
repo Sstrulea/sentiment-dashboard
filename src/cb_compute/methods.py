@@ -3,6 +3,9 @@
   EXACT   1M futures on the month average: r_post = (N * X - d_pre * r_prev) / (N - d_pre) in calendar days, the rate
           changes only on the effective date; a meeting with fewer than 5 days left in its month takes the next month's
           average when that month has no meeting; months without a meeting are consistency checks.
+  OIS     OIS discount factors (Eurex): the overnight rate is constant between effective dates; one unknown per segment,
+          g_k = ln(1 + r_k / basis) per day, one equation per pillar (-ln DF(T) = sum_k g_k * days of segment k in [t0, T)),
+          plus lam * (g_k - g_k-1) rows so that the system is well posed; least squares. Flagged CURVE (same family).
   CURVE   OIS instantaneous-forward curve on a monthly grid, linear between grid points: the rate after meeting m is the
           average of the curve on [eff_m, eff_m+1).
   WINDOW  3M contracts (MPT, JPX TONA, MX CRA, ASX BB): one value per reference window; the window of a meeting is the one
@@ -19,6 +22,8 @@ import math
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Optional
+
+import numpy as np
 
 MONTH_DAYS = 365.25 / 12
 BACK_DAYS = 7                     # pick_window: a window may start up to 7 calendar days before the effective date
@@ -110,6 +115,57 @@ def curve_interval_averages(curve: Curve, asof: date, starts: list, ends: list) 
 def interval_ends(effs: list, tail_days: int = TAIL_DAYS) -> list:
     """End of each meeting's interval: the next effective date; the last one runs `tail_days`."""
     return [effs[i + 1] if i + 1 < len(effs) else effs[i] + timedelta(days=tail_days) for i in range(len(effs))]
+
+
+# ---------------------------------------------------------------------------
+# OIS: piecewise-constant overnight rate fitted to discount factors
+# ---------------------------------------------------------------------------
+
+OIS_LAMBDA = 0.03                 # weight of the g_k - g_k-1 rows: only makes the system well posed
+OIS_TAIL_DAYS = TAIL_DAYS         # the last segment runs 56 days after the last boundary
+
+
+@dataclass
+class OisFit:
+    bounds: list                  # [t0, b_1, ..., b_K, b_K + tail]: segment k = [bounds[k], bounds[k + 1])
+    rates: list                   # percent, one per segment (overnight benchmark space, before any spread)
+    residuals: list               # [(pillar date, residual in bp of the average rate over [t0, T))]
+    used: int = 0                 # pillars inside the fitted span
+
+    def rate_from(self, d: date) -> Optional[float]:
+        """Rate of the segment that starts on `d`."""
+        return self.rates[self.bounds.index(d)] if d in self.bounds[:-1] else None
+
+    def path(self) -> list:
+        """[(from_date, rate)] step function, for `path_average`."""
+        return list(zip(self.bounds[:-1], self.rates))
+
+    @property
+    def max_residual_bp(self) -> float:
+        return max((abs(r) for _, r in self.residuals), default=0.0)
+
+
+def ois_step_fit(dfs: list, t0: date, boundaries: list, basis: float, lam: float = OIS_LAMBDA,
+                 tail_days: int = OIS_TAIL_DAYS) -> OisFit:
+    """dfs = [(maturity date, discount factor)] from t0 (DF(t0) = 1); boundaries = dates after t0 where the overnight rate may
+    change (effective dates). Segments [t0, b_1), [b_1, b_2), ..., [b_K, b_K + tail_days). Each pillar T <= the end of the last
+    segment gives -ln DF(T) = sum_k g_k * days(segment_k & [t0, T)); g_k = ln(1 + r_k / basis) per calendar day;
+    rows lam * (g_k - g_k-1) are appended; least squares; r_k = (e^g_k - 1) * basis * 100 (percent)."""
+    bs = sorted({b for b in boundaries if b > t0})
+    bounds = [t0] + bs + [(bs[-1] if bs else t0) + timedelta(days=tail_days)]
+    K = len(bounds) - 1
+    pts = sorted((T, v) for T, v in dfs if t0 < T <= bounds[-1])
+    if not pts:
+        raise ValueError("no pillar inside the fitted span")
+    A = np.array([[max(0, (min(T, bounds[k + 1]) - bounds[k]).days) for k in range(K)] for T, _ in pts], dtype=float)
+    b = np.array([-math.log(v) for _, v in pts])
+    R = np.zeros((max(K - 1, 0), K))
+    for k in range(1, K):
+        R[k - 1, k - 1], R[k - 1, k] = -lam, lam
+    g = np.linalg.lstsq(np.vstack([A, R]), np.concatenate([b, np.zeros(K - 1)]), rcond=None)[0]
+    res = A @ g - b
+    residuals = [(T, float(res[i] / A[i].sum() * basis * 1e4)) for i, (T, _) in enumerate(pts)]
+    return OisFit(bounds, [float((math.exp(x) - 1) * basis * 100) for x in g], residuals, len(pts))
 
 
 # ---------------------------------------------------------------------------

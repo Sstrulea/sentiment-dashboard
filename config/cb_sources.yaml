@@ -22,10 +22,12 @@
 #   license        attribution/terms note shown in the UI.
 #   role           primary | crosscheck: the implied trajectory of a currency comes from its primary
 #                  instrument(s); crosscheck instruments are only compared with it (src/cb_compute/).
-#   method         per instrument: EXACT (1M futures, month-average chain) | CURVE (OIS forward curve, interval average) |
+#   method         per instrument: EXACT (1M futures, month-average chain) | OIS (OIS discount factors, overnight rate fitted
+#                  constant between effective dates; points flagged CURVE) | CURVE (OIS forward curve, interval average) |
 #                  WINDOW (3M contracts, one value per window, UPPER_BOUND) | PROXY_CURVE (government forward curve, basis
 #                  removed, per meeting) | PROXY_TENOR (bills by tenor, basis removed). n/a: CHF, NZD vs OCR.
 #   stale_after_bd business days after which a quote is stale (meta default; a source may override).
+#   curve_id, day_count   (EurexOis) the curve of the shared Eurex settlement file and its money-market basis (360 | 365).
 #   calendar_id    holiday calendar of the source's publisher/exchange (config/cb_calendars.yaml): --status
 #                  excludes its holidays from the missing days and counts its business days for the lag.
 
@@ -39,11 +41,13 @@ sources:
   atlantafed_mpt:
     currency: USD
     calendar_id: US
-    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
+    role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: AtlantaMpt
     instruments:
       sofr_3m_ref_quarter_mean: {method: WINDOW, unit: bp, fields: [mean], benchmark: SOFR}
-    url: https://www.atlantafed.org/-/media/Project/Atlanta/FRBA/Documents/cenfis/market-probability-tracker/mpt_histdata.xlsx
+    url: https://www.atlantafed.org/-/media/Project/Atlanta/FRBA/Documents/research-and-data/data/market-probability-tracker/mpt_histdata.xlsx
+    # moved (seen 2026-10-09): the page is now /research-and-data/data/market-probability-tracker; the old .../cenfis/... path answers
+    # 200 with an HTML page, so the collector failed to parse it from 2026-09-21 (last as-of stored: 2026-09-18).
     history: official
     naming: "explicit reference_start (3rd Wednesday of the start month of each 3M SOFR quarter); contract label = start month YYYYMM; ref_end = next window start"
     exchange_tz: America/Chicago
@@ -57,7 +61,7 @@ sources:
   boe_ois:
     currency: GBP
     calendar_id: UK
-    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
+    role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: BoeOis
     instruments:
       sonia_instantaneous_forward: {method: CURVE, unit: percent, fields: [fwd], benchmark: SONIA}
@@ -77,7 +81,7 @@ sources:
   jpx_tona:
     currency: JPY
     calendar_id: JP
-    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
+    role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: JpxTona
     instruments:
       tona_3m_futures: {method: WINDOW, unit: index_points, fields: [settle], benchmark: TONA}
@@ -189,7 +193,7 @@ sources:
   ecb_aaa_fwd:
     currency: EUR
     calendar_id: EU
-    role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
+    role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: EcbAaaForward
     instruments:
       aaa_govt_instantaneous_forward: {method: PROXY_CURVE, unit: percent, fields: [fwd], benchmark: "EUR STR (government curve, NOT OIS)"}
@@ -221,3 +225,131 @@ sources:
     horizon_months: 36
     proxy: true
     license: "RBA statistical table F1; bank-bill series are sourced from ASX - confirm terms. Requires a non-browser User-Agent from some IPs."
+
+  # Eurex Clearing OTC settlement curves: one shared daily file, one entry per curve (adapter EurexOis)
+
+  eurex_ois_usd:
+    currency: USD
+    role: primary
+    curve_id: USD.FEDFUNDS.1D
+    day_count: 360                   # ACT/360
+    instruments:
+      usd_fedfunds_ois_df: {method: OIS, unit: discount_factor, fields: [df], benchmark: "EFFR"}
+    calendar_id: EU
+    adapter: EurexOis
+    url: https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices
+    history: snapshot
+    naming: "daily grid: Maturity Offset = calendar days from the as-of (Value DateTime); stored pillars = as-of + 7/14/21 days (1W-3W) and add_months_date(as-of, n), n = 1..36 (1M-36M), no business-day adjustment; contract = pillar label, ref_start = as-of, ref_end = maturity date"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "22:00"              # Value DateTime is 23:59 Frankfurt; the file for d appears on d+1, so a current-day as-of never occurs
+    availability: "settlement-prices_YYYYMMDD.csv (~65 MB, ~660 000 rows, every curve) under /resource/blob/<id>/<hash>/data/; the link changes daily and is read from the page; only the latest day is online, no archive; the file for d appears on the next day (2026-10-08 was online on 2026-10-09 ~10:45 UTC)"
+    download: {conditional: false, shared_file: true, stream: true, max_downloads_per_run: 1, size_mb: 65,
+               raw_kept: false, note: "one streamed download per run serves every eurex_ois_* entry (in-process cache); no download when the page's file date <= the stored as-of; the file is NOT kept in data/cb/raw/ (65 MB) - the stored pillars are its relevant rows"}
+    horizon_months: 36
+    proxy: false
+    license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
+
+  eurex_ois_usd_sofr:
+    currency: USD
+    role: crosscheck
+    curve_id: USD.SOFR.1D
+    day_count: 360                   # ACT/360
+    instruments:
+      usd_sofr_ois_df: {method: OIS, unit: discount_factor, fields: [df], benchmark: "SOFR"}
+    calendar_id: EU
+    adapter: EurexOis
+    url: https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices
+    history: snapshot
+    naming: "daily grid: Maturity Offset = calendar days from the as-of (Value DateTime); stored pillars = as-of + 7/14/21 days (1W-3W) and add_months_date(as-of, n), n = 1..36 (1M-36M), no business-day adjustment; contract = pillar label, ref_start = as-of, ref_end = maturity date"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "22:00"              # Value DateTime is 23:59 Frankfurt; the file for d appears on d+1, so a current-day as-of never occurs
+    availability: "settlement-prices_YYYYMMDD.csv (~65 MB, ~660 000 rows, every curve) under /resource/blob/<id>/<hash>/data/; the link changes daily and is read from the page; only the latest day is online, no archive; the file for d appears on the next day (2026-10-08 was online on 2026-10-09 ~10:45 UTC)"
+    download: {conditional: false, shared_file: true, stream: true, max_downloads_per_run: 1, size_mb: 65,
+               raw_kept: false, note: "one streamed download per run serves every eurex_ois_* entry (in-process cache); no download when the page's file date <= the stored as-of; the file is NOT kept in data/cb/raw/ (65 MB) - the stored pillars are its relevant rows"}
+    horizon_months: 36
+    proxy: false
+    license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
+
+  eurex_ois_eur:
+    currency: EUR
+    role: primary
+    curve_id: EUR.ESTR.1D
+    day_count: 360                   # ACT/360
+    instruments:
+      eur_estr_ois_df: {method: OIS, unit: discount_factor, fields: [df], benchmark: "€STR"}
+    calendar_id: EU
+    adapter: EurexOis
+    url: https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices
+    history: snapshot
+    naming: "daily grid: Maturity Offset = calendar days from the as-of (Value DateTime); stored pillars = as-of + 7/14/21 days (1W-3W) and add_months_date(as-of, n), n = 1..36 (1M-36M), no business-day adjustment; contract = pillar label, ref_start = as-of, ref_end = maturity date"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "22:00"              # Value DateTime is 23:59 Frankfurt; the file for d appears on d+1, so a current-day as-of never occurs
+    availability: "settlement-prices_YYYYMMDD.csv (~65 MB, ~660 000 rows, every curve) under /resource/blob/<id>/<hash>/data/; the link changes daily and is read from the page; only the latest day is online, no archive; the file for d appears on the next day (2026-10-08 was online on 2026-10-09 ~10:45 UTC)"
+    download: {conditional: false, shared_file: true, stream: true, max_downloads_per_run: 1, size_mb: 65,
+               raw_kept: false, note: "one streamed download per run serves every eurex_ois_* entry (in-process cache); no download when the page's file date <= the stored as-of; the file is NOT kept in data/cb/raw/ (65 MB) - the stored pillars are its relevant rows"}
+    horizon_months: 36
+    proxy: false
+    license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
+
+  eurex_ois_gbp:
+    currency: GBP
+    role: primary
+    curve_id: GBP.SONIA.1D
+    day_count: 365                   # ACT/365
+    instruments:
+      gbp_sonia_ois_df: {method: OIS, unit: discount_factor, fields: [df], benchmark: "SONIA"}
+    calendar_id: EU
+    adapter: EurexOis
+    url: https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices
+    history: snapshot
+    naming: "daily grid: Maturity Offset = calendar days from the as-of (Value DateTime); stored pillars = as-of + 7/14/21 days (1W-3W) and add_months_date(as-of, n), n = 1..36 (1M-36M), no business-day adjustment; contract = pillar label, ref_start = as-of, ref_end = maturity date"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "22:00"              # Value DateTime is 23:59 Frankfurt; the file for d appears on d+1, so a current-day as-of never occurs
+    availability: "settlement-prices_YYYYMMDD.csv (~65 MB, ~660 000 rows, every curve) under /resource/blob/<id>/<hash>/data/; the link changes daily and is read from the page; only the latest day is online, no archive; the file for d appears on the next day (2026-10-08 was online on 2026-10-09 ~10:45 UTC)"
+    download: {conditional: false, shared_file: true, stream: true, max_downloads_per_run: 1, size_mb: 65,
+               raw_kept: false, note: "one streamed download per run serves every eurex_ois_* entry (in-process cache); no download when the page's file date <= the stored as-of; the file is NOT kept in data/cb/raw/ (65 MB) - the stored pillars are its relevant rows"}
+    horizon_months: 36
+    proxy: false
+    license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
+
+  eurex_ois_jpy:
+    currency: JPY
+    role: primary
+    curve_id: JPY.TONAR.1D
+    day_count: 365                   # ACT/365
+    instruments:
+      jpy_tonar_ois_df: {method: OIS, unit: discount_factor, fields: [df], benchmark: "TONA"}
+    calendar_id: EU
+    adapter: EurexOis
+    url: https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices
+    history: snapshot
+    naming: "daily grid: Maturity Offset = calendar days from the as-of (Value DateTime); stored pillars = as-of + 7/14/21 days (1W-3W) and add_months_date(as-of, n), n = 1..36 (1M-36M), no business-day adjustment; contract = pillar label, ref_start = as-of, ref_end = maturity date"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "22:00"              # Value DateTime is 23:59 Frankfurt; the file for d appears on d+1, so a current-day as-of never occurs
+    availability: "settlement-prices_YYYYMMDD.csv (~65 MB, ~660 000 rows, every curve) under /resource/blob/<id>/<hash>/data/; the link changes daily and is read from the page; only the latest day is online, no archive; the file for d appears on the next day (2026-10-08 was online on 2026-10-09 ~10:45 UTC)"
+    download: {conditional: false, shared_file: true, stream: true, max_downloads_per_run: 1, size_mb: 65,
+               raw_kept: false, note: "one streamed download per run serves every eurex_ois_* entry (in-process cache); no download when the page's file date <= the stored as-of; the file is NOT kept in data/cb/raw/ (65 MB) - the stored pillars are its relevant rows"}
+    horizon_months: 36
+    proxy: false
+    license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
+
+  eurex_ois_chf:
+    currency: CHF
+    role: primary
+    curve_id: CHF.SARON.1D
+    day_count: 360                   # ACT/360
+    instruments:
+      chf_saron_ois_df: {method: OIS, unit: discount_factor, fields: [df], benchmark: "SARON"}
+    calendar_id: EU
+    adapter: EurexOis
+    url: https://www.eurex.com/ec-en/clear/eurex-otc-clear/settlement-prices
+    history: snapshot
+    naming: "daily grid: Maturity Offset = calendar days from the as-of (Value DateTime); stored pillars = as-of + 7/14/21 days (1W-3W) and add_months_date(as-of, n), n = 1..36 (1M-36M), no business-day adjustment; contract = pillar label, ref_start = as-of, ref_end = maturity date"
+    exchange_tz: Europe/Berlin
+    eod_cutoff: "22:00"              # Value DateTime is 23:59 Frankfurt; the file for d appears on d+1, so a current-day as-of never occurs
+    availability: "settlement-prices_YYYYMMDD.csv (~65 MB, ~660 000 rows, every curve) under /resource/blob/<id>/<hash>/data/; the link changes daily and is read from the page; only the latest day is online, no archive; the file for d appears on the next day (2026-10-08 was online on 2026-10-09 ~10:45 UTC)"
+    download: {conditional: false, shared_file: true, stream: true, max_downloads_per_run: 1, size_mb: 65,
+               raw_kept: false, note: "one streamed download per run serves every eurex_ois_* entry (in-process cache); no download when the page's file date <= the stored as-of; the file is NOT kept in data/cb/raw/ (65 MB) - the stored pillars are its relevant rows"}
+    horizon_months: 36
+    proxy: false
+    license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."

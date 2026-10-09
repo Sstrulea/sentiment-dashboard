@@ -142,10 +142,13 @@ class MarketSource(HttpSource):
     id = ""
     currency = ""
 
-    def __init__(self, cfg: dict | None = None, now: Callable[[], datetime] | None = None) -> None:
+    def __init__(self, cfg: dict | None = None, now: Callable[[], datetime] | None = None, sid: str | None = None) -> None:
         super().__init__(now)
+        if sid:                                       # one adapter class behind several config entries (Eurex curves)
+            self.id = sid
         self.cfg = cfg if cfg is not None else load_sources()["sources"][self.id]
         self.name = self.id
+        self.stored_asof: Optional[date] = None       # newest as-of already in the store for this source (set by the collector)
 
     # ---- RateSource-like surface -------------------------------------------------
     def supports(self, currency: str) -> bool:

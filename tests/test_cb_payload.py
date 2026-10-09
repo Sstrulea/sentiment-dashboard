@@ -12,7 +12,9 @@ import pytest
 
 from src import cb_render
 from src.cb_compute import payload as P
-from src.cb_loader import load_context, load_pair_defs
+from src.cb_loader import load_pair_defs
+
+from .cb_legacy import load_0918
 
 ROOT = Path(__file__).resolve().parents[1]
 FIX = Path(__file__).parent / "fixtures" / "cb_engine"
@@ -22,7 +24,7 @@ ORDER = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF"]
 
 @pytest.fixture(scope="module")
 def built():
-    return P.build(load_context(FIX), ASOF, load_pair_defs())
+    return P.build(load_0918(FIX), ASOF, load_pair_defs())
 
 
 def rows(built):
@@ -139,7 +141,7 @@ def test_nzd_and_chf(built):
 
 def test_stale_flag_is_carried_from_the_engine(built):
     assert not any(r["stale"] for r in built["overview"]["banks"])
-    later = P.build(load_context(FIX), date(2026, 9, 24), load_pair_defs(), currencies=("GBP",))
+    later = P.build(load_0918(FIX), date(2026, 9, 24), load_pair_defs(), currencies=("GBP",))
     row = later["overview"]["banks"][0]
     assert row["stale"] and row["horizon"]["stale"] and row["end"]["2026"]["stale"]                                            # BoE OIS snapshot is 5 business days old
 
