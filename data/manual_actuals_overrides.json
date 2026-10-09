@@ -1549,5 +1549,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-07T08:29:58+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "usd_initial_jobless_claims",
+  "currency": "USD",
+  "indicator_key": "jobless_claims",
+  "datetime_utc": "2026-10-08 12:30:00",
+  "actual": 197.0,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-09T10:18:54+00:00",
+  "note": ""
  }
 ]
