@@ -872,11 +872,10 @@ punctele FIT intră în calea desenată ca EXACT / CURVE, cu linie întreruptă 
 - **CAD** (rata politică-echivalentă, ± 1.0 bp) — măsurat identic la 4 zecimale: 27 ian 2.5460 · 3 mar 2.6944 · 28 apr 2.9341 · 2 iun 2.9943 ·
   21 iul 3.0407 · 8 sep 3.1590 · 27 oct 3.2260 · 8 dec 3.2344; 28 oct și 9 dec rămân EXACT, neschimbate; 9 contracte, reziduul maxim 1.81 bp la
   CRA sep-26 (acoperă zile realizate; prețurile snapshot-ului nu sunt din același moment). Spread 4.0 bp, baza 2.25.
-- **NZD** (nivelul BKBM, înainte de spread, ± 1.0 bp): valorile pre-înregistrate (9 dec 3.3331 · 10 feb 3.6179 · 17 mar 3.7289 · 5 mai 3.8651 ·
-  16 iun 4.0176 · 4 aug 4.1151 · 15 sep 4.1660 · 27 oct 4.1931 · 8 dec 4.1965; 4 contracte, reziduu ≤ 0.1 bp) se reproduc exact **cu `r_0` = OCR
-  (2.75, spread 0)**. Metoda, cum e specificată, ancorează `r_0` la OCR + spread-ul estimat (2.91): cu 16 bp, 9 dec iese 3.3475 (+1.4 bp) și 10 feb
-  3.5942 (−2.4 bp), restul în ± 0.7 bp — `r_0` intră doar prin rândurile de regularizare (niciun contract nu acoperă zilele dinaintea lui 16 dec).
-  Testul fixează ambele: referința cu ancora la OCR (dovada fit-ului) și valorile reale cu spread-ul estimat.
+- **NZD** (nivelul BKBM, înainte de spread, ± 1.0 bp, `r_0` = OCR + spread estimat 16.0 bp; 4 contracte, reziduu ≤ 0.1 bp): 28 oct n/a ·
+  9 dec 3.3475 · 10 feb 3.5942 · 17 mar 3.7285 · 5 mai 3.8712 · 16 iun 4.0185 · 4 aug 4.1140 · 15 sep 4.1657 · 27 oct 4.1933 · 8 dec 4.1968.
+  Prima pre-înregistrare fusese calculată cu `r_0` = OCR fără spread (eroare în referință, corectată de Sebastian pe 2026-10-09); ancora din
+  implementare (OCR + spread) a rămas, iar acestea sunt valorile pre-înregistrate corectate.
 
 ### Limite
 
