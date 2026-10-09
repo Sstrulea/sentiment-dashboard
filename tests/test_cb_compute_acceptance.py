@@ -1,4 +1,6 @@
-"""1B-2 acceptance on REAL data frozen at 2026-09-18 (tests/fixtures/cb_engine, made by scripts/cb_freeze_engine_fixture.py).
+"""1B-2 acceptance on REAL data frozen at 2026-09-18 (tests/fixtures/cb_engine, made by scripts/cb_freeze_engine_fixture.py),
+with the instruments of that date (tests/cb_legacy.py: the Eurex OIS curves start on 2026-10-08 - their acceptance is in
+tests/test_cb_eurex_acceptance.py).
 
 Where the method is the same as in the 0A / 0B spike, the RAW rate (before the spread) must reproduce the spike's value
 within 0.5 bp; where the method changed on purpose (GBP interval average, EUR basis, AUD / CAD tail rule, BoC effective
@@ -17,6 +19,8 @@ from src.cb_compute import engine as E
 from src.cb_compute.__main__ import main as cli
 from src.cb_loader import load_context, load_pairs
 
+from .cb_legacy import load_0918
+
 FIX = Path(__file__).parent / "fixtures" / "cb_engine"
 ROOT = Path(__file__).resolve().parents[1]
 D = date
@@ -26,7 +30,7 @@ TOL = 0.005                                     # 0.5 bp in percentage points
 
 @pytest.fixture(scope="module")
 def ctx():
-    return load_context(FIX)
+    return load_0918(FIX)
 
 
 @pytest.fixture(scope="module")
@@ -214,7 +218,7 @@ def test_gap_is_na_for_banks_without_a_published_path_and_for_rbnz_without_a_90d
 
 def test_rbnz_gap_uses_the_same_basis_when_the_mps_is_filled(ctx):
     rbnz = {"mps": [{"meeting": D(2026, 9, 2), "status": "filled", "bank_bill_90d": [{"period": "2026Q4", "value": 3.30}, {"period": "2027Q1", "value": 3.60}]}]}
-    ctx2 = load_context(FIX)
+    ctx2 = load_0918(FIX)
     ctx2.rbnz = rbnz
     g = A.rbnz_gap(ctx2, ASOF)
     assert g.kind == "bank_bill" and [round(y.gap_bp, 1) for y in g.years] == [15.0, 20.0]      # the BB whose 90-day period starts in the quarter: 3.45 (Dec-26) / 3.80 (Mar-27) minus the projection
@@ -342,27 +346,31 @@ def test_report_at_an_earlier_asof_shows_history_and_na_for_missing_sources(ctx)
 
 # --- configuration ----------------------------------------------------------------------------------------------------
 
-def test_config_roles_methods_spreads_and_stale_threshold(ctx):
+def test_config_roles_methods_spreads_and_stale_threshold():
+    ctx = load_context(FIX)                                     # the live config (roles since the Eurex curves)
     src = ctx.sources
-    methods = {"EXACT", "CURVE", "WINDOW", "PROXY_CURVE", "PROXY_TENOR"}
+    methods = {"EXACT", "OIS", "CURVE", "WINDOW", "PROXY_CURVE", "PROXY_TENOR"}
     for sid, c in src.items():
         assert c["role"] in ("primary", "crosscheck"), sid
         assert all(i["method"] in methods for i in c["instruments"].values()), sid
     primary = {cur: [(s, {i["method"] for i in c["instruments"].values()}) for s, c in src.items() if c["currency"] == cur and c["role"] == "primary"]
                for cur in ctx.banks}
-    assert primary["USD"] == [("atlantafed_mpt", {"WINDOW"})] and primary["EUR"] == [("ecb_aaa_fwd", {"PROXY_CURVE"})]
-    assert primary["GBP"] == [("boe_ois", {"CURVE"})] and primary["JPY"] == [("jpx_tona", {"WINDOW"})]
+    assert primary["USD"] == [("eurex_ois_usd", {"OIS"})] and primary["EUR"] == [("eurex_ois_eur", {"OIS"})]
+    assert primary["GBP"] == [("eurex_ois_gbp", {"OIS"})] and primary["JPY"] == [("eurex_ois_jpy", {"OIS"})]
     assert primary["CAD"] == [("mx_corra", {"EXACT", "WINDOW"})] and primary["AUD"] == [("asx_ib", {"EXACT"})]
-    assert primary["NZD"] == [("asx_bb", {"WINDOW"})] and primary["CHF"] == []
+    assert primary["NZD"] == [("asx_bb", {"WINDOW"})] and primary["CHF"] == [("eurex_ois_chf", {"OIS"})]
     xc = {s for s, c in src.items() if c["role"] == "crosscheck"}
-    assert xc == {"ust_bills", "boc_tbills", "rba_bank_bills"}
+    assert xc == {"ust_bills", "boc_tbills", "rba_bank_bills", "atlantafed_mpt", "ecb_aaa_fwd", "boe_ois", "jpx_tona", "eurex_ois_usd_sofr"}
     assert ctx.stale_after_bd == 2
     official = yaml.safe_load((ROOT / "config" / "cb_official.yaml").read_text())["series"]
     for cur, bank in ctx.banks.items():
-        sp = bank.get("spread")
-        if sp:
-            assert sp["benchmark"] in official and all(p in official for p in sp["policy"]), cur
-    assert {c for c, b in ctx.banks.items() if not b.get("spread")} == {"EUR", "NZD", "CHF"}
+        for key in ("spread", "crosscheck_spread"):
+            sp = bank.get(key)
+            if sp:
+                assert sp["benchmark"] in official and all(p in official for p in sp["policy"]), (cur, key)
+    assert {c for c, b in ctx.banks.items() if not b.get("spread")} == {"NZD"}
+    assert {c: b["spread"]["benchmark"] for c, b in ctx.banks.items() if c in ("USD", "EUR", "CHF")} == {"USD": "fred:EFFR", "EUR": "ecb:ESTR", "CHF": "snb:SARON"}
+    assert ctx.banks["USD"]["crosscheck_spread"]["benchmark"] == "fred:SOFR"
 
 
 def test_engine_modules_are_pure():

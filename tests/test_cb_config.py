@@ -12,7 +12,7 @@ import pytest
 import yaml
 
 from src.cb_sources import ADAPTERS
-from src.cb_sources.market import MxCorra
+from src.cb_sources.market import EUREX_IDS, EurexOis, MxCorra
 
 ROOT = Path(__file__).resolve().parents[1]
 BANKS = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF"]
@@ -95,7 +95,7 @@ def test_every_configured_source_has_an_adapter_and_the_required_fields(sources)
     assert sources["meta"]["horizon_months"] == 36
     for sid, c in sources["sources"].items():
         cls = ADAPTERS[sid]
-        assert c["adapter"] == cls.__name__ and c["currency"] == cls.currency, sid
+        assert c["adapter"] == cls.__name__ and c["currency"] == cls(c, sid=sid).currency, sid
         assert c["history"] in {"official", "snapshot"}, sid
         assert re.fullmatch(r"\d{2}:\d{2}", c["eod_cutoff"]), sid
         ZoneInfo(c["exchange_tz"])
@@ -106,7 +106,7 @@ def test_every_configured_source_has_an_adapter_and_the_required_fields(sources)
 
 def test_history_and_download_policy_match_what_the_spikes_measured(sources):
     s = sources["sources"]
-    assert {i for i, c in s.items() if c["history"] == "snapshot"} == {"jpx_tona", "mx_corra", "asx_ib", "asx_bb"}
+    assert {i for i, c in s.items() if c["history"] == "snapshot"} == {"jpx_tona", "mx_corra", "asx_ib", "asx_bb", *EUREX_IDS}
     cond = {i for i, c in s.items() if c["download"].get("conditional")}
     assert cond == {"atlantafed_mpt", "boe_ois", "jpx_tona", "rba_bank_bills"}
     assert "etag" in s["atlantafed_mpt"]["download"]["validators"] and s["atlantafed_mpt"]["download"]["size_mb"] == 6.9
@@ -120,9 +120,26 @@ def test_history_and_download_policy_match_what_the_spikes_measured(sources):
 def test_adapter_instruments_and_units_match_the_config(sources):
     for sid, cls in ADAPTERS.items():
         cfg_instr = sources["sources"][sid]["instruments"]
-        names = {name for name, _ in MxCorra.INSTR.values()} if cls is MxCorra else {cls.INSTRUMENT}
+        names = {name for name, _ in MxCorra.INSTR.values()} if cls is MxCorra else {cls(sources["sources"][sid], sid=sid).INSTRUMENT}
         assert names == set(cfg_instr), sid
         assert {v["unit"] for v in cfg_instr.values()} == {cls.UNIT}, sid
+
+
+def test_eurex_entries_share_one_file_and_carry_their_curve(sources):
+    s = sources["sources"]
+    eurex = {i: c for i, c in s.items() if c["adapter"] == "EurexOis"}
+    assert set(eurex) == set(EUREX_IDS)
+    assert {i: (c["currency"], c["curve_id"], c["day_count"], c["role"]) for i, c in eurex.items()} == {
+        "eurex_ois_usd": ("USD", "USD.FEDFUNDS.1D", 360, "primary"), "eurex_ois_usd_sofr": ("USD", "USD.SOFR.1D", 360, "crosscheck"),
+        "eurex_ois_eur": ("EUR", "EUR.ESTR.1D", 360, "primary"), "eurex_ois_gbp": ("GBP", "GBP.SONIA.1D", 365, "primary"),
+        "eurex_ois_jpy": ("JPY", "JPY.TONAR.1D", 365, "primary"), "eurex_ois_chf": ("CHF", "CHF.SARON.1D", 360, "primary")}
+    assert len({c["url"] for c in eurex.values()}) == 1 and len({c["license"] for c in eurex.values()}) == 1
+    for i, c in eurex.items():
+        (inst, ic), = c["instruments"].items()
+        assert inst == EurexOis.instrument_of(c["curve_id"]) and (ic["method"], ic["unit"], ic["fields"]) == ("OIS", "discount_factor", ["df"]), i
+        assert (c["calendar_id"], c["exchange_tz"], c["horizon_months"], c["proxy"]) == ("EU", "Europe/Berlin", 36, False), i
+        assert c["download"]["raw_kept"] is False and c["availability"] and "access gate" in c["license"], i
+    assert [s[i]["role"] for i in ("atlantafed_mpt", "ecb_aaa_fwd", "boe_ois", "jpx_tona")] == ["crosscheck"] * 4
 
 
 # ---------------------------------------------------------------------------
@@ -132,7 +149,7 @@ def test_adapter_instruments_and_units_match_the_config(sources):
 def test_meetings_cover_2026_2027_with_the_specified_fields(meetings):
     assert list(meetings) == BANKS
     counts = {b: len(m) for b, m in meetings.items()}
-    assert counts == {"USD": 16, "EUR": 16, "GBP": 16, "JPY": 16, "CAD": 16, "AUD": 16, "NZD": 8, "CHF": 10}   # CHF from 2025-09 (last 4 decisions)
+    assert counts == {"USD": 16, "EUR": 16, "GBP": 16, "JPY": 16, "CAD": 16, "AUD": 16, "NZD": 15, "CHF": 10}   # CHF from 2025-09 (last 4 decisions)
     for b, rows in meetings.items():
         dates = [r["date"] for r in rows]
         assert dates == sorted(set(dates)), b
@@ -148,7 +165,8 @@ def test_meetings_cover_2026_2027_with_the_specified_fields(meetings):
 
 def test_meeting_sources_and_verification_are_honest(meetings):
     assert all(r["source"] == "manual" and r["verified"] is False for r in meetings["NZD"])     # RBNZ is manual
-    assert max(r["date"] for r in meetings["NZD"]) == date(2027, 2, 17)                          # until the Feb 2027 release
+    assert max(r["date"] for r in meetings["NZD"]) == date(2027, 12, 8)                          # release to Feb 2028, rows to the end of the range
+    assert date(2027, 2, 17) not in {r["date"] for r in meetings["NZD"]}                         # the old release's date, replaced by 2027-02-10
     assert {b for b, rows in meetings.items() if any(r["source"] == "ff" for r in rows)} == {"EUR"}
     assert all(r["date"] < date(2026, 10, 1) and r["verified"] is False for r in meetings["EUR"] if r["source"] == "ff")
     assert all(r["verified"] is False for r in meetings["GBP"] if r["date"].year == 2027)       # BoE 2027 is provisional

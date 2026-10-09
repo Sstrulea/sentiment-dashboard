@@ -13,6 +13,8 @@
 #                   instrument's benchmark, see config/cb_sources.yaml `benchmark`).
 #   spread          overnight benchmark - policy pair whose median (20 business days) turns an implied
 #                   benchmark rate into an implied policy rate (src/cb_compute/spread.py); null = not used.
+#   crosscheck_spread  same, for the cross-check instruments built on another benchmark (USD: SOFR, while the
+#                   primary Eurex curve is fed funds); absent = the cross-checks use `spread`.
 #   effective_rule  how the effective date follows the decision date.
 #                   kind: calendar_days (+N days) | next_business_day (first business day after the decision,
 #                   calendar: JP | NZ). `source` = the series whose change dates were tested against the rule
@@ -34,7 +36,8 @@ banks:
     tz: America/New_York
     calendar_url: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
     calendar_id: US                    # config/cb_calendars.yaml
-    spread: {benchmark: "fred:SOFR", policy: ["fred:DFEDTARL", "fred:DFEDTARU"], note: "MPT is built on SOFR options; policy = midpoint"}
+    spread: {benchmark: "fred:EFFR", policy: ["fred:DFEDTARL", "fred:DFEDTARU"], note: "primary = Eurex fed funds OIS (EFFR); policy = midpoint"}
+    crosscheck_spread: {benchmark: "fred:SOFR", policy: ["fred:DFEDTARL", "fred:DFEDTARU"], note: "SOFR-based cross-checks (Eurex SOFR OIS, Atlanta Fed MPT); policy = midpoint"}
     decision_time: {local: "14:00", variable: false,
                     evidence: "statement page Last-Modified +0.2-0.3 min after 14:00 ET (4/4)"}
     conference: {held: every_meeting, local: "14:30", verified: true,
@@ -64,7 +67,7 @@ banks:
     tz: Europe/Berlin
     calendar_url: https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html
     calendar_id: EU                    # config/cb_calendars.yaml
-    spread: null     # not needed: PROXY basis (EUR), BKBM basis (NZD) or no market path (CHF)
+    spread: {benchmark: "ecb:ESTR", policy: ["ecb:DFR"], note: "primary = Eurex EUR STR OIS; EUR STR vs the deposit facility rate"}
     decision_time: {local: "14:15", variable: false, evidence: "press feed pubDate 14:15 CEST (10 Sep 2026)"}
     conference: {held: every_meeting, local: "14:45", verified: true,
                  source: "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"}
@@ -212,9 +215,9 @@ banks:
     id: rbnz
     name: Reserve Bank of New Zealand (MPC)
     tz: Pacific/Auckland
-    calendar_url: https://www.rbnz.govt.nz/news-and-events/how-we-release-information/monetary-policy-and-ocr-decision-dates-until-february-2027
+    calendar_url: https://www.rbnz.govt.nz/news-and-events/how-we-release-information/ocr-decision-dates-and-financial-stability-report-dates-to-feb-2028
     calendar_id: NZ                    # config/cb_calendars.yaml
-    spread: null     # not needed: PROXY basis (EUR), BKBM basis (NZD) or no market path (CHF)
+    spread: null     # not needed: BKBM basis (NZD)
     decision_time: {local: "14:00", variable: false, evidence: "FF rows 02:00 UTC = 14:00 NZ; site bot-walled, not verified on RBNZ pages", verified: false}
     conference: {held: every_meeting, local: "15:00", verified: false,
                  source: "RBNZ 'all OCR announcements are followed by a media conference at 3pm' (via search; site bot-walled)"}
@@ -230,7 +233,8 @@ banks:
     overnight_benchmark: null                 # OCR is itself the overnight rate; BKBM-90d (instrument benchmark) not published by an accessible source
     effective_rule: {kind: next_business_day, calendar: NZ, verified: false, source: null, derived_from: "bis:NZ",
                      note: "derived from BIS (RBNZ site blocked): BIS dates every other bank by the effective date, and its 5/5 OCR changes since 2025-08 (2025-08-21, 2025-10-09, 2025-11-27, 2026-07-09, 2026-09-03) fall on the first NZ business day after the decision"}
-    projections: {name: Monetary Policy Statement (OCR track), months: [2, 5, 9, 12], source: manual_from_release_schedule}
+    projections: {name: Monetary Policy Statement (OCR track), months: [2, 3, 5, 6, 9, 12], source: manual_from_release_schedule,
+                  note: "2026: Feb / May / Sep / Dec; from 2027 (8 meetings a year): Statements in Mar / Jun / Sep / Dec, Reviews in between (release to Feb 2028)"}
     blackout: null
     youtube_channel_id: UC1v0CeB83SX6Px9r5KT0NuQ
     blackout_rule: null
@@ -243,7 +247,7 @@ banks:
     tz: Europe/Zurich
     calendar_url: https://www.snb.ch/en/services-events/digital-services/event-schedule
     calendar_id: CH                    # config/cb_calendars.yaml
-    spread: null     # not needed: PROXY basis (EUR), BKBM basis (NZD) or no market path (CHF)
+    spread: {benchmark: "snb:SARON", policy: ["snb:LZ"], note: "primary = Eurex SARON OIS; the SNB cube lags a few days - the 20-business-day median covers it"}
     decision_time: {local: "09:30", variable: false, evidence: "RSS mopo pubDate 07:30Z = 09:30 CEST (0.0 min)"}
     conference: {held: quarterly, local: "10:00", verified: true,
                  source: "https://www.snb.ch/en/services-events/digital-services/event-schedule"}

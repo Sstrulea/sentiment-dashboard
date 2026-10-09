@@ -200,8 +200,15 @@ def test_seed_rbnz_file_is_valid_and_carries_the_sep_2026_mps_track():
         ("2026Q3", 2.6), ("2026Q4", 2.8), ("2027Q1", 3.0), ("2027Q2", 3.1), ("2027Q3", 3.1), ("2027Q4", 3.2),
         ("2028Q1", 3.2), ("2028Q2", 3.2), ("2028Q3", 3.2), ("2028Q4", 3.2), ("2029Q1", 3.3), ("2029Q2", 3.3), ("2029Q3", 3.3)]
     assert mps["bank_bill_90d"] == []                                                    # not in the PDF tables: the RBNZ GAP stays n/a
-    assert [m["date"] for m in doc["published_calendar"]["meetings"]] == [m["date"] for m in nz_meetings()]      # the meetings.yaml source
-    assert doc["calendar_2027"]["status"] == "pending" and doc["calendar_2027"]["published_until"] == D(2027, 2, 17)
+    pub = [m["date"] for m in doc["published_calendar"]["meetings"]]
+    assert [d for d in pub if d <= D(2027, 12, 31)] == [m["date"] for m in nz_meetings()]        # the meetings.yaml source (rows to the end of its range)
+    assert "to February 2028" in doc["published_calendar"]["source"] and pub[-1] == D(2028, 2, 9)
+    cal = doc["calendar_2027"]
+    assert cal["status"] == "entered" and cal["published_until"] == D(2028, 2, 9)
+    assert [m["date"] for m in cal["meetings"]] == [d for d in pub if d > D(2027, 1, 1)]             # the dates after the earlier release
+    assert sum(1 for d in pub if d.year == 2027) == 8 and D(2027, 2, 17) not in pub                  # 8 meetings a year from 2027
+    proj = {m["date"]: m["has_projections"] for m in doc["published_calendar"]["meetings"]}
+    assert [d for d in pub if d >= D(2026, 10, 28) and proj[d]] == [D(2026, 12, 9), D(2027, 3, 17), D(2027, 6, 16), D(2027, 9, 15), D(2027, 12, 8)]   # Statements only
     mps_dates = {m["date"] for m in nz_meetings() if m["has_projections"]}
     assert {e["meeting"] for e in doc["mps"]} <= mps_dates                              # every entry is a real MPS of the calendar
 
@@ -234,7 +241,7 @@ def test_schema_rejects_the_usual_mistakes():
     assert any("duplicate meeting" in x for x in with_mps(filled(), filled()))
     e = filled(); e["meeting"] = "2026-09-02"
     assert any("meeting must be a date" in x for x in with_mps(e))
-    d = seed(); d["calendar_2027"]["status"] = "entered"
+    d = seed(); d["calendar_2027"]["meetings"] = []
     assert any("entered without meetings" in x for x in ds.validate_rbnz(d))
     d = seed(); del d["mps"]
     assert any("missing key 'mps'" in x for x in ds.validate_rbnz(d))
@@ -259,12 +266,14 @@ def test_status_warns_only_for_an_mps_newer_than_the_one_in_the_file():
 
 
 def test_status_warns_when_the_2027_calendar_runs_out():
-    doc = seed()
-    assert not any("calendar" in x for x in ds.rbnz_warnings(doc, nz_meetings(), D(2027, 1, 15)))
-    w = ds.rbnz_warnings(doc, nz_meetings(), D(2027, 2, 17))
-    assert any("RBNZ calendar after 2027-02-17 not entered yet" in x for x in w)
-    doc["calendar_2027"] = {"status": "entered", "meetings": [{"date": D(2027, 5, 26), "has_projections": True}]}
-    assert not any("calendar" in x for x in ds.rbnz_warnings(doc, nz_meetings(), D(2027, 3, 1)))
+    doc = seed()                                                                                   # entered: the release runs to 2028-02-09
+    assert not any("calendar" in x for x in ds.rbnz_warnings(doc, nz_meetings(), D(2027, 12, 9)))
+    early = [m for m in nz_meetings() if m["date"] <= D(2027, 2, 10)]
+    doc["calendar_2027"] = {"status": "pending", "meetings": []}
+    assert not any("calendar" in x for x in ds.rbnz_warnings(doc, early, D(2027, 1, 15)))
+    assert any("RBNZ calendar after 2027-02-10 not entered yet" in x for x in ds.rbnz_warnings(doc, early, D(2027, 2, 10)))
+    doc["calendar_2027"] = {"status": "entered", "meetings": [{"date": D(2027, 3, 17), "has_projections": True}]}
+    assert not any("calendar" in x for x in ds.rbnz_warnings(doc, early, D(2027, 3, 1)))
 
 
 def test_an_invalid_file_is_reported_by_status_not_raised():

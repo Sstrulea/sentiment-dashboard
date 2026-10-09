@@ -13,7 +13,8 @@ from src.cb_compute import engine as E
 from src.cb_compute import methods as M
 from src.cb_compute import spread as S
 
-from .cb_synth import (BENCH, CUR, D, POL, bdays, curve_quotes, dec, futures_month, make_ctx, month_avg, quote, src, window_avg)
+from .cb_synth import (BENCH, CUR, D, POL, bdays, curve_quotes, dec, futures_month, make_ctx, month_avg, quote, rate_on, src,
+                       window_avg)
 
 ASOF = D(2026, 9, 30)
 BASE_DEC = dec(D(2026, 9, 16), D(2026, 9, 17), 1.75, 2.00)          # the last decided change; benchmark spread contamination stays away
@@ -675,3 +676,126 @@ def test_rbnz_bank_path_is_shown_and_the_gap_stays_na_without_a_90d_projection()
     assert A.bank_path(ctx, "EUR", g, ASOF).kind == "n/a"
     ctx.rbnz = {"mps": [{**mps, "meeting": D(2026, 12, 9)}]}                                   # an MPS that has not happened yet at this as-of
     assert A.bank_path(ctx, "NZD", g, ASOF).kind == "n/a"
+
+
+# --- OIS (Eurex discount factors) -------------------------------------------------------------------------------------
+
+from src.cb_sources.base import add_months_date                          # noqa: E402
+
+
+def ois_quotes(path, asof, *, months=36, basis=360, source="ois"):
+    """Discount factors at the Eurex pillars from a known overnight path (benchmark space, %), daily compounding."""
+    import math
+    pillars = [(f"{w}W", asof + timedelta(days=7 * w)) for w in (1, 2, 3)] + [(f"{n}M", add_months_date(asof, n)) for n in range(1, months + 1)]
+    out = []
+    for label, T in pillars:
+        s = sum(math.log(1 + rate_on(path, asof + timedelta(days=k)) / 100 / basis) for k in range((T - asof).days))
+        out.append(quote(source, "inst", math.exp(-s), asof, unit="discount_factor", ref_start=asof, ref_end=T, contract=label))
+    return out
+
+
+QM = [(D(2026, 12, 9), D(2026, 12, 10)), (D(2027, 3, 17), D(2027, 3, 18)), (D(2027, 6, 16), D(2027, 6, 17))]     # a pillar in every segment
+
+
+def ctx_ois(bench_path, meetings=QM, *, spread=0.02, asof=ASOF, months=36, decisions=None, basis=360, **kw):
+    return make_ctx(decisions=decisions or [BASE_DEC], meetings=[(D(2026, 9, 16), D(2026, 9, 17))] + meetings,
+                    quotes=ois_quotes(bench_path, asof, months=months, basis=basis), policy_path=BASE_PATH, spread=spread,
+                    sources=src("ois", "OIS", day_count=basis), **kw)
+
+
+def test_ois_points_are_the_segment_rates_minus_the_spread_with_steps_vs_r0():
+    effs = [e for _, e in QM]
+    bench = [(ASOF, 2.02), (effs[0], 2.27), (effs[1], 2.52), (effs[2], 2.42)]          # +25, +25, -10 bp on the benchmark
+    tr = E.trajectory(ctx_ois(bench), CUR, ASOF)
+    assert [p.flag for p in tr.points] == ["CURVE"] * 3 and {p.method for p in tr.points} == {"CURVE"}
+    assert all(p.extra["how"] == "ois_step" and p.level_kind == "policy" for p in tr.points)
+    assert [p.rate for p in tr.points] == pytest.approx([2.25, 2.50, 2.40], abs=1e-4)    # minus the 2 bp spread
+    assert [p.step_bp for p in tr.points] == pytest.approx([25.0, 25.0, -10.0], abs=0.01) # the first vs r_0
+    assert [p.cum_bp for p in tr.points] == pytest.approx([25.0, 50.0, 40.0], abs=0.01)
+    assert tr.points[0].window == (effs[0], effs[1]) and tr.points[-1].window == (effs[2], effs[2] + timedelta(days=56))
+    assert tr.extra["ois_r0"] == pytest.approx(2.02, abs=1e-4)
+    assert tr.extra["ois_path"][0] == (ASOF, pytest.approx(2.00, abs=1e-4))                 # policy space
+    assert any("r_0 2.0200" in n and "+0.0 bp" in n for n in tr.notes)
+    assert [c[0] for c in tr.consistency] == ["OIS ois"] * len(tr.consistency) and max(abs(c[2]) for c in tr.consistency) < 0.01
+    nm = E.next_meeting(tr)
+    assert nm.step_bp == pytest.approx(25.0, abs=0.01) and nm.probabilities["direction"] == "hike"
+    assert nm.probabilities["moves"][1] == pytest.approx(1.0, abs=1e-3)                  # 25 bp = one move
+
+
+def test_ois_meeting_after_the_last_pillar_is_na():
+    late = [(D(2027, 11, 3), D(2027, 11, 4))]                                            # pillars end 12 months out (2027-09-30)
+    tr = E.trajectory(ctx_ois([(ASOF, 2.02)], QM + late, months=12), CUR, ASOF)
+    p = tr.point_for(D(2027, 11, 3))
+    assert p.rate is None and p.level is None and p.reason == E.BEYOND_PILLARS and p.flag == "CURVE"
+    assert all(q.rate is not None for q in tr.points[:3])
+    assert E.year_end(SimpleNamespace(meetings={CUR: [E.Meeting(d, e) for d, e in QM + late]}), tr, 2027).reason == E.BEYOND_PILLARS
+
+
+def test_ois_decided_change_not_yet_in_force_is_a_boundary_not_a_meeting():
+    asof = D(2026, 9, 21)                                                                # decided 18 Sep, in force 24 Sep (BoJ-like)
+    decs = [dec(D(2026, 7, 31), D(2026, 8, 3), 1.75, 2.00), dec(D(2026, 9, 18), D(2026, 9, 24), 2.00, 2.25)]
+    path = [(D(2026, 1, 1), 1.75), (D(2026, 8, 3), 2.00), (D(2026, 9, 24), 2.25)]
+    bench = [(asof, 2.02), (D(2026, 9, 24), 2.27), (D(2026, 12, 10), 2.52)]
+    ctx = make_ctx(decisions=decs, meetings=[(D(2026, 9, 18), D(2026, 9, 24))] + QM, quotes=ois_quotes(bench, asof), policy_path=path,
+                   spread=0.02, sources=src("ois", "OIS", day_count=360), official_start=D(2026, 6, 1))
+    tr = E.trajectory(ctx, CUR, asof)
+    assert tr.base.rate == 2.25 and tr.base.pending
+    assert [p.meeting for p in tr.points] == [d for d, _ in QM]                         # the 24 Sep boundary is not reported
+    assert tr.extra["ois_r0"] == pytest.approx(2.27, abs=1e-3)                           # the segment just before the first meeting
+    assert tr.points[0].step_bp == pytest.approx(25.0, abs=0.05) and tr.points[0].cum_bp == pytest.approx(25.0, abs=0.05)
+
+
+def test_ois_residual_above_2bp_is_noted_and_the_spread_is_required():
+    effs = [e for _, e in QM]
+    qs = ois_quotes([(ASOF, 2.02), (effs[0], 2.27)], ASOF)
+    i = next(k for k, q in enumerate(qs) if q["contract"] == "5M")
+    T = qs[i]["ref_end"]
+    qs[i] = dict(qs[i], value=qs[i]["value"] * (1 - 0.0010 * (T - ASOF).days / 360))  # +10 bp on one pillar's average rate
+    ctx = make_ctx(decisions=[BASE_DEC], meetings=[(D(2026, 9, 16), D(2026, 9, 17))] + QM, quotes=qs, policy_path=BASE_PATH, spread=0.02,
+                   sources=src("ois", "OIS", day_count=360))
+    tr = E.trajectory(ctx, CUR, ASOF)
+    assert any("pillar residual up to" in n and "(5M)" in n and "above 2 bp" in n for n in tr.notes)
+    ctx = ctx_ois([(ASOF, 2.02)], has_spread=False)
+    tr = E.trajectory(ctx, CUR, ASOF)
+    assert all(p.rate is None and p.reason.startswith("spread unavailable") for p in tr.points)
+
+
+def test_ois_day_count_comes_from_the_source():
+    bench = [(ASOF, 2.02), (QM[0][1], 2.27)]
+    a = E.trajectory(ctx_ois(bench, basis=365), CUR, ASOF)
+    assert a.points[0].rate == pytest.approx(2.25, abs=1e-4)
+    ctx = ctx_ois(bench, basis=365)
+    ctx.sources["ois"]["day_count"] = 360                                                # read with the wrong basis
+    b = E.trajectory(ctx, CUR, ASOF)
+    assert abs(b.points[0].rate - 2.25) > 0.02
+
+
+def test_ois_first_step_is_measured_from_the_curve_level_r0_not_from_the_base():
+    effs = [e for _, e in QM]
+    bench = [(ASOF, 2.06), (effs[0], 2.27)]                                              # the curve sits 4 bp above base + spread before the meeting
+    tr = E.trajectory(ctx_ois(bench), CUR, ASOF)
+    assert tr.extra["ois_r0"] == pytest.approx(2.06, abs=1e-4)
+    assert tr.points[0].step_bp == pytest.approx(21.0, abs=0.01)                         # 2.27 - 2.06, not 2.27 - 2.02
+    assert tr.points[0].cum_bp == pytest.approx(25.0, abs=0.01)                          # the cumulative stays vs the base
+    assert any("r_0 2.0600" in n and "+4.0 bp" in n for n in tr.notes)
+
+
+def test_usd_sofr_crosscheck_uses_its_own_spread():
+    """USD: the primary is the fed funds curve (EFFR spread), the SOFR curve is compared after the SOFR spread."""
+    effs = [e for _, e in QM]
+    ff = ois_quotes([(ASOF, 2.02), (effs[0], 2.27)], ASOF, source="eurex_ois_usd")
+    sofr = [dict(q, instrument="usd_sofr_ois_df") for q in ois_quotes([(ASOF, 2.07), (effs[0], 2.32)], ASOF, source="eurex_ois_usd_sofr")]
+    ff = [dict(q, instrument="usd_fedfunds_ois_df", currency="USD") for q in ff]
+    ctx = make_ctx(decisions=[BASE_DEC], meetings=[(D(2026, 9, 16), D(2026, 9, 17))] + QM, quotes=ff + sofr, policy_path=BASE_PATH, spread=0.02,
+                   sources={"eurex_ois_usd": {"currency": "XXX", "role": "primary", "day_count": 360, "instruments": {"usd_fedfunds_ois_df": {"method": "OIS"}}},
+                            "eurex_ois_usd_sofr": {"currency": "XXX", "role": "crosscheck", "day_count": 360, "instruments": {"usd_sofr_ois_df": {"method": "OIS"}}}},
+                   extra_official=[{"series_id": "b:SOFR", "date": d, "value": rate_on(BASE_PATH, d) + 0.07} for d in bdays(D(2026, 6, 1), D(2026, 12, 31))])
+    ctx.banks = {"USD": dict(ctx.banks[CUR], crosscheck_spread={"benchmark": "b:SOFR", "policy": [POL]})}
+    ctx.decisions, ctx.meetings = {"USD": ctx.decisions[CUR]}, {"USD": ctx.meetings[CUR]}
+    ctx.sources = {k: dict(v, currency="USD") for k, v in ctx.sources.items()}
+    ctx.market = E.MarketIndex([dict(q, currency="USD") for q in ff + sofr])
+    tr = E.trajectory(ctx, "USD", ASOF)
+    assert tr.spread.value == pytest.approx(0.02) and tr.points[0].rate == pytest.approx(2.25, abs=1e-4)
+    xc = [c for c in A.crosschecks(ctx, tr) if c.name == "USD Eurex fed funds vs SOFR OIS"]
+    assert len(xc) == 3
+    assert xc[0].b == pytest.approx(2.32 - 0.07, abs=1e-4) and xc[0].diff_bp == pytest.approx(0.0, abs=0.01)   # SOFR spread 7 bp, not the EFFR 2 bp

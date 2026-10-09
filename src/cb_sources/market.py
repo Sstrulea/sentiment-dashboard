@@ -15,14 +15,18 @@ import csv
 import io
 import json
 import re
+import time
 import zipfile
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Optional
 from urllib.parse import urljoin
 
-from ..rate_sources import _safe_float
-from .base import (FetchResult, MarketSource, NON_BROWSER_UA, Quote, add_months, first_wednesday_after_9th,
-                   imm_window, month_bounds, third_wednesday)
+import requests
+
+from ..rate_sources import FRED_UA, _safe_float
+from .base import (FetchResult, MarketSource, NON_BROWSER_UA, Quote, add_months, add_months_date, first_wednesday_after_9th,
+                   imm_window, load_sources, month_bounds, third_wednesday)
 
 MONTHS = {m: i for i, m in enumerate(
     ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
@@ -99,6 +103,9 @@ class AtlantaMpt(MarketSource):
         if not_modified:
             return FetchResult("not_modified", state=v, note="HTTP 304")
         if r is None:
+            return None
+        if not r.content.startswith(b"PK"):                    # the old URL answered 200 with an HTML page after the file moved
+            self._parse_fail("not an xlsx (HTML page?) - the file may have moved, see the Market Probability Tracker page")
             return None
         qs = self.parse(r.content, since)
         return FetchResult("ok", qs, state=v, note="" if qs else f"no rows since {since}")
@@ -476,5 +483,157 @@ class AsxBb(AsxFutures):
         return exp, exp + timedelta(days=91)
 
 
+@dataclass
+class EurexFile:
+    """The pillar rows of one Eurex settlement file: {curve_id: {offset_days: (maturity_date, discount_factor)}}."""
+    asof: date
+    curves: dict
+
+
+class EurexOis(MarketSource):
+    """Eurex Clearing OTC settlement curves (one CSV a day, every curve in it): discount factors (`Value Type` S) on a daily
+    grid, `Maturity Offset` = calendar days from the as-of (`Value DateTime`). One class behind several config entries, one
+    per curve (`curve_id`, `day_count`); the ~65 MB file is downloaded ONCE per process (streamed, cached for the other
+    entries) and only the pillars are kept: as-of + 7 / 14 / 21 days and `add_months_date(as-of, n)` for n = 1..horizon.
+    The page has only the latest file and its link changes daily, so the link is always read from the page."""
+    UNIT = "discount_factor"
+    LINK_RX = re.compile(r'href="([^"]*/settlement-prices_(\d{8})\.csv)"')
+    HEADER = ["Value DateTime", "Curve ID", "Maturity Offset", "Maturity Date", "Value Type", "Value", "Fact DateTime"]
+    WEEKS = {7: "1W", 14: "2W", 21: "3W"}
+    _files: dict = {}                                   # process cache: csv url -> EurexFile | (last_status, last_note)
+
+    def __init__(self, cfg: dict | None = None, now=None, sid: str | None = None) -> None:
+        super().__init__(cfg, now, sid)
+        self.currency = self.cfg["currency"]
+        self.curve_id = self.cfg["curve_id"]
+        self.INSTRUMENT = self.instrument_of(self.curve_id)
+
+    @staticmethod
+    def instrument_of(curve_id: str) -> str:
+        """USD.FEDFUNDS.1D -> usd_fedfunds_ois_df"""
+        ccy, index = curve_id.split(".")[:2]
+        return f"{ccy}_{index}_ois_df".lower()
+
+    @classmethod
+    def clear_cache(cls) -> None:
+        cls._files.clear()
+
+    def find_csv(self, page_html: str) -> Optional[tuple[str, date]]:
+        m = self.LINK_RX.search(page_html)
+        return (m.group(1), datetime.strptime(m.group(2), "%Y%m%d").date()) if m else None
+
+    def pillars(self, asof: date) -> dict[int, str]:
+        """offset in days -> contract label."""
+        out = dict(self.WEEKS)
+        for n in range(1, self.horizon_months + 1):
+            out[(add_months_date(asof, n) - asof).days] = f"{n}M"
+        return out
+
+    def parse(self, lines, curves: set) -> EurexFile:
+        """Pure: an iterable of CSV lines -> the S rows of `curves` at the pillars of the file's own as-of."""
+        it = csv.reader(lines)
+        head = next(it, None)
+        if head is None or [h.strip().lstrip("﻿") for h in head] != self.HEADER:
+            raise ValueError(f"unexpected Eurex header {head!r}")
+        asof, piv, out = None, {}, {}
+        for r in it:
+            if len(r) < 6 or r[4] != "S" or r[1] not in curves:
+                continue
+            d = date.fromisoformat(r[0][:10])
+            if asof is None:
+                asof, piv = d, self.pillars(d)
+            elif d != asof:
+                raise ValueError(f"two as-of dates in one file: {asof} and {d}")
+            off = int(r[2])
+            if off in piv:
+                out.setdefault(r[1], {})[off] = (date.fromisoformat(r[3][:10]), float(r[5]))
+        if asof is None:
+            raise ValueError(f"none of {sorted(curves)} in the file")
+        return EurexFile(asof, out)
+
+    def quotes(self, f: EurexFile) -> list[Quote]:
+        piv = self.pillars(f.asof)
+        out = []
+        for off, (mat, v) in sorted(f.curves.get(self.curve_id, {}).items()):
+            label = piv[off]
+            tenor = off / 30.4375 if label.endswith("W") else float(label[:-1])
+            out.append(self.quote(self.INSTRUMENT, label, "df", v, self.UNIT, f.asof, ref_start=f.asof, ref_end=mat, tenor_months=tenor))
+        return out
+
+    def _file_curves(self) -> set:
+        """Every curve the config reads from this file, so that one pass serves all the entries."""
+        try:
+            ids = {c["curve_id"] for c in load_sources()["sources"].values() if c.get("adapter") == type(self).__name__}
+        except Exception:                                # noqa: BLE001 - the config of this entry is enough
+            ids = set()
+        return ids | {self.curve_id}
+
+    def _download(self, url: str):
+        """Streamed GET (the file is ~65 MB): the response, or None with last_status / last_note."""
+        headers = {"User-Agent": self.ua or FRED_UA, "Accept": "text/csv,*/*"}
+        last = ""
+        for attempt in range(3):
+            try:
+                r = requests.get(url, headers=headers, timeout=60, stream=True)
+            except requests.RequestException as e:
+                last = f"network:{type(e).__name__}"
+            else:
+                if r.status_code == 200:
+                    return r
+                last = f"HTTP {r.status_code}"
+                r.close()
+            if attempt < 2:
+                time.sleep(1.0)
+        self.last_status, self.last_note = "UNREACHABLE", last
+        return None
+
+    def _load(self, url: str) -> Optional[EurexFile]:
+        hit = self._files.get(url)
+        if isinstance(hit, EurexFile):
+            return hit
+        if hit is not None:                              # the download already failed in this run: no second 65 MB attempt
+            self.last_status, self.last_note = hit
+            return None
+        r = self._download(url)
+        if r is None:
+            self._files[url] = (self.last_status, self.last_note)
+            return None
+        try:
+            f = self.parse((ln.decode("utf-8") for ln in r.iter_lines(chunk_size=1 << 16)), self._file_curves())
+        except Exception as e:                           # noqa: BLE001
+            self._parse_fail(f"{type(e).__name__}: {e}")
+            self._files[url] = (self.last_status, self.last_note)
+            return None
+        finally:
+            r.close()
+        self._files[url] = f
+        return f
+
+    def _fetch(self, since, state):
+        page, _, _ = self.get_url(self.cfg["url"])
+        if page is None:
+            return None
+        found = self.find_csv(page.text)
+        if not found:
+            self._parse_fail("no settlement-prices_YYYYMMDD.csv link on the page")
+            return None
+        href, file_day = found
+        known = max((d for d in (self.stored_asof, _as_date(state.get("asof"))) if d), default=None)
+        if known is not None and file_day <= known:
+            return FetchResult("not_modified", state=dict(state), note=f"page file {file_day} <= stored as-of {known}")
+        f = self._load(urljoin(self.cfg["url"], href))
+        if f is None:
+            return None
+        qs = self.quotes(f)
+        if not qs:
+            self._parse_fail(f"curve {self.curve_id} not in the {f.asof} file")
+            return None
+        note = f"file {file_day} carries as-of {f.asof}" if f.asof != file_day else ""
+        return FetchResult("ok", qs, state={"asof": f.asof.isoformat()}, note=note)
+
+
+EUREX_IDS = ("eurex_ois_usd", "eurex_ois_usd_sofr", "eurex_ois_eur", "eurex_ois_gbp", "eurex_ois_jpy", "eurex_ois_chf")
+
 ADAPTERS: dict[str, type[MarketSource]] = {c.id: c for c in (
     AtlantaMpt, BoeOis, JpxTona, MxCorra, AsxIb, AsxBb, TreasuryBills, BocTbills, EcbAaaForward, RbaBankBills)}
+ADAPTERS.update({sid: EurexOis for sid in EUREX_IDS})          # one class, one config entry per curve

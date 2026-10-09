@@ -397,8 +397,135 @@ def test_fetch_result_quotes_come_back_in_a_deterministic_order(monkeypatch):
 
 def test_every_adapter_is_registered_and_supports_only_its_currency():
     assert set(ADAPTERS) == {"atlantafed_mpt", "boe_ois", "jpx_tona", "mx_corra", "asx_ib", "asx_bb", "ust_bills",
-                             "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills"}
+                             "boc_tbills", "ecb_aaa_fwd", "rba_bank_bills", "eurex_ois_usd", "eurex_ois_usd_sofr", "eurex_ois_eur",
+                             "eurex_ois_gbp", "eurex_ois_jpy", "eurex_ois_chf"}
     for sid, cls in ADAPTERS.items():
-        s = mk(cls)
-        assert s.id == sid and s.supports(cls.currency) and not s.supports("XXX")
-        assert re.fullmatch(r"[A-Z]{3}", cls.currency)
+        s = cls(now=lambda: NOW, sid=sid)
+        assert s.id == sid and s.supports(s.currency) and not s.supports("XXX")
+        assert re.fullmatch(r"[A-Z]{3}", s.currency)
+
+
+# ---------------------------------------------------------------------------
+# Eurex Clearing OTC settlement curves (one shared file, six entries)
+# ---------------------------------------------------------------------------
+
+EUREX_NOW = datetime(2026, 10, 9, 11, 0, tzinfo=timezone.utc)
+EUREX_CSV = FIX / "eurex_settlement_20261008_cut.csv"      # scripts/cb_cut_eurex_fixture.py from settlement-prices_20261008.csv
+EUREX_PAGE = FIX / "eurex_settlement_page_cut.htm"          # the download block of the settlement-prices page, 2026-10-09
+SIX = {"USD.FEDFUNDS.1D", "USD.SOFR.1D", "EUR.ESTR.1D", "GBP.SONIA.1D", "JPY.TONAR.1D", "CHF.SARON.1D"}
+
+
+class StreamResp(Resp):
+    def iter_lines(self, chunk_size=512):
+        yield from self.content.splitlines()
+
+    def close(self):
+        pass
+
+
+def eurex(sid="eurex_ois_usd", now=EUREX_NOW):
+    from src.cb_sources.market import EurexOis
+    return EurexOis(now=lambda: now, sid=sid)
+
+
+@pytest.fixture
+def eurex_cache():
+    from src.cb_sources.market import EurexOis
+    EurexOis.clear_cache()
+    yield EurexOis
+    EurexOis.clear_cache()
+
+
+def test_eurex_page_link_and_file_date():
+    href, day = eurex().find_csv(EUREX_PAGE.read_text())
+    assert href == "/resource/blob/5618502/d5a768aed8873e65d125533f04ef3f2c/data/settlement-prices_20261008.csv" and day == date(2026, 10, 8)
+    assert eurex().find_csv("<html><a href='/x/settlement-prices.csv'>no date</a></html>") is None
+
+
+def test_eurex_parse_keeps_only_the_s_rows_of_the_six_curves_at_the_pillars():
+    s = eurex()
+    with open(EUREX_CSV, newline="") as fh:
+        f = s.parse(fh, SIX)
+    assert f.asof == date(2026, 10, 8) and set(f.curves) == SIX                          # decoys (EURIBOR 3M, DKK DESTR) dropped
+    piv = s.pillars(f.asof)
+    assert len(piv) == 39 and piv[7] == "1W" and piv[21] == "3W" and piv[31] == "1M" and piv[(date(2029, 10, 8) - f.asof).days] == "36M"
+    for cid, rows in f.curves.items():
+        assert sorted(rows) == sorted(piv), cid                                          # off-pillar offsets 1, 2, 8, 15, 400 and the Z rows dropped
+        assert all(mat == f.asof + timedelta(days=off) for off, (mat, _) in rows.items()), cid
+    assert f.curves["USD.FEDFUNDS.1D"][7][1] == 0.99924600368928                          # exactly as published (S = discount factor, not the Z row)
+    assert piv[(date(2027, 3, 8) - f.asof).days] == "5M"                                  # add_months_date, calendar days, no adjustment
+
+
+def test_eurex_quotes_rows_per_curve():
+    s = eurex("eurex_ois_gbp")
+    with open(EUREX_CSV, newline="") as fh:
+        qs = s.quotes(s.parse(fh, SIX))
+    assert len(qs) == 39 and {q.instrument for q in qs} == {"gbp_sonia_ois_df"} and {q.currency for q in qs} == {"GBP"}
+    assert {(q.field, q.unit, q.asof, q.ref_start, q.source) for q in qs} == {("df", "discount_factor", date(2026, 10, 8), date(2026, 10, 8), "eurex_ois_gbp")}
+    by = {q.contract: q for q in qs}
+    assert by["1W"].ref_end == date(2026, 10, 15) and by["1W"].tenor_months == pytest.approx(7 / 30.4375)
+    assert by["12M"].ref_end == date(2027, 10, 8) and by["12M"].tenor_months == 12.0 and by["36M"].ref_end == date(2029, 10, 8)
+    assert all(0.8 < q.value < 1.0 for q in qs)
+
+
+def test_eurex_one_download_serves_every_entry(monkeypatch, eurex_cache):
+    calls = serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(200, EUREX_PAGE.read_bytes()),
+                                "settlement-prices_20261008.csv": StreamResp(200, EUREX_CSV.read_bytes())})
+    got = {}
+    for sid in ("eurex_ois_usd", "eurex_ois_usd_sofr", "eurex_ois_eur", "eurex_ois_gbp", "eurex_ois_jpy", "eurex_ois_chf"):
+        res = eurex(sid).fetch()
+        got[sid] = (res.status, len(res.quotes), {q.instrument for q in res.quotes}, res.state)
+    assert sum(".csv" in u for u, _ in calls) == 1                                        # the 65 MB file once per process
+    assert got["eurex_ois_usd"] == ("ok", 39, {"usd_fedfunds_ois_df"}, {"asof": "2026-10-08"})
+    assert got["eurex_ois_chf"][2] == {"chf_saron_ois_df"} and got["eurex_ois_jpy"][2] == {"jpy_tonar_ois_df"}
+    assert all(v[0] == "ok" and v[1] == 39 for v in got.values())
+
+
+def test_eurex_not_modified_when_the_page_file_is_not_newer(monkeypatch, eurex_cache):
+    calls = serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(200, EUREX_PAGE.read_bytes())})   # a csv request would be unrouted
+    s = eurex()
+    s.stored_asof = date(2026, 10, 8)
+    res = s.fetch()
+    assert res.status == "not_modified" and not res.quotes and "2026-10-08 <= stored as-of 2026-10-08" in res.note
+    res = eurex().fetch(state={"asof": "2026-10-09"})                                     # the validator alone works too
+    assert res.status == "not_modified"
+    assert not any(".csv" in u for u, _ in calls)
+
+
+def test_eurex_http_failure_is_none_and_cached_for_the_other_entries(monkeypatch, eurex_cache):
+    calls = serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(200, EUREX_PAGE.read_bytes()),
+                                "settlement-prices_20261008.csv": StreamResp(503)})
+    a = eurex()
+    assert a.fetch() is None and (a.last_status, a.last_note) == ("UNREACHABLE", "HTTP 503")
+    b = eurex("eurex_ois_eur")
+    assert b.fetch() is None and b.last_status == "UNREACHABLE"
+    assert sum(".csv" in u for u, _ in calls) == 3                                       # 1 + 2 retries for the first entry, none for the second
+    serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(500)})
+    c = eurex("eurex_ois_gbp")
+    assert c.fetch() is None and c.last_status == "UNREACHABLE"
+
+
+def test_eurex_page_without_link_or_a_changed_header_is_a_parse_failure(monkeypatch, eurex_cache):
+    serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(200, "<html>redesigned</html>")})
+    s = eurex()
+    assert s.fetch() is None and s.last_status == "PARSE-FAIL" and "link" in s.last_note
+    serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(200, EUREX_PAGE.read_bytes()),
+                        "settlement-prices_20261008.csv": StreamResp(200, b"Date,Curve,Value\n2026-10-08,USD.FEDFUNDS.1D,1\n")})
+    s = eurex()
+    assert s.fetch() is None and s.last_status == "PARSE-FAIL" and "header" in s.last_note
+
+
+def test_eurex_curve_missing_from_the_file_is_a_parse_failure(monkeypatch, eurex_cache):
+    body = "\n".join(ln for ln in EUREX_CSV.read_text().splitlines() if "CHF.SARON" not in ln).encode()
+    serve(monkeypatch, {"eurex-otc-clear/settlement-prices": Resp(200, EUREX_PAGE.read_bytes()),
+                        "settlement-prices_20261008.csv": StreamResp(200, body)})
+    assert eurex("eurex_ois_usd").fetch().status == "ok"
+    s = eurex("eurex_ois_chf")
+    assert s.fetch() is None and s.last_status == "PARSE-FAIL" and "CHF.SARON.1D" in s.last_note
+
+
+def test_mpt_html_instead_of_the_workbook_is_a_parse_failure(monkeypatch):
+    serve(monkeypatch, {"mpt_histdata.xlsx": Resp(200, "<!DOCTYPE html><html><body>Page not found</body></html>")})
+    s = mk(AtlantaMpt)
+    assert s.fetch() is None and s.last_status == "PARSE-FAIL" and "not an xlsx" in s.last_note
+    assert "/research-and-data/data/market-probability-tracker/" in s.cfg["url"]            # the location since the move (2026-10)

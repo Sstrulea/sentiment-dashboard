@@ -202,3 +202,87 @@ def test_path_average_weights_days_and_extends_the_first_rate_backwards():
     assert M.path_average(path, D(2026, 10, 5), D(2026, 10, 15)) == pytest.approx(2.00)
     assert M.path_average(path, D(2026, 10, 5), D(2026, 10, 25)) == pytest.approx((15 * 2.0 + 5 * 3.0) / 20)
     assert rate_on(path, D(2026, 10, 25)) == 3.0
+
+
+# --- OIS: piecewise-constant overnight rate fitted to discount factors -----------------------------------------------
+
+from src.cb_sources.base import add_months_date                          # noqa: E402
+
+T0 = D(2026, 10, 8)
+
+
+def eurex_pillars(t0=T0, months=36):
+    return [t0 + timedelta(days=k) for k in (7, 14, 21)] + [add_months_date(t0, n) for n in range(1, months + 1)]
+
+
+def dfs_of(path, pillars, basis, t0=T0):
+    """DF(T) = prod over the days of [t0, T) of 1 / (1 + r_d / basis): daily compounding of a known overnight path (%)."""
+    import math
+    out = []
+    for T in pillars:
+        s = sum(math.log(1 + rate_on(path, t0 + timedelta(days=k)) / 100 / basis) for k in range((T - t0).days))
+        out.append((T, math.exp(-s)))
+    return out
+
+
+QUARTERLY = [D(2026, 12, 11), D(2027, 3, 19), D(2027, 6, 25), D(2027, 9, 24), D(2027, 12, 17)]      # SNB-like: a pillar inside every segment
+Q_PATH = [(T0, -0.05), (QUARTERLY[0], 0.02), (QUARTERLY[1], 0.15), (QUARTERLY[2], 0.35), (QUARTERLY[3], 0.49), (QUARTERLY[4], 0.56)]
+
+
+@pytest.mark.parametrize("basis", [360, 365])
+def test_ois_fit_recovers_a_synthetic_step_path_on_the_eurex_pillars(basis):
+    fit = M.ois_step_fit(dfs_of(Q_PATH, eurex_pillars(), basis), T0, QUARTERLY, basis)
+    assert fit.bounds == [T0] + QUARTERLY + [QUARTERLY[-1] + timedelta(days=56)]
+    assert fit.rates == pytest.approx([r for _, r in Q_PATH], abs=1e-4)                  # +-0.01 bp
+    assert fit.max_residual_bp < 0.01
+    assert fit.used == sum(1 for T in eurex_pillars() if T <= fit.bounds[-1])           # pillars past the tail are not equations
+
+
+def test_ois_fit_recovers_close_meetings_when_every_segment_has_a_pillar():
+    effs = [D(2026, 10, 29), D(2026, 12, 10), D(2027, 1, 28)]
+    path = [(T0, 3.8783), (effs[0], 3.9322), (effs[1], 4.1407), (effs[2], 4.2232)]
+    pillars = sorted(set(eurex_pillars(months=6)) | set(effs))                          # a pillar on each effective date
+    fit = M.ois_step_fit(dfs_of(path, pillars, 360), T0, effs, 360)
+    steps = [(b - a) * 100 for a, b in zip(fit.rates, fit.rates[1:])]
+    assert steps == pytest.approx([(b - a) * 100 for (_, a), (_, b) in zip(path, path[1:])], abs=0.01)
+
+
+def test_ois_regularisation_does_not_move_an_identified_system():
+    dfs = dfs_of(Q_PATH, eurex_pillars(), 360)
+    a = M.ois_step_fit(dfs, T0, QUARTERLY, 360, lam=0.03)
+    b = M.ois_step_fit(dfs, T0, QUARTERLY, 360, lam=0.0)
+    assert a.rates == pytest.approx(b.rates, abs=1e-4)
+
+
+def test_ois_regularisation_makes_an_unidentified_segment_well_posed():
+    """Two 10-day segments between the same two pillars (1M = 8 Nov, 2M = 8 Dec): only their sum is identified. The
+    lam * (g_k - g_k-1) rows pick the smoothest split: with s0 = 2.00, s3 = 2.25 and s1 + s2 = 4.00 fixed, minimising
+    (s1 - s0)^2 + (s2 - s1)^2 + (s3 - s2)^2 gives s1 = 2 - x, s2 = 2 + x with 12x = 0.5."""
+    effs = [D(2026, 11, 10), D(2026, 11, 20), D(2026, 11, 30)]
+    pillars = eurex_pillars(months=4)
+    assert not any(effs[0] < T <= effs[2] for T in pillars)
+    fit = M.ois_step_fit(dfs_of([(T0, 2.0), (effs[2], 2.25)], pillars, 360), T0, effs, 360)
+    x = 0.5 / 12
+    assert fit.rates == pytest.approx([2.0, 2.0 - x, 2.0 + x, 2.25], abs=1e-3)
+    assert fit.max_residual_bp < 0.01                                                     # the DF equations are still met
+
+
+def test_ois_boundaries_before_t0_are_ignored_and_the_tail_is_56_days():
+    fit = M.ois_step_fit(dfs_of(Q_PATH, eurex_pillars(), 360), T0, [T0 - timedelta(days=3), T0] + QUARTERLY, 360)
+    assert fit.bounds[0] == T0 and fit.bounds[1] == QUARTERLY[0] and (fit.bounds[-1] - fit.bounds[-2]).days == 56
+    assert fit.rate_from(QUARTERLY[1]) == pytest.approx(0.15, abs=1e-4) and fit.rate_from(D(2027, 1, 1)) is None
+    assert fit.path()[0] == (T0, pytest.approx(-0.05, abs=1e-4))
+
+
+def test_ois_residual_is_reported_in_bp_of_the_average_rate():
+    dfs = dfs_of(Q_PATH, eurex_pillars(), 360)
+    T, v = dfs[10]
+    bumped = dfs[:10] + [(T, v * (1 - 0.0001 * (T - T0).days / 360))] + dfs[11:]      # +1 bp on the average rate of one pillar
+    fit = M.ois_step_fit(bumped, T0, QUARTERLY, 360)
+    worst = max(fit.residuals, key=lambda x: abs(x[1]))
+    assert worst[0] == T and 0.2 < abs(worst[1]) < 1.0                                 # least squares spreads the bump over its segment
+
+
+def test_ois_no_pillar_in_the_span_raises():
+    with pytest.raises(ValueError):
+        M.ois_step_fit([(D(2031, 1, 1), 0.9)], T0, QUARTERLY, 360)

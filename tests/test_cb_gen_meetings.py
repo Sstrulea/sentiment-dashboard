@@ -86,7 +86,8 @@ def test_one_day_meetings_carry_no_first_day(parsed, rbnz):
 def test_rbnz_rows_are_the_manual_calendar_and_never_verified(rbnz):
     rows = M.build_rows("NZD", [], BANKS, EVIDENCE, manual=rbnz)
     assert [(r[0], r[2], r[4], r[5]) for r in rows][:3] == [(D(2026, 2, 18), True, "manual", False), (D(2026, 4, 8), False, "manual", False), (D(2026, 5, 27), True, "manual", False)]
-    assert len(rows) == 8 and rows[-1][0] == D(2027, 2, 17)
+    assert len(rows) == 15 and rows[-1][0] == D(2027, 12, 8)                           # the release runs to 2028-02-09: rows to the end of the range
+    assert [(r[0], r[2]) for r in rows if r[0].year == 2027][:3] == [(D(2027, 2, 10), False), (D(2027, 3, 17), True), (D(2027, 5, 5), False)]
 
 
 def test_a_new_evidence_date_changes_only_the_verified_dates_and_the_meta_line(parsed, ecb_days, rbnz):

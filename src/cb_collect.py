@@ -16,7 +16,8 @@ Store rules
   * history is never deleted; a failed source is logged and skipped (exit 0 unless EVERY source failed);
   * validators (ETag / Last-Modified) live in data/cb/state.json and are advanced only after the data they
     describe is on disk, and never when part of the response was held back by the cutoff;
-  * snapshot sources (JPX, MX, ASX) also keep the relevant raw rows, gzip, in data/cb/raw/<source>/<asof>.csv.gz.
+  * snapshot sources (JPX, MX, ASX) also keep the relevant raw rows, gzip, in data/cb/raw/<source>/<asof>.csv.gz
+    (not Eurex: the file is ~65 MB and the stored pillars are its relevant rows).
 
 Single writer: after merge, data/cb/ is written only by CI (.github/workflows/cb-refresh.yml).
 """
@@ -246,15 +247,20 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
     reports: list[SourceReport] = []
     raws: list[tuple[str, date, str]] = []
 
+    stored: dict[str, date] = {}
+    for r in store.values():
+        if r["asof"] > stored.get(r["source"], date.min):
+            stored[r["source"]] = r["asof"]
     for sid in ids:
         rep = SourceReport(sid)
         reports.append(rep)
         try:
-            src = CLASSES[cfg["sources"][sid]["adapter"]](cfg["sources"][sid], now=clock)
+            src = CLASSES[cfg["sources"][sid]["adapter"]](cfg["sources"][sid], now=clock, sid=sid)
         except Exception as e:                                   # a broken adapter must not stop the rest
             rep.status, rep.note = "FAILED", f"init {type(e).__name__}: {e}"
             log.error("%s: %s", sid, rep.note)
             continue
+        src.stored_asof = stored.get(sid)                        # snapshot files named by date (Eurex): no download when not newer
         validators = {} if backfill_from else state.get(sid, {})   # backfill = full download
         res = src.fetch(since=since, state=validators)
         if res is None:
@@ -394,7 +400,55 @@ def _fmt_text(heads: list[str], rows: list[list]) -> str:
     return "\n".join("  ".join(c.ljust(w[i]) for i, c in enumerate(r)).rstrip() for r in cells)
 
 
-def status(paths: Paths, today: date, cfg: dict | None = None) -> tuple[str, str]:
+def eurex_page_file(cfg: dict) -> tuple[Optional[date], str]:
+    """The date of the file the Eurex settlement page links today (one ~100 KB GET): (date, "") or (None, why)."""
+    from .cb_sources.market import EurexOis
+    sid = next((i for i, c in cfg["sources"].items() if c.get("adapter") == EurexOis.__name__), None)
+    if sid is None:
+        return None, "no Eurex source configured"
+    src = EurexOis(cfg["sources"][sid], sid=sid)
+    try:
+        page, _, _ = src.get_url(src.cfg["url"])
+    except Exception as e:                                           # noqa: BLE001 - --status only warns
+        return None, f"page unreachable ({type(e).__name__})"
+    if page is None:
+        return None, f"page unreachable ({src.last_status} {src.last_note})".strip()
+    found = src.find_csv(page.text)
+    return (found[1], "") if found else (None, "no settlement-prices_YYYYMMDD.csv link on the page")
+
+
+def eurex_status(per: dict, cfg: dict, today: date, cals: dict, page: tuple) -> tuple[list[str], list[str]]:
+    """--status section for the Eurex curves: the page's file date, the stored as-of and its lag, curves found (of the
+    configured ones) and pillars per curve; warnings when the page has no link or a curve is missing. -> (lines, warnings)"""
+    ids = [i for i, c in cfg["sources"].items() if c.get("adapter") == "EurexOis"]
+    if not ids:
+        return [], []
+    lines, warn = [], []
+    file_day, why = page
+    asofs = {i: max((r["asof"] for r in per.get(i, [])), default=None) for i in ids}
+    stored = max((a for a in asofs.values() if a), default=None)
+    cal = calendar_of(cals, cfg["sources"][ids[0]].get("calendar_id"))
+    lines.append(f"page file: {file_day}" if file_day else f"page file: n/a - {why}")
+    if file_day is None:
+        warn.append(f"WARN Eurex: {why}")
+    if stored is None:
+        lines.append("stored as-of: none yet")
+    else:
+        newer = f" - the page has a newer file ({file_day})" if file_day and file_day > stored else ""
+        lines.append(f"stored as-of: {stored}, lag {cal.lag(stored, today)} bd ({cfg['sources'][ids[0]].get('calendar_id')}){newer}")
+    found = []
+    for i in ids:
+        rows = [r for r in per.get(i, []) if stored is not None and r["asof"] == stored]
+        cid = cfg["sources"][i].get("curve_id")
+        if rows:
+            found.append(f"{i} {cid} {len(rows)} pillars")
+        else:
+            warn.append(f"WARN Eurex: {i} ({cid}) has no rows at the stored as-of {stored}" if stored else f"WARN Eurex: {i} ({cid}) has no rows")
+    lines.append(f"curves: {len(found)}/{len(ids)}" + (" - " + "; ".join(found) if found else ""))
+    return lines, warn
+
+
+def status(paths: Paths, today: date, cfg: dict | None = None, eurex_page: Optional[Callable[[dict], tuple]] = None) -> tuple[str, str]:
     cfg = cfg or load_sources()
     store = load_store(paths)
     state = load_state(paths)
@@ -435,6 +489,10 @@ def status(paths: Paths, today: date, cfg: dict | None = None) -> tuple[str, str
     md = f"### cb_collect --status {today}\n\n" + _md_table(heads, rows) + f"\n\n_{foot}_"
     if gaps:
         md += "\n\nMissing weekdays (latest 8):\n" + "\n".join(f"- {g}" for g in gaps)
+    if any(c.get("adapter") == "EurexOis" for c in cfg["sources"].values()):
+        lines, warn = eurex_status(per, cfg, today, cals, (eurex_page or eurex_page_file)(cfg))
+        text += "\n\nEurex settlement curves (one shared file)\n" + "\n".join(f"  {x}" for x in lines + warn)
+        md += "\n\n#### Eurex settlement curves (one shared file)\n\n" + "\n".join(f"- {x}" for x in lines + warn)
     from . import cb_datasets as dsets                        # decisions / projections / manual / calendar sections
     et, em = dsets.extra_status(paths, today)
     return text + ("\n" + et if et else ""), md + ("\n" + em if em else "")

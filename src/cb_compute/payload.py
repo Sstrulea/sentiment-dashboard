@@ -26,7 +26,9 @@ CHART_MONTHS_BACK = 13
 FLAG_LABEL = {"EXACT": "EXACT", "CURVE": "CURVE", "UPPER_BOUND": "UPPER BOUND", "PROXY": "PROXY", "DECIDED": "DECIDED"}
 FLAG_HELP = {
     "EXACT": "Solved exactly from 1M month-average futures: the rate changes only on the effective date, so the implied rate after the meeting follows from the monthly average.",
-    "CURVE": "OIS forward curve averaged over the interval between effective dates, minus the overnight-to-policy spread.",
+    "CURVE": "OIS curve: USD, EUR, GBP, JPY and CHF use the Eurex Clearing settlement curves (discount factors), with the overnight rate fitted as "
+             "constant between effective dates (one rate per interval); elsewhere an OIS forward curve averaged over the interval. Minus the "
+             "overnight-to-policy spread.",
     "UPPER_BOUND": "3M contract window: the average covers several meetings, so the cumulative move is an upper bound for this meeting alone.",
     "PROXY": "Government-curve proxy - not policy-equivalent. Shown as a raw sovereign level unless a basis can be measured from a short tenor.",
     "DECIDED": "The meeting has already been decided: it is part of the base rate.",
@@ -40,7 +42,12 @@ METHODOLOGY = [
                                    "(shown as 'from <date>'). The Fed is the midpoint of the target range."},
     {"title": "Implied policy rate", "text": "Market instruments give the overnight benchmark path; the benchmark-to-policy spread (median of the last 20 business days, "
                                               "excluding +-2 business days around rate changes and month-ends) is removed to get a policy-equivalent rate."},
-    {"title": "Methods", "text": "EXACT: 1M month-average futures chain. CURVE: OIS forward curve averaged between effective dates. UPPER BOUND: 3M contracts "
+    {"title": "Methods", "text": "EXACT: 1M month-average futures chain. CURVE: OIS curve - for USD (fed funds), EUR (EUR STR), GBP (SONIA), JPY (TONA) and CHF "
+                                  "(SARON) the daily Eurex Clearing settlement curves: the overnight rate is taken as constant between effective dates and fitted "
+                                  "to the published discount factors (least squares, one rate per interval, a small smoothing term only where pillars cannot "
+                                  "separate two intervals), then the overnight-to-policy spread is removed (EFFR vs the Fed midpoint, EUR STR vs the deposit rate, "
+                                  "SONIA vs Bank Rate, the call rate vs the BoJ guideline, SARON vs the SNB rate); a meeting whose effective date is beyond the last "
+                                  "pillar is n/a. Otherwise an OIS forward curve averaged between effective dates. UPPER BOUND: 3M contracts "
                                   "whose window spans several meetings. PROXY: government curves / bills, with a basis measured only from tenors observed before "
                                   "the first effective date - without one ('proxy without short end') no bp, step or probability is computed and only the raw level is shown."},
     {"title": "Step and probability", "text": "For EXACT and CURVE the implied step at the next meeting is split into whole 25 bp moves (n = floor(|step|/25)) and a "

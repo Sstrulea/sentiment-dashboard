@@ -7,8 +7,9 @@ from datetime import date, timedelta
 from typing import Optional
 
 from .engine import (GAP_YEARS, REPRICING_BD, STRENGTH, YEAR_ENDS, Context, NextMeeting, Point, Trajectory, YearEnd,
-                     last_meeting_of, next_meeting, step_reason, trajectory, weakest, year_end, _raw_rate, _windows)
-from .methods import TenorCurve, Window, months_between, path_average, pick_window
+                     last_meeting_of, next_meeting, ois_fit, spread_for, step_reason, trajectory, weakest, year_end, _raw_rate,
+                     _windows)
+from .methods import Curve, TenorCurve, Window, months_between, path_average, pick_window
 
 # ---------------------------------------------------------------------------
 # Cross-checks (the primary instrument against an independent one)
@@ -67,8 +68,91 @@ def bills_basis(curve: TenorCurve, asof: date, first_eff: date, base: float) -> 
 NO_SHORT_END = "proxy without short end: no bill tenor ends before the first effective date, so no basis can be measured"
 
 
+CROSS_MEETINGS = 6                              # Eurex SOFR vs fed funds: the first meetings
+CROSS_WINDOWS = 4                               # MPT / JPX: the first windows that start after the as-of
+
+
+def _stale(ctx: Context, sid: str, snap, asof: date) -> tuple:
+    lag = ctx.source_cal(sid).lag(snap.asof, asof)
+    return lag > ctx.stale_limit(sid), lag
+
+
+def _ois_crosschecks(ctx: Context, tr: Trajectory, unknown: list) -> list:
+    """The Eurex OIS primary (tr.extra['ois_path'], policy space) against the other instruments of the same currency."""
+    out: list = []
+    cur, asof = tr.currency, tr.asof
+    path, end = tr.extra["ois_path"], tr.extra["ois_end"]
+    sp = tr.spread.value if tr.spread and tr.spread.value is not None else None
+    if cur == "USD":
+        xs = spread_for(ctx, cur, asof, "crosscheck_spread")
+        snap = ctx.market.latest("eurex_ois_usd_sofr", asof)
+        rows = [r for r in snap.rows if r["instrument"] == "usd_sofr_ois_df"] if snap else []
+        if rows and xs.value is not None:
+            got, why = ois_fit(ctx, tr, unknown, "eurex_ois_usd_sofr", snap, rows)
+            if got is None:
+                out.append(CrossCheck("USD Eurex fed funds vs SOFR OIS", "per meeting", "fed funds OIS (policy)", None, "SOFR OIS (policy)", None, na_reason=why))
+            else:
+                fit, inside = got
+                for u in inside[:CROSS_MEETINGS]:
+                    p = tr.point_for(u.decision)
+                    r = fit.rate_from(u.eff)
+                    if p is not None and p.rate is not None and r is not None:
+                        out.append(CrossCheck("USD Eurex fed funds vs SOFR OIS", f"{u.decision} (from {u.eff})", "fed funds OIS (policy)", p.rate,
+                                              "SOFR OIS (policy)", r - xs.value,
+                                              f"same file {snap.asof}; spreads EFFR {sp * 100:+.1f} bp, SOFR {xs.value * 100:+.1f} bp (20-day medians)"))
+        mpt = ctx.market.latest("atlantafed_mpt", asof)
+        if mpt is not None and xs.value is not None:
+            stale, lag = _stale(ctx, "atlantafed_mpt", mpt, asof)
+            if stale:
+                out.append(CrossCheck("USD Eurex fed funds OIS vs MPT", "3M windows", "fed funds OIS path (policy)", None, "MPT (policy)", None,
+                                      na_reason=f"MPT is stale: as-of {mpt.asof}, {lag} business days old"))
+            else:
+                wins = [w for w in _windows(tr, [r for r in mpt.rows if r["instrument"] == "sofr_3m_ref_quarter_mean"], xs.value) if w.start > asof and w.end <= end]
+                for w in wins[:CROSS_WINDOWS]:
+                    out.append(CrossCheck("USD Eurex fed funds OIS vs MPT", f"{w.start}..{w.end}", "fed funds OIS path average (policy)", path_average(path, w.start, w.end),
+                                          "MPT (policy)", w.rate, f"MPT {mpt.asof}, SOFR spread {xs.value * 100:+.1f} bp"))
+    if cur == "GBP" and sp is not None:
+        snap = ctx.market.latest("boe_ois", asof)
+        rows = [r for r in snap.rows if r["instrument"] == "sonia_instantaneous_forward"] if snap else []
+        if rows:
+            curve = Curve([(r["tenor_months"], r["value"]) for r in rows])
+            for y in YEAR_ENDS:
+                m = last_meeting_of(ctx, cur, y)
+                p = tr.point_for(m.decision) if m else None
+                if p is None or p.rate is None or not p.window:
+                    continue
+                t0, t1 = months_between(snap.asof, p.window[0]), months_between(snap.asof, p.window[1])
+                b = curve.average(t0, t1) - sp if curve.t[0] - 1e-9 <= t0 and t1 <= curve.horizon + 1e-9 else None
+                out.append(CrossCheck("GBP Eurex SONIA vs BoE OIS", f"end-{y} ({m.decision})", "Eurex SONIA OIS (policy)", p.rate, "BoE OIS curve (policy)", b,
+                                      f"BoE curve {snap.asof}, interval average", na_reason="" if b is not None else "outside the BoE curve coverage"))
+    if cur == "JPY" and sp is not None:
+        snap = ctx.market.latest("jpx_tona", asof)
+        if snap is not None:
+            wins = [w for w in _windows(tr, [r for r in snap.rows if r["instrument"] == "tona_3m_futures"], sp) if w.start > asof and w.end <= end]
+            for w in wins[:CROSS_WINDOWS]:
+                out.append(CrossCheck("JPY Eurex TONA vs JPX TONA-3M", f"{w.start}..{w.end}", "Eurex TONA OIS path average (policy)", path_average(path, w.start, w.end),
+                                      "JPX 3M TONA (policy)", w.rate, f"JPX {snap.asof}, contract {w.label}"))
+    if cur == "EUR":
+        snap = ctx.market.latest("ecb_aaa_fwd", asof)
+        rows = [r for r in snap.rows if r["instrument"] == "aaa_govt_instantaneous_forward"] if snap else []
+        if rows:
+            curve = Curve([(r["tenor_months"], r["value"]) for r in rows])
+            for y in YEAR_ENDS:
+                m = last_meeting_of(ctx, cur, y)
+                p = tr.point_for(m.decision) if m else None
+                if p is None or p.extra.get("r_raw") is None or not p.window:
+                    continue
+                t0, t1 = months_between(snap.asof, p.window[0]), months_between(snap.asof, p.window[1])
+                b = curve.average(t0, t1) if curve.t[0] - 1e-9 <= t0 and t1 <= curve.horizon + 1e-9 else None
+                out.append(CrossCheck("EUR Eurex EUR STR vs ECB AAA (informative, PROXY)", f"end-{y} ({m.decision})", "Eurex EUR STR OIS (raw)", p.extra["r_raw"],
+                                      "ECB AAA forward (raw sovereign level)", b, f"AAA {snap.asof}; PROXY: a government curve, the difference includes the "
+                                      "government-OIS basis - informative only", na_reason="" if b is not None else "outside the AAA curve coverage"))
+    return out
+
+
 def crosschecks(ctx: Context, tr: Trajectory) -> list:
-    """USD: MPT windows vs Treasury bills; CAD: CRA windows vs the COA chain path; AUD: IB path vs RBA bank bills."""
+    """Eurex OIS primaries (USD, EUR, GBP, JPY) against SOFR OIS / MPT / BoE OIS / JPX / ECB AAA; USD: MPT windows vs Treasury
+    bills; CAD: CRA windows vs the COA chain path; AUD: IB path vs RBA bank bills."""
     out: list = []
     if tr.na_reason or tr.base is None:
         return out
@@ -77,13 +161,16 @@ def crosschecks(ctx: Context, tr: Trajectory) -> list:
     if not unknown:
         return out
     first_eff = unknown[0].eff
+    if tr.extra.get("ois_path"):
+        out += _ois_crosschecks(ctx, tr, unknown)
     if cur == "USD":
         got = _tenor_curve(ctx, "ust_bills", asof, "ust_par_curve")
         mpt = ctx.market.latest("atlantafed_mpt", asof)
-        if got and mpt and tr.spread and tr.spread.value is not None:
+        xs = spread_for(ctx, cur, asof, "crosscheck_spread")             # MPT is built on SOFR options
+        if got and mpt and xs.value is not None:
             curve, snap = got
             basis = bills_basis(curve, snap.asof, first_eff, tr.base.rate)
-            wins = [w for w in _windows(tr, [r for r in mpt.rows if r["instrument"] == "sofr_3m_ref_quarter_mean"], tr.spread.value)[:4] if w.start > asof]
+            wins = [w for w in _windows(tr, [r for r in mpt.rows if r["instrument"] == "sofr_3m_ref_quarter_mean"], xs.value)[:4] if w.start > asof]
             if basis is None and wins:
                 out.append(CrossCheck("USD MPT vs Treasury bills", "all windows", "MPT (policy)", None, "Treasury", None, na_reason=NO_SHORT_END))
             for w in wins if basis is not None else []:
@@ -232,7 +319,7 @@ def fed_gap(ctx: Context, tr: Trajectory, asof: date) -> Gap:
         return Gap("USD", "dots", "no SEP on record")
     g = Gap("USD", "dots", sep=sep)
     mpt = ctx.market.latest("atlantafed_mpt", asof)
-    sp = tr.spread.value if tr.spread else None
+    sp = spread_for(ctx, "USD", asof, "crosscheck_spread").value          # MPT is SOFR-based
     for y in GAP_YEARS:
         gy = GapYear(y)
         g.years.append(gy)

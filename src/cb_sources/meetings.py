@@ -28,7 +28,7 @@ BASIS = {
     "JPY": "dates + Outlook Report (projections) from the BoJ schedule page; presser: every meeting (config), not stated on the schedule page",
     "CAD": "dates + MPR from the BoC schedule page; presser at every decision (BoC blackout page)",
     "AUD": "two-day board meetings, decision on day 2; dates from the RBA schedule page; projections derived (Statement on Monetary Policy Feb/May/Aug/Nov, RBA practice); presser every meeting (config)",
-    "NZD": "MANUAL: transcribed from the RBNZ release 'Monetary policy and OCR decision dates until February 2027' via web search (rbnz.govt.nz is behind a Cloudflare challenge); MPS = projections; presser 15:00 NZ (config, unverified). Dates after 2027-02-17 not published yet",
+    "NZD": "MANUAL: transcribed from the RBNZ release 'OCR decision dates and Financial Stability Report dates to February 2028' (published 2026-02-19, updated 2026-09-18; transcribed 2026-10-09, rbnz.govt.nz is behind a Cloudflare challenge); 8 meetings a year from 2027; projections = Monetary Policy Statement meetings (not the Reviews); presser 15:00 NZ (config, unverified)",
     "CHF": "dates from the SNB decisions archive (past) and event schedule (upcoming); quarterly assessment with conditional inflation forecast and press conference every time",
 }
 
@@ -49,7 +49,7 @@ HEADER = [
     "#                   come from the page where it states them, otherwise they are derived (basis per bank below);",
     "#                   `verified` does not vouch for derived flags.",
     "#",
-    "# RBNZ stays manual (data/cb/manual/rbnz.yaml) until the February 2027 release of the 2027 dates.",
+    "# RBNZ stays manual (data/cb/manual/rbnz.yaml): published calendar to February 2028 (rows up to the end of the range).",
     "",
 ]
 
@@ -73,7 +73,8 @@ def build_rows(bank: str, page: list, banks: dict, evidence: date, ff_days: Opti
 
     if bank == "NZD":                                               # manual list, never a page
         for m in manual or []:
-            add(m["date"], None, bool(m["has_projections"]), "manual", False)
+            if in_scope(bank, m["date"]):
+                add(m["date"], None, bool(m["has_projections"]), "manual", False)
     else:
         for m in page:
             if not in_scope(bank, m["date"]):
