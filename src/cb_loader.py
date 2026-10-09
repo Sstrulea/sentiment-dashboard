@@ -30,6 +30,18 @@ def build_meetings(meetings_raw: dict, banks: dict, calendars: dict) -> dict:
     return out
 
 
+NZD_SPREAD = Path(__file__).resolve().parent.parent / "config" / "cb_nzd_spread.yaml"
+
+
+def load_estimated_spreads(path: Path | str | None = None) -> dict:
+    """currency -> estimated benchmark - policy spread. NZD: config/cb_nzd_spread.yaml (scripts/cb_nzd_bkbm_spread.py); absent file = none."""
+    p = Path(path) if path else NZD_SPREAD
+    if not p.exists():
+        return {}
+    doc = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    return {"NZD": dict(doc, benchmark="BKBM 3M (estimated, monthly)", policy="OCR")} if doc.get("value_bp") is not None else {}
+
+
 def load_context(data_dir: Path | str | None = None) -> Context:
     paths = cc.Paths(data_dir)
     banks = ds.load_banks()
@@ -55,6 +67,7 @@ def load_context(data_dir: Path | str | None = None) -> Context:
         redlines={(r["currency"], r["meeting_date"]): r for r in dst.load_redlines(paths)},
         summaries=sm.load(paths.summaries), summary_failures=sm.load_failures(paths.summaries), summary_no_text=sm.load_no_text(paths.summaries),
 
+        estimated_spreads=load_estimated_spreads(),
         stale_after_bd=int(sources_cfg["meta"].get("stale_after_bd", 2)))
 
 

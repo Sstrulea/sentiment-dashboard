@@ -8,6 +8,37 @@ Each entry records why, and what would trigger re-evaluation.
 
 ---
 
+## 2026-10-09 — /central-banks: MX snapshots 2026-09-18 … 2026-10-09 carry next-morning prices
+
+**Component:** `mx_corra` (Montreal Exchange CRA / COA settlement page) in
+`data/cb/market_quotes/` and `data/cb/raw/mx_corra/`. The page has no as-of
+stamp: the collector infers it from the fetch time and skipped only fetches
+inside `intraday_utc`, which was `["13:00", "22:00"]`.
+
+**Defect:** MX rate futures trade from 02:00 ET (06:00 UTC). A fetch between
+06:00 and 13:00 UTC was outside the old window, so it was recorded as the
+PREVIOUS day's as-of while it showed the new session's prices. Every as-of
+since 2026-09-18 was first written correctly at ~22:41Z on its day, then
+overwritten at 08:41Z / 10:41Z / 12:41Z the next morning (last-write-wins on
+the key). Example: as-of 2026-10-08, CRA Dec-26 = 97.33 at 08:41Z and 97.41 at
+12:41Z on 9 Oct (after the 12:30Z Canadian labour-force data). The raw rows were
+overwritten the same way.
+
+**Change:** `intraday_utc: ["06:00", "22:00"]` (`config/cb_sources.yaml`):
+only fetches between 22:00 and 06:00 UTC are recorded. Test:
+`tests/test_cb_collect.py::test_mx_fetch_during_the_next_session_writes_nothing`.
+
+**Accepted:** the history is NOT rewritten (a snapshot source: the correct
+22:41Z values are gone). The MX snapshots from 2026-09-18 to 2026-10-09 contain
+prices from the morning of the following day; CAD repricing / reaction over
+those dates inherits that offset. The engine fixture `tests/fixtures/cb_engine_1008`
+keeps the 12:41Z snapshot of 9 Oct on purpose (it tests the method on fixed data).
+
+**Re-evaluate:** never needed for new data; the affected as-ofs age out of the
+1w / 1m repricing windows by ~2026-11-09.
+
+---
+
 ## 2026-08-17 — TREND disabled entirely (`trend_enabled: false`)
 
 **Component:** The whole TREND pillar (price MA structure × ADX strength,

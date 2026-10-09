@@ -6,6 +6,9 @@
   OIS     OIS discount factors (Eurex): the overnight rate is constant between effective dates; one unknown per segment,
           g_k = ln(1 + r_k / basis) per day, one equation per pillar (-ln DF(T) = sum_k g_k * days of segment k in [t0, T)),
           plus lam * (g_k - g_k-1) rows so that the system is well posed; least squares. Flagged CURVE (same family).
+  FIT     1M / 3M futures that no single contract isolates (CAD beyond the COA chain, NZD bank bills): the overnight rate is
+          constant between effective dates and every contract of the source is fitted at once (contract average = implied
+          rate, weight 30), with 1 * (r_k - r_k-1) rows (r_0 fixed) so that the system is well posed. Flag ESTIMATE.
   CURVE   OIS instantaneous-forward curve on a monthly grid, linear between grid points: the rate after meeting m is the
           average of the curve on [eff_m, eff_m+1).
   WINDOW  3M contracts (MPT, JPX TONA, MX CRA, ASX BB): one value per reference window; the window of a meeting is the one
@@ -166,6 +169,89 @@ def ois_step_fit(dfs: list, t0: date, boundaries: list, basis: float, lam: float
     res = A @ g - b
     residuals = [(T, float(res[i] / A[i].sum() * basis * 1e4)) for i, (T, _) in enumerate(pts)]
     return OisFit(bounds, [float((math.exp(x) - 1) * basis * 100) for x in g], residuals, len(pts))
+
+
+# ---------------------------------------------------------------------------
+# FIT: every contract of a source at once, piecewise-constant path
+# ---------------------------------------------------------------------------
+
+FIT_WEIGHT = 30.0                 # contract rows
+FIT_LAMBDA = 1.0                  # (r_k - r_k-1) rows, percent
+
+
+@dataclass
+class FitContract:
+    start: date
+    end: date                     # exclusive
+    rate: float                   # implied rate of the contract (100 - price), percent
+    label: str = ""
+
+
+@dataclass
+class FuturesFit:
+    bounds: list                  # [e_1, ..., e_K, e_K + tail]: segment k = [bounds[k], bounds[k + 1])
+    rates: list                   # percent per segment; None = not touched by any contract
+    residuals: list               # [(label, bp)]: fitted contract average - implied rate
+    used: int = 0                 # contracts in the fit
+
+    def rate_from(self, d: date) -> Optional[float]:
+        return self.rates[self.bounds.index(d)] if d in self.bounds[:-1] else None
+
+    @property
+    def max_residual_bp(self) -> float:
+        return max((abs(r) for _, r in self.residuals), default=0.0)
+
+
+def futures_fit(contracts: list, effs: list, r0: float, asof: date, realised=None, weight: float = FIT_WEIGHT,
+                lam: float = FIT_LAMBDA, tail_days: int = TAIL_DAYS) -> FuturesFit:
+    """effs = effective dates of the meetings still to come (ascending, all after `asof`); r0 = the rate before the first one
+    (known: base + spread). Days of a contract up to `asof` take `realised(d)` (fixings, when given and not None), the other
+    days before effs[0] take r0. Only segments touched by a contract are unknowns; contracts ending after the last segment are
+    dropped. Least squares on weight * (average - rate) rows plus lam * (r_k - r_prev touched) rows (the first one vs r0)."""
+    bounds = list(effs) + [effs[-1] + timedelta(days=tail_days)]
+    K = len(effs)
+    cs = [c for c in contracts if c.end <= bounds[-1] and c.end > c.start]
+
+    def seg(d: date) -> int:
+        return bisect.bisect_right(bounds, d) - 1 if d >= bounds[0] else -1
+
+    rows, known = [], []
+    for c in cs:
+        n = (c.end - c.start).days
+        cnt, kn = [0] * K, 0.0
+        d = c.start
+        for _ in range(n):
+            k = seg(d)
+            if k >= 0:
+                cnt[k] += 1
+            else:
+                fx = realised(d) if realised is not None and d <= asof else None
+                kn += r0 if fx is None else fx
+            d += timedelta(days=1)
+        rows.append((cnt, n))
+        known.append(kn)
+    touched = [k for k in range(K) if any(cnt[k] for cnt, _ in rows)]
+    if not touched:
+        return FuturesFit(bounds, [None] * K, [], 0)
+    col = {k: j for j, k in enumerate(touched)}
+    A, b = [], []
+    for (cnt, n), kn, c in zip(rows, known, cs):
+        A.append([weight * cnt[k] / n for k in touched])
+        b.append(weight * (c.rate - kn / n))
+    for j, k in enumerate(touched):
+        r = [0.0] * len(touched)
+        r[j] = lam
+        if j == 0:
+            b.append(lam * r0)
+        else:
+            r[j - 1] = -lam
+            b.append(0.0)
+        A.append(r)
+    A, b = np.array(A), np.array(b)
+    x = np.linalg.lstsq(A, b, rcond=None)[0]
+    res = (A[:len(cs)] @ x - b[:len(cs)]) / weight * 100
+    rates = [float(x[col[k]]) if k in col else None for k in range(K)]
+    return FuturesFit(bounds, rates, [(c.label, float(v)) for c, v in zip(cs, res)], len(cs))
 
 
 # ---------------------------------------------------------------------------

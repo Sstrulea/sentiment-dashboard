@@ -16,12 +16,12 @@ import numpy as np
 
 from ..cb_calendar import Calendar, weekends_only
 from .decisions import SeriesView
-from .methods import (Curve, TenorCurve, Window, chain_path, exact_chain, interior_meetings, interval_ends, months_between,
-                      ois_step_fit, path_average, pick_window, pre_days, proxy_basis, step_probabilities)
+from .methods import (Curve, FitContract, TenorCurve, Window, chain_path, exact_chain, futures_fit, interior_meetings, interval_ends,
+                      months_between, ois_step_fit, path_average, pick_window, pre_days, proxy_basis, step_probabilities)
 from .spread import Spread, compute_spread
 
-FLAG_OF = {"EXACT": "EXACT", "OIS": "CURVE", "CURVE": "CURVE", "WINDOW": "UPPER_BOUND", "PROXY_CURVE": "PROXY", "PROXY_TENOR": "PROXY"}
-STRENGTH = {"EXACT": 0, "CURVE": 1, "UPPER_BOUND": 2, "PROXY": 3, "DECIDED": -1}      # higher = weaker
+FLAG_OF = {"EXACT": "EXACT", "FIT": "ESTIMATE", "CURVE": "CURVE", "WINDOW": "UPPER_BOUND", "PROXY_CURVE": "PROXY", "PROXY_TENOR": "PROXY"}
+STRENGTH = {"EXACT": 0, "CURVE": 1, "ESTIMATE": 2, "UPPER_BOUND": 3, "PROXY": 4, "DECIDED": -1}      # higher = weaker
 LEVEL_KINDS = ("policy", "bkbm", "sovereign_proxy")
 YEAR_ENDS = (2026, 2027)
 GAP_YEARS = (2026, 2027, 2028)
@@ -102,6 +102,7 @@ class Context:
     summary_failures: dict = field(default_factory=dict)         # "doc_id|prompt_version" -> validation failure (never shown as a summary)
     summary_no_text: dict = field(default_factory=dict)          # doc_id -> {url, reason, at}: the page has no extractable text (marked once)
     doc_warnings: list = field(default_factory=list)             # documents past their usual publication lag
+    estimated_spreads: dict = field(default_factory=dict)        # currency -> estimated benchmark - policy spread (NZD: config/cb_nzd_spread.yaml)
     stale_after_bd: int = 2
 
     def cal(self, cal_id: Optional[str]) -> Calendar:
@@ -225,6 +226,10 @@ def spread_for(ctx: Context, cur: str, asof: date, key: str = "spread") -> Sprea
     a bank without one uses its `spread`)."""
     cfg = ctx.banks[cur].get(key) or (ctx.banks[cur].get("spread") if key != "spread" else None)
     if not cfg:
+        est = ctx.estimated_spreads.get(cur)
+        if est and est.get("value_bp") is not None:                # NZD: BKBM - OCR, estimated from monthly data, not observed daily
+            return Spread(est["value_bp"] / 100, n=int(est.get("n_months") or 0), benchmark=est.get("benchmark", "estimate"),
+                          policy=est.get("policy", ""), estimated=True, note=estimate_note(est))
         return Spread(None, reason="no spread pair for this bank")
     cal = ctx.cal(ctx.series_calendar.get(cfg["benchmark"]))
     changes = [d["effective_date"] for d in ctx.decisions.get(cur, []) if d["meeting_date"] <= asof and d["delta_bp"]]
@@ -252,7 +257,7 @@ def trajectory(ctx: Context, cur: str, asof: date) -> Trajectory:
         for inst, ic in cfg["instruments"].items():
             by_method.setdefault(ic["method"], []).append((sid, inst))
     pts: dict = {}
-    for method in ("EXACT", "OIS", "CURVE", "PROXY_CURVE", "WINDOW"):          # exact first: the windows only fill the rest
+    for method in ("EXACT", "OIS", "FIT", "CURVE", "PROXY_CURVE", "WINDOW"):   # exact first: the fit and the windows only fill the rest
         for sid, inst in by_method.get(method, []):
             snap = ctx.market.latest(sid, asof)
             if snap is None:
@@ -270,6 +275,7 @@ def trajectory(ctx: Context, cur: str, asof: date) -> Trajectory:
     why = tr.notes[0] if tr.notes else "no instrument reaches this meeting"
     tr.points = [pts.get(u.decision) or Point(u.decision, u.eff, "meeting", None, None, None, "n/a", "n/a", src, None, reason=why)
                  for u in unknown]
+    _fit_steps(tr)
     if not pts and tr.notes:
         tr.na_reason = tr.notes[0]
     return tr
@@ -391,6 +397,67 @@ def _ois(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
     return out
 
 
+# ---- FIT (futures fitted on effective dates) -------------------------------
+
+NOT_COVERED = "not covered by any contract"
+FIT_RESIDUAL_NOTE_BP = 1.0
+
+
+def estimate_note(est: dict) -> str:
+    return f"BKBM-OCR spread estimated ({est['value_bp']:g} bp, median of {est.get('n_months')} months), not observed daily"
+
+
+def _fit(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
+    """Every contract of the source's snapshot (all its instruments: CAD COA + CRA, NZD BB) fitted at once; fills the meetings
+    no earlier method covered. Steps are set afterwards against the previous point of the trajectory (`_fit_steps`)."""
+    todo = [u for u in unknown if u.decision not in covered]
+    if not todo:
+        return {}
+    sp = tr.spread.value if tr.spread and tr.spread.value is not None else None
+    if sp is None:
+        return {u.decision: _pt(sid, snap, u, method="FIT", reason=f"spread unavailable ({tr.spread.reason if tr.spread else 'none'})") for u in todo}
+    cs = [FitContract(r["ref_start"], r["ref_end"], _raw_rate(r), f"{r['instrument']} {r['contract']}") for r in snap.rows
+          if r["ref_start"] and r["ref_end"] and r["unit"] == "index_points"]
+    fx = ctx.sources[sid].get("fixings")
+    realised = (lambda d: ctx.view.level(fx, d)) if fx else None                  # noqa: E731
+    r0 = tr.base.rate + sp
+    fit = futures_fit(cs, [u.eff for u in unknown], r0, tr.asof, realised)
+    tr.consistency += [("FIT " + sid, lab, bp, "fitted contract average - implied rate") for lab, bp in fit.residuals]
+    if fit.max_residual_bp > FIT_RESIDUAL_NOTE_BP:
+        worst = max(fit.residuals, key=lambda x: abs(x[1]))
+        tr.notes.append(f"FIT {sid}: contract residual up to {worst[1]:+.2f} bp ({worst[0]}) - above {FIT_RESIDUAL_NOTE_BP:g} bp")
+    tr.extra.update(fit_source=sid, fit_contracts=fit.used, fit_max_residual_bp=fit.max_residual_bp, fit_r0=r0)
+    est = tr.spread.estimated
+    out = {}
+    for k, u in enumerate(unknown):
+        if u.decision in covered:
+            continue
+        r = fit.rates[k]
+        if r is None:
+            out[u.decision] = _pt(sid, snap, u, method="FIT", reason=NOT_COVERED)
+            continue
+        e0, e1 = fit.bounds[k], fit.bounds[k + 1]
+        out[u.decision] = _pt(sid, snap, u, method="FIT", rate=r - sp, level=r - sp, level_kind="policy", cum_bp=_cum(r - sp, tr.base.rate),
+                              window=(e0, e1), notes=[tr.spread.note] if est else [],
+                              extra={"how": "futures_fit", "interval": (e0, e1), "r_raw": r, "spread": sp, "spread_estimated": est})
+    return out
+
+
+def _fit_steps(tr: Trajectory) -> None:
+    """FIT points: step = their level - the level of the previous point of the trajectory that has one, whatever its method (the
+    base when there is none); a skipped meeting (n/a) in between is named - its move is inside this step."""
+    prev, skipped = (tr.base.rate if tr.base else None), []
+    for p in tr.points:
+        if p.method == "FIT" and p.level is not None:
+            p.step_bp = None if prev is None else (p.level - prev) * 100
+            if skipped:
+                p.notes.append("includes the " + ", ".join(str(d) for d in skipped) + " meeting" + ("s" if len(skipped) > 1 else ""))
+        if p.level is not None:
+            prev, skipped = p.level, []
+        else:
+            skipped.append(p.meeting)
+
+
 # ---- CURVE / PROXY_CURVE ---------------------------------------------------
 
 def _curve_of(rows: list) -> Curve:
@@ -507,7 +574,7 @@ def _window(ctx, tr, unknown, sid, snap, rows, covered) -> dict:
     return out
 
 
-_METHODS = {"EXACT": _exact, "OIS": _ois, "CURVE": _curve, "PROXY_CURVE": _proxy_curve, "WINDOW": _window}
+_METHODS = {"EXACT": _exact, "OIS": _ois, "FIT": _fit, "CURVE": _curve, "PROXY_CURVE": _proxy_curve, "WINDOW": _window}
 
 
 # ---------------------------------------------------------------------------

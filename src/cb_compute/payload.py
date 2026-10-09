@@ -23,12 +23,13 @@ WINDOW_KEYS = {"1s": "1w", "1l": "1m"}                         # 5 / 21 business
 BASE_URL = "/central-banks"
 CHART_MONTHS_BACK = 13
 
-FLAG_LABEL = {"EXACT": "EXACT", "CURVE": "CURVE", "UPPER_BOUND": "UPPER BOUND", "PROXY": "PROXY", "DECIDED": "DECIDED"}
+FLAG_LABEL = {"EXACT": "EXACT", "CURVE": "CURVE", "ESTIMATE": "ESTIMATE", "UPPER_BOUND": "UPPER BOUND", "PROXY": "PROXY", "DECIDED": "DECIDED"}
 FLAG_HELP = {
     "EXACT": "Solved exactly from 1M month-average futures: the rate changes only on the effective date, so the implied rate after the meeting follows from the monthly average.",
     "CURVE": "OIS curve: USD, EUR, GBP, JPY and CHF use the Eurex Clearing settlement curves (discount factors), with the overnight rate fitted as "
              "constant between effective dates (one rate per interval); elsewhere an OIS forward curve averaged over the interval. Minus the "
              "overnight-to-policy spread.",
+    "ESTIMATE": "No contract isolates this meeting: 1M/3M futures averages fitted with the rate changing only on effective dates and the smallest possible step changes. NZD also uses an estimated BKBM-OCR spread.",
     "UPPER_BOUND": "3M contract window: the average covers several meetings, so the cumulative move is an upper bound for this meeting alone.",
     "PROXY": "Government-curve proxy - not policy-equivalent. Shown as a raw sovereign level unless a basis can be measured from a short tenor.",
     "DECIDED": "The meeting has already been decided: it is part of the base rate.",
@@ -50,6 +51,12 @@ METHODOLOGY = [
                                   "pillar is n/a. Otherwise an OIS forward curve averaged between effective dates. UPPER BOUND: 3M contracts "
                                   "whose window spans several meetings. PROXY: government curves / bills, with a basis measured only from tenors observed before "
                                   "the first effective date - without one ('proxy without short end') no bp, step or probability is computed and only the raw level is shown."},
+    {"title": "Estimates (ESTIMATE)", "text": "Where no contract isolates a meeting (CAD beyond the 1M CORRA chain, NZD bank bills), every 1M / 3M futures contract of "
+                                              "the exchange is fitted at once: the overnight rate is constant between effective dates, each contract's average over its window "
+                                              "equals 100 minus its price (days already past use the realised fixings), and among the paths that fit, the one with the smallest "
+                                              "step changes is chosen. The step of an estimated meeting is its level minus the level of the previous point; a meeting no contract "
+                                              "reaches is n/a and its move is inside the next one. No probability is computed for an estimate. NZD: bank bills are a BKBM level; "
+                                              "the BKBM-OCR spread is an estimate (median of 3M interbank minus OCR over months without an OCR change around them), not a daily observation."},
     {"title": "Step and probability", "text": "For EXACT and CURVE the implied step at the next meeting is split into whole 25 bp moves (n = floor(|step|/25)) and a "
                                               "fraction p of one more: P(n+1 moves) = p, P(n moves) = 1 - p, in the direction of the step."},
     {"title": "Cumulative bp", "text": "Implied policy rate after the last meeting of the year minus the base rate, in bp. Positive = hawkish."},

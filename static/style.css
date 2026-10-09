@@ -1676,6 +1676,7 @@ table.cb-mini td.econ-cell, table.cb-mini td.cb-n { text-align: center; }
 
 .cb-flag-EXACT { background: var(--success-bg); color: var(--success-fg); cursor: help; }
 .cb-flag-CURVE { background: var(--info-bg); color: var(--info-fg); cursor: help; }
+.cb-flag-ESTIMATE { background: var(--surface-alt); color: var(--fg); border: 1px dashed var(--muted); cursor: help; }
 .cb-flag-UPPER_BOUND { background: var(--caution-bg); color: var(--caution-fg); cursor: help; }
 .cb-flag-PROXY { background: var(--excluded-bg); color: var(--excluded-fg); cursor: help; }
 .cb-flag-DECIDED { background: var(--surface-alt); color: var(--muted); cursor: help; }

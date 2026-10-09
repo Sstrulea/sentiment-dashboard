@@ -710,3 +710,29 @@ def test_status_shows_the_lag_with_the_same_convention(env):
     assert lag == {"a": "0", "b": "1", "c": "2"}
     reps = cc.run(paths, cfg=cfg, now=clock())
     assert {r.id: r.lag_bd for r in reps} == {"a": 0, "b": 1, "c": 2}                       # the run report uses it too
+
+
+def test_mx_fetch_during_the_next_session_writes_nothing(tmp_path, monkeypatch):
+    """2026-10-09 12:41Z (after the 12:30Z Canadian data) used to overwrite as-of 2026-10-08 with Friday's prices: the
+    06:00-22:00 UTC window now skips it - no request, no row, no raw, no state."""
+    def boom(*a, **k):
+        raise AssertionError("no request inside the intraday window")
+    monkeypatch.setattr("src.rate_sources.requests.get", boom)
+    paths = cc.Paths(tmp_path / "cb")
+    for t in ((12, 41), (8, 41)):
+        (rep,) = cc.run(paths, now=clock(datetime(2026, 10, 9, *t, tzinfo=timezone.utc)), only=["mx_corra"])
+        assert rep.status == "skipped" and rep.merge.new == rep.merge.updated == 0
+    assert not paths.quotes.exists() or not list(paths.quotes.iterdir())
+    assert not paths.raw.exists()
+
+
+def test_status_nzd_spread_age_warning(tmp_path):
+    f = tmp_path / "s.yaml"
+    f.write_text("value_bp: 16.0\nn_months: 62\nwindow: ['2015-01', '2026-08']\ncomputed_on: 2026-10-09\n")
+    ok = cc.nzd_spread_status(date(2027, 1, 17), f)                                       # 100 days: still fine
+    assert ok == ["BKBM-OCR spread 16.0 bp (median of 62 months, 2015-01..2026-08), computed 2026-10-09, 100 days ago"]
+    old = cc.nzd_spread_status(date(2027, 1, 18), f)
+    assert old[-1].startswith("WARN NZD spread: computed_on 2026-10-09 is older than 100 days")
+    assert cc.nzd_spread_status(date(2027, 1, 18), tmp_path / "none.yaml")[0].startswith("WARN NZD spread:")
+    text, _ = cc.status(cc.Paths(tmp_path / "cb"), date(2026, 10, 12), eurex_page=lambda cfg: (date(2026, 10, 9), ""))
+    assert "NZD estimated spread (config/cb_nzd_spread.yaml)" in text and "BKBM-OCR spread" in text

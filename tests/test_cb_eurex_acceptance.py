@@ -120,6 +120,6 @@ def test_crosschecks_against_the_former_primaries(reports):
     assert names["CHF"] == set()
 
 
-def test_cad_aud_nzd_are_unchanged(reports):
+def test_cad_aud_nzd_keep_their_own_sources(reports):
     assert reports["CAD"].trajectory.points[0].flag == "EXACT" and reports["AUD"].trajectory.points[0].flag == "EXACT"
-    assert reports["NZD"].trajectory.points[0].flag == "UPPER_BOUND" and reports["NZD"].trajectory.points[0].level_kind == "bkbm"
+    assert reports["NZD"].trajectory.points[0].source == "asx_bb"                      # FIT since stage 2 (tests/test_cb_fit_acceptance.py)
