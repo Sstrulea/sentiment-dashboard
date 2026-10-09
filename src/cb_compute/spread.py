@@ -28,6 +28,8 @@ class Spread:
     benchmark: str = ""
     policy: str = ""
     reason: str = ""                       # why value is None
+    estimated: bool = False                # an estimate from monthly data (NZD BKBM - OCR), not the 20-day median of daily series
+    note: str = ""
 
     @property
     def bp(self) -> Optional[float]:

@@ -24,6 +24,7 @@
 #                  instrument(s); crosscheck instruments are only compared with it (src/cb_compute/).
 #   method         per instrument: EXACT (1M futures, month-average chain) | OIS (OIS discount factors, overnight rate fitted
 #                  constant between effective dates; points flagged CURVE) | CURVE (OIS forward curve, interval average) |
+#                  FIT (all 1M / 3M contracts of the source fitted on effective dates, flag ESTIMATE) |
 #                  WINDOW (3M contracts, one value per window, UPPER_BOUND) | PROXY_CURVE (government forward curve, basis
 #                  removed, per meeting) | PROXY_TENOR (bills by tenor, basis removed). n/a: CHF, NZD vs OCR.
 #   stale_after_bd business days after which a quote is stale (meta default; a source may override).
@@ -102,8 +103,9 @@ sources:
     role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: MxCorra
     instruments:
-      corra_3m_futures: {method: WINDOW, unit: index_points, fields: [settle], benchmark: CORRA}
+      corra_3m_futures: {method: FIT, unit: index_points, fields: [settle], benchmark: CORRA}     # FIT uses every row of the snapshot (COA + CRA)
       corra_1m_futures: {method: EXACT, unit: index_points, fields: [settle], benchmark: CORRA}
+    fixings: "boc:AVG.INTWO"           # FIT: realised CORRA for the contract days up to the as-of
     url: https://www.m-x.ca/en/trading/tools/canadian-interest-rate-expectations
     history: snapshot
     naming: "CRA contract = 'Contract Reference Month' = START month of the Reference Quarter (3rd Wednesday of that month to the 3rd Wednesday 3 months later); COA = calendar month"
@@ -141,8 +143,8 @@ sources:
     role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
     adapter: AsxBb
     instruments:
-      bb_90d_nz_bank_bill_futures: {method: WINDOW, unit: index_points, fields: [settle],
-                                    benchmark: "BKBM 90-day (3M bank-bill FRA); NOT an overnight rate - spread vs OCR unavailable (RBNZ B2 blocked)"}
+      bb_90d_nz_bank_bill_futures: {method: FIT, unit: index_points, fields: [settle],
+                                    benchmark: "BKBM 90-day (3M bank-bill FRA); spread vs OCR ESTIMATED (config/cb_nzd_spread.yaml) - RBNZ B2 is blocked"}
     url: https://asx.api.markitdigital.com/asx-research/1.0/derivatives/interest-rate/BB/futures?days=1&height=179&width=179
     history: snapshot
     naming: "contract month = SETTLEMENT month; expiry = first Wednesday after the 9th of that month; underlying = 90-day BKBM forward from expiry (window = expiry .. +91 days); API dateExpiry is 2 days earlier and is not used"

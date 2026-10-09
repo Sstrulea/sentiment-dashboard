@@ -286,3 +286,82 @@ def test_ois_residual_is_reported_in_bp_of_the_average_rate():
 def test_ois_no_pillar_in_the_span_raises():
     with pytest.raises(ValueError):
         M.ois_step_fit([(D(2031, 1, 1), 0.9)], T0, QUARTERLY, 360)
+
+
+# --- FIT: every futures contract of a source at once ------------------------------------------------------------------
+
+from .cb_synth import window_avg                                         # noqa: E402
+
+FA = D(2026, 10, 8)
+F_EFFS = [D(2026, 10, 29), D(2026, 12, 10), D(2027, 1, 28), D(2027, 3, 4), D(2027, 4, 29)]
+F_PATH = [(D(2026, 1, 1), 2.29), (F_EFFS[0], 2.39), (F_EFFS[1], 2.54), (F_EFFS[2], 2.58), (F_EFFS[3], 2.73), (F_EFFS[4], 2.97)]
+
+
+def month_contracts(path, months):
+    out = []
+    for y, m in months:
+        s0 = D(y, m, 1)
+        s1 = D(y + (m == 12), m % 12 + 1, 1)
+        out.append(M.FitContract(s0, s1, window_avg(path, s0, s1), f"{y}-{m:02d}"))
+    return out
+
+
+F_MONTHS = [(2026, 10), (2026, 11), (2026, 12), (2027, 1), (2027, 2), (2027, 3), (2027, 4), (2027, 5), (2027, 6)]
+
+
+def test_fit_recovers_the_steps_where_they_are_identified():
+    cs = month_contracts(F_PATH, F_MONTHS)
+    fit = M.futures_fit(cs, F_EFFS, 2.29, FA, realised=lambda d: 2.29)
+    assert fit.bounds == F_EFFS + [F_EFFS[-1] + timedelta(days=56)] and fit.used == 8          # June ends after 29 Apr + 56 days
+    assert fit.rates == pytest.approx([r for _, r in F_PATH[1:]], abs=0.0005)              # +-0.05 bp
+    assert fit.max_residual_bp < 0.05
+
+
+def test_fit_segment_no_contract_reaches_is_none():
+    cs = [c for c in month_contracts(F_PATH, F_MONTHS) if c.start >= D(2027, 2, 1)]      # nothing covers [29 Oct, 28 Jan)
+    fit = M.futures_fit(cs, F_EFFS, 2.29, FA)
+    assert fit.rates[0] is None and fit.rates[1] is None and all(r is not None for r in fit.rates[2:])
+
+
+def test_fit_realised_days_are_known_values():
+    path = [(D(2026, 1, 1), 2.60), (D(2026, 9, 20), 2.29), (F_EFFS[0], 2.39), (F_EFFS[1], 2.54)]    # 16-19 Sep at 2.60: off r0
+    cs = [M.FitContract(D(2026, 9, 16), D(2026, 12, 16), window_avg(path, D(2026, 9, 16), D(2026, 12, 16)), "CRA-sep"),
+          *month_contracts(path, [(2026, 11), (2026, 12), (2027, 1)])]
+    effs = F_EFFS[:2]
+    real = lambda d: 2.29 if d >= D(2026, 9, 20) else 2.60                              # noqa: E731
+    good = M.futures_fit(cs, effs, 2.29, FA, realised=real)
+    assert good.rates == pytest.approx([2.39, 2.54], abs=0.0005) and good.max_residual_bp < 0.05
+    bad = M.futures_fit(cs, effs, 2.29, FA)                                              # past days at r0 instead of the fixings
+    assert max(abs(a - b) for a, b in zip(bad.rates, [2.39, 2.54])) > 0.002
+    later = [c for c in cs if c.start > FA]
+    assert M.futures_fit(later, effs, 2.29, FA, realised=lambda d: 99.0).rates == pytest.approx(M.futures_fit(later, effs, 2.29, FA).rates)   # no past day: unused
+
+
+def test_fit_contract_past_the_last_segment_is_dropped_and_weights_put_contracts_first():
+    cs = month_contracts(F_PATH, F_MONTHS + [(2027, 7)])                                 # July ends after the 56-day tail of 29 Apr
+    assert M.futures_fit(cs, F_EFFS, 2.29, FA).used == 8
+    two = month_contracts(F_PATH, [(2026, 11)])
+    fit = M.futures_fit(two, F_EFFS[:1], 2.29, FA, weight=30.0, lam=1.0)
+    assert fit.residuals[0][1] == pytest.approx(0.0, abs=0.05)                           # one contract, one unknown: the contract wins
+
+
+def test_fit_smoothing_splits_an_unidentified_pair_analytically():
+    """One contract over two equal segments (r0 = 2.0 fixed): only (r1 + r2) / 2 = 2.25 is identified; the rows
+    30 * (r1 + r2) / 2 = 30 * 2.25, r1 - r0 = 0, r2 - r1 = 0 give the split - recomputed here by hand."""
+    e1, e2 = D(2026, 11, 1), D(2026, 11, 11)
+    c = [M.FitContract(e1, D(2026, 11, 21), 2.25, "x")]
+    fit = M.futures_fit(c, [e1, e2], 2.0, FA, tail_days=10)
+    import numpy as np
+    A = np.array([[15.0, 15.0], [1.0, 0.0], [-1.0, 1.0]])
+    b = np.array([30 * 2.25, 2.0, 0.0])
+    exp = np.linalg.lstsq(A, b, rcond=None)[0]
+    assert fit.rates == pytest.approx(list(exp), abs=1e-9) and fit.rates[0] < fit.rates[1]
+    assert (fit.rates[0] + fit.rates[1]) / 2 == pytest.approx(2.25, abs=0.001)
+
+
+def test_fit_days_after_the_asof_before_the_first_meeting_take_r0_not_the_fixings():
+    path = [(D(2026, 1, 1), 2.29), (F_EFFS[0], 2.39), (F_EFFS[1], 2.54)]
+    cs = [M.FitContract(D(2026, 10, 12), D(2026, 11, 30), window_avg(path, D(2026, 10, 12), D(2026, 11, 30)), "x"),
+          *month_contracts(path, [(2026, 12), (2027, 1)])]
+    fit = M.futures_fit(cs, F_EFFS[:2], 2.29, FA, realised=lambda d: 1.00)               # a "last fixing" that must not leak forward
+    assert fit.rates == pytest.approx([2.39, 2.54], abs=0.001)

@@ -799,3 +799,84 @@ def test_usd_sofr_crosscheck_uses_its_own_spread():
     xc = [c for c in A.crosschecks(ctx, tr) if c.name == "USD Eurex fed funds vs SOFR OIS"]
     assert len(xc) == 3
     assert xc[0].b == pytest.approx(2.32 - 0.07, abs=1e-4) and xc[0].diff_bp == pytest.approx(0.0, abs=0.01)   # SOFR spread 7 bp, not the EFFR 2 bp
+
+
+# --- FIT (futures fitted on effective dates, flag ESTIMATE) -----------------------------------------------------------
+
+FIT_M = [(D(2026, 10, 28), D(2026, 10, 29)), (D(2026, 12, 9), D(2026, 12, 10)), (D(2027, 1, 27), D(2027, 1, 28)), (D(2027, 3, 3), D(2027, 3, 4))]
+
+
+def ctx_fit(bench_path, *, coa=((2026, 10), (2026, 11), (2026, 12), (2027, 1)), cra=(), spread=0.04, meetings=FIT_M, fixings=True, **kw):
+    """CAD-like: one source with 1M (EXACT) and 3M (FIT) futures priced from a known benchmark path."""
+    qs = [dict(q, ref_end=D(q["ref_start"].year + (q["ref_start"].month == 12), q["ref_start"].month % 12 + 1, 1))      # MX COA rows carry ref_end
+          for q in futures_month("mx", "m1", bench_path, 0.0, ASOF, list(coa))]
+    for s0, s1 in cra:
+        qs.append(quote("mx", "m3", 100 - window_avg(bench_path, s0, s1), ASOF, ref_start=s0, ref_end=s1, contract=f"{s0:%Y%m}"))
+    sources = {"mx": {"currency": CUR, "role": "primary", "instruments": {"m1": {"method": "EXACT"}, "m3": {"method": "FIT"}},
+                      **({"fixings": BENCH} if fixings else {})}}
+    return make_ctx(decisions=[BASE_DEC], meetings=[(D(2026, 9, 16), D(2026, 9, 17))] + list(meetings), quotes=qs, policy_path=BASE_PATH,
+                    spread=spread, sources=sources, **kw)
+
+
+CRA = [(D(2026, 12, 16), D(2027, 3, 17)), (D(2027, 1, 28), D(2027, 4, 29))]          # both end inside the fit (3 Mar + 56 days = 29 Apr)
+
+
+def bench_of(policy_levels, spread=0.04):
+    effs = [e for _, e in FIT_M]
+    return [(D(2026, 1, 1), 1.75 + spread), (D(2026, 9, 17), 2.00 + spread)] + [(e, r + spread) for e, r in zip(effs, policy_levels)]
+
+
+def test_fit_fills_the_meetings_after_the_exact_chain_with_estimates():
+    bench = bench_of([2.25, 2.50, 2.50, 2.75])
+    tr = E.trajectory(ctx_fit(bench, coa=((2026, 10), (2026, 11), (2026, 12)), cra=CRA), CUR, ASOF)
+    flags = [p.flag for p in tr.points]
+    assert flags[:2] == ["EXACT", "EXACT"] and flags[2:] == ["ESTIMATE", "ESTIMATE"]
+    p3, p4 = tr.points[2], tr.points[3]
+    assert p3.method == "FIT" and p3.extra["how"] == "futures_fit" and p3.level_kind == "policy"
+    # two overlapping 3M windows only: the 1 * step rows still pull against the 30 * contract rows, by up to ~1 bp here
+    assert p3.rate == pytest.approx(2.50, abs=0.01) and p4.rate == pytest.approx(2.75, abs=0.01)
+    assert p3.step_bp == pytest.approx((p3.level - tr.points[1].level) * 100) and p4.step_bp == pytest.approx(25.0, abs=2.0)   # vs the previous point, any method
+    assert p4.cum_bp == pytest.approx((p4.rate - 2.00) * 100)
+    nm = E.next_meeting(SimpleNamespace(na_reason="", points=[p3]))                    # an estimate as the next meeting
+    assert nm.step_bp == pytest.approx(p3.step_bp) and nm.probabilities is None and "only EXACT / CURVE" in nm.prob_reason
+    assert any(c[0] == "FIT mx" for c in tr.consistency) and tr.extra["fit_contracts"] == 5
+
+
+def test_fit_meeting_no_contract_reaches_is_na_and_the_next_carries_its_move():
+    bench = bench_of([2.25, 2.50, 2.50, 2.75])
+    tr = E.trajectory(ctx_fit(bench, coa=(), cra=CRA), CUR, ASOF)                         # nothing before 16 Dec
+    p1, p2 = tr.points[0], tr.points[1]
+    assert p1.rate is None and p1.reason == E.NOT_COVERED and p1.flag == "ESTIMATE"
+    assert p2.rate is not None and "includes the 2026-10-28 meeting" in p2.notes
+    assert p2.step_bp == pytest.approx((p2.level - 2.00) * 100)                           # vs the base: no point before it has a level
+
+
+def test_fit_realised_fixings_enter_as_known_days():
+    bench = bench_of([2.25, 2.50, 2.50, 2.75])
+    past = (D(2026, 9, 16), D(2026, 12, 16))                                              # a CRA window that started before the as-of
+    tr = E.trajectory(ctx_fit(bench, coa=(), cra=[past] + CRA), CUR, ASOF)
+    assert max(abs(c[2]) for c in tr.consistency if c[0] == "FIT mx") < 0.05
+    off = E.trajectory(ctx_fit(bench, coa=(), cra=[past] + CRA, fixings=False), CUR, ASOF)  # past days at r0 = 2.04 instead of the fixings
+    assert abs(off.points[1].rate - tr.points[1].rate) > 0.0005
+
+
+def test_fit_residual_note_and_spread_requirement():
+    bench = bench_of([2.25, 2.50, 2.50, 2.75])
+    ctx = ctx_fit(bench, coa=(), cra=CRA + [(D(2026, 12, 16), D(2027, 3, 17))])
+    q = next(r for r in ctx.market._by["mx"][ASOF] if r["instrument"] == "m3")
+    ctx.market._by["mx"][ASOF].append(dict(q, contract="dup", value=q["value"] - 0.10))  # a second, 10 bp different price for the same window
+    tr = E.trajectory(ctx, CUR, ASOF)
+    assert any("contract residual up to" in n and "above 1 bp" in n for n in tr.notes)
+    tr = E.trajectory(ctx_fit(bench, coa=(), cra=CRA, has_spread=False), CUR, ASOF)
+    assert all(p.rate is None and p.reason.startswith("spread unavailable") for p in tr.points)
+
+
+def test_fit_with_an_estimated_spread_marks_every_point():
+    bench = bench_of([2.25, 2.50, 2.50, 2.75], spread=0.16)
+    ctx = ctx_fit(bench, coa=(), cra=CRA, spread=0.16, has_spread=False, fixings=False)
+    ctx.estimated_spreads = {CUR: {"value_bp": 16.0, "n_months": 62, "benchmark": "BKBM", "policy": "OCR"}}
+    tr = E.trajectory(ctx, CUR, ASOF)
+    assert tr.spread.estimated and tr.spread.value == pytest.approx(0.16)
+    pts = [p for p in tr.points if p.rate is not None]
+    assert pts and all("BKBM-OCR spread estimated (16 bp, median of 62 months), not observed daily" in p.notes for p in pts)
+    assert all(p.extra["spread_estimated"] for p in pts)

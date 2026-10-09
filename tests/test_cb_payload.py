@@ -52,7 +52,7 @@ def test_overview_has_the_eight_banks_in_order_with_the_full_row(built):
     for r in ov["banks"]:
         assert keys <= set(r) and r["href"] == f"/central-banks/{r['ccy'].lower()}.html"
         assert set(r["end"]) == {"2026", "2027"} and set(r["repricing"]) == {"1w", "1m"} and set(r["reaction"]) >= {"next", "year"}
-    assert set(ov["meta"]["flags"]) == {"EXACT", "CURVE", "UPPER_BOUND", "PROXY", "DECIDED"} and ov["meta"]["flags"]["UPPER_BOUND"]["label"] == "UPPER BOUND"
+    assert set(ov["meta"]["flags"]) == {"EXACT", "CURVE", "ESTIMATE", "UPPER_BOUND", "PROXY", "DECIDED"} and ov["meta"]["flags"]["ESTIMATE"]["label"] == "ESTIMATE" and ov["meta"]["flags"]["UPPER_BOUND"]["label"] == "UPPER BOUND"
     assert all(f["help"] for f in ov["meta"]["flags"].values()) and len(ov["meta"]["methodology"]) >= 8
 
 

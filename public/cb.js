@@ -332,8 +332,8 @@
     const stepPts = [], windows = [], proxy = [];
     ch.market.forEach(function (p) {
       const x = ms(p.effective);
-      if ((p.method === "EXACT" || p.method === "CURVE") && isNum(p.rate)) {
-        stepPts.push({ x: x, y: p.rate, tip: p.method + " " + fmtRate(p.rate, 3) + "% after " + fmtDate(p.meeting) + " (" + fmtSigned(p.cum_bp, 1) + " bp vs base)" });
+      if ((p.method === "EXACT" || p.method === "CURVE" || p.method === "FIT") && isNum(p.rate)) {
+        stepPts.push({ x: x, y: p.rate, est: p.method === "FIT", tip: (p.method === "FIT" ? "ESTIMATE" : p.method) + " " + fmtRate(p.rate, 3) + "% after " + fmtDate(p.meeting) + " (" + fmtSigned(p.cum_bp, 1) + " bp vs base)" });
       } else if (p.method === "WINDOW" && isNum(p.level)) {
         const key = p.window.join("|");
         if (!windows.some(function (w) { return w.key === key; })) {
@@ -379,7 +379,8 @@
       return Object.assign({ type: "line", label: label, data: data, borderColor: color, backgroundColor: color, stepped: "after", pointRadius: 0, pointHoverRadius: 4, borderWidth: 2.2, spanGaps: false, order: 2 }, extra || {});
     };
     const ds = [line("Policy rate", m.hist, c.fg, { borderWidth: 2.6, order: 1 })];
-    if (m.step.length) ds.push(line("Market-implied path", m.step, c.accent, { pointRadius: 3.5, borderWidth: 2.4 }));
+    if (m.step.length) ds.push(line("Market-implied path", m.step, c.accent, { pointRadius: 3.5, borderWidth: 2.4,
+      segment: { borderDash: function (ctx) { return ctx.p0.raw && ctx.p0.raw.est ? [6, 4] : undefined; } } }));          // dashed after an ESTIMATE point
     if (m.windows.length) ds.push({ type: "line", label: "3M window (upper bound)", data: [], borderColor: withAlpha(c.accent, 0.55), backgroundColor: withAlpha(c.accent, 0.55), borderWidth: 7 });
     if (m.proxy.length) ds.push(line("Sovereign proxy (raw level, not policy-equivalent)", m.proxy, c.warn, { borderDash: [2, 5], pointRadius: 3, borderWidth: 2 }));
     if (bp.medians.length) {
@@ -601,7 +602,8 @@
 
   function chartHelp(d) {
     const ms_ = d.chart.market, bits = ["Solid line = policy-rate history"];
-    if (ms_.some(function (p) { return (p.method === "EXACT" || p.method === "CURVE") && isNum(p.rate); })) bits.push("blue = market-implied path (steps on the effective dates)");
+    if (ms_.some(function (p) { return (p.method === "EXACT" || p.method === "CURVE" || p.method === "FIT") && isNum(p.rate); })) bits.push("blue = market-implied path (steps on the effective dates)");
+    if (ms_.some(function (p) { return p.method === "FIT" && isNum(p.rate); })) bits.push("dashed blue = ESTIMATE (futures fitted on the effective dates: no contract isolates those meetings, no probability)");
     if (ms_.some(function (p) { return p.method === "WINDOW" && isNum(p.level); })) bits.push("bars marked \u2264 = 3M windows (upper bounds; BKBM = not the OCR)");
     if (ms_.some(function (p) { return isNum(p.level) && p.level_kind === "sovereign_proxy"; })) bits.push("dotted = sovereign proxy, not policy-equivalent");
     if (d.chart.bank.kind === "dots") bits.push("diamonds / circles = FOMC median dot / dot distribution (size = participants)");
@@ -981,7 +983,7 @@
     const last = pts.length ? pts[pts.length - 1].x : m.asofMs;
     let lastX = m.asofMs;
     d.chart.market.forEach(function (p) {
-      if ((p.method === "EXACT" || p.method === "CURVE" || p.method === "WINDOW") && isNum(p.rate) && p.level_kind === "policy") {
+      if ((p.method === "EXACT" || p.method === "CURVE" || p.method === "FIT" || p.method === "WINDOW") && isNum(p.rate) && p.level_kind === "policy") {
         pts.push({ x: ms(p.effective), y: p.rate, mkt: true, upper: p.method === "WINDOW" });
         lastX = Math.max(lastX, ms(p.effective));
       }

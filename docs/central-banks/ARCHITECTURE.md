@@ -86,6 +86,7 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **2b** | rezumate AI peste textele din 2a (sloturile „summary pending”) |
 | **4** | trigger extern + verificări finale: **scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`**, 3 reîncercări cu backoff, alertă la eșec (Vercel Cron pe Hobby rulează o dată pe zi) |
 | **E1** | preț pe ședință din curbele OIS Eurex Clearing pentru USD, EUR, GBP, JPY, CHF (metoda `OIS`, §17); fostele instrumente principale devin cross-check; spread-uri noi USD / EUR / CHF; calendarul RBNZ până în feb 2028 |
+| **E2** | metoda `FIT` (estimare, flag ESTIMATE) pentru CAD dincolo de lanțul COA și pentru NZD (ASX BB, cu spread BKBM–OCR estimat); fereastra intraday MX de la 06:00 UTC; anul BoE din titlu (§18) |
 
 ## 8. Ce există după 1B-1
 
@@ -801,3 +802,83 @@ Ultimul as-of stocat: 2026-09-18. Cauza: pagina s-a mutat la `/research-and-data
 parsarea pica din 21 sep. URL-ul e actualizat (fișierul nou: as-of până la 2026-10-07, Last-Modified 8 oct), iar un răspuns care nu e xlsx dă acum
 PARSE-FAIL cu motivul „not an xlsx (HTML page?)”. MPT rămâne doar cross-check. Rularea normală (10 zile înapoi) reia de la ~29 sep; golul 21–28 sep se
 umple doar cu un backfill (`--source atlantafed_mpt --backfill-from 2026-09-18`) rulat în CI.
+
+## 18. ETAPA E2 — metoda `FIT`: traiectorie completă pentru CAD și NZD
+
+A doua din trei etape. După E1, CAD avea EXACT doar pe orizontul COA (4 luni: 28 oct, 9 dec la 2026-10-08), restul ca ferestre CRA
+UPPER_BOUND; NZD avea doar ferestre ASX BB pe baza BKBM (fără spread BKBM–OCR: tabelul RBNZ B2 e blocat, ASX nu are futures pe OCR, OIS NZD e
+plătit). E2 completează ambele cu o metodă nouă, **marcată ca estimare**.
+
+### Două corecturi găsite la verificarea PR #38 (commit separat)
+
+- **MX intraday.** Pagina MX nu are as-of; as-of-ul se deduce din ora fetch-ului, iar fereastra „intraday” era 13:00–22:00 UTC. Futures pe rate
+  MX se tranzacționează de la 02:00 ET (06:00 UTC), deci rulările de la 08:41Z / 10:41Z / 12:41Z rescriau as-of-ul zilei precedente cu prețurile
+  ședinței noi (as-of 2026-10-08, CRA dec-26: 97.33 la 08:41Z, 97.41 la 12:41Z după datele de la 12:30Z). Acum `intraday_utc: ["06:00", "22:00"]`:
+  se înregistrează doar fetch-urile dintre 22:00 și 06:00 UTC (rularea de 22:40Z și cele de noapte). Istoricul nu se rescrie:
+  `docs/accepted-degradations.md` (snapshot-urile MX 2026-09-18 … 2026-10-09 conțin prețuri din dimineața zilei următoare).
+- **BoE.** Rândurile paginii de ședințe nu au an; anul vine din titlu. Pagina spune acum „2027 confirmed dates”, iar parserul căuta literal
+  „2027 provisional dates”: `find` = −1, blocul 2026 acoperea tot textul și rândurile 2027 primeau anul 2026. Acum anul (și „provisional”) se citesc
+  din orice titlu `YYYY … dates`; tăietură nouă `cal_boe_cut_20261009.htm`. `meetings.yaml`: aceleași date BoE, rândurile GBP verificate pe pagina
+  din 2026-10-09 (`verified: 2026-10-09` — și cele din 2026, confirmate pe aceeași pagină în aceeași zi); generatorul primește data dovezii pe bancă
+  (`build(..., evidence_by_bank)`).
+
+### Metoda `FIT` (pură: `methods.futures_fit`, `engine._fit`, `_METHODS["FIT"]`)
+
+Ordinea în `trajectory()`: `EXACT`, `OIS`, `FIT`, `CURVE`, `PROXY_CURVE`, `WINDOW` — FIT completează doar ședințele pe care nu le-a acoperit o metodă
+anterioară. Ipoteza: rata overnight e constantă între datele efective; **toate contractele sursei** (lunare și ferestre; CAD: COA + CRA, NZD: BB) se
+potrivesc deodată.
+
+- **Segmente:** `[.., e_1)` = `r_0` cunoscută (baza + spread); `[e_k, e_{k+1})` = `r_k` necunoscută; ultimul până la `e_K + 56` de zile. Toate
+  ședințele viitoare sunt segmente (și cele acoperite de EXACT: fit-ul le folosește, dar nu le raportează).
+- **Zile cunoscute:** zilele ≤ as-of dintr-un contract iau fixing-ul realizat (`fixings:` pe sursă; CAD `boc:AVG.INTWO`, ultima observație ≤ ziua
+  respectivă); zilele dintre as-of și `e_1` iau `r_0`.
+- **Contracte:** rândurile snapshot-ului cu fereastră explicită care se termină ≤ `e_K + 56`; rata = 100 − preț; o ecuație pe contract (media pe
+  zile calendaristice a căii pe `[start, end)` = rata), pondere 30. **Regularizare:** `1 · (r_k − r_{k−1})` în procente, cu `r_0` fix. Necunoscute
+  doar pentru segmentele atinse de cel puțin un contract; `numpy.linalg.lstsq`.
+- **Ieșiri:** `method: "FIT"`, flag nou **ESTIMATE** (între CURVE și UPPER_BOUND în ordinea „cel mai slab”), `rate` = `level` = `r_k − spread`
+  (`level_kind: policy`), `cum_bp` față de bază; `step_bp` = nivelul punctului − nivelul punctului anterior din traiectorie care are nivel (orice
+  metodă; baza dacă nu există). Un segment neatins ⇒ ședința n/a, „not covered by any contract”; următoarea ședință estimată poartă și mișcarea ei,
+  cu nota „includes the <data> meeting”. **Fără probabilitate** (regula existentă o dă doar la EXACT / CURVE). Reziduul fiecărui contract (bp) în
+  `tr.consistency` (`FIT <sursă>`), notă peste 1 bp; `tr.extra`: `fit_contracts`, `fit_max_residual_bp`, `fit_r0`.
+- **Compromisul ponderilor:** cu 30 pe contracte și 1 pe pași, un segment slab identificat (de ex. acoperit doar de două ferestre de 3 luni care
+  se suprapun) poate fi tras de regularizare cu ~1 bp; unde segmentele sunt bine identificate fit-ul reface pașii în ± 0.05 bp (test).
+
+### CAD
+
+`mx_corra`: `corra_3m_futures` trece de la WINDOW la FIT (`_fit` folosește toate rândurile snapshot-ului, COA + CRA), `fixings: boc:AVG.INTWO`.
+COA rămâne EXACT pe ședințele pe care lanțul le identifică (la 2026-10-08: 28 oct, 9 dec — neschimbate, test). Spread-ul rămâne CORRA − țintă.
+
+### NZD și spread-ul BKBM–OCR estimat
+
+`asx_bb`: `bb_90d_nz_bank_bill_futures` trece pe FIT, `level_kind: policy`, flag ESTIMATE; fiecare punct are nota „BKBM-OCR spread estimated (X bp,
+median of N months), not observed daily”. Spread-ul (`src/cb_compute/nzd_spread.py`, pur; `scripts/cb_nzd_bkbm_spread.py`, I/O):
+
+- **Date:** FRED `IR3TIB01NZM156N` (3M interbank NZ, OECD, lunar), prin CSV-ul FRED fără cheie al colectorului; OCR-ul mediu lunar din BIS `WS_CBPOL`
+  (NZ, zilnic; zilele NaN sar), prin același API ca `cb_official`; 2015-01 … ultima lună comună (o lună OCR incompletă nu intră).
+- **Regula:** se păstrează doar lunile în care OCR-ul nu s-a schimbat nici în acea lună, nici în următoarele 3; spread = mediana (3M − OCR mediu) pe
+  ele. **Rezultat 2026-10-09: 16.0 bp, 62 de luni, fereastra 2015-01 … 2026-08, IQR 10.7 … 21.0 bp.**
+- **Ieșire:** `config/cb_nzd_spread.yaml` (`value_bp`, `n_months`, `window`, `iqr_bp`, `computed_on`, regula, sursele, lunile păstrate). Engine-ul îl
+  primește prin `cb_loader` (`Context.estimated_spreads`), deci `cb_compute` rămâne fără I/O; `spread_for` îl folosește când banca nu are pereche de
+  spread (`Spread.estimated = True`). **Actualizare:** de mână, cu scriptul; `--status` avertizează când `computed_on` e mai vechi de 100 de zile.
+- **Prima ședință:** 28 oct 2026 nu e acoperită de niciun contract (primul BB începe la 16 dec) ⇒ n/a; 9 dec poartă și mișcarea din octombrie.
+
+### UI (minim)
+
+`FLAG_LABEL` / `FLAG_HELP["ESTIMATE"]`, o intrare nouă în `METHODOLOGY`; `.cb-flag-ESTIMATE` (neutru, chenar întrerupt, ambele teme); în `cb.js`
+punctele FIT intră în calea desenată ca EXACT / CURVE, cu linie întreruptă după un punct estimat, iar `chartHelp` le explică. Pagina nouă: etapa 3.
+
+### Acceptanță (pre-înregistrată, `tests/fixtures/cb_engine_1008`, as-of 2026-10-08; snapshot-ul MX din fixture e cel de la 12:41Z pe 9 oct)
+
+- **CAD** (rata politică-echivalentă, ± 1.0 bp) — măsurat identic la 4 zecimale: 27 ian 2.5460 · 3 mar 2.6944 · 28 apr 2.9341 · 2 iun 2.9943 ·
+  21 iul 3.0407 · 8 sep 3.1590 · 27 oct 3.2260 · 8 dec 3.2344; 28 oct și 9 dec rămân EXACT, neschimbate; 9 contracte, reziduul maxim 1.81 bp la
+  CRA sep-26 (acoperă zile realizate; prețurile snapshot-ului nu sunt din același moment). Spread 4.0 bp, baza 2.25.
+- **NZD** (nivelul BKBM, înainte de spread, ± 1.0 bp): valorile pre-înregistrate (9 dec 3.3331 · 10 feb 3.6179 · 17 mar 3.7289 · 5 mai 3.8651 ·
+  16 iun 4.0176 · 4 aug 4.1151 · 15 sep 4.1660 · 27 oct 4.1931 · 8 dec 4.1965; 4 contracte, reziduu ≤ 0.1 bp) se reproduc exact **cu `r_0` = OCR
+  (2.75, spread 0)**. Metoda, cum e specificată, ancorează `r_0` la OCR + spread-ul estimat (2.91): cu 16 bp, 9 dec iese 3.3475 (+1.4 bp) și 10 feb
+  3.5942 (−2.4 bp), restul în ± 0.7 bp — `r_0` intră doar prin rândurile de regularizare (niciun contract nu acoperă zilele dinaintea lui 16 dec).
+  Testul fixează ambele: referința cu ancora la OCR (dovada fit-ului) și valorile reale cu spread-ul estimat.
+
+### Limite
+
+- Ședințele estimate nu au probabilitate; NZD 28 oct e n/a; spread-ul NZD e o estimare din date lunare, nu o observație zilnică.
+- Repricing-ul CAD pe datele afectate de defectul MX (până la 2026-10-09) moștenește decalajul de dimineață.

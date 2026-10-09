@@ -724,3 +724,15 @@ def test_mx_fetch_during_the_next_session_writes_nothing(tmp_path, monkeypatch):
         assert rep.status == "skipped" and rep.merge.new == rep.merge.updated == 0
     assert not paths.quotes.exists() or not list(paths.quotes.iterdir())
     assert not paths.raw.exists()
+
+
+def test_status_nzd_spread_age_warning(tmp_path):
+    f = tmp_path / "s.yaml"
+    f.write_text("value_bp: 16.0\nn_months: 62\nwindow: ['2015-01', '2026-08']\ncomputed_on: 2026-10-09\n")
+    ok = cc.nzd_spread_status(date(2027, 1, 17), f)                                       # 100 days: still fine
+    assert ok == ["BKBM-OCR spread 16.0 bp (median of 62 months, 2015-01..2026-08), computed 2026-10-09, 100 days ago"]
+    old = cc.nzd_spread_status(date(2027, 1, 18), f)
+    assert old[-1].startswith("WARN NZD spread: computed_on 2026-10-09 is older than 100 days")
+    assert cc.nzd_spread_status(date(2027, 1, 18), tmp_path / "none.yaml")[0].startswith("WARN NZD spread:")
+    text, _ = cc.status(cc.Paths(tmp_path / "cb"), date(2026, 10, 12), eurex_page=lambda cfg: (date(2026, 10, 9), ""))
+    assert "NZD estimated spread (config/cb_nzd_spread.yaml)" in text and "BKBM-OCR spread" in text

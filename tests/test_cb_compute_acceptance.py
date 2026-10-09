@@ -349,7 +349,7 @@ def test_report_at_an_earlier_asof_shows_history_and_na_for_missing_sources(ctx)
 def test_config_roles_methods_spreads_and_stale_threshold():
     ctx = load_context(FIX)                                     # the live config (roles since the Eurex curves)
     src = ctx.sources
-    methods = {"EXACT", "OIS", "CURVE", "WINDOW", "PROXY_CURVE", "PROXY_TENOR"}
+    methods = {"EXACT", "OIS", "FIT", "CURVE", "WINDOW", "PROXY_CURVE", "PROXY_TENOR"}
     for sid, c in src.items():
         assert c["role"] in ("primary", "crosscheck"), sid
         assert all(i["method"] in methods for i in c["instruments"].values()), sid
@@ -357,8 +357,8 @@ def test_config_roles_methods_spreads_and_stale_threshold():
                for cur in ctx.banks}
     assert primary["USD"] == [("eurex_ois_usd", {"OIS"})] and primary["EUR"] == [("eurex_ois_eur", {"OIS"})]
     assert primary["GBP"] == [("eurex_ois_gbp", {"OIS"})] and primary["JPY"] == [("eurex_ois_jpy", {"OIS"})]
-    assert primary["CAD"] == [("mx_corra", {"EXACT", "WINDOW"})] and primary["AUD"] == [("asx_ib", {"EXACT"})]
-    assert primary["NZD"] == [("asx_bb", {"WINDOW"})] and primary["CHF"] == [("eurex_ois_chf", {"OIS"})]
+    assert primary["CAD"] == [("mx_corra", {"EXACT", "FIT"})] and primary["AUD"] == [("asx_ib", {"EXACT"})]
+    assert primary["NZD"] == [("asx_bb", {"FIT"})] and primary["CHF"] == [("eurex_ois_chf", {"OIS"})]
     xc = {s for s, c in src.items() if c["role"] == "crosscheck"}
     assert xc == {"ust_bills", "boc_tbills", "rba_bank_bills", "atlantafed_mpt", "ecb_aaa_fwd", "boe_ois", "jpx_tona", "eurex_ois_usd_sofr"}
     assert ctx.stale_after_bd == 2

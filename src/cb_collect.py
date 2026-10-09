@@ -448,6 +448,27 @@ def eurex_status(per: dict, cfg: dict, today: date, cals: dict, page: tuple) -> 
     return lines, warn
 
 
+NZD_SPREAD_MAX_AGE_DAYS = 100
+
+
+def nzd_spread_status(today: date, path: Path | None = None) -> list[str]:
+    """--status lines for the estimated NZD BKBM-OCR spread (config/cb_nzd_spread.yaml): value, months, age; WARN when older than
+    NZD_SPREAD_MAX_AGE_DAYS or missing (re-run scripts/cb_nzd_bkbm_spread.py)."""
+    from .cb_loader import NZD_SPREAD
+    import yaml
+    p = path or NZD_SPREAD
+    if not p.exists():
+        return [f"WARN NZD spread: {p.name} missing - run scripts/cb_nzd_bkbm_spread.py (NZD points stay n/a)"]
+    doc = yaml.safe_load(p.read_text()) or {}
+    on = doc.get("computed_on")
+    age = (today - on).days if isinstance(on, date) else None
+    out = [f"BKBM-OCR spread {doc.get('value_bp')} bp (median of {doc.get('n_months')} months, {'..'.join(map(str, doc.get('window') or []))}), computed {on}"
+           + (f", {age} days ago" if age is not None else "")]
+    if age is None or age > NZD_SPREAD_MAX_AGE_DAYS:
+        out.append(f"WARN NZD spread: computed_on {on} is older than {NZD_SPREAD_MAX_AGE_DAYS} days - re-run scripts/cb_nzd_bkbm_spread.py")
+    return out
+
+
 def status(paths: Paths, today: date, cfg: dict | None = None, eurex_page: Optional[Callable[[dict], tuple]] = None) -> tuple[str, str]:
     cfg = cfg or load_sources()
     store = load_store(paths)
@@ -493,6 +514,10 @@ def status(paths: Paths, today: date, cfg: dict | None = None, eurex_page: Optio
         lines, warn = eurex_status(per, cfg, today, cals, (eurex_page or eurex_page_file)(cfg))
         text += "\n\nEurex settlement curves (one shared file)\n" + "\n".join(f"  {x}" for x in lines + warn)
         md += "\n\n#### Eurex settlement curves (one shared file)\n\n" + "\n".join(f"- {x}" for x in lines + warn)
+    if any(i.get("method") == "FIT" for c in cfg["sources"].values() if c.get("currency") == "NZD" for i in c["instruments"].values()):
+        nz = nzd_spread_status(today)
+        text += "\n\nNZD estimated spread (config/cb_nzd_spread.yaml)\n" + "\n".join(f"  {x}" for x in nz)
+        md += "\n\n#### NZD estimated spread\n\n" + "\n".join(f"- {x}" for x in nz)
     from . import cb_datasets as dsets                        # decisions / projections / manual / calendar sections
     et, em = dsets.extra_status(paths, today)
     return text + ("\n" + et if et else ""), md + ("\n" + em if em else "")
