@@ -14,8 +14,9 @@ from zoneinfo import ZoneInfo
 
 from ..cb_calendar import compute_blackout
 from ..cb_docs.expect import EXPECTED_LAG, GRACE_DAYS, TYPE_LABEL, VIDEO_NA
-from .analysis import BankReport, PairRow, bank_report, pair_row
-from .engine import Context, Point, STRENGTH, YEAR_ENDS, YearEnd, step_reason, weakest
+from .analysis import BankReport, PairRow, bank_report, pair_row, primary_calendar, primary_history_start
+from .engine import Context, Point, STRENGTH, YEAR_ENDS, YearEnd, step_reason, trajectory, weakest
+from .methods import step_probabilities
 
 ORDER = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")
 SHORT = {"USD": "Fed", "EUR": "ECB", "GBP": "BoE", "JPY": "BoJ", "CAD": "BoC", "AUD": "RBA", "NZD": "RBNZ", "CHF": "SNB"}
@@ -540,6 +541,120 @@ def chart_json(ctx: Context, rep: BankReport, asof: date) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# rate paths (stage 3): the implied path over 12 months, now / 1w / 3w ago
+# ---------------------------------------------------------------------------
+
+PATH_DAYS = 365
+PATH_HISTORY_BD = {"1w": 5, "3w": 15}
+PER_MEETING_PROB = ("EXACT", "CURVE")
+
+
+def prob_json(p: Point) -> Optional[dict]:
+    """{dir, n, p}: n whole 25 bp moves certain, p = probability of one more, in the direction of the step (EXACT / CURVE only)."""
+    if p.step_bp is None or p.method not in PER_MEETING_PROB:
+        return None
+    sp = step_probabilities(p.step_bp)
+    n = min(sp["moves"])
+    return {"dir": sp["direction"], "n": n, "p": num(sp["moves"].get(n + 1, 0.0), 4)}
+
+
+def path_point_json(p: Point) -> dict:
+    na = None
+    if p.rate is None:
+        na = p.reason or step_reason(p) or "n/a"
+    return {"meeting": iso(p.meeting), "effective": iso(p.eff), "rate": num(p.rate), "cum_bp": num(p.cum_bp, 2), "step_bp": num(p.step_bp, 2),
+            "flag": p.flag, "method": p.method, "est": p.flag == "ESTIMATE", "prob": prob_json(p) if p.rate is not None else None, "na": na,
+            "step_na": (step_reason(p) or "n/a") if p.rate is not None and p.step_bp is None else None}
+
+
+def path_json(ctx: Context, rep: BankReport, asof: date) -> dict:
+    """The implied path of one bank over the next 12 months (decision dates <= as-of + 365 days), its 12-month end point, the current
+    rate and overnight benchmark, the same meetings 5 and 15 business days earlier (primary source calendar) and the change of the
+    12-month level against them. Pure and deterministic (no clock)."""
+    ccy, tr = rep.currency, rep.trajectory
+    until = asof + timedelta(days=PATH_DAYS)
+    pts = [p for p in tr.points if p.meeting is not None and p.meeting <= until]
+    points = [path_point_json(p) for p in pts]
+    last = next((p for p in reversed(pts) if p.rate is not None), None)
+    m12 = ({"meeting": iso(last.meeting), "cum_bp": num(last.cum_bp, 2), "moves": num(last.cum_bp / 25, 2), "rate": num(last.rate),
+            "flag": last.flag, "est": last.flag == "ESTIMATE", "na": None} if last is not None and last.cum_bp is not None
+           else {"meeting": None, "cum_bp": None, "moves": None, "rate": None, "flag": None, "est": False,
+                 "na": tr.na_reason or (pts[-1].reason if pts else "no meeting in the next 12 months")})
+    rj = rate_json(ctx, rep, asof)
+    bench = None
+    if tr.spread is not None and getattr(tr.spread, "estimated", False):
+        bench = {"id": None, "name": f"OCR + estimated BKBM-OCR spread ({tr.spread.bp:+.1f} bp)", "value": None, "date": None, "estimated": True}
+    elif tr.spread is not None and tr.spread.benchmark:
+        sid = tr.spread.benchmark
+        ob = ctx.view.obs(sid, asof)
+        bench = {"id": sid, "name": ctx.series_names.get(sid, sid), "value": num(ob[1]) if ob else None, "date": iso(ob[0]) if ob else None,
+                 "estimated": bool(getattr(tr.spread, "estimated", False))}
+    current = {"rate": rj["value"], "lower": rj["lower"] if rj["range"] else None, "upper": rj["upper"] if rj["range"] else None,
+               "range": rj["range"], "pending": rj["pending"], "from": rj["from"], "benchmark": bench}
+    history, delta = {}, {}
+    cal = primary_calendar(ctx, ccy)
+    start = primary_history_start(ctx, ccy)
+    for key, n in PATH_HISTORY_BD.items():
+        if tr.na_reason:
+            history[key] = {"asof": None, "points": [], "na": tr.na_reason}
+            delta[key] = metric(None, na=tr.na_reason, nd=2)
+            continue
+        prev = cal.add_business_days(asof, -n)
+        if start is None or start > prev:
+            why = f"history starts {start}" if start else "no history"
+            history[key] = {"asof": iso(prev), "points": [], "na": why}
+            delta[key] = metric(None, na=why, nd=2)
+            continue
+        tp = trajectory(ctx, ccy, prev)
+        hp = []
+        for p in pts:
+            q = tp.point_for(p.meeting)
+            hp.append({"meeting": iso(p.meeting), "rate": num(q.rate) if q else None, "cum_bp": num(q.cum_bp, 2) if q else None,
+                       "est": bool(q and q.flag == "ESTIMATE"), "na": None if q and q.rate is not None else ((q.reason if q else "") or "not priced on " + iso(prev))})
+        history[key] = {"asof": iso(prev), "points": hp, "na": None}
+        if last is None:
+            delta[key] = metric(None, na=m12["na"], nd=2)
+        else:
+            q = tp.point_for(last.meeting)
+            if q is None or q.level is None:
+                delta[key] = metric(None, na=f"the {last.meeting} meeting has no level on {prev}" + (f": {q.reason}" if q and q.reason else ""), nd=2)
+            else:
+                delta[key] = metric((last.level - q.level) * 100, flag=weakest(last.flag, q.flag), nd=2, meeting=iso(last.meeting), prev=iso(prev))
+    upcoming = [m for m in ctx.meetings.get(ccy, []) if m.decision > asof]
+    nxt = ({"decision": iso(upcoming[0].decision), "effective": iso(upcoming[0].eff), "time": decision_instant(ctx, ccy, upcoming[0].decision)}
+           if upcoming else None)
+    return {"ccy": ccy, "short": SHORT.get(ccy), "href": bank_href(ccy), "asof": iso(asof), "points": points, "m12": m12, "current": current,
+            "history": history, "delta": delta, "next": nxt, "na": tr.na_reason or None}
+
+
+def instant_sort_utc(ctx: Context, ccy: str, day: date) -> str:
+    """UTC instant used to order decisions: the fixed time, or the start of the window (BoJ), else noon local."""
+    t = decision_instant(ctx, ccy, day)
+    if t["utc"]:
+        return t["utc"]
+    hhmm = (t.get("window_local") or ["12:00"])[0]
+    h, m = hhmm.split(":")
+    return datetime.combine(day, time(int(h), int(m)), ZoneInfo(t["tz"])).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def next_decision_json(ctx: Context, paths: dict, asof: date) -> Optional[dict]:
+    """The nearest upcoming decision of all banks (by the UTC instant; BoJ: the start of its window) with the move priced for it."""
+    cands = []
+    for ccy, pj in paths.items():
+        if pj["next"] is None:
+            continue
+        day = date.fromisoformat(pj["next"]["decision"])
+        cands.append((instant_sort_utc(ctx, ccy, day), ccy, day))
+    if not cands:
+        return None
+    sort_utc, ccy, day = min(cands)
+    pj = paths[ccy]
+    pt = next((p for p in pj["points"] if p["meeting"] == iso(day)), None)
+    return {"ccy": ccy, "short": SHORT.get(ccy), "href": bank_href(ccy), "decision": iso(day), "time": decision_instant(ctx, ccy, day),
+            "sort_utc": sort_utc, "point": pt}
+
+
+# ---------------------------------------------------------------------------
 # overview row / bank page / pairs
 # ---------------------------------------------------------------------------
 
@@ -595,7 +710,7 @@ def bank_page(ctx: Context, rep: BankReport, asof: date) -> dict:
         "calendar": calendar_json(ctx, rep.currency, asof), "sources": sources_json(ctx, rep.currency, asof),
         "crosschecks": [{"name": c.name, "period": c.period, "primary": num(c.a), "second": num(c.b), "diff_bp": num(c.diff_bp, 2), "note": c.note, "na": c.na_reason or None}
                         for c in rep.crosschecks],
-        "meta": meta(ctx, asof), "latency": latency_block(ctx, rep.currency),
+        "meta": meta(ctx, asof), "latency": latency_block(ctx, rep.currency), "path": path_json(ctx, rep, asof),
     }
 
 
@@ -638,10 +753,11 @@ def build(ctx: Context, asof: date, pair_defs: list, currencies=ORDER) -> dict:
     """{"overview": ..., "banks": {ccy: page}, "pairs": ...} at `asof`. `pair_defs` = [(pair, base, quote, display)]."""
     reports = {c: bank_report(ctx, c, asof) for c in currencies if c in ctx.banks}
     rows = [overview_row(ctx, reports[c], asof) for c in currencies if c in reports]
+    paths = {c: path_json(ctx, reports[c], asof) for c in reports}
     pairs = [pair_json(pair_row(n, reports[b], reports[q]), disp) for n, b, q, disp in pair_defs if b in reports and q in reports]
     m = meta(ctx, asof)
     return {
-        "overview": {"meta": m, "banks": rows},
-        "banks": {c: bank_page(ctx, reports[c], asof) for c in reports},
+        "overview": {"meta": m, "banks": rows, "paths": paths, "next_decision": next_decision_json(ctx, paths, asof)},
+        "banks": {c: {**bank_page(ctx, reports[c], asof), "path": paths[c]} for c in reports},
         "pairs": {"meta": m, "pairs": pairs, "banks": {c: {"short": SHORT.get(c), "href": bank_href(c)} for c in reports}},
     }

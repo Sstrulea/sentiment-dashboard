@@ -87,6 +87,7 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **4** | trigger extern + verificări finale: **scheduler extern Cloudflare Worker (cron `*/5`, cod în repo) → `workflow_dispatch`**, 3 reîncercări cu backoff, alertă la eșec (Vercel Cron pe Hobby rulează o dată pe zi) |
 | **E1** | preț pe ședință din curbele OIS Eurex Clearing pentru USD, EUR, GBP, JPY, CHF (metoda `OIS`, §17); fostele instrumente principale devin cross-check; spread-uri noi USD / EUR / CHF; calendarul RBNZ până în feb 2028 |
 | **E2** | metoda `FIT` (estimare, flag ESTIMATE) pentru CAD dincolo de lanțul COA și pentru NZD (ASX BB, cu spread BKBM–OCR estimat); fereastra intraday MX de la 06:00 UTC; anul BoE din titlu (§18) |
+| **E3** | pagina nouă: Compare (toate băncile pe un grafic + tabel), pagina băncii cu Now / 1w / 3w, bara de bănci, `BANK_COLORS` (§19) |
 
 ## 8. Ce există după 1B-1
 
@@ -881,3 +882,70 @@ punctele FIT intră în calea desenată ca EXACT / CURVE, cu linie întreruptă 
 
 - Ședințele estimate nu au probabilitate; NZD 28 oct e n/a; spread-ul NZD e o estimare din date lunare, nu o observație zilnică.
 - Repricing-ul CAD pe datele afectate de defectul MX (până la 2026-10-09) moștenește decalajul de dimineață.
+
+## 19. ETAPA E3 — pagina nouă: Compare și pagina băncii (Now / 1w / 3w)
+
+A treia etapă. Înlocuiește tabelul „Banks” și graficul vechi al traiectoriei cu o vedere de tip RateProbability (nu o copie 1:1): toate
+băncile pe același grafic, apoi, pe pagina fiecărei bănci, tabelul pe ședințe cu probabilități și graficul acum / acum o săptămână / acum trei săptămâni.
+
+### Payload (pur, `payload.py`)
+
+- **`path_json(ctx, rep, asof)`** per bancă:
+  - `points` — ședințele cu decizia ≤ as-of + 365 de zile: `meeting`, `effective`, `rate` (politică-echivalentă), `cum_bp`, `step_bp`, `flag`, `method`,
+    `est` (ESTIMATE), `prob` (`dir`, `n`, `p` — doar EXACT / CURVE, din `step_probabilities`), `na` (motivul);
+  - `m12` — ultima ședință din fereastră cu valoare: `meeting`, `cum_bp`, `moves` = `cum_bp / 25` (2 zecimale), `rate`, `est`;
+  - `current` — baza (Fed: și intervalul) + benchmark-ul overnight al spread-ului (`ctx.series_names`, ultima observație ≤ as-of; NZD: spread-ul estimat, fără serie);
+  - `history` — `1w` / `3w` = traiectoria recalculată la as-of − 5 / − 15 zile lucrătoare în calendarul sursei primare (ca `analysis.repricing`): `asof`,
+    `points` (`meeting`, `rate`, `cum_bp`, doar ședințele din `points`), `na` = „history starts <data>” când sursa primară începe mai târziu;
+  - `delta` — Δ nivelului la ședința `m12` față de 1w / 3w, bp, aceeași ședință la ambele date; n/a cu motiv;
+  - `next` — prima ședință, cu `decision_instant`.
+- **`overview.json`**: `paths: {ccy: path_json}` (toate 8) și `next_decision` = cea mai apropiată decizie (după instantul UTC; BoJ: începutul ferestrei
+  11:30 JST, `sort_utc`) cu punctul ei din `paths`. **JSON-ul băncii**: același bloc sub `path`. Determinist (fără ceas); countdown-urile în browser.
+
+### Pagina principală `/central-banks` (Compare, implicit)
+
+- **Bara de bănci** (sus, pe toate paginile CB): `Compare · Pairs · USD … CHF`; Compare / Pairs comută pe overview (`#pairs`), băncile sunt linkuri.
+  Rândul vechi de tab-uri a dispărut (dubla bara).
+- **Up next**: banca, data și ora deciziei în ora locală a browserului, countdown, mișcarea prețuită („48% hike · +12 bp”, „≈ +12 bp” la estimări, „—” + motiv).
+- **Graficul comun** (Chart.js): X = de la as-of la + 12 luni, Y = bp prețuite față de rata curentă (comutator „bp vs now / level %”); o linie per bancă,
+  din 0 (respectiv rata curentă), un punct pe fiecare decizie, segmente drepte; estimările = puncte goale + segmente întrerupte; legenda ascunde
+  banca; tooltip: banca, data, bp cumulat, rata implicită, probabilitatea, „estimate”; etichetă directă (codul băncii) la capătul fiecărei linii,
+  fără suprapuneri.
+- **Tabelul**: Bank · Rate · Next meeting (dată + countdown) · Next move priced · 12M (bp + mișcări) · Δ 1w · Δ 3w; nuanțe `ScorePalette`, „≈” la
+  estimări, „—” cu motivul în tooltip; sortare pe Next meeting / Next move / 12M (bp: cel mai hawkish întâi, n/a la final); click pe rând = pagina băncii.
+- **Scos**: tabelul „Banks” (`bankTable`, `bankList`) și legenda lui de badge-uri, plus funcțiile rămase fără folos (celulele vechi de overview).
+  Șablonul încarcă acum Chart.js și pe overview; `boot()` îl cere pe toate paginile.
+
+### Pagina băncii `/central-banks/<ccy>`
+
+- Header: rata, overnight-ul (nume, valoare, data), as-of. Trei carduri: **Next meeting** (dată, oră, countdown, mișcarea prețuită, bara cu 2 segmente
+  pentru probabilități, blackout), **12 months** („+74 bp · 2.97 hikes”), **Repricing** (Δ 12 luni față de 1w și 3w sau „history starts …”).
+- Graficul: X = datele deciziilor din 12 luni (axă de timp), Y = rata implicită %; **Now** linie plină cu arie până la rata curentă, **1w ago** întreruptă,
+  **3w ago** punctată gri (fiecare ascunsă din legendă); linie orizontală la rata curentă; comutator trepte / linie (implicit trepte; în Chart.js
+  `stepped: "before"` = orizontal până la ședință, apoi saltul); tooltip cu cele trei valori și Δ față de 1w / 3w; estimări goale + întrerupte.
+- Tabelul: Meeting · Implied rate · Probability (hike/cut) · Moves (cum.) · Δ vs now (bp) · Δ vs 1w (bp); estimările cu „≈” și fără probabilitate, n/a = „—” cu motivul.
+  Textul probabilității: n = 0 „30% hike”; n ≥ 1 „+25 bp + 28% of +50”; la cut la fel, cu „cut” / minus.
+- **Înlocuite**: graficul vechi (`drawBankChart`), `pathTable`, cardurile End-2026 / End-2027 și header-ul vechi. `bankChartModel` rămâne doar pentru pagina
+  perechii. **Neschimbate**: GAP / dots, deciziile, documentele, rezumatele, calendarul + blackout, sursele cu licența, „How is this calculated?” (cross-check-uri,
+  consistență) și modul zilei de decizie (cardul vechi al următoarei ședințe urcă în cap în ziua deciziei).
+- **Lipsa istoricului**: Eurex începe la 2026-10-08 ⇒ liniile 1w (de la 2026-10-15) și 3w (de la 2026-10-29) și Δ-urile sunt n/a până atunci, cu motivul.
+
+### `BANK_COLORS`
+
+O culoare fixă per bancă, definită o dată în `static/cb.js` (graficul, legenda, bara, tabelul; pătrățelele HTML se recolorează la schimbarea temei):
+paleta categorială de referință a skill-ului de dataviz, cu trepte separate light / dark, în ordinea USD albastru, EUR portocaliu, GBP aqua, JPY galben,
+CAD magenta, AUD verde, NZD violet, CHF roșu. Validată cu validatorul de paletă pe suprafețele site-ului (`#ffffff`, `#1a1d22`): CVD ΔE ≥ 9.1 / 8.4,
+normal ΔE ≥ 19.6 / 19.3; în light trei nuanțe stau sub 3:1 ⇒ etichetele directe + tabelul (regula de compensare).
+
+### Telefon (≤ 600 px)
+
+Compare: graficul pe toată lățimea (legenda pe mai multe rânduri, mai puține etichete de lună), apoi lista băncilor cu aceleași valori ca tabelul.
+Banca: cardurile unul sub altul, graficul pe toată lățimea, tabelul cu scroll orizontal, apoi acordeoanele existente (fără cele vechi de traiectorie / cale /
+orizonturi). Re-randarea la pragul de 600 px rămâne.
+
+### Teste, capturi
+
+`tests/test_cb_paths_payload.py` (selecția pe 12 luni, `m12`, `moves`, istoricul n/a cu motiv, Δ pe aceeași ședință, `next_decision` inclusiv BoJ TBD,
+determinism, copiile din `public/`), `tests/cb_js/test_rate_paths.cjs` (pe funcțiile reale din `static/cb.js`: textul probabilității, rândurile Compare,
+sortarea, tabelul băncii, `BANK_COLORS`). Capturi: `docs/design/cb-paths-v1/screenshots/` (Compare și USD, desktop 1440 dark / light, telefon 390).
+Dacă `overview.json` / `<ccy>.json` nu au încă blocul (fișierele dinaintea primului render de după merge), pagina spune că datele vin la următorul refresh.

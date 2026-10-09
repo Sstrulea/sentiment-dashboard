@@ -102,6 +102,7 @@ class Context:
     summary_failures: dict = field(default_factory=dict)         # "doc_id|prompt_version" -> validation failure (never shown as a summary)
     summary_no_text: dict = field(default_factory=dict)          # doc_id -> {url, reason, at}: the page has no extractable text (marked once)
     doc_warnings: list = field(default_factory=list)             # documents past their usual publication lag
+    series_names: dict = field(default_factory=dict)             # official series id -> display name (cb_official.yaml)
     estimated_spreads: dict = field(default_factory=dict)        # currency -> estimated benchmark - policy spread (NZD: config/cb_nzd_spread.yaml)
     stale_after_bd: int = 2
 
