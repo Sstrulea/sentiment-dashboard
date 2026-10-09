@@ -28,6 +28,7 @@
 #                  WINDOW (3M contracts, one value per window, UPPER_BOUND) | PROXY_CURVE (government forward curve, basis
 #                  removed, per meeting) | PROXY_TENOR (bills by tenor, basis removed). n/a: CHF, NZD vs OCR.
 #   stale_after_bd business days after which a quote is stale (meta default; a source may override).
+#   label          display name of the publisher (the bank page says "Market data <date> · <label>").
 #   curve_id, day_count   (EurexOis) the curve of the shared Eurex settlement file and its money-market basis (360 | 365).
 #   calendar_id    holiday calendar of the source's publisher/exchange (config/cb_calendars.yaml): --status
 #                  excludes its holidays from the missing days and counts its business days for the lag.
@@ -40,6 +41,7 @@ meta:
 
 sources:
   atlantafed_mpt:
+    label: "Atlanta Fed MPT"
     currency: USD
     calendar_id: US
     role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -60,6 +62,7 @@ sources:
     license: "Atlanta Fed Market Probability Tracker (CME 3M SOFR options). Workbook licence: personal and educational purposes only; CME data used under CME permission."
 
   boe_ois:
+    label: "BoE OIS curve"
     currency: GBP
     calendar_id: UK
     role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -80,6 +83,7 @@ sources:
     license: "Bank of England yield-curve data, OGL v3.0; OIS pages cite 'Bloomberg Finance L.P. and Bank calculations' - confirm before public display."
 
   jpx_tona:
+    label: "JPX"
     currency: JPY
     calendar_id: JP
     role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -98,6 +102,7 @@ sources:
     license: "JPX settlement prices; terms not retrieved (403/404) - unverified. Historical data is sold via J-Quants DataCube."
 
   mx_corra:
+    label: "Montréal Exchange"
     currency: CAD
     calendar_id: CA
     role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -120,6 +125,7 @@ sources:
     license: "(c) Bourse de Montreal; 'for general information purposes only'. TMX Datalinx sells MX data 'for a single end user, no redistribution rights'."
 
   asx_ib:
+    label: "ASX"
     currency: AUD
     calendar_id: AU
     role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -138,6 +144,7 @@ sources:
     license: "Undocumented JSON API behind asx.com.au; ASX terms not retrieved - unverified. Community mirror github.com/bpalmer4/ASX has daily captures since 2022-04 (unofficial)."
 
   asx_bb:
+    label: "ASX"
     currency: NZD
     calendar_id: AU  # ASX trading days (the underlying is NZ 90-day BKBM)
     role: primary                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -157,6 +164,7 @@ sources:
     license: "Undocumented JSON API behind asx.com.au; ASX terms not retrieved - unverified."
 
   ust_bills:
+    label: "US Treasury"
     currency: USD
     calendar_id: US
     role: crosscheck                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -175,6 +183,7 @@ sources:
     license: "US Treasury - US government work, public domain."
 
   boc_tbills:
+    label: "Bank of Canada"
     currency: CAD
     calendar_id: CA
     role: crosscheck                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -193,6 +202,7 @@ sources:
     license: "Bank of Canada Terms of Use s.1: 'freely use, copy, distribute and transmit' with attribution."
 
   ecb_aaa_fwd:
+    label: "ECB AAA curve"
     currency: EUR
     calendar_id: EU
     role: crosscheck                     # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -211,6 +221,7 @@ sources:
     license: "ECB statistics, reuse with source acknowledgement."
 
   rba_bank_bills:
+    label: "RBA"
     currency: AUD
     calendar_id: AU
     role: crosscheck                    # primary | crosscheck (1B-2: the trajectory comes from the primary instrument)
@@ -231,6 +242,7 @@ sources:
   # Eurex Clearing OTC settlement curves: one shared daily file, one entry per curve (adapter EurexOis)
 
   eurex_ois_usd:
+    label: "Eurex Clearing"
     currency: USD
     role: primary
     curve_id: USD.FEDFUNDS.1D
@@ -252,6 +264,7 @@ sources:
     license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
 
   eurex_ois_usd_sofr:
+    label: "Eurex Clearing"
     currency: USD
     role: crosscheck
     curve_id: USD.SOFR.1D
@@ -273,6 +286,7 @@ sources:
     license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
 
   eurex_ois_eur:
+    label: "Eurex Clearing"
     currency: EUR
     role: primary
     curve_id: EUR.ESTR.1D
@@ -294,6 +308,7 @@ sources:
     license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
 
   eurex_ois_gbp:
+    label: "Eurex Clearing"
     currency: GBP
     role: primary
     curve_id: GBP.SONIA.1D
@@ -315,6 +330,7 @@ sources:
     license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
 
   eurex_ois_jpy:
+    label: "Eurex Clearing"
     currency: JPY
     role: primary
     curve_id: JPY.TONAR.1D
@@ -336,6 +352,7 @@ sources:
     license: "Eurex Clearing AG public settlement prices (OTC IRD curves, eurex.com); reuse terms not reviewed - display stays behind the access gate, with attribution."
 
   eurex_ois_chf:
+    label: "Eurex Clearing"
     currency: CHF
     role: primary
     curve_id: CHF.SARON.1D

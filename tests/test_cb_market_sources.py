@@ -532,3 +532,14 @@ def test_mpt_html_instead_of_the_workbook_is_a_parse_failure(monkeypatch):
     s = mk(AtlantaMpt)
     assert s.fetch() is None and s.last_status == "PARSE-FAIL" and "not an xlsx" in s.last_note
     assert "/research-and-data/data/market-probability-tracker/" in s.cfg["url"]            # the location since the move (2026-10)
+
+
+@pytest.mark.parametrize("now", [datetime(2026, 10, 12, 22, 40, tzinfo=timezone.utc),       # Canadian Thanksgiving (MX closed), after the cutoff
+                                 datetime(2026, 10, 13, 0, 40, tzinfo=timezone.utc)])        # the night after it
+def test_mx_asof_rolls_back_over_the_canadian_holiday(now):
+    assert mk(MxCorra, now).infer_asof() == date(2026, 10, 9)
+
+
+def test_mx_asof_without_a_calendar_rolls_back_weekends_only():
+    s = MxCorra(cfg=dict(mk(MxCorra).cfg, calendar_id=None), now=lambda: datetime(2026, 10, 12, 22, 40, tzinfo=timezone.utc))
+    assert s.infer_asof() == date(2026, 10, 12)

@@ -65,6 +65,13 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
    fără permisiune scrisă a furnizorilor (Atlanta Fed / CME, BoE, ASX, MX, JPX); UI afișează atribuirea din câmpul
    `license` al fiecărei surse.
 
+10. **Ședința viitoare — o singură regulă** (`engine.is_upcoming` / `upcoming_meetings`, folosită de engine, analysis și payload): o ședință e viitoare
+   dacă `decision > asof`, sau dacă `decision == asof` și **nu există încă un rând în `decisions.parquet`** pentru ea. Motivul: as-of-ul global e cea mai nouă
+   dată a oricărei surse (ASX / JPX au ziua T de la ~08:40 UTC, Eurex rămâne la T−1, MX până seara), iar fără regulă ședința din ziua T dispărea înainte de
+   anunț. Un rând apare doar după anunț (verificat: FF are `actual` gol până la publicare; seria oficială e citită la data efectivă — la BoE, singura cu
+   efectiv = ziua deciziei, observația zilei D se stochează abia în D+1 ~08:41Z; comunicatul apare la decizie; RBNZ e introdus de mână). As-of-ul global
+   rămâne (meta, stale). UI: modul zilei de decizie e activ când azi, în fusul băncii, e data următoarei ședințe **sau** a ultimei decizii înregistrate.
+
 ## 6. Structură și scriitor unic
 
 - `src/cb_sources/` (I/O), `src/cb_compute/` (pur), `src/cb_render.py`.
@@ -88,6 +95,7 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **E1** | preț pe ședință din curbele OIS Eurex Clearing pentru USD, EUR, GBP, JPY, CHF (metoda `OIS`, §17); fostele instrumente principale devin cross-check; spread-uri noi USD / EUR / CHF; calendarul RBNZ până în feb 2028 |
 | **E2** | metoda `FIT` (estimare, flag ESTIMATE) pentru CAD dincolo de lanțul COA și pentru NZD (ASX BB, cu spread BKBM–OCR estimat); fereastra intraday MX de la 06:00 UTC; anul BoE din titlu (§18) |
 | **E3** | pagina nouă: Compare (toate băncile pe un grafic + tabel), pagina băncii cu Now / 1w / 3w, bara de bănci, `BANK_COLORS` (§19) |
+| **E3.1** | ziua deciziei (regula ședinței viitoare), 1w / 3w de la data datelor băncii, „Up next” în browser + `joint`, nota de sensibilitate NZD, MX la sărbători (§20) |
 
 ## 8. Ce există după 1B-1
 
@@ -949,3 +957,25 @@ orizonturi). Re-randarea la pragul de 600 px rămâne.
 determinism, copiile din `public/`), `tests/cb_js/test_rate_paths.cjs` (pe funcțiile reale din `static/cb.js`: textul probabilității, rândurile Compare,
 sortarea, tabelul băncii, `BANK_COLORS`). Capturi: `docs/design/cb-paths-v1/screenshots/` (Compare și USD, desktop 1440 dark / light, telefon 390).
 Dacă `overview.json` / `<ccy>.json` nu au încă blocul (fișierele dinaintea primului render de după merge), pagina spune că datele vin la următorul refresh.
+
+## 20. ETAPA E3.1 — corecturi după review
+
+- **Ședința din ziua as-of-ului** (§5, punctul 10): regula unică `is_upcoming`; primul caz real era 28 oct (BoC 13:45 UTC, Fed 18:00 UTC), între ~08:40 UTC și
+  decizie. La OIS, ședința rămâne graniță la efectivul ei (29 oct), prețuită din snapshot-ul Eurex de T−1. Cu rândul ei de decizie, ședința dispare, baza e
+  rata nouă (pending până la efectiv), iar `next` = ședința următoare. O traiectorie de istoric la o zi de decizie înregistrată exclude acea ședință.
+- **1w / 3w de la data datelor băncii**: `path.data_asof` = as-of-ul snapshot-ului primar folosit de traiectorie, `data_source` / `data_label` (câmp nou
+  `label` pe fiecare sursă din `cb_sources.yaml`); `history` numără 5 / 15 zile lucrătoare înapoi de la el, nu de la as-of-ul global (Eurex 2026-10-08 →
+  2026-10-01 / 2026-09-17). UI: „Market data 8 Oct · Eurex Clearing” în header (desktop + telefon), „1w ago · 1 Oct” în legendă, „vs 1 Oct” în cardul
+  Repricing, data datelor în tooltip-ul celulei băncii din Compare. Consecință acceptată: linia 1w a băncilor Eurex apare din 16 oct (snapshot-ul din 15 oct).
+- **„Up next” și `joint`**: `path.next` are `sort_utc` (regula `next_decision`) și, la BoJ, `end_utc` (sfârșitul ferestrei). „Up next” se alege în browser:
+  cea mai apropiată decizie care nu a trecut (ora fixă; BoJ: sfârșitul ferestrei), altfel `next_decision`. Sortarea „Next meeting” folosește `sort_utc`. Un punct
+  n/a „not covered by any contract” inclus de un punct următor (nota „includes the … meeting”) primește `joint` = {meeting, step_bp, cum_bp}; punctele au
+  `includes`. Textul „≈ +43.7 bp by 9 Dec, together with 28 Oct”, estompat, fără nuanță, cu tooltip-ul „No contract isolates this meeting; the 9 Dec estimate
+  includes it.” — în „Up next”, celula „Next move priced”, lista de telefon și cardul Next meeting; tooltip-ul graficului Compare spune „includes 28 Oct”; la
+  sortarea după „Next move” NZD rămâne la final.
+- **NZD — sensibilitatea la spread**: `path.spread_note` + METHODOLOGY: „If the actual BKBM-OCR spread is wider than assumed, every NZD point is lower by about the
+  same number of bp.” (pe fixture: cu 26 bp în loc de 16, fiecare punct scade cu 9–11.5 bp). Valoarea de 16 bp nu se schimbă.
+- **MX la sărbători**: `infer_asof` coboară la ziua lucrătoare precedentă din calendarul sursei (`calendar_id`; Thanksgiving 2026-10-12 e în calendarul CA):
+  un fetch la 2026-10-12T22:40Z sau 2026-10-13T00:40Z dă as-of 2026-10-09.
+- **Teste**: `tests/test_cb_decision_day.py`, `tests/cb_js/test_decision_day.cjs`; capturi `compare-dark-1440.png` (refăcută), `nzd-dark-1440.png`,
+  `usd-decision-day-dark-1440.png` (fixture la 2026-10-28, ceasul browserului 2026-10-28T10:00Z).

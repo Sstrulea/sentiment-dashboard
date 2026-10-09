@@ -25,6 +25,7 @@ log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES_YAML = ROOT / "config" / "cb_sources.yaml"
+_CALENDARS = None                  # cached config/cb_calendars.yaml (infer_asof)
 NON_BROWSER_UA = FRED_UA           # RBA/FRED serve it; a Chrome UA is what earns some 403s
 
 
@@ -190,7 +191,8 @@ class MarketSource(HttpSource):
 
     def infer_asof(self) -> Optional[date]:
         """For pages WITHOUT an as-of stamp: None inside the intraday window (values may be live),
-        otherwise the last completed exchange day from fetch time + cutoff (weekend rolled back).
+        otherwise the last completed exchange day from fetch time + cutoff, rolled back over weekends AND the holidays of the
+        source's calendar (`calendar_id`; MX is closed on Canadian Thanksgiving: a 22:40Z fetch that Monday shows Friday's prices).
         Saturday/Sunday have no session, so the window does not apply."""
         now = self._now()
         start, end = (_hhmm(x) for x in self.cfg["intraday_utc"])
@@ -198,7 +200,21 @@ class MarketSource(HttpSource):
         if now.weekday() < 5 and start <= t < end:
             return None
         d = now.date() if t >= end else now.date() - timedelta(days=1)
-        return roll_back_weekend(d)
+        cal = self.calendar()
+        if cal is None:
+            return roll_back_weekend(d)
+        return d if cal.is_business_day(d) else cal.prev_business_day(d)
+
+    def calendar(self):
+        """The holiday calendar of the source (config/cb_calendars.yaml `calendar_id`), None when unknown."""
+        cid = self.cfg.get("calendar_id")
+        if not cid:
+            return None
+        from ..cb_calendar import load_calendars           # late import: keeps the adapters importable on their own
+        global _CALENDARS
+        if _CALENDARS is None:
+            _CALENDARS = load_calendars()
+        return _CALENDARS.get(cid)
 
     def quote(self, instrument: str, contract: str, field_: str, value: float, unit: str, asof: date, *,
               ref_start: date | None = None, ref_end: date | None = None, tenor_months: float | None = None,
