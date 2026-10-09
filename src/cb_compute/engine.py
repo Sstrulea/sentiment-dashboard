@@ -123,6 +123,28 @@ class Context:
 
 
 # ---------------------------------------------------------------------------
+# Upcoming vs decided: ONE rule for every module
+# ---------------------------------------------------------------------------
+
+def is_decided(ctx: "Context", cur: str, day: date) -> bool:
+    """A decision row exists for the meeting of `day` (rows appear only after the announcement: FF actual, the official series at the
+    effective date, the statement, the hand-entered RBNZ file)."""
+    return any(r["meeting_date"] == day for r in ctx.decisions.get(cur, []))
+
+
+def is_upcoming(ctx: "Context", cur: str, m, asof: date) -> bool:
+    """A meeting is still to come at `asof` when its decision day is later, or is `asof` itself and no decision row exists yet: the
+    global as-of is the newest date of ANY source (ASX / JPX carry day T from ~08:40 UTC), so on a decision day the meeting must not
+    vanish before the announcement."""
+    d = m.decision if hasattr(m, "decision") else m
+    return d > asof or (d == asof and not is_decided(ctx, cur, d))
+
+
+def upcoming_meetings(ctx: "Context", cur: str, asof: date) -> list:
+    return [m for m in ctx.meetings.get(cur, []) if is_upcoming(ctx, cur, m, asof)]
+
+
+# ---------------------------------------------------------------------------
 # Base rate
 # ---------------------------------------------------------------------------
 
@@ -252,7 +274,7 @@ def trajectory(ctx: Context, cur: str, asof: date) -> Trajectory:
         tr.na_reason = "no decision on record to anchor the base rate"
         return tr
     tr.spread = spread_for(ctx, cur, asof)
-    unknown = [m for m in ctx.meetings.get(cur, []) if m.decision > asof]
+    unknown = upcoming_meetings(ctx, cur, asof)
     by_method: dict = {}
     for sid, cfg in prim:
         for inst, ic in cfg["instruments"].items():
@@ -639,7 +661,7 @@ def year_end(ctx: Context, tr: Trajectory, year: int) -> YearEnd:
         return YearEnd(year, m.decision if m else None, reason=tr.na_reason)
     if m is None:
         return YearEnd(year, None, reason=f"no {year} meeting on record")
-    if m.decision <= tr.asof:
+    if not is_upcoming(ctx, tr.currency, m, tr.asof):
         return YearEnd(year, m.decision, cum_bp=0.0, rate=tr.base.rate if tr.base else None, flag="DECIDED",
                        reason="the last meeting of the year is already decided: it is part of the base",
                        level=tr.base.rate if tr.base else None)

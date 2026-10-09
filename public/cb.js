@@ -157,7 +157,7 @@
     titleEl.textContent = "Central Banks";
     metaEl.innerHTML = "As of " + esc(fmtDate(ov.meta.asof)) + DOT + ov.banks.length + " banks" + DOT + "stale after " + ov.meta.stale_after_bd + " business days";
     root.innerHTML = bankBar("compare") +
-      '<section id="cbCompare">' + upNextHtml(ov.next_decision) +
+      '<section id="cbCompare">' + upNextHtml(pickUpNext(ov.paths, Date.now(), ov.next_decision)) +
       '<section class="cb-card cb-chartcard"><h3>Market-implied paths <small class="muted">next 12 months, every bank</small>' +
       '<span class="cb-toggle" role="group" aria-label="Scale"><button type="button" class="cb-tbtn active" data-mode="bp" aria-pressed="true">bp vs now</button><button type="button" class="cb-tbtn" data-mode="level" aria-pressed="false">level %</button></span></h3>' +
       '<div class="cb-chart-wrap cb-compare-wrap"><canvas id="cbCompareChart"></canvas></div>' +
@@ -318,6 +318,35 @@
     if (pt.est) return "≈ " + bp;
     return pt.prob ? probText(pt.prob) + DOT + bp : bp;
   }
+  // a meeting no contract isolates (NZD 28 Oct): its move sits in a later estimate - "≈ +43.7 bp by 9 Dec, together with 28 Oct"
+  function jointText(pt) {
+    if (!pt || !pt.joint || !isNum(pt.joint.cum_bp)) return null;
+    return "≈ " + fmtSigned(pt.joint.cum_bp, 1) + " bp by " + fmtDay(pt.joint.meeting) + ", together with " + fmtDay(pt.meeting);
+  }
+  function jointTip(pt) { return "No contract isolates this meeting; the " + fmtDay(pt.joint.meeting) + " estimate includes it."; }
+  function jointSpan(pt) { return '<span class="cb-joint muted" title="' + esc(jointTip(pt)) + '">' + esc(jointText(pt)) + "</span>"; }
+  function dataDateText(pj) { return pj && pj.data_asof ? "Market data " + fmtDay(pj.data_asof) + (pj.data_label ? DOT + pj.data_label : "") : ""; }
+  // decision-day mode: today (bank time zone) is the next meeting or the last recorded decision - so it stays on all day, also after the decision is in the data
+  function dayModeOf(d, today) {
+    const n = d.summary.next, last = d.summary.last_decision, tz = (n && n.time && n.time.tz) || d.bank.tz || "UTC", t = today(tz);
+    return !!((n && n.decision && t === n.decision) || (last && last.date && t === last.date));
+  }
+  // "Up next" in the browser: the nearest decision not passed yet (fixed time; BoJ: the end of its window); the payload's when none
+  function pickUpNext(paths, nowMs, fallback) {
+    let best = null;
+    BANK_ORDER.forEach(function (c) {
+      const pj = paths[c], n = pj && pj.next;
+      if (!n) return;
+      const until = Date.parse(n.end_utc || n.sort_utc || (n.decision + "T23:59:59Z"));
+      if (!(until > nowMs)) return;
+      const key = n.sort_utc || n.decision;
+      if (!best || key < best.sort_utc) {
+        best = { ccy: c, short: pj.short, href: pj.href, decision: n.decision, time: n.time, sort_utc: key, end_utc: n.end_utc || null,
+                 point: (pj.points || []).find(function (p) { return p.meeting === n.decision; }) || null };
+      }
+    });
+    return best || fallback || null;
+  }
   function naSpan(reason) { return '<span class="cb-na" title="' + esc(shortNa(reason || "n/a")) + '">' + NA + "</span>"; }
   function m12Text(m) {
     if (!m || !isNum(m.cum_bp)) return null;
@@ -331,7 +360,8 @@
     return BANK_ORDER.filter(function (c) { return paths[c]; }).map(function (c) {
       const pj = paths[c], pt = firstPoint(pj), n = pj.next;
       return { ccy: c, short: pj.short, href: pj.href, current: pj.current, next: n, point: pt, m12: pj.m12, d1w: pj.delta["1w"], d3w: pj.delta["3w"],
-               keys: { next: n ? (n.time && n.time.utc) || n.decision : null, move: pt && isNum(pt.step_bp) ? Number(pt.step_bp) : null,
+               data_text: dataDateText(pj), spread_note: pj.spread_note || null,
+               keys: { next: n ? n.sort_utc || (n.time && n.time.utc) || n.decision : null, move: pt && isNum(pt.step_bp) ? Number(pt.step_bp) : null,
                        m12: pj.m12 && isNum(pj.m12.cum_bp) ? Number(pj.m12.cum_bp) : null } };
     });
   }
@@ -361,11 +391,14 @@
       const n = r.next, pt = r.point;
       const nextHtml = n ? '<div class="cb-next-date">' + fmtDate(n.decision) + '</div><div class="cb-prob">' + cdSpan(n) + (n.time && n.time.tbd ? DOT + esc(timeText(n.time)) : "") + "</div>" : naSpan("no upcoming meeting");
       const mv = moveText(pt);
-      const moveHtml = mv ? '<td class="econ-cell cb-num cb-n"' + tint(pt.step_bp, 25) + ">" + esc(mv) + "</td>" : '<td class="econ-cell cb-n">' + naSpan(pt ? pt.na || pt.step_na : "no upcoming meeting") + "</td>";
+      const moveHtml = mv ? '<td class="econ-cell cb-num cb-n"' + tint(pt.step_bp, 25) + ">" + esc(mv) + "</td>"
+        : jointText(pt) ? '<td class="econ-cell cb-n">' + jointSpan(pt) + "</td>"
+        : '<td class="econ-cell cb-n">' + naSpan(pt ? pt.na || pt.step_na : "no upcoming meeting") + "</td>";
       const m12 = m12Text(r.m12);
-      const m12Html = m12 ? '<td class="econ-cell cb-num cb-n"' + tint(r.m12.cum_bp, 100) + ' title="' + esc("after the " + fmtDate(r.m12.meeting) + " meeting") + '">' + esc(m12) + "</td>" : '<td class="econ-cell cb-n">' + naSpan(r.m12 && r.m12.na) + "</td>";
+      const m12Tip = "after the " + fmtDate(r.m12.meeting) + " meeting" + (r.spread_note ? ". " + r.spread_note : "");
+      const m12Html = m12 ? '<td class="econ-cell cb-num cb-n"' + tint(r.m12.cum_bp, 100) + ' title="' + esc(m12Tip) + '">' + esc(m12) + "</td>" : '<td class="econ-cell cb-n">' + naSpan(r.m12 && r.m12.na) + "</td>";
       return '<tr class="cb-row" data-href="' + esc(r.href) + '" data-ccy="' + esc(r.ccy) + '" tabindex="0">' +
-        '<td class="cb-bank"><span class="cb-swatch" data-ccy="' + esc(r.ccy) + '"></span><a href="' + esc(r.href) + '"><b>' + esc(r.ccy) + "</b>" + DOT + esc(r.short) + "</a></td>" +
+        '<td class="cb-bank" title="' + esc(r.data_text) + '"><span class="cb-swatch" data-ccy="' + esc(r.ccy) + '"></span><a href="' + esc(r.href) + '"><b>' + esc(r.ccy) + "</b>" + DOT + esc(r.short) + "</a></td>" +
         '<td class="cb-n">' + esc(currentText(r.current)) + "</td><td>" + nextHtml + "</td>" + moveHtml + m12Html + deltaCell(r.d1w) + deltaCell(r.d3w) + "</tr>";
     }).join("");
     const th = function (k, label, tip) { return '<th class="cb-sort' + (k === (sortKey || "next") ? " active" : "") + '" data-sort="' + k + '" title="' + esc(tip) + '">' + label + "</th>"; };
@@ -380,7 +413,7 @@
       const mv = moveText(r.point), m12 = m12Text(r.m12);
       return '<a class="ph-row cb-ph-cmp" href="' + esc(r.href) + '"><span class="cb-swatch" data-ccy="' + esc(r.ccy) + '"></span>' +
         '<span class="cb-ph-bank"><b>' + esc(r.ccy) + '</b> <span class="cb-ph-short">' + esc(r.short) + '</span><span class="cb-ph-sub">' + esc(currentText(r.current)) + (r.next ? DOT + fmtDay(r.next.decision) + " " : "") + (r.next ? cdSpan(r.next) : "") + "</span></span>" +
-        '<span class="cb-ph-r"><b>' + (mv ? esc(mv) : NA) + '</b><span class="cb-ph-sub">12M ' + (m12 ? esc(m12) : NA) + DOT + "1w " + (isNum(r.d1w.v) ? fmtSigned(r.d1w.v, 1) : NA) + DOT + "3w " + (isNum(r.d3w.v) ? fmtSigned(r.d3w.v, 1) : NA) + "</span></span>" + CHEV + "</a>";
+        '<span class="cb-ph-r"><b>' + (mv ? esc(mv) : jointText(r.point) ? jointSpan(r.point) : NA) + '</b><span class="cb-ph-sub">12M ' + (m12 ? esc(m12) : NA) + DOT + "1w " + (isNum(r.d1w.v) ? fmtSigned(r.d1w.v, 1) : NA) + DOT + "3w " + (isNum(r.d3w.v) ? fmtSigned(r.d3w.v, 1) : NA) + "</span></span>" + CHEV + "</a>";
     }).join("") + '</div><p class="ph-note">≈ = estimate (no contract isolates the meeting). Tap a bank for its page.</p></div>';
   }
   function upNextHtml(nd) {
@@ -388,7 +421,7 @@
     const mv = moveText(nd.point);
     return '<div class="cb-upnext"><span class="cb-kicker">Up next</span> <span class="cb-swatch" data-ccy="' + esc(nd.ccy) + '"></span><a href="' + esc(nd.href) + '"><b>' + esc(nd.ccy) + "</b>" + DOT + esc(nd.short) + "</a>" +
       DOT + '<span class="cb-local-time" data-utc="' + esc((nd.time && nd.time.utc) || nd.sort_utc || "") + '" data-date="' + esc(nd.decision) + '" data-tbd="' + (nd.time && nd.time.tbd ? "1" : "") + '">' + fmtDate(nd.decision) + "</span>" +
-      DOT + cdSpan(nd) + DOT + (mv ? "<b>" + esc(mv) + "</b>" : naSpan(nd.point ? nd.point.na || nd.point.step_na : "n/a") + ' <span class="muted">' + esc(shortNa((nd.point && (nd.point.na || nd.point.step_na)) || "n/a")) + "</span>") + "</div>";
+      DOT + cdSpan(nd) + DOT + (mv ? "<b>" + esc(mv) + "</b>" : jointText(nd.point) ? jointSpan(nd.point) : naSpan(nd.point ? nd.point.na || nd.point.step_na : "n/a") + ' <span class="muted">' + esc(shortNa((nd.point && (nd.point.na || nd.point.step_na)) || "n/a")) + "</span>") + "</div>";
   }
   function localTimes() {
     document.querySelectorAll(".cb-local-time").forEach(function (el) {
@@ -476,6 +509,7 @@
     const p = r.p, bits = [fmtSigned(p.cum_bp, 1) + " bp cumulative", fmtRate(p.rate, 3) + "% implied"];
     if (p.prob) bits.push(probText(p.prob));
     if (p.est) bits.push("estimate");
+    if (p.includes && p.includes.length) bits.push("includes " + p.includes.map(fmtDay).join(", "));
     return bits.join(DOT);
   }
 
@@ -485,7 +519,8 @@
     const on = b ? (b.estimated ? esc(b.name) : esc(b.name) + " " + (isNum(b.value) ? fmtRate(b.value, 3) + "%" : NA) + (b.date ? ' <span class="muted">(' + fmtDay(b.date) + ")</span>" : "")) : NA;
     return '<section class="cb-card cb-head cb-path-head"><div class="cb-head-main"><div class="cb-kicker">Policy rate</div><div class="cb-bigrate">' + rateHtml(d.summary.rate) + "</div>" +
       '<div class="cb-sub">' + esc(d.bank.policy_rate || "") + "</div>" + (d.unverified.length ? '<div class="cb-badges">' + unverifiedChips(d) + "</div>" : "") + "</div>" +
-      '<div class="cb-head-next"><div class="cb-kicker">Overnight</div><div class="cb-sub">' + on + '</div><div class="cb-kicker">As of</div><div class="cb-sub">' + fmtDate(d.meta.asof) + "</div></div></section>";
+      '<div class="cb-head-next"><div class="cb-kicker">Overnight</div><div class="cb-sub">' + on + '</div><div class="cb-kicker">Market data</div><div class="cb-sub">' +
+      (pj.data_asof ? fmtDate(pj.data_asof) + (pj.data_label ? DOT + esc(pj.data_label) : "") : NA) + "</div></div></section>";
   }
   function probBar2(pt) {
     const pr = pt && pt.prob;
@@ -500,14 +535,17 @@
     const next = '<section class="cb-card cb-pcard"><h3>Next meeting</h3>' + (n ? '<div class="cb-bigdate">' + esc(weekday(n.decision)) + " " + fmtDate(n.decision) + ' <span class="cb-cdbig">' + cdSpan(n) + "</span></div>" +
       '<div class="cb-sub">' + esc(timeText(n.time) || "") + (n.effective ? DOT + "effective " + fmtDay(n.effective) : "") + " " + blackoutBadge(d.summary.next) + "</div>" +
       (mv ? '<div class="cb-bigrate ' + (pt.step_bp > 0 ? "cb-hawk" : pt.step_bp < 0 ? "cb-dove" : "") + '">' + esc(mv) + flagBadge(pt.flag) + "</div>" + probBar2(pt)
+          : jointText(pt) ? '<div class="cb-sub">' + jointSpan(pt) + "</div>"
           : '<div class="cb-sub">' + NA + " " + esc(shortNa((pt && (pt.na || pt.step_na)) || "n/a")) + "</div>") : '<div class="cb-sub">' + NA + " no upcoming meeting</div>") + "</section>";
     const year = '<section class="cb-card cb-pcard"><h3>12 months</h3>' + (m12 ? '<div class="cb-bigrate ' + (pj.m12.cum_bp > 0 ? "cb-hawk" : pj.m12.cum_bp < 0 ? "cb-dove" : "") + '">' + esc(m12) + flagBadge(pj.m12.flag) + "</div>" +
-      '<div class="cb-sub">Implied ' + fmtRate(pj.m12.rate, 3) + "% after the " + fmtDate(pj.m12.meeting) + " meeting</div>" : '<div class="cb-sub">' + NA + " " + esc(shortNa(pj.m12.na)) + "</div>") + "</section>";
+      '<div class="cb-sub">Implied ' + fmtRate(pj.m12.rate, 3) + "% after the " + fmtDate(pj.m12.meeting) + " meeting</div>" : '<div class="cb-sub">' + NA + " " + esc(shortNa(pj.m12.na)) + "</div>") +
+      (pj.spread_note ? '<div class="cb-sub muted">' + esc(pj.spread_note) + "</div>" : "") + "</section>";
     const one = function (k, label) {
       const m = pj.delta[k];
       return '<div class="cb-kv"><span>' + label + "</span>" + (m && isNum(m.v) ? valueSpan(m, 1, " bp") : '<span class="cb-na">' + esc(shortNa((m && m.na) || "n/a")) + "</span>") + "</div>";
     };
-    const rep = '<section class="cb-card cb-pcard"><h3>Repricing <small class="muted">12-month level</small></h3>' + one("1w", "vs 1 week ago") + one("3w", "vs 3 weeks ago") + "</section>";
+    const vs = function (k, fb) { const a = pj.history[k] && pj.history[k].asof; return a ? "vs " + fmtDay(a) : fb; };
+    const rep = '<section class="cb-card cb-pcard"><h3>Repricing <small class="muted">12-month level</small></h3>' + one("1w", vs("1w", "vs 1 week ago")) + one("3w", vs("3w", "vs 3 weeks ago")) + "</section>";
     return '<div class="cb-grid cb-pcards">' + next + year + rep + "</div>";
   }
   function bankChartSeries(pj) {
@@ -536,8 +574,9 @@
     const ds = [{ type: "line", label: "Now", data: s.now, borderColor: col, backgroundColor: withAlpha(col, 0.14), borderWidth: 2.4, stepped: st,
                   fill: isNum(s.current) ? { value: s.current } : false, pointRadius: s.now.map(function (p) { return p.start ? 0 : 4; }), pointBorderColor: col, pointBorderWidth: 2,
                   pointBackgroundColor: s.now.map(function (p) { return p.est ? c.surface : col; }), segment: est, order: 1 }];
-    if (s.w1 && s.w1.length) ds.push({ type: "line", label: "1w ago", data: s.w1, borderColor: withAlpha(col, 0.7), backgroundColor: withAlpha(col, 0.7), borderWidth: 1.8, borderDash: [6, 4], stepped: st, pointRadius: 2.5, order: 2 });
-    if (s.w3 && s.w3.length) ds.push({ type: "line", label: "3w ago", data: s.w3, borderColor: c.muted, backgroundColor: c.muted, borderWidth: 1.6, borderDash: [2, 4], stepped: st, pointRadius: 2, order: 3 });
+    const lab = function (k, t) { const a = pj.history[k] && pj.history[k].asof; return a ? t + DOT + fmtDay(a) : t; };
+    if (s.w1 && s.w1.length) ds.push({ type: "line", label: lab("1w", "1w ago"), data: s.w1, borderColor: withAlpha(col, 0.7), backgroundColor: withAlpha(col, 0.7), borderWidth: 1.8, borderDash: [6, 4], stepped: st, pointRadius: 2.5, order: 2 });
+    if (s.w3 && s.w3.length) ds.push({ type: "line", label: lab("3w", "3w ago"), data: s.w3, borderColor: c.muted, backgroundColor: c.muted, borderWidth: 1.6, borderDash: [2, 4], stepped: st, pointRadius: 2, order: 3 });
     const xs = s.now.map(function (p) { return p.x; });
     const chart = new Chart(canvas, {
       data: { datasets: ds },
@@ -879,11 +918,11 @@
     titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + "</span>";
     document.title = d.ccy + " " + d.bank.short + " | Central Banks | Dashboard";
     const anyStale = d.summary.stale || d.sources.some(function (s) { return s.stale; });
-    metaEl.innerHTML = '<a href="' + esc(CFG.urls.overview_page) + '">' + "← All banks</a>" + DOT + "As of " + esc(fmtDate(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "");
+    metaEl.innerHTML = '<a href="' + esc(CFG.urls.overview_page) + '">' + "← All banks</a>" + DOT + esc(dataDateText(d.path) || "As of " + fmtDate(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "");
     const n = d.summary.next;
-    const dayMode = !!(n && n.decision && todayIn((n.time || {}).tz || "UTC") === n.decision);
+    const dayMode = dayModeOf(d, todayIn);
     if (isPhone()) {
-      titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + DOT + "as of " + esc(fmtDay(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "") + "</span>";
+      titleEl.innerHTML = esc(d.ccy) + DOT + esc(d.bank.short) + ' <span class="cb-title-sub">' + esc(d.bank.name) + DOT + esc(dataDateText(d.path) || "as of " + fmtDay(d.meta.asof)) + (anyStale ? staleBadge(true, "at least one source is older than " + d.meta.stale_after_bd + " business days") : "") + "</span>";
       metaEl.innerHTML = '<a class="cb-back" href="' + esc(CFG.urls.overview_page) + '">' + '<svg class="ph-ico" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>All banks</a>';
       renderBankPhone(d, dayMode);
       if (!themeWatched) { themeWatched = true; watchTheme(); }

@@ -8,6 +8,7 @@ A metric that can be n/a is always `{"v": number | null, "flag": ..., "stale": b
 from __future__ import annotations
 
 import math
+import re
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Optional
 from zoneinfo import ZoneInfo
@@ -15,7 +16,7 @@ from zoneinfo import ZoneInfo
 from ..cb_calendar import compute_blackout
 from ..cb_docs.expect import EXPECTED_LAG, GRACE_DAYS, TYPE_LABEL, VIDEO_NA
 from .analysis import BankReport, PairRow, bank_report, pair_row, primary_calendar, primary_history_start
-from .engine import Context, Point, STRENGTH, YEAR_ENDS, YearEnd, step_reason, trajectory, weakest
+from .engine import NOT_COVERED, Context, Point, STRENGTH, YEAR_ENDS, YearEnd, step_reason, trajectory, upcoming_meetings, weakest
 from .methods import step_probabilities
 
 ORDER = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")
@@ -39,6 +40,8 @@ LEVEL_HELP = {"policy": "implied policy rate", "bkbm": "BKBM base: level of the 
               "sovereign_proxy": "sovereign proxy: raw government-curve level, not policy-equivalent"}
 LEVEL_LABEL = {"policy": "policy-equivalent", "bkbm": "BKBM base", "sovereign_proxy": "sovereign proxy"}
 
+NZD_SENSITIVITY = "If the actual BKBM-OCR spread is wider than assumed, every NZD point is lower by about the same number of bp."
+
 METHODOLOGY = [
     {"title": "Base rate", "text": "The last rate DECIDED on or before the as-of date, including a decision that has been announced but is not in force yet "
                                    "(shown as 'from <date>'). The Fed is the midpoint of the target range."},
@@ -57,7 +60,8 @@ METHODOLOGY = [
                                               "equals 100 minus its price (days already past use the realised fixings), and among the paths that fit, the one with the smallest "
                                               "step changes is chosen. The step of an estimated meeting is its level minus the level of the previous point; a meeting no contract "
                                               "reaches is n/a and its move is inside the next one. No probability is computed for an estimate. NZD: bank bills are a BKBM level; "
-                                              "the BKBM-OCR spread is an estimate (median of 3M interbank minus OCR over months without an OCR change around them), not a daily observation."},
+                                              "the BKBM-OCR spread is an estimate (median of 3M interbank minus OCR over months without an OCR change around them), not a daily observation. "
+                                              + NZD_SENSITIVITY},
     {"title": "Step and probability", "text": "For EXACT and CURVE the implied step at the next meeting is split into whole 25 bp moves (n = floor(|step|/25)) and a "
                                               "fraction p of one more: P(n+1 moves) = p, P(n moves) = 1 - p, in the direction of the step."},
     {"title": "Cumulative bp", "text": "Implied policy rate after the last meeting of the year minus the base rate, in bp. Positive = hawkish."},
@@ -160,7 +164,7 @@ def year_metric(ye: YearEnd) -> dict:
 
 
 def n_meetings_to(ctx: Context, ccy: str, asof: date, until: date) -> int:
-    return sum(1 for m in ctx.meetings.get(ccy, []) if m.decision > asof and m.eff < until)
+    return sum(1 for m in upcoming_meetings(ctx, ccy, asof) if m.eff < until)
 
 
 def horizon_json(ctx: Context, rep: BankReport) -> dict:
@@ -280,7 +284,7 @@ def rate_json(ctx: Context, rep: BankReport, asof: date) -> dict:
 
 def next_json(ctx: Context, rep: BankReport, asof: date) -> dict:
     cur = rep.currency
-    upcoming = [m for m in ctx.meetings.get(cur, []) if m.decision > asof]
+    upcoming = upcoming_meetings(ctx, cur, asof)
     if not upcoming:
         return {"decision": None, "na": "no upcoming meeting on record"}
     m = upcoming[0]
@@ -480,7 +484,7 @@ def calendar_json(ctx: Context, ccy: str, asof: date, limit: int = 12) -> list:
     proj = bank.get("projections") or {}
     conf = bank.get("conference") or {}
     rows = []
-    for m in [m for m in ctx.meetings.get(ccy, []) if m.decision > asof][:limit]:
+    for m in upcoming_meetings(ctx, ccy, asof)[:limit]:
         rows.append({"decision": iso(m.decision), "first_day": iso(m.first_day), "effective": iso(m.eff), "has_projections": m.has_projections,
                      "projections_name": proj.get("name") if m.has_projections else None, "has_presser": m.has_presser,
                      "conference_local": conf.get("local") if m.has_presser else None, "source": m.source, "date_verified": m.verified,
@@ -536,7 +540,7 @@ def bank_path_json(rep: BankReport) -> dict:
 
 def chart_json(ctx: Context, rep: BankReport, asof: date) -> dict:
     return {"asof": iso(asof), "history": history_steps(ctx, rep.currency, asof), "market": [point_json(p) for p in rep.trajectory.points],
-            "bank": bank_path_json(rep), "meetings": [{"decision": iso(m.decision), "effective": iso(m.eff)} for m in ctx.meetings.get(rep.currency, []) if m.decision > asof],
+            "bank": bank_path_json(rep), "meetings": [{"decision": iso(m.decision), "effective": iso(m.eff)} for m in upcoming_meetings(ctx, rep.currency, asof)],
             "base": num(rep.trajectory.base.rate) if rep.trajectory.base else None}
 
 
@@ -558,11 +562,24 @@ def prob_json(p: Point) -> Optional[dict]:
     return {"dir": sp["direction"], "n": n, "p": num(sp["moves"].get(n + 1, 0.0), 4)}
 
 
+INCLUDES_RX = re.compile(r"includes the (.+?) meetings?$")
+
+
+def includes_of(p: Point) -> list:
+    """Meetings whose move is inside this point (FIT: the n/a meetings no contract reaches, `_fit_steps`)."""
+    out = []
+    for n in p.notes or []:
+        m = INCLUDES_RX.match(n)
+        if m:
+            out += [x.strip() for x in m.group(1).split(",")]
+    return out
+
+
 def path_point_json(p: Point) -> dict:
     na = None
     if p.rate is None:
         na = p.reason or step_reason(p) or "n/a"
-    return {"meeting": iso(p.meeting), "effective": iso(p.eff), "rate": num(p.rate), "cum_bp": num(p.cum_bp, 2), "step_bp": num(p.step_bp, 2),
+    return {"includes": includes_of(p), "joint": None,"meeting": iso(p.meeting), "effective": iso(p.eff), "rate": num(p.rate), "cum_bp": num(p.cum_bp, 2), "step_bp": num(p.step_bp, 2),
             "flag": p.flag, "method": p.method, "est": p.flag == "ESTIMATE", "prob": prob_json(p) if p.rate is not None else None, "na": na,
             "step_na": (step_reason(p) or "n/a") if p.rate is not None and p.step_bp is None else None}
 
@@ -575,6 +592,11 @@ def path_json(ctx: Context, rep: BankReport, asof: date) -> dict:
     until = asof + timedelta(days=PATH_DAYS)
     pts = [p for p in tr.points if p.meeting is not None and p.meeting <= until]
     points = [path_point_json(p) for p in pts]
+    for i, pt in enumerate(points):                                    # a meeting no contract isolates: the later point that carries its move
+        if pt["na"] == NOT_COVERED:
+            q = next((x for x in points[i + 1:] if pt["meeting"] in x["includes"]), None)
+            if q is not None:
+                pt["joint"] = {"meeting": q["meeting"], "step_bp": q["step_bp"], "cum_bp": q["cum_bp"]}
     last = next((p for p in reversed(pts) if p.rate is not None), None)
     m12 = ({"meeting": iso(last.meeting), "cum_bp": num(last.cum_bp, 2), "moves": num(last.cum_bp / 25, 2), "rate": num(last.rate),
             "flag": last.flag, "est": last.flag == "ESTIMATE", "na": None} if last is not None and last.cum_bp is not None
@@ -594,12 +616,17 @@ def path_json(ctx: Context, rep: BankReport, asof: date) -> dict:
     history, delta = {}, {}
     cal = primary_calendar(ctx, ccy)
     start = primary_history_start(ctx, ccy)
+    prim = ctx.primary(ccy)
+    snap = ctx.market.latest(prim[0][0], asof) if prim else None
+    data_asof = snap.asof if snap else None                             # the date of THIS bank's market data (Eurex: T-1 until the next day)
+    data_source = prim[0][0] if prim else None
+    data_label = (prim[0][1].get("label") or data_source) if prim else None
     for key, n in PATH_HISTORY_BD.items():
         if tr.na_reason:
             history[key] = {"asof": None, "points": [], "na": tr.na_reason}
             delta[key] = metric(None, na=tr.na_reason, nd=2)
             continue
-        prev = cal.add_business_days(asof, -n)
+        prev = cal.add_business_days(data_asof or asof, -n)               # counted from the bank's own data date, not the global as-of
         if start is None or start > prev:
             why = f"history starts {start}" if start else "no history"
             history[key] = {"asof": iso(prev), "points": [], "na": why}
@@ -620,11 +647,17 @@ def path_json(ctx: Context, rep: BankReport, asof: date) -> dict:
                 delta[key] = metric(None, na=f"the {last.meeting} meeting has no level on {prev}" + (f": {q.reason}" if q and q.reason else ""), nd=2)
             else:
                 delta[key] = metric((last.level - q.level) * 100, flag=weakest(last.flag, q.flag), nd=2, meeting=iso(last.meeting), prev=iso(prev))
-    upcoming = [m for m in ctx.meetings.get(ccy, []) if m.decision > asof]
-    nxt = ({"decision": iso(upcoming[0].decision), "effective": iso(upcoming[0].eff), "time": decision_instant(ctx, ccy, upcoming[0].decision)}
-           if upcoming else None)
-    return {"ccy": ccy, "short": SHORT.get(ccy), "href": bank_href(ccy), "asof": iso(asof), "points": points, "m12": m12, "current": current,
-            "history": history, "delta": delta, "next": nxt, "na": tr.na_reason or None}
+    upcoming = upcoming_meetings(ctx, ccy, asof)
+    nxt = None
+    if upcoming:
+        u = upcoming[0]
+        nxt = {"decision": iso(u.decision), "effective": iso(u.eff), "time": decision_instant(ctx, ccy, u.decision),
+               "sort_utc": instant_sort_utc(ctx, ccy, u.decision), "end_utc": window_end_utc(ctx, ccy, u.decision)}
+    est = bool(tr.spread is not None and getattr(tr.spread, "estimated", False))
+    spread_note = (tr.spread.note + ". " + NZD_SENSITIVITY) if est else None
+    return {"ccy": ccy, "short": SHORT.get(ccy), "href": bank_href(ccy), "asof": iso(asof), "data_asof": iso(data_asof), "data_source": data_source,
+            "data_label": data_label, "points": points, "m12": m12, "current": current, "history": history, "delta": delta, "next": nxt,
+            "spread_note": spread_note, "na": tr.na_reason or None}
 
 
 def instant_sort_utc(ctx: Context, ccy: str, day: date) -> str:
@@ -634,6 +667,15 @@ def instant_sort_utc(ctx: Context, ccy: str, day: date) -> str:
         return t["utc"]
     hhmm = (t.get("window_local") or ["12:00"])[0]
     h, m = hhmm.split(":")
+    return datetime.combine(day, time(int(h), int(m)), ZoneInfo(t["tz"])).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def window_end_utc(ctx: Context, ccy: str, day: date) -> Optional[str]:
+    """BoJ (no fixed time): the end of its announcement window in UTC; None for a fixed time."""
+    t = decision_instant(ctx, ccy, day)
+    if t["utc"] or not t.get("window_local"):
+        return None
+    h, m = t["window_local"][1].split(":")
     return datetime.combine(day, time(int(h), int(m)), ZoneInfo(t["tz"])).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -651,7 +693,7 @@ def next_decision_json(ctx: Context, paths: dict, asof: date) -> Optional[dict]:
     pj = paths[ccy]
     pt = next((p for p in pj["points"] if p["meeting"] == iso(day)), None)
     return {"ccy": ccy, "short": SHORT.get(ccy), "href": bank_href(ccy), "decision": iso(day), "time": decision_instant(ctx, ccy, day),
-            "sort_utc": sort_utc, "point": pt}
+            "sort_utc": sort_utc, "end_utc": window_end_utc(ctx, ccy, day), "point": pt}
 
 
 # ---------------------------------------------------------------------------

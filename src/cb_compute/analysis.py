@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Optional
 
-from .engine import (GAP_YEARS, REPRICING_BD, STRENGTH, YEAR_ENDS, Context, NextMeeting, Point, Trajectory, YearEnd,
+from .engine import (GAP_YEARS, REPRICING_BD, STRENGTH, YEAR_ENDS, Context, NextMeeting, Point, Trajectory, YearEnd, is_upcoming, upcoming_meetings,
                      last_meeting_of, next_meeting, ois_fit, spread_for, step_reason, trajectory, weakest, year_end, _raw_rate,
                      _windows)
 from .methods import Curve, TenorCurve, Window, months_between, path_average, pick_window
@@ -157,7 +157,7 @@ def crosschecks(ctx: Context, tr: Trajectory) -> list:
     if tr.na_reason or tr.base is None:
         return out
     cur, asof = tr.currency, tr.asof
-    unknown = [m for m in ctx.meetings.get(cur, []) if m.decision > asof]
+    unknown = upcoming_meetings(ctx, cur, asof)
     if not unknown:
         return out
     first_eff = unknown[0].eff
@@ -501,10 +501,10 @@ def surprises(ctx: Context, cur: str, asof: date, tr_now: Trajectory, n: int = 4
         else:
             r.implied_step_bp, r.vs_market_flag = p1.step_bp, p1.flag
             r.vs_market_bp = d["delta_bp"] - p1.step_bp if d["delta_bp"] is not None else None
-        after = [m for m in ctx.meetings.get(cur, []) if m.decision > T]
+        after = upcoming_meetings(ctx, cur, T)                                # T is decided: the meetings after it
         targets = {"next": after[0].decision if after else None}
         yr = last_meeting_of(ctx, cur, T.year)
-        targets["year"] = yr.decision if yr and yr.decision > T else (last_meeting_of(ctx, cur, T.year + 1).decision if last_meeting_of(ctx, cur, T.year + 1) else None)
+        targets["year"] = yr.decision if yr and is_upcoming(ctx, cur, yr, T) else (last_meeting_of(ctx, cur, T.year + 1).decision if last_meeting_of(ctx, cur, T.year + 1) else None)
         for key, m in targets.items():
             if m is None:
                 r.reaction_reason[key] = "no later meeting on record"
