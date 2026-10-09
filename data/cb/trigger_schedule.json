@@ -225,11 +225,48 @@
    "id": "conference:GBP:2026-11-05",
    "kind": "conference",
    "lead_minutes": 0
+  },
+  {
+   "at": "2026-12-08T03:30:00Z",
+   "bank": "AUD",
+   "date": "2026-12-08",
+   "dispatch": {
+    "inputs": {
+     "bank": "AUD",
+     "date": "2026-12-08",
+     "event": "decision"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2026-12-08T03:31:00Z",
+   "grace_minutes": 90,
+   "id": "decision:AUD:2026-12-08",
+   "kind": "decision",
+   "lead_minutes": 5
+  },
+  {
+   "at": "2026-12-08T04:30:00Z",
+   "at_basis": "conference",
+   "bank": "AUD",
+   "date": "2026-12-08",
+   "dispatch": {
+    "inputs": {
+     "bank": "AUD",
+     "date": "2026-12-08",
+     "event": "conference"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2026-12-08T06:30:00Z",
+   "grace_minutes": 240,
+   "id": "conference:AUD:2026-12-08",
+   "kind": "conference",
+   "lead_minutes": 0
   }
  ],
  "horizon": {
-  "from": "2026-10-05",
-  "to": "2026-12-07"
+  "from": "2026-10-06",
+  "to": "2026-12-08"
  },
  "regular": [
   {
