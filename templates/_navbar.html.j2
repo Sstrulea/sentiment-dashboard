@@ -1,8 +1,9 @@
-{#- Site navigation: groups (sticky bar on top on desktop, fixed bar at the
-    bottom on the phone - one markup, placed by CSS) + the active group's pages
-    (sub-tabs on desktop, chips on the phone). The menu itself lives in
-    _nav_config.html.j2; the active group/page come from active_page. -#}
-{%- from '_nav_config.html.j2' import NAV_GROUPS -%}
+{#- Site navigation, one markup placed by CSS: a single sticky header (logo,
+    groups, theme) - on the phone its logo row scrolls away (negative top) and
+    the groups stay as the category bar - then the active group's pages as a
+    segmented switch (not sticky). The menu lives in _nav_config.html.j2; the
+    active group/page come from active_page. -#}
+{%- from '_nav_config.html.j2' import NAV_BRAND, NAV_GROUPS -%}
 {%- set nav = namespace(group=none, page=none) -%}
 {%- for g in NAV_GROUPS -%}{%- for p in g.pages -%}
   {%- if active_page in p.active -%}{%- set nav.group = g -%}{%- set nav.page = p -%}{%- endif -%}
@@ -21,7 +22,12 @@
 {%- endmacro -%}
 <header class="site-head">
   <div class="site-bar">
-    <a class="nav-brand" href="/economic">Dashboard</a>
+    <a class="nav-brand" href="{{ NAV_BRAND.url }}">
+      <span class="nav-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M5 15l4.5-5 3.5 3 6-7"></path></svg>
+      </span><span class="nav-brand-name">{{ NAV_BRAND.name }}</span></a>
+    <span class="nav-sep" aria-hidden="true"></span>
     <nav class="nav-groups" aria-label="Sections">
       <ul>
       {%- for g in NAV_GROUPS %}
@@ -50,7 +56,7 @@
 </header>
 {%- if nav.group is not none %}
 <nav class="nav-sub" aria-label="{{ nav.group.label }} pages" data-nav-group="{{ nav.group.key }}">
-  <ul>
+  <ul class="nav-seg">
   {%- for p in nav.group.pages | rejectattr("hidden") %}
     {%- set on = nav.page.key == p.key %}
     <li><a class="nav-sub-link{% if on %} active{% endif %}" href="{{ p.url }}"{% if on %} aria-current="page"{% endif %}>{{ p.label }}</a></li>

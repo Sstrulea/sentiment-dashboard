@@ -8,7 +8,9 @@
               Central Banks page (landing, per bank, pair) passes "central-banks";
       hidden  rendered but not in the menu (its group still shows as active).
     The first visible page of a group is the group's own link (no-JS fallback);
-    nav.js swaps in the group's last visited page. A new page = one entry here. -#}
+    nav.js swaps in the group's last visited page. A new page = one entry here.
+    NAV_BRAND: the logo slot (name + link); the real logo changes here only. -#}
+{%- set NAV_BRAND = {"name": "Dashboard", "url": "/economic"} -%}
 {%- set NAV_GROUPS = [
   {"key": "signal", "label": "Signal", "icon": "target", "pages": [
     {"key": "economic", "label": "Pairs", "url": "/economic", "active": ["economic"]},
