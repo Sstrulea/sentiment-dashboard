@@ -1,34 +1,38 @@
-<nav class="main-nav">
-  <div class="nav-container">
-    <a class="nav-brand" href="/">Dashboard</a>
-    <div class="nav-tabs">
-    <ul class="nav-links">
-      <li class="{% if active_page == 'economic' %}active{% endif %}">
-        <a href="/economic">Economic</a>
-      </li>
-      <li class="{% if active_page == 'carry' %}active{% endif %}">
-        <a href="/carry">Carry</a>
-      </li>
-      <li class="{% if active_page == 'central-banks' %}active{% endif %}">
-        <a href="/central-banks">Central Banks</a>
-      </li>
-      <li class="{% if active_page == 'strength' %}active{% endif %}">
-        <a href="/strength">Currency Strength</a>
-      </li>
-      <li class="{% if active_page == 'history' %}active{% endif %}">
-        <a href="/history">History</a>
-      </li>
-      <li class="{% if active_page == 'cot' %}active{% endif %}">
-        <a href="/cot">COT</a>
-      </li>
-      <li class="{% if active_page == 'pc-ratio' %}active{% endif %}">
-        <a href="/pc-ratio">P/C Ratio</a>
-      </li>
-      <li class="{% if active_page == 'vix-ratio' %}active{% endif %}">
-        <a href="/vix-ratio">VIX/VIX3M</a>
-      </li>
-    </ul>
-    </div>
+{#- Site navigation: groups (sticky bar on top on desktop, fixed bar at the
+    bottom on the phone - one markup, placed by CSS) + the active group's pages
+    (sub-tabs on desktop, chips on the phone). The menu itself lives in
+    _nav_config.html.j2; the active group/page come from active_page. -#}
+{%- from '_nav_config.html.j2' import NAV_GROUPS -%}
+{%- set nav = namespace(group=none, page=none) -%}
+{%- for g in NAV_GROUPS -%}{%- for p in g.pages -%}
+  {%- if active_page in p.active -%}{%- set nav.group = g -%}{%- set nav.page = p -%}{%- endif -%}
+{%- endfor -%}{%- endfor -%}
+{%- macro nav_icon(name) -%}
+<svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+{%- if name == "target" %}
+  <circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle>
+{%- elif name == "bank" %}
+  <path d="M3 9.5L12 4l9 5.5zM5 20h14M3 22h18M6 12v5M10 12v5M14 12v5M18 12v5"></path>
+{%- elif name == "gauge" %}
+  <path d="M12 14l4-4M3.34 19a10 10 0 1 1 17.32 0"></path>
+{%- endif %}
+</svg>
+{%- endmacro -%}
+<header class="site-head">
+  <div class="site-bar">
+    <a class="nav-brand" href="/economic">Dashboard</a>
+    <nav class="nav-groups" aria-label="Sections">
+      <ul>
+      {%- for g in NAV_GROUPS %}
+        {%- set shown = g.pages | rejectattr("hidden") | list %}
+        {%- set on = nav.group is not none and nav.group.key == g.key %}
+        <li><a class="nav-group{% if on %} active{% endif %}" href="{{ shown[0].url }}" data-nav-group="{{ g.key }}"
+               data-nav-pages="{{ shown | map(attribute='url') | join(' ') }}"{% if on %} aria-current="true"{% endif %}>
+          {{- nav_icon(g.icon) }}<span class="nav-group-label">{{ g.label }}</span></a></li>
+      {%- endfor %}
+      </ul>
+    </nav>
     <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle theme">
       <svg class="theme-icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
            fill="none" stroke="currentColor" stroke-width="2"
@@ -43,7 +47,17 @@
       </svg>
     </button>
   </div>
+</header>
+{%- if nav.group is not none %}
+<nav class="nav-sub" aria-label="{{ nav.group.label }} pages" data-nav-group="{{ nav.group.key }}">
+  <ul>
+  {%- for p in nav.group.pages | rejectattr("hidden") %}
+    {%- set on = nav.page.key == p.key %}
+    <li><a class="nav-sub-link{% if on %} active{% endif %}" href="{{ p.url }}"{% if on %} aria-current="page"{% endif %}>{{ p.label }}</a></li>
+  {%- endfor %}
+  </ul>
 </nav>
+{%- endif %}
 <div class="phone-banner" role="status">
   <svg class="phone-banner-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
        stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -58,3 +72,4 @@
 </div>
 <script src="/theme-toggle.js"></script>
 <script src="/phone.js"></script>
+<script src="/nav.js"></script>

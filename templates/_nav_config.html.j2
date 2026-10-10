@@ -1,0 +1,28 @@
+{#- The site menu, the single source for the navbar (_navbar.html.j2 imports it).
+    Groups -> pages. Per page:
+      key     unique id;
+      label   the sub-tab / chip text;
+      url     the existing page URL (clean, no .html);
+      active  the active_page values (passed by the page's renderer) that mark
+              this page and its group active - aliases go here, e.g. every
+              Central Banks page (landing, per bank, pair) passes "central-banks";
+      hidden  rendered but not in the menu (its group still shows as active).
+    The first visible page of a group is the group's own link (no-JS fallback);
+    nav.js swaps in the group's last visited page. A new page = one entry here. -#}
+{%- set NAV_GROUPS = [
+  {"key": "signal", "label": "Signal", "icon": "target", "pages": [
+    {"key": "economic", "label": "Pairs", "url": "/economic", "active": ["economic"]},
+    {"key": "strength", "label": "Currency Strength", "url": "/strength", "active": ["strength"]},
+  ]},
+  {"key": "macro", "label": "Macro", "icon": "bank", "pages": [
+    {"key": "carry", "label": "Carry", "url": "/carry", "active": ["carry"]},
+    {"key": "central-banks", "label": "Central Banks", "url": "/central-banks", "active": ["central-banks"]},
+    {"key": "history", "label": "History", "url": "/history", "active": ["history"]},
+  ]},
+  {"key": "sentiment", "label": "Sentiment", "icon": "gauge", "pages": [
+    {"key": "cot", "label": "COT", "url": "/cot", "active": ["cot"]},
+    {"key": "pc-ratio", "label": "P/C Ratio", "url": "/pc-ratio", "active": ["pc-ratio"]},
+    {"key": "vix-ratio", "label": "VIX/VIX3M", "url": "/vix-ratio", "active": ["vix-ratio"]},
+    {"key": "retail-sentiment", "label": "Retail Sentiment", "url": "/retail-sentiment", "active": ["retail-sentiment"], "hidden": true},
+  ]},
+] -%}
