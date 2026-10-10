@@ -22,13 +22,13 @@ const eq = (got, want, what) => { if (got !== want) { failures++; console.error(
 const ok = (cond, what) => { if (!cond) { failures++; console.error("FAIL " + what); } };
 
 // probability text
-eq(ctx.probText({ dir: "hike", n: 0, p: 0.3 }), "30% hike", "n = 0 hike");
-eq(ctx.probText({ dir: "hike", n: 1, p: 0.28 }), "+25 bp + 28% of +50", "n ≥ 1 hike");
-eq(ctx.probText({ dir: "cut", n: 0, p: 0.3 }), "30% cut", "n = 0 cut");
-eq(ctx.probText({ dir: "cut", n: 1, p: 0.28 }), "−25 bp + 28% of −50", "n ≥ 1 cut");
+eq(ctx.probText({ dir: "hike", n: 0, p: 0.3 }), "30.0% hike", "n = 0 hike");
+eq(ctx.probText({ dir: "hike", n: 1, p: 0.28 }), "+25 bp + 28.0% of +50", "n ≥ 1 hike");
+eq(ctx.probText({ dir: "cut", n: 0, p: 0.3 }), "30.0% cut", "n = 0 cut");
+eq(ctx.probText({ dir: "cut", n: 1, p: 0.28 }), "−25 bp + 28.0% of −50", "n ≥ 1 cut");
 eq(ctx.probText({ dir: "hike", n: 2, p: 0 }), "+50 bp", "whole moves only");
 eq(ctx.probText({ dir: "hold", n: 0, p: 0 }), "hold", "hold");
-eq(ctx.moveText({ step_bp: 12, prob: { dir: "hike", n: 0, p: 0.48 }, est: false }), "48% hike · +12.0 bp", "priced move");
+eq(ctx.moveText({ step_bp: 12, prob: { dir: "hike", n: 0, p: 0.48 }, est: false }), "48.0% hike · +12.0 bp", "priced move");
 eq(ctx.moveText({ step_bp: 12, prob: null, est: true }), "≈ +12.0 bp", "estimate: ≈, no probability");
 eq(ctx.moveText({ step_bp: null, na: "x" }), null, "n/a move");
 
@@ -72,7 +72,7 @@ eq(t[1].prob, null, "estimate row: no probability");
 eq(t[1].moves, "≈ 2 hikes", "moves in words (cumulative 25 bp)");
 ok(Math.abs(t[1].dW - 5) < 1e-9, "Δ vs 1w = (now - 1w) in bp");
 const tu = ctx.pathTableRows(paths.USD);
-eq(tu[0].prob, "22% hike", "probability text in the bank table");
+eq(tu[0].prob, "21.6% hike", "probability text in the bank table");
 const th = ctx.pathTableHtml(paths.NZD);
 ok(th.indexOf('<tr class="cb-est">') > 0 && th.indexOf("not covered by any contract") > 0, "the bank table marks estimates and keeps the reason");
 const noHist = JSON.parse(JSON.stringify(paths.USD)); noHist.history["1w"] = { na: "history starts 2026-10-08", points: [] };

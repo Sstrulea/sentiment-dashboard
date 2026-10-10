@@ -993,6 +993,7 @@ aceleași (`path` din §19); payload-ul primește doar `path.name` = numele băn
 x = |bp| / 25, k = floor(x), f = x − k. Dacă 0.4 ≤ f ≤ 0.6: „k or k+1 hikes” (64.6 bp → „2 or 3 hikes”, 10 bp → „0 or 1 hike”); altfel n = round(x):
 0 → „no change”, 1 → „1 hike”, n → „n hikes”; la bp negativ „cut” / „cuts”. Folosită în hover-uri (Compare, pereche, bancă), tooltip-ul 12M, cardul
 „12 months” (`m12Text`: „+85.5 bp · 3 or 4 hikes”, în loc de „3.42 hikes”) și coloana „Hikes” a tabelului „By meeting” (în loc de „Moves (cum.)” = +1.75).
+Probabilitățile se afișează peste tot cu o zecimală (`pct`: „22.6%”, „22.6% hike”, „+25 bp + 20.0% of +50”), și în „By meeting”, cardul Next meeting și barele.
 
 ### Hover (Compare, pagina perechii, pagina băncii)
 
@@ -1022,8 +1023,8 @@ afișează). Rândul explicativ: „Rate gap = base rate − quote rate. 12M cha
 „2.50% vs 3.88%”) · Priced 12M („ECB +73 · Fed +85”) · 12M change (bp) = 12M base − 12M quote, colorat, „favors USD / EUR” · Rate gap in 12M = gap acum + 12M change
 · Δ 1w / Δ 3w = Δ băncii base − Δ băncii quote, „toward …” în tooltip. Implicit sortat după |12M change| descrescător; pastila „Rate gap now” sortează după gap.
 „≈” când un picior e estimare (NZD; CAD după decembrie); n/a = „—” cu motivul piciorului („EUR: …; USD: …”, o dată cu „(both legs)” când e același).
-**Pagina perechii**: aceleași valori în carduri, graficul celor două bănci (bp vs now, 12 luni) cu hover-ul din Compare + rândul „Gap”, graficul gap-ului pe
-12 luni (în trepte: se schimbă doar la o decizie). **Scos**: tabelul vechi Pairs (End-2026 / End-2027, 1w / 1m), lista lui de telefon, tabelul de metrici al
+**Pagina perechii**: aceleași valori în carduri, graficul celor două bănci (bp vs now, 12 luni) cu hover-ul din Compare + rândul „Gap”
+(gap-ul apare doar în carduri și în acest rând). **Scos**: tabelul vechi Pairs (End-2026 / End-2027, 1w / 1m), lista lui de telefon, tabelul de metrici al
 perechii (`pairMetricRow` / `pairMetricPh`) și graficele vechi pe istoric (`ratePath`, `stepVal`, `bankChartModel`).
 
 ### Pagina băncii: graficul

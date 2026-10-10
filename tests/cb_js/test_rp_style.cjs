@@ -92,7 +92,7 @@ eq(byCcy.USD.prob, "35.6%", "Probability with one decimal (n = 0)");
 eq(byCcy.USD.dir, "hike", "Hike/Cut");
 eq(byCcy.USD.move, "+8.9", "Priced move = step_bp");
 eq(byCcy.USD.likely, "HOLD", "Most likely: 35.6% of a hike -> HOLD");
-eq(byCcy.GBP.prob, "+25 bp + 20% of +50", "Probability at n >= 1 keeps the existing text");
+eq(byCcy.GBP.prob, "+25 bp + 20.0% of +50", "Probability at n >= 1 keeps the existing text");
 eq(byCcy.GBP.likely, "HIKE", "Most likely: 80% of +25 -> HIKE");
 eq(byCcy.CHF.prob, null, "a hold has no probability");
 eq(byCcy.CHF.dir, null, "a hold has no direction");
@@ -148,6 +148,7 @@ ok(ph.indexOf('class="cb-pill active" data-sort="change"') > 0 && !/style="[^"]*
 ok(ctx.pairCards(p).indexOf("favors USD") > 0 && ctx.pairCards(p).indexOf("−137.5 bp") > 0, "the pair page cards");
 eq(ctx.gapRow(eur, usd, D("2026-10-30")).text, "Gap −143.6 bp", "pair hover: the Gap row from the two levels in force");
 eq(ctx.gapRow(nzd, usd, D("2026-11-01")).text, "Gap —", "pair hover: Gap n/a when a leg is n/a");
+ok(src.indexOf("cbGapChart") < 0 && src.indexOf("function drawGapChart") < 0, "the pair page has no Rate gap chart");
 
 // ---- the bank page hover ----
 const tr = ctx.bankTipRows(usd, "2026-10-28", {});

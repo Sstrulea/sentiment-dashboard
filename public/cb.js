@@ -41,7 +41,7 @@
     catch (e) { return new Date().toISOString().slice(0, 10); }
   }
   function daysBetween(a, b) { return Math.round((ms(b) - ms(a)) / DAY_MS); }
-  function pct(p) { return (Number(p) * 100).toFixed(p >= 0.995 || p < 0.005 ? 0 : 1) + "%"; }
+  function pct(p) { return (Number(p) * 100).toFixed(1) + "%"; }                   // one decimal everywhere ("22.6%")
 
   // headline of a long reason (the full text stays in the title attribute)
   function shortNa(t) { return String(t === null || t === undefined ? "" : t).replace(/proxy without short end:[^;]*/g, "proxy without short end").replace(/history starts (\d{4}-\d{2}-\d{2}) \(needs[^)]*\)/g, "history starts $1"); }
@@ -264,7 +264,7 @@
     const cut = pr.dir === "cut", sgn = cut ? MINUS : "+", word = cut ? "cut" : "hike";
     const p = Number(pr.p) || 0;
     if (pr.dir === "hold" || (pr.n === 0 && p < 0.005)) return "hold";
-    const pc = Math.round(p * 100) + "%";
+    const pc = pct(p);
     if (pr.n === 0) return pc + " " + word;
     return sgn + 25 * pr.n + " bp" + (p >= 0.005 ? " + " + pc + " of " + sgn + 25 * (pr.n + 1) : "");
   }
@@ -734,33 +734,6 @@
     state.charts.push(chart);
     return chart;
   }
-  // the pair page: the rate gap over 12 months (bp), a point on each decision date of either bank
-  function gapSeries(B, Q) {
-    const x0 = Math.min(ms(B.asof), ms(Q.asof)), xs = [x0];
-    (B.points || []).concat(Q.points || []).forEach(function (p) { const x = ms(p.meeting); if (xs.indexOf(x) < 0) xs.push(x); });
-    xs.sort(function (a, b) { return a - b; });
-    return xs.map(function (x) { const g = pairGapAt(B, Q, x); return { x: x, y: g.bp, est: g.est }; }).filter(function (p) { return isNum(p.y); });
-  }
-  function drawGapChart(canvas, B, Q, p) {
-    const c = colors(), data = gapSeries(B, Q), asof = data.length ? data[0].x : Date.now();
-    const chart = new Chart(canvas, {
-      data: { datasets: [{ type: "line", label: p.display + " rate gap (bp)", data: data, borderColor: c.fg, backgroundColor: withAlpha(c.fg, 0.08), fill: { value: data.length ? data[0].y : 0 },
-                           borderWidth: 2, tension: 0, stepped: "before", pointRadius: data.map(function (d, i) { return i ? 3.5 : 0; }), pointBorderColor: c.fg, pointBorderWidth: 2,
-                           pointBackgroundColor: data.map(function (d) { return d.est ? c.surface : c.fg; }),
-                           segment: { borderDash: function (ctx) { return ctx.p1.raw && ctx.p1.raw.est ? [6, 4] : undefined; } } }] },
-      plugins: [crosshair],
-      options: { responsive: true, maintainAspectRatio: false, animation: false, parsing: false, interaction: { mode: "nearest", intersect: true },
-                 scales: Object.assign(baseScales(c, "bp, " + p.base + " " + MINUS + " " + p.quote), { x: Object.assign(baseScales(c, "", true).x, { min: asof, max: asof + 385 * DAY_MS }) }),
-                 plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-    });
-    hoverChart(chart, canvas, {
-      yLabel: function (v) { return fmtSigned(v, 1); },
-      html: function (ch, cr) { const t = dayOf(cr.xv); return '<div class="cb-tt-title">' + esc(tipTitle(t, asof)) + "</div>" + ttRowsHtml([gapRow(B, Q, t)]); }
-    });
-    state.charts.push(chart);
-    return chart;
-  }
-
   // the bank page: cards, the Now / 1w / 3w chart and the per-meeting table
   function pathHeader(d) {
     const pj = d.path, cur = pj.current, b = cur.benchmark;
@@ -1343,7 +1316,7 @@
 
   // ---- pair page ------------------------------------------------------------------------------------------------------------
   // The same 12 months as Compare, from the two banks' `path`: the values of the Pairs table as cards, the two paths (bp vs now) with
-  // the Compare hover plus a "Gap" row, and the rate gap over the 12 months. The year-end fields of pairs.json are no longer shown.
+  // the Compare hover plus a "Gap" row. The year-end fields of pairs.json are no longer shown.
   function renderPair(pj, p, b, q) {
     state.meta = pj.meta;
     destroyCharts();
@@ -1359,13 +1332,10 @@
     root.innerHTML = bankBar("pairs") + '<p class="cb-sub cb-pairs-help">' + esc(PAIRS_HELP) + "</p>" + pairCards(r) +
       '<section class="cb-card cb-chartcard"><h3>Implied paths <small class="muted">' + esc(p.base) + " and " + esc(p.quote) + ", bp vs now, next 12 months</small></h3>" +
       '<div class="cb-chart-wrap"><canvas id="cbPairChart"></canvas></div><div class="cb-sub">Hover (or tap) for both banks at a date and the rate gap then. Hollow points and dashed segments = estimates.</div></section>' +
-      '<section class="cb-card cb-chartcard"><h3>Rate gap ' + esc(p.base) + " " + MINUS + " " + esc(p.quote) + ' <small class="muted">bp, next 12 months</small></h3>' +
-      '<div class="cb-chart-wrap cb-chart-short"><canvas id="cbGapChart"></canvas></div><div class="cb-sub">Base rate minus quote rate in force after each meeting of either bank, bp: it changes only on a decision date. Shaded against the gap now.</div></section>' +
       '<section class="cb-card cb-method-link"><a href="' + esc(pj.banks[p.base].href) + '#cbMethod">How is this calculated?</a></section>';
-    const pairCanvas = document.getElementById("cbPairChart"), gapCanvas = document.getElementById("cbGapChart");
+    const pairCanvas = document.getElementById("cbPairChart");
     registerRedraw(function () {
       drawCompareChart(pairCanvas, paths, "bp", { extra: function (t) { return [gapRow(b.path, q.path, t)]; } });
-      drawGapChart(gapCanvas, b.path, q.path, p);
     });
     if (!themeWatched) { themeWatched = true; watchTheme(); }
     paintSwatches();
