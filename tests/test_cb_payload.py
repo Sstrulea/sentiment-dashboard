@@ -247,7 +247,8 @@ def test_html_is_a_shell_nothing_hardcoded(site):
     pub, _ = site
     html = (pub / "central-banks" / "usd.html").read_text()
     assert 'data-page="bank"' in html and '"ccy": "USD"' in html and '/data/cb/{ccy}.json' in html and 'id="cbRoot"' in html
-    assert '<a href="/central-banks">Central Banks</a>' in html and 'class="active"' in html and "/cb.js" in html and "/chart.umd.min.js" in html
+    assert '<a class="nav-sub-link active" href="/central-banks" aria-current="page">Central Banks</a>' in html and "/cb.js" in html and "/chart.umd.min.js" in html
+    assert 'class="nav-group active" href="/carry" data-nav-group="macro"' in html                                   # a bank page marks Macro -> Central Banks
     for forbidden in ("3.875", "4.290", "Federal Reserve", "+41.5"):
         assert forbidden not in html
     over = (pub / "central-banks.html").read_text()
@@ -280,7 +281,9 @@ def test_static_assets_are_mirrored_in_public_and_the_js_parses():
 
 
 def test_navbar_and_economic_cross_link():
-    nav = (ROOT / "templates" / "_navbar.html.j2").read_text()
-    assert nav.index('href="/carry"') < nav.index('href="/central-banks"') < nav.index('href="/strength"')
+    from jinja2 import Environment, FileSystemLoader
+    nav = Environment(loader=FileSystemLoader(str(ROOT / "templates"))).get_template("_navbar.html.j2").render(active_page="central-banks")
+    sub = nav[nav.index('<nav class="nav-sub"'):]                                                                       # Macro: Carry, Central Banks, History
+    assert sub.index('href="/carry"') < sub.index('href="/central-banks"') < sub.index('href="/history"')
     js = (ROOT / "static" / "economic-chart.js").read_text()
     assert '"/central-banks/pair/"' in js and '"/central-banks/"' in js and 'key !== "rate_expectations"' in js and "ev.stopPropagation()" in js

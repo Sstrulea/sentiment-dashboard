@@ -1,5 +1,5 @@
-"""Narrow-screen layout: the navbar folds (brand + toggle, links on a scrolling second row) up to the width its single row needs, and the filter chips wrap
-instead of scrolling inside a row that cannot shrink. Checked on the stylesheet (no browser in the suite); the widths themselves were measured on every page
+"""Narrow-screen layout: the navbar never overflows (the sub-page row scrolls sideways at any width; on the phone the groups move to a fixed bottom bar
+the body pads for), and the filter chips wrap instead of scrolling inside a row that cannot shrink. Checked on the stylesheet (no browser in the suite); the widths themselves were measured on every page
 at 360-1440 px when this was written."""
 from __future__ import annotations
 
@@ -23,10 +23,23 @@ def block(media: str) -> str:
     return "\n".join(out)
 
 
-def test_the_navbar_folds_up_to_the_width_its_single_row_needs():
-    b = block("900")
-    for needle in (".nav-container", "flex-wrap: wrap", ".nav-links", "overflow-x: auto", "flex: 1 0 100%", "white-space: nowrap"):
+def rule(selector: str) -> str:
+    """The body of the top-level (outside any @media) rule `selector { ... }`."""
+    m = re.search(r"^%s \{([^}]*)\}" % re.escape(selector), CSS, re.M)
+    assert m, selector
+    return m.group(1)
+
+
+def test_the_navbar_never_overflows_narrow_screens():
+    sub = rule(".nav-sub ul")                                                                                          # the sub-page row: one line, scrolls sideways at any width
+    assert "overflow-x: auto" in sub and "display: flex" in sub
+    assert "white-space: nowrap" in rule(".nav-sub-link") and "flex: none" in rule(".nav-sub li")
+    assert "white-space: nowrap" in rule(".nav-group")
+    b = block("600")                                                                                                   # the phone: groups in a fixed bottom bar, 3 equal columns
+    for needle in (".nav-groups {", "position: fixed", "bottom: 0", "env(safe-area-inset-bottom, 0px)", "grid-template-columns: repeat(3, 1fr)",
+                   "min-height: 44px", "padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px))"):
         assert needle in b, needle
+    assert ".nav-" not in block("900")                                                                                 # the two-row 900 px navbar is gone
     assert "@media (max-width: 640px) {\n  .nav-container" not in CSS                                                    # the old breakpoint left 641-866 px overflowing
 
 

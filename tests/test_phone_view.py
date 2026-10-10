@@ -7,14 +7,14 @@ CSS = (ROOT / "static" / "style.css").read_text()
 
 
 def test_served_copies_are_in_step():
-    for f in ("phone.js", "style.css", "economic-chart.js", "cb.js", "carry.js", "strength.js", "cot.js"):
+    for f in ("phone.js", "nav.js", "style.css", "economic-chart.js", "cb.js", "carry.js", "strength.js", "cot.js"):
         assert (ROOT / "public" / f).read_text() == (ROOT / "static" / f).read_text(), f
 
 
 def test_navbar_carries_the_banner_and_phone_js_and_the_head_decides_the_banner():
     nav = (ROOT / "templates" / "_navbar.html.j2").read_text()
     assert 'class="phone-banner"' in nav and "Best on desktop or tablet." in nav and 'src="/phone.js"' in nav
-    assert '<div class="nav-tabs">' in nav
+    assert '<nav class="nav-groups" aria-label="Sections">' in nav and '<nav class="nav-sub" aria-label=' in nav and 'src="/nav.js"' in nav
     head = (ROOT / "templates" / "_theme_head.html.j2").read_text()
     assert 'localStorage.getItem("phone-banner-closed")' in head and "banner-closed" in head
 
@@ -25,10 +25,11 @@ def test_no_table_turns_into_stacked_cards():
 
 
 def test_breakpoints_are_unified():
-    # the old phone breakpoints are gone; what stays only tightens the desktop (760 modal grid, 768 chip wrap, 900 nav/strength)
+    # the old phone breakpoints are gone; what stays only tightens the desktop (760 modal grid, 768 chip wrap, 900 strength)
     widths = set(re.findall(r"@media \((?:max|min)-width: (\d+)px\)", CSS))
     assert not widths & {"480", "640", "700", "701", "767"}, widths
     assert "@media (max-width: 600px)" in CSS and "@media (max-width: 900px)" in CSS
+    assert 'matchMedia("(max-width: 600px)")' in (ROOT / "static" / "phone.js").read_text()                           # the JS phone = the CSS phone (bottom bar)
 
 
 def test_every_page_folds_its_long_description():
