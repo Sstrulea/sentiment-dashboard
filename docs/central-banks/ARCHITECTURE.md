@@ -893,6 +893,8 @@ punctele FIT intră în calea desenată ca EXACT / CURVE, cu linie întreruptă 
 
 ## 19. ETAPA E3 — pagina nouă: Compare și pagina băncii (Now / 1w / 3w)
 
+> Tooltip-ul Compare, tabelul de sub grafic, tabul Pairs, pagina perechii și graficul / tabelul paginii băncii sunt înlocuite în §21 (E4).
+
 A treia etapă. Înlocuiește tabelul „Banks” și graficul vechi al traiectoriei cu o vedere de tip RateProbability (nu o copie 1:1): toate
 băncile pe același grafic, apoi, pe pagina fiecărei bănci, tabelul pe ședințe cu probabilități și graficul acum / acum o săptămână / acum trei săptămâni.
 
@@ -979,3 +981,64 @@ Dacă `overview.json` / `<ccy>.json` nu au încă blocul (fișierele dinaintea p
   un fetch la 2026-10-12T22:40Z sau 2026-10-13T00:40Z dă as-of 2026-10-09.
 - **Teste**: `tests/test_cb_decision_day.py`, `tests/cb_js/test_decision_day.cjs`; capturi `compare-dark-1440.png` (refăcută), `nzd-dark-1440.png`,
   `usd-decision-day-dark-1440.png` (fixture la 2026-10-28, ceasul browserului 2026-10-28T10:00Z).
+
+## 21. ETAPA E4 — UI în stilul RateProbability: hover pe toate băncile, tabelul „Upcoming meetings”, Pairs pe 12 luni
+
+Înlocuiește în §19 / §20 tooltip-ul Compare, tabelul de sub grafic, tabul Pairs, pagina perechii și graficul / tabelul paginii băncii. Datele sunt
+aceleași (`path` din §19); payload-ul primește doar `path.name` = numele băncii fără organul de decizie („Bank of Canada (Governing Council)” →
+„Bank of Canada”, `payload.display_name`). Nimic preluat de pe rateprobability.com (cod, date, imagini, branding), fără poze.
+
+### Regula „hikes” (una singură: `hikesText(bp)` în `static/cb.js`)
+
+x = |bp| / 25, k = floor(x), f = x − k. Dacă 0.4 ≤ f ≤ 0.6: „k or k+1 hikes” (64.6 bp → „2 or 3 hikes”, 10 bp → „0 or 1 hike”); altfel n = round(x):
+0 → „no change”, 1 → „1 hike”, n → „n hikes”; la bp negativ „cut” / „cuts”. Folosită în hover-uri (Compare, pereche, bancă), tooltip-ul 12M, cardul
+„12 months” (`m12Text`: „+85.5 bp · 3 or 4 hikes”, în loc de „3.42 hikes”) și coloana „Hikes” a tabelului „By meeting” (în loc de „Moves (cum.)” = +1.75).
+
+### Hover (Compare, pagina perechii, pagina băncii)
+
+- Pluginul `crosshair` (Chart.js): o linie verticală întreruptă la data de sub cursor (pagina băncii: la cea mai apropiată ședință) și una orizontală
+  la cursor, cu valoarea scrisă pe axa Y. Tooltip-ul Chart.js e oprit; cardul e HTML (`.cb-tt`) lângă cursor, întors la stânga lângă marginea dreaptă și
+  ținut în interiorul graficului. Mouse, tap și drag (`touch-action: pan-y` pe canvas). Callback-urile stau pe instanța graficului (`chart.$cb`), nu în
+  opțiuni (Chart.js ar trata funcțiile din opțiunile pluginului ca opțiuni „scriptable”).
+- **Compare**: titlul = data („16 Aug 2027”; „Now · 9 Oct 2026” în ziua as-of-ului); un rând per bancă vizibilă, descrescător, „BoE +103.3 bp · 4 hikes”
+  (în „level %”: „BoE 4.78% · +103.3 bp · 4 hikes”). Valoarea la o dată (`bankValueAt`) = ultima ședință cu decizia ≤ data (rata în vigoare atunci);
+  înainte de prima ședință 0 bp (nivelul = rata curentă); ședința n/a (NZD 28 oct) = „—” cu motivul, estimările cu „≈”. Băncile ascunse din legendă
+  lipsesc din card. Liniile rămân segmente drepte între ședințe.
+- **Axa X** (toate graficele CB): „Dec 2026”, „Feb 2027” (în loc de „Nov 26”); prima etichetă = „Now” (prima lună la ≥ 25 de zile după ea).
+
+### Compare: tabelul „Upcoming meetings” (`upcomingTableHtml`, telefon `upcomingListHtml`)
+
+Next meeting (doar data) · Bank (swatch + numele complet) · Policy rate („3.75–4.00%”) · Probability (o zecimală, „35.6%”; la n ≥ 1 textul existent
+„+25 bp + 20% of +50”; „—” la hold / estimare) · Hike/Cut („—” la hold) · Priced move (bp) = `step_bp` („+8.9”, tooltip-ul cu exemplul; NZD „≈ +44.8 (by 9 Dec)”
+estompat cu tooltip-ul `joint`) · Most likely (n sau n+1 mișcări, care e mai probabil: HOLD / HIKE / CUT / HIKE 50; „—” la estimări) · 12M (bp) („+89.9”, tooltip
+„after the <data> meeting · <hikes>” + nota NZD) · Δ 1w · Δ 3w. Fără fundaluri colorate; numerele colorate doar ca text (albastru = hawkish, roșu = dovish),
+cifre monospace, antet simplu fără uppercase, rânduri aerisite, hover pe rând, click = pagina băncii. Deasupra: „Upcoming meetings” + pastilele
+„Sort by: Date · Priced move · 12M” (aceleași chei ca înainte: `next` / `move` / `m12`). Lista de pe telefon are aceleași valori și aceleași pastile.
+
+### Pairs pe 12 luni (`pairCalc`, `pairsTableHtml`, `pairsListHtml`, `pairCards`)
+
+Din `path`-urile celor două bănci (aceleași ca în Compare), pentru cele 28 de perechi din `pairs.json` (lista; câmpurile year-end rămân în JSON, nu se mai
+afișează). Rândul explicativ: „Rate gap = base rate − quote rate. 12M change = …”. Coloane: Pair („EUR/USD”, „ECB vs Fed”) · Rate gap now (bp) (ratele dedesubt,
+„2.50% vs 3.88%”) · Priced 12M („ECB +73 · Fed +85”) · 12M change (bp) = 12M base − 12M quote, colorat, „favors USD / EUR” · Rate gap in 12M = gap acum + 12M change
+· Δ 1w / Δ 3w = Δ băncii base − Δ băncii quote, „toward …” în tooltip. Implicit sortat după |12M change| descrescător; pastila „Rate gap now” sortează după gap.
+„≈” când un picior e estimare (NZD; CAD după decembrie); n/a = „—” cu motivul piciorului („EUR: …; USD: …”, o dată cu „(both legs)” când e același).
+**Pagina perechii**: aceleași valori în carduri, graficul celor două bănci (bp vs now, 12 luni) cu hover-ul din Compare + rândul „Gap”, graficul gap-ului pe
+12 luni (în trepte: se schimbă doar la o decizie). **Scos**: tabelul vechi Pairs (End-2026 / End-2027, 1w / 1m), lista lui de telefon, tabelul de metrici al
+perechii (`pairMetricRow` / `pairMetricPh`) și graficele vechi pe istoric (`ratePath`, `stepVal`, `bankChartModel`).
+
+### Pagina băncii: graficul
+
+Current = culoarea băncii, cu arie până la rata curentă; 1w ago = culoarea textului la 85%, 3w ago = gri (`--muted` la 75%, puncte pătrate) — nicio culoare de bancă;
+toate linii pline cu puncte la ședințe (estimările = puncte goale). Deasupra, tab-uri „Current · 1w ago · 2 Oct · 3w ago · 18 Sep” subliniate în culoarea seriei;
+click ascunde / arată seria; o serie n/a e tăiată, cu motivul în tooltip („history starts 2026-10-08”). Legenda Chart.js a dispărut; „Step” e oprit implicit
+(linie). Hover-ul se fixează pe cea mai apropiată ședință; cardul e un mini-tabel Level · Δ vs today · Hikes, rândurile Current / 1w ago / 3w ago („Current
+4.42% · +54.3 bp · 2 hikes”; Current folosește `cum_bp`, ca în Compare; 1w / 3w = nivelul lor − rata de azi), „≈” la estimări, „—” pentru o serie fără valoare.
+Linia rata curentă rămâne. Tabelul „By meeting” are stilul tabelului de mai sus.
+
+### Teste, capturi
+
+`tests/cb_js/test_rp_style.cjs` (regula hikes la 10 / 37.6 / 64.6 / 103.3 bp, negativ, 0; valorile Compare la o dată, n/a, „≈”, sortarea, băncile ascunse; rândurile
+Upcoming: Probability, Most likely, Priced move inclusiv NZD; Pairs: 12M change, favors, gap în 12M, Δ; rândurile tooltip-ului băncii, tab-urile), rulat din
+`tests/test_cb_paths_payload.py`, care verifică și `path.name` + determinismul. Actualizate: `test_rate_paths.cjs` și `test_decision_day.cjs` (tabelul nou).
+Capturi: `docs/design/cb-paths-v2/screenshots/` (Compare dark / light 1440 și telefon 390, USD dark / light 1440, Pairs dark 1440, EUR/USD dark 1440; cu cardul
+de hover deschis acolo unde există).

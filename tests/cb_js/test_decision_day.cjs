@@ -13,8 +13,8 @@ const ctx = { CFG: { urls: { overview_page: "/central-banks.html" } }, SP: undef
 vm.createContext(ctx);
 vm.runInContext(cut("  const MINUS =", "  const state =") + cut("  function esc(s) {", "  // ---- rate / next meeting text") +
                 cut("  // ---- rate paths (stage 3)", "  // ---- bank page ---") +
-                ";this.dayModeOf = dayModeOf; this.pickUpNext = pickUpNext; this.upNextHtml = upNextHtml; this.compareTableHtml = compareTableHtml; this.compareRows = compareRows;" +
-                "this.sortRows = sortRows; this.jointText = jointText; this.compareListHtml = compareListHtml;", ctx);
+                ";this.dayModeOf = dayModeOf; this.pickUpNext = pickUpNext; this.upNextHtml = upNextHtml; this.upcomingTableHtml = upcomingTableHtml; this.compareRows = compareRows;" +
+                "this.sortRows = sortRows; this.jointText = jointText; this.upcomingListHtml = upcomingListHtml;", ctx);
 let failures = 0;
 const eq = (got, want, what) => { if (got !== want) { failures++; console.error("FAIL " + what + ": got " + JSON.stringify(got) + ", want " + JSON.stringify(want)); } };
 const ok = (cond, what) => { if (!cond) { failures++; console.error("FAIL " + what); } };
@@ -50,14 +50,15 @@ ok(up.indexOf('title="No contract isolates this meeting; the 9 Dec estimate incl
 ok(up.indexOf("cb-joint muted") > 0 && up.indexOf("not covered by any contract") < 0, "muted, not the n/a reason");
 
 // the Compare table: the joint cell (muted, no tint), NZD last when sorted by the next move
-const html = ctx.compareTableHtml(paths, "move");
+const html = ctx.upcomingTableHtml(paths, "move");
 const nzRow = html.slice(html.indexOf('data-ccy="NZD"'), html.indexOf("</tr>", html.indexOf('data-ccy="NZD"')));
-ok(nzRow.indexOf("≈ +43.7 bp by 9 Dec, together with 28 Oct") > 0 && nzRow.indexOf("cb-joint muted") > 0, "Next move priced: the joint text");
+ok(nzRow.indexOf("≈ +43.7 (by 9 Dec)") > 0 && nzRow.indexOf("cb-joint muted") > 0, "Priced move: the joint text, muted");
+ok(nzRow.indexOf('title="No contract isolates this meeting; the 9 Dec estimate includes it."') > 0, "Priced move: the joint tooltip");
 ok(!/style="[^"]*background/.test(nzRow.split("cb-joint")[0].slice(-80)), "the joint cell carries no ScorePalette tint");
 eq(ctx.sortRows(ctx.compareRows(paths), "move").map((r) => r.ccy).pop(), "NZD", "sorted by the next move, NZD stays last");
 eq(ctx.sortRows(ctx.compareRows(paths), "next").map((r) => r.ccy).join(","), "NZD,CAD,USD,JPY", "sorted by next meeting = by sort_utc");
 ok(html.indexOf('title="Market data 8 Oct · X"') > 0, "the data date on the bank cell");
-ok(ctx.compareListHtml(paths).indexOf("together with 28 Oct") > 0, "the phone list shows the joint text");
+ok(ctx.upcomingListHtml(paths).indexOf("≈ +43.7 (by 9 Dec)") > 0, "the phone list shows the joint text");
 
 if (failures) { console.error(failures + " failure(s)"); process.exit(1); }
 console.log("ok - decision day");

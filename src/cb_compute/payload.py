@@ -655,9 +655,15 @@ def path_json(ctx: Context, rep: BankReport, asof: date) -> dict:
                "sort_utc": instant_sort_utc(ctx, ccy, u.decision), "end_utc": window_end_utc(ctx, ccy, u.decision)}
     est = bool(tr.spread is not None and getattr(tr.spread, "estimated", False))
     spread_note = (tr.spread.note + ". " + NZD_SENSITIVITY) if est else None
-    return {"ccy": ccy, "short": SHORT.get(ccy), "href": bank_href(ccy), "asof": iso(asof), "data_asof": iso(data_asof), "data_source": data_source,
+    return {"ccy": ccy, "short": SHORT.get(ccy), "name": display_name(ctx, ccy), "href": bank_href(ccy), "asof": iso(asof), "data_asof": iso(data_asof), "data_source": data_source,
             "data_label": data_label, "points": points, "m12": m12, "current": current, "history": history, "delta": delta, "next": nxt,
             "spread_note": spread_note, "na": tr.na_reason or None}
+
+
+def display_name(ctx: Context, ccy: str) -> str:
+    """The bank's name without the decision body ("Bank of Canada (Governing Council)" -> "Bank of Canada")."""
+    name = (ctx.banks.get(ccy) or {}).get("name") or SHORT.get(ccy) or ccy
+    return re.sub(r"\s*\([^)]*\)\s*$", "", name)
 
 
 def instant_sort_utc(ctx: Context, ccy: str, day: date) -> str:

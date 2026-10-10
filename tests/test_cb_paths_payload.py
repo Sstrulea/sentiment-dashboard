@@ -145,3 +145,21 @@ def test_public_copies_are_not_behind_static():
     root = Path(__file__).resolve().parents[1]
     for f in ("cb.js", "style.css"):
         assert (root / "public" / f).read_bytes() == (root / "static" / f).read_bytes(), f
+
+
+def test_path_carries_the_bank_name_without_the_decision_body(ctx, built):
+    """v2 (RP style): the Upcoming meetings table shows the full name ("Bank of Canada"), from central_banks.yaml without the body."""
+    names = {c: pj["name"] for c, pj in paths(built).items()}
+    assert names == {"USD": "Federal Reserve", "EUR": "European Central Bank", "GBP": "Bank of England", "JPY": "Bank of Japan",
+                     "CAD": "Bank of Canada", "AUD": "Reserve Bank of Australia", "NZD": "Reserve Bank of New Zealand", "CHF": "Swiss National Bank"}
+    for c in names:
+        assert built["banks"][c]["path"]["name"] == names[c]                                    # the bank JSON carries the same block
+    again = P.build(ctx, ASOF, load_pair_defs())
+    assert json.dumps(again["overview"]["paths"], sort_keys=True) == json.dumps(paths(built), sort_keys=True)   # deterministic
+
+
+def test_rp_style_js_on_the_real_cb_js():
+    import subprocess
+    root = Path(__file__).resolve().parents[1]
+    r = subprocess.run(["node", str(root / "tests" / "cb_js" / "test_rp_style.cjs")], cwd=root, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stdout + r.stderr

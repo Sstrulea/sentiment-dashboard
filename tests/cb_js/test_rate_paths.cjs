@@ -15,7 +15,7 @@ const ctx = { CFG: { urls: { overview_page: "/central-banks.html" } }, SP: undef
 vm.createContext(ctx);
 vm.runInContext(cut("  const MINUS =", "  const state =") + cut("  function esc(s) {", "  // ---- rate / next meeting text") +
                 cut("  // ---- rate paths (stage 3)", "  // ---- bank page ---") +
-                ";this.probText = probText; this.moveText = moveText; this.compareRows = compareRows; this.sortRows = sortRows; this.compareTableHtml = compareTableHtml;" +
+                ";this.probText = probText; this.moveText = moveText; this.compareRows = compareRows; this.sortRows = sortRows; this.upcomingTableHtml = upcomingTableHtml;" +
                 "this.pathTableRows = pathTableRows; this.pathTableHtml = pathTableHtml; this.BANK_COLORS = BANK_COLORS; this.BANK_ORDER = BANK_ORDER; this.m12Text = m12Text;", ctx);
 let failures = 0;
 const eq = (got, want, what) => { if (got !== want) { failures++; console.error("FAIL " + what + ": got " + JSON.stringify(got) + ", want " + JSON.stringify(want)); } };
@@ -52,14 +52,16 @@ const early = JSON.parse(JSON.stringify(paths)); early.NZD.next.time.utc = "2026
 eq(ctx.sortRows(ctx.compareRows(early), "next").map((r) => r.ccy).join(","), "NZD,USD,EUR,CHF", "sort by next meeting: the earlier instant first");
 eq(ctx.sortRows(rows, "move").map((r) => r.ccy).join(","), "CHF,USD,EUR,NZD", "sort by next move: most hawkish first, n/a last");
 eq(ctx.sortRows(rows, "m12").map((r) => r.ccy).join(","), "USD,EUR,NZD,CHF", "sort by 12M");
-const html = ctx.compareTableHtml(paths, "move");
-ok(html.indexOf("≈ +44 bp · 1.75 hikes") > 0, "12M of an estimate carries ≈");
+const html = ctx.upcomingTableHtml(paths, "move");
+ok(html.indexOf("≈ +43.7</td>") > 0, "12M of an estimate carries ≈");
+ok(html.indexOf('title="after the 9 Dec 2026 meeting · 2 hikes"') > 0, "12M tooltip: the meeting and the moves in words");
 ok(html.indexOf("≈ −8.0") > 0, "Δ 1w of an estimate carries ≈");
 ok(/<span class="cb-na" title="not covered by any contract">—<\/span>/.test(html), "n/a = — with the reason in the tooltip");
 ok(/<span class="cb-na" title="history starts 2026-10-08">—<\/span>/.test(html), "Δ n/a carries its reason");
-ok(html.indexOf('th class="cb-sort active" data-sort="move"') > 0, "the sorted column is marked");
+ok(html.indexOf('class="cb-pill active" data-sort="move"') > 0, "the active sort pill is marked");
 ok(html.indexOf('data-href="/central-banks/chf.html"') < html.indexOf('data-href="/central-banks/nzd.html"'), "rows rendered in the sorted order");
-ok(html.indexOf("21.6% hike") < 0 && html.indexOf("22% hike · +5.4 bp") > 0, "the move text in the table");
+ok(html.indexOf(">21.6%</td>") > 0 && html.indexOf(">+5.4</td>") > 0, "Probability (one decimal) and Priced move in the table");
+ok(!/style="[^"]*background/.test(html), "no coloured cell backgrounds");
 
 // bank table
 const t = ctx.pathTableRows(paths.NZD);
@@ -67,7 +69,7 @@ eq(t[0].rate, null, "n/a row has no rate");
 eq(t[0].na, "not covered by any contract", "n/a row keeps the reason");
 eq(t[1].rate, "≈ 3.190%", "estimate row: ≈ on the rate");
 eq(t[1].prob, null, "estimate row: no probability");
-eq(t[1].moves, "≈ +1.75", "moves (cumulative 25 bp)");
+eq(t[1].moves, "≈ 2 hikes", "moves in words (cumulative 25 bp)");
 ok(Math.abs(t[1].dW - 5) < 1e-9, "Δ vs 1w = (now - 1w) in bp");
 const tu = ctx.pathTableRows(paths.USD);
 eq(tu[0].prob, "22% hike", "probability text in the bank table");
@@ -83,7 +85,7 @@ ok(ctx.pathTableHtml(noHist).indexOf('title="history starts 2026-10-08"') > 0, "
   eq(new Set(Object.values(c)).size, 8, "BANK_COLORS." + k + " are distinct");
 });
 eq(ctx.BANK_ORDER.length, 8, "eight banks");
-eq(ctx.m12Text({ cum_bp: -50, moves: -2, est: false }), "−50 bp · 2.00 cuts", "12M text for cuts");
+eq(ctx.m12Text({ cum_bp: -50, moves: -2, est: false }), "−50.0 bp · 2 cuts", "12M text for cuts");
 
 if (failures) { console.error(failures + " failure(s)"); process.exit(1); }
 console.log("ok - rate paths");
