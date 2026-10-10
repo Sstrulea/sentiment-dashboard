@@ -180,21 +180,30 @@ svg.spark { display: block; }
 
 .muted { color: var(--muted); }
 
-/* === NAVBAR (refactored to theme vars in Stage 4) === */
-.main-nav {
+/* === NAVBAR: grouped (templates/_navbar.html.j2, menu in _nav_config.html.j2) ===
+   Desktop (> 600px): a sticky bar of --nav-h (brand, groups, theme), then the
+   active group's sub-tabs (not sticky; they scroll sideways when they do not
+   fit). Phone (<= 600px, the 600px block below): the same group list becomes a
+   fixed bar at the bottom. Sticky table headers sit at top: var(--nav-h). */
+:root { --nav-h: 48px; --tabbar-h: 56px; }
+html { scroll-padding-top: var(--nav-h); }
+/* viewport-fit=cover: keep the content out from under a landscape notch */
+body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.site-head {
+  position: sticky;
+  top: 0;
+  z-index: 35; /* under the COT side panel (40/41), the modals and the phone sheet */
   background: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
-  padding: 0;
-  margin: 0;
 }
-.nav-container {
+.site-bar {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  min-height: 56px;
+  gap: 24px;
+  height: calc(var(--nav-h) - 1px); /* + the 1px border: the whole sticky bar is --nav-h */
 }
 .nav-brand {
   color: var(--nav-brand);
@@ -202,29 +211,58 @@ svg.spark { display: block; }
   font-weight: 600;
   font-size: 16px;
   letter-spacing: 0.5px;
+  flex: none;
 }
-.nav-links {
+.nav-groups { flex: 1 1 auto; min-width: 0; height: 100%; }
+.nav-groups ul { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; height: 100%; }
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0 14px;
+  color: var(--nav-link);
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.nav-group:hover { color: var(--nav-link-hover-fg); background: var(--nav-link-hover-bg); }
+.nav-group.active { color: var(--nav-active-fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--nav-active); }
+.nav-icon { display: block; flex: none; }
+.nav-sub { background: var(--bg); border-bottom: 1px solid var(--border); }
+.nav-sub ul {
+  position: relative; /* nav.js measures the active tab from here */
   list-style: none;
   display: flex;
   gap: 4px;
-  margin: 0;
-  padding: 0;
+  max-width: 1400px;
+  height: 36px;
+  margin: 0 auto;
+  padding: 0 20px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.nav-links li a {
-  color: var(--nav-link);
+.nav-sub ul::-webkit-scrollbar { display: none; }
+.nav-sub li { flex: none; }
+.nav-sub-link {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+  color: var(--muted);
   text-decoration: none;
-  padding: 16px 20px;
-  display: block;
-  font-size: 14px;
-  transition: color 0.15s ease, background 0.15s ease;
+  font-size: 13px;
+  white-space: nowrap;
 }
-.nav-links li a:hover {
-  color: var(--nav-link-hover-fg);
-  background: var(--nav-link-hover-bg);
-}
-.nav-links li.active a {
-  color: var(--nav-active-fg);
-  border-bottom: 2px solid var(--nav-active);
+.nav-sub-link:hover { color: var(--fg); }
+.nav-sub-link.active { color: var(--fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--nav-active); }
+.nav-brand:focus-visible, .nav-group:focus-visible, .nav-sub-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  border-radius: 4px;
 }
 .theme-toggle {
   display: inline-flex;
@@ -270,29 +308,36 @@ html.dark body .theme-toggle .moon { display: none; }
   margin-top: 20px;
 }
 
-/* Faza 11: below 900px the navbar has two rows - brand + theme, then the tabs,
-   which scroll sideways; phone.js centres the active tab and sets the fades. */
-.nav-tabs { display: contents; }
-@media (max-width: 900px) {
-  .nav-container { flex-wrap: wrap; min-height: 0; padding: 6px 4px 0 16px; }
-  .nav-brand { order: 1; flex: 1 1 auto; padding: 0; }
-  .theme-toggle { order: 2; margin: 0; width: 44px; height: 44px; }
-  .nav-tabs { display: block; order: 3; flex: 1 0 100%; min-width: 0; position: relative; margin: 0 -4px 0 -16px; }
-  .nav-tabs::before, .nav-tabs::after {
-    content: ""; position: absolute; top: 0; bottom: 0; width: 36px; pointer-events: none;
-    opacity: 0; transition: opacity 0.15s ease; z-index: 1;
+/* Phone (same 600px as phone.js): a compact header (brand + theme, not sticky),
+   the sub-pages as one row of chips that scrolls sideways (nav.js brings the
+   active one into view), and the groups as a fixed bottom bar - icon + label,
+   44px+ targets - that the body pads for, so nothing ends up under it. */
+@media (max-width: 600px) {
+  :root { --nav-h: 0px; }
+  body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+  .site-head { position: static; }
+  .site-bar { height: 48px; padding: 0 4px 0 16px; justify-content: space-between; }
+  .theme-toggle { margin: 0; width: 44px; height: 44px; }
+  .nav-groups {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; height: auto;
+    background: var(--nav-bg); border-top: 1px solid var(--nav-border);
+    padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   }
-  .nav-tabs::before { left: 0; background: linear-gradient(90deg, var(--nav-bg), transparent); }
-  .nav-tabs::after { right: 0; background: linear-gradient(270deg, var(--nav-bg), transparent); }
-  .nav-tabs.fade-left::before, .nav-tabs.fade-right::after { opacity: 1; }
-  .nav-links {
-    gap: 0; padding: 0 4px; overflow-x: auto; overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  .nav-groups ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; height: calc(var(--tabbar-h) - 1px); } /* + the 1px border = what the body pads */
+  .nav-group {
+    flex-direction: column; justify-content: center; gap: 3px; min-height: 44px; padding: 0 4px;
+    font-size: 11px; font-weight: 500;
   }
-  .nav-links::-webkit-scrollbar { display: none; }
-  .nav-links li { flex: 0 0 auto; }
-  .nav-links li a { padding: 12px 12px; white-space: nowrap; }
-  .nav-links li.active a { border-bottom: 0; box-shadow: inset 0 -2px 0 var(--nav-active); font-weight: 600; }
+  .nav-group:hover { background: transparent; }
+  .nav-group.active { color: var(--accent); font-weight: 600; box-shadow: none; }
+  .nav-icon { width: 22px; height: 22px; }
+  .nav-sub { border-bottom: 0; }
+  .nav-sub ul { height: auto; gap: 8px; padding: 8px 16px; }
+  .nav-sub-link {
+    height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 999px;
+    background: var(--surface); color: var(--fg);
+  }
+  .nav-sub-link.active { background: var(--accent); border-color: var(--accent); color: var(--bg); box-shadow: none; }
 }
 
 /* === P/C Ratio page (added in Stage 4) === */
@@ -1972,10 +2017,10 @@ html.dark body .cb-chip-chair { color: #0d0f12; }
 .cot-table th:first-child, .cot-table td:first-child, .cot-table tr.cot-groups th.cot-g-score { border-left: 0; }
 .cot-table tr.cot-groups th.cot-g-score { border-left: 1px solid var(--border); }
 .cot-table thead th { position: sticky; background: var(--header-bg); z-index: 2; font-weight: 600; }
-.cot-table tr.cot-groups th { top: 0; height: 30px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; text-align: left; border-bottom: 1px solid var(--border); }
+.cot-table tr.cot-groups th { top: var(--nav-h); height: 30px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; text-align: left; border-bottom: 1px solid var(--border); }
 .cot-table tr.cot-groups th:first-child { border-top-left-radius: 8px; }
 .cot-table tr.cot-groups th:last-child { border-top-right-radius: 8px; }
-.cot-table tr.cot-cols th { top: 30px; height: 34px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+.cot-table tr.cot-cols th { top: calc(var(--nav-h) + 30px); height: 34px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
 .cot-table tr.cot-groups th > span { display: inline-block; padding: 6px 0 4px; border-bottom: 2px solid var(--cot-tick); }
 .cot-table th.cot-left { text-align: left; }
 .cot-table th.cot-right { text-align: right; }

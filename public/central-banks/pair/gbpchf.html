@@ -19,43 +19,34 @@
   })();
 </script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>GBP/CHF | Central Banks | Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <nav class="main-nav">
-  <div class="nav-container">
-    <a class="nav-brand" href="/">Dashboard</a>
-    <div class="nav-tabs">
-    <ul class="nav-links">
-      <li class="">
-        <a href="/economic">Economic</a>
-      </li>
-      <li class="">
-        <a href="/carry">Carry</a>
-      </li>
-      <li class="active">
-        <a href="/central-banks">Central Banks</a>
-      </li>
-      <li class="">
-        <a href="/strength">Currency Strength</a>
-      </li>
-      <li class="">
-        <a href="/history">History</a>
-      </li>
-      <li class="">
-        <a href="/cot">COT</a>
-      </li>
-      <li class="">
-        <a href="/pc-ratio">P/C Ratio</a>
-      </li>
-      <li class="">
-        <a href="/vix-ratio">VIX/VIX3M</a>
-      </li>
-    </ul>
-    </div>
+  <header class="site-head">
+  <div class="site-bar">
+    <a class="nav-brand" href="/economic">Dashboard</a>
+    <nav class="nav-groups" aria-label="Sections">
+      <ul>
+        <li><a class="nav-group" href="/economic" data-nav-group="signal"
+               data-nav-pages="/economic /strength"><svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle>
+</svg><span class="nav-group-label">Signal</span></a></li>
+        <li><a class="nav-group active" href="/carry" data-nav-group="macro"
+               data-nav-pages="/carry /central-banks /history" aria-current="true"><svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 9.5L12 4l9 5.5zM5 20h14M3 22h18M6 12v5M10 12v5M14 12v5M18 12v5"></path>
+</svg><span class="nav-group-label">Macro</span></a></li>
+        <li><a class="nav-group" href="/cot" data-nav-group="sentiment"
+               data-nav-pages="/cot /pc-ratio /vix-ratio"><svg class="nav-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
+     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 14l4-4M3.34 19a10 10 0 1 1 17.32 0"></path>
+</svg><span class="nav-group-label">Sentiment</span></a></li>
+      </ul>
+    </nav>
     <button id="themeBtn" class="theme-toggle" type="button" aria-label="Toggle theme">
       <svg class="theme-icon sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"
            fill="none" stroke="currentColor" stroke-width="2"
@@ -70,6 +61,13 @@
       </svg>
     </button>
   </div>
+</header>
+<nav class="nav-sub" aria-label="Macro pages" data-nav-group="macro">
+  <ul>
+    <li><a class="nav-sub-link" href="/carry">Carry</a></li>
+    <li><a class="nav-sub-link active" href="/central-banks" aria-current="page">Central Banks</a></li>
+    <li><a class="nav-sub-link" href="/history">History</a></li>
+  </ul>
 </nav>
 <div class="phone-banner" role="status">
   <svg class="phone-banner-ico" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
@@ -85,6 +83,7 @@
 </div>
 <script src="/theme-toggle.js"></script>
 <script src="/phone.js"></script>
+<script src="/nav.js"></script>
 
   <main class="page-content cb-page" id="cbPage" data-page="pair">
     <header class="econ-header">

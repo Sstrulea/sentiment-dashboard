@@ -1,7 +1,5 @@
 /* Phone view (Faza 11): the pieces every page shares.
  *
- *   - navbar: the active tab is scrolled into view (centred, horizontally only)
- *     and a fade marks the edge where more tabs are;
  *   - the first-visit banner ("Best on desktop or tablet"): its visibility is
  *     decided in <head> (templates/_theme_head.html.j2), this only wires the ×;
  *   - "How to read": long descriptions marked [data-htr] fold under one button
@@ -9,7 +7,9 @@
  *   - PhoneUI.sheet(): the one bottom sheet (filters and details);
  *   - PhoneUI.filterButton(): the full-width filter button + its sheet.
  *
- * Phone = max-width 600px (PhoneUI.isPhone()). DOM + textContent only.
+ * The navbar has its own script (nav.js).
+ *
+ * Phone = max-width 600px (PhoneUI.isPhone()), the same breakpoint as the CSS. DOM + textContent only.
  */
 (function () {
   "use strict";
@@ -55,29 +55,6 @@
     chevronRight: "M9 6l6 6-6 6",
     check: "M5 12.5l4.2 4.2L19 7",
   };
-
-  // ---------------------------------------------------------------- navbar
-  function initNav() {
-    const tabs = document.querySelector(".nav-tabs");
-    const list = tabs && tabs.querySelector(".nav-links");
-    if (!list) return;
-    const update = () => {
-      const max = list.scrollWidth - list.clientWidth;
-      tabs.classList.toggle("fade-left", list.scrollLeft > 2);
-      tabs.classList.toggle("fade-right", max > 2 && list.scrollLeft < max - 2);
-    };
-    const centre = () => {
-      const active = list.querySelector("li.active");
-      if (active && list.scrollWidth > list.clientWidth) {
-        // scrollLeft only: scrollIntoView would also move the page vertically
-        list.scrollLeft = active.offsetLeft - (list.clientWidth - active.offsetWidth) / 2;
-      }
-      update();
-    };
-    list.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", centre);
-    centre();
-  }
 
   // ---------------------------------------------------------------- banner
   function initBanner() {
@@ -258,7 +235,6 @@
     current: () => current };
 
   function init() {
-    initNav();
     initBanner();
     foldHowToRead();
   }
