@@ -1043,3 +1043,15 @@ Upcoming: Probability, Most likely, Priced move inclusiv NZD; Pairs: 12M change,
 `tests/test_cb_paths_payload.py`, care verifică și `path.name` + determinismul. Actualizate: `test_rate_paths.cjs` și `test_decision_day.cjs` (tabelul nou).
 Capturi: `docs/design/cb-paths-v2/screenshots/` (Compare dark / light 1440 și telefon 390, USD dark / light 1440, Pairs dark 1440, EUR/USD dark 1440; cu cardul
 de hover deschis acolo unde există).
+
+### Graficul mai înalt și legenda nouă (PR feat/cb-chart-legend)
+
+- **Înălțime** (Compare, pagina băncii, pagina perechii; `.cb-chart-tall`): `aspect-ratio: 2 / 1`, minim 440 px, maxim 72vh; pe telefon (≤ 600 px) 380 px.
+- **Legenda** (Compare și pagina perechii; `legendState` / `legendHtml` / `wireLegend`): sub titlu, un buton per bancă în ordinea `BANK_ORDER` — o linie de 16×3 px
+  în culoarea băncii și codul valutei (12 px, estompat), ~16 px între ele; `aria-pressed`, merg de la tastatură. Click = banca dispare din grafic (seria
+  `hidden`, deci și eticheta de la capăt și rândul din cardul de hover); ascunsă = linie gri, text la 40%; „Show all” la capătul rândului cât timp o bancă e
+  ascunsă. Hover / focus pe un buton = celelalte linii la 20% (`applyFocus`), fără să schimbe ce e ascuns. Pe telefon, două rânduri de câte 4. Legenda
+  Chart.js a dispărut; etichetele de la capătul liniilor rămân. Pagina băncii păstrează tab-urile Current / 1w / 3w.
+- Textul de sub grafic (Compare, pereche) e într-un „ⓘ How to read” închis pe desktop; pe telefon rămâne fold-ul `PhoneUI` (`[data-htr]`).
+- Test: `tests/cb_js/test_chart_legend.cjs` (toggle → banca lipsește din card, „Show all”, hover-ul nu schimbă starea; `drawCompareChart` pe un Chart fals).
+  Capturi: `compare-dark-1440.png`, `compare-light-1440.png`, `compare-dark-390.png` refăcute, `compare-hidden-dark-1440.png` (GBP și NZD ascunse).
