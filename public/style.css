@@ -2764,3 +2764,26 @@ table.cb-rp tr.cb-est td.cb-dove { color: var(--warning-fg); }
 }
 .cb-pcards .cb-pcard-text .cb-bigrate { font-size: 17px; }
 .cb-tt-table td:last-child { font-family: inherit; }
+
+/* ---- Compare / pair chart: taller charts, the bank legend above the chart, "How to read" ---- */
+.cb-chart-wrap.cb-chart-tall { height: auto; aspect-ratio: 2 / 1; min-height: 440px; max-height: 72vh; }
+.cb-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin: 2px 0 10px; }
+.cb-lg-item { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 3px 0; font: inherit; font-size: 12px; font-weight: 600;
+  color: var(--muted); cursor: pointer; letter-spacing: 0.02em; }
+.cb-lg-item:hover, .cb-lg-item:focus-visible { color: var(--fg); }
+.cb-lg-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.cb-lg-line { display: inline-block; width: 16px; height: 3px; border-radius: 2px; background: var(--muted); }
+.cb-lg-item.off { opacity: 0.4; }
+.cb-lg-item.off .cb-lg-line { background: var(--muted); }
+.cb-lg-all { margin-left: auto; border: 0; background: none; padding: 3px 0; font: inherit; font-size: 12px; color: var(--accent); cursor: pointer; }
+.cb-lg-all:hover { text-decoration: underline; }
+details.cb-htr { margin-top: 8px; }
+details.cb-htr > summary { cursor: pointer; font-size: 12px; color: var(--muted); list-style: none; width: max-content; }
+details.cb-htr > summary::-webkit-details-marker { display: none; }
+details.cb-htr > summary:hover { color: var(--fg); }
+details.cb-htr[open] > summary { margin-bottom: 4px; }
+@media (max-width: 600px) {
+  .cb-chart-wrap.cb-chart-tall { aspect-ratio: auto; min-height: 0; max-height: none; height: 380px; }
+  .cb-legend { display: grid; grid-template-columns: repeat(4, max-content); gap: 6px 16px; }
+  .cb-lg-all { grid-column: 1 / -1; margin-left: 0; justify-self: start; }
+}

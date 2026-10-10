@@ -125,6 +125,14 @@
   }
 
 
+  const COMPARE_HELP = 'One line per bank from today, a point on each decision date. Hover (or tap / drag) for every bank at a date: the rate in force after the last meeting on or before it, ' +
+    "in bp vs now and in 25 bp moves. Hollow points and dashed segments = estimates (no contract isolates the meeting). Click a bank above the chart to hide or show it; hover it to bring its line forward. " +
+    '<span class="cb-hawk"><b>Blue = hawkish</b></span>, <span class="cb-dove"><b>red = dovish</b></span> in the tables; the sign is always written out.';
+  // the explanation under a chart: "ⓘ How to read", closed, on the desktop; the phone keeps its own fold (PhoneUI, [data-htr])
+  function howToRead(html) {
+    return '<details class="cb-htr desk-only"><summary>ⓘ How to read</summary><div class="cb-sub">' + html + "</div></details>" +
+      '<div class="cb-sub phone-only" data-htr>' + html + "</div>";
+  }
   function sortable(box, key, render) {
     box.innerHTML = render(key);
     wireRows(box);
@@ -145,15 +153,18 @@
       '<section id="cbCompare">' + upNextHtml(pickUpNext(ov.paths, Date.now(), ov.next_decision)) +
       '<section class="cb-card cb-chartcard"><h3>Market-implied paths <small class="muted">next 12 months, every bank</small>' +
       '<span class="cb-toggle" role="group" aria-label="Scale"><button type="button" class="cb-tbtn active" data-mode="bp" aria-pressed="true">bp vs now</button><button type="button" class="cb-tbtn" data-mode="level" aria-pressed="false">level %</button></span></h3>' +
-      '<div class="cb-chart-wrap cb-compare-wrap"><canvas id="cbCompareChart"></canvas></div>' +
-      '<div class="cb-sub" data-htr>One line per bank from today, a point on each decision date. Hover (or tap / drag) for every bank at a date: the rate in force after the last meeting on or before it, ' +
-      'in bp vs now and in 25 bp moves. Hollow points and dashed segments = estimates (no contract isolates the meeting). Click a legend item to hide a bank. ' +
-      '<span class="cb-hawk"><b>Blue = hawkish</b></span>, <span class="cb-dove"><b>red = dovish</b></span> in the tables; the sign is always written out.</div></section>' +
+      '<div class="cb-legend-box" id="cbCompareLegend"></div><div class="cb-chart-wrap cb-chart-tall cb-compare-wrap"><canvas id="cbCompareChart"></canvas></div>' +
+      howToRead(COMPARE_HELP) + "</section>" +
       '<div class="desk-only" id="cbCompareTable"></div><div class="phone-only" id="cbCompareList"></div></section>' +
       '<section id="cbPairs" hidden><p class="muted cb-loading">Loading pairs…</p></section>';
-    let mode = "bp";
+    let mode = "bp", chart = null;
     const canvas = document.getElementById("cbCompareChart");
-    registerRedraw(function () { drawCompareChart(canvas, ov.paths, mode); });
+    const legend = legendState(Object.keys(ov.paths).filter(function (c) { return ov.paths[c] && ov.paths[c].points; }));
+    const names = {};
+    Object.keys(ov.paths).forEach(function (c) { names[c] = ov.paths[c].name || ov.paths[c].short || c; });
+    const redraw = function () { destroyCharts(); state.redraw.forEach(function (fn) { fn(); }); };
+    registerRedraw(function () { chart = drawCompareChart(canvas, ov.paths, mode, { legend: legend }); });
+    wireLegend(document.getElementById("cbCompareLegend"), legend, names, redraw, function () { return chart; });
     root.querySelectorAll(".cb-tbtn[data-mode]").forEach(function (b) {
       b.addEventListener("click", function () {
         mode = b.dataset.mode;
@@ -256,7 +267,7 @@
   };
   function isDark() { return !!(document.body && document.body.classList.contains("dark")); }
   function bankColor(ccy) { return BANK_COLORS[isDark() ? "dark" : "light"][ccy] || "#888888"; }
-  function paintSwatches() { document.querySelectorAll(".cb-swatch[data-ccy]").forEach(function (el) { el.style.background = bankColor(el.dataset.ccy); }); }
+  function paintSwatches() { document.querySelectorAll(".cb-swatch[data-ccy], .cb-lg-item:not(.off) .cb-lg-line[data-ccy]").forEach(function (el) { el.style.background = bankColor(el.dataset.ccy); }); }
 
   // "30% hike" (n = 0) · "+25 bp + 28% of +50" (n ≥ 1) · the same with "cut" / minus signs; "hold" when nothing is priced
   function probText(pr) {
@@ -694,7 +705,57 @@
       c.restore();
     }
   };
-  // Compare (every bank) and the pair page (two banks + a "Gap" row in the card): opts.extra(t) adds rows below the banks
+  // ---- the bank legend above the chart (Compare, pair page): one toggle per bank, in BANK_ORDER --------------------------------------
+  // The state is pure (tests): `hidden` = banks taken off the chart, its end label and the hover card; `focus` = the bank under the mouse
+  // (the other lines fade to 20%), which never changes `hidden`.
+  function legendState(ccys) {
+    const st = { ccys: BANK_ORDER.filter(function (c) { return ccys.indexOf(c) >= 0; }), hidden: {}, focus: null };
+    st.toggle = function (c) { if (st.ccys.indexOf(c) < 0) return; if (st.hidden[c]) delete st.hidden[c]; else st.hidden[c] = true; };
+    st.showAll = function () { st.hidden = {}; };
+    st.anyHidden = function () { return Object.keys(st.hidden).length > 0; };
+    st.hover = function (c) { st.focus = c && st.ccys.indexOf(c) >= 0 && !st.hidden[c] ? c : null; };
+    st.alpha = function (c) { return st.focus && st.focus !== c ? 0.2 : 1; };
+    return st;
+  }
+  function legendHtml(st, names) {
+    names = names || {};
+    return '<div class="cb-legend" role="group" aria-label="Banks on the chart">' + st.ccys.map(function (c) {
+      const off = !!st.hidden[c];
+      return '<button type="button" class="cb-lg-item' + (off ? " off" : "") + '" data-ccy="' + esc(c) + '" aria-pressed="' + (off ? "false" : "true") + '" title="' +
+        esc((off ? "Show " : "Hide ") + (names[c] || c)) + '"><span class="cb-lg-line" data-ccy="' + esc(c) + '" aria-hidden="true"></span>' + esc(c) + "</button>";
+    }).join("") + (st.anyHidden() ? '<button type="button" class="cb-lg-all">Show all</button>' : "") + "</div>";
+  }
+  // a chart line in the legend focus: full colour for the focused bank (or every bank), 20% for the others
+  function fadeColor(col, a) { return a >= 1 ? col : withAlpha(col, a); }
+  function applyFocus(chart, st) {
+    if (!chart) return;
+    const c = colors();
+    chart.data.datasets.forEach(function (d) {
+      const a = st.alpha(d.cbCcy), col = fadeColor(d.cbColor, a);
+      d.borderColor = col; d.backgroundColor = col; d.pointBorderColor = col;
+      d.pointBackgroundColor = d.data.map(function (p) { return p.est ? c.surface : col; });
+    });
+    chart.update("none");
+  }
+  function wireLegend(box, st, names, redraw, chartOf) {
+    const paint = function () {
+      box.innerHTML = legendHtml(st, names);
+      box.querySelectorAll(".cb-lg-line").forEach(function (el) { el.style.background = st.hidden[el.dataset.ccy] ? "" : bankColor(el.dataset.ccy); });
+      box.querySelectorAll(".cb-lg-item").forEach(function (b) {
+        b.addEventListener("click", function () { st.toggle(b.dataset.ccy); st.focus = null; paint(); redraw(); });
+        const on = function () { st.hover(b.dataset.ccy); applyFocus(chartOf(), st); };
+        const out = function () { st.hover(null); applyFocus(chartOf(), st); };
+        b.addEventListener("mouseenter", on); b.addEventListener("focus", on);
+        b.addEventListener("mouseleave", out); b.addEventListener("blur", out);
+      });
+      const all = box.querySelector(".cb-lg-all");
+      if (all) all.addEventListener("click", function () { st.showAll(); paint(); redraw(); });
+    };
+    paint();
+    return paint;
+  }
+  // Compare (every bank) and the pair page (two banks + a "Gap" row in the card): opts.extra(t) adds rows below the banks;
+  // opts.legend = legendState: hidden banks are not drawn (line, end label, hover row)
   function drawCompareChart(canvas, paths, mode, opts) {
     opts = opts || {};
     const c = colors(), series = compareChartModel(paths, mode);
@@ -702,7 +763,7 @@
     const xMax = asof + 365 * DAY_MS + 20 * DAY_MS;
     const ds = series.map(function (s) {
       const col = bankColor(s.ccy);
-      return { type: "line", label: s.ccy + " " + s.short, cbLabel: s.ccy, cbCcy: s.ccy, data: s.data, borderColor: col, backgroundColor: col, borderWidth: 2, tension: 0, stepped: false,
+      return { type: "line", label: s.ccy + " " + s.short, cbLabel: s.ccy, cbCcy: s.ccy, cbColor: col, hidden: !!(opts.legend && opts.legend.hidden[s.ccy]), data: s.data, borderColor: col, backgroundColor: col, borderWidth: 2, tension: 0, stepped: false,
                pointRadius: s.data.map(function (p) { return p.start ? 0 : 4; }), pointHoverRadius: 5, pointBorderWidth: 2, pointBorderColor: col,
                pointBackgroundColor: s.data.map(function (p) { return p.est ? c.surface : col; }),
                segment: { borderDash: function (ctx) { return ctx.p1.raw && ctx.p1.raw.est ? [6, 4] : undefined; } } };
@@ -716,7 +777,7 @@
         interaction: { mode: "nearest", intersect: true },
         scales: Object.assign(baseScales(c, mode === "level" ? "Implied policy rate, %" : "bp priced vs the current rate"), { x: Object.assign(baseScales(c, "", true).x, { min: asof, max: xMax }) }),
         plugins: {
-          legend: { position: "bottom", labels: { color: c.fg, usePointStyle: true, boxWidth: 8 } },
+          legend: { display: false },
           tooltip: { enabled: false },
           annotation: { annotations: mode === "level" ? {} : { zero: { type: "line", yMin: 0, yMax: 0, borderColor: withAlpha(c.muted, 0.6), borderWidth: 1 } } }
         }
@@ -725,12 +786,13 @@
     hoverChart(chart, canvas, {
       yLabel: function (v) { return mode === "level" ? Number(v).toFixed(2) + "%" : fmtSigned(v, 1); },
       html: function (ch, cr) {
-        const t = dayOf(cr.xv), hidden = {};
+        const t = dayOf(cr.xv), hidden = {};                   // a bank hidden by the legend is a hidden dataset
         ch.data.datasets.forEach(function (d, i) { if (!ch.isDatasetVisible(i)) hidden[d.cbCcy] = true; });
         const rows = compareHoverRows(paths, t, mode, hidden).concat(opts.extra ? opts.extra(t) : []);
         return '<div class="cb-tt-title">' + esc(tipTitle(t, asof)) + "</div>" + ttRowsHtml(rows);
       }
     });
+    if (opts.legend && opts.legend.focus) applyFocus(chart, opts.legend);
     state.charts.push(chart);
     return chart;
   }
@@ -869,7 +931,7 @@
     const pj = d.path;
     return '<section class="cb-card cb-chartcard"><h3>Implied path <small class="muted">next 12 months</small>' +
       '<span class="cb-toggle" role="group" aria-label="Line shape"><button type="button" class="cb-tbtn" data-shape="step" aria-pressed="false" title="Draw the path as steps (the rate changes at each meeting)">Step</button></span></h3>' +
-      '<div id="cbSeriesTabs">' + seriesTabsHtml(pj, {}) + '</div><div class="cb-chart-wrap"><canvas id="cbPathChart"></canvas></div><div class="cb-sub">' + esc(pathHelp(pj)) + "</div></section>";
+      '<div id="cbSeriesTabs">' + seriesTabsHtml(pj, {}) + '</div><div class="cb-chart-wrap cb-chart-tall"><canvas id="cbPathChart"></canvas></div><div class="cb-sub">' + esc(pathHelp(pj)) + "</div></section>";
   }
   function pathHelp(pj) {
     const bits = ["The rate implied after each meeting: now and 1 and 3 weeks ago", "shaded against the current rate (dotted line)", "click a tab above the chart to hide or show a series"];
@@ -1331,12 +1393,17 @@
       DOT + '<a href="' + esc(pj.banks[p.base].href) + '">' + esc(p.base) + " page</a>" + DOT + '<a href="' + esc(pj.banks[p.quote].href) + '">' + esc(p.quote) + " page</a>";
     root.innerHTML = bankBar("pairs") + '<p class="cb-sub cb-pairs-help">' + esc(PAIRS_HELP) + "</p>" + pairCards(r) +
       '<section class="cb-card cb-chartcard"><h3>Implied paths <small class="muted">' + esc(p.base) + " and " + esc(p.quote) + ", bp vs now, next 12 months</small></h3>" +
-      '<div class="cb-chart-wrap"><canvas id="cbPairChart"></canvas></div><div class="cb-sub">Hover (or tap) for both banks at a date and the rate gap then. Hollow points and dashed segments = estimates.</div></section>' +
+      '<div class="cb-legend-box" id="cbPairLegend"></div><div class="cb-chart-wrap cb-chart-tall"><canvas id="cbPairChart"></canvas></div>' +
+      howToRead("Hover (or tap) for both banks at a date and the rate gap then. Hollow points and dashed segments = estimates. Click a bank above the chart to hide or show it.") + "</section>" +
       '<section class="cb-card cb-method-link"><a href="' + esc(pj.banks[p.base].href) + '#cbMethod">How is this calculated?</a></section>';
-    const pairCanvas = document.getElementById("cbPairChart");
+    const pairCanvas = document.getElementById("cbPairChart"), legend = legendState([p.base, p.quote]), names = {};
+    names[p.base] = b.path.name || b.bank.short; names[p.quote] = q.path.name || q.bank.short;
+    let chart = null;
     registerRedraw(function () {
-      drawCompareChart(pairCanvas, paths, "bp", { extra: function (t) { return [gapRow(b.path, q.path, t)]; } });
+      chart = drawCompareChart(pairCanvas, paths, "bp", { legend: legend, extra: function (t) { return [gapRow(b.path, q.path, t)]; } });
     });
+    wireLegend(document.getElementById("cbPairLegend"), legend, names, function () { destroyCharts(); state.redraw.forEach(function (fn) { fn(); }); }, function () { return chart; });
+    if (window.PhoneUI) window.PhoneUI.foldHowToRead();
     if (!themeWatched) { themeWatched = true; watchTheme(); }
     paintSwatches();
     tick();

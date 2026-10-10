@@ -163,3 +163,10 @@ def test_rp_style_js_on_the_real_cb_js():
     root = Path(__file__).resolve().parents[1]
     r = subprocess.run(["node", str(root / "tests" / "cb_js" / "test_rp_style.cjs")], cwd=root, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_chart_legend_js_on_the_real_cb_js():
+    import subprocess
+    root = Path(__file__).resolve().parents[1]
+    r = subprocess.run(["node", str(root / "tests" / "cb_js" / "test_chart_legend.cjs")], cwd=root, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stdout + r.stderr
