@@ -29,7 +29,12 @@
 <body>
   <header class="site-head">
   <div class="site-bar">
-    <a class="nav-brand" href="/economic">Dashboard</a>
+    <a class="nav-brand" href="/economic">
+      <span class="nav-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M5 15l4.5-5 3.5 3 6-7"></path></svg>
+      </span><span class="nav-brand-name">Dashboard</span></a>
+    <span class="nav-sep" aria-hidden="true"></span>
     <nav class="nav-groups" aria-label="Sections">
       <ul>
         <li><a class="nav-group" href="/economic" data-nav-group="signal"
@@ -65,7 +70,7 @@
   </div>
 </header>
 <nav class="nav-sub" aria-label="Sentiment pages" data-nav-group="sentiment">
-  <ul>
+  <ul class="nav-seg">
     <li><a class="nav-sub-link" href="/cot">COT</a></li>
     <li><a class="nav-sub-link" href="/pc-ratio">P/C Ratio</a></li>
     <li><a class="nav-sub-link" href="/vix-ratio">VIX/VIX3M</a></li>

@@ -4,13 +4,16 @@
  *     sub-page is remembered per group (localStorage "nav-last-<group>") and
  *     every group link's href is swapped for its remembered page. Without JS
  *     (or storage) the href stays the group's first page;
- *   - the sub-page row scrolls sideways when it does not fit: the active
- *     sub-tab / chip is brought into view (horizontally only).
+ *   - the segmented switch of the group's pages scrolls sideways when it does
+ *     not fit: the active segment is brought into view (horizontally only);
+ *   - desktop (> 600px, the CSS breakpoint): when the bar's row does not fit,
+ *     the logo's name is hidden first (the mark stays), then the group icons.
  */
 (function () {
   "use strict";
 
   const PREFIX = "nav-last-";
+  const PHONE_MQ = window.matchMedia ? window.matchMedia("(max-width: 600px)") : null;
 
   function remember() {
     const sub = document.querySelector(".nav-sub");
@@ -29,7 +32,7 @@
   }
 
   function centreActive() {
-    const list = document.querySelector(".nav-sub ul");
+    const list = document.querySelector(".nav-seg");
     const active = list && list.querySelector('a[aria-current="page"]');
     if (!active || list.scrollWidth <= list.clientWidth) return;
     const li = active.parentNode;
@@ -38,11 +41,23 @@
     list.scrollLeft = li.offsetLeft - (list.clientWidth - li.offsetWidth) / 2;
   }
 
+  function fitBar() {
+    const head = document.querySelector(".site-head");
+    const groups = head && head.querySelector(".nav-groups ul");
+    if (!groups) return;
+    head.classList.remove("nav-fit-1", "nav-fit-2");
+    if (PHONE_MQ && PHONE_MQ.matches) return;
+    const over = () => groups.scrollWidth > groups.clientWidth + 1;
+    if (over()) head.classList.add("nav-fit-1");                                   // hide the name, keep the mark
+    if (over()) head.classList.add("nav-fit-2");                                   // then the group icons
+  }
+
   function init() {
     remember();
     restore();
+    fitBar();
     centreActive();
-    window.addEventListener("resize", centreActive);
+    window.addEventListener("resize", () => { fitBar(); centreActive(); });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();

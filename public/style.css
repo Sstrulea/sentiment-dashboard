@@ -180,12 +180,23 @@ svg.spark { display: block; }
 
 .muted { color: var(--muted); }
 
-/* === NAVBAR: grouped (templates/_navbar.html.j2, menu in _nav_config.html.j2) ===
-   Desktop (> 600px): a sticky bar of --nav-h (brand, groups, theme), then the
-   active group's sub-tabs (not sticky; they scroll sideways when they do not
-   fit). Phone (<= 600px, the 600px block below): the same group list becomes a
-   fixed bar at the bottom. Sticky table headers sit at top: var(--nav-h). */
-:root { --nav-h: 48px; --tabbar-h: 56px; }
+/* === NAVBAR (templates/_navbar.html.j2; menu + logo slot in _nav_config.html.j2) ===
+   One sticky header. Desktop (> 600px): one full-width row of --nav-h - logo
+   slot | groups | theme - on the gutter of the full-width pages (--page-x, the
+   same variable .econ-page uses). Below it, not sticky and without a band of
+   its own, the active group's pages as a segmented switch.
+   Phone (<= 600px, the 600px block below): the logo row scrolls away (the
+   header's negative top) and the groups stay stuck on top as the category bar.
+   Sticky table headers sit at top: var(--nav-h). */
+:root {
+  --nav-h: 56px;          /* what stays stuck on top: the bar (desktop), the category bar (phone) */
+  --page-x: 16px;         /* the gutter of the full-width pages, shared by the navbar */
+  --logo-row-h: 48px;     /* phone: the logo row that scrolls away */
+  --cat-bar-h: 56px;      /* phone: the category bar */
+  --brand-mark-bg: rgba(21, 101, 192, 0.12);
+  --seg-raised: #ffffff;
+}
+html.dark body { --brand-mark-bg: rgba(100, 181, 246, 0.16); --seg-raised: #2b3038; }
 html { scroll-padding-top: var(--nav-h); }
 /* viewport-fit=cover: keep the content out from under a landscape notch */
 body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
@@ -197,68 +208,102 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   border-bottom: 1px solid var(--nav-border);
 }
 .site-bar {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
   display: flex;
   align-items: center;
-  gap: 24px;
   height: calc(var(--nav-h) - 1px); /* + the 1px border: the whole sticky bar is --nav-h */
+  padding: 0 var(--page-x);
 }
 .nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
   color: var(--nav-brand);
   text-decoration: none;
+  font-size: 16.5px;
   font-weight: 600;
-  font-size: 16px;
-  letter-spacing: 0.5px;
-  flex: none;
+  border-radius: 6px;
 }
+.nav-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--brand-mark-bg);
+  color: var(--accent);
+}
+.nav-mark svg { display: block; }
+.nav-sep { flex: none; width: 1px; height: 22px; margin: 0 10px 0 20px; background: var(--nav-border); }
 .nav-groups { flex: 1 1 auto; min-width: 0; height: 100%; }
-.nav-groups ul { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; height: 100%; }
+.nav-groups ul { list-style: none; display: flex; gap: 2px; margin: 0; padding: 0; height: 100%; }
 .nav-group {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 100%;
-  padding: 0 14px;
+  padding: 0 15px;
   color: var(--nav-link);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   white-space: nowrap;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease;
 }
-.nav-group:hover { color: var(--nav-link-hover-fg); background: var(--nav-link-hover-bg); }
-.nav-group.active { color: var(--nav-active-fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--nav-active); }
-.nav-icon { display: block; flex: none; }
-.nav-sub { background: var(--bg); border-bottom: 1px solid var(--border); }
-.nav-sub ul {
-  position: relative; /* nav.js measures the active tab from here */
+.nav-group:hover { color: var(--nav-link-hover-fg); }
+.nav-group.active { color: var(--nav-active-fg); box-shadow: inset 0 -2px 0 var(--accent); }
+.nav-group.active .nav-icon { color: var(--accent); }
+.nav-icon { display: block; flex: none; width: 18px; height: 18px; }
+/* the segmented switch: the active group's pages */
+.nav-sub { padding: 14px var(--page-x) 0; }
+.nav-seg {
+  position: relative; /* nav.js measures the active segment from here */
   list-style: none;
-  display: flex;
-  gap: 4px;
-  max-width: 1400px;
-  height: 36px;
-  margin: 0 auto;
-  padding: 0 20px;
+  display: inline-flex;
+  max-width: 100%;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  vertical-align: top;
+  background: var(--header-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.nav-sub ul::-webkit-scrollbar { display: none; }
-.nav-sub li { flex: none; }
+.nav-seg::-webkit-scrollbar { display: none; }
+.nav-seg li { flex: none; }
 .nav-sub-link {
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 100%;
-  padding: 0 12px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   color: var(--muted);
   text-decoration: none;
-  font-size: 13px;
+  font-size: 13.5px;
+  line-height: 18px;
   white-space: nowrap;
 }
 .nav-sub-link:hover { color: var(--fg); }
-.nav-sub-link.active { color: var(--fg); font-weight: 600; box-shadow: inset 0 -2px 0 var(--nav-active); }
+.nav-sub-link.active {
+  background: var(--seg-raised);
+  border-color: var(--border);
+  color: var(--fg);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+/* 601-767px and narrower fonts: nav.js sets these only when the row does not fit */
+.nav-fit-1 .nav-brand-name {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; /* still the link's name */
+}
+.nav-fit-2 .nav-groups .nav-icon { display: none; }
 .nav-brand:focus-visible, .nav-group:focus-visible, .nav-sub-link:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
@@ -268,10 +313,11 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  flex: none;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  margin-left: 8px;
+  margin-left: auto;
   background: transparent;
   color: var(--nav-link);
   border: 1px solid transparent;
@@ -308,36 +354,40 @@ html.dark body .theme-toggle .moon { display: none; }
   margin-top: 20px;
 }
 
-/* Phone (same 600px as phone.js): a compact header (brand + theme, not sticky),
-   the sub-pages as one row of chips that scrolls sideways (nav.js brings the
-   active one into view), and the groups as a fixed bottom bar - icon + label,
-   44px+ targets - that the body pads for, so nothing ends up under it. */
+/* Phone (same 600px as phone.js): one header, two rows - the logo row (logo +
+   theme) and the category bar (3 equal columns, icon over label, active in
+   accent, 44px+ targets). The header is sticky at top: -logo row, so the logo
+   row scrolls away and the category bar stays stuck on top (--nav-h = its
+   height). The pages follow as the full-width segmented switch, not sticky:
+   equal segments, scrolling sideways when they do not fit (nav.js brings the
+   active one into view). */
 @media (max-width: 600px) {
-  :root { --nav-h: 0px; }
-  body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
-  .site-head { position: static; }
-  .site-bar { height: 48px; padding: 0 4px 0 16px; justify-content: space-between; }
-  .theme-toggle { margin: 0; width: 44px; height: 44px; }
-  .nav-groups {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 35; height: auto;
-    background: var(--nav-bg); border-top: 1px solid var(--nav-border);
-    padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  :root { --nav-h: calc(var(--cat-bar-h) + env(safe-area-inset-top, 0px)); }
+  .site-head { top: calc(-1 * var(--logo-row-h)); }
+  .site-bar {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "brand theme" "groups groups";
+    height: auto; padding: 0;
   }
-  .nav-groups ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; height: calc(var(--tabbar-h) - 1px); } /* + the 1px border = what the body pads */
+  .nav-brand { grid-area: brand; justify-self: start; height: var(--logo-row-h); margin-left: var(--page-x); }
+  .theme-toggle { grid-area: theme; width: 44px; height: 44px; margin: 0 calc(var(--page-x) - 6px) 0 0; }
+  .nav-sep { display: none; }
+  .nav-groups {
+    grid-area: groups; height: auto; border-top: 1px solid var(--nav-border);
+    padding: env(safe-area-inset-top, 0px) 0 0;
+  }
+  /* - 2px: the bar's top border + the header's bottom border, so it is --cat-bar-h in all */
+  .nav-groups ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; height: calc(var(--cat-bar-h) - 2px); }
   .nav-group {
     flex-direction: column; justify-content: center; gap: 3px; min-height: 44px; padding: 0 4px;
     font-size: 11px; font-weight: 500;
   }
-  .nav-group:hover { background: transparent; }
   .nav-group.active { color: var(--accent); font-weight: 600; box-shadow: none; }
   .nav-icon { width: 22px; height: 22px; }
-  .nav-sub { border-bottom: 0; }
-  .nav-sub ul { height: auto; gap: 8px; padding: 8px 16px; }
-  .nav-sub-link {
-    height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 999px;
-    background: var(--surface); color: var(--fg);
-  }
-  .nav-sub-link.active { background: var(--accent); border-color: var(--accent); color: var(--bg); box-shadow: none; }
+  .nav-sub { padding: 10px var(--page-x) 0; }
+  .nav-seg { display: flex; width: 100%; }
+  .nav-seg li { flex: 1 1 0; min-width: max-content; } /* equal; never below the label - then the row scrolls */
+  .nav-sub-link { height: 40px; padding: 0 14px; }
+  .nav-sub + .phone-banner { margin-top: 10px; }
 }
 
 /* === P/C Ratio page (added in Stage 4) === */
@@ -1173,7 +1223,7 @@ table.econ-ind-table td.ei-date { text-align: right; color: var(--muted); white-
 
 /* === Economic Dashboard v2: dense per-indicator table (EdgeFinder-style) === */
 /* Near full-width: override the 1400px page cap and trim gutters. */
-.econ-page { max-width: 100%; padding-left: 16px; padding-right: 16px; }
+.econ-page { max-width: 100%; padding-left: var(--page-x); padding-right: var(--page-x); } /* the navbar shares --page-x */
 
 .econ-scroll { overflow-x: auto; }
 
