@@ -131,3 +131,49 @@ def test_nav_js_remembers_the_last_page_per_group_safely():
     assert js.count("try {") >= 2 and "localStorage.setItem" in js and "localStorage.getItem" in js                 # storage only inside try/catch
     assert "innerHTML" not in js and "scrollIntoView(" not in js
     assert (ROOT / "public" / "nav.js").read_text() == js
+
+
+# ---------------------------------------------------------------- the redesign: logo slot, top category bar
+
+
+def css_block(media: str) -> str:
+    css = (ROOT / "static" / "style.css").read_text()
+    out = []
+    for m in re.finditer(r"@media \(max-width: %spx\) \{" % media, css):
+        depth, i = 1, m.end()
+        while depth:
+            depth += {"{": 1, "}": -1}.get(css[i], 0)
+            i += 1
+        out.append(css[m.end():i - 1])
+    return "\n".join(out)
+
+
+def test_the_logo_name_and_link_come_from_the_config():
+    brand = ENV.get_template("_nav_config.html.j2").module.NAV_BRAND
+    assert brand == {"name": "Dashboard", "url": "/economic"}
+    html = nav_for("cot")
+    assert '<a class="nav-brand" href="%s">' % brand["url"] in html and '<span class="nav-brand-name">%s</span>' % brand["name"] in html
+    src = (ROOT / "templates" / "_navbar.html.j2").read_text()
+    assert "Dashboard" not in src and 'href="/economic"' not in src                                                    # nothing hardcoded in the partial
+    assert 'class="nav-mark" aria-hidden="true"' in html and "<svg" in html.split('class="nav-mark"')[1].split("</span>")[0]
+
+
+def test_no_fixed_bottom_bar_and_no_padding_for_it():
+    css = (ROOT / "static" / "style.css").read_text()
+    assert "--tabbar-h" not in css and "padding-bottom: calc(" not in css
+    nav = css[css.index("/* === NAVBAR"):css.index("/* === P/C Ratio page")]
+    assert "position: fixed" not in nav and "bottom: 0" not in nav and "safe-area-inset-bottom" not in nav
+    for f in (ROOT / "public").rglob("*.html"):                                                                         # no trace in the rendered pages either
+        assert "nav-tabs" not in f.read_text() and "main-nav" not in f.read_text(), f
+
+
+def test_the_category_bar_sticks_on_top_on_the_phone():
+    css = (ROOT / "static" / "style.css").read_text()
+    head = re.search(r"^\.site-head \{([^}]*)\}", css, re.M).group(1)
+    assert "position: sticky" in head and "top: 0" in head                                                            # one sticky header
+    b = css_block("600")
+    assert ".site-head { top: calc(-1 * var(--logo-row-h)); }" in b                                                    # its logo row scrolls away...
+    assert ":root { --nav-h: calc(var(--cat-bar-h) + env(safe-area-inset-top, 0px)); }" in b                          # ...the category bar stays: --nav-h
+    assert 'grid-template-areas: "brand theme" "groups groups"' in b and "padding: env(safe-area-inset-top, 0px) 0 0" in b
+    html = nav_for("cot")                                                                                               # one markup for the groups (no copy for the phone)
+    assert html.count('class="nav-groups"') == 1 and html.index('class="nav-groups"') < html.index("</header>")

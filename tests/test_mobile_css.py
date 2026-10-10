@@ -1,5 +1,5 @@
-"""Narrow-screen layout: the navbar never overflows (the sub-page row scrolls sideways at any width; on the phone the groups move to a fixed bottom bar
-the body pads for), and the filter chips wrap instead of scrolling inside a row that cannot shrink. Checked on the stylesheet (no browser in the suite); the widths themselves were measured on every page
+"""Narrow-screen layout: the navbar never overflows (the segmented page switch scrolls sideways at any width; on the phone the groups are a
+3-column category bar under the logo row), and the filter chips wrap instead of scrolling inside a row that cannot shrink. Checked on the stylesheet (no browser in the suite); the widths themselves were measured on every page
 at 360-1440 px when this was written."""
 from __future__ import annotations
 
@@ -31,13 +31,16 @@ def rule(selector: str) -> str:
 
 
 def test_the_navbar_never_overflows_narrow_screens():
-    sub = rule(".nav-sub ul")                                                                                          # the sub-page row: one line, scrolls sideways at any width
-    assert "overflow-x: auto" in sub and "display: flex" in sub
-    assert "white-space: nowrap" in rule(".nav-sub-link") and "flex: none" in rule(".nav-sub li")
+    seg = rule(".nav-seg")                                                                                             # the page switch: one line, scrolls sideways at any width
+    assert "overflow-x: auto" in seg and "display: inline-flex" in seg and "max-width: 100%" in seg
+    assert "white-space: nowrap" in rule(".nav-sub-link") and "flex: none" in rule(".nav-seg li")
     assert "white-space: nowrap" in rule(".nav-group")
-    b = block("600")                                                                                                   # the phone: groups in a fixed bottom bar, 3 equal columns
-    for needle in (".nav-groups {", "position: fixed", "bottom: 0", "env(safe-area-inset-bottom, 0px)", "grid-template-columns: repeat(3, 1fr)",
-                   "min-height: 44px", "padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px))"):
+    assert ".nav-fit-1 .nav-brand-name" in CSS and ".nav-fit-2 .nav-groups .nav-icon { display: none; }" in CSS        # 601-767 px: name, then icons go
+    js = (ROOT / "static" / "nav.js").read_text()
+    assert js.index('add("nav-fit-1")') < js.index('add("nav-fit-2")')
+    b = block("600")                                                                                                   # the phone: a 3-column category bar, 44px+ targets
+    for needle in (".nav-groups {", "grid-template-columns: repeat(3, 1fr)", "min-height: 44px",
+                   ".nav-seg { display: flex; width: 100%; }", "flex: 1 1 0; min-width: max-content;", "height: 40px"):
         assert needle in b, needle
     assert ".nav-" not in block("900")                                                                                 # the two-row 900 px navbar is gone
     assert "@media (max-width: 640px) {\n  .nav-container" not in CSS                                                    # the old breakpoint left 641-866 px overflowing
