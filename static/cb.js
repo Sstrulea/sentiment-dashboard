@@ -802,8 +802,7 @@
     const on = b ? (b.estimated ? esc(b.name) : esc(b.name) + " " + (isNum(b.value) ? fmtRate(b.value, 3) + "%" : NA) + (b.date ? ' <span class="muted">(' + fmtDay(b.date) + ")</span>" : "")) : NA;
     return '<section class="cb-card cb-head cb-path-head"><div class="cb-head-main"><div class="cb-kicker">Policy rate</div><div class="cb-bigrate">' + rateHtml(d.summary.rate) + "</div>" +
       '<div class="cb-sub">' + esc(d.bank.policy_rate || "") + "</div>" + (d.unverified.length ? '<div class="cb-badges">' + unverifiedChips(d) + "</div>" : "") + "</div>" +
-      '<div class="cb-head-next"><div class="cb-kicker">Overnight</div><div class="cb-sub">' + on + '</div><div class="cb-kicker">Market data</div><div class="cb-sub">' +
-      (pj.data_asof ? fmtDate(pj.data_asof) + (pj.data_label ? DOT + esc(pj.data_label) : "") : NA) + "</div></div></section>";
+      '<div class="cb-head-next"><div class="cb-kicker">Overnight</div><div class="cb-sub">' + on + "</div></div></section>";
   }
   function probBar2(pt) {
     const pr = pt && pt.prob;
@@ -948,10 +947,30 @@
                moves: moves, cum: p.cum_bp, dW: dW, na: p.na, dWna: (w1 && w1.na) || (hp ? hp.na : "not priced 1 week ago"), flag: p.flag };
     });
   }
-  function pathTableHtml(pj) {
+  // a meeting of the calendar: the short projections label ("SEP", full name in its tooltip) and the tooltip of the date
+  const PROJ_SHORT = { "Outlook Report": "Outlook", "Eurosystem staff projections": "Projections", "Conditional inflation forecast": "Forecast" };
+  function projLabel(name) {
+    if (!name) return null;
+    if (PROJ_SHORT[name]) return PROJ_SHORT[name];
+    const base = name.replace(/\s*\(.*\)\s*$/, ""), caps = base.split(/\s+/).filter(function (w) { return /^[A-Z]/.test(w); });
+    return base.length <= 5 ? base : caps.length >= 2 ? caps.map(function (w) { return w[0]; }).join("") : base.split(/\s+/)[0];
+  }
+  function meetingInfo(m) {
+    if (!m) return { label: null, name: null, tip: "" };
+    const b = m.blackout, bits = ["Decision " + weekday(m.decision) + " " + fmtDate(m.decision) + (timeText(m.time) ? ", " + timeText(m.time) : "")];
+    if (m.effective) bits.push("effective " + fmtDate(m.effective));
+    if (m.has_presser) bits.push("press conference" + (m.conference_local ? " " + m.conference_local + " " + ((m.time && m.time.abbr) || "") : ""));
+    if (b) bits.push("blackout " + fmtDay(b.start.slice(0, 10)) + " → " + fmtDay(b.end.slice(0, 10)) + (b.precision === "approximate" || !b.verified ? " (approximate)" : ""));
+    if (m.has_projections) bits.push("projections: " + (m.projections_name || "yes"));
+    return { label: m.has_projections ? projLabel(m.projections_name) || "Proj." : null, name: m.has_projections ? m.projections_name || "projections" : null, tip: bits.join(" · ").trim() };
+  }
+  function pathTableHtml(pj, calendar) {
+    const cal = {};
+    (calendar || []).forEach(function (m) { cal[m.decision] = m; });
     const rows = pathTableRows(pj).map(function (r) {
-      const ap = r.est ? "≈ " : "";
-      return "<tr" + (r.est ? ' class="cb-est"' : "") + '><td class="cb-date">' + fmtDate(r.meeting) + flagBadge(r.flag) + "</td>" +
+      const ap = r.est ? "≈ " : "", mi = meetingInfo(cal[r.meeting]);
+      return "<tr" + (r.est ? ' class="cb-est"' : "") + '><td class="cb-date"><span' + (mi.tip ? ' class="cb-mdate" title="' + esc(mi.tip) + '"' : "") + ">" + fmtDate(r.meeting) + "</span>" +
+        (mi.label ? ' <span class="econ-flag cb-proj" title="' + esc(mi.name) + '">' + esc(mi.label) + "</span>" : "") + flagBadge(r.flag) + "</td>" +
         (r.rate ? '<td class="cb-n">' + esc(r.rate) + "</td>" : naTd(r.na)) +
         '<td class="cb-n">' + (r.prob ? esc(r.prob) : r.rate ? '<span class="muted" title="' + esc(r.est ? "estimate: no probability" : "no per-meeting probability") + '">' + NA + "</span>" : naSpan(r.na)) + "</td>" +
         (r.moves ? "<td>" + esc(r.moves) + "</td>" : "<td>" + naSpan(r.na) + "</td>") +
@@ -1023,54 +1042,135 @@
     const when = n && n.decision ? '<div class="cb-sub">' + fmtDate(n.decision) + " " + cdSpan(n) + (timeText(n.time) ? DOT + esc(timeText(n.time)) : "") + "</div>" : "";
     return '<section class="cb-card cb-next' + (dayMode ? " cb-daycard" : "") + '">' + (dayMode ? '<div class="cb-daytag">Decision day</div>' : "") + "<h3>Next meeting</h3>" + when + body + "</section>";
   }
-  function gapCard(d) {
+  // ---- bank page v3: zone 2 "The bank" (latest decision, projections, speeches, decision history) -------------------------------
+  // Each block returns {title, sub, html}: the desktop wraps it in a card, the phone in an accordion (same order, same content).
+  const MINUTES_TYPES = ["minutes", "account", "summary_of_opinions", "deliberations"];
+  const PRESSER_LABEL = { presser_video: "Video", presser_transcript: "Transcript", opening_statement: "Opening statement" };
+  function rateAfterText(x) { return x.lower !== null && x.lower !== undefined ? fmtRate(x.lower) + EN + fmtRate(x.upper) + "%" : fmtRateAuto(x.rate_after) + "%"; }
+  function moveText2(x) {                                             // "+25 bp to 3.75–4.00%" · "Hold at 2.50%" · "−25 bp to 2.25%"
+    if (!x) return "";
+    return isNum(x.delta_bp) && Number(x.delta_bp) !== 0 ? fmtSigned(x.delta_bp, 0) + " bp to " + rateAfterText(x) : "Hold at " + rateAfterText(x);
+  }
+  function timelineFor(d, date) { return ((d.documents && d.documents.timeline) || []).find(function (t) { return t.meeting === date; }) || null; }
+  // the links of one decision: statement, minutes (account / summary of opinions / deliberations), press conference; a document not out yet = muted
+  function decisionLinks(stmt, followUp, conf) {
+    const out = [];
+    if (stmt && stmt.url) out.push(docAnchor(stmt, "Statement"));
+    (followUp || []).filter(function (i) { return MINUTES_TYPES.indexOf(i.type) >= 0; }).forEach(function (i) {
+      out.push(i.url ? docAnchor(i, i.label) : '<span class="muted" title="' + esc(i.na || "not published yet") + '">' + esc(i.label) + (i.expected ? " (expected " + fmtDay(i.expected) + ")" : "") + "</span>");
+    });
+    const press = (followUp || []).filter(function (i) { return PRESSER_LABEL[i.type] && i.url; });
+    if (press.length) press.forEach(function (i) { out.push(docAnchor(i, PRESSER_LABEL[i.type])); });
+    else if (conf) Object.keys(conf).forEach(function (k) { if (conf[k] && conf[k].url) out.push(docAnchor(conf[k], PRESSER_LABEL[k] || "Press conference")); });
+    return out;
+  }
+  function latestDecisionBlock(d) {
+    const doc = d.documents, L = doc && doc.latest;
+    if (!L) return null;
+    const st = L.statement, dec = d.decisions.find(function (x) { return x.date === L.meeting; });
+    const links = decisionLinks(st, L.follow_up, dec && dec.slots && dec.slots.conference);
+    const row = '<div class="cb-ld-row"><b>' + fmtDate(L.meeting) + "</b>" + (dec ? '<span class="cb-ld-move' + tone(dec.delta_bp) + '">' + esc(moveText2(dec)) + "</span>" : "") +
+      voteChip(L.votes) + (links.length ? '<span class="cb-ld-links">' + links.join(DOT) + "</span>" : "") + "</div>";
+    const changes = st && L.redline ? '<details class="cb-x"><summary>Changes vs ' + fmtDate(L.redline.prev_meeting) + ' <span class="muted">(+' + L.redline.added_words + " / −" + L.redline.removed_words +
+      " words)</span></summary>" + '<div class="cb-stmt-body">' + redlineParas(st, L.redline) + "</div></details>" : "";
+    const full = st ? '<details class="cb-x"><summary>Full statement <span class="muted">(' + st.paragraphs.length + " paragraphs)</span></summary>" + '<div class="cb-stmt-body">' + st.paragraphs.map(paraHtml).join("") +
+      '</div><div class="cb-sub">Source: <a href="' + esc(st.url) + '" target="_blank" rel="noopener">' + esc(st.url) + "</a>" + (st.rate_after !== null ? DOT + "rate in the text: " + fmtRateAuto(st.rate_after) + "%" : "") +
+      (st.license ? "<br>" + esc(st.license) : "") + "</div></details>" : '<div class="cb-sub">' + esc(L.na || "statement not collected") + "</div>";
+    const manual = doc.manual_only && !/manual/i.test((!st && L.na) || "") ? '<div class="cb-sub muted">RBNZ texts come from a manual file: the site is behind a Cloudflare challenge.</div>' : "";
+    return { title: "Latest decision", sub: fmtDay(L.meeting) + (dec ? DOT + esc(moveText2(dec)) : "") + (L.votes && L.votes.label ? DOT + esc(L.votes.label) : ""),
+             html: row + summarySlot(L.summary, true) + changes + full + manual };
+  }
+
+  // market vs the bank's own path: only the Fed dots and the RBNZ OCR track (null otherwise: the block is left out)
+  function gapLean(v, who) { return !isNum(v) ? "" : Math.abs(v) < 0.5 ? "in line with the " + who : v > 0 ? "market above the " + who : "market below the " + who; }
+  function projectionsBlock(d) {
     const g = d.gap, bank = d.chart.bank;
     if (g.kind === "dots") {
       const rows = Object.keys(g.years).map(function (y) {
-        const m = g.years[y];
-        const dots = ((bank.years || []).find(function (b) { return String(b.year) === y; }) || {}).dots || [];
-        return "<tr><td>" + y + "</td>" + '<td class="cb-n">' + fmtRate(m.bank, 3) + '</td><td class="cb-n">' + (m.n_dots || NA) + '</td><td class="cb-n">' + fmtRate(m.market, 3) + flagBadge(m.flag) + "</td>" +
-          numCell(m, { scale: 50, dp: 1, noBadge: true }) + '<td class="cb-dots">' + dots.map(function (x) { return fmtRate(x.level, 3) + "×" + x.count; }).join("  ") + "</td></tr>" +
-          (m.na && !isNum(m.v) ? "" : "") + (m.period === null && false ? "" : "");
+        const m = g.years[y], yr = (bank.years || []).find(function (b) { return String(b.year) === y; }) || {};
+        const tip = "Distribution of the " + (m.n_dots || "") + " dots: " + (yr.dots || []).map(function (x) { return fmtRate(x.level, 3) + "% ×" + x.count; }).join(", ");
+        const mkt = isNum(m.market) ? fmtRate(m.market, 3) + "%" : NA;
+        const gap = isNum(m.v) ? '<span class="' + tone(m.v).trim() + '">' + fmtSigned(m.v, 0) + " bp</span> (" + gapLean(m.v, "Fed") + ")" : naSpan(m.na);
+        return '<li class="cb-pj-row" title="' + esc(tip) + '"><b>' + esc(y) + "</b>" + DOT + "dots " + fmtRate(m.bank, 3) + "%" + DOT + "market " + mkt + flagBadge(m.flag) + DOT + gap + "</li>";
       }).join("");
-      return '<section class="cb-card cb-gap"><h3>GAP vs the FOMC dots <small class="muted">SEP of ' + fmtDate(g.sep) + '</small></h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Year</th><th>Dots median %</th><th>n</th><th>Market %</th><th>GAP bp</th><th>Distribution</th></tr></thead><tbody>' + rows +
-        '</tbody></table></div><div class="cb-sub">GAP = market minus bank, on the same basis. 2028: no meeting calendar yet, the last meeting is assumed to be the 2nd Wednesday of December (Fed pattern).</div></section>';
+      return { title: "Market vs bank projections", sub: "FOMC dots" + DOT + "SEP of " + fmtDay(g.sep),
+               html: '<ul class="cb-pj">' + rows + '</ul><div class="cb-sub">Market minus the median dot at year end, same basis; hover a year for the distribution of the dots. 2028: no meeting calendar yet, the last meeting is assumed to be the 2nd Wednesday of December.</div>' };
     }
     if (bank.kind === "ocr_track") {
       const byYear = {};
       bank.quarters.forEach(function (x) { const y = x.period.slice(0, 4); (byYear[y] = byYear[y] || {})[x.period.slice(-1)] = x.value; });
-      const q = Object.keys(byYear).sort().map(function (y) {
-        return "<tr><td>" + esc(y) + "</td>" + [1, 2, 3, 4].map(function (k) { return '<td class="cb-n">' + (isNum(byYear[y][k]) ? fmtRate(byYear[y][k], 1) : NA) + "</td>"; }).join("") + "</tr>";
+      const rows = Object.keys(byYear).sort().map(function (y) {
+        return '<li class="cb-pj-row"><b>' + esc(y) + "</b>" + DOT + [1, 2, 3, 4].map(function (k) { return "Q" + k + " " + (isNum(byYear[y][k]) ? fmtRate(byYear[y][k], 1) + "%" : NA); }).join(DOT) + "</li>";
       }).join("");
-      return '<section class="cb-card cb-gap"><h3>Bank path: RBNZ OCR track <small class="muted">MPS ' + fmtDate(bank.source) + ", projections finalised " + fmtDate(bank.finalised) + '</small></h3>' +
-        '<div class="cb-sub">' + esc(bank.note) + '</div><div class="cb-sub"><b>GAP ' + NA + "</b>: " + esc(g.na || "n/a") + '</div><div class="cb-scroll"><table class="cb-table cb-mini cb-ocr"><thead><tr><th>Year</th><th>Q1 %</th><th>Q2 %</th><th>Q3 %</th><th>Q4 %</th></tr></thead><tbody>' + q + "</tbody></table></div></section>";
+      return { title: "Market vs bank projections", sub: "RBNZ OCR track" + DOT + "MPS " + fmtDay(bank.source),
+               html: '<ul class="cb-pj">' + rows + '</ul><div class="cb-sub">' + esc((bank.note || "").replace(/([^.])\s*$/, "$1.")) + (bank.finalised ? " Projections finalised " + fmtDate(bank.finalised) + "." : "") +
+                     (g.na ? " Market vs bank: " + esc(shortNa(g.na)) + "." : "") + "</div>" };
     }
-    return '<section class="cb-card cb-gap"><h3>GAP</h3><div class="cb-sub">' + NA + " " + esc(g.na || "n/a") + "</div></section>";
+    return null;
   }
-  function decisionSummaries(rows) {                              // one collapsible summary per decision that has one; else the pending marker (reason in the tooltip)
-    const ready = rows.filter(function (x) { return x.summary && x.summary.status === "ready" && SUMMARIES[x.summary.doc_id]; });
-    if (!ready.length) return summarySlot(rows[0] && rows[0].summary);
-    return '<div class="cb-sum-list">' + ready.map(function (x) { return summaryDetails(x.summary, fmtDate(x.date) + " · statement summary"); }).join("") + "</div>";
+
+  // speeches: the last 5 about monetary policy; everything else (older monetary ones, "other") under "Show all (N)"
+  function speechSplit(speeches) {
+    const all = (speeches || []).slice().sort(function (a, b) { return String(b.published).localeCompare(String(a.published)); });
+    const top = all.filter(function (x) { return x.relevance === "monetary"; }).slice(0, 5);
+    return { top: top, rest: all.filter(function (x) { return top.indexOf(x) < 0; }) };
   }
-  function decisionsCard(d) {
-    const rows = d.decisions.map(function (x) {
-      const cons = isNum(x.surprise_consensus_bp) ? { v: x.surprise_consensus_bp, flag: null, na: "" } : { v: null, na: "no consensus on record" };
-      return "<tr><td>" + fmtDate(x.date) + "</td>" + '<td class="econ-cell cb-num"' + tint(x.delta_bp, 25) + ">" + fmtSigned(x.delta_bp, 0) + "</td>" +
-        '<td class="cb-n">' + (x.lower !== null && x.lower !== undefined ? fmtRate(x.lower) + EN + fmtRate(x.upper) : fmtRateAuto(x.rate_after)) + "</td><td>" + fmtDate(x.effective) + "</td>" +
-        '<td class="cb-n">' + (isNum(x.consensus) ? fmtRateAuto(x.consensus) : NA) + "</td>" + numCell(cons, { scale: 10, dp: 1, noBadge: true }) +
-        numCell(x.vs_market, { scale: 10, dp: 1, tip: isNum(x.vs_market.implied_step_bp) ? "Step implied at T-1: " + fmtSigned(x.vs_market.implied_step_bp, 1) + " bp" : "" }) +
-        numCell(x.reaction.next, { scale: 10, dp: 1, tip: x.reaction.next.target ? "Level implied for the " + fmtDate(x.reaction.next.target) + " meeting, T minus T-1" : "" }) +
-        numCell(x.reaction.year, { scale: 10, dp: 1, tip: x.reaction.year.target ? "Level implied for the " + fmtDate(x.reaction.year.target) + " meeting, T minus T-1" : "" }) +
-        '<td class="cb-slot">' + voteChip(x.slots.votes) + '</td><td class="cb-slot">' + (x.slots.statement ? docAnchor(x.slots.statement, "text") : '<span class="cb-na" title="statement not collected">' + NA + "</span>") + "</td>" +
-        '<td class="cb-slot">' + confLinks(x.slots.conference) + "</td></tr>";
+  function speechRow(x) {
+    const chip = x.chair ? ' <span class="econ-flag cb-chip-chair" title="Chair / head of the decision body">chair</span>' : x.voter ? ' <span class="econ-flag cb-chip-voter" title="Votes at the meetings this year">voter</span>' : "";
+    return '<li class="cb-sp-row' + (x.relevance === "other" ? " cb-dim" : "") + '"><span class="cb-sp-date">' + fmtDay(x.published) + '</span><span class="cb-sp-who">' + esc(x.speaker || NA) + chip + "</span>" +
+      '<a class="cb-sp-title" href="' + esc(x.url) + '" target="_blank" rel="noopener"' + (x.relevance === "other" ? ' title="not about monetary policy / the outlook"' : "") + ">" + esc(x.title) + "</a>" +
+      summaryDetails(x.summary, "Summary") + "</li>";
+  }
+  function speechesBlock(d) {
+    const doc = d.documents;
+    if (!doc) return null;
+    const s = speechSplit(doc.speeches);
+    const top = s.top.length ? '<ul class="cb-sp">' + s.top.map(speechRow).join("") + "</ul>" : '<div class="cb-sub">' + NA + " no speech about monetary policy in the last 60 days.</div>";
+    const rest = s.rest.length ? '<details class="cb-x cb-sp-all"><summary>Show all (' + s.rest.length + ')</summary><ul class="cb-sp">' + s.rest.map(speechRow).join("") + "</ul></details>" : "";
+    return { title: "Recent speeches", sub: s.top.length + " about monetary policy" + DOT + doc.n_speeches + " in the last 60 days", html: top + rest };
+  }
+
+  // the last 4 decisions: Date · Move · Rate after · Vote · vs market (bp) · Links; the summaries of a decision in one expander under its row
+  const HISTORY_COLS = ["Date", "Move", "Rate after", "Vote", "vs market (bp)", "Links"];
+  function decisionHistoryRows(d) {
+    return d.decisions.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); }).slice(0, 4).map(function (x) {
+      const t = timelineFor(d, x.date);
+      const sums = [];
+      const add = function (slot, label) { if (slot && slot.status === "ready" && SUMMARIES[slot.doc_id]) sums.push({ slot: slot, label: label }); };
+      if (t && t.statement) add(t.statement.summary, "Statement");
+      ((t && t.follow_up) || []).forEach(function (i) { add(i.summary, i.label); });
+      return { date: x.date, move: x.delta_bp, rate: rateAfterText(x), vote: x.slots && x.slots.votes, vs: x.vs_market,
+               links: decisionLinks((t && t.statement) || (x.slots && x.slots.statement), t && t.follow_up, x.slots && x.slots.conference), sums: sums };
+    });
+  }
+  function decisionHistoryBlock(d) {
+    const rows = decisionHistoryRows(d).map(function (r) {
+      const vs = r.vs && isNum(r.vs.v) ? txtTd(r.vs.v, esc(fmtSigned(r.vs.v, 1)) + flagBadge(r.vs.flag), isNum(r.vs.implied_step_bp) ? "Decided step minus the step implied at T-1 (" + fmtSigned(r.vs.implied_step_bp, 1) + " bp)" : "Decided step minus the step implied at T-1")
+        : naTd(r.vs && r.vs.na);
+      return '<tr><td class="cb-date">' + fmtDate(r.date) + "</td>" + txtTd(r.move, esc(fmtSigned(r.move, 0))) + '<td class="cb-n">' + esc(r.rate) + "</td><td>" + voteChip(r.vote) + "</td>" + vs +
+        '<td class="cb-links-td">' + (r.links.join(DOT) || NA) + "</td></tr>" +
+        (r.sums.length ? '<tr class="cb-sumrow"><td colspan="' + HISTORY_COLS.length + '"><details class="cb-x"><summary>Summaries (' + r.sums.map(function (s) { return s.label; }).join(", ") + ")</summary>" +
+          r.sums.map(function (s) { return '<div class="cb-sum-titled"><div class="cb-kicker">' + esc(s.label) + "</div>" + summaryBlock(SUMMARIES[s.slot.doc_id]) + "</div>"; }).join("") + "</details></td></tr>" : "");
     }).join("");
-    return '<section class="cb-card"><h3>Last decisions</h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Date</th><th>Δ bp</th><th>Rate after %</th><th>Effective</th><th>Consensus %</th>' +
-      '<th title="Decided rate minus consensus, bp">vs consensus</th><th title="Decided step minus the step implied at T-1, bp (EXACT / CURVE / PROXY with a basis only)">vs market T-1</th>' +
-      '<th title="Change of the implied level at the next meeting, T minus T-1, bp">React. next</th><th title="Change of the implied level at the last meeting of the year, bp">React. year-end</th>' +
-      '<th title="Votes for / against; hover for the names and the direction of each dissent">Votes</th><th title="The bank\u2019s own statement">Statement</th><th title="Official video / transcript / introductory statement of the press conference">Press conf.</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
-      decisionSummaries(d.decisions) + "</section>";
+    const head = HISTORY_COLS.map(function (h) {
+      return h === "vs market (bp)" ? '<th class="cb-n" title="Decided step minus the step implied at T-1, bp (EXACT / CURVE / PROXY with a basis only)">' + h + "</th>" : "<th" + (h === "Move" || h === "Rate after" ? ' class="cb-n"' : "") + ">" + h + "</th>";
+    }).join("");
+    return { title: "Decision history", sub: "last " + Math.min(4, d.decisions.length) + " decisions",
+             html: '<div class="cb-scroll"><table class="cb-table cb-rp cb-dhist"><thead><tr>' + head + "</tr></thead><tbody>" + (rows || '<tr><td colspan="6" class="muted">no decision on record</td></tr>') + "</tbody></table></div>" };
   }
-  function calendarCard(d) {
+  function bankCard(b, cls) { return b ? '<section class="cb-card cb-bblock' + (cls ? " " + cls : "") + '"><h3>' + esc(b.title) + (b.sub ? ' <small class="muted">' + b.sub + "</small>" : "") + "</h3>" + b.html + "</section>" : ""; }
+
+  // ---- zone 3: reference (closed): methodology + the sources / licences table + the full calendar ---------------------------------
+  function sourcesTable(d) {
+    const rows = d.sources.map(function (s) {
+      return "<tr" + (s.stale ? ' class="cb-stale"' : "") + "><td>" + esc(s.id) + "</td><td>" + esc(s.role || "") + "</td><td>" + esc((s.methods || []).join(", ")) + "</td><td>" + (s.asof ? fmtDate(s.asof) + (isNum(s.lag_bd) ? " (" + s.lag_bd + " bd)" : "") : NA) +
+        staleBadge(s.stale, "older than " + d.meta.stale_after_bd + " business days") + '</td><td class="cb-notes">' + esc(s.license || "") + (s.proxy ? " Proxy source." : "") + "</td></tr>";
+    }).join("");
+    return "<h4>Sources and licences</h4>" + '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Source</th><th>Role</th><th>Method</th><th>As-of</th><th>License / attribution</th></tr></thead><tbody>' +
+      (rows || '<tr><td colspan="5" class="muted">no market source for this currency</td></tr>') + "</tbody></table></div>" +
+      "<p>Official series: " + esc(d.summary.rate.decision_status === "official" ? "decision confirmed by an official series" : "decision status: " + (d.summary.rate.decision_status || "n/a")) + ". Decisions, meeting calendars and Fed projections come from the banks' own pages.</p>";
+  }
+  function calendarTable(d) {
     const rows = d.calendar.map(function (m) {
       const b = m.blackout;
       const bo = b ? fmtDay(b.start.slice(0, 10)) + " → " + fmtDay(b.end.slice(0, 10)) + (b.precision === "approximate" || !b.verified ? ' <span class="econ-flag flag-nc" title="' + esc(b.note || "rule not confirmed on the official page") + '">approx.</span>' : "") : '<span class="cb-na" title="no published quiet-period rule found">' + NA + "</span>";
@@ -1078,8 +1178,11 @@
         "<td>" + (m.has_projections ? esc(m.projections_name || "yes") : NA) + "</td><td>" + (m.has_presser ? esc(m.conference_local ? m.conference_local + " " + m.time.abbr : "yes") : NA) + "</td><td>" + bo + "</td>" +
         '<td class="cb-notes">' + (m.source === "official" ? "official" : '<span title="date not read from an official page">' + esc(m.source || "n/a") + "</span>") + "</td></tr>";
     }).join("");
-    return '<section class="cb-card"><h3>Calendar and blackout</h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Decision</th><th>First day</th><th>Effective</th><th>Time</th><th>Projections</th><th>Conference</th><th>Blackout</th><th>Date source</th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="8" class="muted">no upcoming meetings on record</td></tr>') + "</tbody></table></div></section>";
+    return "<h4>Calendar and blackout</h4>" + '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Decision</th><th>First day</th><th>Effective</th><th>Time</th><th>Projections</th><th>Conference</th><th>Blackout</th><th>Date source</th></tr></thead><tbody>' +
+      (rows || '<tr><td colspan="8" class="muted">no upcoming meetings on record</td></tr>') + "</tbody></table></div>";
+  }
+  function referencePanel(d) {
+    return methodPanel(d).replace(/<\/details>$/, "") + sourcesTable(d) + calendarTable(d) + "</details>";
   }
   // Phase 4: how long after each decision the collector had the statement (labels and numbers all come from the payload).
   function utcStamp(iso) { const p = parts(iso.slice(0, 10)); return p.d + " " + MONTHS[p.m - 1] + " " + iso.slice(11, 16); }
@@ -1106,18 +1209,6 @@
     const notes = d.notes.length ? "<h4>Notes</h4><ul>" + d.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
     return '<details class="cb-card cb-method" id="cbMethod"><summary>How is this calculated?</summary><dl>' + items + "</dl>" + sp + notes + cc + ck + latencyBlock(d.latency) + "</details>";
   }
-  function footerCard(d) {
-    const rows = d.sources.map(function (s) {
-      return "<tr" + (s.stale ? ' class="cb-stale"' : "") + "><td>" + esc(s.id) + '</td><td>' + esc(s.role || "") + "</td><td>" + esc((s.methods || []).join(", ")) + "</td><td>" + (s.asof ? fmtDate(s.asof) + (isNum(s.lag_bd) ? " (" + s.lag_bd + " bd)" : "") : NA) +
-        staleBadge(s.stale, "older than " + d.meta.stale_after_bd + " business days") + '</td><td class="cb-notes">' + esc(s.license || "") + (s.proxy ? " Proxy source." : "") + "</td></tr>";
-    }).join("");
-    const official = '<div class="cb-sub">Official series: ' + esc(d.summary.rate.decision_status === "official" ? "decision confirmed by an official series" : "decision status: " + (d.summary.rate.decision_status || "n/a")) + ". Decisions, meeting calendars and Fed projections come from the banks' own pages.</div>";
-    return '<section class="cb-card cb-foot"><h3>Sources</h3><div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Source</th><th>Role</th><th>Method</th><th>As-of</th><th>License / attribution</th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="5" class="muted">no market source for this currency</td></tr>') + "</tbody></table></div>" + official +
-      '<div class="cb-sub"><a href="#cbMethod" data-open-method>How is this calculated?</a></div></section>';
-  }
-
-
   // ---- official texts (phase 2a) -------------------------------------------------------------------------------------------
   function docAnchor(it, label) {
     if (!it || !it.url) return '<span class="cb-na" title="' + esc((it && it.na) || "n/a") + '">' + NA + "</span>";
@@ -1166,7 +1257,7 @@
   document.addEventListener("keydown", function (e) {
     if ((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("cb-sum-text")) { e.preventDefault(); e.target.click(); }
   });
-  function summaryBlock(s) {
+  function summaryBlock(s, compact) {                               // compact (Latest decision): the points and the footer only; the changes / quotes stay in their own blocks
     const pts = '<ul class="cb-sum-points">' + s.points.map(function (p, i) { return pointHtml(p, s.evidence && s.evidence[i]); }).join("") + "</ul>";
     const qs = '<div class="cb-sum-quotes">' + s.quotes.map(function (q) {
       return "<blockquote>\u201c" + esc(q.text) + "\u201d " + '<a href="' + esc(q.href) + '" target="_blank" rel="noopener" title="Opens the bank\u2019s own page and highlights the passage">source \u00b6' + q.paragraph + " \u2197</a></blockquote>";
@@ -1174,10 +1265,11 @@
     const foot = '<div class="cb-sum-foot">' + esc(s.note.charAt(0).toUpperCase() + s.note.slice(1)) + " · " + (s.provider ? esc(s.provider) + " " : "") + esc(s.model) + " · " + esc(s.prompt_version) + " · generated " + fmtDate(s.generated) +
       (s.truncated ? " · covers the first part of a long document only" : "") + "</div>";
     const dropped = s.dropped && s.dropped.length ? '<div class="cb-sum-dropped" title="' + esc(s.dropped.map(function (d) { return "\u201c" + d.text + "\u201d: " + d.reason; }).join("\n")) + '">' + s.dropped.length + (s.dropped.length === 1 ? " point" : " points") + " removed by verification</div>" : "";
+    if (compact) return '<div class="cb-summary">' + pts + dropped + foot + "</div>";
     return '<div class="cb-summary">' + pts + dropped + (s.changes ? changesBlock(s.changes) : "") + qs + foot + "</div>";
   }
-  function summarySlot(slot) {                                      // the summary when ready; otherwise the pending marker, the reason in its tooltip
-    if (slot && slot.status === "ready" && SUMMARIES[slot.doc_id]) return summaryBlock(SUMMARIES[slot.doc_id]);
+  function summarySlot(slot, compact) {                             // the summary when ready; otherwise the pending marker, the reason in its tooltip
+    if (slot && slot.status === "ready" && SUMMARIES[slot.doc_id]) return summaryBlock(SUMMARIES[slot.doc_id], compact);
     return '<div class="cb-summary-slot" title="' + esc((slot && slot.reason) || "not generated yet") + '">' + esc((slot && slot.label) || "summary pending") + "</div>";
   }
   function summaryDetails(slot, label) {                            // a collapsible summary under a document link; nothing when there is none
@@ -1197,62 +1289,6 @@
       return "<p>" + x.ops.map(function (o) { return o[0] === "+" ? "<ins>" + esc(o[1]) + "</ins>" : o[0] === "-" ? "<del>" + esc(o[1]) + "</del>" : esc(o[1]); }).join("") + "</p>";
     }).join("");
   }
-  function votesBlock(v) {
-    if (!v) return '<div class="cb-sub">Votes: not collected yet.</div>';
-    const against = (v.against || []).map(function (a) {
-      return '<li><b>' + esc(a.name || "member(s)") + '</b> <span class="econ-flag cb-dir cb-dir-' + esc(a.direction) + '">' + esc(a.direction === "hold" ? "wanted no change" : a.direction === "raise" ? "wanted higher" : "wanted lower") + "</span>" + (a.note ? '<div class="cb-sub">' + esc(a.note) + "</div>" : "") + "</li>";
-    }).join("");
-    return '<div class="cb-votes-block"><div class="cb-kicker">Votes</div><div class="cb-bigrate">' + voteChip(v) + '</div>' +
-      (v.kind === "not_published" || v.kind === "consensus" ? '<div class="cb-sub">' + esc(v.evidence || "") + "</div>" : "") +
-      (v.for && v.for.length ? '<div class="cb-sub"><b>For:</b> ' + esc(v.for.join(", ")) + "</div>" : "") + (against ? '<ul class="cb-against">' + against + "</ul>" : "") +
-      '<div class="cb-sub">Source: ' + esc(v.source) + (v.notes ? " · " + esc(v.notes) : "") + "</div></div>";
-  }
-  function linksBlock(items) {
-    return '<div class="cb-links">' + (items || []).map(function (it) {
-      return '<div class="cb-linkitem"><span class="cb-kicker">' + esc(it.label) + "</span>" + (it.url ? docAnchor(it, it.published ? fmtDate(it.published) : "open") : '<span class="cb-na" title="' + esc(it.na || "n/a") + '">' + esc(it.expected ? "expected " + fmtDate(it.expected) : NA) + "</span>") + summaryDetails(it.summary, "Summary") + "</div>";
-    }).join("") + "</div>";
-  }
-  function latestDecisionCard(d, dayMode) {
-    const doc = d.documents, L = doc && doc.latest;
-    if (!L) return "";
-    const st = L.statement;
-    const body = st
-      ? '<details class="cb-stmt"' + (dayMode ? " open" : "") + "><summary>Statement text · " + fmtDate(L.meeting) + " (" + st.paragraphs.length + " paragraphs, " + esc(st.format) + ")</summary>" +
-        (L.redline ? '<label class="cb-rl-toggle"><input type="checkbox" id="cbRlToggle"> Show changes vs the statement of ' + fmtDate(L.redline.prev_meeting) + ' <span class="cb-sub">(+' + L.redline.added_words + " / −" + L.redline.removed_words + " words, similarity " + (L.redline.similarity * 100).toFixed(0) + "%)</span></label>" : "") +
-        '<div class="cb-stmt-body" id="cbStmtBody">' + st.paragraphs.map(paraHtml).join("") + '</div><div class="cb-sub">Source: <a href="' + esc(st.url) + '" target="_blank" rel="noopener">' + esc(st.url) + "</a>" + (st.rate_after !== null ? " · rate in the text: " + fmtRateAuto(st.rate_after) + "%" : "") + "<br>" + esc(st.license || "") + "</div></details>"
-      : '<div class="cb-sub">' + esc(L.na || "n/a") + "</div>";
-    return '<section class="cb-card cb-latest' + (dayMode ? " cb-daycard" : "") + '" id="cbLatest">' + (dayMode ? '<div class="cb-daytag">Decision day</div>' : "") + "<h3>Latest decision · " + fmtDate(L.meeting) + "</h3>" +
-      '<div class="cb-grid">' + '<div>' + votesBlock(L.votes) + "</div><div>" + '<div class="cb-kicker">Documents</div>' + linksBlock(L.follow_up) + "</div></div>" + body +
-      summarySlot(L.summary) + "</section>";
-  }
-  function wireRedline(d) {
-    const box = document.getElementById("cbRlToggle");
-    if (!box) return;
-    const L = d.documents.latest;
-    box.addEventListener("change", function () {
-      document.getElementById("cbStmtBody").innerHTML = box.checked ? redlineParas(L.statement, L.redline) : L.statement.paragraphs.map(paraHtml).join("");
-    });
-  }
-  function documentsCard(d) {
-    const doc = d.documents;
-    if (!doc) return "";
-    const rows = doc.timeline.map(function (t) {
-      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0; }).map(function (i) { return i.url ? docAnchor(i, i.label) + summaryDetails(i.summary, "summary") : '<span class="cb-na" title="' + esc(i.na || "n/a") + '">' + esc(i.label) + " " + NA + "</span>"; }).join("<br>") || NA; };
-      return "<tr><td>" + fmtDate(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") + summaryDetails(t.statement.summary, "summary") : '<span class="cb-na">' + NA + "</span>") + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) +
-        "</td><td>" + fu(["presser_video", "presser_transcript", "opening_statement"]) + "</td><td>" + voteChip(t.votes) + "</td></tr>";
-    }).join("");
-    const sp = doc.speeches.slice(0, 12).map(function (x) {
-      return '<tr class="' + (x.relevance === "other" ? "cb-dim" : "") + '"><td>' + fmtDate(x.published) + "</td><td>" + esc(x.speaker || NA) + (x.role ? '<div class="cb-prob">' + esc(x.role) + "</div>" : "") +
-        (x.chair ? ' <span class="econ-flag cb-chip-chair" title="Chair / head of the decision body">chair</span>' : x.voter ? ' <span class="econ-flag cb-chip-voter" title="Votes at the meetings this year">voter</span>' : "") + "</td>" +
-        '<td class="cb-notes"><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></td><td>" + esc(x.type) + '</td><td title="' + esc(x.relevance === "other" ? "kept but marked: not about monetary policy / the outlook" : "monetary policy / inflation / outlook") + '">' + esc(x.relevance || NA) + (x.via === "bis" ? ' <span class="cb-prob" title="from the BIS feed (backfill): posting date, not the speech date">BIS</span>' : "") + "</td></tr>" +
-        (x.summary && x.summary.status === "ready" && SUMMARIES[x.summary.doc_id] ? '<tr class="cb-sumrow"><td colspan="5">' + summaryDetails(x.summary, "Summary of this " + x.type) + "</td></tr>" : "");
-    }).join("");
-    return '<section class="cb-card"><h3>Documents <small class="muted">last four meetings and recent speeches</small></h3>' + (doc.manual_only ? '<div class="cb-sub">RBNZ: the site is behind a Cloudflare challenge; texts only from the manual file (data/cb/manual/documents.yaml).</div>' : "") +
-      '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Meeting</th><th>Statement</th><th>Minutes / account / summary</th><th>Press conference</th><th>Votes</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
-      '<h3 class="cb-h3-gap">Speeches and testimony <small class="muted">' + doc.n_speeches + " in the last 60 days; a dimmed row is not about monetary policy</small></h3>" +
-      (sp ? '<div class="cb-scroll"><table class="cb-table cb-mini"><thead><tr><th>Date</th><th>Speaker</th><th>Title</th><th>Type</th><th>Relevance</th></tr></thead><tbody>' + sp + "</tbody></table></div>" : '<div class="cb-sub">' + NA + " no speeches collected in the last 60 days.</div>") + "</section>";
-  }
-
   function renderBank(d) {
     if (!d.path) { root.innerHTML = PENDING; return; }
     destroyCharts();
@@ -1273,9 +1309,11 @@
       tick();
       return;
     }
-    root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + latestDecisionCard(d, true) : "") + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path) +
-      gapCard(d) + (dayMode ? "" : latestDecisionCard(d, false)) + decisionsCard(d) + documentsCard(d) + calendarCard(d) + footerCard(d) + methodPanel(d);
-    wireRedline(d);
+    const latest = latestDecisionBlock(d);
+    const dayLatest = dayMode && latest ? '<section class="cb-card cb-bblock cb-daycard"><div class="cb-daytag">Decision day</div><h3>' + esc(latest.title) + "</h3>" + latest.html + "</section>" : "";
+    root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + dayLatest : "") + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path, d.calendar) +
+      '<h2 class="cb-zone">The bank</h2>' + (dayMode ? "" : bankCard(latest)) + bankCard(projectionsBlock(d)) + bankCard(speechesBlock(d)) + bankCard(decisionHistoryBlock(d)) +
+      referencePanel(d);
     wirePathChart(d.path);
     if (!themeWatched) { themeWatched = true; watchTheme(); }
     paintSwatches();
@@ -1300,68 +1338,10 @@
       "</tr></thead><tbody>" + (rows.join("") || '<tr><td colspan="' + head.length + '" class="muted">' + esc(empty || "n/a") + "</td></tr>") + "</tbody></table></div>";
   }
   function renderBankPhone(d, dayMode) {
-    const doc = d.documents, L = doc && doc.latest;
-    const g = d.gap;
-    let gapTitle = "GAP", gapSub = "", gapBody;
-    if (g.kind === "dots") {
-      gapTitle = "Gap vs the FOMC dots";
-      gapSub = Object.keys(g.years).map(function (y) { return y + " " + (isNum(g.years[y].v) ? fmtSigned(g.years[y].v, 1) + " bp" : NA); }).join(DOT);
-      gapBody = miniTable(["Year", "Dots %", "Market %", "GAP bp"], Object.keys(g.years).map(function (y) {
-        const m = g.years[y];
-        return "<tr><td>" + y + '</td><td class="cb-n">' + fmtRate(m.bank, 3) + '</td><td class="cb-n">' + fmtRate(m.market, 3) + '</td><td class="cb-n">' + (isNum(m.v) ? fmtSigned(m.v, 1) : NA) + "</td></tr>";
-      })) + '<div class="cb-sub">GAP = market minus bank, on the same basis. SEP of ' + fmtDate(g.sep) + ".</div>";
-    } else if (d.chart.bank.kind === "ocr_track") {
-      gapTitle = "Bank path: RBNZ OCR track";
-      gapSub = "GAP " + NA;
-      const byYear = {};
-      d.chart.bank.quarters.forEach(function (x) { const y = x.period.slice(0, 4); (byYear[y] = byYear[y] || {})[x.period.slice(-1)] = x.value; });
-      gapBody = miniTable(["Year", "Q1 / Q2 / Q3 / Q4 %"], Object.keys(byYear).sort().map(function (y) {
-        return "<tr><td>" + esc(y) + '</td><td class="cb-n">' + [1, 2, 3, 4].map(function (k) { return isNum(byYear[y][k]) ? fmtRate(byYear[y][k], 1) : NA; }).join(" / ") + "</td></tr>";
-      })) + '<div class="cb-sub">' + esc(d.chart.bank.note || "") + " GAP " + NA + ": " + esc(g.na || "n/a") + "</div>";
-    } else {
-      gapSub = NA;
-      gapBody = '<div class="cb-sub">' + NA + " " + esc(g.na || "n/a") + "</div>";
-    }
-    const latest = L ? (function () {
-      const bits = [];
-      const dec = d.decisions.find(function (x) { return x.date === L.meeting; });
-      if (dec) bits.push(fmtSigned(dec.delta_bp, 0) + " bp");
-      if (L.votes && L.votes.label) bits.push(esc(L.votes.label));
-      const have = [L.statement ? "statement" : ""].concat((L.follow_up || []).filter(function (i) { return i.url; }).map(function (i) {
-        return /minutes|account|summary|deliberations/.test(i.type) ? "minutes" : /presser|opening/.test(i.type) ? "press conference" : "";
-      })).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
-      if (have.length) bits.push(have.join(", "));
-      const html = latestDecisionCard(d, false).replace(/^<section[^>]*>/, "").replace(/<\/section>$/, "").replace(/<h3>[\s\S]*?<\/h3>/, "");
-      return acc("cbAccLatest", "Latest decision" + DOT + fmtDay(L.meeting), bits.join(DOT), html, dayMode);
-    })() : "";
-    const decRows = d.decisions.map(function (x) {
-      return "<tr><td>" + fmtDate(x.date) + '</td><td class="cb-n econ-cell cb-num"' + tint(x.delta_bp, 25) + ">" + fmtSigned(x.delta_bp, 0) + '</td><td class="cb-n">' +
-        (x.lower !== null && x.lower !== undefined ? fmtRate(x.lower) + EN + fmtRate(x.upper) : fmtRateAuto(x.rate_after)) + "</td></tr>";
-    });
-    const docRows = doc ? doc.timeline.map(function (t) {
-      const SHORT = { presser_video: "Video", presser_transcript: "Transcript", opening_statement: "Opening" };      // short labels: the column is ~80px
-      const fu = function (types) { return t.follow_up.filter(function (i) { return types.indexOf(i.type) >= 0 && i.url; }).map(function (i) { return docAnchor(i, SHORT[i.type] || i.label); }).join("<br>") || NA; };
-      return "<tr><td>" + fmtDay(t.meeting) + "</td><td>" + (t.statement ? docAnchor(t.statement, "Statement") : NA) + "</td><td>" + fu(["minutes", "account", "summary_of_opinions", "deliberations"]) + "</td><td>" + fu(["presser_video", "presser_transcript", "opening_statement"]) + "</td></tr>";
-    }) : [];
-    const spRows = doc ? doc.speeches.slice(0, 12).map(function (x) {
-      return '<tr class="' + (x.relevance === "other" ? "cb-dim" : "") + '"><td>' + fmtDay(x.published) + "</td><td>" + esc(x.speaker || NA) + '</td><td class="cb-notes"><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></td></tr>";
-    }) : [];
-    const calRows = d.calendar.map(function (m) {
-      const b = m.blackout;
-      return "<tr><td>" + weekday(m.decision) + " " + fmtDay(m.decision) + "</td><td>" + esc(timeText(m.time) || NA) + "</td><td>" + (b ? fmtDay(b.start.slice(0, 10)) + " → " + fmtDay(b.end.slice(0, 10)) : NA) + "</td></tr>";
-    });
-    const srcRows = d.sources.map(function (x) {
-      return "<tr" + (x.stale ? ' class="cb-stale"' : "") + "><td>" + esc(x.id) + "</td><td>" + esc(x.role || "") + '</td><td class="cb-n">' + (x.asof ? fmtDay(x.asof) : NA) + staleBadge(x.stale) + "</td></tr>";
-    });
-    root.innerHTML = bankBar(d.ccy) + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path) + '<div class="cb-accs">' +
-      acc("cbAccGap", gapTitle, gapSub, gapBody, false) +
-      latest +
-      acc("cbAccDecisions", "Last decisions", d.decisions.length + " on record", miniTable(["Date", "Δ bp", "Rate after %"], decRows), false) +
-      (doc ? acc("cbAccDocs", "Documents", "last four meetings", miniTable(["Meeting", "Statement", "Minutes", "Press"], docRows), false) +
-             acc("cbAccSpeeches", "Speeches and testimony", "last 60 days", miniTable(["Date", "Speaker", "Title"], spRows, "no speeches collected in the last 60 days"), false) : "") +
-      acc("cbAccCalendar", "Calendar and blackout", "", miniTable(["Decision", "Time", "Blackout"], calRows, "no upcoming meetings on record"), false) +
-      acc("cbAccSources", "Sources", "", miniTable(["Source", "Role", "As-of"], srcRows, "no market source for this currency"), false) +
-      acc("cbAccMethod", "How is this calculated?", "", methodPanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, "")
+    const blocks = [["cbAccLatest", latestDecisionBlock(d), true], ["cbAccProj", projectionsBlock(d), false], ["cbAccSpeeches", speechesBlock(d), false], ["cbAccDecisions", decisionHistoryBlock(d), false]];
+    root.innerHTML = bankBar(d.ccy) + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path, d.calendar) + '<h2 class="cb-zone">The bank</h2><div class="cb-accs">' +
+      blocks.filter(function (x) { return x[1]; }).map(function (x) { return acc(x[0], x[1].title, x[1].sub, x[1].html, x[2]); }).join("") +
+      acc("cbAccMethod", "How is this calculated?", "methodology, sources, calendar", referencePanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, "")
         .replace("<th>Official time (UTC)</th><th>First seen (UTC)</th>", "<th>Official, UTC</th><th>Seen, UTC</th>"), false) +
       "</div>";
     root.querySelectorAll(".cb-acc-head").forEach(function (b) {
@@ -1373,7 +1353,6 @@
     });
     wirePathChart(d.path);
     paintSwatches();
-    wireRedline(d);
   }
 
   // ---- pair page ------------------------------------------------------------------------------------------------------------

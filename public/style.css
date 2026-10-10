@@ -2787,3 +2787,36 @@ details.cb-htr[open] > summary { margin-bottom: 4px; }
   .cb-legend { display: grid; grid-template-columns: repeat(4, max-content); gap: 6px 16px; }
   .cb-lg-all { grid-column: 1 / -1; margin-left: 0; justify-self: start; }
 }
+
+/* ---- bank page v3: zone 2 "The bank" (compact blocks), the reference panel ---- */
+.cb-zone { margin: 28px 0 10px; font-size: 18px; font-weight: 700; }
+.cb-bblock h3 small { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.cb-ld-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 14px; margin: 2px 0 10px; }
+.cb-ld-move { font-weight: 600; font-variant-numeric: tabular-nums; }
+.cb-ld-links { font-size: 13px; color: var(--muted); }
+details.cb-x { margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px; }
+details.cb-x > summary { cursor: pointer; font-size: 13px; font-weight: 600; }
+details.cb-x .cb-stmt-body { margin-top: 6px; }
+ul.cb-pj { list-style: none; margin: 0; padding: 0; }
+.cb-pj-row { padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; font-variant-numeric: tabular-nums; cursor: help; }
+.cb-pj-row:last-child { border-bottom: 0; }
+ul.cb-sp { list-style: none; margin: 0; padding: 0; }
+.cb-sp-row { display: grid; grid-template-columns: 56px minmax(140px, 220px) minmax(0, 1fr); column-gap: 14px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.cb-sp-row:last-child { border-bottom: 0; }
+.cb-sp-row > details { grid-column: 3; }
+.cb-sp-row.cb-dim { opacity: 0.65; }
+.cb-sp-date { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cb-sp-who { font-weight: 600; }
+.cb-sp-title { color: var(--fg); }
+table.cb-dhist td.cb-links-td { white-space: normal; font-size: 13px; }
+table.cb-dhist tr.cb-sumrow td { padding-top: 0; }
+table.cb-dhist tr.cb-sumrow details.cb-x { border-top: 0; margin-top: 0; padding-top: 0; }
+.cb-sum-titled { margin-top: 8px; }
+.cb-proj { margin-left: 4px; cursor: help; }
+.cb-mdate { cursor: help; border-bottom: 1px dotted var(--muted); }
+@media (max-width: 600px) {
+  .cb-zone { margin: 20px 0 8px; font-size: 16px; }
+  .cb-sp-row { grid-template-columns: 1fr; row-gap: 2px; }
+  .cb-sp-row > details { grid-column: 1; }
+  .cb-ld-row { font-size: 13px; }
+}

@@ -11,7 +11,7 @@ function cut(from, to) {
 const ctx = { document: { addEventListener: () => {} }, DOT: " - ", EN: "-", fmtSigned: (v) => String(v) };
 vm.createContext(ctx);
 vm.runInContext(`const NA = "n/a", MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; function isNum(v) { return typeof v === "number" && isFinite(v); }` +
-  cut("  function esc(s) {", "  function fmtDate") + cut("  function parts(", "  function fmtDay") + cut("  function fmtDate", "  function fmtRange") + cut("  function utcStamp(", "  function footerCard"), ctx);
+  cut("  function esc(s) {", "  function fmtDate") + cut("  function parts(", "  function fmtDay") + cut("  function fmtDate", "  function fmtRange") + cut("  function utcStamp(", "  // ---- official texts (phase 2a)"), ctx);
 const block = vm.runInContext("latencyBlock", ctx);
 const l = { title: "Time from decision to site", text: "First seen = when the collector stored it.",
             summary: { target_minutes: 15, n: 2, within: 1, median_minutes: 9.5, max_minutes: 21, measure_from: "2026-09-22" },

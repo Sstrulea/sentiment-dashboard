@@ -928,6 +928,8 @@ băncile pe același grafic, apoi, pe pagina fiecărei bănci, tabelul pe ședin
 
 ### Pagina băncii `/central-banks/<ccy>`
 
+> Structura de sub tabelul „By meeting” e înlocuită în §22 (pagina băncii v3).
+
 - Header: rata, overnight-ul (nume, valoare, data), as-of. Trei carduri: **Next meeting** (dată, oră, countdown, mișcarea prețuită, bara cu 2 segmente
   pentru probabilități, blackout), **12 months** („+74 bp · 2.97 hikes”), **Repricing** (Δ 12 luni față de 1w și 3w sau „history starts …”).
 - Graficul: X = datele deciziilor din 12 luni (axă de timp), Y = rata implicită %; **Now** linie plină cu arie până la rata curentă, **1w ago** întreruptă,
@@ -1055,3 +1057,39 @@ de hover deschis acolo unde există).
 - Textul de sub grafic (Compare, pereche) e într-un „ⓘ How to read” închis pe desktop; pe telefon rămâne fold-ul `PhoneUI` (`[data-htr]`).
 - Test: `tests/cb_js/test_chart_legend.cjs` (toggle → banca lipsește din card, „Show all”, hover-ul nu schimbă starea; `drawCompareChart` pe un Chart fals).
   Capturi: `compare-dark-1440.png`, `compare-light-1440.png`, `compare-dark-390.png` refăcute, `compare-hidden-dark-1440.png` (GBP și NZD ascunse).
+
+## 22. Pagina băncii v3 — trei zone (audit UI/UX)
+
+Doar UI (`static/cb.js`, `static/style.css`); payload-ul nu se schimbă. Ordinea, de sus în jos:
+
+**Zona 1 — piața** (neschimbată): header, cele 3 carduri (Next meeting, 12 months, Repricing), graficul, „By meeting”.
+- Cardul „Policy rate” nu mai repetă „Market data …” (e în header).
+- „By meeting”: la ședințele cu proiecții (`calendar[].has_projections`) o etichetă scurtă lângă dată (`projLabel`: SEP, MPR, SMP, MPS, Outlook,
+  Projections, Forecast), cu numele complet în tooltip; data are tooltip-ul ședinței (`meetingInfo`): ora deciziei, data efectivă, conferința, blackout-ul,
+  proiecțiile.
+
+**Zona 2 — „The bank”** (blocuri compacte, fiecare `{title, sub, html}`: card pe desktop, acordeon pe telefon):
+1. **Latest decision** (`latestDecisionBlock`): un rând — data, mișcarea („+25 bp to 3.75–4.00%” / „Hold at 2.50%”), chip-ul votului (tooltip-ul cu
+   numele și disidențele), linkurile (statement, minutes / account / summary of opinions / deliberations, video, transcript); sub el punctele rezumatului
+   factual (compact: fără citate și fără blocul lui de schimbări); expanderele închise „Changes vs <data>” (redline-ul) și „Full statement”. RBNZ: nota
+   scurtă despre fișierul manual (o dată).
+2. **Market vs bank projections** (`projectionsBlock`): doar Fed (dots) și RBNZ (OCR track), altfel blocul lipsește. Fed: un rând pe an „2027 · dots
+   4.125% · market 4.679% [CURVE] · +55 bp (market above the Fed)”, distribuția dot-urilor în tooltip. RBNZ: un rând pe an Q1…Q4 + nota.
+3. **Recent speeches** (`speechSplit`, `speechesBlock`): ultimele 5 cu `relevance = monetary`; dată · vorbitor (chip chair / voter) · titlu (link) ·
+   rezumat în expander; restul (monetary mai vechi + „other”) într-un „Show all (N)” închis.
+4. **Decision history** (`decisionHistoryRows`, `decisionHistoryBlock`): ultimele 4 decizii — Date · Move · Rate after · Vote · vs market (bp) (= „vs
+   market T-1”, cu tooltip-ul lui) · Links; rezumatele existente ale deciziei (statement, minutes, transcript) într-un singur expander sub rândul ei.
+   Scoase: Effective, Consensus, vs consensus, React. next, React. year-end (rămân în JSON).
+
+**Zona 3 — referință** (închisă, `referencePanel`): „How is this calculated?” = metodologia existentă + tabelul de surse și licențe + calendarul complet
+(cu blackout).
+
+**Scos din pagină**: `documentsCard` (linkurile sunt în Latest decision și Decision history), `calendarCard` și `footerCard` ca blocuri separate, blocul
+„GAP — n/a”, `votesBlock`, `linksBlock`, comutatorul redline (`wireRedline`).
+
+**Ziua deciziei**: Next meeting și Latest decision urcă sus (Latest decision lipsește atunci din zona 2). **Telefon** (`renderBankPhone`): aceeași
+ordine; zona 2 = acordeoane (Latest decision deschis), zona 3 = acordeon închis.
+
+**Teste**: `tests/cb_js/test_bank_page_v3.cjs` (filtrul discursurilor, lipsa blocului de proiecții, coloanele Decision history, eticheta de proiecții și
+tooltip-ul datei, Latest decision); `test_latency_block.cjs` taie acum până la „official texts” (`footerCard` nu mai există). Capturi:
+`docs/design/cb-bank-v3/screenshots/` (USD dark / light 1440, EUR dark 1440 fără proiecții, NZD dark 1440 cu OCR track, USD dark 390).
