@@ -535,7 +535,25 @@ def bank_path_json(rep: BankReport) -> dict:
         out["years"] = [{"year": int(lbl), "median": num(v), "dots": [{"level": num(l), "count": n} for l, n in bp.dots.get(int(lbl), [])]} for lbl, v in bp.points]
     else:
         out["quarters"] = [{"period": lbl, "value": num(v, 2)} for lbl, v in bp.points]
+        out["vs_market"] = ocr_vs_market_json(rep)
     return out
+
+
+OCR_VS_MARKET_NOTE = "RBNZ: Q4 average of the published OCR track vs the market at year-end; the market side is an estimate (BKBM-OCR spread)."
+
+
+def ocr_vs_market_json(rep: BankReport) -> dict:
+    """RBNZ OCR track vs the market, the Fed rule: per year, the Q4 average of the published track against the policy-equivalent
+    rate in force after the last meeting of the year (`year_end`). Only years with both values. Pure and deterministic."""
+    q4 = {int(lbl[:4]): v for lbl, v in rep.bank_path.points if str(lbl).endswith("Q4") and v is not None}
+    years = []
+    for y in YEAR_ENDS:
+        ye = rep.year_ends.get(y)
+        if y not in q4 or ye is None or ye.rate is None:
+            continue
+        years.append({"year": y, "bank": num(q4[y], 2), "market": num(ye.rate), "gap_bp": num((ye.rate - q4[y]) * 100, 1), "flag": ye.flag,
+                      "est": ye.flag == "ESTIMATE", "meeting": iso(ye.meeting)})
+    return {"note": OCR_VS_MARKET_NOTE, "years": years}
 
 
 def chart_json(ctx: Context, rep: BankReport, asof: date) -> dict:

@@ -1064,20 +1064,21 @@
     else if (conf) Object.keys(conf).forEach(function (k) { if (conf[k] && conf[k].url) out.push(docAnchor(conf[k], PRESSER_LABEL[k] || "Press conference")); });
     return out;
   }
+  function votesPublished(v) { return !!v && v.kind !== "not_published"; }        // "consensus" (RBNZ) is shown; "not published" (ECB) is not
   function latestDecisionBlock(d) {
     const doc = d.documents, L = doc && doc.latest;
     if (!L) return null;
     const st = L.statement, dec = d.decisions.find(function (x) { return x.date === L.meeting; });
     const links = decisionLinks(st, L.follow_up, dec && dec.slots && dec.slots.conference);
     const row = '<div class="cb-ld-row"><b>' + fmtDate(L.meeting) + "</b>" + (dec ? '<span class="cb-ld-move' + tone(dec.delta_bp) + '">' + esc(moveText2(dec)) + "</span>" : "") +
-      voteChip(L.votes) + (links.length ? '<span class="cb-ld-links">' + links.join(DOT) + "</span>" : "") + "</div>";
+      (votesPublished(L.votes) ? voteChip(L.votes) : "") + (links.length ? '<span class="cb-ld-links">' + links.join(DOT) + "</span>" : "") + "</div>";
     const changes = st && L.redline ? '<details class="cb-x"><summary>Changes vs ' + fmtDate(L.redline.prev_meeting) + ' <span class="muted">(+' + L.redline.added_words + " / −" + L.redline.removed_words +
       " words)</span></summary>" + '<div class="cb-stmt-body">' + redlineParas(st, L.redline) + "</div></details>" : "";
     const full = st ? '<details class="cb-x"><summary>Full statement <span class="muted">(' + st.paragraphs.length + " paragraphs)</span></summary>" + '<div class="cb-stmt-body">' + st.paragraphs.map(paraHtml).join("") +
       '</div><div class="cb-sub">Source: <a href="' + esc(st.url) + '" target="_blank" rel="noopener">' + esc(st.url) + "</a>" + (st.rate_after !== null ? DOT + "rate in the text: " + fmtRateAuto(st.rate_after) + "%" : "") +
       (st.license ? "<br>" + esc(st.license) : "") + "</div></details>" : '<div class="cb-sub">' + esc(L.na || "statement not collected") + "</div>";
     const manual = doc.manual_only && !/manual/i.test((!st && L.na) || "") ? '<div class="cb-sub muted">RBNZ texts come from a manual file: the site is behind a Cloudflare challenge.</div>' : "";
-    return { title: "Latest decision", sub: fmtDay(L.meeting) + (dec ? DOT + esc(moveText2(dec)) : "") + (L.votes && L.votes.label ? DOT + esc(L.votes.label) : ""),
+    return { title: "Latest decision", sub: fmtDay(L.meeting) + (dec ? DOT + esc(moveText2(dec)) : "") + (votesPublished(L.votes) && L.votes.label ? DOT + esc(L.votes.label) : ""),
              html: row + summarySlot(L.summary, true) + changes + full + manual };
   }
 
@@ -1097,14 +1098,16 @@
                html: '<ul class="cb-pj">' + rows + '</ul><div class="cb-sub">Market minus the median dot at year end, same basis; hover a year for the distribution of the dots. 2028: no meeting calendar yet, the last meeting is assumed to be the 2nd Wednesday of December.</div>' };
     }
     if (bank.kind === "ocr_track") {
-      const byYear = {};
-      bank.quarters.forEach(function (x) { const y = x.period.slice(0, 4); (byYear[y] = byYear[y] || {})[x.period.slice(-1)] = x.value; });
-      const rows = Object.keys(byYear).sort().map(function (y) {
-        return '<li class="cb-pj-row"><b>' + esc(y) + "</b>" + DOT + [1, 2, 3, 4].map(function (k) { return "Q" + k + " " + (isNum(byYear[y][k]) ? fmtRate(byYear[y][k], 1) + "%" : NA); }).join(DOT) + "</li>";
+      const track = bank.quarters.map(function (x) { return x.period.slice(0, 4) + " Q" + x.period.slice(-1) + " " + (isNum(x.value) ? fmtRate(x.value, 1) + "%" : NA); }).join(", ");
+      const vm = bank.vs_market || { years: [], note: "" };
+      const rows = vm.years.map(function (r) {
+        const ap = r.est ? "≈ " : "";
+        return '<li class="cb-pj-row" title="' + esc("Published OCR track (quarterly averages): " + track) + '"><b>' + esc(String(r.year)) + "</b>" + DOT + "RBNZ Q4 " + fmtRate(r.bank, 1) + "%" + DOT +
+          "market " + ap + fmtRate(r.market, 2) + "%" + DOT + '<span class="' + tone(r.gap_bp).trim() + '">' + ap + fmtSigned(r.gap_bp, 0) + " bp</span> (" + gapLean(r.gap_bp, "RBNZ") + ")</li>";
       }).join("");
       return { title: "Market vs bank projections", sub: "RBNZ OCR track" + DOT + "MPS " + fmtDay(bank.source),
-               html: '<ul class="cb-pj">' + rows + '</ul><div class="cb-sub">' + esc((bank.note || "").replace(/([^.])\s*$/, "$1.")) + (bank.finalised ? " Projections finalised " + fmtDate(bank.finalised) + "." : "") +
-                     (g.na ? " Market vs bank: " + esc(shortNa(g.na)) + "." : "") + "</div>" };
+               html: (rows ? '<ul class="cb-pj">' + rows + "</ul>" : '<div class="cb-sub">' + NA + " no year with both the OCR track and a market level.</div>") +
+                     '<div class="cb-sub">' + esc(vm.note || "") + " Hover a year for the full track.</div>" };
     }
     return null;
   }
@@ -1143,20 +1146,22 @@
                links: decisionLinks((t && t.statement) || (x.slots && x.slots.statement), t && t.follow_up, x.slots && x.slots.conference), sums: sums };
     });
   }
+  function historyCols(rows) { return rows.length && rows.every(function (r) { return !votesPublished(r.vote); }) ? HISTORY_COLS.filter(function (c) { return c !== "Vote"; }) : HISTORY_COLS; }
   function decisionHistoryBlock(d) {
-    const rows = decisionHistoryRows(d).map(function (r) {
+    const all = decisionHistoryRows(d), cols = historyCols(all), withVote = cols.indexOf("Vote") >= 0;
+    const rows = all.map(function (r) {
       const vs = r.vs && isNum(r.vs.v) ? txtTd(r.vs.v, esc(fmtSigned(r.vs.v, 1)) + flagBadge(r.vs.flag), isNum(r.vs.implied_step_bp) ? "Decided step minus the step implied at T-1 (" + fmtSigned(r.vs.implied_step_bp, 1) + " bp)" : "Decided step minus the step implied at T-1")
         : naTd(r.vs && r.vs.na);
-      return '<tr><td class="cb-date">' + fmtDate(r.date) + "</td>" + txtTd(r.move, esc(fmtSigned(r.move, 0))) + '<td class="cb-n">' + esc(r.rate) + "</td><td>" + voteChip(r.vote) + "</td>" + vs +
+      return '<tr><td class="cb-date">' + fmtDate(r.date) + "</td>" + txtTd(r.move, esc(fmtSigned(r.move, 0))) + '<td class="cb-n">' + esc(r.rate) + "</td>" + (withVote ? "<td>" + (votesPublished(r.vote) ? voteChip(r.vote) : '<span class="muted" title="votes not published">' + NA + "</span>") + "</td>" : "") + vs +
         '<td class="cb-links-td">' + (r.links.join(DOT) || NA) + "</td></tr>" +
-        (r.sums.length ? '<tr class="cb-sumrow"><td colspan="' + HISTORY_COLS.length + '"><details class="cb-x"><summary>Summaries (' + r.sums.map(function (s) { return s.label; }).join(", ") + ")</summary>" +
+        (r.sums.length ? '<tr class="cb-sumrow"><td colspan="' + cols.length + '"><details class="cb-x"><summary>Summaries (' + r.sums.map(function (s) { return s.label; }).join(", ") + ")</summary>" +
           r.sums.map(function (s) { return '<div class="cb-sum-titled"><div class="cb-kicker">' + esc(s.label) + "</div>" + summaryBlock(SUMMARIES[s.slot.doc_id]) + "</div>"; }).join("") + "</details></td></tr>" : "");
     }).join("");
-    const head = HISTORY_COLS.map(function (h) {
+    const head = cols.map(function (h) {
       return h === "vs market (bp)" ? '<th class="cb-n" title="Decided step minus the step implied at T-1, bp (EXACT / CURVE / PROXY with a basis only)">' + h + "</th>" : "<th" + (h === "Move" || h === "Rate after" ? ' class="cb-n"' : "") + ">" + h + "</th>";
     }).join("");
     return { title: "Decision history", sub: "last " + Math.min(4, d.decisions.length) + " decisions",
-             html: '<div class="cb-scroll"><table class="cb-table cb-rp cb-dhist"><thead><tr>' + head + "</tr></thead><tbody>" + (rows || '<tr><td colspan="6" class="muted">no decision on record</td></tr>') + "</tbody></table></div>" };
+             html: '<div class="cb-scroll"><table class="cb-table cb-rp cb-dhist"><thead><tr>' + head + "</tr></thead><tbody>" + (rows || '<tr><td colspan="' + cols.length + '" class="muted">no decision on record</td></tr>') + "</tbody></table></div>" };
   }
   function bankCard(b, cls) { return b ? '<section class="cb-card cb-bblock' + (cls ? " " + cls : "") + '"><h3>' + esc(b.title) + (b.sub ? ' <small class="muted">' + b.sub + "</small>" : "") + "</h3>" + b.html + "</section>" : ""; }
 
@@ -1312,7 +1317,7 @@
     const latest = latestDecisionBlock(d);
     const dayLatest = dayMode && latest ? '<section class="cb-card cb-bblock cb-daycard"><div class="cb-daytag">Decision day</div><h3>' + esc(latest.title) + "</h3>" + latest.html + "</section>" : "";
     root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + dayLatest : "") + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path, d.calendar) +
-      '<h2 class="cb-zone">The bank</h2>' + (dayMode ? "" : bankCard(latest)) + bankCard(projectionsBlock(d)) + bankCard(speechesBlock(d)) + bankCard(decisionHistoryBlock(d)) +
+      '<h2 class="cb-zone">The bank</h2>' + (dayMode || !latest ? "" : bankCard({ title: latest.title, sub: "", html: latest.html })) + bankCard(projectionsBlock(d)) + bankCard(speechesBlock(d)) + bankCard(decisionHistoryBlock(d)) +
       referencePanel(d);
     wirePathChart(d.path);
     if (!themeWatched) { themeWatched = true; watchTheme(); }

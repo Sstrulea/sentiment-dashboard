@@ -177,3 +177,31 @@ def test_bank_page_v3_js_on_the_real_cb_js():
     root = Path(__file__).resolve().parents[1]
     r = subprocess.run(["node", str(root / "tests" / "cb_js" / "test_bank_page_v3.cjs")], cwd=root, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_rbnz_ocr_track_vs_market_at_year_end(ctx, built):
+    """Bank page v3: RBNZ Q4 of the published OCR track vs the policy-equivalent rate in force after the last meeting of the year
+    (the Fed rule, `year_end`); only years with both values; the market side is an ESTIMATE (BKBM-OCR spread)."""
+    vm = built["banks"]["NZD"]["chart"]["bank"]["vs_market"]
+    assert vm["note"] == P.OCR_VS_MARKET_NOTE
+    rows = {r["year"]: r for r in vm["years"]}
+    assert set(rows) == {2026, 2027}                                                   # Q4 of the track and a year-end level exist for both
+    for y, r in rows.items():
+        ye = built["banks"]["NZD"]["summary"]["end"][str(y)]
+        q4 = next(q["value"] for q in built["banks"]["NZD"]["chart"]["bank"]["quarters"] if q["period"] == f"{y}Q4")
+        assert r["bank"] == q4 and r["market"] == ye["rate"] and r["meeting"] == ye["meeting"]
+        assert r["gap_bp"] == pytest.approx((ye["rate"] - q4) * 100, abs=0.05)
+        assert r["flag"] == "ESTIMATE" and r["est"] is True
+    assert rows[2026] == {"year": 2026, "bank": 2.8, "market": 3.187, "gap_bp": 38.7, "flag": "ESTIMATE", "est": True, "meeting": "2026-12-09"}
+    assert rows[2027]["bank"] == 3.2 and rows[2027]["gap_bp"] == 83.7
+    assert "vs_market" not in built["banks"]["USD"]["chart"]["bank"] and "vs_market" not in built["banks"]["EUR"]["chart"]["bank"]
+    again = P.build(ctx, ASOF, load_pair_defs())
+    assert again["banks"]["NZD"]["chart"]["bank"] == built["banks"]["NZD"]["chart"]["bank"]                      # deterministic
+
+
+def test_ocr_vs_market_keeps_only_years_with_both_values(ctx, built):
+    import copy
+    rep = copy.deepcopy(A.bank_report(ctx, "NZD", ASOF))
+    rep.bank_path.points = [p for p in rep.bank_path.points if p[0] != "2027Q4"]                 # no 2027 Q4 on the track
+    rep.year_ends[2026].rate = None                                                              # no market level at end-2026
+    assert P.ocr_vs_market_json(rep)["years"] == []

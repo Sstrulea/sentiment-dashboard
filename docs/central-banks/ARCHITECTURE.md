@@ -1069,17 +1069,22 @@ Doar UI (`static/cb.js`, `static/style.css`); payload-ul nu se schimbă. Ordinea
   proiecțiile.
 
 **Zona 2 — „The bank”** (blocuri compacte, fiecare `{title, sub, html}`: card pe desktop, acordeon pe telefon):
-1. **Latest decision** (`latestDecisionBlock`): un rând — data, mișcarea („+25 bp to 3.75–4.00%” / „Hold at 2.50%”), chip-ul votului (tooltip-ul cu
+1. **Latest decision** (`latestDecisionBlock`; pe desktop doar titlul, pe telefon antetul acordeonului păstrează subtitlul): un rând — data, mișcarea („+25 bp to 3.75–4.00%” / „Hold at 2.50%”), chip-ul votului (tooltip-ul cu
    numele și disidențele), linkurile (statement, minutes / account / summary of opinions / deliberations, video, transcript); sub el punctele rezumatului
    factual (compact: fără citate și fără blocul lui de schimbări); expanderele închise „Changes vs <data>” (redline-ul) și „Full statement”. RBNZ: nota
    scurtă despre fișierul manual (o dată).
 2. **Market vs bank projections** (`projectionsBlock`): doar Fed (dots) și RBNZ (OCR track), altfel blocul lipsește. Fed: un rând pe an „2027 · dots
-   4.125% · market 4.679% [CURVE] · +55 bp (market above the Fed)”, distribuția dot-urilor în tooltip. RBNZ: un rând pe an Q1…Q4 + nota.
+   4.125% · market 4.679% [CURVE] · +55 bp (market above the Fed)”, distribuția dot-urilor în tooltip. RBNZ, aceeași regulă: un rând pe an doar când există
+   ambele valori, „2027 · RBNZ Q4 3.2% · market ≈ 4.04% · ≈ +84 bp (market above the RBNZ)” — Q4 din traiectoria OCR publicată vs rata politică-echivalentă
+   în vigoare după ultima ședință a anului (`year_end`, estimare la NZD); traiectoria completă în tooltip. Calculul e în payload, pur:
+   `chart.bank.vs_market` = {note, years: [{year, bank, market, gap_bp, flag, est, meeting}]} (`payload.ocr_vs_market_json`, anii din `YEAR_ENDS`).
 3. **Recent speeches** (`speechSplit`, `speechesBlock`): ultimele 5 cu `relevance = monetary`; dată · vorbitor (chip chair / voter) · titlu (link) ·
    rezumat în expander; restul (monetary mai vechi + „other”) într-un „Show all (N)” închis.
 4. **Decision history** (`decisionHistoryRows`, `decisionHistoryBlock`): ultimele 4 decizii — Date · Move · Rate after · Vote · vs market (bp) (= „vs
    market T-1”, cu tooltip-ul lui) · Links; rezumatele existente ale deciziei (statement, minutes, transcript) într-un singur expander sub rândul ei.
    Scoase: Effective, Consensus, vs consensus, React. next, React. year-end (rămân în JSON).
+   Voturi nepublicate (`kind = not_published`, ECB): fără chip în Latest decision; coloana Vote lipsește când niciun rând nu are vot publicat.
+   „consensus” (RBNZ) rămâne afișat.
 
 **Zona 3 — referință** (închisă, `referencePanel`): „How is this calculated?” = metodologia existentă + tabelul de surse și licențe + calendarul complet
 (cu blackout).

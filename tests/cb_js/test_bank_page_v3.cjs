@@ -46,10 +46,16 @@ ok(pb.html.indexOf("+55 bp</span> (market above the Fed)") > 0, "Fed: the gap in
 ok(pb.html.indexOf("(in line with the Fed)") > 0, "Fed: a gap under 0.5 bp is in line");
 ok(pb.html.indexOf('title="Distribution of the 18 dots: 4.375% ×8, 4.125% ×10"') > 0, "Fed: the distribution in the tooltip");
 ok(pb.html.indexOf("cb-flag-CURVE") > 0, "Fed: the method flag stays");
-const ocr = { gap: { kind: "n/a", na: "no comparable horizon" }, chart: { bank: { kind: "ocr_track", source: "2026-08-12", finalised: "2026-08-05", note: "OCR track of the MPS.", quarters: [{ period: "2027Q1", value: 2.5 }, { period: "2027Q2", value: 2.75 }] } } };
+const NOTE = "RBNZ: Q4 average of the published OCR track vs the market at year-end; the market side is an estimate (BKBM-OCR spread).";
+const ocr = { gap: { kind: "n/a", na: "no comparable horizon" }, chart: { bank: { kind: "ocr_track", source: "2026-09-02", finalised: "2026-08-26", note: "OCR track",
+  quarters: [{ period: "2026Q4", value: 2.8 }, { period: "2027Q1", value: 3.0 }, { period: "2027Q4", value: 3.2 }, { period: "2028Q4", value: 3.2 }],
+  vs_market: { note: NOTE, years: [{ year: 2026, bank: 2.8, market: 3.198, gap_bp: 39.8, flag: "ESTIMATE", est: true }, { year: 2027, bank: 3.2, market: 4.037, gap_bp: 83.7, flag: "ESTIMATE", est: true }] } } } };
 const po = ctx.projectionsBlock(ocr);
-ok(po && po.html.indexOf("<b>2027</b> · Q1 2.5% · Q2 2.8% · Q3 — · Q4 —") > 0, "RBNZ: the OCR track, one row per year");
-ok(po.html.indexOf("OCR track of the MPS.") > 0, "RBNZ: the note stays");
+ok(po && po.html.indexOf('<b>2027</b> · RBNZ Q4 3.2% · market ≈ 4.04% · <span class="cb-hawk">≈ +84 bp</span> (market above the RBNZ)') > 0, "RBNZ: one row per year like the Fed, the market side with ≈");
+ok(po.html.indexOf("<b>2026</b> · RBNZ Q4 2.8% · market ≈ 3.20%") > 0, "RBNZ: 2026");
+ok(po.html.indexOf("<b>2028</b>") < 0, "RBNZ: only years with both values");
+ok(po.html.indexOf('title="Published OCR track (quarterly averages): 2026 Q4 2.8%, 2027 Q1 3.0%, 2027 Q4 3.2%, 2028 Q4 3.2%"') > 0, "RBNZ: the full track in the tooltip");
+ok(po.html.indexOf(NOTE) > 0, "RBNZ: the note");
 eq(ctx.projectionsBlock({ gap: { kind: "n/a", na: "no bank path" }, chart: { bank: { kind: "n/a" } } }), null, "no own path: no block");
 
 // ---- Decision history: the columns and one expander per decision ----
@@ -75,6 +81,19 @@ vm.runInContext('SUMMARIES = { S1: { points: ["p1"], quotes: [], note: "factual"
 const html2 = ctx.decisionHistoryBlock(d).html;
 eq((html2.match(/<details class="cb-x"><summary>Summaries/g) || []).length, 1, "one expander per decision that has summaries");
 ok(html2.indexOf("Summaries (Statement, Minutes)") > 0, "the expander lists its summaries");
+
+// ---- votes not published (ECB): no chip in Latest decision, no Vote column when no row has a published vote; consensus (RBNZ) stays ----
+const np = { kind: "not_published", label: "not published" };
+const dEcb = { decisions: ["2026-09-10", "2026-07-23", "2026-06-04", "2026-04-16"].map((x) => dec(x, 0, { slots: { votes: np, statement: null, conference: null } })), documents: { timeline: [] } };
+const hEcb = ctx.decisionHistoryBlock(dEcb).html;
+ok(hEcb.indexOf("<th>Vote</th>") < 0 && hEcb.indexOf("not published") < 0, "ECB: no Vote column, no 'not published'");
+eq((hEcb.match(/<th[ >]/g) || []).length, 5, "ECB: five columns");
+const dMix = { decisions: [dec("2026-09-10", 0, { slots: { votes: np } }), dec("2026-07-23", 0, { slots: { votes: { kind: "counted", label: "7–2" } } })], documents: { timeline: [] } };
+ok(ctx.decisionHistoryBlock(dMix).html.indexOf("<th>Vote</th>") > 0, "one published vote keeps the column");
+const dNz = { decisions: [dec("2026-09-02", 25, { slots: { votes: { kind: "consensus", label: "consensus" } } })], documents: { timeline: [] } };
+ok(ctx.decisionHistoryBlock(dNz).html.indexOf(">consensus<") > 0, "RBNZ consensus stays");
+const LE = { documents: { timeline: [], latest: { meeting: "2026-09-10", votes: np, summary: null, follow_up: [], statement: null, na: "x" } }, decisions: [dec("2026-09-10", 0)] };
+ok(ctx.latestDecisionBlock(LE).html.indexOf("cb-votes") < 0 && ctx.latestDecisionBlock(LE).sub.indexOf("not published") < 0, "ECB: no vote chip in Latest decision");
 
 // ---- latest decision: one row, the summary visible, two closed expanders ----
 eq(ctx.moveText2({ delta_bp: 25, lower: 3.75, upper: 4.0, rate_after: 3.875 }), "+25 bp to 3.75–4.00%", "move text");
@@ -105,6 +124,9 @@ eq((t.match(/cb-proj/g) || []).length, 1, "only the meeting with projections has
 ok(t.indexOf('title="Decision Wed 28 Oct 2026, 14:00 EDT · effective 29 Oct 2026 · press conference 14:30 EDT · blackout 17 Oct → 29 Oct"') > 0, "the date tooltip: time, effective, conference, blackout");
 ok(ctx.pathTableHtml(pj).indexOf("cb-proj") < 0, "no calendar: no label");
 ok(t.indexOf("press conference 14:30 EST · projections: SEP (dot plot)") > 0, "the date tooltip names the projections");
+
+ok(src.indexOf('bankCard({ title: latest.title, sub: "", html: latest.html })') > 0, "desktop: the Latest decision card has the title only");
+ok(src.indexOf('acc(x[0], x[1].title, x[1].sub, x[1].html, x[2])') > 0, "phone: the accordion keeps the subtitle");
 
 if (failures) { console.error(failures + " failure(s)"); process.exit(1); }
 console.log("ok - bank page v3");
