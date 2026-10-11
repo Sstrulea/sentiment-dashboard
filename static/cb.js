@@ -619,7 +619,9 @@
   }
   function hoverChart(chart, canvas, o) {
     const el = tipBox(canvas);
-    chart.$cb = { snap: o.snap || null, yLabel: o.yLabel, show: function (ch, cr) { placeTip(el, canvas, cr, o.html(ch, cr)); }, hide: function () { el.hidden = true; } };
+    chart.$cb = { snap: o.snap || null, yLabel: o.yLabel,
+                  show: function (ch, cr) { placeTip(el, canvas, cr, o.html(ch, cr)); if (o.after) o.after(ch, cr); },
+                  hide: function () { el.hidden = true; if (o.after) o.after(chart, null); } };
   }
 
   // the value of one bank at a date: the rate in force then = the last meeting decided on or before the date (0 bp before the first);
@@ -797,12 +799,13 @@
     return chart;
   }
   // the bank page: cards, the Now / 1w / 3w chart and the per-meeting table
-  function pathHeader(d) {
+  // the Policy rate card (first of the four cards): the rate, its name, the overnight benchmark below
+  function policyCard(d) {
     const pj = d.path, cur = pj.current, b = cur.benchmark;
     const on = b ? (b.estimated ? esc(b.name) : esc(b.name) + " " + (isNum(b.value) ? fmtRate(b.value, 3) + "%" : NA) + (b.date ? ' <span class="muted">(' + fmtDay(b.date) + ")</span>" : "")) : NA;
-    return '<section class="cb-card cb-head cb-path-head"><div class="cb-head-main"><div class="cb-kicker">Policy rate</div><div class="cb-bigrate">' + rateHtml(d.summary.rate) + "</div>" +
-      '<div class="cb-sub">' + esc(d.bank.policy_rate || "") + "</div>" + (d.unverified.length ? '<div class="cb-badges">' + unverifiedChips(d) + "</div>" : "") + "</div>" +
-      '<div class="cb-head-next"><div class="cb-kicker">Overnight</div><div class="cb-sub">' + on + "</div></div></section>";
+    return '<section class="cb-card cb-pcard cb-policycard"><h3>Policy rate</h3><div class="cb-bigrate">' + rateHtml(d.summary.rate) + "</div>" +
+      '<div class="cb-sub">' + esc(d.bank.policy_rate || "") + "</div>" + (d.unverified.length ? '<div class="cb-badges">' + unverifiedChips(d) + "</div>" : "") +
+      '<div class="cb-kicker cb-on-k">Overnight</div><div class="cb-sub">' + on + "</div></section>";
   }
   function probBar2(pt) {
     const pr = pt && pt.prob;
@@ -810,7 +813,7 @@
     const cut = pr.dir === "cut", sgn = cut ? MINUS : "+", p = Number(pr.p) || 0;
     const lo = pr.n === 0 ? "Hold" : sgn + 25 * pr.n + " bp", hi = sgn + 25 * (pr.n + 1) + " bp";
     return '<div class="cb-prob2" role="img" aria-label="' + esc(lo + " " + pct(1 - p) + ", " + hi + " " + pct(p)) + '"><span class="cb-prob2-a" style="width:' + ((1 - p) * 100).toFixed(1) + '%">' + esc(lo) + " " + pct(1 - p) +
-      '</span><span class="cb-prob2-b ' + (cut ? "cb-bar-dove" : "cb-bar-hawk") + '" style="width:' + (p * 100).toFixed(1) + '%">' + (p >= 0.12 ? esc(hi) + " " + pct(p) : "") + "</span></div>";
+      '</span><span class="cb-prob2-b ' + (cut ? "cb-bar-dove" : "cb-bar-hawk") + '" style="width:' + (p * 100).toFixed(1) + '%">' + (p >= 0.3 ? esc(hi) + " " + pct(p) : p >= 0.12 ? pct(p) : "") + "</span></div>";
   }
   function pathCards(d) {
     const pj = d.path, n = pj.next, pt = firstPoint(pj), mv = moveText(pt), m12 = m12Text(pj.m12);
@@ -828,7 +831,7 @@
     };
     const vs = function (k, fb) { const a = pj.history[k] && pj.history[k].asof; return a ? "vs " + fmtDay(a) : fb; };
     const rep = '<section class="cb-card cb-pcard"><h3>Repricing <small class="muted">12-month level</small></h3>' + one("1w", vs("1w", "vs 1 week ago")) + one("3w", vs("3w", "vs 3 weeks ago")) + "</section>";
-    return '<div class="cb-grid cb-pcards">' + next + year + rep + "</div>";
+    return '<div class="cb-grid cb-pcards cb-pcards4">' + policyCard(d) + next + year + rep + "</div>";
   }
   // the bank page chart: Current (the bank's colour, shaded against the current rate), 1w ago and 3w ago (two neutral colours that no
   // bank uses), solid lines with a point on each meeting; tabs above the chart show / hide a series, the hover snaps to the nearest meeting
@@ -889,7 +892,7 @@
     xs.forEach(function (x) { if (best === null || Math.abs(x - v) < Math.abs(best - v)) best = x; });
     return best;
   }
-  function drawPathChart(canvas, pj, stepped, hidden) {
+  function drawPathChart(canvas, pj, stepped, hidden, onMeeting) {
     hidden = hidden || {};
     const c = colors(), s = bankChartSeries(pj), col = seriesColor("now", pj.ccy);
     const st = stepped ? "before" : false;          // Chart.js "before" = horizontal at the previous level up to the point, then the jump (the rate changes at the meeting)
@@ -921,7 +924,8 @@
     hoverChart(chart, canvas, {
       snap: function (v) { return s.meetings.length ? nearestX(s.meetings, v) : null; },
       yLabel: function (v) { return Number(v).toFixed(2) + "%"; },
-      html: function (ch, cr) { return bankTipHtml(pj, isoOf(cr.xv), hidden); }
+      html: function (ch, cr) { return bankTipHtml(pj, isoOf(cr.xv), hidden); },
+      after: function (ch, cr) { if (onMeeting) onMeeting(cr ? isoOf(cr.xv) : null); }
     });
     state.charts.push(chart);
     return chart;
@@ -930,7 +934,7 @@
     const pj = d.path;
     return '<section class="cb-card cb-chartcard"><h3>Implied path <small class="muted">next 12 months</small>' +
       '<span class="cb-toggle" role="group" aria-label="Line shape"><button type="button" class="cb-tbtn" data-shape="step" aria-pressed="false" title="Draw the path as steps (the rate changes at each meeting)">Step</button></span></h3>' +
-      '<div id="cbSeriesTabs">' + seriesTabsHtml(pj, {}) + '</div><div class="cb-chart-wrap cb-chart-tall"><canvas id="cbPathChart"></canvas></div><div class="cb-sub">' + esc(pathHelp(pj)) + "</div></section>";
+      '<div id="cbSeriesTabs">' + seriesTabsHtml(pj, {}) + '</div><div class="cb-chart-wrap cb-chart-side"><canvas id="cbPathChart"></canvas></div><div class="cb-sub">' + esc(pathHelp(pj)) + "</div></section>";
   }
   function pathHelp(pj) {
     const bits = ["The rate implied after each meeting: now and 1 and 3 weeks ago", "shaded against the current rate (dotted line)", "click a tab above the chart to hide or show a series"];
@@ -964,27 +968,63 @@
     if (m.has_projections) bits.push("projections: " + (m.projections_name || "yes"));
     return { label: m.has_projections ? projLabel(m.projections_name) || "Proj." : null, name: m.has_projections ? m.projections_name || "projections" : null, tip: bits.join(" · ").trim() };
   }
+  // EXACT / CURVE are the normal case: no badge in the table, the method is in the tooltip of the date; any other method keeps its badge
+  const QUIET_FLAGS = ["EXACT", "CURVE"];
+  function methodText(flag) { const f = ((state.meta || {}).flags || {})[flag] || {}; return (f.label || flag) + (f.help ? " (" + f.help + ")" : ""); }
   function pathTableHtml(pj, calendar) {
     const cal = {};
     (calendar || []).forEach(function (m) { cal[m.decision] = m; });
     const rows = pathTableRows(pj).map(function (r) {
-      const ap = r.est ? "≈ " : "", mi = meetingInfo(cal[r.meeting]);
-      return "<tr" + (r.est ? ' class="cb-est"' : "") + '><td class="cb-date"><span' + (mi.tip ? ' class="cb-mdate" title="' + esc(mi.tip) + '"' : "") + ">" + fmtDate(r.meeting) + "</span>" +
-        (mi.label ? ' <span class="econ-flag cb-proj" title="' + esc(mi.name) + '">' + esc(mi.label) + "</span>" : "") + flagBadge(r.flag) + "</td>" +
+      const ap = r.est ? "≈ " : "", mi = meetingInfo(cal[r.meeting]), quiet = QUIET_FLAGS.indexOf(r.flag) >= 0;
+      const tip = [mi.tip, quiet ? "Method: " + methodText(r.flag) : ""].filter(Boolean).join(" · ");
+      return '<tr data-meeting="' + esc(r.meeting) + '"' + (r.est ? ' class="cb-est"' : "") + '><td class="cb-date"><span' + (tip ? ' class="cb-mdate" title="' + esc(tip) + '"' : "") + ">" + fmtDate(r.meeting) + "</span>" +
+        (mi.label ? ' <span class="econ-flag cb-proj" title="' + esc(mi.name) + '">' + esc(mi.label) + "</span>" : "") + (quiet ? "" : flagBadge(r.flag)) + "</td>" +
         (r.rate ? '<td class="cb-n">' + esc(r.rate) + "</td>" : naTd(r.na)) +
         '<td class="cb-n">' + (r.prob ? esc(r.prob) : r.rate ? '<span class="muted" title="' + esc(r.est ? "estimate: no probability" : "no per-meeting probability") + '">' + NA + "</span>" : naSpan(r.na)) + "</td>" +
         (r.moves ? "<td>" + esc(r.moves) + "</td>" : "<td>" + naSpan(r.na) + "</td>") +
         (isNum(r.cum) ? txtTd(r.cum, esc(ap + fmtSigned(r.cum, 1))) : naTd(r.na)) +
         (isNum(r.dW) ? txtTd(r.dW, esc(ap + fmtSigned(r.dW, 1))) : naTd(r.dWna)) + "</tr>";
     }).join("");
-    return '<section class="cb-card"><h3>By meeting <small class="muted">next 12 months</small></h3><div class="cb-scroll"><table class="cb-table cb-rp cb-pathtable"><thead><tr><th>Meeting</th><th class="cb-n">Implied rate</th>' +
+    return '<section class="cb-card cb-pathtablecard" id="cbPathTable"><h3>By meeting <small class="muted">next 12 months</small></h3><div class="cb-scroll"><table class="cb-table cb-rp cb-pathtable"><thead><tr><th>Meeting</th><th class="cb-n">Implied rate</th>' +
       '<th class="cb-n" title="EXACT / CURVE only: whole 25 bp moves plus the probability of one more">Probability</th><th title="Cumulative 25 bp moves priced by this meeting">Hikes</th><th class="cb-n">Δ vs now (bp)</th><th class="cb-n" title="Change of the implied rate at this meeting over 5 business days">Δ vs 1w (bp)</th></tr></thead><tbody>' +
       (rows || '<tr><td colspan="6" class="muted">' + esc(pj.na || "no meeting in the next 12 months") + "</td></tr>") + "</tbody></table></div><div class=\"cb-sub\">≈ = estimate. " + NA + " = not available, hover for the reason.</div></section>";
+  }
+  // linked hover between "By meeting" and the chart: a row shows the crosshair + card at its meeting and enlarges the point; the chart
+  // highlights the row of the meeting under the cursor
+  function highlightRow(scope, meeting) {
+    if (!scope) return;
+    scope.querySelectorAll("tr[data-meeting]").forEach(function (tr) { tr.classList.toggle("cb-row-hl", tr.dataset.meeting === meeting); });
+  }
+  function showAtMeeting(chart, meeting) {
+    if (!chart || !chart.$cb || !chart.chartArea) return false;
+    const x = ms(meeting), a = chart.chartArea, ds = chart.data.datasets[0];
+    const i = ds && !ds.hidden ? ds.data.findIndex(function (p) { return p.x === x && !p.start; }) : -1;
+    const y = i >= 0 ? chart.scales.y.getPixelForValue(ds.data[i].y) : (a.top + a.bottom) / 2;
+    chart.$cross = { x: chart.scales.x.getPixelForValue(x), y: y, xv: x, yv: chart.scales.y.getValueForPixel(y) };
+    chart.setActiveElements(i >= 0 ? [{ datasetIndex: 0, index: i }] : []);
+    chart.$cb.show(chart, chart.$cross);
+    chart.update("none");
+    return true;
+  }
+  function hideAtMeeting(chart) {
+    if (!chart || !chart.$cb) return;
+    chart.$cross = null;
+    chart.setActiveElements([]);
+    chart.$cb.hide();
+    chart.update("none");
+  }
+  function wireLinkedHover(scope, chartOf) {
+    if (!scope) return;
+    scope.querySelectorAll("tr[data-meeting]").forEach(function (tr) {
+      tr.addEventListener("mouseenter", function () { showAtMeeting(chartOf(), tr.dataset.meeting); });
+      tr.addEventListener("mouseleave", function () { hideAtMeeting(chartOf()); });
+    });
   }
   function wirePathChart(pj) {
     const canvas = document.getElementById("cbPathChart");
     if (!canvas) return;
-    let stepped = false;
+    let stepped = false, chart = null;
+    const table = document.getElementById("cbPathTable");
     const hidden = {};
     const paintTabs = function () {
       const box = document.getElementById("cbSeriesTabs");
@@ -998,7 +1038,8 @@
         });
       });
     };
-    registerRedraw(function () { paintTabs(); drawPathChart(canvas, pj, stepped, hidden); });
+    registerRedraw(function () { paintTabs(); chart = drawPathChart(canvas, pj, stepped, hidden, function (m) { highlightRow(table, m); }); });
+    wireLinkedHover(table, function () { return chart; });
     root.querySelectorAll(".cb-tbtn[data-shape]").forEach(function (b) {
       b.addEventListener("click", function () {
         stepped = !stepped;
@@ -1316,7 +1357,7 @@
     }
     const latest = latestDecisionBlock(d);
     const dayLatest = dayMode && latest ? '<section class="cb-card cb-bblock cb-daycard"><div class="cb-daytag">Decision day</div><h3>' + esc(latest.title) + "</h3>" + latest.html + "</section>" : "";
-    root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + dayLatest : "") + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path, d.calendar) +
+    root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + dayLatest : "") + pathCards(d) + '<div class="cb-pathgrid">' + pathTableHtml(d.path, d.calendar) + pathChartCard(d) + "</div>" +
       '<h2 class="cb-zone">The bank</h2>' + (dayMode || !latest ? "" : bankCard({ title: latest.title, sub: "", html: latest.html })) + bankCard(projectionsBlock(d)) + bankCard(speechesBlock(d)) + bankCard(decisionHistoryBlock(d)) +
       referencePanel(d);
     wirePathChart(d.path);
@@ -1344,7 +1385,7 @@
   }
   function renderBankPhone(d, dayMode) {
     const blocks = [["cbAccLatest", latestDecisionBlock(d), true], ["cbAccProj", projectionsBlock(d), false], ["cbAccSpeeches", speechesBlock(d), false], ["cbAccDecisions", decisionHistoryBlock(d), false]];
-    root.innerHTML = bankBar(d.ccy) + pathHeader(d) + pathCards(d) + pathChartCard(d) + pathTableHtml(d.path, d.calendar) + '<h2 class="cb-zone">The bank</h2><div class="cb-accs">' +
+    root.innerHTML = bankBar(d.ccy) + pathCards(d) + '<div class="cb-pathgrid">' + pathTableHtml(d.path, d.calendar) + pathChartCard(d) + "</div>" + '<h2 class="cb-zone">The bank</h2><div class="cb-accs">' +
       blocks.filter(function (x) { return x[1]; }).map(function (x) { return acc(x[0], x[1].title, x[1].sub, x[1].html, x[2]); }).join("") +
       acc("cbAccMethod", "How is this calculated?", "methodology, sources, calendar", referencePanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, "")
         .replace("<th>Official time (UTC)</th><th>First seen (UTC)</th>", "<th>Official, UTC</th><th>Seen, UTC</th>"), false) +

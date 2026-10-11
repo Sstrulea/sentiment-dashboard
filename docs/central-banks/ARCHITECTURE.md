@@ -1098,3 +1098,14 @@ ordine; zona 2 = acordeoane (Latest decision deschis), zona 3 = acordeon închis
 **Teste**: `tests/cb_js/test_bank_page_v3.cjs` (filtrul discursurilor, lipsa blocului de proiecții, coloanele Decision history, eticheta de proiecții și
 tooltip-ul datei, Latest decision); `test_latency_block.cjs` taie acum până la „official texts” (`footerCard` nu mai există). Capturi:
 `docs/design/cb-bank-v3/screenshots/` (USD dark / light 1440, EUR dark 1440 fără proiecții, NZD dark 1440 cu OCR track, USD dark 390).
+
+### Graficul lângă tabel (PR feat/cb-bank-side-by-side)
+
+- Sus, un rând de 4 carduri egale (≥ 1100 px): Policy rate (cu overnight-ul dedesubt, `policyCard`), Next meeting, 12 months, Repricing; cardul separat
+  „Policy rate” a dispărut (`pathHeader` scos).
+- Dedesubt `.cb-pathgrid`: ≥ 1100 px două coloane egale — „By meeting” stânga, „Implied path” dreapta (tab-urile Current / 1w / 3w și „Step” deasupra);
+  graficul umple înălțimea cardului (= a tabelului), minim 420 px (`.cb-chart-side`). Sub 1100 px graficul sus (~420 px), tabelul dedesubt; telefon 380 px.
+  Regula 2:1 / 72vh (`.cb-chart-tall`) rămâne doar pentru Compare și pereche.
+- „By meeting”: badge-ul de metodă doar când nu e EXACT / CURVE (`QUIET_FLAGS`); pentru acestea metoda e în tooltip-ul datei. Eticheta de proiecții rămâne.
+- Hover legat: rând → grafic (`showAtMeeting`: crosshair + card la ședință, punctul mărit prin `setActiveElements`); grafic → rând (`hoverChart` → `after` →
+  `highlightRow`, clasa `cb-row-hl`). Test: `tests/cb_js/test_bank_side_by_side.cjs`.
