@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-04T08:06:08.641163",
+ "as_of": "2026-10-11T08:06:37.168772",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -456,9 +456,9 @@
      "next_previous": -1.4,
      "next_from": "parquet",
      "diff": 13.2,
-     "tolerance": 9.85604,
-     "threshold": 9.85604,
-     "n_revision_pairs": 42,
+     "tolerance": 8.71648,
+     "threshold": 8.71648,
+     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -513,9 +513,9 @@
      "next_previous": 42.7,
      "next_from": "parquet",
      "diff": -12.3,
-     "tolerance": 9.85604,
-     "threshold": 9.85604,
-     "n_revision_pairs": 42,
+     "tolerance": 8.71648,
+     "threshold": 8.71648,
+     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -570,9 +570,9 @@
      "next_previous": 72.6,
      "next_from": "parquet",
      "diff": 11.1,
-     "tolerance": 9.85604,
-     "threshold": 9.85604,
-     "n_revision_pairs": 42,
+     "tolerance": 8.71648,
+     "threshold": 8.71648,
+     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -648,7 +648,7 @@
      "diff": -0.7,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 39,
+     "n_revision_pairs": 40,
      "level": "INFO",
      "new": false
     },
@@ -741,9 +741,9 @@
      "next_previous": 15.3,
      "next_from": "parquet",
      "diff": 14.8,
-     "tolerance": 9.85604,
-     "threshold": 9.85604,
-     "n_revision_pairs": 42,
+     "tolerance": 8.71648,
+     "threshold": 8.71648,
+     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -860,6 +860,25 @@
      "n_revision_pairs": 41,
      "level": "INFO",
      "new": false
+    },
+    {
+     "canonical_id": "aud_employment_change",
+     "currency": "AUD",
+     "indicator_key": "employment_change",
+     "name_raw": "Employment Change",
+     "release_dt": "2024-08-15T01:30:00",
+     "kind": "value",
+     "scored_actual": 58.2,
+     "scored_source": "ff",
+     "next_release_dt": "2024-09-19T01:30:00",
+     "next_previous": 48.9,
+     "next_from": "parquet",
+     "diff": -9.3,
+     "tolerance": 8.71648,
+     "threshold": 8.71648,
+     "n_revision_pairs": 43,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -1180,7 +1199,7 @@
      "diff": -0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 38,
+     "n_revision_pairs": 39,
      "level": "INFO",
      "new": false
     },
@@ -1446,7 +1465,7 @@
      "diff": 0.1,
      "tolerance": 0.0,
      "threshold": 0.0,
-     "n_revision_pairs": 38,
+     "n_revision_pairs": 39,
      "level": "WARN",
      "new": false
     },
@@ -1520,9 +1539,9 @@
      "next_previous": -40.7,
      "next_from": "parquet",
      "diff": -22.1,
-     "tolerance": 9.85604,
-     "threshold": 9.85604,
-     "n_revision_pairs": 42,
+     "tolerance": 8.71648,
+     "threshold": 8.71648,
+     "n_revision_pairs": 43,
      "level": "WARN",
      "new": false
     },
@@ -1598,7 +1617,7 @@
      "diff": 1.4,
      "tolerance": 0.64478,
      "threshold": 0.64478,
-     "n_revision_pairs": 43,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -1655,7 +1674,7 @@
      "diff": -0.6,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 39,
+     "n_revision_pairs": 40,
      "level": "WARN",
      "new": false
     },
@@ -1680,19 +1699,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 72,
+    "ff": 73,
     "manual": 15,
     "quarantined": 1
    },
    "findings_by_kind": {
-    "value": 74,
+    "value": 75,
     "zero": 14
    },
-   "n_checked": 3363,
+   "n_checked": 3378,
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-04.json"
+   "weekly_feed": "ff_weekly_2026-10-11.json"
   },
   "missing_release": {
    "findings": [
@@ -2120,12 +2139,12 @@
   },
   "previous_consistency": {
    "WARN": 21,
-   "INFO": 67
+   "INFO": 68
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-10-04T08:06:14+00:00"
+ "generated_at": "2026-10-11T08:06:47+00:00"
 }
