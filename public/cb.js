@@ -815,6 +815,7 @@
     return '<div class="cb-prob2" role="img" aria-label="' + esc(lo + " " + pct(1 - p) + ", " + hi + " " + pct(p)) + '"><span class="cb-prob2-a" style="width:' + ((1 - p) * 100).toFixed(1) + '%">' + esc(lo) + " " + pct(1 - p) +
       '</span><span class="cb-prob2-b ' + (cut ? "cb-bar-dove" : "cb-bar-hawk") + '" style="width:' + (p * 100).toFixed(1) + '%">' + (p >= 0.3 ? esc(hi) + " " + pct(p) : p >= 0.12 ? pct(p) : "") + "</span></div>";
   }
+  function infoTip(text) { return text ? ' <span class="cb-info" tabindex="0" role="note" title="' + esc(text) + '" aria-label="' + esc(text) + '">ⓘ</span>' : ""; }
   function pathCards(d) {
     const pj = d.path, n = pj.next, pt = firstPoint(pj), mv = moveText(pt), m12 = m12Text(pj.m12);
     const next = '<section class="cb-card cb-pcard"><h3>Next meeting</h3>' + (n ? '<div class="cb-bigdate">' + esc(weekday(n.decision)) + " " + fmtDate(n.decision) + ' <span class="cb-cdbig">' + cdSpan(n) + "</span></div>" +
@@ -822,9 +823,9 @@
       (mv ? '<div class="cb-bigrate ' + (pt.step_bp > 0 ? "cb-hawk" : pt.step_bp < 0 ? "cb-dove" : "") + '">' + esc(mv) + flagBadge(pt.flag) + "</div>" + probBar2(pt)
           : jointText(pt) ? '<div class="cb-sub">' + jointSpan(pt) + "</div>"
           : '<div class="cb-sub">' + NA + " " + esc(shortNa((pt && (pt.na || pt.step_na)) || "n/a")) + "</div>") : '<div class="cb-sub">' + NA + " no upcoming meeting</div>") + "</section>";
-    const year = '<section class="cb-card cb-pcard"><h3>12 months</h3>' + (m12 ? '<div class="cb-bigrate ' + (pj.m12.cum_bp > 0 ? "cb-hawk" : pj.m12.cum_bp < 0 ? "cb-dove" : "") + '">' + esc(m12) + flagBadge(pj.m12.flag) + "</div>" +
+    const year = '<section class="cb-card cb-pcard"><h3>12 months</h3>' + (m12 ? '<div class="cb-bigrate ' + (pj.m12.cum_bp > 0 ? "cb-hawk" : pj.m12.cum_bp < 0 ? "cb-dove" : "") + '">' + esc(m12) + flagBadge(pj.m12.flag) + infoTip(pj.spread_note) + "</div>" +
       '<div class="cb-sub">Implied ' + fmtRate(pj.m12.rate, 3) + "% after the " + fmtDate(pj.m12.meeting) + " meeting</div>" : '<div class="cb-sub">' + NA + " " + esc(shortNa(pj.m12.na)) + "</div>") +
-      (pj.spread_note ? '<div class="cb-sub muted">' + esc(pj.spread_note) + "</div>" : "") + "</section>";
+      "</section>";
     const one = function (k, label) {
       const m = pj.delta[k];
       return '<div class="cb-kv"><span>' + label + "</span>" + (m && isNum(m.v) ? valueSpan(m, 1, " bp") : '<span class="cb-na">' + esc(shortNa((m && m.na) || "n/a")) + "</span>") + "</div>";
@@ -934,7 +935,7 @@
     const pj = d.path;
     return '<section class="cb-card cb-chartcard"><h3>Implied path <small class="muted">next 12 months</small>' +
       '<span class="cb-toggle" role="group" aria-label="Line shape"><button type="button" class="cb-tbtn" data-shape="step" aria-pressed="false" title="Draw the path as steps (the rate changes at each meeting)">Step</button></span></h3>' +
-      '<div id="cbSeriesTabs">' + seriesTabsHtml(pj, {}) + '</div><div class="cb-chart-wrap cb-chart-side"><canvas id="cbPathChart"></canvas></div><div class="cb-sub">' + esc(pathHelp(pj)) + "</div></section>";
+      '<div id="cbSeriesTabs">' + seriesTabsHtml(pj, {}) + '</div><div class="cb-chart-wrap cb-chart-side"><canvas id="cbPathChart"></canvas></div>' + howToRead(esc(pathHelp(pj))) + "</section>";
   }
   function pathHelp(pj) {
     const bits = ["The rate implied after each meeting: now and 1 and 3 weeks ago", "shaded against the current rate (dotted line)", "click a tab above the chart to hide or show a series"];
@@ -1252,7 +1253,8 @@
     }).join("") + "</ul>" : "";
     const ck = d.consistency.length ? "<h4>Consistency of months without a meeting</h4><ul>" + d.consistency.map(function (c) { return "<li>" + esc(c.source + " " + c.period) + DOT + fmtSigned(c.dev_bp, 1) + " bp (" + esc(c.detail) + ")</li>"; }).join("") + "</ul>" : "";
     const sp = d.spread ? "<p>Overnight-to-policy spread used: <b>" + fmtSigned(d.spread.bp, 2) + " bp</b>, median of " + d.spread.n + " business days (" + fmtDate(d.spread.start) + EN + fmtDate(d.spread.end) + "; " + d.spread.excluded + " excluded) for " + esc(d.spread.benchmark) + " minus " + esc(d.spread.policy) + ".</p>" : "";
-    const notes = d.notes.length ? "<h4>Notes</h4><ul>" + d.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
+    const allNotes = d.notes.concat(d.path && d.path.spread_note && d.notes.indexOf(d.path.spread_note) < 0 ? [d.path.spread_note] : []);
+    const notes = allNotes.length ? "<h4>Notes</h4><ul>" + allNotes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>" : "";
     return '<details class="cb-card cb-method" id="cbMethod"><summary>How is this calculated?</summary><dl>' + items + "</dl>" + sp + notes + cc + ck + latencyBlock(d.latency) + "</details>";
   }
   // ---- official texts (phase 2a) -------------------------------------------------------------------------------------------

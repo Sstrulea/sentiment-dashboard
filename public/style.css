@@ -2840,3 +2840,15 @@ table.cb-pathtable tr[data-meeting] { cursor: default; }
 @media (max-width: 600px) {
   .cb-chart-wrap.cb-chart-side { height: 380px; }
 }
+
+/* ---- bank page polish: the table fills its column, the ⓘ note, 2 + 2 cards between 600 and 1100 px ---- */
+.cb-info { display: inline-block; margin-left: 4px; font-size: 13px; font-weight: 400; color: var(--muted); cursor: help; vertical-align: middle; }
+.cb-info:hover, .cb-info:focus-visible { color: var(--fg); }
+@media (min-width: 601px) and (max-width: 1099px) {
+  .cb-pcards.cb-pcards4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .cb-pathgrid > .cb-pathtablecard { display: flex; flex-direction: column; }
+  .cb-pathgrid > .cb-pathtablecard > .cb-scroll { flex: 1 1 auto; display: flex; }
+  .cb-pathgrid > .cb-pathtablecard table.cb-pathtable { height: 100%; }
+}
