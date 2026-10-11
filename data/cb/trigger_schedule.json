@@ -336,11 +336,48 @@
    "id": "conference:USD:2026-12-09",
    "kind": "conference",
    "lead_minutes": 0
+  },
+  {
+   "at": "2026-12-10T08:30:00Z",
+   "bank": "CHF",
+   "date": "2026-12-10",
+   "dispatch": {
+    "inputs": {
+     "bank": "CHF",
+     "date": "2026-12-10",
+     "event": "decision"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2026-12-10T08:31:00Z",
+   "grace_minutes": 90,
+   "id": "decision:CHF:2026-12-10",
+   "kind": "decision",
+   "lead_minutes": 5
+  },
+  {
+   "at": "2026-12-10T09:00:00Z",
+   "at_basis": "conference",
+   "bank": "CHF",
+   "date": "2026-12-10",
+   "dispatch": {
+    "inputs": {
+     "bank": "CHF",
+     "date": "2026-12-10",
+     "event": "conference"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2026-12-10T11:00:00Z",
+   "grace_minutes": 240,
+   "id": "conference:CHF:2026-12-10",
+   "kind": "conference",
+   "lead_minutes": 0
   }
  ],
  "horizon": {
-  "from": "2026-10-07",
-  "to": "2026-12-09"
+  "from": "2026-10-08",
+  "to": "2026-12-10"
  },
  "regular": [
   {

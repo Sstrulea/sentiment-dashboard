@@ -1,30 +1,14 @@
 {
   "_calendar_check": {
-    "checked": "2026-10-04",
+    "checked": "2026-10-11",
     "failed": {},
     "signatures": {
       "CH": {
-        "etag": "\"25b6b-65ce6ed59bfd7\"",
+        "etag": "\"25b6b-65d78049d6ae3\"",
         "length": 154475
       }
     },
     "warnings": [
-      "GBP: 2026-02-04 is on the official page but not in meetings.yaml",
-      "GBP: 2026-03-18 is on the official page but not in meetings.yaml",
-      "GBP: 2026-04-29 is on the official page but not in meetings.yaml",
-      "GBP: 2026-06-17 is on the official page but not in meetings.yaml",
-      "GBP: 2026-07-29 is on the official page but not in meetings.yaml",
-      "GBP: 2026-09-16 is on the official page but not in meetings.yaml",
-      "GBP: 2026-11-04 is on the official page but not in meetings.yaml",
-      "GBP: 2026-12-16 is on the official page but not in meetings.yaml",
-      "GBP: 2027-02-04 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-03-18 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-04-29 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-06-17 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-07-29 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-09-16 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-11-04 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
-      "GBP: 2027-12-16 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
       "HOLIDAYS NZ: 2026-04-27 (Anzac Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2026-12-28 (Boxing Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2027-01-04 (Day after New Year's Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
@@ -32,7 +16,7 @@
       "HOLIDAYS NZ: 2027-04-26 (Anzac Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2027-12-27 (Christmas Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2027-12-28 (Boxing Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
-      "HOLIDAYS CH: the official file changed (154362 -> 154475 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
+      "HOLIDAYS CH: the official file changed (154475 -> 154475 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
     ]
   },
   "atlantafed_mpt": {
