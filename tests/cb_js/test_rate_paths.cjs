@@ -74,7 +74,7 @@ ok(Math.abs(t[1].dW - 5) < 1e-9, "Δ vs 1w = (now - 1w) in bp");
 const tu = ctx.pathTableRows(paths.USD);
 eq(tu[0].prob, "21.6% hike", "probability text in the bank table");
 const th = ctx.pathTableHtml(paths.NZD);
-ok(th.indexOf('<tr class="cb-est">') > 0 && th.indexOf("not covered by any contract") > 0, "the bank table marks estimates and keeps the reason");
+ok(/<tr data-meeting="[^"]+" class="cb-est">/.test(th) && th.indexOf("not covered by any contract") > 0, "the bank table marks estimates and keeps the reason");
 const noHist = JSON.parse(JSON.stringify(paths.USD)); noHist.history["1w"] = { na: "history starts 2026-10-08", points: [] };
 ok(ctx.pathTableHtml(noHist).indexOf('title="history starts 2026-10-08"') > 0, "Δ vs 1w n/a carries the history reason");
 

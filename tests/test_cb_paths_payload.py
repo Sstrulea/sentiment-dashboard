@@ -205,3 +205,10 @@ def test_ocr_vs_market_keeps_only_years_with_both_values(ctx, built):
     rep.bank_path.points = [p for p in rep.bank_path.points if p[0] != "2027Q4"]                 # no 2027 Q4 on the track
     rep.year_ends[2026].rate = None                                                              # no market level at end-2026
     assert P.ocr_vs_market_json(rep)["years"] == []
+
+
+def test_bank_side_by_side_js_on_the_real_cb_js():
+    import subprocess
+    root = Path(__file__).resolve().parents[1]
+    r = subprocess.run(["node", str(root / "tests" / "cb_js" / "test_bank_side_by_side.cjs")], cwd=root, capture_output=True, text=True, timeout=60)
+    assert r.returncode == 0, r.stdout + r.stderr

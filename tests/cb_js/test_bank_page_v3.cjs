@@ -121,7 +121,7 @@ const cal = [{ decision: "2026-10-28", effective: "2026-10-29", has_projections:
 const t = ctx.pathTableHtml(pj, cal);
 ok(t.indexOf('<span class="econ-flag cb-proj" title="SEP (dot plot)">SEP</span>') > 0, "the SEP label with the full name in its tooltip");
 eq((t.match(/cb-proj/g) || []).length, 1, "only the meeting with projections has the label");
-ok(t.indexOf('title="Decision Wed 28 Oct 2026, 14:00 EDT · effective 29 Oct 2026 · press conference 14:30 EDT · blackout 17 Oct → 29 Oct"') > 0, "the date tooltip: time, effective, conference, blackout");
+ok(t.indexOf('title="Decision Wed 28 Oct 2026, 14:00 EDT · effective 29 Oct 2026 · press conference 14:30 EDT · blackout 17 Oct → 29 Oct · Method: ') > 0, "the date tooltip: time, effective, conference, blackout");
 ok(ctx.pathTableHtml(pj).indexOf("cb-proj") < 0, "no calendar: no label");
 ok(t.indexOf("press conference 14:30 EST · projections: SEP (dot plot)") > 0, "the date tooltip names the projections");
 
