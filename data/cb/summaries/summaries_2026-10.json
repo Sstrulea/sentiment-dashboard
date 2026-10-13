@@ -4,6 +4,233 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     20,
+     27,
+     30,
+     51,
+     52,
+     56
+    ],
+    "paragraphs_sent": 65,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:minutes:2026-09-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-13T00:42:00Z",
+   "input_sha256": "42a53fd1e82ea9d256fb5f8af7f0666aaf17791961d25c11d012f3aeb0aa47f6",
+   "meeting_date": "2026-09-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 12216,
+     "point": 2,
+     "source_text": "4.6 per cent",
+     "start": 12204,
+     "text": "4.6 per cent"
+    },
+    {
+     "end": 24274,
+     "point": 5,
+     "source_text": "25 basis points",
+     "start": 24259,
+     "text": "25 basis points"
+    },
+    {
+     "end": 24274,
+     "point": 6,
+     "source_text": "25 basis points",
+     "start": 24259,
+     "text": "25 basis points"
+    },
+    {
+     "end": 12216,
+     "point": 6,
+     "source_text": "4.6 per cent",
+     "start": 12204,
+     "text": "4.60 per cent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-10-13",
+   "quotes": [
+    {
+     "end": 7812,
+     "paragraph": 20,
+     "start": 7689,
+     "text": "Taken together, these developments led members to judge that Australian financial conditions remained somewhat restrictive."
+    },
+    {
+     "end": 15294,
+     "paragraph": 30,
+     "start": 15165,
+     "text": "Members judged that these domestic and global developments pointed to an increase in the risk of persistently elevated inflation."
+    },
+    {
+     "end": 28514,
+     "paragraph": 52,
+     "start": 28368,
+     "text": "Having considered these arguments, all members judged that it was appropriate to increase the cash rate target by 25 basis points at this meeting."
+    },
+    {
+     "end": 30864,
+     "paragraph": 56,
+     "start": 30768,
+     "text": "The Board decided unanimously to raise the cash rate target by 25 basis points to 4.60 per cent."
+    }
+   ],
+   "source": {
+    "chars": 31976,
+    "chars_sent": 31977,
+    "method": "html-selector",
+    "paragraphs_sent": 65,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 7812,
+        "paragraph": 20,
+        "start": 7689,
+        "text": "Taken together, these developments led members to judge that Australian financial conditions remained somewhat restrictive."
+       },
+       {
+        "end": 7941,
+        "paragraph": 20,
+        "start": 7813,
+        "text": "However, the extent of restriction remained uncertain and various indicators of financial conditions provided different signals."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "Members judged that Australian financial conditions remained somewhat restrictive, but said the extent of restriction remained uncertain and indicators gave different signals."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 12275,
+        "paragraph": 27,
+        "start": 12165,
+        "text": "The unemployment rate had increased to 4.6 per cent in August, alongside a rise in labour force participation."
+       },
+       {
+        "end": 12819,
+        "paragraph": 27,
+        "start": 12679,
+        "text": "Taken together, the staff’s judgement was that these leading indicators pointed to broadly stable labour market conditions in the near term."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Members noted that the unemployment rate increased to 4.6 per cent in August, while staff judged leading indicators pointed to broadly stable labour market conditions in the near term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15294,
+        "paragraph": 30,
+        "start": 15165,
+        "text": "Members judged that these domestic and global developments pointed to an increase in the risk of persistently elevated inflation."
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "Members judged that domestic and global developments pointed to an increase in the risk of persistently elevated inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 27686,
+        "paragraph": 51,
+        "start": 27592,
+        "text": "Members briefly considered the arguments in support of leaving the cash rate target unchanged."
+       },
+       {
+        "end": 27809,
+        "paragraph": 51,
+        "start": 27687,
+        "text": "These rested primarily on the possibility that downside risks to activity and employment could prove larger than expected."
+       }
+      ],
+      "paragraphs": [
+       51
+      ]
+     },
+     "text": "Members considered leaving the cash rate target unchanged on the possibility that downside risks to activity and employment could prove larger than expected."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 28514,
+        "paragraph": 52,
+        "start": 28368,
+        "text": "Having considered these arguments, all members judged that it was appropriate to increase the cash rate target by 25 basis points at this meeting."
+       },
+       {
+        "end": 28827,
+        "paragraph": 52,
+        "start": 28739,
+        "text": "Members expressed their concern that excess demand was greater than previously assessed."
+       }
+      ],
+      "paragraphs": [
+       52
+      ]
+     },
+     "text": "All members judged it appropriate to increase the cash rate target by 25 basis points, citing concern that excess demand was greater than previously assessed."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30864,
+        "paragraph": 56,
+        "start": 30768,
+        "text": "The Board decided unanimously to raise the cash rate target by 25 basis points to 4.60 per cent."
+       }
+      ],
+      "paragraphs": [
+       56
+      ]
+     },
+     "text": "The Board decided unanimously to raise the cash rate target by 25 basis points to 4.60 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia minutes of the 29 September 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-09-29.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7172,
+    "output_tokens": 1115,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      36,
      39,
      62,
