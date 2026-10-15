@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-15T19:06:46.810173",
+ "as_of": "2026-10-15T20:06:41.280207",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -1695,7 +1695,7 @@
      "threshold": 10.10604,
      "n_revision_pairs": 43,
      "level": "WARN",
-     "new": true
+     "new": false
     }
    ],
    "findings_by_source": {
@@ -2146,5 +2146,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-15T19:06:57+00:00"
+ "generated_at": "2026-10-15T20:06:47+00:00"
 }
