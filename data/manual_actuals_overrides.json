@@ -1615,5 +1615,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-15T12:25:40+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "gbp_industrial_production",
+  "currency": "GBP",
+  "indicator_key": "industrial_production_mm",
+  "datetime_utc": "2026-10-15 06:00:00",
+  "actual": 0.8,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-15T12:25:42+00:00",
+  "note": ""
  }
 ]
