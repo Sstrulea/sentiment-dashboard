@@ -1582,5 +1582,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-15T06:48:37+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_unemployment_rate",
+  "currency": "AUD",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-15 00:30:00",
+  "actual": 4.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-15T06:51:22+00:00",
+  "note": ""
  }
 ]
