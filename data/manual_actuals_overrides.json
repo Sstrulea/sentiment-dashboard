@@ -1626,5 +1626,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-15T12:57:00+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "chf_ppi",
+  "currency": "CHF",
+  "indicator_key": "ppi_yoy",
+  "datetime_utc": "2026-10-15 06:30:00",
+  "actual": 0.3,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-15T13:06:24+00:00",
+  "note": ""
  }
 ]
