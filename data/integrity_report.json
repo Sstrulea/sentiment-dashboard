@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-11T12:06:24.456457",
+ "as_of": "2026-10-15T19:06:46.810173",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -456,8 +456,8 @@
      "next_previous": -1.4,
      "next_from": "parquet",
      "diff": 13.2,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
+     "tolerance": 10.10604,
+     "threshold": 10.10604,
      "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
@@ -513,8 +513,8 @@
      "next_previous": 42.7,
      "next_from": "parquet",
      "diff": -12.3,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
+     "tolerance": 10.10604,
+     "threshold": 10.10604,
      "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
@@ -570,8 +570,8 @@
      "next_previous": 72.6,
      "next_from": "parquet",
      "diff": 11.1,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
+     "tolerance": 10.10604,
+     "threshold": 10.10604,
      "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
@@ -741,8 +741,8 @@
      "next_previous": 15.3,
      "next_from": "parquet",
      "diff": 14.8,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
+     "tolerance": 10.10604,
+     "threshold": 10.10604,
      "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
@@ -858,25 +858,6 @@
      "tolerance": 0.1,
      "threshold": 0.2,
      "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "aud_employment_change",
-     "currency": "AUD",
-     "indicator_key": "employment_change",
-     "name_raw": "Employment Change",
-     "release_dt": "2024-08-15T01:30:00",
-     "kind": "value",
-     "scored_actual": 58.2,
-     "scored_source": "ff",
-     "next_release_dt": "2024-09-19T01:30:00",
-     "next_previous": 48.9,
-     "next_from": "parquet",
-     "diff": -9.3,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
-     "n_revision_pairs": 43,
      "level": "INFO",
      "new": false
     },
@@ -1539,8 +1520,8 @@
      "next_previous": -40.7,
      "next_from": "parquet",
      "diff": -22.1,
-     "tolerance": 8.71648,
-     "threshold": 8.71648,
+     "tolerance": 10.10604,
+     "threshold": 10.10604,
      "n_revision_pairs": 43,
      "level": "WARN",
      "new": false
@@ -1696,6 +1677,25 @@
      "n_revision_pairs": 191,
      "level": "WARN",
      "new": false
+    },
+    {
+     "canonical_id": "aud_employment_change",
+     "currency": "AUD",
+     "indicator_key": "employment_change",
+     "name_raw": "Employment Change",
+     "release_dt": "2026-09-24T01:30:00",
+     "kind": "value",
+     "scored_actual": 39.5,
+     "scored_source": "ff",
+     "next_release_dt": "2026-10-15T00:30:00",
+     "next_previous": 29.3,
+     "next_from": "parquet",
+     "diff": -10.2,
+     "tolerance": 10.10604,
+     "threshold": 10.10604,
+     "n_revision_pairs": 43,
+     "level": "WARN",
+     "new": true
     }
    ],
    "findings_by_source": {
@@ -1711,7 +1711,7 @@
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-11.json"
+   "weekly_feed": "ff_weekly_2026-10-15.json"
   },
   "missing_release": {
    "findings": [
@@ -2138,13 +2138,13 @@
    "INFO": 0
   },
   "previous_consistency": {
-   "WARN": 21,
-   "INFO": 68
+   "WARN": 22,
+   "INFO": 67
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-10-11T12:06:34+00:00"
+ "generated_at": "2026-10-15T19:06:57+00:00"
 }
