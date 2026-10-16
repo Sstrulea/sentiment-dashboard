@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-16T19:06:45.352451",
+ "as_of": "2026-10-16T20:06:40.298291",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -61,7 +61,7 @@
      "threshold": 0.37239,
      "n_revision_pairs": 40,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "gbp_ppi_output",
@@ -1163,7 +1163,7 @@
      "threshold": 0.37239,
      "n_revision_pairs": 40,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_retail_sales",
@@ -1486,7 +1486,7 @@
      "threshold": 0.37239,
      "n_revision_pairs": 40,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "gbp_gdp",
@@ -1543,7 +1543,7 @@
      "threshold": 0.37239,
      "n_revision_pairs": 40,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -2222,5 +2222,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-16T19:06:53+00:00"
+ "generated_at": "2026-10-16T20:06:46+00:00"
 }
