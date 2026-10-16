@@ -297,10 +297,9 @@ def a1(D: Data, t):
     if r is None:
         return _out()
     w = V.v3_week(r, D.hist, D.k, D.inst_cfg, D.xcfg, D.series)
-    cs = V.currency_scores(r, D.hist, D.k)
     pair = {s: w["scores"][s] for s, _, _ in D.pairs()}
     cross = {s: w["scores"][s] for s in CROSS}
-    return _out(ccy=dict(w["ccy"]), usd_row=cs["_USD_ROW"]["S"], pair=pair, cross=cross)
+    return _out(ccy=dict(w["ccy"]), usd_row=w["scores"][USD_ROW], pair=pair, cross=cross)
 
 
 def a2(D: Data, t):
