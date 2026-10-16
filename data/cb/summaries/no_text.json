@@ -78,6 +78,12 @@
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260924~e0eceef02c.en.pdf"
   },
+  "GBP:speech:a94a47400194": {
+   "at": "2026-10-16T20:42:15Z",
+   "kind": "non_prose",
+   "reason": "only 0% of the text is full sentences: a deck of tables or slides, not prose",
+   "url": "https://www.bankofengland.co.uk/speech/2026/october/financial-innovation-dollar-dominance-and-their-uk-monetary-policy-implications"
+  },
   "JPY:speech:71e2909828ea": {
    "at": "2026-10-15T02:41:53Z",
    "kind": "no_text",
