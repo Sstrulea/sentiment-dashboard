@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-15T20:06:41.280207",
+ "as_of": "2026-10-16T19:06:45.352451",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -43,6 +43,25 @@
      "n_revision_pairs": 29,
      "level": "INFO",
      "new": false
+    },
+    {
+     "canonical_id": "usd_import_prices",
+     "currency": "USD",
+     "indicator_key": "import_prices",
+     "name_raw": "Import Prices m/m",
+     "release_dt": "2023-01-13T13:30:00",
+     "kind": "value",
+     "scored_actual": 0.4,
+     "scored_source": "ff",
+     "next_release_dt": "2023-02-17T13:30:00",
+     "next_previous": -0.1,
+     "next_from": "parquet",
+     "diff": -0.5,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "gbp_ppi_output",
@@ -646,8 +665,8 @@
      "next_previous": -0.7,
      "next_from": "parquet",
      "diff": -0.7,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
      "n_revision_pairs": 40,
      "level": "INFO",
      "new": false
@@ -1128,6 +1147,25 @@
      "new": false
     },
     {
+     "canonical_id": "usd_import_prices",
+     "currency": "USD",
+     "indicator_key": "import_prices",
+     "name_raw": "Import Prices m/m",
+     "release_dt": "2025-06-17T12:30:00",
+     "kind": "zero",
+     "scored_actual": 0.0,
+     "scored_source": "manual",
+     "next_release_dt": "2025-07-17T12:30:00",
+     "next_previous": -0.4,
+     "next_from": "parquet",
+     "diff": -0.4,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 40,
+     "level": "INFO",
+     "new": true
+    },
+    {
      "canonical_id": "aud_retail_sales",
      "currency": "AUD",
      "indicator_key": "retail_sales",
@@ -1432,6 +1470,25 @@
      "new": false
     },
     {
+     "canonical_id": "usd_import_prices",
+     "currency": "USD",
+     "indicator_key": "import_prices",
+     "name_raw": "Import Prices m/m",
+     "release_dt": "2026-03-05T13:30:00",
+     "kind": "value",
+     "scored_actual": 0.2,
+     "scored_source": "ff",
+     "next_release_dt": "2026-03-25T12:30:00",
+     "next_previous": 0.6,
+     "next_from": "parquet",
+     "diff": 0.4,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 40,
+     "level": "WARN",
+     "new": true
+    },
+    {
      "canonical_id": "gbp_gdp",
      "currency": "GBP",
      "indicator_key": "gdp_qoq",
@@ -1468,6 +1525,25 @@
      "n_revision_pairs": 41,
      "level": "WARN",
      "new": false
+    },
+    {
+     "canonical_id": "usd_import_prices",
+     "currency": "USD",
+     "indicator_key": "import_prices",
+     "name_raw": "Import Prices m/m",
+     "release_dt": "2026-03-25T12:30:00",
+     "kind": "value",
+     "scored_actual": 1.3,
+     "scored_source": "ff",
+     "next_release_dt": "2026-04-15T12:30:00",
+     "next_previous": 0.9,
+     "next_from": "parquet",
+     "diff": -0.4,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
+     "n_revision_pairs": 40,
+     "level": "WARN",
+     "new": true
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -1653,8 +1729,8 @@
      "next_previous": -0.3,
      "next_from": "parquet",
      "diff": -0.6,
-     "tolerance": 0.54478,
-     "threshold": 0.54478,
+     "tolerance": 0.37239,
+     "threshold": 0.37239,
      "n_revision_pairs": 40,
      "level": "WARN",
      "new": false
@@ -1699,19 +1775,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 73,
-    "manual": 15,
+    "ff": 76,
+    "manual": 16,
     "quarantined": 1
    },
    "findings_by_kind": {
-    "value": 75,
-    "zero": 14
+    "value": 78,
+    "zero": 15
    },
    "n_checked": 3378,
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-15.json"
+   "weekly_feed": "ff_weekly_2026-10-16.json"
   },
   "missing_release": {
    "findings": [
@@ -2138,13 +2214,13 @@
    "INFO": 0
   },
   "previous_consistency": {
-   "WARN": 22,
-   "INFO": 67
+   "WARN": 24,
+   "INFO": 69
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-10-15T20:06:47+00:00"
+ "generated_at": "2026-10-16T19:06:53+00:00"
 }
