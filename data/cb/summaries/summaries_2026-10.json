@@ -919,6 +919,294 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     4,
+     6,
+     12,
+     13,
+     15,
+     18,
+     21,
+     24,
+     26
+    ],
+    "paragraphs_sent": 29,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:e545c030814a",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-17T06:41:34Z",
+   "input_sha256": "7d41129c13021785543c5006772445a10e638f757fcc869c25b9be7939936da9",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1204,
+     "point": 2,
+     "source_text": "0.9%",
+     "start": 1200,
+     "text": "0.9%"
+    },
+    {
+     "end": 172,
+     "point": 2,
+     "source_text": "2026",
+     "start": 168,
+     "text": "2026"
+    },
+    {
+     "end": 1218,
+     "point": 2,
+     "source_text": "1.4%",
+     "start": 1214,
+     "text": "1.4%"
+    },
+    {
+     "end": 1226,
+     "point": 2,
+     "source_text": "2027",
+     "start": 1222,
+     "text": "2027"
+    },
+    {
+     "end": 1235,
+     "point": 2,
+     "source_text": "1.5%",
+     "start": 1231,
+     "text": "1.5%"
+    },
+    {
+     "end": 1243,
+     "point": 2,
+     "source_text": "2028",
+     "start": 1239,
+     "text": "2028"
+    },
+    {
+     "end": 2957,
+     "point": 3,
+     "source_text": "3.8%",
+     "start": 2953,
+     "text": "3.8%"
+    },
+    {
+     "end": 1226,
+     "point": 3,
+     "source_text": "2027",
+     "start": 1222,
+     "text": "2027"
+    },
+    {
+     "end": 4194,
+     "point": 4,
+     "source_text": "25 basis points",
+     "start": 4179,
+     "text": "25 basis points"
+    },
+    {
+     "end": 8202,
+     "point": 6,
+     "source_text": "12",
+     "start": 8200,
+     "text": "12"
+    },
+    {
+     "end": 1226,
+     "point": 6,
+     "source_text": "2027",
+     "start": 1222,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-17",
+   "quotes": [
+    {
+     "end": 784,
+     "paragraph": 4,
+     "start": 693,
+     "text": "Risks nonetheless remain tilted to the downside for growth and to the upside for inflation."
+    },
+    {
+     "end": 1244,
+     "paragraph": 6,
+     "start": 1146,
+     "text": "The September ECB staff projections foresee growth of 0.9% in 2026, 1.4% in 2027 and 1.5% in 2028."
+    },
+    {
+     "end": 5267,
+     "paragraph": 18,
+     "start": 5110,
+     "text": "Taking these three criteria together, the energy shock is too large to “look through” but a measured response remains appropriate to keep inflation in check."
+    },
+    {
+     "end": 8251,
+     "paragraph": 26,
+     "start": 8130,
+     "text": "To lay the groundwork for a seamless and secure launch, we will run a 12-month internal pilot in the second half of 2027."
+    }
+   ],
+   "source": {
+    "chars": 9802,
+    "chars_sent": 9803,
+    "method": "html-selector",
+    "paragraphs_sent": 29,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 271,
+        "paragraph": 4,
+        "start": 186,
+        "text": "The global economy has proven surprisingly resilient in the face of high uncertainty."
+       },
+       {
+        "end": 784,
+        "paragraph": 4,
+        "start": 693,
+        "text": "Risks nonetheless remain tilted to the downside for growth and to the upside for inflation."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "President Lagarde says the global economy has proven surprisingly resilient, while risks remain tilted to the downside for growth and to the upside for inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1244,
+        "paragraph": 6,
+        "start": 1146,
+        "text": "The September ECB staff projections foresee growth of 0.9% in 2026, 1.4% in 2027 and 1.5% in 2028."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "President Lagarde says the September ECB staff projections foresee growth of 0.9% in 2026, 1.4% in 2027 and 1.5% in 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3017,
+        "paragraph": 12,
+        "start": 2921,
+        "text": "Headline inflation increased to 3.8% in September, mostly reflecting a surge in energy inflation"
+       },
+       {
+        "end": 3402,
+        "paragraph": 13,
+        "start": 3296,
+        "text": "higher energy prices are expected to keep headline inflation well above target into the first half of 2027"
+       }
+      ],
+      "paragraphs": [
+       12,
+       13
+      ]
+     },
+     "text": "President Lagarde says headline inflation increased to 3.8% in September, and higher energy prices are expected to keep headline inflation well above target into the first half of 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4207,
+        "paragraph": 15,
+        "start": 4110,
+        "text": "The Governing Council decided to raise the key ECB interest rates by 25 basis points in September"
+       },
+       {
+        "end": 5267,
+        "paragraph": 18,
+        "start": 5148,
+        "text": "the energy shock is too large to “look through” but a measured response remains appropriate to keep inflation in check."
+       }
+      ],
+      "paragraphs": [
+       15,
+       18
+      ]
+     },
+     "text": "President Lagarde says the Governing Council decided to raise the key ECB interest rates by 25 basis points in September, and that a measured response remains appropriate to keep inflation in check."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5896,
+        "paragraph": 21,
+        "start": 5814,
+        "text": "Sources of risk and vulnerabilities for euro area financial stability remain high."
+       },
+       {
+        "end": 7516,
+        "paragraph": 24,
+        "start": 7393,
+        "text": "This means, for now, that private credit in isolation is unlikely to be a source of financial instability in the euro area."
+       }
+      ],
+      "paragraphs": [
+       21,
+       24
+      ]
+     },
+     "text": "President Lagarde says sources of risk and vulnerabilities for euro area financial stability remain high, while private credit in isolation is unlikely to be a source of financial instability in the euro area."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7918,
+        "paragraph": 26,
+        "start": 7789,
+        "text": "In the retail space we are preparing to complement cash with its digital equivalent – the digital euro – for day-to-day payments."
+       },
+       {
+        "end": 8251,
+        "paragraph": 26,
+        "start": 8130,
+        "text": "To lay the groundwork for a seamless and secure launch, we will run a 12-month internal pilot in the second half of 2027."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "President Lagarde says the Eurosystem is preparing to complement cash with the digital euro and will run a 12-month internal pilot in the second half of 2027."
+    }
+   ],
+   "title": "Christine Lagarde: IMFC Statement",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261017~7015ea3099.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3337,
+    "output_tokens": 1723,
+    "reasoning_tokens": 982
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      10,
      12,
