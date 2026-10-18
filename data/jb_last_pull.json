@@ -4,7 +4,7 @@
  "endpoint": "today",
  "rows": 3,
  "actuals": 3,
- "last_attempt_at": "2026-10-17T20:05:42.679692",
+ "last_attempt_at": "2026-10-18T20:05:41.434530",
  "last_status": "empty",
  "last_http_status": 200,
  "last_error": "payload mapped 0 events",
