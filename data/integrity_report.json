@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-16T20:06:40.298291",
+ "as_of": "2026-10-18T08:06:17.812738",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -78,7 +78,7 @@
      "diff": -0.7,
      "tolerance": 0.54478,
      "threshold": 0.54478,
-     "n_revision_pairs": 31,
+     "n_revision_pairs": 32,
      "level": "INFO",
      "new": false
     },
@@ -230,7 +230,7 @@
      "diff": 48.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -344,7 +344,7 @@
      "diff": -17.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -382,7 +382,7 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -515,7 +515,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -724,7 +724,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -800,7 +800,7 @@
      "diff": -7.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -819,7 +819,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -857,7 +857,7 @@
      "diff": -221.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -952,7 +952,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -1275,7 +1275,7 @@
      "diff": -10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -1294,7 +1294,7 @@
      "diff": -6.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -1408,7 +1408,7 @@
      "diff": 10.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -1615,9 +1615,9 @@
      "next_previous": 47.7,
      "next_from": "parquet",
      "diff": 1.3,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
-     "n_revision_pairs": 8,
+     "tolerance": 0.54478,
+     "threshold": 0.54478,
+     "n_revision_pairs": 9,
      "level": "WARN",
      "new": false
     },
@@ -1636,7 +1636,7 @@
      "diff": -3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "INFO",
      "new": false
     },
@@ -1676,25 +1676,6 @@
      "threshold": 0.64478,
      "n_revision_pairs": 44,
      "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "eur_s_p_global_services_pmi",
-     "currency": "EUR",
-     "indicator_key": "services_pmi",
-     "name_raw": "Flash Services PMI",
-     "release_dt": "2026-06-23T08:00:00",
-     "kind": "value",
-     "scored_actual": 48.9,
-     "scored_source": "ff",
-     "next_release_dt": "2026-07-24T08:00:00",
-     "next_previous": 49.4,
-     "next_from": "parquet",
-     "diff": 0.5,
-     "tolerance": 0.37239,
-     "threshold": 0.37239,
-     "n_revision_pairs": 8,
-     "level": "WARN",
      "new": false
     },
     {
@@ -1750,7 +1731,7 @@
      "diff": 3.0,
      "tolerance": 1.0,
      "threshold": 2.0,
-     "n_revision_pairs": 191,
+     "n_revision_pairs": 192,
      "level": "WARN",
      "new": false
     },
@@ -1775,19 +1756,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 76,
+    "ff": 75,
     "manual": 16,
     "quarantined": 1
    },
    "findings_by_kind": {
-    "value": 78,
+    "value": 77,
     "zero": 15
    },
-   "n_checked": 3378,
+   "n_checked": 3400,
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-16.json"
+   "weekly_feed": "ff_weekly_2026-10-18.json"
   },
   "missing_release": {
    "findings": [
@@ -2214,7 +2195,7 @@
    "INFO": 0
   },
   "previous_consistency": {
-   "WARN": 24,
+   "WARN": 23,
    "INFO": 69
   },
   "missing_release": {
@@ -2222,5 +2203,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-16T20:06:46+00:00"
+ "generated_at": "2026-10-18T08:06:28+00:00"
 }
