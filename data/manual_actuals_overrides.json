@@ -1648,5 +1648,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-20T13:33:56+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "gbp_unemployment_rate",
+  "currency": "GBP",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-20 06:00:00",
+  "actual": 4.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-20T13:34:02+00:00",
+  "note": ""
  }
 ]
