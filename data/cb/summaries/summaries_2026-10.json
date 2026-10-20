@@ -1207,6 +1207,184 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     146,
+     158,
+     159,
+     160,
+     161
+    ],
+    "paragraphs_sent": 199,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:4cafd6da09f6",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-20T18:41:24Z",
+   "input_sha256": "d023641199ff1701e4b74287e6d51ae8a359a69390427dbe727a58c897a7fcad",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2611,
+     "point": 1,
+     "source_text": "2",
+     "start": 2610,
+     "text": "2%"
+    },
+    {
+     "end": 35874,
+     "point": 2,
+     "source_text": "3.5%",
+     "start": 35870,
+     "text": "3.5%"
+    },
+    {
+     "end": 4945,
+     "point": 2,
+     "source_text": "3",
+     "start": 4944,
+     "text": "3%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-20",
+   "quotes": [
+    {
+     "end": 43219,
+     "paragraph": 158,
+     "start": 42981,
+     "text": "A closer look at the two main metrics we use to understand the recent evolution of wage growth—private sector regular AWE and private sector RTI—suggests wage disinflation has stalled at levels above those consistent with inflation at 2%."
+    },
+    {
+     "end": 43538,
+     "paragraph": 159,
+     "start": 43347,
+     "text": "The forward-looking indicators we consider—the DMP, pay settlements and the Indeed Wage Tracker–all point to wage growth that is likely to plateau closer to 3.5% than 3% over the coming year."
+    },
+    {
+     "end": 44001,
+     "paragraph": 160,
+     "start": 43877,
+     "text": "Our broad range of wage indicators suggests there is less slack in the labour market than we thought and it may have peaked."
+    },
+    {
+     "end": 45196,
+     "paragraph": 161,
+     "start": 45096,
+     "text": "I therefore continue to believe we should proactively lean against the risk of second-round effects."
+    }
+   ],
+   "source": {
+    "chars": 52805,
+    "chars_sent": 52806,
+    "method": "html-selector",
+    "paragraphs_sent": 199,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 43219,
+        "paragraph": 158,
+        "start": 43126,
+        "text": "suggests wage disinflation has stalled at levels above those consistent with inflation at 2%."
+       }
+      ],
+      "paragraphs": [
+       158
+      ]
+     },
+     "text": "External member (MPC) Megan Greene says private sector regular AWE and private sector RTI suggest wage disinflation has stalled at levels above those consistent with inflation at 2%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 43538,
+        "paragraph": 159,
+        "start": 43443,
+        "text": "all point to wage growth that is likely to plateau closer to 3.5% than 3% over the coming year."
+       }
+      ],
+      "paragraphs": [
+       159
+      ]
+     },
+     "text": "External member (MPC) Megan Greene says the DMP, pay settlements and Indeed Wage Tracker point to wage growth likely to plateau closer to 3.5% than 3% over the coming year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 44001,
+        "paragraph": 160,
+        "start": 43877,
+        "text": "Our broad range of wage indicators suggests there is less slack in the labour market than we thought and it may have peaked."
+       }
+      ],
+      "paragraphs": [
+       160
+      ]
+     },
+     "text": "External member (MPC) Megan Greene says the broad range of wage indicators suggests there is less slack in the labour market than thought and it may have peaked."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 40732,
+        "paragraph": 146,
+        "start": 40633,
+        "text": "It is not obvious to me from this data that our monetary policy stance is meaningfully restrictive."
+       }
+      ],
+      "paragraphs": [
+       146
+      ]
+     },
+     "text": "External member (MPC) Megan Greene says it is not obvious from credit data that the monetary policy stance is meaningfully restrictive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 45196,
+        "paragraph": 161,
+        "start": 45096,
+        "text": "I therefore continue to believe we should proactively lean against the risk of second-round effects."
+       }
+      ],
+      "paragraphs": [
+       161
+      ]
+     },
+     "text": "External member (MPC) Megan Greene says she continues to believe the MPC should proactively lean against the risk of second-round effects."
+    }
+   ],
+   "title": "Learning about earnings: Can we rely on labour market slack to mitigate the latest supply shock? − speech by Megan Greene",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/october/megan-greene-speech-at-lse-economics-society-london",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 13034,
+    "output_tokens": 1059,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      10,
      12,
