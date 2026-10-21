@@ -1692,5 +1692,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-21T12:23:08+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "gbp_core_cpi",
+  "currency": "GBP",
+  "indicator_key": "core_cpi",
+  "datetime_utc": "2026-10-21 06:00:00",
+  "actual": 2.8,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-21T12:23:12+00:00",
+  "note": ""
  }
 ]
