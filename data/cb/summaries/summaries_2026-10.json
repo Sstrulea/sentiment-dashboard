@@ -920,6 +920,264 @@
    "coverage": {
     "paragraphs": [
      4,
+     5,
+     7,
+     8,
+     9,
+     11,
+     12,
+     15,
+     17,
+     18
+    ],
+    "paragraphs_sent": 18,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:c66aeb50a0f6",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-21T04:41:34Z",
+   "input_sha256": "046d02f6aa21ecd1ecdf943556cb6b8eb629adfa3a47677b6f9fbb9e4ca96085",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 158,
+     "point": 3,
+     "source_text": "2026",
+     "start": 154,
+     "text": "2026"
+    },
+    {
+     "end": 3469,
+     "point": 4,
+     "source_text": "50",
+     "start": 3467,
+     "text": "50"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-21",
+   "quotes": [
+    {
+     "end": 790,
+     "paragraph": 5,
+     "start": 614,
+     "text": "Since the ECB only has domestic counterparties in its refinancing operations, it is essential to complement the domestic liquidity framework with international liquidity lines."
+    },
+    {
+     "end": 2369,
+     "paragraph": 8,
+     "start": 2170,
+     "text": "This year, the ECB decided to enhance the Eurosystem repo facility for central banks (EUREP) to make it more flexible and effective in supporting the smooth transmission of euro area monetary policy."
+    },
+    {
+     "end": 7401,
+     "paragraph": 15,
+     "start": 7169,
+     "text": "Since swap lines entail greater risks than EUREP, it is appropriate to provide them only to foreign central banks that are clearly capable of repaying their euro debt in due course, requiring the backing of a highly-rated sovereign."
+    },
+    {
+     "end": 9478,
+     "paragraph": 18,
+     "start": 9235,
+     "text": "Greater use of the euro internationally, in turn, supports the ability of the ECB to achieve price stability by increasing the international impact of euro area monetary policy and thereby influencing foreign demand as well as domestic demand."
+    }
+   ],
+   "source": {
+    "chars": 10049,
+    "chars_sent": 10050,
+    "method": "html-selector",
+    "paragraphs_sent": 18,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 285,
+        "paragraph": 4,
+        "start": 225,
+        "text": "The ECB injects liquidity through its refinancing operations"
+       },
+       {
+        "end": 790,
+        "paragraph": 5,
+        "start": 692,
+        "text": "it is essential to complement the domestic liquidity framework with international liquidity lines."
+       }
+      ],
+      "paragraphs": [
+       4,
+       5
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the ECB injects liquidity through refinancing operations and asset portfolios, while international liquidity lines complement its domestic liquidity framework."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1889,
+        "paragraph": 7,
+        "start": 1777,
+        "text": "international liquidity lines are designed to be drawn down only in response to shocks and in crisis situations."
+       },
+       {
+        "end": 2030,
+        "paragraph": 7,
+        "start": 1899,
+        "text": "their mere existence – even without being drawn upon – can help to prevent adverse market dynamics from arising in the first place."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says international liquidity lines are designed to be drawn down only in response to shocks and in crisis situations, while their existence can help to prevent adverse market dynamics."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2262,
+        "paragraph": 8,
+        "start": 2170,
+        "text": "This year, the ECB decided to enhance the Eurosystem repo facility for central banks (EUREP)"
+       },
+       {
+        "end": 2633,
+        "paragraph": 8,
+        "start": 2548,
+        "text": "The updated framework introduces standing access, in principle, for all central banks"
+       },
+       {
+        "end": 3690,
+        "paragraph": 9,
+        "start": 3604,
+        "text": "central banks will be able to draw from the facility as of the fourth quarter of 2026."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the ECB decided this year to enhance EUREP, with standing access in principle for all central banks, and onboarded central banks will be able to draw from the facility as of the fourth quarter of 2026."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3266,
+        "paragraph": 9,
+        "start": 3171,
+        "text": "priced at the main refinancing operations (MRO) rate plus a spread set by the Governing Council"
+       },
+       {
+        "end": 3412,
+        "paragraph": 9,
+        "start": 3319,
+        "text": "The maturity of a single transaction will range from one day to one week and may be extended."
+       },
+       {
+        "end": 3478,
+        "paragraph": 9,
+        "start": 3413,
+        "text": "The maximum line size per individual central bank is €50 billion."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says EUREP loans are priced at the main refinancing operations rate plus a Governing Council spread, have maturities from one day to one week, and have a maximum line size of €50 billion per central bank."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5093,
+        "paragraph": 11,
+        "start": 4963,
+        "text": "Swap lines complement EUREP from a monetary policy perspective, strengthening the overall international liquidity lines framework."
+       },
+       {
+        "end": 5544,
+        "paragraph": 12,
+        "start": 5484,
+        "text": "Swap lines can be deployed against local-currency collateral"
+       },
+       {
+        "end": 7349,
+        "paragraph": 15,
+        "start": 7219,
+        "text": "it is appropriate to provide them only to foreign central banks that are clearly capable of repaying their euro debt in due course"
+       }
+      ],
+      "paragraphs": [
+       11,
+       12,
+       15
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says swap lines complement EUREP, can be deployed against local-currency collateral, and should be provided only to foreign central banks clearly capable of repaying their euro debt in due course."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8381,
+        "paragraph": 17,
+        "start": 8321,
+        "text": "liquidity lines can boost the international role of the euro"
+       },
+       {
+        "end": 8694,
+        "paragraph": 17,
+        "start": 8622,
+        "text": "Liquidity lines also support expanded issuance of euro-denominated debt."
+       },
+       {
+        "end": 9343,
+        "paragraph": 18,
+        "start": 9235,
+        "text": "Greater use of the euro internationally, in turn, supports the ability of the ECB to achieve price stability"
+       }
+      ],
+      "paragraphs": [
+       17,
+       18
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says liquidity lines can boost the international role of the euro and support expanded issuance of euro-denominated debt, while greater international use of the euro supports the ECB’s ability to achieve price stability."
+    }
+   ],
+   "title": "Philip R. Lane: Euro liquidity lines and the international monetary system",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021~401d6c4b70.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 8032,
+    "output_tokens": 3068,
+    "reasoning_tokens": 1204
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
      6,
      12,
      13,
