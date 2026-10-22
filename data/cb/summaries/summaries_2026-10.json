@@ -231,6 +231,302 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     1,
+     3,
+     14,
+     18,
+     29,
+     34,
+     39
+    ],
+    "paragraphs_sent": 39,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:deliberations:2026-09-24",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-22T08:42:32Z",
+   "input_sha256": "512d38bbcd4561697df7e171229bc647e3d222f17d504b9c22f2c9557e4478f2",
+   "meeting_date": "2026-09-24",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 39,
+     "point": 1,
+     "source_text": "22",
+     "start": 37,
+     "text": "22"
+    },
+    {
+     "end": 46,
+     "point": 1,
+     "source_text": "23",
+     "start": 44,
+     "text": "23"
+    },
+    {
+     "end": 61,
+     "point": 1,
+     "source_text": "2026",
+     "start": 57,
+     "text": "2026"
+    },
+    {
+     "end": 162,
+     "point": 1,
+     "source_text": "0%",
+     "start": 160,
+     "text": "0%"
+    },
+    {
+     "end": 10777,
+     "point": 4,
+     "source_text": "0.8%",
+     "start": 10773,
+     "text": "0.8%"
+    },
+    {
+     "end": 11044,
+     "point": 4,
+     "source_text": "0.6%",
+     "start": 11040,
+     "text": "0.6%"
+    },
+    {
+     "end": 12926,
+     "point": 5,
+     "source_text": "1.5%",
+     "start": 12922,
+     "text": "1.5%"
+    },
+    {
+     "end": 12935,
+     "point": 5,
+     "source_text": "2.0%",
+     "start": 12931,
+     "text": "2.0%"
+    },
+    {
+     "end": 61,
+     "point": 5,
+     "source_text": "2026",
+     "start": 57,
+     "text": "2026"
+    },
+    {
+     "end": 12926,
+     "point": 5,
+     "source_text": "1.5%",
+     "start": 12922,
+     "text": "1.5%"
+    },
+    {
+     "end": 13164,
+     "point": 5,
+     "source_text": "2027",
+     "start": 13160,
+     "text": "2027"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-10-22",
+   "quotes": [
+    {
+     "end": 163,
+     "paragraph": 1,
+     "start": 0,
+     "text": "At the monetary policy assessment of 22 and 23 September 2026, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+    },
+    {
+     "end": 4700,
+     "paragraph": 14,
+     "start": 4533,
+     "text": "They concluded that monetary policy is continuing to have an expansionary effect and that the excess liquidity is consistent with price stability over the medium term."
+    },
+    {
+     "end": 5017,
+     "paragraph": 18,
+     "start": 4945,
+     "text": "Global economic growth was stronger than expected in the second quarter."
+    },
+    {
+     "end": 12957,
+     "paragraph": 34,
+     "start": 12900,
+     "text": "GDP growth of between 1.5% and 2.0% is expected for 2026."
+    },
+    {
+     "end": 16721,
+     "paragraph": 39,
+     "start": 16598,
+     "text": "The SNB is also willing to be active in the foreign exchange market as necessary to ensure appropriate monetary conditions."
+    }
+   ],
+   "source": {
+    "chars": 16810,
+    "chars_sent": 16811,
+    "method": "html-selector",
+    "paragraphs_sent": 39,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 163,
+        "paragraph": 1,
+        "start": 0,
+        "text": "At the monetary policy assessment of 22 and 23 September 2026, the Governing Board of the Swiss National Bank decided to leave the SNB policy rate unchanged at 0%."
+       },
+       {
+        "end": 726,
+        "paragraph": 3,
+        "start": 544,
+        "text": "The decision was taken by Martin Schlegel (Chairman of the Governing Board), Antoine Martin (Vice Chairman of the Governing Board) and Petra Tschudin (Member of the Governing Board)."
+       }
+      ],
+      "paragraphs": [
+       1,
+       3
+      ]
+     },
+     "text": "At the monetary policy assessment of 22 and 23 September 2026, the Governing Board decided to leave the SNB policy rate unchanged at 0%; the decision was taken by Martin Schlegel, Antoine Martin and Petra Tschudin."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4403,
+        "paragraph": 14,
+        "start": 4245,
+        "text": "As the depreciation of the Swiss franc outweighed the rise in interest rates, monetary conditions had eased overall since the June monetary policy assessment."
+       },
+       {
+        "end": 4700,
+        "paragraph": 14,
+        "start": 4533,
+        "text": "They concluded that monetary policy is continuing to have an expansionary effect and that the excess liquidity is consistent with price stability over the medium term."
+       }
+      ],
+      "paragraphs": [
+       14
+      ]
+     },
+     "text": "The Governing Board and Alternate Members concluded that monetary conditions had eased overall since the June monetary policy assessment and that monetary policy was continuing to have an expansionary effect."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5017,
+        "paragraph": 18,
+        "start": 4945,
+        "text": "Global economic growth was stronger than expected in the second quarter."
+       },
+       {
+        "end": 5402,
+        "paragraph": 18,
+        "start": 5300,
+        "text": "In many countries, inflation is above central banks' targets, notably due to the higher energy prices."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "The Economic Affairs division reported that global economic growth was stronger than expected in the second quarter, while inflation in many countries was above central banks' targets."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10788,
+        "paragraph": 29,
+        "start": 10677,
+        "text": "Inflation continued to rise as expected since the last monetary policy assessment, and stood at 0.8% in August."
+       },
+       {
+        "end": 11055,
+        "paragraph": 29,
+        "start": 10957,
+        "text": "The core inflation rate calculated by the SNB using a trimmed mean (TM15) stood at 0.6% in August."
+       }
+      ],
+      "paragraphs": [
+       29
+      ]
+     },
+     "text": "The Economic Affairs division reported that inflation stood at 0.8% in August, while the core inflation rate calculated by the SNB using TM15 stood at 0.6% in August."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12957,
+        "paragraph": 34,
+        "start": 12900,
+        "text": "GDP growth of between 1.5% and 2.0% is expected for 2026."
+       },
+       {
+        "end": 13165,
+        "paragraph": 34,
+        "start": 13102,
+        "text": "The SNB continues to expect GDP growth of around 1.5% for 2027."
+       }
+      ],
+      "paragraphs": [
+       34
+      ]
+     },
+     "text": "The SNB expects GDP growth of between 1.5% and 2.0% for 2026 and continues to expect GDP growth of around 1.5% for 2027."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16069,
+        "paragraph": 39,
+        "start": 15882,
+        "text": "In light of its discussion of the outlook for inflation and the economy, the Governing Board deemed current monetary conditions appropriate to ensure price stability over the medium term."
+       },
+       {
+        "end": 16721,
+        "paragraph": 39,
+        "start": 16598,
+        "text": "The SNB is also willing to be active in the foreign exchange market as necessary to ensure appropriate monetary conditions."
+       }
+      ],
+      "paragraphs": [
+       39
+      ]
+     },
+     "text": "The Governing Board deemed current monetary conditions appropriate to ensure price stability over the medium term, and the SNB is willing to be active in the foreign exchange market as necessary."
+    }
+   ],
+   "title": "Swiss National Bank deliberations of the 24 September 2026 meeting",
+   "type": "deliberations",
+   "url": "https://www.snb.ch/en/publications/communication/summaries/zus_20261022",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4571,
+    "output_tokens": 2236,
+    "reasoning_tokens": 1399
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      36,
      39,
      62,
