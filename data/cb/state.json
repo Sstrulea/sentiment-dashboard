@@ -34,22 +34,22 @@
     }
   },
   "eurex_ois_chf": {
-    "asof": "2026-10-21"
+    "asof": "2026-10-22"
   },
   "eurex_ois_eur": {
-    "asof": "2026-10-21"
+    "asof": "2026-10-22"
   },
   "eurex_ois_gbp": {
-    "asof": "2026-10-21"
+    "asof": "2026-10-22"
   },
   "eurex_ois_jpy": {
-    "asof": "2026-10-21"
+    "asof": "2026-10-22"
   },
   "eurex_ois_usd": {
-    "asof": "2026-10-21"
+    "asof": "2026-10-22"
   },
   "eurex_ois_usd_sofr": {
-    "asof": "2026-10-21"
+    "asof": "2026-10-22"
   },
   "http_validators": {
     "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-summary-and-minutes/mpcvoting.xlsx": {
@@ -138,7 +138,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Wed, 21 Oct 2026 21:56:42 GMT"
+    "last_modified": "Thu, 22 Oct 2026 21:59:28 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -161,7 +161,7 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Wed, 21 Oct 2026 21:56:42 GMT"
+    "last_modified": "Thu, 22 Oct 2026 21:59:28 GMT"
   },
   "summaries": {
     "last_run": {
