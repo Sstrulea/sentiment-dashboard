@@ -1758,5 +1758,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-23T12:38:09+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "eur_s_p_global_services_pmi",
+  "currency": "EUR",
+  "indicator_key": "services_pmi",
+  "datetime_utc": "2026-10-23 08:00:00",
+  "actual": 51.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-10-23T17:21:08+00:00",
+  "note": ""
  }
 ]
