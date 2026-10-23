@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-23T19:07:21.433103",
+ "as_of": "2026-10-23T20:07:12.975983",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -1448,7 +1448,7 @@
      "threshold": 0.3,
      "n_revision_pairs": 9,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_gdp",
@@ -1619,7 +1619,7 @@
      "threshold": 0.3,
      "n_revision_pairs": 9,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_s_p_global_services_pmi",
@@ -1638,7 +1638,7 @@
      "threshold": 0.94478,
      "n_revision_pairs": 9,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "aud_employment_change",
@@ -2260,5 +2260,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-23T19:07:31+00:00"
+ "generated_at": "2026-10-23T20:07:23+00:00"
 }
