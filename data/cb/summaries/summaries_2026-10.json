@@ -2143,6 +2143,206 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     18,
+     33,
+     40,
+     44,
+     57,
+     59,
+     64
+    ],
+    "paragraphs_sent": 127,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:8bd67b451c42",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-23T10:42:15Z",
+   "input_sha256": "860f5b685587267c5775f85accd37ebcc4eab8e218e168edf7a5171e4d518b01",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-23",
+   "quotes": [
+    {
+     "end": 3765,
+     "paragraph": 18,
+     "start": 3578,
+     "text": "Physical hazards can operate through several channels at once: They can damage capital. They can reduce labour supply and lower productivity. They can disrupt transport and supply chains."
+    },
+    {
+     "end": 7109,
+     "paragraph": 33,
+     "start": 6938,
+     "text": "The report provides a five-step approach to assess these impacts: identify, assess the propagation, assess whether a trade-off arises, set policy, communicate and monitor."
+    },
+    {
+     "end": 8280,
+     "paragraph": 40,
+     "start": 8177,
+     "text": "Monetary policy cannot repair infrastructure, restore a harvest, or offset the initial physical damage."
+    },
+    {
+     "end": 14518,
+     "paragraph": 59,
+     "start": 14334,
+     "text": "Repeated shocks can gradually erode the very buffers that help economies absorb losses in the first place, including fiscal space, private-sector balance sheets and insurance capacity."
+    },
+    {
+     "end": 16040,
+     "paragraph": 64,
+     "start": 15880,
+     "text": "High insurance penetration and rapid payouts can reduce household distress, firm insolvency and credit losses as well as supporting a faster recovery in output."
+    }
+   ],
+   "source": {
+    "chars": 29281,
+    "chars_sent": 29282,
+    "method": "html-selector",
+    "paragraphs_sent": 127,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3765,
+        "paragraph": 18,
+        "start": 3641,
+        "text": "They can damage capital. They can reduce labour supply and lower productivity. They can disrupt transport and supply chains."
+       },
+       {
+        "end": 3875,
+        "paragraph": 18,
+        "start": 3766,
+        "text": "They can weaken demand and confidence among economic agents, tighten credit conditions and raise uncertainty."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "Physical Shocks And Economic Resilience says physical hazards can damage capital, reduce labour supply and productivity, disrupt transport and supply chains, and weaken demand and confidence."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10021,
+        "paragraph": 44,
+        "start": 9885,
+        "text": "Central banks should therefore focus closely on frequency, persistence and pass-through to overall inflation and inflation expectations."
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "Physical Shocks And Economic Resilience says central banks should focus closely on frequency, persistence and pass-through to overall inflation and inflation expectations."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7109,
+        "paragraph": 33,
+        "start": 6938,
+        "text": "The report provides a five-step approach to assess these impacts: identify, assess the propagation, assess whether a trade-off arises, set policy, communicate and monitor."
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "Physical Shocks And Economic Resilience says the NGFS guide provides a five-step approach: identify, assess the propagation, assess whether a trade-off arises, set policy, communicate and monitor."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8280,
+        "paragraph": 40,
+        "start": 8177,
+        "text": "Monetary policy cannot repair infrastructure, restore a harvest, or offset the initial physical damage."
+       },
+       {
+        "end": 8431,
+        "paragraph": 40,
+        "start": 8281,
+        "text": "If the shock is short-lived and expectations remain anchored, the standard monetary policy response is usually to look through the first-round effects"
+       }
+      ],
+      "paragraphs": [
+       40
+      ]
+     },
+     "text": "Physical Shocks And Economic Resilience says monetary policy cannot repair infrastructure, restore a harvest, or offset initial physical damage, and usually looks through short-lived first-round effects when expectations remain anchored."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13708,
+        "paragraph": 57,
+        "start": 13522,
+        "text": "Fiscal space, insurance penetration, climate adaptation, infrastructure quality, financial-market depth and institutional capacity all help to determine a country’s resilience threshold."
+       },
+       {
+        "end": 14518,
+        "paragraph": 59,
+        "start": 14334,
+        "text": "Repeated shocks can gradually erode the very buffers that help economies absorb losses in the first place, including fiscal space, private-sector balance sheets and insurance capacity."
+       }
+      ],
+      "paragraphs": [
+       57,
+       59
+      ]
+     },
+     "text": "Physical Shocks And Economic Resilience says fiscal space and insurance penetration help determine resilience, while repeated shocks can erode fiscal space, private-sector balance sheets and insurance capacity."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16040,
+        "paragraph": 64,
+        "start": 15880,
+        "text": "High insurance penetration and rapid payouts can reduce household distress, firm insolvency and credit losses as well as supporting a faster recovery in output."
+       }
+      ],
+      "paragraphs": [
+       64
+      ]
+     },
+     "text": "Physical Shocks And Economic Resilience says high insurance penetration and rapid payouts can reduce household distress, firm insolvency and credit losses while supporting a faster recovery in output."
+    }
+   ],
+   "title": "Physical shocks and economic resilience: a central bank perspective − speech by James Talbot",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/october/physical-shocks-and-economic-resilience-speech-by-james-talbot",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7328,
+    "output_tokens": 1860,
+    "reasoning_tokens": 1128
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      12,
      17,
      33,
