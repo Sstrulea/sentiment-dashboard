@@ -1,10 +1,10 @@
 {
   "_calendar_check": {
-    "checked": "2026-10-18",
+    "checked": "2026-10-25",
     "failed": {},
     "signatures": {
       "CH": {
-        "etag": "\"25b6b-65e008646b1a6\"",
+        "etag": "\"25b6b-65e90e98be0c0\"",
         "length": 154475
       }
     },
