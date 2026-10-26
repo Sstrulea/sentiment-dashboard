@@ -961,6 +961,268 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     16,
+     18,
+     27,
+     35,
+     37,
+     55,
+     56,
+     70,
+     71,
+     82,
+     83
+    ],
+    "paragraphs_sent": 92,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:4aa2eb3e52ea",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-26T06:42:03Z",
+   "input_sha256": "ec0e03f2e4fe14b27c54d79bab363c338e21c56dfaad845fd306a47e7b191d1a",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2085,
+     "point": 1,
+     "source_text": "72%",
+     "start": 2082,
+     "text": "72%"
+    },
+    {
+     "end": 2052,
+     "point": 3,
+     "source_text": "1",
+     "start": 2051,
+     "text": "1"
+    },
+    {
+     "end": 4937,
+     "point": 3,
+     "source_text": "100",
+     "start": 4934,
+     "text": "100"
+    },
+    {
+     "end": 4976,
+     "point": 3,
+     "source_text": "24%",
+     "start": 4973,
+     "text": "24%"
+    },
+    {
+     "end": 5124,
+     "point": 3,
+     "source_text": "12%",
+     "start": 5121,
+     "text": "12%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-26",
+   "quotes": [
+    {
+     "end": 3167,
+     "paragraph": 27,
+     "start": 3064,
+     "text": "Depleted natural capital is already disrupting production, damaging supply chains and increasing costs."
+    },
+    {
+     "end": 5017,
+     "paragraph": 35,
+     "start": 4831,
+     "text": "Research involving the ECB, the London School of Economics and Oxford University has found that a 1-in-100-year drought event could put up to 24% of euro area economic output at risk.[5]"
+    },
+    {
+     "end": 8677,
+     "paragraph": 55,
+     "start": 8628,
+     "text": "Economic security depends on ecological security."
+    },
+    {
+     "end": 11407,
+     "paragraph": 71,
+     "start": 11228,
+     "text": "In banking supervision, we expect banks to identify and manage not only material climate risks, but also nature-related risks, as part of ensuring banks remain safe and sound.[13]"
+    },
+    {
+     "end": 13051,
+     "paragraph": 82,
+     "start": 12830,
+     "text": "Protecting and restoring the natural infrastructure on which economic activity depends will require mobilising substantially greater private capital flows towards nature-positive investments, alongside public finance.[17]"
+    }
+   ],
+   "source": {
+    "chars": 14071,
+    "chars_sent": 14072,
+    "method": "html-selector",
+    "paragraphs_sent": 92,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1754,
+        "paragraph": 16,
+        "start": 1667,
+        "text": "Nature provides services without which large parts of our economies could not function."
+       },
+       {
+        "end": 2157,
+        "paragraph": 18,
+        "start": 2054,
+        "text": "Our own analysis shows that 72% of companies in the euro area depend on at least one ecosystem service."
+       }
+      ],
+      "paragraphs": [
+       16,
+       18
+      ]
+     },
+     "text": "Member of the Executive Board Frank Elderson says nature provides services without which large parts of economies could not function, and 72% of companies in the euro area depend on at least one ecosystem service."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3167,
+        "paragraph": 27,
+        "start": 3064,
+        "text": "Depleted natural capital is already disrupting production, damaging supply chains and increasing costs."
+       },
+       {
+        "end": 3312,
+        "paragraph": 27,
+        "start": 3168,
+        "text": "The consequences are already spreading from ecosystems to firms, from firms to balance sheets and from balance sheets into the financial system."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Member of the Executive Board Frank Elderson says depleted natural capital is disrupting production, damaging supply chains and increasing costs, with consequences spreading into the financial system."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5017,
+        "paragraph": 35,
+        "start": 4831,
+        "text": "Research involving the ECB, the London School of Economics and Oxford University has found that a 1-in-100-year drought event could put up to 24% of euro area economic output at risk.[5]"
+       },
+       {
+        "end": 5211,
+        "paragraph": 37,
+        "start": 5114,
+        "text": "Nearly 12% of economic output in the euro area faces risks from insufficient flood protection.[6]"
+       }
+      ],
+      "paragraphs": [
+       35,
+       37
+      ]
+     },
+     "text": "Member of the Executive Board Frank Elderson says research found a 1-in-100-year drought event could put up to 24% of euro area economic output at risk, while nearly 12% faces risks from insufficient flood protection."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8677,
+        "paragraph": 55,
+        "start": 8628,
+        "text": "Economic security depends on ecological security."
+       },
+       {
+        "end": 9048,
+        "paragraph": 56,
+        "start": 8965,
+        "text": "It is investment in the productive capacity that makes lasting prosperity possible."
+       }
+      ],
+      "paragraphs": [
+       55,
+       56
+      ]
+     },
+     "text": "Member of the Executive Board Frank Elderson says economic security depends on ecological security and investment in nature is investment in the productive capacity that makes lasting prosperity possible."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11227,
+        "paragraph": 70,
+        "start": 11034,
+        "text": "Because nature degradation can affect price stability, financial stability and the safety and soundness of banks, nature-related risks are increasingly part of the bread and butter of our work."
+       },
+       {
+        "end": 11407,
+        "paragraph": 71,
+        "start": 11228,
+        "text": "In banking supervision, we expect banks to identify and manage not only material climate risks, but also nature-related risks, as part of ensuring banks remain safe and sound.[13]"
+       }
+      ],
+      "paragraphs": [
+       70,
+       71
+      ]
+     },
+     "text": "Member of the Executive Board Frank Elderson says nature-related risks are increasingly part of ECB work, and the ECB expects banks to identify and manage not only material climate risks, but also nature-related risks."
+    },
+    {
+     "evidence": {
+      "coverage": 0.955,
+      "fragments": [
+       {
+        "end": 13051,
+        "paragraph": 82,
+        "start": 12830,
+        "text": "Protecting and restoring the natural infrastructure on which economic activity depends will require mobilising substantially greater private capital flows towards nature-positive investments, alongside public finance.[17]"
+       },
+       {
+        "end": 13153,
+        "paragraph": 83,
+        "start": 13052,
+        "text": "But the longer we delay restoring natural capital, the more costly and difficult restoration becomes."
+       }
+      ],
+      "paragraphs": [
+       82,
+       83
+      ]
+     },
+     "text": "Member of the Executive Board Frank Elderson says protecting and restoring natural infrastructure will require substantially greater private capital flows towards nature-positive investments alongside public finance, and delay makes restoration more costly and difficult."
+    }
+   ],
+   "title": "Frank Elderson: Taking action for nature – investing in economic resilience and prosperity",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261026~d903d7ad85.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4416,
+    "output_tokens": 2373,
+    "reasoning_tokens": 1552
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      4,
      14,
      16,
