@@ -161,7 +161,8 @@
     "USD:2026-04-29": "video",
     "USD:2026-06-17": "video",
     "USD:2026-07-29": "video",
-    "USD:2026-09-16": "video"
+    "USD:2026-09-16": "video",
+    "USD:2026-10-28": "video"
   },
   "rba_bank_bills": {
     "etag": null,
@@ -169,26 +170,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-28T18:01:07Z",
+      "at": "2026-10-28T20:31:12Z",
       "calls": 2,
-      "cost_usd": 0.021,
+      "cost_usd": 0.0338,
       "failed_validation": 0,
-      "input_tokens": 4104,
+      "input_tokens": 6631,
       "new": 1,
       "no_text": 0,
-      "output_tokens": 1068,
+      "output_tokens": 1711,
       "pending": 0,
-      "reasoning_tokens": 0,
+      "reasoning_tokens": 513,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 0,
+      "unchanged": 16,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 210,
-      "input_tokens": 1331874,
-      "output_tokens": 237840,
-      "summaries": 139
+      "calls": 212,
+      "input_tokens": 1338505,
+      "output_tokens": 239551,
+      "summaries": 140
     }
   }
 }

@@ -4115,6 +4115,184 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     3,
+     6,
+     9
+    ],
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:presser_transcript:2026-10-28",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 5 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+     ],
+     "text": "Chairman Warsh said that in 2027, one meeting will focus exclusively on broad monetary policy strategy, with neither a vote on the federal funds rate nor a policy statement anticipated."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-10-28T20:31:12Z",
+   "input_sha256": "581c540485f3043f181f96db423e1d6faf7972ebe04d586c8521a0c17b12f8d7",
+   "meeting_date": "2026-10-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 274,
+     "point": 1,
+     "source_text": "3¾",
+     "start": 272,
+     "text": "3¾"
+    },
+    {
+     "end": 74,
+     "point": 1,
+     "source_text": "4",
+     "start": 73,
+     "text": "4 percent"
+    },
+    {
+     "end": 2258,
+     "point": 3,
+     "source_text": "6",
+     "start": 2257,
+     "text": "6"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-10-28",
+   "quotes": [
+    {
+     "end": 338,
+     "paragraph": 3,
+     "start": 184,
+     "text": "This morning the FOMC decided to maintain the target rate for the federal funds rate at 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
+    },
+    {
+     "end": 3486,
+     "paragraph": 6,
+     "start": 3460,
+     "text": "But inflation is too high."
+    },
+    {
+     "end": 4469,
+     "paragraph": 9,
+     "start": 4365,
+     "text": "Now, with this objective in mind, we have decided on a change in our FOMC schedule , starting next fall."
+    }
+   ],
+   "source": {
+    "chars": 5824,
+    "chars_sent": 5825,
+    "method": "pypdf",
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 338,
+        "paragraph": 3,
+        "start": 184,
+        "text": "This morning the FOMC decided to maintain the target rate for the federal funds rate at 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Chairman Warsh said the FOMC decided to maintain the target rate for the federal funds rate at 3¾ to 4 percent, in support of the Federal Reserve’s dual mandate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 387,
+        "paragraph": 3,
+        "start": 339,
+        "text": "Economic activity is expanding at a strong pace."
+       },
+       {
+        "end": 863,
+        "paragraph": 3,
+        "start": 651,
+        "text": "But inflation remains elevated. T he Committee believes that the accumulation of more information will help it determine the policy stance appropriate to ensure a timely return of inflation to the 2 percent goal."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Chairman Warsh said economic activity is expanding at a strong pace, while inflation remains elevated and more information will help determine the appropriate policy stance."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1926,
+        "paragraph": 6,
+        "start": 1827,
+        "text": "The jobless rate is lower than a year ago, and payroll growth is noticeably above last year’s pace."
+       },
+       {
+        "end": 2266,
+        "paragraph": 6,
+        "start": 2126,
+        "text": "And yet Americans , of course, are still dealing with inflation that has been running above the Committee’s objective for close to 6 years ."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Chairman Warsh said the jobless rate is lower than a year ago, payroll growth is noticeably above last year’s pace, and inflation has been above the Committee’s objective for close to 6 years."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 3555,
+        "paragraph": 6,
+        "start": 3487,
+        "text": "Energy and related p rices have moved higher again in recent weeks ."
+       },
+       {
+        "end": 3727,
+        "paragraph": 6,
+        "start": 3556,
+        "text": "And our job is to ensure that relative price changes in some sectors do not broade n out across the economy , and that inflation expectations remain as they are anchored ."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Chairman Warsh said energy and related prices have moved higher again in recent weeks, and the Fed’s job is to ensure relative price changes do not broaden across the economy."
+    }
+   ],
+   "title": "Federal Reserve press conference transcript, 28 October 2026",
+   "type": "presser_transcript",
+   "url": "https://www.federalreserve.gov/mediacenter/files/FOMCpresconf20261028.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 6631,
+    "output_tokens": 1711,
+    "reasoning_tokens": 513
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      7,
      9,
      11,
