@@ -4581,6 +4581,282 @@
     "output_tokens": 615,
     "reasoning_tokens": 0
    }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 56,
+    "changes": [
+     {
+      "added": "10",
+      "paragraph": 1,
+      "removed": "12"
+     },
+     {
+      "added": "2",
+      "paragraph": 1,
+      "removed": "0"
+     },
+     {
+      "added": "maintain",
+      "paragraph": 2,
+      "removed": "raise"
+     },
+     {
+      "added": "at",
+      "paragraph": 2,
+      "removed": "by 1/4 percentage point to"
+     },
+     {
+      "added": "strong",
+      "paragraph": 3,
+      "removed": "solid"
+     },
+     {
+      "added": "The accumulation of more information will help the Committee determine the",
+      "paragraph": 4,
+      "removed": "Today's"
+     },
+     {
+      "added": "stance appropriate to ensure",
+      "paragraph": 4,
+      "removed": "action will support"
+     },
+     {
+      "added": "timely",
+      "paragraph": 4,
+      "removed": "timelier"
+     },
+     {
+      "added": "of inflation",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "Voting against the monetary policy action were Lisa D. Cook and Beth M. Hammack, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting.",
+      "paragraph": 5,
+      "removed": ""
+     }
+    ],
+    "removed_words": 14,
+    "truncated": false,
+    "vs_doc_id": "USD:statement:2026-09-16",
+    "vs_meeting": "2026-09-16"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "paragraphs_sent": 5,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:statement:2026-10-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-28T18:01:07Z",
+   "input_sha256": "e22a52d380060ec6baf0af35114f3d5d8ee9f4930ad5f6dcbce0e8af782bfbe2",
+   "meeting_date": "2026-10-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 183,
+     "point": 1,
+     "source_text": "3-3/4",
+     "start": 178,
+     "text": "3-3/4"
+    },
+    {
+     "end": 196,
+     "point": 1,
+     "source_text": "4 percent",
+     "start": 187,
+     "text": "4 percent"
+    },
+    {
+     "end": 90,
+     "point": 4,
+     "source_text": "2",
+     "start": 89,
+     "text": "2 percent"
+    },
+    {
+     "end": 86,
+     "point": 5,
+     "source_text": "10",
+     "start": 84,
+     "text": "10"
+    },
+    {
+     "end": 90,
+     "point": 5,
+     "source_text": "2",
+     "start": 89,
+     "text": "2"
+    },
+    {
+     "end": 1082,
+     "point": 5,
+     "source_text": "1/4 percentage point",
+     "start": 1062,
+     "text": "1/4 percentage point"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-10-28",
+   "quotes": [
+    {
+     "end": 247,
+     "paragraph": 2,
+     "start": 97,
+     "text": "The Committee decided to maintain the target range for the federal funds rate at 3-3/4 to 4 percent, in support of the Federal Reserve's dual mandate."
+    },
+    {
+     "end": 388,
+     "paragraph": 3,
+     "start": 340,
+     "text": "Economic activity is expanding at a strong pace."
+    },
+    {
+     "end": 691,
+     "paragraph": 4,
+     "start": 664,
+     "text": "Inflation remains elevated."
+    },
+    {
+     "end": 1099,
+     "paragraph": 5,
+     "start": 911,
+     "text": "Voting against the monetary policy action were Lisa D. Cook and Beth M. Hammack, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting."
+    }
+   ],
+   "source": {
+    "chars": 1099,
+    "chars_sent": 1100,
+    "method": "stored",
+    "paragraphs_sent": 5,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 196,
+        "paragraph": 2,
+        "start": 97,
+        "text": "The Committee decided to maintain the target range for the federal funds rate at 3-3/4 to 4 percent"
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Committee decided to maintain the target range for the federal funds rate at 3-3/4 to 4 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 339,
+        "paragraph": 2,
+        "start": 248,
+        "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Committee is continuing its policy of maintaining ample reserves in the banking system."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 388,
+        "paragraph": 3,
+        "start": 340,
+        "text": "Economic activity is expanding at a strong pace."
+       },
+       {
+        "end": 507,
+        "paragraph": 3,
+        "start": 470,
+        "text": "domestic spending has been resilient."
+       },
+       {
+        "end": 572,
+        "paragraph": 3,
+        "start": 508,
+        "text": "Productivity growth is strong, and capital investment is robust."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Committee stated that economic activity is expanding at a strong pace, domestic spending has been resilient, and productivity growth and capital investment are strong and robust."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 866,
+        "paragraph": 4,
+        "start": 664,
+        "text": "Inflation remains elevated. The accumulation of more information will help the Committee determine the policy stance appropriate to ensure a timely return of inflation to the Committee's 2 percent goal."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Committee stated that inflation remains elevated and that more information will help determine the policy stance appropriate to ensure a timely return to its 2 percent goal."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 96,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Federal Open Market Committee approved the following statement for release by a 10 – 2 vote:"
+       },
+       {
+        "end": 1099,
+        "paragraph": 5,
+        "start": 911,
+        "text": "Voting against the monetary policy action were Lisa D. Cook and Beth M. Hammack, who preferred to raise the target range for the federal funds rate by 1/4 percentage point at this meeting."
+       }
+      ],
+      "paragraphs": [
+       1,
+       5
+      ]
+     },
+     "text": "The monetary policy action was approved by a 10 – 2 vote, with Lisa D. Cook and Beth M. Hammack preferring to raise the target range by 1/4 percentage point."
+    }
+   ],
+   "title": "Federal Reserve monetary policy statement, 28 October 2026",
+   "type": "statement",
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4104,
+    "output_tokens": 1068,
+    "reasoning_tokens": 0
+   }
   }
  ],
  "version": 1

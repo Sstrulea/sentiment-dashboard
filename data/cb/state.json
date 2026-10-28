@@ -130,6 +130,10 @@
     },
     "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm": {
       "last_modified": "Wed, 16 Sep 2026 18:00:17 GMT"
+    },
+    "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm": {
+      "last_modified": "Wed, 28 Oct 2026 18:00:18 GMT",
+      "sha256": "e22a52d380060ec6baf0af35114f3d5d8ee9f4930ad5f6dcbce0e8af782bfbe2"
     }
   },
   "jpx_tona": {
@@ -165,26 +169,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-28T14:41:43Z",
-      "calls": 3,
-      "cost_usd": 0.046,
+      "at": "2026-10-28T18:01:07Z",
+      "calls": 2,
+      "cost_usd": 0.021,
       "failed_validation": 0,
-      "input_tokens": 7538,
-      "new": 3,
+      "input_tokens": 4104,
+      "new": 1,
       "no_text": 0,
-      "output_tokens": 2581,
+      "output_tokens": 1068,
       "pending": 0,
-      "reasoning_tokens": 1034,
+      "reasoning_tokens": 0,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 118,
+      "unchanged": 0,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 208,
-      "input_tokens": 1327770,
-      "output_tokens": 236772,
-      "summaries": 138
+      "calls": 210,
+      "input_tokens": 1331874,
+      "output_tokens": 237840,
+      "summaries": 139
     }
   }
 }
