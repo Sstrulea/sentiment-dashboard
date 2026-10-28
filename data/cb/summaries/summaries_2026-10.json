@@ -231,6 +231,226 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     7,
+     8,
+     11,
+     17,
+     28,
+     32
+    ],
+    "paragraphs_sent": 38,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:aafcb89ed36b",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-28T00:41:49Z",
+   "input_sha256": "92394a14aff49dcff0d82fcd1959fd913195785dd4434074fdfc53575716c4a2",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1123,
+     "point": 2,
+     "source_text": "25 basis points",
+     "start": 1108,
+     "text": "25 basis points"
+    },
+    {
+     "end": 2390,
+     "point": 3,
+     "source_text": "3½",
+     "start": 2388,
+     "text": "3½"
+    },
+    {
+     "end": 2404,
+     "point": 3,
+     "source_text": "4 per cent",
+     "start": 2394,
+     "text": "4 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-28",
+   "quotes": [
+    {
+     "end": 1124,
+     "paragraph": 8,
+     "start": 983,
+     "text": "Since the Committee’s previous hearing with the RBA in June, the Monetary Policy Board has increased the cash rate target by 25 basis points."
+    },
+    {
+     "end": 2425,
+     "paragraph": 11,
+     "start": 2352,
+     "text": "Recently, inflation has been around 3½ to 4 per cent in year-ended terms."
+    },
+    {
+     "end": 5191,
+     "paragraph": 17,
+     "start": 4990,
+     "text": "Against this backdrop, and despite growth in domestic demand slowing, a further period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+    },
+    {
+     "end": 8349,
+     "paragraph": 28,
+     "start": 8123,
+     "text": "Following extensive consultation, the Payments System Board concluded that a package of reforms to remove card surcharging, reduce interchange fee caps and improve transparency of payment costs would be in the public interest."
+    },
+    {
+     "end": 10893,
+     "paragraph": 32,
+     "start": 10818,
+     "text": "Cash remains a critical part of an inclusive and resilient payments system."
+    }
+   ],
+   "source": {
+    "chars": 12635,
+    "chars_sent": 12636,
+    "method": "html-selector",
+    "paragraphs_sent": 38,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 646,
+        "paragraph": 7,
+        "start": 509,
+        "text": "setting monetary policy to achieve low and stable inflation and full employment, and by supporting the stability of the financial system."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Bullock says the RBA sets monetary policy to achieve low and stable inflation and full employment, and supports the stability of the financial system."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1124,
+        "paragraph": 8,
+        "start": 1044,
+        "text": "the Monetary Policy Board has increased the cash rate target by 25 basis points."
+       },
+       {
+        "end": 1184,
+        "paragraph": 8,
+        "start": 1125,
+        "text": "It did this with the goal of returning inflation to target."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governor Bullock says the Monetary Policy Board increased the cash rate target by 25 basis points to return inflation to target."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2351,
+        "paragraph": 11,
+        "start": 2261,
+        "text": "inflation picked up over the second half of 2025 and has remained above target since then."
+       },
+       {
+        "end": 2425,
+        "paragraph": 11,
+        "start": 2352,
+        "text": "Recently, inflation has been around 3½ to 4 per cent in year-ended terms."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Governor Bullock says inflation has remained above target and recently has been around 3½ to 4 per cent in year-ended terms."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5191,
+        "paragraph": 17,
+        "start": 5060,
+        "text": "a further period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Governor Bullock says a further period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8349,
+        "paragraph": 28,
+        "start": 8157,
+        "text": "the Payments System Board concluded that a package of reforms to remove card surcharging, reduce interchange fee caps and improve transparency of payment costs would be in the public interest."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Governor Bullock says the Payments System Board concluded that reforms to remove card surcharging, reduce interchange fee caps and improve transparency would be in the public interest."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 10893,
+        "paragraph": 32,
+        "start": 10818,
+        "text": "Cash remains a critical part of an inclusive and resilient payments system."
+       },
+       {
+        "end": 11050,
+        "paragraph": 32,
+        "start": 10894,
+        "text": "The RBA remains committed to supporting the Australian Government’s objective that cash remains available for as long as Australians want or need to use it."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "Governor Bullock says cash remains critical to an inclusive and resilient payments system, and the RBA remains committed to supporting cash availability."
+    }
+   ],
+   "title": "Opening Statement to the Senate Economics Legislation Committee (Supplementary Budget Estimates)",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-gov-2026-10-28.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3888,
+    "output_tokens": 1047,
+    "reasoning_tokens": 405
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1,
      3,
      14,
