@@ -451,6 +451,778 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     4,
+     5,
+     17
+    ],
+    "paragraphs_sent": 19,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:opening_statement:2026-10-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-28T14:41:43Z",
+   "input_sha256": "2f1bd1e20a0cc7d0b5bcd72c0b7f5d1ad9e067c167a698743eb5f235902e79a8",
+   "meeting_date": "2026-10-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 224,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 209,
+     "text": "25 basis points"
+    },
+    {
+     "end": 245,
+     "point": 1,
+     "source_text": "2.5%",
+     "start": 241,
+     "text": "2.5%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-10-28",
+   "quotes": [
+    {
+     "end": 246,
+     "paragraph": 2,
+     "start": 164,
+     "text": "Today, we raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+    },
+    {
+     "end": 1123,
+     "paragraph": 6,
+     "start": 897,
+     "text": "With the outlook for inflation substantially higher and the economy showing resilience, an increase in the policy rate is needed to reduce the risk that elevated energy prices could spill over and become generalized inflation."
+    },
+    {
+     "end": 5040,
+     "paragraph": 17,
+     "start": 4929,
+     "text": "There could be a need to raise the policy rate further, but given the uncertainties, we will proceed carefully."
+    }
+   ],
+   "source": {
+    "chars": 5243,
+    "chars_sent": 5244,
+    "method": "stored",
+    "paragraphs_sent": 19,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 246,
+        "paragraph": 2,
+        "start": 164,
+        "text": "Today, we raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Bank of Canada raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 430,
+        "paragraph": 4,
+        "start": 380,
+        "text": "First, the outlook for inflation has deteriorated."
+       },
+       {
+        "end": 553,
+        "paragraph": 4,
+        "start": 475,
+        "text": "global oil prices have increased and are expected to remain higher for longer."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Bank states that the inflation outlook has deteriorated as global oil prices have increased and are expected to remain higher for longer."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 752,
+        "paragraph": 5,
+        "start": 646,
+        "text": "the growth outlook for Canada has improved modestly, despite continued trade actions by the United States."
+       },
+       {
+        "end": 896,
+        "paragraph": 5,
+        "start": 806,
+        "text": "exports and business and government investment are expected to support a further recovery."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Bank states that Canada’s growth outlook has improved modestly, with exports and business and government investment expected to support a further recovery."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4781,
+        "paragraph": 17,
+        "start": 4635,
+        "text": "With elevated inflation expected to last longer and the economy showing resilience, Governing Council agreed that risks to inflation had increased"
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Governing Council states that elevated inflation is expected to last longer and that risks to inflation had increased."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4928,
+        "paragraph": 17,
+        "start": 4850,
+        "text": "Governing Council agreed we would take future decisions one meeting at a time."
+       },
+       {
+        "end": 5040,
+        "paragraph": 17,
+        "start": 4929,
+        "text": "There could be a need to raise the policy rate further, but given the uncertainties, we will proceed carefully."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Governing Council agreed to take future decisions one meeting at a time and stated that there could be a need to raise the policy rate further."
+    }
+   ],
+   "title": "Bank of Canada introductory statement, 28 October 2026",
+   "type": "opening_statement",
+   "url": "https://www.bankofcanada.ca/2026/10/opening-statement-2026-10-28/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2556,
+    "output_tokens": 476,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     4,
+     6,
+     9,
+     12,
+     17
+    ],
+    "paragraphs_sent": 19,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:1dbd907e4f47",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-28T14:41:43Z",
+   "input_sha256": "2f1bd1e20a0cc7d0b5bcd72c0b7f5d1ad9e067c167a698743eb5f235902e79a8",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 224,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 209,
+     "text": "25 basis points"
+    },
+    {
+     "end": 245,
+     "point": 1,
+     "source_text": "2.5%",
+     "start": 241,
+     "text": "2.5%"
+    },
+    {
+     "end": 1556,
+     "point": 4,
+     "source_text": "3.3%",
+     "start": 1552,
+     "text": "3.3%"
+    },
+    {
+     "end": 1629,
+     "point": 4,
+     "source_text": "2%",
+     "start": 1627,
+     "text": "2%"
+    },
+    {
+     "end": 2848,
+     "point": 5,
+     "source_text": "3%",
+     "start": 2846,
+     "text": "3%"
+    },
+    {
+     "end": 2897,
+     "point": 5,
+     "source_text": "3½%",
+     "start": 2894,
+     "text": "3½%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-28",
+   "quotes": [
+    {
+     "end": 246,
+     "paragraph": 2,
+     "start": 164,
+     "text": "Today, we raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+    },
+    {
+     "end": 1123,
+     "paragraph": 6,
+     "start": 897,
+     "text": "With the outlook for inflation substantially higher and the economy showing resilience, an increase in the policy rate is needed to reduce the risk that elevated energy prices could spill over and become generalized inflation."
+    },
+    {
+     "end": 3042,
+     "paragraph": 12,
+     "start": 2911,
+     "text": "Inflation is projected to remain at or above 3% through much of 2027 before returning close to the 2% target by the middle of 2028."
+    },
+    {
+     "end": 5040,
+     "paragraph": 17,
+     "start": 4929,
+     "text": "There could be a need to raise the policy rate further, but given the uncertainties, we will proceed carefully."
+    }
+   ],
+   "source": {
+    "chars": 5243,
+    "chars_sent": 5244,
+    "method": "html-selector",
+    "paragraphs_sent": 19,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 246,
+        "paragraph": 2,
+        "start": 164,
+        "text": "Today, we raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Governor Macklem says the Bank raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 430,
+        "paragraph": 4,
+        "start": 380,
+        "text": "First, the outlook for inflation has deteriorated."
+       },
+       {
+        "end": 553,
+        "paragraph": 4,
+        "start": 475,
+        "text": "global oil prices have increased and are expected to remain higher for longer."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Governor Macklem says the outlook for inflation has deteriorated, and global oil prices have increased and are expected to remain higher for longer."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1123,
+        "paragraph": 6,
+        "start": 985,
+        "text": "an increase in the policy rate is needed to reduce the risk that elevated energy prices could spill over and become generalized inflation."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Macklem says an increase in the policy rate is needed to reduce the risk that elevated energy prices could spill over and become generalized inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1651,
+        "paragraph": 9,
+        "start": 1537,
+        "text": "GDP growth was 3.3% in the second quarter, and recent indicators point to growth of about 2% in the third quarter."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Governor Macklem says GDP growth was 3.3% in the second quarter, and recent indicators point to growth of about 2% in the third quarter."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2910,
+        "paragraph": 12,
+        "start": 2816,
+        "text": "CPI inflation has been around 3% since April and is expected to rise to about 3½% by year end."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Governor Macklem says CPI inflation has been around 3% since April and is expected to rise to about 3½% by year end."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4928,
+        "paragraph": 17,
+        "start": 4835,
+        "text": "Looking ahead, Governing Council agreed we would take future decisions one meeting at a time."
+       },
+       {
+        "end": 5040,
+        "paragraph": 17,
+        "start": 4929,
+        "text": "There could be a need to raise the policy rate further, but given the uncertainties, we will proceed carefully."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Governor Macklem says Governing Council will take future decisions one meeting at a time and will proceed carefully given the uncertainties."
+    }
+   ],
+   "title": "Monetary Policy Report Press Conference Opening Statement",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/10/opening-statement-2026-10-28/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2552,
+    "output_tokens": 1640,
+    "reasoning_tokens": 1034
+   }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 623,
+    "changes": [
+     {
+      "added": "increased",
+      "paragraph": 1,
+      "removed": "held"
+     },
+     {
+      "added": "by 25 basis points to 2.5%,",
+      "paragraph": 1,
+      "removed": "at 2.25%,"
+     },
+     {
+      "added": "2.75%",
+      "paragraph": 1,
+      "removed": "2.5%"
+     },
+     {
+      "added": "2.45%.",
+      "paragraph": 1,
+      "removed": "2.20%."
+     },
+     {
+      "added": "Since the July Monetary Policy Report, global economic activity has remained resilient, despite higher energy prices.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "the economy",
+      "paragraph": 2,
+      "removed": "economic growth"
+     },
+     {
+      "added": "grow at a robust pace, supported",
+      "paragraph": 2,
+      "removed": "be solid, driven"
+     },
+     {
+      "added": "has been resilient and broad-based. After slowing",
+      "paragraph": 2,
+      "removed": "was stronger than expected"
+     },
+     {
+      "added": "Chinese growth rebounded",
+      "paragraph": 2,
+      "removed": "while China’s economy slowed. Overall, the global economy has shown resilience"
+     },
+     {
+      "added": "third quarter, owing to strength in exports and a pickup in fiscal spending.",
+      "paragraph": 2,
+      "removed": "face of geopolitical headwinds, with growth broadly consistent with the July Monetary Policy Report (MPR) projection."
+     },
+     {
+      "added": "persistently elevated",
+      "paragraph": 2,
+      "removed": "still-high"
+     },
+     {
+      "added": "refinery margins,",
+      "paragraph": 2,
+      "removed": "elevated margins for refined energy products,"
+     },
+     {
+      "added": "has risen",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "countries.",
+      "paragraph": 2,
+      "removed": "countries remains high."
+     },
+     {
+      "added": "Given the ongoing resilience of the global economy, the Bank has revised up global GDP growth slightly to 3.1% in 2026, while growth in 2027 and 2028 remains unchanged from the July projection at 3.2%.",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "Global financial",
+      "paragraph": 4,
+      "removed": "Financial"
+     },
+     {
+      "added": "Advanced economy sovereign",
+      "paragraph": 4,
+      "removed": "Long-term"
+     },
+     {
+      "added": "are higher. Equity and credit markets",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "been volatile due to uncertainty about the outlook for the AI sector.",
+      "paragraph": 4,
+      "removed": "moved up globally, including in Canada."
+     },
+     {
+      "added": "had weakened somewhat",
+      "paragraph": 4,
+      "removed": "has appreciated slightly"
+     },
+     {
+      "added": "strength but has since recovered to around 71 cents – the same as assumed in the July Report.",
+      "paragraph": 4,
+      "removed": "weakness."
+     },
+     {
+      "added": "Growth picked up in Canada through the middle of the year. GDP growth was 3.3%",
+      "paragraph": 5,
+      "removed": "As expected, Canadian economic activity strengthened"
+     },
+     {
+      "added": "and",
+      "paragraph": 5,
+      "removed": "with GDP up by 3.3%, following very weak growth in the first quarter. While some of the"
+     },
+     {
+      "added": "",
+      "paragraph": 5,
+      "removed": "strength reflected temporary factors, the pick-up in activity was broad-based. Consumption showed solid gains. Following several weak quarters, there was some rebound in housing activity. Exports and business investment were up sharply. Labour market conditions have improved in recent months, with the unemployment rate edging down to 6.4% in July. Still, demand for labour remains subdued and"
+     },
+     {
+      "added": "growth of about 2% in the third quarter. This is stronger than expected in the July Report. Consumer spending has been solid, even with slow population growth. Business investment rebounded, reflecting oil and gas sector activity and spending on machinery and equipment. Despite ongoing weakness in sectors affected by US tariffs, exports overall have strengthened, owing to robust US demand, higher energy production and increasing signs that businesses are adapting to the changing trade environment. The unemployment rate has been around 6½% for several months. A broad set of indicators continue to point to some",
+      "paragraph": 5,
+      "removed": "continued"
+     },
+     {
+      "added": "Owing to new US tariffs, growth is expected to slow in the fourth quarter of 2026, before picking up again in 2027. This rebound is supported by business investment, exports and fiscal measures. Consumption growth is expected to moderate and housing to remain relatively weak.",
+      "paragraph": 6,
+      "removed": ""
+     },
+     {
+      "added": "The Canadian economy is expected to grow 1% in 2026, and 2% in 2027 and 2028. This is a somewhat stronger overall growth projection than the July Report. This forecast is still subject to considerable uncertainty, particularly regarding Canada-US trade relations.",
+      "paragraph": 7,
+      "removed": ""
+     },
+     {
+      "added": "Given persistently high oil prices, CPI inflation has been around 3% since April and is expected to rise to about 3½% by the end of the year. Excluding gasoline, inflation was 2.2% in September and measures of core inflation remain close to 2%. But cost pressures are building, with high fuel prices raising the costs of production and transportation. Imported industrial and electronics input prices have also increased. While businesses have mostly absorbed higher input costs so far, Bank surveys suggest cost pass-through will increase over the next year. Near-term household and business inflation expectations have risen, while longer-term inflation expectations remain well anchored.",
+      "paragraph": 8,
+      "removed": ""
+     },
+     {
+      "added": "The conflict in the Middle East is now in its eighth month and there is no clear path to resolution. The combination of higher-for-longer energy prices and increased pass-through adds to the persistence of inflation in the projection. CPI inflation is expected to average 3% in 2027, a percentage point above the July projection, then come down to 2% in the middle of 2028. The main sources of uncertainty around this forecast are developments in the Middle East and businesses’ responses to cost pressures.",
+      "paragraph": 9,
+      "removed": ""
+     },
+     {
+      "added": "In the outlook, inflation is higher and more persistent than in the July Report. Growth has picked up this year and is expected to recover further. Against this backdrop, Governing Council decided to increase the policy rate to reduce the risk that continuing high energy prices spread broadly to the prices of other goods and services. There could be a need to increase the policy rate further, but given uncertainties, Governing Council agreed to proceed carefully. The Bank remains committed to maintaining Canadians’ confidence in price stability.",
+      "paragraph": 10,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The continuing conflict in the Middle East is keeping energy prices high. As well, new US tariffs and Canadian counter-measures have been announced following the breakdown of trade talks between Canada and the United States. Both situations remain fluid."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Overall, recent data reaffirm Governing Council’s view of a broadening recovery in Canada’s economy. However, uncertainty is high and new US tariffs and threats of further action pose risks to the sustainability of the recovery."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "CPI inflation has been hovering around 3% in recent months, mainly because of persistently higher gasoline prices. So far, there has been little evidence of higher energy prices spreading to other components of inflation: excluding gasoline, inflation was 2.2% and measures of core inflation remained close to 2% in July. However, with the Middle East conflict still ongoing and little progress reopening the Strait of Hormuz, upside risks to the Bank’s inflation forecast have increased. The longer that high oil prices and elevated refinery margins persist, the greater the risk of spillover to the prices of other goods and services. New US tariffs and Canadian counter-tariffs will also raise costs for some businesses and could feed into consumer prices over time."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "With the economy and inflation evolving broadly as forecast in the July MPR, Governing Council agreed to leave the policy rate unchanged. However, the upside risks to inflation have increased, while new tariffs make growth prospects more uncertain. Governing Council will assess the sustainability of the economic rebound and the outlook for inflation, and is prepared to adjust monetary policy as needed. The Bank remains committed to maintaining Canadians’ confidence in price stability through this period of global upheaval."
+     },
+     {
+      "added": "December 9,",
+      "paragraph": 12,
+      "removed": "October 28,"
+     },
+     {
+      "added": "Monetary Policy Report",
+      "paragraph": 12,
+      "removed": "MPR"
+     },
+     {
+      "added": "on January 27, 2027.",
+      "paragraph": 12,
+      "removed": "at the same time."
+     }
+    ],
+    "removed_words": 425,
+    "truncated": false,
+    "vs_doc_id": "CAD:statement:2026-09-02",
+    "vs_meeting": "2026-09-02"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     10
+    ],
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:statement:2026-10-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-28T14:41:43Z",
+   "input_sha256": "26f737d3721fdc9a6d1ce8658e0c4ec0360d13c7234cdbfa4872a018d0a10105",
+   "meeting_date": "2026-10-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 87,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 72,
+     "text": "25 basis points"
+    },
+    {
+     "end": 95,
+     "point": 1,
+     "source_text": "2.5%",
+     "start": 91,
+     "text": "2.5%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-10-28",
+   "quotes": [
+    {
+     "end": 155,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Bank of Canada today increased its target for the overnight rate by 25 basis points to 2.5%, with the Bank Rate at 2.75% and the deposit rate at 2.45%."
+    },
+    {
+     "end": 4121,
+     "paragraph": 10,
+     "start": 3933,
+     "text": "Against this backdrop, Governing Council decided to increase the policy rate to reduce the risk that continuing high energy prices spread broadly to the prices of other goods and services."
+    },
+    {
+     "end": 4252,
+     "paragraph": 10,
+     "start": 4122,
+     "text": "There could be a need to increase the policy rate further, but given uncertainties, Governing Council agreed to proceed carefully."
+    }
+   ],
+   "source": {
+    "chars": 4516,
+    "chars_sent": 4517,
+    "method": "stored",
+    "paragraphs_sent": 12,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 95,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Bank of Canada today increased its target for the overnight rate by 25 basis points to 2.5%"
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Bank of Canada increased its target for the overnight rate by 25 basis points to 2.5%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4121,
+        "paragraph": 10,
+        "start": 3956,
+        "text": "Governing Council decided to increase the policy rate to reduce the risk that continuing high energy prices spread broadly to the prices of other goods and services."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governing Council decided to increase the policy rate to reduce the risk that continuing high energy prices spread broadly to other goods and services prices."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3865,
+        "paragraph": 10,
+        "start": 3785,
+        "text": "In the outlook, inflation is higher and more persistent than in the July Report."
+       },
+       {
+        "end": 3932,
+        "paragraph": 10,
+        "start": 3866,
+        "text": "Growth has picked up this year and is expected to recover further."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "The Bank states that inflation is higher and more persistent than in the July Report, while growth has picked up this year and is expected to recover further."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4252,
+        "paragraph": 10,
+        "start": 4122,
+        "text": "There could be a need to increase the policy rate further, but given uncertainties, Governing Council agreed to proceed carefully."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "The Bank states that there could be a need to increase the policy rate further, but Governing Council agreed to proceed carefully given uncertainties."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4336,
+        "paragraph": 10,
+        "start": 4253,
+        "text": "The Bank remains committed to maintaining Canadians’ confidence in price stability."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "The Bank remains committed to maintaining Canadians’ confidence in price stability."
+    }
+   ],
+   "title": "Bank of Canada monetary policy statement, 28 October 2026",
+   "type": "statement",
+   "url": "https://www.bankofcanada.ca/2026/10/fad-press-release-2026-10-28/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2430,
+    "output_tokens": 465,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      1,
      3,
      14,
