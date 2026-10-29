@@ -3012,6 +3012,297 @@
    }
   },
   {
+   "changes_vs_previous": {
+    "added_words": 104,
+    "changes": [
+     {
+      "added": "keep",
+      "paragraph": 1,
+      "removed": "raise"
+     },
+     {
+      "added": "unchanged. Energy prices have continued to rise, posing upside risks to the inflation outlook and downside risks to the growth outlook. While the full effects of the energy shock are still unfolding, underlying inflation has remained broadly stable so far and wages do not show a material response at this stage.",
+      "paragraph": 1,
+      "removed": "by 25 basis points."
+     },
+     {
+      "added": "increased magnitude and duration of",
+      "paragraph": 1,
+      "removed": "conflict in"
+     },
+     {
+      "added": "energy shock, as well as the implications for indirect and second-round effects, are likely",
+      "paragraph": 1,
+      "removed": "Middle East continues"
+     },
+     {
+      "added": "drive up",
+      "paragraph": 1,
+      "removed": "generate"
+     },
+     {
+      "added": "",
+      "paragraph": 1,
+      "removed": "pressures,"
+     },
+     {
+      "added": "lower growth. Financing conditions have tightened since",
+      "paragraph": 1,
+      "removed": "inflation is set to remain well above target for an extended period. Today’s decision underscores"
+     },
+     {
+      "added": "last meeting, which is likely to weigh on inflation and growth. The Governing Council is committed",
+      "paragraph": 1,
+      "removed": "commitment"
+     },
+     {
+      "added": "The",
+      "paragraph": 2,
+      "removed": "With today’s decision, the"
+     },
+     {
+      "added": "current elevated uncertainty.",
+      "paragraph": 2,
+      "removed": "uncertainty caused by the conflict."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The baseline of the new ECB staff projections sees headline inflation averaging 3.0% in 2026, 2.5% in 2027 and 2.1% in 2028. For inflation excluding energy and food, the baseline foresees 2.5% in 2026, 2.6% in 2027 and 2.3% in 2028. Compared with June, the baseline projection for inflation in 2026 is unchanged, while it has been revised up for 2027 and 2028. The baseline projection for economic growth is 0.9% for 2026, 1.4% for 2027 and 1.5% for 2028. This is an upward revision for both 2026 and 2027, mainly reflecting the greater than expected resilience of the euro area economy."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The outlook remains highly uncertain, with risks to the upside for inflation and to the downside for economic growth. In relation to the energy shock, the updated scenarios put together by staff illustrate the broad range of outcomes for how growth and inflation would evolve under different assumptions about its intensity and duration, as well as its indirect and second-round effects."
+     },
+     {
+      "added": "",
+      "paragraph": 4,
+      "removed": "Governing Council decided to raise the three key ECB interest rates by 25 basis points. Accordingly, the"
+     },
+     {
+      "added": "remain unchanged at",
+      "paragraph": 4,
+      "removed": "be increased to"
+     },
+     {
+      "added": "respectively.",
+      "paragraph": 4,
+      "removed": "respectively, with effect from 16 September 2026."
+     }
+    ],
+    "removed_words": 227,
+    "truncated": false,
+    "vs_doc_id": "EUR:statement:2026-09-10",
+    "vs_meeting": "2026-09-10"
+   },
+   "coverage": {
+    "paragraphs": [
+     1,
+     2,
+     4,
+     6,
+     8
+    ],
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:statement:2026-10-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-29T13:16:17Z",
+   "input_sha256": "3380b472affd31e71506318a35e3996bbd1c7c03da2c3f0d4e6c08da743ab295",
+   "meeting_date": "2026-10-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1578,
+     "point": 1,
+     "source_text": "2.50%",
+     "start": 1573,
+     "text": "2.50%"
+    },
+    {
+     "end": 1585,
+     "point": 1,
+     "source_text": "2.65%",
+     "start": 1580,
+     "text": "2.65%"
+    },
+    {
+     "end": 1595,
+     "point": 1,
+     "source_text": "2.90%",
+     "start": 1590,
+     "text": "2.90%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-10-29",
+   "quotes": [
+    {
+     "end": 87,
+     "paragraph": 1,
+     "start": 0,
+     "text": "The Governing Council today decided to keep the three key ECB interest rates unchanged."
+    },
+    {
+     "end": 212,
+     "paragraph": 1,
+     "start": 88,
+     "text": "Energy prices have continued to rise, posing upside risks to the inflation outlook and downside risks to the growth outlook."
+    },
+    {
+     "end": 1414,
+     "paragraph": 2,
+     "start": 1344,
+     "text": "The Governing Council is not pre-committing to a particular rate path."
+    },
+    {
+     "end": 1854,
+     "paragraph": 6,
+     "start": 1690,
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+    }
+   ],
+   "source": {
+    "chars": 2534,
+    "chars_sent": 2535,
+    "method": "stored",
+    "paragraphs_sent": 9,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 87,
+        "paragraph": 1,
+        "start": 0,
+        "text": "The Governing Council today decided to keep the three key ECB interest rates unchanged."
+       },
+       {
+        "end": 1609,
+        "paragraph": 4,
+        "start": 1438,
+        "text": "The interest rates on the deposit facility, the main refinancing operations and the marginal lending facility will remain unchanged at 2.50%, 2.65% and 2.90% respectively."
+       }
+      ],
+      "paragraphs": [
+       1,
+       4
+      ]
+     },
+     "text": "The Governing Council decided to keep the three key ECB interest rates unchanged at 2.50%, 2.65% and 2.90%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 212,
+        "paragraph": 1,
+        "start": 88,
+        "text": "Energy prices have continued to rise, posing upside risks to the inflation outlook and downside risks to the growth outlook."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "Energy prices have continued to rise, posing upside risks to the inflation outlook and downside risks to the growth outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 389,
+        "paragraph": 1,
+        "start": 277,
+        "text": "underlying inflation has remained broadly stable so far and wages do not show a material response at this stage."
+       }
+      ],
+      "paragraphs": [
+       1
+      ]
+     },
+     "text": "The Governing Council states that underlying inflation has remained broadly stable so far and wages do not show a material response at this stage."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1041,
+        "paragraph": 2,
+        "start": 923,
+        "text": "It will follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Governing Council will follow a data-dependent and meeting-by-meeting approach to determining the appropriate monetary policy stance."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1854,
+        "paragraph": 6,
+        "start": 1690,
+        "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests the principal payments from maturing securities."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The APP and PEPP portfolios are declining at a measured and predictable pace, as the Eurosystem no longer reinvests principal payments from maturing securities."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2089,
+        "paragraph": 8,
+        "start": 1859,
+        "text": "The Governing Council stands ready to adjust all of its instruments within its mandate to ensure that inflation stabilises at its 2% target in the medium term and to preserve the smooth functioning of monetary policy transmission."
+       },
+       {
+        "end": 2299,
+        "paragraph": 8,
+        "start": 2100,
+        "text": "the Transmission Protection Instrument is available to counter unwarranted, disorderly market dynamics that pose a serious threat to the transmission of monetary policy across all euro area countries"
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "The Governing Council stands ready to adjust all of its instruments within its mandate, and the Transmission Protection Instrument is available to counter unwarranted, disorderly market dynamics."
+    }
+   ],
+   "title": "European Central Bank monetary policy statement, 29 October 2026",
+   "type": "statement",
+   "url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp261029~9a493adf17.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2001,
+    "output_tokens": 1151,
+    "reasoning_tokens": 516
+   }
+  },
+  {
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
