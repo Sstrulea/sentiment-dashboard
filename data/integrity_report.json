@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-29T19:06:27.111529",
+ "as_of": "2026-10-29T20:06:32.037328",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -99,7 +99,7 @@
      "threshold": 0.32239,
      "n_revision_pairs": 14,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -460,7 +460,7 @@
      "threshold": 0.32239,
      "n_revision_pairs": 14,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_jolts_job_openings",
@@ -2317,5 +2317,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-29T19:06:31+00:00"
+ "generated_at": "2026-10-29T20:06:38+00:00"
 }
