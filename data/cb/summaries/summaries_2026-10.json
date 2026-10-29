@@ -1519,6 +1519,208 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     4,
+     8,
+     15,
+     22,
+     36,
+     46
+    ],
+    "paragraphs_sent": 56,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:speech:683ddb27987e",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-29T18:41:27Z",
+   "input_sha256": "d654371946c586e9fcdef851be98011732a54c4a06125388a10a8f922b4537bb",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 10577,
+     "point": 5,
+     "source_text": "90%",
+     "start": 10574,
+     "text": "90%"
+    },
+    {
+     "end": 14408,
+     "point": 6,
+     "source_text": "24",
+     "start": 14406,
+     "text": "24"
+    },
+    {
+     "end": 11654,
+     "point": 6,
+     "source_text": "7",
+     "start": 11653,
+     "text": "7"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-29",
+   "quotes": [
+    {
+     "end": 463,
+     "paragraph": 4,
+     "start": 365,
+     "text": "As part of its statutory tasks, the SNB provides the financial system with central bank liquidity."
+    },
+    {
+     "end": 3975,
+     "paragraph": 15,
+     "start": 3831,
+     "text": "Sufficient collateralisation thus limits the SNB's financial risks, protects its balance sheet and helps to preserve its financial independence."
+    },
+    {
+     "end": 10780,
+     "paragraph": 36,
+     "start": 10673,
+     "text": "The SNB GC Basket has thus established itself as the common collateral standard for the SNB and the market."
+    },
+    {
+     "end": 16037,
+     "paragraph": 52,
+     "start": 15875,
+     "text": "The SNB reviews its collateral policy on an ongoing basis and adjusts it as necessary to take account of changed market conditions and technological developments."
+    }
+   ],
+   "source": {
+    "chars": 16649,
+    "chars_sent": 16650,
+    "method": "html-selector",
+    "paragraphs_sent": 56,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 580,
+        "paragraph": 4,
+        "start": 464,
+        "text": "It always does so against collateral, and this has to meet requirements set out by the SNB in its collateral policy."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Petra Tschudin and Thomas Moser say the SNB provides central bank liquidity against collateral that meets requirements set out in its collateral policy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1966,
+        "paragraph": 8,
+        "start": 1812,
+        "text": "To keep the short-term money market rates close to the SNB policy rate, the SNB uses repo transactions to provide or absorb liquidity in the money market."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Petra Tschudin and Thomas Moser say the SNB uses repo transactions to provide or absorb liquidity and keep short-term money market rates close to the SNB policy rate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3975,
+        "paragraph": 15,
+        "start": 3831,
+        "text": "Sufficient collateralisation thus limits the SNB's financial risks, protects its balance sheet and helps to preserve its financial independence."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Petra Tschudin and Thomas Moser say sufficient collateralisation limits the SNB's financial risks, protects its balance sheet and helps preserve its financial independence."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5714,
+        "paragraph": 22,
+        "start": 5581,
+        "text": "the SNB General Collateral Basket, or SNB GC Basket for short, which comprises all the securities that the SNB accepts as collateral."
+       },
+       {
+        "end": 5924,
+        "paragraph": 22,
+        "start": 5803,
+        "text": "First, the eligible collateral must effectively protect the SNB's balance sheet in the event of a counterparty's default."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "Petra Tschudin and Thomas Moser say the SNB GC Basket comprises all securities the SNB accepts as collateral, and eligible collateral must protect its balance sheet and be broad enough for counterparties."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 10655,
+        "paragraph": 36,
+        "start": 10527,
+        "text": "Over the past five years, an average of around 90% of all transactions have been secured using securities from the SNB GC Basket"
+       }
+      ],
+      "paragraphs": [
+       36
+      ]
+     },
+     "text": "Petra Tschudin and Thomas Moser say that over the past five years, an average of around 90% of Swiss interbank repo transactions used securities from the SNB GC Basket."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14466,
+        "paragraph": 46,
+        "start": 14335,
+        "text": "Counterparties can use the PSSF to obtain liquidity via the SIC system 24 hours a day, 7 days a week, up to a limit set by the SNB."
+       }
+      ],
+      "paragraphs": [
+       46
+      ]
+     },
+     "text": "Petra Tschudin and Thomas Moser say counterparties can use the PSSF to obtain liquidity via the SIC system 24 hours a day, 7 days a week, up to an SNB-set limit."
+    }
+   ],
+   "title": "2026-10-29 - Petra Tschudin / Thomas Moser: Liquidity against collateral: the SNB's approach",
+   "type": "speech",
+   "url": "https://www.snb.ch/en/publications/communication/speeches/2026/ref_20261029_gpetmo",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4979,
+    "output_tokens": 815,
+    "reasoning_tokens": 146
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      36,
      39,
      62,
