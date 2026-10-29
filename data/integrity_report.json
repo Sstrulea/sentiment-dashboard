@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-25T12:07:03.324356",
+ "as_of": "2026-10-29T19:06:27.111529",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -81,6 +81,25 @@
      "n_revision_pairs": 32,
      "level": "INFO",
      "new": false
+    },
+    {
+     "canonical_id": "usd_advance_gdp_price_index",
+     "currency": "USD",
+     "indicator_key": "gdp_price_index",
+     "name_raw": "Advance GDP Price Index q/q",
+     "release_dt": "2023-01-26T13:30:00",
+     "kind": "value",
+     "scored_actual": 3.5,
+     "scored_source": "ff",
+     "next_release_dt": "2023-04-27T12:30:00",
+     "next_previous": 3.9,
+     "next_from": "parquet",
+     "diff": 0.4,
+     "tolerance": 0.32239,
+     "threshold": 0.32239,
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_durable_goods_orders",
@@ -423,6 +442,25 @@
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
+    },
+    {
+     "canonical_id": "usd_advance_gdp_price_index",
+     "currency": "USD",
+     "indicator_key": "gdp_price_index",
+     "name_raw": "Advance GDP Price Index q/q",
+     "release_dt": "2023-07-27T12:30:00",
+     "kind": "value",
+     "scored_actual": 2.2,
+     "scored_source": "ff",
+     "next_release_dt": "2023-10-26T12:30:00",
+     "next_previous": 1.7,
+     "next_from": "parquet",
+     "diff": -0.5,
+     "tolerance": 0.32239,
+     "threshold": 0.32239,
+     "n_revision_pairs": 14,
+     "level": "INFO",
+     "new": true
     },
     {
      "canonical_id": "usd_jolts_job_openings",
@@ -1832,19 +1870,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 78,
+    "ff": 80,
     "manual": 16,
     "quarantined": 2
    },
    "findings_by_kind": {
-    "value": 80,
+    "value": 82,
     "zero": 16
    },
-   "n_checked": 3422,
+   "n_checked": 3421,
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-25.json"
+   "weekly_feed": "ff_weekly_2026-10-29.json"
   },
   "missing_release": {
    "findings": [
@@ -2272,12 +2310,12 @@
   },
   "previous_consistency": {
    "WARN": 23,
-   "INFO": 73
+   "INFO": 75
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-10-25T12:07:09+00:00"
+ "generated_at": "2026-10-29T19:06:31+00:00"
 }
