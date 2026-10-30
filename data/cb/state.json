@@ -71,6 +71,11 @@
       "etag": "\"w208861-1789702105535\"",
       "last_modified": "Fri, 18 Sep 2026 03:28:25 GMT"
     },
+    "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k261030a.pdf": {
+      "etag": "\"w175859-1793331826696\"",
+      "last_modified": "Fri, 30 Oct 2026 03:43:46 GMT",
+      "sha256": "d101f213b15355e882d2eabb23a5acc57906d8c577da3c3556d267757d9529f2"
+    },
     "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260428.pdf": {
       "etag": "\"w343339-1781682380113\"",
       "last_modified": "Wed, 17 Jun 2026 07:46:20 GMT"
@@ -170,26 +175,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-29T18:41:27Z",
+      "at": "2026-10-30T04:41:36Z",
       "calls": 1,
-      "cost_usd": 0.0197,
+      "cost_usd": 0.0179,
       "failed_validation": 0,
-      "input_tokens": 4979,
+      "input_tokens": 2522,
       "new": 1,
       "no_text": 0,
-      "output_tokens": 815,
+      "output_tokens": 1073,
       "pending": 0,
-      "reasoning_tokens": 146,
+      "reasoning_tokens": 510,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 123,
+      "unchanged": 121,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 214,
-      "input_tokens": 1345485,
-      "output_tokens": 241517,
-      "summaries": 142
+      "calls": 215,
+      "input_tokens": 1348007,
+      "output_tokens": 242590,
+      "summaries": 143
     }
   }
 }
