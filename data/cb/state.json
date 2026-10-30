@@ -20,8 +20,8 @@
     ]
   },
   "atlantafed_mpt": {
-    "etag": "de7a0c30e28842acb753d5fc4e80a373",
-    "last_modified": "Thu, 29 Oct 2026 15:14:56 GMT"
+    "etag": "dc0bd8d596bb469ca03e71c4b669fa0b",
+    "last_modified": "Fri, 30 Oct 2026 14:36:19 GMT"
   },
   "boe_ois": {
     "history": {
@@ -175,26 +175,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-10-30T04:41:36Z",
-      "calls": 1,
-      "cost_usd": 0.0179,
+      "at": "2026-10-30T16:41:38Z",
+      "calls": 2,
+      "cost_usd": 0.1,
       "failed_validation": 0,
-      "input_tokens": 2522,
+      "input_tokens": 29487,
       "new": 1,
-      "no_text": 0,
-      "output_tokens": 1073,
+      "no_text": 2,
+      "output_tokens": 3419,
       "pending": 0,
-      "reasoning_tokens": 510,
+      "reasoning_tokens": 1873,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 121,
+      "unchanged": 122,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 215,
-      "input_tokens": 1348007,
-      "output_tokens": 242590,
-      "summaries": 143
+      "calls": 217,
+      "input_tokens": 1377494,
+      "output_tokens": 246009,
+      "summaries": 144
     }
   }
 }

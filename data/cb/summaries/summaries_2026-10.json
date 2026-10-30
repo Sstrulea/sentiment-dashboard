@@ -3214,6 +3214,256 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     3,
+     15,
+     105,
+     133,
+     251,
+     288
+    ],
+    "paragraphs_sent": 290,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:fb4eeae5b207",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-30T16:41:38Z",
+   "input_sha256": "08b246b53ab4ce891c93844eba584f5438a34d4af1d04f5c9607e3502cfde486",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3284,
+     "point": 2,
+     "source_text": "10 per cent",
+     "start": 3273,
+     "text": "10 per cent"
+    },
+    {
+     "end": 1967,
+     "point": 3,
+     "source_text": "2025",
+     "start": 1963,
+     "text": "2025"
+    },
+    {
+     "end": 18078,
+     "point": 3,
+     "source_text": "64 per cent",
+     "start": 18067,
+     "text": "64 per cent"
+    },
+    {
+     "end": 8256,
+     "point": 3,
+     "source_text": "7",
+     "start": 8255,
+     "text": "7 per cent"
+    },
+    {
+     "end": 23174,
+     "point": 4,
+     "source_text": "52 per cent",
+     "start": 23163,
+     "text": "52 per cent"
+    },
+    {
+     "end": 23240,
+     "point": 4,
+     "source_text": "26 per cent",
+     "start": 23229,
+     "text": "26 per cent"
+    },
+    {
+     "end": 1363,
+     "point": 4,
+     "source_text": "2024",
+     "start": 1359,
+     "text": "2024"
+    },
+    {
+     "end": 50331,
+     "point": 5,
+     "source_text": "0.9 percentage points",
+     "start": 50310,
+     "text": "0.9 percentage points"
+    },
+    {
+     "end": 201,
+     "point": 5,
+     "source_text": "2026",
+     "start": 197,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-30",
+   "quotes": [
+    {
+     "end": 587,
+     "paragraph": 3,
+     "start": 381,
+     "text": "the adoption of AI will be a key determinant of European productivity growth in the coming years, while expenditure on AI adoption also currently constitutes a significant stimulus to the euro area economy."
+    },
+    {
+     "end": 3330,
+     "paragraph": 15,
+     "start": 3197,
+     "text": "In the ECB Corporate Telephone Survey, firms report that AI has added about 10 per cent to their capital expenditure plans this year."
+    },
+    {
+     "end": 23261,
+     "paragraph": 133,
+     "start": 23064,
+     "text": "According to the CES, the proportion of workers using AI has doubled over the last two years, with 52 per cent now reporting that they use AI at work, compared with 26 per cent in 2024 (Chart 16a)."
+    },
+    {
+     "end": 57489,
+     "paragraph": 288,
+     "start": 57318,
+     "text": "However, the AI adoption process is still at a relatively early stage and the extent and timing of the economy-wide transformative potential of AI remain highly uncertain."
+    }
+   ],
+   "source": {
+    "chars": 58016,
+    "chars_sent": 58017,
+    "method": "html-selector",
+    "paragraphs_sent": 290,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 477,
+        "paragraph": 3,
+        "start": 381,
+        "text": "the adoption of AI will be a key determinant of European productivity growth in the coming years"
+       },
+       {
+        "end": 587,
+        "paragraph": 3,
+        "start": 485,
+        "text": "expenditure on AI adoption also currently constitutes a significant stimulus to the euro area economy."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says AI adoption will be a key determinant of European productivity growth, while expenditure on AI adoption currently constitutes a significant stimulus to the euro area economy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3330,
+        "paragraph": 15,
+        "start": 3197,
+        "text": "In the ECB Corporate Telephone Survey, firms report that AI has added about 10 per cent to their capital expenditure plans this year."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane reports that firms in the ECB Corporate Telephone Survey say AI has added about 10 per cent to their capital expenditure plans this year."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 18221,
+        "paragraph": 105,
+        "start": 18067,
+        "text": "64 per cent of firms said they were using it either experimentally or moderately, while only 7 per cent of firms reported that their use was “significant”"
+       }
+      ],
+      "paragraphs": [
+       105
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says that in the fourth quarter of 2025, 64 per cent of SAFE firms used AI experimentally or moderately, while only 7 per cent reported “significant” use."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 23248,
+        "paragraph": 133,
+        "start": 23086,
+        "text": "the proportion of workers using AI has doubled over the last two years, with 52 per cent now reporting that they use AI at work, compared with 26 per cent in 2024"
+       },
+       {
+        "end": 23329,
+        "paragraph": 133,
+        "start": 23266,
+        "text": "Adoption rates are higher for younger and more educated workers"
+       }
+      ],
+      "paragraphs": [
+       133
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the CES finds that 52 per cent of workers now report using AI at work, compared with 26 per cent in 2024, and that adoption rates are higher for younger and more educated workers."
+    },
+    {
+     "evidence": {
+      "coverage": 0.882,
+      "fragments": [
+       {
+        "end": 50456,
+        "paragraph": 251,
+        "start": 50246,
+        "text": "Internal estimates suggest that the AI boom accounts for around 0.9 percentage points of additional aggregate annual credit growth – about one quarter of the total credit growth as of the first quarter of 2026."
+       }
+      ],
+      "paragraphs": [
+       251
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane reports that internal estimates put the AI boom’s contribution at around 0.9 percentage points of additional aggregate annual credit growth, about one quarter of total credit growth as of the first quarter of 2026."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 57489,
+        "paragraph": 288,
+        "start": 57327,
+        "text": "the AI adoption process is still at a relatively early stage and the extent and timing of the economy-wide transformative potential of AI remain highly uncertain."
+       }
+      ],
+      "paragraphs": [
+       288
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane concludes that the AI adoption process is still at a relatively early stage and that its economy-wide transformative potential remains highly uncertain."
+    }
+   ],
+   "title": "Philip R. Lane: AI adoption in Europe",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261030~08d9d540f0.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 29487,
+    "output_tokens": 3419,
+    "reasoning_tokens": 1873
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 104,
     "changes": [
