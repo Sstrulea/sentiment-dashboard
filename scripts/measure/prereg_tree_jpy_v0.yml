@@ -1,0 +1,88 @@
+# Pre-registration — JPY decision tree v0 (phase 1, feat/tree-engine).
+# Committed BEFORE any forward return was computed. scripts/measure/tree_jpy_v0.py
+# refuses to run while this file has uncommitted changes and prints its commit hash.
+# Changing anything below after the first measurement = a new pre-registration (v1).
+id: tree_jpy_v0
+written: 2026-10-30
+tree_config: data/trees/jpy.yml          # frozen in the same commit
+global_config: data/trees/_global.yml    # nodes + classifier risk_regime_v0, frozen in the same commit
+inputs: data/tree_inputs.parquet         # scripts/fetch_tree_inputs.py, fetched 2026-10-30
+
+regime_classifier:                       # copy of _global.yml, for the record
+  id: risk_regime_v0
+  precedence: [liquidity_stress, inflation_shock, growth_scare]
+  default: calm
+  liquidity_stress: "vix_term >= 1.0 OR (vix_level >= 30 AND hy_oas_chg_20d >= +100 bp)"
+  inflation_shock: "spx_ret_20d < -3% AND us10y_chg_20d > +25 bp"
+  growth_scare: "spx_ret_20d < -3% AND us10y_chg_20d < -15 bp"
+  undetermined_rule: >-
+    a rule that cannot be decided because an input node is missing does not fire
+    (three-valued AND/OR); the week is marked degraded and counted as such
+
+tree:                                    # copy of data/trees/jpy.yml, for the record
+  direction: "JPY = -USDJPY (DEXJPUS)"
+  z: "rolling 2y z-score, as-of, >= 250 obs"
+  z_min: 0.5
+  conviction: "|signed primary z| x product of modifier multipliers; 0 when direction 0"
+  conviction_tiers: [0.5, 1.0, 2.0]
+  calm: {primary: -us2y_chg_20d, modifiers: ["jpy_cot_pctile <=20 up / >=80 down x1.3 / x0.7",
+                                             "oil_chg_20d z >= +1 -> JPY down x1.2 / x0.8 (one-sided)"]}
+  growth_scare: {primary: -spx_ret_20d, modifiers: ["us2y_chg_20d sign -, threshold 0, x1.2 / x0.8",
+                                                    "jpy_cot_pctile x1.3 / x0.7"]}
+  inflation_shock: {primary: -us2y_chg_20d, modifiers: ["jpy_cot_pctile x1.3 / x0.7"]}
+  liquidity_stress: {primary: "const z = +2 (JPY up)", modifiers: ["jpy_cot_pctile <= 20 x1.5, no disagree penalty"],
+                     invalidator: "vix_term < 0.9"}
+  context_only: [usdjpy_trend_20d, usdjpy_speed_flag, boj_path_proxy]
+
+availability:                            # what a node may see at asof t (no leakage)
+  daily_series: "observation date + 1 day <= t (the asof-day fixing is never seen)"
+  cot: "report Tuesday + 6 days <= t"
+
+walk_forward:
+  step: weekly, Fridays from 2000-01-07
+  windows:                               # end = last Friday with the forward return available
+    long:   {start: 2000-01-07, note: "nodes with long history; short-history nodes are missing"}
+    main:   {start: 2016-01-08, note: "all nodes the sources serve (HY OAS only from 2023-10, SP500 from 2016-10)"}
+    recent: {start: 2022-10-07}
+  primary_window: main                   # promotion is decided on this window; the others are reported
+
+target:
+  return: "JPY forward return = -(ln DEXJPUS[t + 7h days] - ln DEXJPUS[t]), bp; price = last fixing on or before the day"
+  horizons_weeks: [1, 2, 4, 8, 13]
+  reported_first: 2
+  stale_end: "dropped when the end fixing is more than 4 days before t + 7h days or after the last fixing"
+
+metrics:                                 # per window x horizon, and per regime cell
+  N: weeks with a forward return
+  N_dir: weeks with direction != 0
+  N_ind: "non-overlapping subsample: every h-th week from the first week of the window (offset 0)"
+  hit: "share of direction != 0 weeks with sign(return) == direction (return == 0 excluded)"
+  mean_bp: "mean of direction x return over direction != 0 weeks"
+  IC: "Spearman(signed conviction, return) over all N weeks (direction 0 -> 0)"
+  t_IC: "IC on the non-overlapping subsample, t = IC sqrt((n-2)/(1-IC^2))"
+  t_mean: "t of direction x return on the non-overlapping subsample, direction != 0"
+  t_hit: "(hit - 0.5) / sqrt(0.25 / n) on the non-overlapping subsample, direction != 0"
+  halves: "window split in two by week count; IC in each half"
+  cells: "same metrics inside each regime cell; the non-overlapping grid is the window's, restricted to the cell"
+
+baselines:
+  a_random_walk: "no change forecast: IC 0, hit 0.5, mean 0 by definition"
+  b_const_jpy_down: "direction -1 every week (carry); IC undefined"
+  c_us2y_alone: "signed = -z(us2y_chg_20d), unconditional; direction = sign when |z| >= 0.5"
+  d_trend: "signed = -z(usdjpy_trend_20d) (USDJPY trend continues); direction = sign when |z| >= 0.5"
+  best_baseline_ic: "max(0, IC_c, IC_d)"
+
+criteria:                                # applied per horizon, on the primary window
+  signal:                                # tree context -> signal at horizon h when ALL hold
+    - "IC >= 0.05"
+    - "t_IC >= 2"
+    - "IC has the same sign in both halves (and as the full window)"
+    - "IC - best_baseline_ic >= 0.03"
+    - "neighbour rule: IC has the same sign at every adjacent horizon in [1, 2, 4, 8, 13] (one neighbour at the ends)"
+  filter:                                # one regime cell -> filter at horizon h when ALL hold
+    - "N_dir >= 20 in the cell"
+    - "hit >= 0.58"
+    - "t_hit >= 2"
+    - "neighbour rule: the cell IC has the same sign at every adjacent horizon (cell IC undefined, e.g. a constant signal -> sign of mean_bp)"
+  otherwise: everything stays context
+  order: raw numbers are reported before any recommendation; horizon 2w first

@@ -1,0 +1,45 @@
+# Global nodes of the decision trees: computed once per asof and shared by every tree.
+# Raw series come from data/tree_inputs.parquet (scripts/fetch_tree_inputs.py, FRED keyless).
+# z = rolling 2y z-score of the node value, as-of (needs >= 250 obs in the window).
+# Changes count observations (20 obs ~ 20 trading days). Units: yields/spreads in bp,
+# prices in % (log change for oil, simple for SP500).
+note: thresholds of risk_regime_v0 are v0 hypotheses, fixed before any forward return was computed
+nodes:
+  - {id: us2y_chg_5d,   fn: chg,   inputs: [DGS2],  params: {n: 5,  mode: diff_bp}, status: context, stale_after_days: 7}
+  - {id: us2y_chg_20d,  fn: chg,   inputs: [DGS2],  params: {n: 20, mode: diff_bp}, status: context, stale_after_days: 7}
+  - {id: us10y_chg_20d, fn: chg,   inputs: [DGS10], params: {n: 20, mode: diff_bp}, status: context, stale_after_days: 7}
+  - {id: vix_level,     fn: level, inputs: [VIXCLS], status: context, stale_after_days: 7}
+  - {id: vix_term,      fn: ratio, inputs: [VIXCLS, VXVCLS], status: context, stale_after_days: 7,
+     note: VIX / VIX3M; >= 1.0 is backwardation}
+  - {id: hy_oas_chg_20d, fn: chg,  inputs: [BAMLH0A0HYM2], params: {n: 20, mode: diff_bp}, status: context,
+     stale_after_days: 7, note: FRED serves only the last 3 years of ICE BofA series (licence)}
+  - {id: spx_ret_20d,   fn: chg,   inputs: [SP500], params: {n: 20, mode: pct}, status: context, stale_after_days: 7,
+     note: FRED serves only the last 10 years of SP500 (licence)}
+  - {id: stock_bond_corr_60d, fn: rolling_corr, inputs: [SP500, DGS10],
+     params: {window: 60, a_mode: log_pct, b_mode: diff_bp}, status: context, stale_after_days: 7}
+  - {id: oil_chg_20d,   fn: chg,   inputs: [DCOILWTICO], params: {n: 20, mode: log_pct}, status: context,
+     stale_after_days: 7, note: non-positive prices (2020-04-20) are dropped before the log change}
+
+classifiers:
+  risk_regime_v0:
+    note: >-
+      Fixed before any contact with forward returns. Precedence = list order, default calm.
+      Rules read node values (raw units). A rule that cannot be decided because an
+      input node is missing does not fire; the decision is then marked degraded.
+    precedence: [liquidity_stress, inflation_shock, growth_scare]
+    default: calm
+    rules:
+      liquidity_stress:
+        any:
+          - {node: vix_term, op: ">=", value: 1.0}
+          - all:
+              - {node: vix_level, op: ">=", value: 30}
+              - {node: hy_oas_chg_20d, op: ">=", value: 100}
+      inflation_shock:
+        all:
+          - {node: spx_ret_20d, op: "<", value: -3.0}
+          - {node: us10y_chg_20d, op: ">", value: 25}
+      growth_scare:
+        all:
+          - {node: spx_ret_20d, op: "<", value: -3.0}
+          - {node: us10y_chg_20d, op: "<", value: -15}
