@@ -168,6 +168,9 @@ def main() -> int:
                 beta[c] = {}
                 for yr in sorted(P.index.year.unique()):
                     tr = f[f.index < pd.Timestamp(f"{yr}-01-01")]
+                    if len(tr) < 250:          # fix after the prereg commit: no training data -> no beta
+                        beta[c][yr] = {"all": np.nan}
+                        continue
                     reg = pd.Series({d: rv.label(d) for d in pd.date_range(tr.index[0], tr.index[-1], freq="7D")})
                     lab = reg.reindex(tr.index, method="ffill")
                     beta[c][yr] = {r: ols(tr.loc[lab == r, "x"].to_numpy(), tr.loc[lab == r, "r"].to_numpy())[0]
@@ -176,7 +179,7 @@ def main() -> int:
             for t in two.index:
                 r_t = regime.get(t, "calm")
                 for c in BANKS:
-                    b = beta[c][t.year]
+                    b = beta[c].get(t.year, {"all": np.nan})
                     two.at[t, c] = rel.at[t, c] * (b.get(r_t) if np.isfinite(b.get(r_t, np.nan)) else b["all"])
             w0 = pd.Timestamp("2010-01-01")
             fw = fwd[fwd.index >= w0]
@@ -197,10 +200,10 @@ def main() -> int:
                 ">=5/6 banks IC>0": m["banks_positive"] >= 5}
         gates[f"H @{h}w"] = {"criteria": crit, "pass": all(crit.values())}
     res["gates"] = gates
-    res["seconds"] = round(time.time() - t0, 1)
+    seconds = round(time.time() - t0, 1)
     out = R._clean(res)
     a.out_json.write_text(json.dumps(out, indent=1, sort_keys=True, default=str) + "\n")
-    print(json.dumps({k: out[k] for k in ("gates", "seconds")}, indent=1))
+    print(json.dumps(out["gates"], indent=1), f"{seconds}s")
     return 0
 
 

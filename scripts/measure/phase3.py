@@ -497,15 +497,15 @@ def main() -> int:
     tm["E"] = time.time() - t0
     G4 = stage_g4()
     gates = {**gates_c(C), **gates_e(E)}
+    seconds = {k: round(v, 1) for k, v in tm.items()} | {"total": round(time.time() - t0, 1)}
     out = R._clean({"prereg_commit": commit, "A": A, "B": B, "C": C, "D": D, "E": E, "G4": G4, "gates": gates,
-                    "seconds": {k: round(v, 1) for k, v in tm.items()} | {"total": round(time.time() - t0, 1)},
-                    "fridays": [str(fridays[0].date()), str(fridays[-1].date())]})
+                    "fridays": [str(fridays[0].date()), str(fridays[-1].date())]})   # timings printed, not stored
     # the panels the registry / stage H reuse
     pd.concat({k: v for k, v in frames.items()}, names=["score", "asof"]).to_parquet(
         ROOT / "data" / "tree_runs" / "macro_momentum_panel.parquet")
     a.out_json.write_text(json.dumps(out, indent=1, sort_keys=True, default=str) + "\n")
     a.out_md.write_text(markdown(out))
-    print(f"prereg {commit}; {out['seconds']} -> {a.out_json}")
+    print(f"prereg {commit}; {seconds} -> {a.out_json}")
     return 0
 
 
