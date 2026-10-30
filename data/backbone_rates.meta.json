@@ -1,8 +1,6 @@
 {
- "fetched_at": "2026-10-30T17:51:29Z",
+ "fetched_at": "2026-10-30T19:17:52Z",
  "notes": {
-  "Y2_AUD": "live UNREACHABLE HTTP 403 -> data/rates.parquet RBA rows",
-  "Y2_NZD": "FAILED RuntimeError: RBNZ B2: UNREACHABLE HTTP 403",
-  "Y2_CHF": "2025-09-01 14:29"
+  "Y2_CHF": "rendeiduebd published 2026-10-01 14:30; rendoblid 2025-09-01 14:29"
  }
 }

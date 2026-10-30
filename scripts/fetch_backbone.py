@@ -57,6 +57,9 @@ BBK_KEY = "BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A"
 BIS_URL = ("https://stats.bis.org/api/v2/data/dataflow/BIS/WS_CBPOL/1.0/D.{areas}"
            "?startPeriod={since}&format=csv")
 SNB_URL = "https://data.snb.ch/api/cube/rendoblid/data/csv/en"
+# successor (found in phase 3): daily spot rates on Confederation bonds, D0=CHF D1=2J, published
+# monthly around the first working day of M+1 (PublishingDate 2026-10-01 holds data to 2026-09-30)
+SNB_NEW_URL = "https://data.snb.ch/api/cube/rendeiduebd/data/csv/en"
 SINCE = date(2000, 1, 1)
 UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
 
@@ -166,6 +169,32 @@ def y2_nzd():
 
 
 def y2_chf():
+    """SNB rendeiduebd (CHF, 2J) where it has values; rendoblid only for dates it lacks.
+    avail: rendeiduebd -> first day of M+1 + 10 days; rendoblid -> first day of M+2 + 10 days."""
+    try:
+        r = _get(SNB_NEW_URL)
+        text = r.content.decode("utf-8-sig")
+        lines = [ln for ln in text.splitlines() if ln.strip()]
+        hi = next(i for i, ln in enumerate(lines) if ln.startswith('"Date"'))
+        d = pd.read_csv(io.StringIO("\n".join(lines[hi:])), sep=";", dtype=str)
+        d = d[(d["D0"] == "CHF") & (d["D1"] == "2J")]
+        new = _frame("Y2_CHF", "CHF", "y2", "SNB:rendeiduebd D0=CHF D1=2J", "snb", d["Date"], d["Value"])
+        new["avail"] = (new["date"].dt.to_period("M") + 1).dt.to_timestamp() + pd.Timedelta(days=10)
+        pub_new = next((ln for ln in lines if ln.startswith('"PublishingDate"')), "").split(";")[-1].strip('"')
+    except Exception as e:  # successor unreachable -> the old cube alone
+        new, pub_new = None, f"rendeiduebd failed: {e}"
+    old, pub_old = _y2_chf_rendoblid()
+    if new is None or new.empty:
+        return old, f"rendoblid {pub_old}; {pub_new}"
+    # a date rendoblid already published keeps rendoblid's (later) availability: the successor
+    # cube did not exist then, so its faster publication is not back-dated
+    old_avail = dict(zip(old["date"], old["avail"]))
+    new["avail"] = [old_avail.get(d, a) for d, a in zip(new["date"], new["avail"])]
+    old = old[~old["date"].isin(set(new["date"]))]
+    return pd.concat([old, new], ignore_index=True), f"rendeiduebd published {pub_new}; rendoblid {pub_old}"
+
+
+def _y2_chf_rendoblid():
     r = _get(SNB_URL)
     text = r.content.decode("utf-8-sig")
     pub = next((ln for ln in text.splitlines() if ln.startswith('"PublishingDate"')), "")
@@ -174,6 +203,14 @@ def y2_chf():
     m2 = (df["date"].dt.to_period("M") + 2).dt.to_timestamp()
     df["avail"] = m2 + pd.Timedelta(days=10)
     return df, pub.split(";")[-1].strip('"')
+
+
+def y2_nzd_manual():
+    """RBNZ B2 'Daily close (2018-current)' downloaded by hand into data/manual/rbnz/
+    (official source, manual transport; the site is behind a Cloudflare wall)."""
+    from scripts.import_rbnz_b2 import load_manual
+    df, note = load_manual()
+    return _frame("Y2_NZD", "NZD", "y2", note, "rbnz_manual", df["date"], df["value"]), note
 
 
 # --- policy + FX --------------------------------------------------------------
@@ -206,10 +243,17 @@ def fx():
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, default=ROOT / "data" / "backbone_rates.parquet")
+    ap.add_argument("--only", nargs="*", help="refresh only these jobs (e.g. Y2_CHF Y2_NZD_MANUAL); "
+                    "the other series of the existing parquet are kept as they are")
     a = ap.parse_args()
     frames, notes = [], {}
     jobs = {"Y2_USD": y2_usd, "Y2_EUR": y2_eur, "Y2_GBP": y2_gbp, "Y2_JPY": y2_jpy, "Y2_CAD": y2_cad,
             "Y2_AUD": y2_aud, "Y2_NZD": y2_nzd, "Y2_CHF": y2_chf, "POL": policy, "FX": fx}
+    jobs["Y2_NZD_MANUAL"] = y2_nzd_manual
+    if a.only:
+        jobs = {k: v for k, v in jobs.items() if k in a.only}
+    else:
+        jobs.pop("Y2_NZD_MANUAL")
     for name, job in jobs.items():
         try:
             res = job()
@@ -223,6 +267,10 @@ def main() -> int:
         for s, g in res.groupby("series"):
             print(f"  ok   {s:8s} {len(g):6d}  {g['date'].min().date()} -> {g['date'].max().date()}"
                   f"  {g['code'].iloc[-1]}")
+    if a.only and a.out.exists():
+        keep = pd.read_parquet(a.out)
+        fresh = {s for f in frames for s in f["series"].unique()}
+        frames.insert(0, keep[~keep["series"].isin(fresh)])
     out = pd.concat(frames, ignore_index=True).sort_values(["series", "date"])
     out = out.drop_duplicates(["series", "date"], keep="last").reset_index(drop=True)
     for c in ("date", "avail"):

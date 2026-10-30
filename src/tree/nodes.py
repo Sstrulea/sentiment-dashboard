@@ -220,3 +220,34 @@ def abs_gt_flag(ctx: NodeContext) -> NodeResult:
 def unavailable(ctx: NodeContext) -> NodeResult:
     """Placeholder for a node without an official keyless source (params.reason)."""
     return ctx.missing(ctx.params.get("reason", "no official keyless source"))
+
+
+@node("derived_pctile")
+def derived_pctile(ctx: NodeContext) -> NodeResult:
+    """Percentile (0-100) of the last value of a derived daily series inside a
+    rolling calendar window of that series; params: mode (level | a change mode
+    of transform_change), n (change length, obs), window_days, min_obs, and an
+    optional splice {after: YYYY-MM-DD}: inputs [a, b] -> the derived series is
+    built from a up to `after` and from b after it (each transformed on its own)."""
+    p = ctx.params
+    win = int(p["window_days"])
+    look = win + 400
+
+    def derive(s: pd.Series) -> pd.Series:
+        return s if p.get("mode", "level") == "level" else transform_change(s, int(p["n"]), p["mode"])
+
+    a = ctx.series(ctx.spec["inputs"][0], look)
+    if "splice" in p:
+        cut = pd.Timestamp(p["splice"]["after"])
+        b = ctx.series(ctx.spec["inputs"][1], look)
+        d = pd.concat([derive(a)[lambda x: x.index <= cut], derive(b)[lambda x: x.index > cut]])
+    else:
+        d = derive(a)
+    d = d.dropna()
+    if d.empty:
+        return ctx.missing("no data at asof")
+    w = d[d.index > d.index[-1] - pd.Timedelta(days=win)]
+    if len(w) < int(p.get("min_obs", 1)):
+        return ctx.missing(f"short history for percentile ({len(w)} obs)", d.index[-1])
+    last = w.iloc[-1]
+    return ctx.ok(100.0 * float((w <= last).sum()) / len(w), None, d.index[-1], raw=_f(last))
