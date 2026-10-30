@@ -54,6 +54,33 @@ def walk_forward(engine: Engine, tree: dict, start, end, step_days: int = 7) -> 
     return pd.DataFrame(rows)
 
 
+def run_layer(a) -> int:
+    """A per-currency node layer (reaction): snapshot JSON per asof."""
+    from .reaction import ReactionInputs, snapshot
+    layer = schema.load_layer(a.tree)
+    ri = ReactionInputs.load()
+    a.out_dir.mkdir(parents=True, exist_ok=True)
+    if a.walk_forward:
+        from .reaction import panel
+        end = pd.Timestamp(a.end) if a.end else default_asof(ri)
+        t0 = time.time()
+        df = panel(layer, ri, pd.date_range(pd.Timestamp(a.start), end, freq=f"{int(a.step[:-1])}D"))
+        last = df["asof"].max()
+        out = a.out_dir / f"{a.tree}_wf_{pd.Timestamp(a.start):%Y-%m-%d}_{last:%Y-%m-%d}.parquet"
+        df.to_parquet(out, index=False)
+        print(f"{df['asof'].nunique()} asofs in {time.time() - t0:.1f}s -> {out}")
+        return 0
+    asof = pd.Timestamp(a.asof) if a.asof else default_asof(ri)
+    d = snapshot(layer, ri, asof)
+    text = dumps(d)
+    (a.out_dir / f"{a.tree}_{d['asof']}.json").write_text(text)
+    (a.out_dir / f"{a.tree}_latest.json").write_text(text)
+    print(f"{a.tree} {d['asof']}: " + ", ".join(
+        f"{c} {sum(not r['quality'] == 'missing' for r in v.values())}/{len(v)}"
+        for c, v in d["currencies"].items()) + " nodes ok")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--tree", required=True)
@@ -66,6 +93,8 @@ def main(argv=None) -> int:
     ap.add_argument("--step", default="7d")
     a = ap.parse_args(argv)
 
+    if schema.is_layer(a.tree):
+        return run_layer(a)
     glob, tree = schema.load(a.tree)
     inputs = Inputs.load(a.inputs)
     engine = Engine(glob, inputs)

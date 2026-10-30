@@ -6,6 +6,7 @@ from pathlib import Path
 
 import yaml
 
+from . import reaction  # noqa: F401  (registers the reaction-layer node functions)
 from .nodes import REGISTRY, STATUSES
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -193,6 +194,37 @@ def load_yaml(path: Path) -> dict:
     if not isinstance(cfg, dict):
         raise TreeSchemaError(f"{path}: top level must be a mapping")
     return cfg
+
+
+LAYER_KEYS = {"layer_id", "currencies", "nodes", "missing_by_ccy", "note"}
+
+
+def validate_layer(cfg: dict, where: str = "layer") -> dict:
+    """A per-currency node layer (no regime switch, no decision): data/trees/reaction.yml."""
+    _keys(where, cfg, LAYER_KEYS, {"layer_id", "currencies", "nodes"})
+    cur = cfg["currencies"]
+    if not isinstance(cur, list) or not cur or len(set(cur)) != len(cur):
+        _err(f"{where}.currencies", "must be a non-empty list without duplicates")
+    validate_nodes(where, cfg["nodes"])
+    ids = {n["id"] for n in cfg["nodes"]}
+    for nid, per in (cfg.get("missing_by_ccy") or {}).items():
+        if nid not in ids:
+            _err(f"{where}.missing_by_ccy", f"unknown node {nid!r}")
+        if not isinstance(per, dict) or not set(per) <= set(cur):
+            _err(f"{where}.missing_by_ccy.{nid}", "must map listed currencies to a reason")
+    return cfg
+
+
+def is_layer(name: str, trees_dir: Path = TREES_DIR) -> bool:
+    path = trees_dir / f"{name}.yml"
+    return path.exists() and "layer_id" in load_yaml(path)
+
+
+def load_layer(name: str, trees_dir: Path = TREES_DIR) -> dict:
+    path = trees_dir / f"{name}.yml"
+    if not path.exists():
+        raise TreeSchemaError(f"{path}: no such layer")
+    return validate_layer(load_yaml(path), path.name)
 
 
 def load(tree: str, trees_dir: Path = TREES_DIR) -> tuple[dict, dict]:
