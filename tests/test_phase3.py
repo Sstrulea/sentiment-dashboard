@@ -194,8 +194,8 @@ def test_registry_snapshot_and_scoring(tmp_path, monkeypatch):
     monkeypatch.setattr(snap, "carry_scores", lambda asof, backbone=None: {c: 1.0 for c in snap.CCYS})
     calls = tmp_path / "calls.parquet"
     a = pd.Timestamp("2026-01-02")
-    df = snap.snapshot(a, calls, payload)
-    df = snap.snapshot(a, calls, payload)                                  # idempotent per asof
+    df = snap.snapshot(a, calls, payload, with_v4=False)
+    df = snap.snapshot(a, calls, payload, with_v4=False)                                  # idempotent per asof
     assert len(df) == 3 * 8 * 4
     v3 = df[(df.source == "v3") & (df.horizon_weeks == 2)].set_index("ccy")
     assert v3.loc["CHF", "rank"] == 1 and v3.loc["USD", "rank"] == 8

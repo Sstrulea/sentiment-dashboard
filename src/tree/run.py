@@ -81,6 +81,26 @@ def run_layer(a) -> int:
     return 0
 
 
+def run_v4(a) -> int:
+    """v4 per currency and horizon (src/tree/v4.py): rank, P, confidence, flags, contributions."""
+    import yaml
+    from .v4 import snapshot as v4_snapshot
+    cfg = yaml.safe_load((schema.TREES_DIR / "v4.yml").read_text())
+    if cfg.get("model") != "v4" or cfg.get("extra_nodes"):
+        raise schema.TreeSchemaError("v4.yml: model must be v4; extra nodes are not wired (none passed)")
+    asof = pd.Timestamp(a.asof) if a.asof else pd.Timestamp.now().normalize()
+    d = v4_snapshot(asof, horizons=tuple(cfg["horizons"]))
+    text = dumps(d)
+    a.out_dir.mkdir(parents=True, exist_ok=True)
+    (a.out_dir / f"v4_{d['asof']}.json").write_text(text)
+    (a.out_dir / "v4_latest.json").write_text(text)
+    print(f"v4 {d['asof']}: regime {d['regime']}, crowding pct {d['crowding_pct']}, PC1 {d['concentration_pc1']}")
+    for c, e in sorted(d["currencies"].items(), key=lambda x: x[1]["rank"] or 9):
+        print(f"  {e['rank']:.0f} {c} score {e['score']:+.2f} " + " ".join(
+            f"{h}w P={v['P_beats_basket']} ({v['confidence']})" for h, v in e["by_horizon"].items()))
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--tree", required=True)
@@ -95,6 +115,8 @@ def main(argv=None) -> int:
 
     if schema.is_layer(a.tree):
         return run_layer(a)
+    if a.tree == "v4":
+        return run_v4(a)
     glob, tree = schema.load(a.tree)
     inputs = Inputs.load(a.inputs)
     engine = Engine(glob, inputs)
