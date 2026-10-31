@@ -236,6 +236,9 @@ class Phase4:
                   halve: bool, by_regime: bool = True) -> pd.DataFrame:
         """Walk-forward P(forward basket return > 0) per Friday x currency."""
         reg = self.regime()
+        score, fwd = score.copy(), fwd.copy()
+        for f in (score, fwd):                    # panels built by pivot carry index / column names
+            f.index.name, f.columns.name = None, None
         long = score.stack().rename("s").to_frame().join(fwd.stack().rename("r"), how="left").reset_index()
         long.columns = ["asof", "ccy", "s", "r"]
         long["regime"] = long["asof"].map(reg)
