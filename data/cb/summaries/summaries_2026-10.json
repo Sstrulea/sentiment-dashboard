@@ -232,6 +232,240 @@
    "coverage": {
     "paragraphs": [
      7,
+     10,
+     12,
+     15,
+     16,
+     27,
+     31,
+     34
+    ],
+    "paragraphs_sent": 39,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:71e5489a6ce1",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-10-31T06:43:37Z",
+   "input_sha256": "46efaab4b9b2c61b44a4018b95eed2e7285d85ed0d59e0dd5201c7096b3bb529",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 987,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 972,
+     "text": "25 basis points"
+    },
+    {
+     "end": 1141,
+     "point": 1,
+     "source_text": "100 basis points",
+     "start": 1125,
+     "text": "100 basis points"
+    },
+    {
+     "end": 2254,
+     "point": 2,
+     "source_text": "3½",
+     "start": 2252,
+     "text": "3½"
+    },
+    {
+     "end": 2268,
+     "point": 2,
+     "source_text": "4 per cent",
+     "start": 2258,
+     "text": "4 per cent"
+    },
+    {
+     "end": 9375,
+     "point": 5,
+     "source_text": "2026",
+     "start": 9371,
+     "text": "2026"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-10-29",
+   "quotes": [
+    {
+     "end": 988,
+     "paragraph": 7,
+     "start": 847,
+     "text": "Since the Committee’s previous hearing with the RBA in June, the Monetary Policy Board has increased the cash rate target by 25 basis points."
+    },
+    {
+     "end": 3125,
+     "paragraph": 12,
+     "start": 3050,
+     "text": "Inflation will therefore likely be higher than was our base case in August."
+    },
+    {
+     "end": 5055,
+     "paragraph": 16,
+     "start": 4854,
+     "text": "Against this backdrop, and despite growth in domestic demand slowing, a further period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+    },
+    {
+     "end": 8409,
+     "paragraph": 27,
+     "start": 8214,
+     "text": "Card surcharging was removed from 1 October and we have been monitoring the payments industry’s implementation and working with industry stakeholders to support merchant awareness of the changes."
+    },
+    {
+     "end": 10757,
+     "paragraph": 31,
+     "start": 10682,
+     "text": "Cash remains a critical part of an inclusive and resilient payments system."
+    }
+   ],
+   "source": {
+    "chars": 12516,
+    "chars_sent": 12517,
+    "method": "html-selector",
+    "paragraphs_sent": 39,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 988,
+        "paragraph": 7,
+        "start": 847,
+        "text": "Since the Committee’s previous hearing with the RBA in June, the Monetary Policy Board has increased the cash rate target by 25 basis points."
+       },
+       {
+        "end": 1142,
+        "paragraph": 7,
+        "start": 1049,
+        "text": "This has taken the cumulative increase in the cash rate target this year to 100 basis points."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Chair Michele Bullock says the Monetary Policy Board increased the cash rate target by 25 basis points since the previous hearing in June, taking the cumulative increase this year to 100 basis points."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2289,
+        "paragraph": 10,
+        "start": 2216,
+        "text": "Recently, inflation has been around 3½ to 4 per cent in year-ended terms."
+       },
+       {
+        "end": 3125,
+        "paragraph": 12,
+        "start": 3050,
+        "text": "Inflation will therefore likely be higher than was our base case in August."
+       }
+      ],
+      "paragraphs": [
+       10,
+       12
+      ]
+     },
+     "text": "Chair Michele Bullock says inflation has recently been around 3½ to 4 per cent in year-ended terms and will likely be higher than the August base case."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4213,
+        "paragraph": 15,
+        "start": 4149,
+        "text": "we still see inflation arising from domestic capacity pressures."
+       },
+       {
+        "end": 5055,
+        "paragraph": 16,
+        "start": 4924,
+        "text": "a further period of subdued growth of aggregate demand is needed to reduce capacity pressures and bring inflation down sustainably."
+       }
+      ],
+      "paragraphs": [
+       15,
+       16
+      ]
+     },
+     "text": "Chair Michele Bullock says inflation is arising from domestic capacity pressures, and a further period of subdued growth of aggregate demand is needed to reduce those pressures and bring inflation down sustainably."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8213,
+        "paragraph": 27,
+        "start": 8021,
+        "text": "the Payments System Board concluded that a package of reforms to remove card surcharging, reduce interchange fee caps and improve transparency of payment costs would be in the public interest."
+       },
+       {
+        "end": 8324,
+        "paragraph": 27,
+        "start": 8214,
+        "text": "Card surcharging was removed from 1 October and we have been monitoring the payments industry’s implementation"
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Chair Michele Bullock says the Payments System Board concluded that reforms to remove card surcharging, reduce interchange fee caps and improve payment-cost transparency would be in the public interest."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 10757,
+        "paragraph": 31,
+        "start": 10682,
+        "text": "Cash remains a critical part of an inclusive and resilient payments system."
+       },
+       {
+        "end": 11799,
+        "paragraph": 34,
+        "start": 11629,
+        "text": "the Cash Distribution Framework Act 2026, which provides the RBA with crisis-readiness and resolution powers to support continuity of critical cash distribution services."
+       }
+      ],
+      "paragraphs": [
+       31,
+       34
+      ]
+     },
+     "text": "Chair Michele Bullock says cash remains critical to an inclusive and resilient payments system, and the Cash Distribution Framework Act 2026 gives the RBA crisis-readiness and resolution powers."
+    }
+   ],
+   "title": "Opening Statement to the Senate Economics Legislation Committee (Supplementary Budget Estimates)",
+   "type": "speech",
+   "url": "https://www.bis.org/speeches/20261029-opening-statement-senate-economics-legislation-committee-supplementary-budget-estimates",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3884,
+    "output_tokens": 1135,
+    "reasoning_tokens": 470
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
      8,
      11,
      17,
