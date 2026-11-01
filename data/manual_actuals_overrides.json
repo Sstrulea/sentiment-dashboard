@@ -1846,5 +1846,159 @@
   "entered_by": "dolce",
   "entered_at": "2026-10-28T10:56:50+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_import_prices",
+  "currency": "AUD",
+  "indicator_key": "import_prices",
+  "datetime_utc": "2026-10-29 00:30:00",
+  "actual": -1.1,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "ABS International Trade Price Indexes, Sep qtr 2026 (2026-10-29): Import Price Index -1.1% q/q https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/international-trade-price-indexes-australia/sep-2026"
+ },
+ {
+  "canonical_id": "usd_personal_income",
+  "currency": "USD",
+  "indicator_key": "personal_income_mm",
+  "datetime_utc": "2026-10-29 12:30:00",
+  "actual": 0.2,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "BEA Personal Income and Outlays, Sep 2026 (2026-10-29): personal income +0.2% m/m https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+ },
+ {
+  "canonical_id": "usd_initial_jobless_claims",
+  "currency": "USD",
+  "indicator_key": "jobless_claims",
+  "datetime_utc": "2026-10-29 12:30:00",
+  "actual": 194.0,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "DOL weekly claims, release 2026-10-29: SA initial claims 194,000 (week ending Oct 24) https://www.dol.gov/ui/data.pdf"
+ },
+ {
+  "canonical_id": "usd_core_pce_price_index",
+  "currency": "USD",
+  "indicator_key": "core_pce",
+  "datetime_utc": "2026-10-29 12:30:00",
+  "actual": 0.3,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "BEA Personal Income and Outlays, Sep 2026 (2026-10-29): PCE price index ex food and energy +0.3% m/m https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+ },
+ {
+  "canonical_id": "usd_personal_spending",
+  "currency": "USD",
+  "indicator_key": "personal_spending_mm",
+  "datetime_utc": "2026-10-29 12:30:00",
+  "actual": 0.5,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "BEA Personal Income and Outlays, Sep 2026 (2026-10-29): PCE (current dollars) +0.5% m/m https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+ },
+ {
+  "canonical_id": "usd_gdp",
+  "currency": "USD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-10-29 12:30:00",
+  "actual": 3.4,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "BEA GDP advance estimate Q3 2026 (2026-10-29): real GDP +3.4% annual rate https://www.bea.gov/data/gdp/gross-domestic-product"
+ },
+ {
+  "canonical_id": "jpy_tokyo_core_cpi",
+  "currency": "JPY",
+  "indicator_key": "tokyo_core_cpi_yoy",
+  "datetime_utc": "2026-10-29 23:30:00",
+  "actual": 2.6,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "MIC Tokyo ku-area CPI prelim Oct 2026 (2026-10-30 JST): CPI ex fresh food +2.6% y/y https://www.stat.go.jp/english/data/cpi/1581-z.html"
+ },
+ {
+  "canonical_id": "jpy_unemployment_rate",
+  "currency": "JPY",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-29 23:30:00",
+  "actual": 2.4,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "Statistics Bureau Labour Force Survey Sep 2026 (2026-10-30 JST): unemployment rate SA 2.4% https://www.stat.go.jp/data/roudou/sokuhou/tsuki/index.html"
+ },
+ {
+  "canonical_id": "jpy_prelim_industrial_production",
+  "currency": "JPY",
+  "indicator_key": "industrial_production_mm",
+  "datetime_utc": "2026-10-29 23:50:00",
+  "actual": 2.2,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "METI IIP preliminary Sep 2026 (2026-10-30 JST): production +2.2% m/m SA https://www.meti.go.jp/english/statistics/tyo/iip/index.html"
+ },
+ {
+  "canonical_id": "jpy_retail_sales",
+  "currency": "JPY",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2026-10-29 23:50:00",
+  "actual": 2.3,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "METI Current Survey of Commerce prelim Sep 2026 (2026-10-30 JST): retail sales +2.3% y/y https://www.meti.go.jp/english/statistics/tyo/syoudou/index.html"
+ },
+ {
+  "canonical_id": "aud_ppi",
+  "currency": "AUD",
+  "indicator_key": "ppi_yoy",
+  "datetime_utc": "2026-10-30 00:30:00",
+  "actual": 1.1,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "ABS Producer Price Indexes, Sep qtr 2026 (2026-10-30): final demand ex exports +1.1% q/q https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/producer-price-indexes-australia/sep-2026"
+ },
+ {
+  "canonical_id": "eur_unemployment_rate",
+  "currency": "EUR",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-10-30 10:00:00",
+  "actual": 6.5,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "Eurostat 2026-10-30: euro area unemployment Sep 2026 6.5% (Aug revised 6.4->6.5) https://ec.europa.eu/eurostat/web/products-euro-indicators/w/3-30102026-bp"
+ },
+ {
+  "canonical_id": "eur_gdp",
+  "currency": "EUR",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-10-30 10:00:00",
+  "actual": 0.4,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "Eurostat preliminary flash 2026-10-30: euro area GDP Q3 2026 +0.4% q/q (Q2 +0.6%) https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-30102026-ap"
+ },
+ {
+  "canonical_id": "cad_gdp",
+  "currency": "CAD",
+  "indicator_key": "gdp_qoq",
+  "datetime_utc": "2026-10-30 12:30:00",
+  "actual": 0.0,
+  "state_resolved": "MISSING",
+  "entered_by": "backfill-official",
+  "entered_at": "2026-11-01T21:57:39+00:00",
+  "note": "StatCan The Daily 2026-10-30: real GDP essentially unchanged in August, 0.0% m/m https://www150.statcan.gc.ca/n1/daily-quotidien/261030/dq261030a-eng.htm"
  }
 ]
