@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-29T20:06:32.037328",
+ "as_of": "2026-11-01T08:06:51.482949",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -133,9 +133,9 @@
      "next_previous": 3.2,
      "next_from": "parquet",
      "diff": 2.1,
-     "tolerance": 1.76195,
-     "threshold": 1.76195,
-     "n_revision_pairs": 14,
+     "tolerance": 1.93434,
+     "threshold": 1.93434,
+     "n_revision_pairs": 15,
      "level": "INFO",
      "new": false
     },
@@ -230,7 +230,7 @@
      "diff": 19.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -323,9 +323,9 @@
      "next_previous": 4.2,
      "next_from": "parquet",
      "diff": -2.1,
-     "tolerance": 1.76195,
-     "threshold": 1.76195,
-     "n_revision_pairs": 14,
+     "tolerance": 1.93434,
+     "threshold": 1.93434,
+     "n_revision_pairs": 15,
      "level": "INFO",
      "new": false
     },
@@ -439,7 +439,7 @@
      "diff": -42.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -477,7 +477,7 @@
      "diff": -0.41,
      "tolerance": 0.356868,
      "threshold": 0.356868,
-     "n_revision_pairs": 45,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -496,7 +496,7 @@
      "diff": 47.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -646,9 +646,9 @@
      "next_previous": 333.0,
      "next_from": "parquet",
      "diff": 117.0,
-     "tolerance": 89.2692,
-     "threshold": 89.2692,
-     "n_revision_pairs": 45,
+     "tolerance": 90.9931,
+     "threshold": 90.9931,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -665,9 +665,9 @@
      "next_previous": -1.5,
      "next_from": "parquet",
      "diff": -2.2,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 43,
+     "tolerance": 1.23956,
+     "threshold": 1.23956,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -779,9 +779,9 @@
      "next_previous": 229.0,
      "next_from": "parquet",
      "diff": -124.0,
-     "tolerance": 89.2692,
-     "threshold": 89.2692,
-     "n_revision_pairs": 45,
+     "tolerance": 90.9931,
+     "threshold": 90.9931,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -876,7 +876,7 @@
      "diff": 24.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -1028,7 +1028,7 @@
      "diff": -49.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -1066,7 +1066,7 @@
      "diff": 54.0,
      "tolerance": 18.3434,
      "threshold": 18.3434,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "INFO",
      "new": false
     },
@@ -1102,9 +1102,9 @@
      "next_previous": 2.9,
      "next_from": "parquet",
      "diff": 1.6,
-     "tolerance": 1.28956,
-     "threshold": 1.28956,
-     "n_revision_pairs": 43,
+     "tolerance": 1.23956,
+     "threshold": 1.23956,
+     "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
     },
@@ -1235,9 +1235,9 @@
      "next_previous": 14.0,
      "next_from": "parquet",
      "diff": -133.0,
-     "tolerance": 89.2692,
-     "threshold": 89.2692,
-     "n_revision_pairs": 45,
+     "tolerance": 90.9931,
+     "threshold": 90.9931,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -1273,9 +1273,9 @@
      "next_previous": 49.6,
      "next_from": "parquet",
      "diff": 3.4,
-     "tolerance": 3.2239,
-     "threshold": 3.2239,
-     "n_revision_pairs": 45,
+     "tolerance": 2.95151,
+     "threshold": 2.95151,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -1370,7 +1370,7 @@
      "diff": -0.4,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 44,
+     "n_revision_pairs": 45,
      "level": "WARN",
      "new": false
     },
@@ -1389,7 +1389,7 @@
      "diff": -0.3,
      "tolerance": 0.0,
      "threshold": 0.2,
-     "n_revision_pairs": 45,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -1406,9 +1406,9 @@
      "next_previous": 56.0,
      "next_from": "parquet",
      "diff": 161.0,
-     "tolerance": 89.2692,
-     "threshold": 89.2692,
-     "n_revision_pairs": 45,
+     "tolerance": 90.9931,
+     "threshold": 90.9931,
+     "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
     },
@@ -1878,11 +1878,11 @@
     "value": 82,
     "zero": 16
    },
-   "n_checked": 3421,
+   "n_checked": 3446,
    "n_series": 107,
    "n_scored_zero": 98,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-10-29.json"
+   "weekly_feed": "ff_weekly_2026-11-01.json"
   },
   "missing_release": {
    "findings": [
@@ -2317,5 +2317,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-10-29T20:06:38+00:00"
+ "generated_at": "2026-11-01T08:07:00+00:00"
 }
