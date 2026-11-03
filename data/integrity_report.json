@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-02T19:07:03.660104",
+ "as_of": "2026-11-03T19:07:41.003546",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -475,8 +475,8 @@
      "next_previous": 9.17,
      "next_from": "parquet",
      "diff": -0.41,
-     "tolerance": 0.356868,
-     "threshold": 0.356868,
+     "tolerance": 0.334629,
+     "threshold": 0.334629,
      "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
@@ -1878,11 +1878,11 @@
     "value": 82,
     "zero": 16
    },
-   "n_checked": 3447,
+   "n_checked": 3448,
    "n_series": 107,
    "n_scored_zero": 99,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-11-02.json"
+   "weekly_feed": "ff_weekly_2026-11-03.json"
   },
   "missing_release": {
    "findings": [
@@ -2317,5 +2317,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-11-02T19:07:14+00:00"
+ "generated_at": "2026-11-03T19:07:49+00:00"
 }
