@@ -2011,5 +2011,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-02T14:15:40+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "chf_cpi",
+  "currency": "CHF",
+  "indicator_key": "cpi_yoy",
+  "datetime_utc": "2026-11-03 07:30:00",
+  "actual": 0.2,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-03T14:14:54+00:00",
+  "note": ""
  }
 ]
