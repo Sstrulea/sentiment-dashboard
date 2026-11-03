@@ -5,43 +5,6 @@
  },
  "events": [
   {
-   "bank": "JPY",
-   "date": "2026-10-30",
-   "dispatch": {
-    "inputs": {
-     "bank": "JPY",
-     "date": "2026-10-30",
-     "event": "decision"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fallback_at_window_end": true,
-   "grace_minutes": 30,
-   "id": "decision:JPY:2026-10-30",
-   "kind": "boj_window",
-   "window_end": "2026-10-30T04:30:00Z",
-   "window_start": "2026-10-30T02:30:00Z"
-  },
-  {
-   "at": "2026-10-30T06:30:00Z",
-   "at_basis": "conference",
-   "bank": "JPY",
-   "date": "2026-10-30",
-   "dispatch": {
-    "inputs": {
-     "bank": "JPY",
-     "date": "2026-10-30",
-     "event": "conference"
-    },
-    "workflow": "cb-refresh.yml"
-   },
-   "fire_at": "2026-10-30T08:30:00Z",
-   "grace_minutes": 240,
-   "id": "conference:JPY:2026-10-30",
-   "kind": "conference",
-   "lead_minutes": 0
-  },
-  {
    "at": "2026-11-03T03:30:00Z",
    "bank": "AUD",
    "date": "2026-11-03",
@@ -357,8 +320,8 @@
   }
  ],
  "horizon": {
-  "from": "2026-10-30",
-  "to": "2027-01-01"
+  "from": "2026-10-31",
+  "to": "2027-01-02"
  },
  "regular": [
   {
