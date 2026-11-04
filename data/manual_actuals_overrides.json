@@ -2022,5 +2022,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-03T14:14:54+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "nzd_unemployment_rate",
+  "currency": "NZD",
+  "indicator_key": "unemployment_rate",
+  "datetime_utc": "2026-11-03 21:45:00",
+  "actual": 5.7,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-04T20:40:07+00:00",
+  "note": ""
  }
 ]
