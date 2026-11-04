@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-04T19:08:03.804675",
+ "as_of": "2026-11-04T20:07:15.636155",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -1866,7 +1866,7 @@
      "threshold": 0.0,
      "n_revision_pairs": 12,
      "level": "WARN",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "jpy_core_cpi",
@@ -2336,5 +2336,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-11-04T19:08:14+00:00"
+ "generated_at": "2026-11-04T20:07:26+00:00"
 }
