@@ -1,6 +1,418 @@
 {
  "summaries": [
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
+     8,
+     9,
+     22,
+     34,
+     38,
+     46
+    ],
+    "paragraphs_sent": 143,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:presser_transcript:2026-11-03",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 2 of summary point 5 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+     ],
+     "text": "In response to Ian Verrender, Bullock said full effects can take 12 months or so, or maybe a bit longer, and that monetary policy is having an impact."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-04T00:42:24Z",
+   "input_sha256": "d67c6417718fb7a04184b54451fdeb004d979d3c14196eeaee241de3360d95d1",
+   "meeting_date": "2026-11-03",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 214,
+     "point": 1,
+     "source_text": "4.85 per cent",
+     "start": 201,
+     "text": "4.85 per cent"
+    }
+   ],
+   "prompt_version": "transcript-v6",
+   "provider": "openai",
+   "published": "2026-11-03",
+   "quotes": [
+    {
+     "end": 215,
+     "paragraph": 7,
+     "start": 148,
+     "text": "Today the Board decided to increase the cash rate to 4.85 per cent."
+    },
+    {
+     "end": 626,
+     "paragraph": 8,
+     "start": 532,
+     "text": "we are not tightening monetary policy because of the direct impact of oil prices on inflation."
+    },
+    {
+     "end": 9513,
+     "paragraph": 34,
+     "start": 9473,
+     "text": "I don't know what the next move will be."
+    },
+    {
+     "end": 11384,
+     "paragraph": 38,
+     "start": 11321,
+     "text": "Monetary policy will work, but it doesn't work instantaneously."
+    },
+    {
+     "end": 14990,
+     "paragraph": 46,
+     "start": 14841,
+     "text": "The banks are very solid. They have generally lent at good loan to valuation ratios, and APRA's kept a good eye on things like debt-to-income ratios."
+    }
+   ],
+   "source": {
+    "chars": 47087,
+    "chars_sent": 47088,
+    "method": "html-selector",
+    "paragraphs_sent": 143,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 215,
+        "paragraph": 7,
+        "start": 148,
+        "text": "Today the Board decided to increase the cash rate to 4.85 per cent."
+       },
+       {
+        "end": 331,
+        "paragraph": 7,
+        "start": 285,
+        "text": "but it is what's needed to get inflation down."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Michele Bullock said the Board decided to increase the cash rate to 4.85 per cent and that it was needed to get inflation down."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 626,
+        "paragraph": 8,
+        "start": 532,
+        "text": "we are not tightening monetary policy because of the direct impact of oil prices on inflation."
+       },
+       {
+        "end": 832,
+        "paragraph": 9,
+        "start": 748,
+        "text": "Rather, the tightening in monetary policy is to address domestic capacity pressures."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "Michele Bullock said the tightening in monetary policy was to address domestic capacity pressures, not the direct impact of oil prices on inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 5557,
+        "paragraph": 22,
+        "start": 5391,
+        "text": "Those in favor of a hold, I would say, weighted the downside risks more than the upside risks, and those who voted in favor of a rise felt there was more upside risk."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "In response to Matthew Cranston, Bullock said those in favor of a hold weighted downside risks more than upside risks, while those voting for a rise felt more upside risk."
+    },
+    {
+     "evidence": {
+      "coverage": 0.9,
+      "fragments": [
+       {
+        "end": 9513,
+        "paragraph": 34,
+        "start": 9415,
+        "text": "No, you shouldn't take it to mean anything in particular. I don't know what the next move will be."
+       },
+       {
+        "end": 9563,
+        "paragraph": 34,
+        "start": 9514,
+        "text": "As you know, Mike, I don't give forward guidance."
+       }
+      ],
+      "paragraphs": [
+       34
+      ]
+     },
+     "text": "In response to Michael Read on future interest rates, Bullock said she did not know what the next move would be and did not give forward guidance."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 15209,
+        "paragraph": 46,
+        "start": 15058,
+        "text": "even if the economy does turn down, and turn down more sharply than we're expecting, we don't expect to see financial stability implications from that."
+       }
+      ],
+      "paragraphs": [
+       46
+      ]
+     },
+     "text": "In response to Chris Kohler on financial stability, Bullock said they did not expect financial stability implications if the economy turned down more sharply than they were expecting."
+    }
+   ],
+   "title": "Reserve Bank of Australia press conference transcript, 03 November 2026",
+   "type": "presser_transcript",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-11-03.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 24400,
+    "output_tokens": 3476,
+    "reasoning_tokens": 2183
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     7,
+     8,
+     9,
+     10,
+     12,
+     34,
+     58
+    ],
+    "paragraphs_sent": 143,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:bb424f442f3e",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-04T00:42:24Z",
+   "input_sha256": "d67c6417718fb7a04184b54451fdeb004d979d3c14196eeaee241de3360d95d1",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 214,
+     "point": 1,
+     "source_text": "4.85 per cent",
+     "start": 201,
+     "text": "4.85 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-03",
+   "quotes": [
+    {
+     "end": 215,
+     "paragraph": 7,
+     "start": 148,
+     "text": "Today the Board decided to increase the cash rate to 4.85 per cent."
+    },
+    {
+     "end": 832,
+     "paragraph": 9,
+     "start": 748,
+     "text": "Rather, the tightening in monetary policy is to address domestic capacity pressures."
+    },
+    {
+     "end": 2798,
+     "paragraph": 12,
+     "start": 2597,
+     "text": "We expect, though, that growth will need to remain subdued and the labour market will need to ease further to bring overall demand and supply back into balance and inflation sustainably back to target."
+    },
+    {
+     "end": 17569,
+     "paragraph": 58,
+     "start": 17495,
+     "text": "We are not looking to tip the economy into a recession if we can avoid it."
+    }
+   ],
+   "source": {
+    "chars": 47087,
+    "chars_sent": 47088,
+    "method": "html-selector",
+    "paragraphs_sent": 143,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 215,
+        "paragraph": 7,
+        "start": 148,
+        "text": "Today the Board decided to increase the cash rate to 4.85 per cent."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Bullock says the Board decided to increase the cash rate to 4.85 per cent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 626,
+        "paragraph": 8,
+        "start": 532,
+        "text": "we are not tightening monetary policy because of the direct impact of oil prices on inflation."
+       },
+       {
+        "end": 832,
+        "paragraph": 9,
+        "start": 748,
+        "text": "Rather, the tightening in monetary policy is to address domestic capacity pressures."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "Governor Bullock says the tightening is not because of oil prices’ direct impact on inflation, but is to address domestic capacity pressures."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1515,
+        "paragraph": 10,
+        "start": 1380,
+        "text": "productivity growth has been weak for some time, which has constrained the economy's ability to grow without generating high inflation."
+       },
+       {
+        "end": 1687,
+        "paragraph": 10,
+        "start": 1575,
+        "text": "In particular, investment has been much stronger than expected, including due to data center-related investment."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governor Bullock says weak productivity growth has constrained the economy’s ability to grow without generating high inflation, while investment has been much stronger than expected."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2596,
+        "paragraph": 12,
+        "start": 2482,
+        "text": "Spending in the economy has slowed, housing prices have come down, and conditions in the labour market have eased."
+       },
+       {
+        "end": 2703,
+        "paragraph": 12,
+        "start": 2597,
+        "text": "We expect, though, that growth will need to remain subdued and the labour market will need to ease further"
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Governor Bullock says spending has slowed and the labour market has eased, and expects growth to remain subdued and the labour market to ease further."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17569,
+        "paragraph": 58,
+        "start": 17495,
+        "text": "We are not looking to tip the economy into a recession if we can avoid it."
+       },
+       {
+        "end": 17776,
+        "paragraph": 58,
+        "start": 17672,
+        "text": "Our central forecasts do not see us going into recession, but it does see growth slowing quite markedly."
+       }
+      ],
+      "paragraphs": [
+       58
+      ]
+     },
+     "text": "Governor Bullock says the Board is not looking to tip the economy into a recession, and its central forecasts do not see a recession."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9513,
+        "paragraph": 34,
+        "start": 9473,
+        "text": "I don't know what the next move will be."
+       },
+       {
+        "end": 9563,
+        "paragraph": 34,
+        "start": 9514,
+        "text": "As you know, Mike, I don't give forward guidance."
+       }
+      ],
+      "paragraphs": [
+       34
+      ]
+     },
+     "text": "Governor Bullock says she does not give forward guidance and does not know what the next move will be."
+    }
+   ],
+   "title": "Monetary Policy Decision",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/mc-gov-2026-11-03.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 11616,
+    "output_tokens": 1208,
+    "reasoning_tokens": 617
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 345,
     "changes": [
