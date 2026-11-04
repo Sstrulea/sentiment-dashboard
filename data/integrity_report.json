@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-03T19:07:41.003546",
+ "as_of": "2026-11-04T19:08:03.804675",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -1850,6 +1850,25 @@
      "new": false
     },
     {
+     "canonical_id": "aud_household_spending",
+     "currency": "AUD",
+     "indicator_key": "retail_sales",
+     "name_raw": "Household Spending m/m",
+     "release_dt": "2026-09-29T01:30:00",
+     "kind": "zero",
+     "scored_actual": 0.0,
+     "scored_source": "manual",
+     "next_release_dt": "2026-11-04T00:30:00",
+     "next_previous": -0.1,
+     "next_from": "parquet",
+     "diff": -0.1,
+     "tolerance": 0.0,
+     "threshold": 0.0,
+     "n_revision_pairs": 12,
+     "level": "WARN",
+     "new": true
+    },
+    {
      "canonical_id": "jpy_core_cpi",
      "currency": "JPY",
      "indicator_key": "core_cpi",
@@ -1871,18 +1890,18 @@
    ],
    "findings_by_source": {
     "ff": 80,
-    "manual": 16,
+    "manual": 17,
     "quarantined": 2
    },
    "findings_by_kind": {
     "value": 82,
-    "zero": 16
+    "zero": 17
    },
    "n_checked": 3448,
    "n_series": 107,
    "n_scored_zero": 99,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-11-03.json"
+   "weekly_feed": "ff_weekly_2026-11-04.json"
   },
   "missing_release": {
    "findings": [
@@ -2309,7 +2328,7 @@
    "INFO": 0
   },
   "previous_consistency": {
-   "WARN": 23,
+   "WARN": 24,
    "INFO": 75
   },
   "missing_release": {
@@ -2317,5 +2336,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-11-03T19:07:49+00:00"
+ "generated_at": "2026-11-04T19:08:14+00:00"
 }
