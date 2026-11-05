@@ -202,6 +202,206 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     8,
+     30,
+     44,
+     47,
+     75,
+     76,
+     80,
+     82
+    ],
+    "paragraphs_sent": 133,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:8a2010a77940",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 3 of summary point 4 has 1 content word(s) in common with the point; at least 2 needed: a fragment must be the passage that states what the point says"
+     ],
+     "text": "Deputy Governor Hauser says the RBA is investing heavily in skills and tools to navigate uncertainty, including research engagement and models and frameworks."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-05T08:43:07Z",
+   "input_sha256": "7281d09908d10c05401fbe150c776d990e1ebab34c7c431aa06a2fd2579c351a",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 13958,
+     "point": 3,
+     "source_text": "55 per cent",
+     "start": 13947,
+     "text": "55 per cent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-05",
+   "quotes": [
+    {
+     "end": 865,
+     "paragraph": 8,
+     "start": 776,
+     "text": "And that trust, in turn, relies on confidence that central banks will keep prices stable."
+    },
+    {
+     "end": 9407,
+     "paragraph": 30,
+     "start": 9175,
+     "text": "This is a powerful result – because it means that if the public understands and trusts the central bank’s strategy, the policy response required to deliver a given disinflation can be smaller and less costly in terms of lost output."
+    },
+    {
+     "end": 25377,
+     "paragraph": 75,
+     "start": 25292,
+     "text": "So we’re investing in new more targeted communications for households and businesses."
+    },
+    {
+     "end": 28514,
+     "paragraph": 82,
+     "start": 28397,
+     "text": "Trust is no birthright. We never stop earning it – by continuing to listen, learn and level with the people we serve."
+    }
+   ],
+   "source": {
+    "chars": 45233,
+    "chars_sent": 45234,
+    "method": "html-selector",
+    "paragraphs_sent": 133,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 775,
+        "paragraph": 8,
+        "start": 687,
+        "text": "Their value rests on trust that others will accept them tomorrow at much the same worth."
+       },
+       {
+        "end": 865,
+        "paragraph": 8,
+        "start": 776,
+        "text": "And that trust, in turn, relies on confidence that central banks will keep prices stable."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Deputy Governor Hauser says trust is integral to how monetary policy works because money’s value rests on confidence that central banks will keep prices stable."
+    },
+    {
+     "evidence": {
+      "coverage": 0.882,
+      "fragments": [
+       {
+        "end": 9407,
+        "paragraph": 30,
+        "start": 9225,
+        "text": "if the public understands and trusts the central bank’s strategy, the policy response required to deliver a given disinflation can be smaller and less costly in terms of lost output."
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "Deputy Governor Hauser says that when the public understands and trusts a central bank’s strategy, the policy response needed for a given disinflation can be smaller and less costly in terms of lost output."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 14024,
+        "paragraph": 44,
+        "start": 13918,
+        "text": "The survey shows that around 55 per cent of respondents have ‘high’ or ‘moderately high’ trust in the RBA."
+       },
+       {
+        "end": 14749,
+        "paragraph": 47,
+        "start": 14626,
+        "text": "trust in our near-term ability to achieve our objectives, looking one year back and one year forward, has fallen materially"
+       }
+      ],
+      "paragraphs": [
+       44,
+       47
+      ]
+     },
+     "text": "Deputy Governor Hauser reports that around 55 per cent of survey respondents have ‘high’ or ‘moderately high’ trust in the RBA, while trust in its near-term ability to achieve objectives has fallen materially."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 25377,
+        "paragraph": 75,
+        "start": 25292,
+        "text": "So we’re investing in new more targeted communications for households and businesses."
+       },
+       {
+        "end": 26532,
+        "paragraph": 76,
+        "start": 26373,
+        "text": "New five-year reviews of the RBA will strengthen that accountability further, providing periodic assessments of performance and opportunities for improvements."
+       }
+      ],
+      "paragraphs": [
+       75,
+       76
+      ]
+     },
+     "text": "Deputy Governor Hauser says the RBA is investing in more targeted communications for households and businesses, while new five-year reviews will provide assessments of performance and opportunities for improvements."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 27576,
+        "paragraph": 80,
+        "start": 27510,
+        "text": "Trust in the RBA seems to have held up through a difficult period."
+       },
+       {
+        "end": 27681,
+        "paragraph": 80,
+        "start": 27605,
+        "text": "some people’s confidence in delivery, particularly on inflation, has fallen."
+       }
+      ],
+      "paragraphs": [
+       80
+      ]
+     },
+     "text": "Deputy Governor Hauser says trust in the RBA seems to have held up through a difficult period, but some people’s confidence in delivery, particularly on inflation, has fallen."
+    }
+   ],
+   "title": "Trust, Expectations and Monetary Policy",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-dg-2026-11-05.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 23571,
+    "output_tokens": 1560,
+    "reasoning_tokens": 110
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      7,
      8,
      9,
@@ -1064,6 +1264,144 @@
     "input_tokens": 2293,
     "output_tokens": 651,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     126,
+     127,
+     128,
+     129
+    ],
+    "paragraphs_sent": 132,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:ae12e9ef0f2f",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-05T08:43:07Z",
+   "input_sha256": "1305461d37ed335ff60b301cefa706c822ddddbf1070b1ed2f949f50485cf6b2",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-05",
+   "quotes": [
+    {
+     "end": 23805,
+     "paragraph": 126,
+     "start": 23681,
+     "text": "First, preserving room for manoeuvre allows monetary policy to respond quickly when circumstances change in unexpected ways."
+    },
+    {
+     "end": 23922,
+     "paragraph": 127,
+     "start": 23806,
+     "text": "Second, monetary policy should respond to the implications of shocks for the inflation outlook, not to their nature."
+    },
+    {
+     "end": 24033,
+     "paragraph": 128,
+     "start": 23923,
+     "text": "Third, safeguarding monetary dominance allows central banks to act decisively when price stability is at risk."
+    },
+    {
+     "end": 24222,
+     "paragraph": 129,
+     "start": 24034,
+     "text": "And finally, implementing monetary policy efficiently with a balance sheet that is no larger than necessary reduces side effects, preserves future policy space and fosters market activity."
+    }
+   ],
+   "source": {
+    "chars": 24597,
+    "chars_sent": 24598,
+    "method": "html-selector",
+    "paragraphs_sent": 132,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23805,
+        "paragraph": 126,
+        "start": 23681,
+        "text": "First, preserving room for manoeuvre allows monetary policy to respond quickly when circumstances change in unexpected ways."
+       }
+      ],
+      "paragraphs": [
+       126
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says preserving room for manoeuvre allows monetary policy to respond quickly when circumstances change in unexpected ways."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 23922,
+        "paragraph": 127,
+        "start": 23806,
+        "text": "Second, monetary policy should respond to the implications of shocks for the inflation outlook, not to their nature."
+       }
+      ],
+      "paragraphs": [
+       127
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says monetary policy should respond to the implications of shocks for the inflation outlook, not to their nature."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 24033,
+        "paragraph": 128,
+        "start": 23923,
+        "text": "Third, safeguarding monetary dominance allows central banks to act decisively when price stability is at risk."
+       }
+      ],
+      "paragraphs": [
+       128
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says safeguarding monetary dominance allows central banks to act decisively when price stability is at risk."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 24222,
+        "paragraph": 129,
+        "start": 24034,
+        "text": "And finally, implementing monetary policy efficiently with a balance sheet that is no larger than necessary reduces side effects, preserves future policy space and fosters market activity."
+       }
+      ],
+      "paragraphs": [
+       129
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says implementing monetary policy efficiently with a balance sheet that is no larger than necessary reduces side effects, preserves future policy space and fosters market activity."
+    }
+   ],
+   "title": "Isabel Schnabel: Navigating stormy waters: reflections on monetary policy",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261105_1~5e97d9d5a0.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 6419,
+    "output_tokens": 606,
+    "reasoning_tokens": 188
    }
   }
  ],
