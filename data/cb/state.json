@@ -34,22 +34,22 @@
     }
   },
   "eurex_ois_chf": {
-    "asof": "2026-11-03"
+    "asof": "2026-11-04"
   },
   "eurex_ois_eur": {
-    "asof": "2026-11-03"
+    "asof": "2026-11-04"
   },
   "eurex_ois_gbp": {
-    "asof": "2026-11-03"
+    "asof": "2026-11-04"
   },
   "eurex_ois_jpy": {
-    "asof": "2026-11-03"
+    "asof": "2026-11-04"
   },
   "eurex_ois_usd": {
-    "asof": "2026-11-03"
+    "asof": "2026-11-04"
   },
   "eurex_ois_usd_sofr": {
-    "asof": "2026-11-03"
+    "asof": "2026-11-04"
   },
   "http_validators": {
     "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-summary-and-minutes/mpcvoting.xlsx": {
@@ -164,6 +164,7 @@
     "GBP:2026-06-18": "none",
     "GBP:2026-07-30": "video",
     "GBP:2026-09-17": "none",
+    "GBP:2026-11-05": "none",
     "USD:2026-04-29": "video",
     "USD:2026-06-17": "video",
     "USD:2026-07-29": "video",
