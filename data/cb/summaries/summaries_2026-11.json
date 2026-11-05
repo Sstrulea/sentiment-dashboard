@@ -1403,6 +1403,300 @@
     "output_tokens": 606,
     "reasoning_tokens": 188
    }
+  },
+  {
+   "changes_vs_previous": {
+    "added_words": 233,
+    "changes": [
+     {
+      "added": "November",
+      "paragraph": 1,
+      "removed": "September"
+     },
+     {
+      "added": "4 November",
+      "paragraph": 2,
+      "removed": "16 September"
+     },
+     {
+      "added": "8–1",
+      "paragraph": 2,
+      "removed": "6–3 to maintain Bank Rate at 3.75%. Three members voted"
+     },
+     {
+      "added": "One member voted to increase Bank Rate by 0.5 percentage points, to 4.25%.",
+      "paragraph": 2,
+      "removed": ""
+     },
+     {
+      "added": "The conflict in the Middle East is now in its ninth month. Global energy prices have continued to rise from an already elevated level. UK CPI inflation increased to 3.5% in September. It is now expected to rise to around 5% by the middle of next year. It is then projected to fall as the impact of rising energy prices on 12-month inflation rates fades, and still restrictive monetary policy bears down on inflation.",
+      "paragraph": 3,
+      "removed": ""
+     },
+     {
+      "added": "While the direct effects of higher energy prices are clear, and will continue to feed into firm and household energy bills, there remains limited evidence of knock-on effects on other prices and wages. However, the degree of inflationary pressure in the pipeline is now sufficient to warrant an increase in Bank Rate. Activity data in recent months have generally been stronger than expected, adding to the case for modestly tighter monetary policy.",
+      "paragraph": 4,
+      "removed": ""
+     },
+     {
+      "added": "Monetary policy is not on a pre-set path. The Committee will continue to assess the evidence at each meeting, in particular how likely high energy prices are to feed through to other prices and the economy more broadly, by monitoring the evolution of underlying pay, pricing behaviour, and slack. The Committee will adjust Bank Rate as necessary to ensure CPI inflation returns to the 2% target in the medium term.",
+      "paragraph": 5,
+      "removed": ""
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "Protracted conflict in the Middle East has contributed to further increases in crude and refined energy prices since the previous meeting, which remain more volatile and higher than pre-conflict. UK CPI inflation increased to 3.1% in August and is likely to rise further over coming quarters. Monetary policy is being set to ensure inflation comes down to 2% sustainably as the economy adjusts to the energy shock. The policy stance required to achieve this will depend on the scale and duration of the shock and how it propagates through the economy."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "There has been little evidence so far of material second-round effects in price and wage-setting. However, the risk of such effects, against which policy needs to lean, is greater the longer higher energy prices persist or are more volatile. Activity has been slightly stronger than expected, although soft labour market conditions, and the higher interest rates faced by households and businesses since the conflict began, will act to reduce inflation over time. Overall, the Committee judges that the risks to the inflation outlook are tilted to the upside, and more so than at the time of the July Monetary Policy Report, although there remains scope for the outlook to change materially as events in the Middle East unfold."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "The Committee judges that it is appropriate to maintain Bank Rate at this meeting. The Committee stands ready to act as necessary to ensure that CPI inflation remains on track to meet the 2% target in the medium term."
+     },
+     {
+      "added": "",
+      "paragraph": null,
+      "removed": "At this meeting, the MPC also voted unanimously to reduce the stock of UK government bond purchases held for monetary policy purposes, and financed by the issuance of central bank reserves, to zero. This will be conducted through a multi-year plan, such that the remaining stock is unwound at an annual average pace of £46 billion by the end of 2034, through annual sales of £20 billion alongside maturing gilts."
+     }
+    ],
+    "removed_words": 331,
+    "truncated": false,
+    "vs_doc_id": "GBP:statement:2026-09-17",
+    "vs_meeting": "2026-09-17"
+   },
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "paragraphs_sent": 5,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:statement:2026-11-05",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-05T12:02:00Z",
+   "input_sha256": "91499f40dac8c9d2f4580deeb4bc20957f7fe927488a48b4d9e55ea76245ee77",
+   "meeting_date": "2026-11-05",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 141,
+     "point": 1,
+     "source_text": "8",
+     "start": 140,
+     "text": "8"
+    },
+    {
+     "end": 143,
+     "point": 1,
+     "source_text": "1",
+     "start": 142,
+     "text": "1"
+    },
+    {
+     "end": 191,
+     "point": 1,
+     "source_text": "0.25 percentage points",
+     "start": 169,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 65,
+     "point": 1,
+     "source_text": "4",
+     "start": 64,
+     "text": "4%"
+    },
+    {
+     "end": 444,
+     "point": 2,
+     "source_text": "3.5%",
+     "start": 440,
+     "text": "3.5%"
+    },
+    {
+     "end": 498,
+     "point": 2,
+     "source_text": "5%",
+     "start": 496,
+     "text": "5%"
+    },
+    {
+     "end": 1529,
+     "point": 4,
+     "source_text": "2%",
+     "start": 1527,
+     "text": "2%"
+    },
+    {
+     "end": 263,
+     "point": 5,
+     "source_text": "0.5 percentage points",
+     "start": 242,
+     "text": "0.5 percentage points"
+    },
+    {
+     "end": 273,
+     "point": 5,
+     "source_text": "4.25%",
+     "start": 268,
+     "text": "4.25%"
+    }
+   ],
+   "prompt_version": "statement-v6",
+   "provider": "openai",
+   "published": "2026-11-05",
+   "quotes": [
+    {
+     "end": 199,
+     "paragraph": 2,
+     "start": 39,
+     "text": "At its meeting ending on 4 November 2026, the Monetary Policy Committee (MPC) voted by a majority of 8–1 to increase Bank Rate by 0.25 percentage points, to 4%."
+    },
+    {
+     "end": 526,
+     "paragraph": 3,
+     "start": 410,
+     "text": "UK CPI inflation increased to 3.5% in September. It is now expected to rise to around 5% by the middle of next year."
+    },
+    {
+     "end": 1009,
+     "paragraph": 4,
+     "start": 894,
+     "text": "However, the degree of inflationary pressure in the pipeline is now sufficient to warrant an increase in Bank Rate."
+    },
+    {
+     "end": 1556,
+     "paragraph": 5,
+     "start": 1439,
+     "text": "The Committee will adjust Bank Rate as necessary to ensure CPI inflation returns to the 2% target in the medium term."
+    }
+   ],
+   "source": {
+    "chars": 1556,
+    "chars_sent": 1557,
+    "method": "stored",
+    "paragraphs_sent": 5,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 199,
+        "paragraph": 2,
+        "start": 81,
+        "text": "the Monetary Policy Committee (MPC) voted by a majority of 8–1 to increase Bank Rate by 0.25 percentage points, to 4%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The MPC voted by a majority of 8–1 to increase Bank Rate by 0.25 percentage points, to 4%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 526,
+        "paragraph": 3,
+        "start": 410,
+        "text": "UK CPI inflation increased to 3.5% in September. It is now expected to rise to around 5% by the middle of next year."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The MPC stated that UK CPI inflation increased to 3.5% in September and is expected to rise to around 5% by the middle of next year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1009,
+        "paragraph": 4,
+        "start": 903,
+        "text": "the degree of inflationary pressure in the pipeline is now sufficient to warrant an increase in Bank Rate."
+       },
+       {
+        "end": 1141,
+        "paragraph": 4,
+        "start": 1010,
+        "text": "Activity data in recent months have generally been stronger than expected, adding to the case for modestly tighter monetary policy."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The MPC stated that pipeline inflationary pressure warranted an increase in Bank Rate, while stronger-than-expected activity data added to the case for modestly tighter monetary policy."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1250,
+        "paragraph": 5,
+        "start": 1184,
+        "text": "The Committee will continue to assess the evidence at each meeting"
+       },
+       {
+        "end": 1556,
+        "paragraph": 5,
+        "start": 1439,
+        "text": "The Committee will adjust Bank Rate as necessary to ensure CPI inflation returns to the 2% target in the medium term."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Committee will assess evidence at each meeting and adjust Bank Rate as necessary to ensure CPI inflation returns to the 2% target in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 274,
+        "paragraph": 2,
+        "start": 200,
+        "text": "One member voted to increase Bank Rate by 0.5 percentage points, to 4.25%."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "One member voted to increase Bank Rate by 0.5 percentage points, to 4.25%."
+    }
+   ],
+   "title": "Bank of England monetary policy statement, 05 November 2026",
+   "type": "statement",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4374,
+    "output_tokens": 1132,
+    "reasoning_tokens": 0
+   }
   }
  ],
  "version": 1

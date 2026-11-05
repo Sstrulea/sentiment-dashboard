@@ -53,7 +53,8 @@
   },
   "http_validators": {
     "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-summary-and-minutes/mpcvoting.xlsx": {
-      "last_modified": "Thu, 17 Sep 2026 11:00:08 GMT"
+      "last_modified": "Thu, 05 Nov 2026 12:00:03 GMT",
+      "sha256": "f6bd57f6737f2cac49c03ef197c1afae7be131f2e9e799401975fc6e630c8d38"
     },
     "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260428a.pdf": {
       "etag": "\"w93412-1777348429161\"",
@@ -177,26 +178,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-05T08:43:07Z",
-      "calls": 3,
-      "cost_usd": 0.086,
+      "at": "2026-11-05T12:02:00Z",
+      "calls": 2,
+      "cost_usd": 0.0223,
       "failed_validation": 0,
-      "input_tokens": 29990,
-      "new": 2,
+      "input_tokens": 4374,
+      "new": 1,
       "no_text": 0,
-      "output_tokens": 2166,
+      "output_tokens": 1132,
       "pending": 0,
-      "reasoning_tokens": 298,
+      "reasoning_tokens": 0,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 120,
+      "unchanged": 0,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 226,
-      "input_tokens": 1451920,
-      "output_tokens": 255798,
-      "summaries": 151
+      "calls": 228,
+      "input_tokens": 1456294,
+      "output_tokens": 256930,
+      "summaries": 152
     }
   }
 }
