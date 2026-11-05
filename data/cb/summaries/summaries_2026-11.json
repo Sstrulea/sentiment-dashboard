@@ -1013,6 +1013,269 @@
      4,
      5,
      9,
+     10,
+     13
+    ],
+    "paragraphs_sent": 15,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:0c5a37e62a7e",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-05T16:42:15Z",
+   "input_sha256": "892a4a9700cecd58b1b9af8f7c06404916027b20aeac6cc5540d2fffb922ef21",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 235,
+     "point": 1,
+     "source_text": "25 basis points",
+     "start": 220,
+     "text": "25 basis points"
+    },
+    {
+     "end": 256,
+     "point": 1,
+     "source_text": "2.5%",
+     "start": 252,
+     "text": "2.5%"
+    },
+    {
+     "end": 315,
+     "point": 1,
+     "source_text": "2023",
+     "start": 311,
+     "text": "2023"
+    },
+    {
+     "end": 1649,
+     "point": 4,
+     "source_text": "3.3%",
+     "start": 1645,
+     "text": "3.3%"
+    },
+    {
+     "end": 1722,
+     "point": 4,
+     "source_text": "2%",
+     "start": 1720,
+     "text": "2%"
+    },
+    {
+     "end": 2259,
+     "point": 5,
+     "source_text": "1%",
+     "start": 2257,
+     "text": "1%"
+    },
+    {
+     "end": 2267,
+     "point": 5,
+     "source_text": "2026",
+     "start": 2263,
+     "text": "2026"
+    },
+    {
+     "end": 1722,
+     "point": 5,
+     "source_text": "2%",
+     "start": 1720,
+     "text": "2%"
+    },
+    {
+     "end": 2117,
+     "point": 5,
+     "source_text": "2027",
+     "start": 2113,
+     "text": "2027"
+    },
+    {
+     "end": 2330,
+     "point": 5,
+     "source_text": "2028",
+     "start": 2326,
+     "text": "2028"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-05",
+   "quotes": [
+    {
+     "end": 257,
+     "paragraph": 2,
+     "start": 171,
+     "text": "Last week, we raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+    },
+    {
+     "end": 522,
+     "paragraph": 4,
+     "start": 472,
+     "text": "First, the outlook for inflation has deteriorated."
+    },
+    {
+     "end": 2331,
+     "paragraph": 10,
+     "start": 2233,
+     "text": "Following GDP growth of 1% in 2026, the economy is projected to grow by about 2% in 2027 and 2028."
+    },
+    {
+     "end": 3618,
+     "paragraph": 13,
+     "start": 3507,
+     "text": "There could be a need to raise the policy rate further, but given the uncertainties, we will proceed carefully."
+    }
+   ],
+   "source": {
+    "chars": 3821,
+    "chars_sent": 3822,
+    "method": "html-selector",
+    "paragraphs_sent": 15,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 257,
+        "paragraph": 2,
+        "start": 171,
+        "text": "Last week, we raised the policy interest rate by 25 basis points, bringing it to 2.5%."
+       },
+       {
+        "end": 316,
+        "paragraph": 2,
+        "start": 258,
+        "text": "This was the first interest rate increase since July 2023."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Bank of Canada says it raised the policy interest rate by 25 basis points to 2.5%, the first increase since July 2023."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 522,
+        "paragraph": 4,
+        "start": 472,
+        "text": "First, the outlook for inflation has deteriorated."
+       },
+       {
+        "end": 645,
+        "paragraph": 4,
+        "start": 567,
+        "text": "global oil prices have increased and are expected to remain higher for longer."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Bank of Canada says the inflation outlook has deteriorated, with global oil prices expected to remain higher for longer."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 844,
+        "paragraph": 5,
+        "start": 730,
+        "text": "Second, the growth outlook for Canada has improved modestly, despite continued trade actions by the United States."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "The Bank of Canada says Canada’s growth outlook has improved modestly despite continued trade actions by the United States."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1744,
+        "paragraph": 9,
+        "start": 1630,
+        "text": "GDP growth was 3.3% in the second quarter, and recent indicators point to growth of about 2% in the third quarter."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "The Bank of Canada reports GDP growth was 3.3% in the second quarter, while recent indicators point to growth of about 2% in the third quarter."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2331,
+        "paragraph": 10,
+        "start": 2233,
+        "text": "Following GDP growth of 1% in 2026, the economy is projected to grow by about 2% in 2027 and 2028."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "The Bank of Canada projects GDP growth of 1% in 2026 and about 2% in 2027 and 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3506,
+        "paragraph": 13,
+        "start": 3428,
+        "text": "Governing Council agreed we would take future decisions one meeting at a time."
+       },
+       {
+        "end": 3618,
+        "paragraph": 13,
+        "start": 3507,
+        "text": "There could be a need to raise the policy rate further, but given the uncertainties, we will proceed carefully."
+       }
+      ],
+      "paragraphs": [
+       13
+      ]
+     },
+     "text": "The Bank of Canada says Governing Council will take future decisions one meeting at a time and may need to raise the policy rate further."
+    }
+   ],
+   "title": "Opening Statement to the Standing Senate Committee on Banking, Commerce and the Economy",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/11/opening-statement-standing-senate-committee-banking-commerce-and-economy-2026-11-05/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2297,
+    "output_tokens": 825,
+    "reasoning_tokens": 233
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     4,
+     5,
+     9,
      11,
      13
     ],
