@@ -1270,6 +1270,234 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     15,
+     16,
+     17,
+     18,
+     37,
+     38,
+     43
+    ],
+    "paragraphs_sent": 45,
+    "truncated": false
+   },
+   "currency": "CHF",
+   "doc_id": "CHF:speech:f000c3a0b19e",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-05T12:42:15Z",
+   "input_sha256": "6c7caf25d9e3a2b2559fa313aed72301af119f7038df866a459d951b5c51bfcc",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 6219,
+     "point": 2,
+     "source_text": "0%",
+     "start": 6217,
+     "text": "0%"
+    },
+    {
+     "end": 1570,
+     "point": 2,
+     "source_text": "2",
+     "start": 1569,
+     "text": "2%"
+    },
+    {
+     "end": 13330,
+     "point": 5,
+     "source_text": "2021",
+     "start": 13326,
+     "text": "2021"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-05",
+   "quotes": [
+    {
+     "end": 6227,
+     "paragraph": 16,
+     "start": 6162,
+     "text": "We define price stability as an inflation rate between 0% and 2%."
+    },
+    {
+     "end": 6807,
+     "paragraph": 17,
+     "start": 6752,
+     "text": "It is our main indicator for monetary policy decisions."
+    },
+    {
+     "end": 7276,
+     "paragraph": 18,
+     "start": 7203,
+     "text": "The SNB policy rate is the main tool for influencing monetary conditions."
+    },
+    {
+     "end": 14818,
+     "paragraph": 38,
+     "start": 14756,
+     "text": "This brought inflation back into the range of price stability."
+    },
+    {
+     "end": 15686,
+     "paragraph": 43,
+     "start": 15615,
+     "text": "The SNB has fulfilled its mandate - price stability in the medium term."
+    }
+   ],
+   "source": {
+    "chars": 16133,
+    "chars_sent": 16134,
+    "method": "html-selector",
+    "paragraphs_sent": 45,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6014,
+        "paragraph": 15,
+        "start": 5887,
+        "text": "being a small open economy exposes us to external shocks. Our stability brings us low interest rates and a safe-haven currency."
+       }
+      ],
+      "paragraphs": [
+       15
+      ]
+     },
+     "text": "Chairman Martin Schlegel says being a small open economy exposes us to external shocks, while stability brings low interest rates and a safe-haven currency."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 6227,
+        "paragraph": 16,
+        "start": 6162,
+        "text": "We define price stability as an inflation rate between 0% and 2%."
+       },
+       {
+        "end": 6291,
+        "paragraph": 16,
+        "start": 6228,
+        "text": "We want to keep inflation within this range in the medium term."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Chairman Martin Schlegel says the SNB defines price stability as inflation between 0% and 2% and seeks to keep inflation within this range in the medium term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6807,
+        "paragraph": 17,
+        "start": 6752,
+        "text": "It is our main indicator for monetary policy decisions."
+       },
+       {
+        "end": 6887,
+        "paragraph": 17,
+        "start": 6808,
+        "text": "It summarises our assessment of the economy and the implications for inflation."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Chairman Martin Schlegel says the conditional inflation forecast is the SNB’s main indicator for monetary policy decisions and summarises its assessment of the economy and inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7276,
+        "paragraph": 18,
+        "start": 7203,
+        "text": "The SNB policy rate is the main tool for influencing monetary conditions."
+       },
+       {
+        "end": 7417,
+        "paragraph": 18,
+        "start": 7277,
+        "text": "If necessary, the SNB may use additional monetary policy measures, such as foreign exchange interventions, to influence monetary conditions."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "Chairman Martin Schlegel says the SNB policy rate is the main tool for influencing monetary conditions, and the SNB may use foreign exchange interventions if necessary."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 13887,
+        "paragraph": 37,
+        "start": 13787,
+        "text": "We used a combination of policy rate hikes and foreign-currency sales - as you can see on the right."
+       },
+       {
+        "end": 14818,
+        "paragraph": 38,
+        "start": 14756,
+        "text": "This brought inflation back into the range of price stability."
+       }
+      ],
+      "paragraphs": [
+       37,
+       38
+      ]
+     },
+     "text": "Chairman Martin Schlegel says the SNB used policy rate hikes and foreign-currency sales after inflation started to rise in 2021, bringing inflation back into the range of price stability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15602,
+        "paragraph": 43,
+        "start": 15489,
+        "text": "it has been within the range consistent with price stability most of the time - despite these repeated challenges"
+       }
+      ],
+      "paragraphs": [
+       43
+      ]
+     },
+     "text": "Chairman Martin Schlegel says inflation in Switzerland has been within the range consistent with price stability most of the time since the start of this century."
+    }
+   ],
+   "title": "2026-11-05 - Martin Schlegel: Transmission and conduct of monetary policy in Switzerland",
+   "type": "speech",
+   "url": "https://www.snb.ch/en/publications/communication/speeches/2026/ref_20261105_msl",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10350,
+    "output_tokens": 1207,
+    "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      126,
      127,
      128,
@@ -1402,6 +1630,265 @@
     "input_tokens": 6419,
     "output_tokens": 606,
     "reasoning_tokens": 188
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     8,
+     12,
+     13,
+     17,
+     19,
+     25,
+     26
+    ],
+    "paragraphs_sent": 54,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:minutes:2026-11-05",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-05T12:42:15Z",
+   "input_sha256": "3ba538010f0096ae0198d1aeb21ce6410298cd7316c248e6ce47b9ca2c3e807f",
+   "meeting_date": "2026-11-05",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3944,
+     "point": 2,
+     "source_text": "4½%",
+     "start": 3941,
+     "text": "4½%"
+    },
+    {
+     "end": 3952,
+     "point": 2,
+     "source_text": "2027",
+     "start": 3948,
+     "text": "2027"
+    },
+    {
+     "end": 1654,
+     "point": 2,
+     "source_text": "5%",
+     "start": 1652,
+     "text": "5%"
+    },
+    {
+     "end": 3952,
+     "point": 2,
+     "source_text": "2027",
+     "start": 3948,
+     "text": "2027"
+    },
+    {
+     "end": 5818,
+     "point": 6,
+     "source_text": "¼ percentage points",
+     "start": 5799,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 60,
+     "point": 6,
+     "source_text": "4",
+     "start": 59,
+     "text": "4%"
+    },
+    {
+     "end": 12852,
+     "point": 6,
+     "source_text": "0.5 percentage point",
+     "start": 12832,
+     "text": "0.5 percentage points"
+    },
+    {
+     "end": 8912,
+     "point": 6,
+     "source_text": "4.25%",
+     "start": 8907,
+     "text": "4.25%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-05",
+   "quotes": [
+    {
+     "end": 575,
+     "paragraph": 4,
+     "start": 438,
+     "text": "The impact of protracted conflicts overseas on global energy prices remained the main source of uncertainty for the UK inflation outlook."
+    },
+    {
+     "end": 4054,
+     "paragraph": 8,
+     "start": 3752,
+     "text": "The latest near-term inflation projection by Bank staff, which was based on energy prices averaged over the 15 UK working days to 27 October, was for headline CPI inflation to reach around 4½% in 2027 Q1, around 1¼ percentage points higher than at the time of the July Report, and around 5% in 2027 Q2."
+    },
+    {
+     "end": 10468,
+     "paragraph": 19,
+     "start": 10333,
+     "text": "Taken together, the Committee judged that the risk of stronger inflationary pressure had increased further since the September meeting."
+    },
+    {
+     "end": 13567,
+     "paragraph": 26,
+     "start": 13282,
+     "text": "Eight members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Megan Greene, Clare Lombardelli, Huw Pill, Dave Ramsden and Alan Taylor) voted in favour of the proposition. Catherine L Mann voted against the proposition, preferring to increase Bank Rate by 0.5 percentage points, to 4.25%."
+    }
+   ],
+   "source": {
+    "chars": 26347,
+    "chars_sent": 26348,
+    "method": "html-selector",
+    "paragraphs_sent": 54,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 575,
+        "paragraph": 4,
+        "start": 438,
+        "text": "The impact of protracted conflicts overseas on global energy prices remained the main source of uncertainty for the UK inflation outlook."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Committee said protracted conflicts overseas and global energy prices remained the main source of uncertainty for the UK inflation outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4054,
+        "paragraph": 8,
+        "start": 3894,
+        "text": "was for headline CPI inflation to reach around 4½% in 2027 Q1, around 1¼ percentage points higher than at the time of the July Report, and around 5% in 2027 Q2."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Bank staff’s near-term inflation projection was for headline CPI inflation to reach around 4½% in 2027 Q1 and around 5% in 2027 Q2."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6209,
+        "paragraph": 12,
+        "start": 6101,
+        "text": "Since September, there had been further evidence of the resilience of activity despite higher energy prices."
+       },
+       {
+        "end": 6898,
+        "paragraph": 13,
+        "start": 6804,
+        "text": "but on balance members judged that it was likely to fall back somewhat in the coming quarters."
+       }
+      ],
+      "paragraphs": [
+       12,
+       13
+      ]
+     },
+     "text": "Since September, there had been further evidence of activity’s resilience despite higher energy prices, while members judged GDP growth was likely to fall back somewhat in coming quarters."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9068,
+        "paragraph": 17,
+        "start": 8992,
+        "text": "Most members judged that the stance of monetary policy was still restrictive"
+       },
+       {
+        "end": 9565,
+        "paragraph": 17,
+        "start": 9442,
+        "text": "growth rates of lending to businesses had remained strong, although new mortgage approvals for households had been falling."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "Most members judged that the monetary policy stance was still restrictive, while business lending growth remained strong and new mortgage approvals had been falling."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10468,
+        "paragraph": 19,
+        "start": 10333,
+        "text": "Taken together, the Committee judged that the risk of stronger inflationary pressure had increased further since the September meeting."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "The Committee judged that the risk of stronger inflationary pressure had increased further since the September meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13277,
+        "paragraph": 25,
+        "start": 13214,
+        "text": "Bank Rate should be increased by 0.25 percentage points, to 4%."
+       },
+       {
+        "end": 13450,
+        "paragraph": 26,
+        "start": 13282,
+        "text": "Eight members (Andrew Bailey, Sarah Breeden, Swati Dhingra, Megan Greene, Clare Lombardelli, Huw Pill, Dave Ramsden and Alan Taylor) voted in favour of the proposition."
+       },
+       {
+        "end": 13567,
+        "paragraph": 26,
+        "start": 13451,
+        "text": "Catherine L Mann voted against the proposition, preferring to increase Bank Rate by 0.5 percentage points, to 4.25%."
+       }
+      ],
+      "paragraphs": [
+       25,
+       26
+      ]
+     },
+     "text": "Eight members voted to increase Bank Rate by 0.25 percentage points, to 4%; Catherine L Mann voted against, preferring an increase of 0.5 percentage points, to 4.25%."
+    }
+   ],
+   "title": "Bank of England minutes of the 05 November 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 14018,
+    "output_tokens": 3450,
+    "reasoning_tokens": 1890
    }
   },
   {
