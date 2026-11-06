@@ -119,6 +119,12 @@
    "kind": "no_text",
    "reason": "no container of the page holds the document text",
    "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko261005a.htm"
+  },
+  "JPY:speech:d1a1c4e473bc": {
+   "at": "2026-11-06T16:41:38Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.boj.or.jp/en/about/press/koen_2026/ko261107a.htm"
   }
  },
  "version": 1
