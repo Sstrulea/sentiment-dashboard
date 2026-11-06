@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-06T16:06:20.415038",
+ "as_of": "2026-11-06T19:12:48.123007",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -646,8 +646,8 @@
      "next_previous": 333.0,
      "next_from": "parquet",
      "diff": 117.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
+     "tolerance": 90.2692,
+     "threshold": 90.2692,
      "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
@@ -779,8 +779,8 @@
      "next_previous": 229.0,
      "next_from": "parquet",
      "diff": -124.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
+     "tolerance": 90.2692,
+     "threshold": 90.2692,
      "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
@@ -1235,8 +1235,8 @@
      "next_previous": 14.0,
      "next_from": "parquet",
      "diff": -133.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
+     "tolerance": 90.2692,
+     "threshold": 90.2692,
      "n_revision_pairs": 46,
      "level": "INFO",
      "new": false
@@ -1406,10 +1406,10 @@
      "next_previous": 56.0,
      "next_from": "parquet",
      "diff": 161.0,
-     "tolerance": 90.9931,
-     "threshold": 90.9931,
+     "tolerance": 90.2692,
+     "threshold": 90.2692,
      "n_revision_pairs": 46,
-     "level": "WARN",
+     "level": "INFO",
      "new": false
     },
     {
@@ -2328,13 +2328,13 @@
    "INFO": 0
   },
   "previous_consistency": {
-   "WARN": 24,
-   "INFO": 75
+   "WARN": 23,
+   "INFO": 76
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-11-06T16:06:26+00:00"
+ "generated_at": "2026-11-06T19:12:56+00:00"
 }
