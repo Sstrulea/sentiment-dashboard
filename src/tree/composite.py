@@ -167,10 +167,10 @@ def last_ecb_business_day(month_end: pd.Timestamp, fx_dates: pd.DatetimeIndex) -
 # ---------------------------------------------------------------------------
 
 class P5Inputs:
-    def __init__(self, root=None):
+    def __init__(self, root=None, research_dir=None):
         from pathlib import Path
         root = Path(root) if root else Path(__file__).resolve().parents[2]
-        r = root / "data" / "research"
+        r = Path(research_dir) if research_dir else root / "data" / "research"
         self.oecd = pd.read_parquet(r / "p5_oecd_components.parquet")
         self.oecd["edition"] = self.oecd["edition"].astype(str)
         b = pd.read_parquet(r / "p5_bci.parquet")
