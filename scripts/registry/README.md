@@ -19,3 +19,17 @@ cd ~/projects/macro-dev
   (asof + 2/4/8/13 weeks) has passed; `--offline` uses the backbone parquet instead.
 - Output: `data/registry/calls.parquet` (asof, source, ccy, score, rank, horizon, due,
   realized_bp). Nothing here feeds production.
+
+## George's calls (phase 5)
+
+- `data/registry/apeluri_george.csv` — `data,banca,directie,probabilitate,motiv,nota`
+  (banca: Fed ECB BoE BoJ BoC RBA RBNZ SNB; directie: hawkish dovish fara_opinie;
+  probabilitate: integer 50-95, fara_opinie = 50; motiv: munca inflatie crestere comunicare
+  risc pricing altul). Example: `2026-11-07,Fed,hawkish,65,inflatie,core PCE sticky`.
+- `data/registry/valute_george.csv` — `data,tari,slabe,nota` (2 + 2 codes of the 8, e.g.
+  `2026-11-07,USD GBP,JPY CHF,`).
+- Outcome (pre-registered): bank calls — 2Y from the close of the first business day after the
+  call date (Fri-Sun -> Monday) over 20 business days, hawkish = higher at the end, unchanged =
+  excluded; currencies — from the first H.10 fixing after the date, 1/2/4 weeks vs the basket.
+- A row counts only if it was committed before its window starts:
+  `python scripts/registry/validate_calls.py` lists accepted / rejected rows with the reason.
