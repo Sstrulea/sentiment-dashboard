@@ -4,9 +4,9 @@
  "endpoint": "today",
  "rows": 7,
  "actuals": 7,
- "last_attempt_at": "2026-11-06T19:05:55.124145",
- "last_status": "ok",
+ "last_attempt_at": "2026-11-07T20:05:39.901660",
+ "last_status": "empty",
  "last_http_status": 200,
- "last_error": null,
+ "last_error": "payload mapped 0 events",
  "last_rate_limit_headers": {}
 }
