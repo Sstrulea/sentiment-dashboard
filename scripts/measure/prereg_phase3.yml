@@ -1,0 +1,83 @@
+# Pre-registration — phase 3 (feat/macro-momentum). Attempt #3 in docs/eval/attempts.md.
+# Committed BEFORE any new score touched a forward return. scripts/measure/phase3.py and
+# scripts/measure/phase3_h.py refuse to run while this file has uncommitted changes.
+id: phase3
+written: 2026-10-30
+attempt: 3
+frozen_with_this_commit: [data/trees/regime_v1.yml, src/tree/regimes.py, src/tree/macro.py, src/tree/nodes.py,
+                          scripts/fetch_oecd_macro.py, scripts/fetch_phase3_market.py, scripts/fetch_backbone.py,
+                          scripts/measure/phase3.py, scripts/measure/phase3_h.py]
+inputs: [data/regime_inputs.parquet, data/macro_monthly.parquet, data/backbone_rates.parquet (Y2_CHF extended),
+         data/reaction_events.parquet, data/ecb_exr.parquet, data/bis_neer.parquet, all fetched 2026-10-30;
+         ~/.cache/macro-tournament/scores_main.parquet (v3 A1, B2, D1)]
+
+regime_v1:                         # data/trees/regime_v1.yml, rolling 5y (1826 d, >= 500 obs) percentiles
+  liquidity_stress: "vix_term >= 1.0 OR (VIX pct >= 95 AND Baa-10y 20-obs widening pct >= 95)"
+  inflation_shock: "equity 20-obs return pct <= 10 AND 10y 20-obs change pct >= 90"
+  growth_scare: "equity 20-obs return pct <= 10 AND 10y 20-obs change pct <= 10"
+  equity: "NASDAQCOM to 2016-12-31, SP500 after"
+  logic: "three-valued; an undecided rule does not fire (degraded); before 2007-12 stress = VIX/Baa branch"
+  stress_for_tests: "any regime other than calm"
+
+trend_range:                       # src/tree/regimes.py
+  er: "13-week efficiency ratio per currency vs basket (|net| / sum |weekly|), mean of 8"
+  trend: "er >= median of er over the previous 260 Fridays (>= 104)"
+  vol: "percentile of the 13-week realised vol (daily basket returns, mean std over 8) in 260 Fridays"
+
+macro:                             # scripts/fetch_oecd_macro.py, src/tree/macro.py
+  source: "OECD SDMX (official); current vintage, not real time"
+  lags_days_after_period_end: {cpi: 28, cpi_core: 28, unemp: 42, emp: 42, ip: 42, bci: 14, cli: 42}
+  stale_component_days: {monthly: 200, quarterly: 300}   # older visible data -> component missing
+  z: "rolling 60 monthly / 20 quarterly obs, >= 36 / 12"
+  categories: {Inflation: [infl_head, infl_core], Labor: [lab_unemp, lab_emp], Growth: [gr_ip, gr_bci]}
+  composites:
+    eq: "mean of available categories = production weights (data/economic_indicators.yaml growth/inflation/labour all 1.0): (i) = (ii), tested once"
+    il: "Inflation + Labor"
+    cli: "variant: Growth uses gr_cli instead of gr_bci (descriptive)"
+  cycle_root:
+    growth_impulse: "sign of BCI 3-month change (>= 0 up); variant CLI"
+    inflation_impulse: "sign of the 3-month change of core CPI YoY; headline where no core"
+    phase: "BIS policy rate: last change within 365 d up/down -> tightening/easing; else hold_top/hold_bottom by the sign of the last change"
+    cells: "16 = phase x growth x inflation (reported); 8 = phase x inflation (conditioning)"
+
+harness:
+  panel: "Fridays 2000-01-07 -> last Friday with the forward return; 8 currencies; forward basket return (H.10) at 2/4/8/13 weeks, bp"
+  ic: "Spearman across currencies each week (>= 5 present); mean on the non-overlapping grid (every h-th Friday from 2000-01-07); t = mean / (sd / sqrt(n))"
+  subperiods: [[2000-01-01, 2008-12-31], [2009-01-01, 2019-12-31], [2020-01-01, 2026-12-31]]
+  long_short: "top-2 / bottom-2, 1/2 each, rebalanced every h weeks, 3 bp per side x |weight change|"
+  abstention: "|composite| < 0.25 -> abstain; accuracy = sign(composite) == sign(forward basket return)"
+  cycle_cells: "pooled currency-weeks in the cell: Spearman of the cross-sectionally demeaned score vs the forward basket return, grid weeks"
+  baselines: {carry: "BIS policy rate as of t - 1 day", momentum: "13-week basket return to t - 1 day",
+              random: "uniform, seed 20261030", v3: "A1 (2023-09-22 -> 2026-10-09)", v3_macro: "B2 (same window)"}
+
+gates:
+  C_main:
+    signal: "composite eq"
+    horizons: [2, 4, 8, 13]          # 4 tests
+    pass: ["IC >= 0.05", "t >= 2.5", "same sign in the three subperiods", "IC - carry IC (same horizon, 8 currencies) >= 0.02"]
+  C_secondary:
+    horizon: 4
+    S1: "IC calm - IC stress > 0 with t >= 2 (Welch on the grid weekly ICs)"
+    S2: "Inflation-category IC in calm > 0 with t >= 2 AND its IC in inflation_shock <= 0 (point)"
+  E_attempt3:
+    window: [2023-01-06, 2026-10-30]
+    episode: "first Friday with gnbp_4w >= 2 for a currency; next episode of that currency only after 4 weeks; same for bngp_4w (separate tests: 2)"
+    control: "currency-Fridays with gnbp_4w == 0 and the 4-week past basket return in the bottom quintile of the pooled currency-weeks of the previous 52 Fridays; same 4-week exclusion"
+    target: "forward basket return from the episode Friday, 2 and 4 weeks"
+    pass: ["|mean episodes - mean control| >= 15 bp at 4 weeks", "t >= 2.5 (episodes as units, SE clustered on the Friday, Welch with the control)",
+           "same sign in 2023-01 -> 2024-11 and 2024-12 -> 2026-10"]
+    descriptive: ["control vs zero (generic reversal)", "digest_fx_20d every 4th Friday, cross-sectional IC at 4 weeks, by trend / range"]
+  H_rates:
+    target: "2Y change at 4/8/13 weeks (bp) / (std of daily 2Y changes over the previous 365 d x sqrt(5h)); USD EUR GBP JPY CAD AUD; pooled"
+    features_and_signs: {Inflation: +1, Labor: +1, Growth: +1, priced_slope_2y_minus_policy: -1, d2y_1m: +1, d2y_3m: +1,
+                         phase_score: +1, equity_3m: +1, vix: -1, baa_d3m: -1, neer_3m: -1}
+    phase_score: {tightening: 1, hold_top: 0, hold_bottom: 0, easing: -1}
+    model: "ridge on features standardised with the training mean/std, lambda = 0.1 x n_train, coefficients sign-constrained (NNLS on sign-flipped features); training rows = targets that ended before the refit date"
+    walk_forward: "first fit 2010-01-01 on 2000-2009, refit every 1 January, predictions OOS from 2010"
+    pass: ["pooled OOS Spearman IC >= 0.08 at 8 or 13 weeks", "t >= 2.5 on the grid", "IC > 0 for at least 5 of the 6 banks"]
+    compare: "direct path (macro composite eq -> basket return) vs two-stage (predicted 2Y z relative to the cross-section mean x beta_rates_fx of the regime) at 8 and 13 weeks, 6 currencies — descriptive"
+  count: "gated tests: C_main 4 + C_secondary 2 + E 2 + H 2 = 10; everything else descriptive; all reported"
+
+data_checks:
+  ecb_fixing: "ECB EXR (14:15 CET) basket returns: daily beta_rates_fx t vs H.10 (2016 ->); event windows 'last fixing before -> first fixing after' vs H.10 noon — diagnostic only, H2 not re-run"
+  jblanked: "documentation only, zero API calls"

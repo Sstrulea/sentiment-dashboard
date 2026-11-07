@@ -1,0 +1,60 @@
+name: registry
+
+# Prospective registry (phase 5, stage G): Friday snapshot after the close, Tuesday scoring.
+# Writes ONLY data/registry/** (never public/, never other workflows' data).
+on:
+  schedule:
+    - cron: '15 23 * * 5'   # Friday 23:15 UTC -> snapshot (values known Friday 21:00 UTC)
+    - cron: '0 14 * * 2'    # Tuesday 14:00 UTC -> scoring of the outcomes now due
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "snapshot (Friday) or score (Tuesday)"
+        type: choice
+        options: [snapshot, score]
+        default: snapshot
+
+concurrency:
+  group: registry
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # validate_calls.py reads the commit history of George's calls
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt -r requirements-research.txt
+      - name: Pick the mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "15 23 * * 5" ]; then
+            echo "mode=snapshot" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=score" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run the registry
+        run: python -m src.registry.run --mode ${{ steps.mode.outputs.mode }}
+      - name: Commit data/registry only (rebase + retry x3)
+        run: |
+          git config user.name "sstrulea"
+          git config user.email "sebi.strulea@gmail.com"
+          git add data/registry
+          if git diff --staged --quiet; then echo "nothing to commit"; exit 0; fi
+          git commit -m "registry: ${{ steps.mode.outputs.mode }} $(date -u +%Y-%m-%dT%H:%MZ) [ci]"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            echo "push failed (attempt $i), retrying"; sleep $((i * 20))
+          done
+          exit 1
