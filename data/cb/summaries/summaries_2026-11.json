@@ -202,6 +202,227 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     9,
+     23,
+     29,
+     37,
+     39,
+     44,
+     51
+    ],
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:3c9392b6e01a",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-08T22:41:34Z",
+   "input_sha256": "3b2d7a9bbf1d26ae14b24d17ad4c8839c3bd59d3c0a05a51a7b04ae6de65c6f5",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 8875,
+     "point": 3,
+     "source_text": "10",
+     "start": 8873,
+     "text": "10"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-09",
+   "quotes": [
+    {
+     "end": 1586,
+     "paragraph": 9,
+     "start": 1506,
+     "text": "Today I’ll be focusing on the channels through which AI will affect the economy."
+    },
+    {
+     "end": 6145,
+     "paragraph": 23,
+     "start": 6048,
+     "text": "So far, there is limited evidence that AI has materially lifted aggregate productivity (Graph 2)."
+    },
+    {
+     "end": 8940,
+     "paragraph": 29,
+     "start": 8708,
+     "text": "This investment cycle is visible in Australia, most notably in the rapid expansion of data centres; our estimates for realised data centre investment have increased 10-fold (from a very low base) over the past three years (Graph 4)."
+    },
+    {
+     "end": 15021,
+     "paragraph": 44,
+     "start": 14857,
+     "text": "In Australia, contacts in the RBA’s liaison program indicate that AI has not yet impacted most firms’ headcount (Graph 8) and is not expected to over the next year."
+    },
+    {
+     "end": 17346,
+     "paragraph": 51,
+     "start": 17048,
+     "text": "To begin grappling with this, the RBA is pursuing a broad research agenda19 to deepen our understanding of AI’s implications for financial markets, productivity, labour markets, inflation, financial stability and ultimately monetary policy, ensuring we’re well placed to navigate the changes ahead."
+    }
+   ],
+   "source": {
+    "chars": 21290,
+    "chars_sent": 21291,
+    "method": "html-selector",
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1735,
+        "paragraph": 9,
+        "start": 1637,
+        "text": "AI may also be increasing risks to financial stability via operational and financial risk channels"
+       }
+      ],
+      "paragraphs": [
+       2,
+       9
+      ]
+     },
+     "text": "Assistant Governor Hunter says AI may increase financial-stability risks through operational and financial risk channels, within a central bank’s responsibilities."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6134,
+        "paragraph": 23,
+        "start": 6048,
+        "text": "So far, there is limited evidence that AI has materially lifted aggregate productivity"
+       },
+       {
+        "end": 6222,
+        "paragraph": 23,
+        "start": 6147,
+        "text": "Firms are taking time to invest and reorganise to realise the full benefits"
+       }
+      ],
+      "paragraphs": [
+       2,
+       23
+      ]
+     },
+     "text": "Assistant Governor Hunter says there is so far limited evidence that AI has materially lifted aggregate productivity, as firms invest and reorganise to realise benefits."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8929,
+        "paragraph": 29,
+        "start": 8808,
+        "text": "our estimates for realised data centre investment have increased 10-fold (from a very low base) over the past three years"
+       }
+      ],
+      "paragraphs": [
+       2,
+       29
+      ]
+     },
+     "text": "Assistant Governor Hunter says realised data centre investment in Australia has increased 10-fold (from a very low base) over the past three years."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12833,
+        "paragraph": 37,
+        "start": 12702,
+        "text": "the positive shock to aggregate demand set against the economy’s current supply capacity will put some upward pressure on inflation"
+       },
+       {
+        "end": 13653,
+        "paragraph": 39,
+        "start": 13551,
+        "text": "If AI delivers broader productivity gains, economies will be able to produce more with the same inputs"
+       },
+       {
+        "end": 13745,
+        "paragraph": 39,
+        "start": 13668,
+        "text": "the initial inflationary pressures from AI investment are likely to dissipate"
+       }
+      ],
+      "paragraphs": [
+       2,
+       37,
+       39
+      ]
+     },
+     "text": "Assistant Governor Hunter says AI investment will put some upward pressure on inflation in the near term, while broader productivity gains will dissipate initial pressures over time."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14968,
+        "paragraph": 44,
+        "start": 14871,
+        "text": "contacts in the RBA’s liaison program indicate that AI has not yet impacted most firms’ headcount"
+       },
+       {
+        "end": 15020,
+        "paragraph": 44,
+        "start": 14979,
+        "text": "and is not expected to over the next year"
+       }
+      ],
+      "paragraphs": [
+       2,
+       44
+      ]
+     },
+     "text": "Assistant Governor Hunter says RBA liaison contacts indicate that AI has not yet impacted most firms’ headcount and is not expected to over the next year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17287,
+        "paragraph": 51,
+        "start": 17078,
+        "text": "the RBA is pursuing a broad research agenda19 to deepen our understanding of AI’s implications for financial markets, productivity, labour markets, inflation, financial stability and ultimately monetary policy"
+       }
+      ],
+      "paragraphs": [
+       2,
+       51
+      ]
+     },
+     "text": "Assistant Governor Hunter says the RBA is pursuing research on AI’s implications for financial markets, productivity, labour markets, inflation, financial stability and monetary policy."
+    }
+   ],
+   "title": "What Happens to the Economy as &#145;Intelligence&#146; Gets Cheaper?",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-ag-2026-11-09.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 13218,
+    "output_tokens": 2173,
+    "reasoning_tokens": 773
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      8,
      30,
      44,

@@ -148,7 +148,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Thu, 05 Nov 2026 22:08:14 GMT"
+    "last_modified": "Sun, 08 Nov 2026 22:00:00 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -174,30 +174,30 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Thu, 05 Nov 2026 22:08:14 GMT"
+    "last_modified": "Sun, 08 Nov 2026 22:00:00 GMT"
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-07T14:41:39Z",
-      "calls": 0,
-      "cost_usd": 0.0,
+      "at": "2026-11-08T22:41:34Z",
+      "calls": 2,
+      "cost_usd": 0.0525,
       "failed_validation": 0,
-      "input_tokens": 0,
-      "new": 0,
-      "no_text": 1,
-      "output_tokens": 0,
+      "input_tokens": 13218,
+      "new": 1,
+      "no_text": 0,
+      "output_tokens": 2173,
       "pending": 0,
-      "reasoning_tokens": 0,
+      "reasoning_tokens": 773,
       "source_errors": 0,
       "stopped": null,
       "unchanged": 127,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 233,
-      "input_tokens": 1482959,
-      "output_tokens": 262412,
-      "summaries": 155
+      "calls": 235,
+      "input_tokens": 1496177,
+      "output_tokens": 264585,
+      "summaries": 156
     }
   }
 }
