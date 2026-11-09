@@ -2376,6 +2376,185 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     4,
+     5,
+     8,
+     11,
+     12,
+     13,
+     17,
+     22
+    ],
+    "paragraphs_sent": 24,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:162729de8472",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 3 is not supported by the paragraph(s) it cites [8]: 83% of its content words are there (85% needed); not found: 'central' - say only what those paragraphs say, or cite the paragraphs that say it"
+     ],
+     "text": "Governor Bailey says independent central banks are not independent of the people of their countries, and serve and are accountable to them."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-09T18:41:30Z",
+   "input_sha256": "9b77bbb4fcdd5dde77b032c0d2be609926435a37196a028867333e30832548ec",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-09",
+   "quotes": [
+    {
+     "end": 1886,
+     "paragraph": 8,
+     "start": 1813,
+     "text": "We serve them and are accountable to them. This is our public legitimacy."
+    },
+    {
+     "end": 3214,
+     "paragraph": 11,
+     "start": 3134,
+     "text": "But, I do contend that sustained economic growth depends on financial stability."
+    },
+    {
+     "end": 4740,
+     "paragraph": 13,
+     "start": 4663,
+     "text": "The key point is that public trust will depend on assured human intervention."
+    },
+    {
+     "end": 6292,
+     "paragraph": 17,
+     "start": 6227,
+     "text": "But, let’s recognise that such a risk exists, which we should do."
+    }
+   ],
+   "source": {
+    "chars": 7858,
+    "chars_sent": 7859,
+    "method": "html-selector",
+    "paragraphs_sent": 24,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 592,
+        "paragraph": 4,
+        "start": 464,
+        "text": "The economics of these events are supply shocks – which tend to push prices and inflation up and activity down at the same time."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Governor Bailey says military conflicts in Europe and the Middle East are supply shocks that tend to push prices and inflation up and activity down at the same time."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1053,
+        "paragraph": 5,
+        "start": 879,
+        "text": "In the UK, economic activity is turning out to be more resilient than we had expected, and some of that is due to AI investment, particularly in the business services sector."
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Governor Bailey says UK economic activity is more resilient than expected, with some of that due to AI investment, particularly in the business services sector."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3214,
+        "paragraph": 11,
+        "start": 3139,
+        "text": "I do contend that sustained economic growth depends on financial stability."
+       },
+       {
+        "end": 3437,
+        "paragraph": 11,
+        "start": 3374,
+        "text": "The post crisis regulatory reforms have made a difference here."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Governor Bailey contends that sustained economic growth depends on financial stability and says post crisis regulatory reforms have made a difference."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3800,
+        "paragraph": 12,
+        "start": 3685,
+        "text": "They have the potential to lift the sustainable growth rates of many economies through raising productivity growth."
+       },
+       {
+        "end": 3975,
+        "paragraph": 13,
+        "start": 3908,
+        "text": "In our world, Frontier AI has increased the risk from cyber-attacks"
+       }
+      ],
+      "paragraphs": [
+       12,
+       13
+      ]
+     },
+     "text": "Governor Bailey says AI and digital technology have the potential to lift sustainable growth rates through raising productivity growth, but Frontier AI has increased cyber-attack risk."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7635,
+        "paragraph": 22,
+        "start": 7527,
+        "text": "So, there are clear financial stability risks here, and that’s without talking explicitly about cyber risks."
+       }
+      ],
+      "paragraphs": [
+       22
+      ]
+     },
+     "text": "Governor Bailey says there are clear financial stability risks here, and that’s without talking explicitly about cyber risks."
+    }
+   ],
+   "title": "Central Bank independence in today’s world - Speech by Andrew Bailey",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/november/andrew-bailey-speech-at-swiss-institute-international-studies-lecture-series",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 7126,
+    "output_tokens": 1368,
+    "reasoning_tokens": 254
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 233,
     "changes": [
