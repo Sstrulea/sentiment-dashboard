@@ -31,6 +31,7 @@ import yaml
 from .economic_compute import _max_age_for, compute_indicator_score, effective_frequency
 from .ff_scoring import CCY2COUNTRY, SCORING_COLUMNS, build_matcher, detect_cadence, load_can_be_zero, to_scoring_frame
 from .manual_actuals import apply_overrides, load_overrides, supersede_by_overrides
+from . import official_series as osr
 
 log = logging.getLogger(__name__)
 
@@ -436,13 +437,18 @@ def compute_series_history(full_frame: pd.DataFrame, currency: str, indicator_ke
 
 def compute_catalog(ff: pd.DataFrame, ind_cfg: dict, catalog: dict,
                     quarantine_df: pd.DataFrame, as_of: Optional[pd.Timestamp] = None,
-                    overrides: Optional[list[dict]] = None) -> dict[tuple[str, str], pd.DataFrame]:
+                    overrides: Optional[list[dict]] = None,
+                    official_store: Optional[pd.DataFrame] = None) -> dict[tuple[str, str], pd.DataFrame]:
     """{(currency, indicator_key): history DataFrame}, one entry per DISTINCT
     series referenced anywhere in the catalog (if two roles in the same
     (category, currency) ever shared an indicator_key, it would be computed
     once — no catalog entry does this today; the FAZA 2C 4 removal of the
     inflation-category `policy` duplicate-reference role eliminated the only
-    case that used to)."""
+    case that used to).
+
+    Official (display-only) entries — `official_series` set, selected by
+    `key` — are cached under (currency, key); see compute_official_history.
+    `official_store` defaults to data/official_series.parquet."""
     as_of = as_of or pd.Timestamp.now()
     matcher = build_matcher()
     cbz = load_can_be_zero(ind_cfg)
@@ -459,9 +465,97 @@ def compute_catalog(ff: pd.DataFrame, ind_cfg: dict, catalog: dict,
                 key = entry.get("indicator_key")
                 if key:
                     wanted.add((ccy, key))
+                elif entry.get("official_series"):
+                    # the official series' anchor must be computed even if no
+                    # catalog entry charts it
+                    wanted.add((ccy, osr.SERIES_META[entry["official_series"]].anchor_indicator_key))
 
-    return {(ccy, key): compute_series_history(full_frame, ccy, key, ind_cfg, qkeys)
-           for ccy, key in wanted}
+    cache = {(ccy, key): compute_series_history(full_frame, ccy, key, ind_cfg, qkeys)
+             for ccy, key in wanted}
+
+    official_entries = [(ccy, entry, entries)
+                        for ccys in catalog.get("categories", {}).values()
+                        for ccy, entries in ccys.items()
+                        for entry in entries if entry.get("official_series")]
+    if official_entries:
+        store = official_store if official_store is not None else osr.read_store()
+        for ccy, entry, siblings in official_entries:
+            meta = osr.SERIES_META[entry["official_series"]]
+            anchor_entry = next((e for e in siblings
+                                 if e.get("indicator_key") == meta.anchor_indicator_key), {})
+            cache[(ccy, entry["key"])] = compute_official_history(
+                cache[(ccy, meta.anchor_indicator_key)], store, meta, as_of,
+                anchor_label=anchor_entry.get("display_label") or meta.anchor_indicator_key)
+    return cache
+
+
+OFFICIAL_PENDING_HOURS = 48
+
+
+def official_anchors(anchor_hist: pd.DataFrame) -> pd.DataFrame:
+    """The anchor publications of an official series: the rows of the SAME
+    series /history computes (FF + manual overrides) with a real actual —
+    not quarantined, not recovered, not telemetry. `published` is the
+    as-published actual (`revised_from` when the history layer has since
+    overwritten `actual` with the revised value). Shared by
+    src.official_fetch (G1) and compute_official_history (points)."""
+    if anchor_hist.empty:
+        return pd.DataFrame(columns=["release_dt", "period", "published", "forecast"])
+    h = anchor_hist
+    real = h[h["actual"].notna() & ~h["quarantined"].astype(bool) & ~h["recovered"].astype(bool)
+             & (h["score_status"] != "telemetry")].copy()
+    real["published"] = [rf if rf is not None and not pd.isna(rf) else a
+                         for rf, a in zip(real["revised_from"], real["actual"])]
+    real["period"] = [osr.reference_quarter(d) for d in real["release_dt"]]
+    return real[["release_dt", "period", "published", "forecast"]].sort_values("release_dt").reset_index(drop=True)
+
+
+def compute_official_history(anchor_hist: pd.DataFrame, store: pd.DataFrame,
+                             meta: "osr.OfficialSeriesMeta", as_of: pd.Timestamp,
+                             anchor_label: str) -> pd.DataFrame:
+    """One point per anchor publication that already has an official value:
+    release_dt = the FF publication's, actual = the display transform (YoY)
+    of the stored official index (Decimal ROUND_HALF_UP, 1dp), previous = the
+    same transform one quarter earlier. Never scored (forecast/z/bucket None,
+    score_status "official"). `linked` = the anchor (QoQ) point of the same
+    publication, as published.
+
+    An anchor with no stored value yet produces no point; when its release is
+    older than OFFICIAL_PENDING_HOURS it is listed in
+    `df.attrs["official_pending"]` (surfaced as payload health)."""
+    idx = osr.index_map(store, meta.series_id)
+    anchors = official_anchors(anchor_hist)
+    rows, pending = [], []
+    for a in anchors.itertuples(index=False):
+        val = osr.transform(idx, a.period, meta.display_transform)
+        if val is None:
+            age_h = (as_of - pd.Timestamp(a.release_dt)).total_seconds() / 3600
+            if age_h > OFFICIAL_PENDING_HOURS:
+                pending.append({"series_id": meta.series_id, "currency": meta.currency,
+                                "period": a.period, "release_dt": pd.Timestamp(a.release_dt).isoformat(),
+                                "age_hours": int(age_h)})
+            continue
+        prev = osr.transform(idx, osr.quarter_shift(a.period, -1), meta.display_transform)
+        rows.append({
+            "release_dt": pd.Timestamp(a.release_dt), "period": a.period,
+            "actual": float(val), "forecast": None,
+            "previous": float(prev) if prev is not None else None,
+            "z": None, "bucket": None, "score_status": "official", "revised_from": None,
+            "quarantined": False, "has_override": False, "recovered": False,
+            "source_ref": meta.source_ref,
+            "linked": {"indicator_key": meta.anchor_indicator_key, "label": anchor_label,
+                       "actual": _json_num(a.published), "forecast": _json_num(a.forecast)},
+        })
+    cols = ["release_dt", "period", "actual", "forecast", "previous", "z", "bucket", "score_status",
+            "revised_from", "quarantined", "has_override", "recovered", "source_ref", "linked"]
+    out = pd.DataFrame(rows, columns=cols)
+    out["release_dt"] = pd.to_datetime(out["release_dt"])
+    for p in pending:
+        log.warning("official series %s: %s %s (release %s) has NO official value %dh after "
+                    "publication — official_pending.", p["series_id"], p["currency"], p["period"],
+                    p["release_dt"], p["age_hours"])
+    out.attrs["official_pending"] = pending
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -511,6 +605,7 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
     # glancing at the page) can act on it without re-deriving anything.
     health_no_data: list[dict] = []
     health_stale: list[dict] = []
+    health_official_pending: list[dict] = []
     seen_for_health: set[tuple[str, str]] = set()
 
     categories_out: dict = {}
@@ -520,7 +615,10 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
             series_list = []
             first_role_for_key: dict[str, str] = {}   # indicator_key -> role that materialized it first
             for entry in entries:
-                key = entry.get("indicator_key")
+                is_official = bool(entry.get("official_series"))
+                # an official entry is selected by its own `key` (never an
+                # economic_indicators.yaml key) — see data/econ_catalog.yml
+                key = entry.get("key") if is_official else entry.get("indicator_key")
                 label_source = "derived" if entry.get("mismatch_note") else "canonical"
                 if key is None:
                     series_list.append({
@@ -553,6 +651,12 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                     # positions are never mistaken for evenly-spaced TIME.
                     "chart_type": "step" if cat == "rates" else "bar",
                 }
+                if is_official:
+                    # display-only official series: never scored, no consensus
+                    base.update({"source": "official", "scored": False,
+                                 "official_series": entry["official_series"]})
+                    for p in series_cache[(ccy, key)].attrs.get("official_pending", []):
+                        health_official_pending.append({**p, "indicator_key": key, "category": cat})
                 printed_dates = series_cache[(ccy, key)]
                 printed_dates = printed_dates[printed_dates["actual"].notna()]["release_dt"]
                 base["cadence_empirical"] = (detect_cadence(printed_dates)
@@ -620,20 +724,22 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
                 for wname, wdays in {**WINDOW_DAYS, "max": None}.items():
                     sub = _window_points(df, as_of, wdays)
                     if len(sub) >= WINDOW_MIN_POINTS:
-                        window_options[wname] = {
-                            "n": len(sub),
-                            "points": [
-                                {"release_dt": r["release_dt"].isoformat(),
-                                "actual": _json_num(r["actual"]), "forecast": _json_num(r["forecast"]),
-                                "previous": _json_num(r["previous"]), "z": _json_num(r["z"]),
-                                "bucket": _json_num(r["bucket"]), "score_status": r["score_status"],
-                                "revised_from": _json_num(r["revised_from"]),
-                                "recovered": bool(r.get("recovered", False)),
-                                "manual": bool(r.get("has_override", False)),
-                                "source_ref": (r.get("source_ref") if isinstance(r.get("source_ref"), str) else None)}
-                                for _, r in sub.iterrows()
-                            ],
-                        }
+                        points = [
+                            {"release_dt": r["release_dt"].isoformat(),
+                            "actual": _json_num(r["actual"]), "forecast": _json_num(r["forecast"]),
+                            "previous": _json_num(r["previous"]), "z": _json_num(r["z"]),
+                            "bucket": _json_num(r["bucket"]), "score_status": r["score_status"],
+                            "revised_from": _json_num(r["revised_from"]),
+                            "recovered": bool(r.get("recovered", False)),
+                            "manual": bool(r.get("has_override", False)),
+                            "source_ref": (r.get("source_ref") if isinstance(r.get("source_ref"), str) else None)}
+                            for _, r in sub.iterrows()
+                        ]
+                        if is_official:
+                            for pt, (_, r) in zip(points, sub.iterrows()):
+                                pt["period"] = r["period"]
+                                pt["linked"] = r["linked"]
+                        window_options[wname] = {"n": len(sub), "points": points}
                 base["quarantine_count"] = int(df["quarantined"].sum())
                 base["window_options"] = window_options
                 series_list.append(base)
@@ -649,7 +755,8 @@ def build_payload(catalog: dict, series_cache: dict[tuple[str, str], pd.DataFram
         "meta": {"generated_at": generated_at.isoformat(), "catalog_version": catalog_version,
                 "as_of": as_of.isoformat()},
         "categories": categories_out,
-        "health": {"no_data": health_no_data, "stale": health_stale},
+        "health": {"no_data": health_no_data, "stale": health_stale,
+                   "official_pending": health_official_pending},
     }
 
 

@@ -354,7 +354,7 @@ def test_payload_fresh_series_is_neither_stale_nor_no_data(ind_cfg):
     entry = payload["categories"]["inflation"]["USD"][0]
     assert entry["has_data"] is True
     assert entry["stale"] is False
-    assert payload["health"] == {"no_data": [], "stale": []}
+    assert payload["health"] == {"no_data": [], "stale": [], "official_pending": []}
 
 
 # ---------------------------------------------------------------------------

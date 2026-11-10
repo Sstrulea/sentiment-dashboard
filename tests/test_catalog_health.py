@@ -50,11 +50,48 @@ def test_no_duplicate_selection_key_within_category_currency():
     failures = []
     for cat, ccys in catalog.get("categories", {}).items():
         for ccy, entries in ccys.items():
-            keys = [e.get("indicator_key") for e in entries if e.get("indicator_key") is not None]
+            # selection key: indicator_key, or `key` on an official entry
+            keys = [_selection_key(e) for e in entries if _selection_key(e) is not None]
             dupes = {k for k in keys if keys.count(k) > 1}
             if dupes:
                 failures.append(f"{cat}/{ccy}: indicator_key(s) {sorted(dupes)} appear more than once")
     assert not failures, "Duplicate selection key(s) found:\n" + "\n".join(failures)
+
+
+def _selection_key(entry):
+    return entry.get("key") if entry.get("official_series") else entry.get("indicator_key")
+
+
+def test_official_entries_are_well_formed_and_never_collide_with_scored_keys():
+    """An official (display-only) entry is selected by its own `key`, which must
+    never equal any data/economic_indicators.yaml key (the UI and URL select
+    by it — a collision would make a scored series and an official one
+    indistinguishable). It carries no indicator_key, names a registered
+    official series, and has role `official`. Structural, no parquet needed."""
+    from src.official_series import SERIES_META
+    catalog = hc.load_catalog()
+    scored_keys = set((hc.load_indicators_cfg().get("indicators") or {}).keys())
+    failures, n_official = [], 0
+    for cat, ccys in catalog.get("categories", {}).items():
+        for ccy, entries in ccys.items():
+            for e in entries:
+                if not e.get("official_series") and e.get("role") != "official":
+                    continue
+                n_official += 1
+                where = f"{cat}/{ccy}/{e.get('key')}"
+                if not e.get("key"):
+                    failures.append(f"{where}: official entry without `key`")
+                if e.get("key") in scored_keys:
+                    failures.append(f"{where}: key collides with an economic_indicators.yaml key")
+                if e.get("indicator_key") is not None:
+                    failures.append(f"{where}: official entry must not carry indicator_key")
+                if e.get("role") != "official" or e.get("official_series") not in SERIES_META:
+                    failures.append(f"{where}: role={e.get('role')} official_series={e.get('official_series')}")
+                elif SERIES_META[e["official_series"]].currency != ccy:
+                    failures.append(f"{where}: official_series belongs to "
+                                    f"{SERIES_META[e['official_series']].currency}")
+    assert n_official >= 1, "expected at least the NZD CPI y/y official entry"
+    assert not failures, "Official catalog entries malformed:\n" + "\n".join(failures)
 
 
 def _build_quarantine_df(ff, matcher):
@@ -86,7 +123,7 @@ def test_no_catalog_series_is_stale_or_below_print_threshold():
     for cat, ccys in catalog.get("categories", {}).items():
         for ccy, entries in ccys.items():
             for entry in entries:
-                key = entry.get("indicator_key")
+                key = _selection_key(entry)   # official entries included (not stale, >= threshold)
                 if key is None or (ccy, key) in seen:
                     continue
                 seen.add((ccy, key))
