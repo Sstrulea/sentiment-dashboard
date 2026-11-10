@@ -254,17 +254,27 @@ categories:
           kind: band
           low: 1.0
           high: 3.0
-          # PENDING — effective_from and source_note must come from the
-          # official RBNZ pages only (PTA history: 1-3% band since 2002, 2%
-          # focus since 2012; Remit in force from 20 Dec 2023; target defined
-          # on the All Groups CPI published by Stats NZ). rbnz.govt.nz refused
-          # automated reads (HTTP 403) on 2026-11-10, so nothing is filled in
-          # here until those dates are confirmed from the source itself.
-          effective_from: null
+          # effective_from = the 2012 PTA's effective date (2% mid-point focus
+          # added). PTA text re-checked 2026-11-10 on the NZ Gazette notice
+          # 2012-au6780: "between 1 per cent and 3 per cent on average over the
+          # medium term, with a focus on keeping future average inflation near
+          # the 2 per cent target midpoint"; "All Groups Consumers Price Index
+          # (CPI), as published by Statistics New Zealand"; "Dated at
+          # Wellington this 20th day of September 2012".
+          effective_from: "2012-09-26"
           effective_to: null
           source_note: >-
-            PENDING verification against rbnz.govt.nz (PTA history and the
-            Monetary Policy Remit) — not yet confirmed from the primary source.
+            RBNZ: keep annual CPI inflation between 1 and 3 percent over the
+            medium term (band since the 2002 PTA), with a focus on the 2 percent
+            mid-point added by the PTA signed 20 September 2012 (NZ Gazette
+            2012-au6780) and in effect from 26 September 2012 (RBNZ news
+            release). Retained since; the current MPC Remit, in effect from 20
+            December 2023, keeps the 1-3% target with the 2% mid-point focus.
+            Defined on the All Groups CPI published by Stats NZ (MPC Remit).
+            https://gazette.govt.nz/notice/id/2012-au6780
+            https://www.rbnz.govt.nz/news-and-events/news/2012/09/news-release-announcing-2012-policy-targets-agreement
+            https://www.rbnz.govt.nz/monetary-policy/history-of-policy-targets-agreements
+            https://www.legislation.govt.nz/regulation/public/2021/0029/latest/whole.html
           label: "RBNZ 1-3% (focus 2%)"
       - indicator_key: cpi_yoy
         role: market
@@ -621,8 +631,8 @@ categories:
 #
 # All target dates verified against an official primary source (central-bank
 # press release, remit letter, or FAQ — see each source_note) — not guessed.
-# EXCEPTION, open: NZD's official-y/y band (2026-11) — effective_from and
-# source_note are PENDING until read from rbnz.govt.nz (HTTP 403 to automated
-# reads on 2026-11-10); left null/pending rather than filled from memory.
+# NZD's official-y/y band (2026-11): PTA text and signing date checked on the
+# NZ Gazette notice (rbnz.govt.nz refuses automated reads); the 26 Sep 2012
+# effective date and the 2023 Remit come from the RBNZ sources cited.
 # effective_to is null throughout: no subsequent reframing found for any of
 # them as of 2026-08-25.

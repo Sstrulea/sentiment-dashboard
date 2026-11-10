@@ -86,7 +86,52 @@
     scored: "Scored", no_actual: "No print yet",
     insufficient_history: "Not enough history for a full score", quarantined: "Quarantined (data-quality)",
     recovered: "Revised value, not scored", telemetry: "Final revision, not scored",
+    official: "Official — not scored",
   };
+
+  // ---- Official (display-only) series --------------------------------------
+  // An entry with source "official" (e.g. NZD CPI y/y from Stats NZ) is never
+  // scored and has no consensus of its own: no forecast line, no Delta. Each
+  // point carries `linked` = the scored QoQ print of the SAME publication
+  // (as published + its forecast) — that is the surprise the market saw.
+  const SOURCE_NAME = { "stats.govt.nz": "Stats NZ" };
+  function isOfficial(meta) { return !!(meta && meta.source === "official"); }
+  function sourceName(ref) { return ref ? (SOURCE_NAME[ref] || ref) : "official source"; }
+  // "2026Q3" -> "Q3 2026"
+  function fmtPeriod(period) {
+    const m = /^(\d{4})Q([1-4])$/.exec(period || "");
+    return m ? "Q" + m[2] + " " + m[1] : (period || "—");
+  }
+  function fmtSigned1(x) {
+    if (x === null || x === undefined || Number.isNaN(Number(x))) return "—";
+    const s = Math.abs(x).toFixed(1);
+    return (x < 0 && s !== "0.0" ? "−" : "") + s;
+  }
+  // The linked (QoQ) surprise of an official point: {actual, forecast, delta}
+  // with delta null when either side is missing.
+  function linkedSurprise(p) {
+    const l = (p && p.linked) || {};
+    const a = l.actual, f = l.forecast;
+    const ok = a !== null && a !== undefined && f !== null && f !== undefined;
+    return { actual: a, forecast: f, delta: ok ? a - f : null, label: l.label || "QoQ" };
+  }
+  function surpriseText(s) {
+    return fmtNum(s.actual, 1) + " vs " + fmtNum(s.forecast, 1) + " = " + fmtSigned1(s.delta);
+  }
+  function deltaClass(delta) {
+    if (delta === null || delta === undefined) return "";
+    // compare at display precision so "−0.0" never gets a color
+    const r = Math.round(delta * 1000) / 1000;
+    return r > 0 ? "hs-delta-pos" : r < 0 ? "hs-delta-neg" : "";
+  }
+  // Tooltip lines for an official point (pure, exported for tests).
+  function officialTooltipLines(p) {
+    const s = linkedSurprise(p);
+    const lines = [fmtPeriod(p.period), "Actual (YoY): " + fmtNum(p.actual, 1), "Previous: " + fmtNum(p.previous, 1)];
+    lines.push("QoQ: " + fmtNum(s.actual, 1) + " vs " + fmtNum(s.forecast, 1) + " forecast (Δ " + fmtSigned1(s.delta) + ")");
+    lines.push("Source: " + sourceName(p.source_ref) + " · not scored");
+    return lines;
+  }
   // Tooltip lines for a printed point (pure, exported for tests). "Actual" is
   // the print AS PUBLISHED: what Delta and the score are computed from, so
   // Actual - Forecast = Delta always reads true. A later revision is its own
@@ -305,12 +350,11 @@
 
   // ---- Strip (last print) + target note ------------------------------------
 
-  function renderStrip(meta, points) {
-    const strip = document.getElementById("historyStrip");
-    function item(label, value, cls) {
-      return '<div class="hs-item"><span class="hs-label">' + label + '</span>' +
-        '<span class="hs-value' + (cls ? " " + cls : "") + '">' + value + "</span></div>";
-    }
+  // Strip items for the last real print (pure, exported for tests):
+  // [{label, value, cls}], or null when the window has no real print.
+  // Release | Actual | Previous | Forecast | Delta (Act-Fcst) [| Next] — or, on
+  // an official series: Release | Actual | Previous | Surprise (QoQ) | Not scored.
+  function stripItems(meta, points) {
     const unitSuffix = meta.unit ? " " + meta.unit : "";
 
     // FAZA 2C 3 — the header strip describes the LAST REAL print (an actual
@@ -324,31 +368,55 @@
       if (points[i].actual !== null && points[i].actual !== undefined) { lastRealIdx = i; break; }
     }
     const last = lastRealIdx !== -1 ? points[lastRealIdx] : null;
+    if (!last) return null;
 
-    if (!last) {
+    if (isOfficial(meta)) {
+      // No forecast/Delta of its own: the surprise is the linked QoQ print's.
+      const s = linkedSurprise(last);
+      return [
+        { label: "Release", value: fmtDate(last.release_dt) },
+        { label: "Actual", value: fmtNum(last.actual, 1) + unitSuffix },
+        { label: "Previous", value: fmtNum(last.previous, 1) + unitSuffix },
+        { label: "Surprise (QoQ)", value: surpriseText(s), cls: deltaClass(s.delta) },
+        { label: "Not scored", value: sourceName(last.source_ref), cls: "hs-muted" },
+      ];
+    }
+
+    // FAZA 1H 4 — Delta is the surprise (actual-as-published vs forecast),
+    // same reasoning/helper as the tooltip (point 3) — never actual-vs-
+    // previous (that was the old, removed "Delta (Act-Prev)").
+    const originalActual = originalActualOf(last);
+    const delta = (originalActual !== null && last.forecast !== null) ? originalActual - last.forecast : null;
+    const deltaCls = delta === null ? "" : delta > 0 ? "hs-delta-pos" : delta < 0 ? "hs-delta-neg" : "";
+    const statusNote = last.score_status !== "scored" ? " (" + STATUS_LABEL[last.score_status] + ")" : "";
+    const items = [
+      { label: "Release", value: fmtDate(last.release_dt) },
+      { label: "Actual", value: fmtNum(last.actual) + unitSuffix + statusNote },
+      { label: "Previous", value: fmtNum(last.previous) + unitSuffix },
+      { label: "Forecast", value: fmtNum(last.forecast) + unitSuffix },
+      { label: "Delta (Act-Fcst)", value: fmtNum(delta) + unitSuffix, cls: deltaCls },
+    ];
+    // A pending release after the last real print (scheduled but not yet
+    // printed) — its own line, so what's expected next is visible without
+    // implying it already happened.
+    const next = points.slice(lastRealIdx + 1).find((p) => p.forecast !== null && p.forecast !== undefined);
+    if (next) {
+      items.push({ label: "Next", value: fmtDate(next.release_dt) + ", forecast " + fmtNum(next.forecast) + unitSuffix });
+    }
+    return items;
+  }
+
+  function renderStrip(meta, points) {
+    const strip = document.getElementById("historyStrip");
+    function item(label, value, cls) {
+      return '<div class="hs-item"><span class="hs-label">' + label + '</span>' +
+        '<span class="hs-value' + (cls ? " " + cls : "") + '">' + value + "</span></div>";
+    }
+    const items = stripItems(meta, points);
+    if (!items) {
       strip.innerHTML = '<div class="hs-item"><span class="hs-value">No prints in this window</span></div>';
     } else {
-      // FAZA 1H 4 — Delta is the surprise (actual-as-published vs forecast),
-      // same reasoning/helper as the tooltip (point 3) — never actual-vs-
-      // previous (that was the old, removed "Delta (Act-Prev)").
-      const originalActual = originalActualOf(last);
-      const delta = (originalActual !== null && last.forecast !== null) ? originalActual - last.forecast : null;
-      const deltaCls = delta === null ? "" : delta > 0 ? "hs-delta-pos" : delta < 0 ? "hs-delta-neg" : "";
-      const statusNote = last.score_status !== "scored" ? " (" + STATUS_LABEL[last.score_status] + ")" : "";
-      let html =
-        item("Release", fmtDate(last.release_dt)) +
-        item("Actual", fmtNum(last.actual) + unitSuffix + statusNote) +
-        item("Forecast", fmtNum(last.forecast) + unitSuffix) +
-        item("Delta (Act-Fcst)", fmtNum(delta) + unitSuffix, deltaCls);
-
-      // A pending release after the last real print (scheduled but not yet
-      // printed) — its own line, so what's expected next is visible without
-      // implying it already happened.
-      const next = points.slice(lastRealIdx + 1).find((p) => p.forecast !== null && p.forecast !== undefined);
-      if (next) {
-        html += item("Next", fmtDate(next.release_dt) + ", forecast " + fmtNum(next.forecast) + unitSuffix);
-      }
-      strip.innerHTML = html;
+      strip.innerHTML = items.map((it) => item(it.label, it.value, it.cls)).join("");
     }
 
     const noteEl = document.getElementById("historyTargetNote");
@@ -511,7 +579,9 @@
     // gap rather than a fabricated interpolation.
     const forecastData = points.map((p) => (p.forecast === null || p.forecast === undefined ? null : p.forecast));
 
-    const datasets = mainDatasets.concat([
+    // An official series has no consensus of its own — no forecast line.
+    const official = isOfficial(meta);
+    const datasets = official ? mainDatasets.slice() : mainDatasets.concat([
       {
         type: "line", label: "Forecast", data: forecastData,
         borderColor: colors.forecastLine, borderWidth: 2, spanGaps: false, fill: false,
@@ -520,7 +590,7 @@
         order: 1,
       },
     ]);
-    const forecastIdx = datasets.length - 1;
+    const forecastIdx = official ? -1 : datasets.length - 1;
 
     const annotations = buildAnnotations(meta, colors);
 
@@ -561,7 +631,7 @@
                   return (p.forecast !== null && p.forecast !== undefined)
                     ? "Forecast: " + fmtNum(p.forecast) + " (not printed yet)" : null;
                 }
-                return pointTooltipLines(p);
+                return official ? officialTooltipLines(p) : pointTooltipLines(p);
               },
             },
           },
@@ -613,12 +683,18 @@
   // more Beat/In-line/Miss buckets) and the coral/red forecast line, plus the
   // hollow "not scored" bar when the window shows one. A distinct swatch shape
   // per kind (filled box, line, outline) so the legend hints at how each is drawn.
-  function renderLegend(points) {
+  function renderLegend(points, meta) {
     const el = document.getElementById("historyLegend");
     if (!el) return;
     const colors = themeColors();
     // A hollow bar is explained only when the window on screen has one.
     const hollow = (points || []).some((p) => p.actual !== null && p.actual !== undefined && isHollow(p));
+    if (isOfficial(meta)) {
+      // no forecast line on an official series — nothing to explain there
+      el.innerHTML =
+        '<span class="hl-item"><span class="hl-swatch" style="background:' + colors.accent + ';"></span>Actual (official, not scored)</span>';
+      return;
+    }
     el.innerHTML =
       '<span class="hl-item"><span class="hl-swatch" style="background:' + colors.accent + ';"></span>Actual</span>' +
       '<span class="hl-item"><span class="hl-swatch hl-line" style="background:' + colors.forecastLine + ';"></span>Forecast</span>' +
@@ -663,7 +739,7 @@
     const points = w ? w.points : [];
 
     renderStrip(meta, points);
-    renderLegend(points);
+    renderLegend(points, meta);
 
     if (!points.length) {
       wrapper.innerHTML = '<p class="history-empty-window">No printed rows in this window.</p>';
@@ -782,6 +858,7 @@
   // or a DOM shim. No-op in the browser: `module` is undefined there.
   if (typeof module !== "undefined" && module.exports) {
     module.exports = { state, resolveEntry, seriesEntries, availableCategories, allCurrencies,
-                       buildBarDatasets, buildStepDatasets, pointTooltipLines };
+                       buildBarDatasets, buildStepDatasets, pointTooltipLines,
+                       stripItems, officialTooltipLines, buildChartConfig };
   }
 })();
