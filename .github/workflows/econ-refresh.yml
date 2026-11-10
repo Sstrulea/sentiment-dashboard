@@ -64,6 +64,9 @@ jobs:
       # Display-only official series (data/official_series.parquet). Zero requests unless an
       # FF anchor's quarter is missing; guarded (G1/G2), append-only; always exits 0.
       - name: Official series (Stats NZ)
+        # the fetcher always exits 0, but an import error must never stop FRED/render/commit
+        continue-on-error: true
+        timeout-minutes: 3
         run: python -m src.official_fetch
 
       - name: FRED

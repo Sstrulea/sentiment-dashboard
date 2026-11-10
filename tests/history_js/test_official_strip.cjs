@@ -39,9 +39,9 @@ const offPts = [
 // ---- official strip: Release | Actual | Previous | Surprise (QoQ) | Not scored
 assert.deepStrictEqual(strip(officialMeta, offPts), [
   { label: "Release", value: "2026-10-21" },
-  { label: "Actual", value: "3.7 pct" },
-  { label: "Previous", value: "4.1 pct" },
-  { label: "Surprise (QoQ)", value: "0.7 vs 0.8 = −0.1", cls: "hs-delta-neg" },
+  { label: "Actual", value: "3.70 pct" },
+  { label: "Previous", value: "4.10 pct" },
+  { label: "Surprise (QoQ)", value: "0.70 vs 0.80 = -0.10", cls: "hs-delta-neg" },
   { label: "Not scored", value: "Stats NZ", cls: "hs-muted" },
 ]);
 // no Forecast / Delta of its own
@@ -49,15 +49,15 @@ const labels = strip(officialMeta, offPts).map((i) => i.label);
 assert.ok(!labels.includes("Forecast") && !labels.includes("Delta (Act-Fcst)"));
 // a beat colors positive (2026Q2: 1.5 vs 1.4)
 assert.deepStrictEqual(strip(officialMeta, offPts.slice(0, 1))[3],
-                       { label: "Surprise (QoQ)", value: "1.5 vs 1.4 = 0.1", cls: "hs-delta-pos" });
+                       { label: "Surprise (QoQ)", value: "1.50 vs 1.40 = 0.10", cls: "hs-delta-pos" });
 // in-line: no sign, no color (2023Q4: 0.5 vs 0.5)
 assert.deepStrictEqual(strip(officialMeta, [off("2024-01-23T21:45:00", "2023Q4", 4.7, 5.6, 0.5, 0.5)])[3],
-                       { label: "Surprise (QoQ)", value: "0.5 vs 0.5 = 0.0", cls: "" });
+                       { label: "Surprise (QoQ)", value: "0.50 vs 0.50 = 0.00", cls: "" });
 
 // ---- official tooltip
 assert.deepStrictEqual(plain(api.officialTooltipLines(offPts[1])), [
-  "Q3 2026", "Actual (YoY): 3.7", "Previous: 4.1",
-  "QoQ: 0.7 vs 0.8 forecast (Δ −0.1)", "Source: Stats NZ · not scored",
+  "Q3 2026", "Actual (YoY): 3.70", "Previous: 4.10",
+  "QoQ: 0.70 vs 0.80 forecast (Δ -0.10)", "Source: Stats NZ · not scored",
 ]);
 
 // ---- every other series: Previous right after Actual, rest unchanged
@@ -83,8 +83,22 @@ assert.strictEqual(api.stripItems(qoqMeta, []), null);
 // ---- chart: official has no forecast line, draws the band; others keep the line
 const cfgOff = api.buildChartConfig(officialMeta, offPts);
 assert.deepStrictEqual(plain(cfgOff.data.datasets.map((d) => d.label)), ["Actual"]);
-const band = cfgOff.options.plugins.annotation.annotations.targetBand;
-assert.ok(band && band.yMin === 1.0 && band.yMax === 3.0 && band.label.content === "RBNZ 1-3% (focus 2%)");
+const anns = cfgOff.options.plugins.annotation.annotations;
+assert.ok(anns.targetBand && anns.targetBand.yMin === 1.0 && anns.targetBand.yMax === 3.0);
+assert.strictEqual(anns.targetBand.label, undefined);   // a box label gets no background
+const bl = anns.targetBandLabel;
+assert.ok(bl && bl.type === "label" && bl.content === "RBNZ 1-3% (focus 2%)" && bl.yValue === 3.0 && bl.xValue === 1.5);   // 2 points -> right edge 1.5
+assert.ok(bl.backgroundColor && bl.color === "#fff");
+// a point target keeps its line label exactly as before
+const usd = plain(api.buildChartConfig({ ...qoqMeta, comparable_with_target: true,
+  target: { kind: "point", value: 2.0, label: "Fed 2% (target on headline PCE)" } }, [qoqLast]).options.plugins.annotation.annotations);
+assert.deepStrictEqual(Object.keys(usd), ["targetLine"]);
+assert.deepStrictEqual(usd.targetLine.label, { display: true, content: "Fed 2% (target on headline PCE)", position: "end",
+  backgroundColor: "#a67600", color: "#fff", font: { size: 10, weight: "600" }, padding: { x: 6, y: 2 } });
+// a band without a label (AUD) gets no label annotation
+const aud = plain(api.buildChartConfig({ ...qoqMeta, comparable_with_target: true,
+  target: { kind: "band", low: 2.0, high: 3.0 } }, [qoqLast]).options.plugins.annotation.annotations);
+assert.deepStrictEqual(Object.keys(aud), ["targetBand"]);
 const cfgQoq = api.buildChartConfig({ ...qoqMeta, comparable_with_target: false }, [qoqLast]);
 assert.deepStrictEqual(plain(cfgQoq.data.datasets.map((d) => d.label)), ["Actual", "Forecast"]);
 assert.deepStrictEqual(plain(cfgQoq.options.plugins.annotation.annotations), {});

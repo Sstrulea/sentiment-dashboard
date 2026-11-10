@@ -102,11 +102,6 @@
     const m = /^(\d{4})Q([1-4])$/.exec(period || "");
     return m ? "Q" + m[2] + " " + m[1] : (period || "—");
   }
-  function fmtSigned1(x) {
-    if (x === null || x === undefined || Number.isNaN(Number(x))) return "—";
-    const s = Math.abs(x).toFixed(1);
-    return (x < 0 && s !== "0.0" ? "−" : "") + s;
-  }
   // The linked (QoQ) surprise of an official point: {actual, forecast, delta}
   // with delta null when either side is missing.
   function linkedSurprise(p) {
@@ -116,7 +111,7 @@
     return { actual: a, forecast: f, delta: ok ? a - f : null, label: l.label || "QoQ" };
   }
   function surpriseText(s) {
-    return fmtNum(s.actual, 1) + " vs " + fmtNum(s.forecast, 1) + " = " + fmtSigned1(s.delta);
+    return fmtNum(s.actual) + " vs " + fmtNum(s.forecast) + " = " + fmtNum(s.delta);
   }
   function deltaClass(delta) {
     if (delta === null || delta === undefined) return "";
@@ -127,8 +122,8 @@
   // Tooltip lines for an official point (pure, exported for tests).
   function officialTooltipLines(p) {
     const s = linkedSurprise(p);
-    const lines = [fmtPeriod(p.period), "Actual (YoY): " + fmtNum(p.actual, 1), "Previous: " + fmtNum(p.previous, 1)];
-    lines.push("QoQ: " + fmtNum(s.actual, 1) + " vs " + fmtNum(s.forecast, 1) + " forecast (Δ " + fmtSigned1(s.delta) + ")");
+    const lines = [fmtPeriod(p.period), "Actual (YoY): " + fmtNum(p.actual), "Previous: " + fmtNum(p.previous)];
+    lines.push("QoQ: " + fmtNum(s.actual) + " vs " + fmtNum(s.forecast) + " forecast (Δ " + fmtNum(s.delta) + ")");
     lines.push("Source: " + sourceName(p.source_ref) + " · not scored");
     return lines;
   }
@@ -375,8 +370,8 @@
       const s = linkedSurprise(last);
       return [
         { label: "Release", value: fmtDate(last.release_dt) },
-        { label: "Actual", value: fmtNum(last.actual, 1) + unitSuffix },
-        { label: "Previous", value: fmtNum(last.previous, 1) + unitSuffix },
+        { label: "Actual", value: fmtNum(last.actual) + unitSuffix },
+        { label: "Previous", value: fmtNum(last.previous) + unitSuffix },
         { label: "Surprise (QoQ)", value: surpriseText(s), cls: deltaClass(s.delta) },
         { label: "Not scored", value: sourceName(last.source_ref), cls: "hs-muted" },
       ];
@@ -448,7 +443,7 @@
   // underlying series than the one on screen (e.g. BoC targets headline
   // CPI, not the Median/Trimmed core measure charted here) — the reader
   // must see that distinction on the chart itself, not just infer it.
-  function buildAnnotations(meta, colors) {
+  function buildAnnotations(meta, colors, nPoints) {
     const annotations = {};
     const target = meta.target;
     if (!target || !meta.comparable_with_target) return annotations;
@@ -458,14 +453,21 @@
         backgroundColor: colors.targetBand, borderWidth: 0,
       };
       if (target.label) {
-        // Anchored at the band's own top edge (y: "start") rather than
-        // vertically centered — the band's numeric range overlaps the bars'
-        // own value range by design, so centering the label would run it
-        // straight through the tallest bars instead of sitting above them.
-        annotations.targetBand.label = {
-          display: true, content: target.label, position: { x: "end", y: "start" },
-          backgroundColor: colors.targetLine, color: "#fff",
-          font: { size: 10, weight: "600" }, padding: { x: 6, y: 2 },
+        // A box annotation's own label gets NO background (backgroundColor is
+        // ignored there), so white text sat straight on the bars and was
+        // unreadable on the light theme. The label is its own `label`
+        // annotation instead — a filled pill like the point-target line's
+        // label — bound to a POINT at the plot's right edge (xValue = the
+        // last category slot's outer half-edge) on the band's TOP edge
+        // (yValue = high). `position` is relative to that point, so x/y "end"
+        // puts the pill's right/bottom edges there: it sits on the band's
+        // upper border at the right end, where the line labels sit. (A
+        // box-bound label is centered on the box instead, whatever `position`.)
+        annotations.targetBandLabel = {
+          type: "label", xValue: Math.max(nPoints || 1, 1) - 0.5, yValue: target.high,
+          position: { x: "end", y: "end" },
+          content: target.label, backgroundColor: colors.targetLine, color: "#fff",
+          font: { size: 10, weight: "600" }, padding: { x: 6, y: 2 }, borderRadius: 6,
         };
       }
     } else if (target.kind === "point") {
@@ -592,7 +594,7 @@
     ]);
     const forecastIdx = official ? -1 : datasets.length - 1;
 
-    const annotations = buildAnnotations(meta, colors);
+    const annotations = buildAnnotations(meta, colors, points.length);
 
     const yTitle = meta.unit ? meta.unit : undefined;
 
