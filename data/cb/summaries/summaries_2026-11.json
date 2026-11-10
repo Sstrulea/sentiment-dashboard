@@ -3608,6 +3608,264 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     9,
+     10,
+     14,
+     16,
+     24,
+     32,
+     39,
+     40
+    ],
+    "paragraphs_sent": 46,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:2b7b524d13f1",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-10T20:42:11Z",
+   "input_sha256": "10a88ff3ca3539036d9a71e9184f60530bfcf0703e250f8dcbe0fbc9af9f9345",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 2081,
+     "point": 1,
+     "source_text": "3-3/4",
+     "start": 2076,
+     "text": "3-3/4"
+    },
+    {
+     "end": 2094,
+     "point": 1,
+     "source_text": "4 percent",
+     "start": 2085,
+     "text": "4 percent"
+    },
+    {
+     "end": 2979,
+     "point": 2,
+     "source_text": "3 percent",
+     "start": 2970,
+     "text": "3 percent"
+    },
+    {
+     "end": 4731,
+     "point": 3,
+     "source_text": "12",
+     "start": 4729,
+     "text": "12"
+    },
+    {
+     "end": 5506,
+     "point": 3,
+     "source_text": "3.3 percent",
+     "start": 5495,
+     "text": "3.3 percent"
+    },
+    {
+     "end": 3034,
+     "point": 3,
+     "source_text": "2 percent",
+     "start": 3025,
+     "text": "2 percent"
+    },
+    {
+     "end": 15726,
+     "point": 5,
+     "source_text": "800",
+     "start": 15723,
+     "text": "800"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-10",
+   "quotes": [
+    {
+     "end": 2095,
+     "paragraph": 9,
+     "start": 1965,
+     "text": "At last month's FOMC meeting, I joined my colleagues to support holding the federal funds rate target range at 3-3/4 to 4 percent."
+    },
+    {
+     "end": 7124,
+     "paragraph": 16,
+     "start": 6952,
+     "text": "As these shocks wane or unwind and with no inflationary pressures emerging in the labor market, my forecast is for core PCE inflation to move closer to 2 percent next year."
+    },
+    {
+     "end": 11218,
+     "paragraph": 24,
+     "start": 10995,
+     "text": "While the outcomes of these conflicts remain uncertain, my approach is to look through temporary energy-driven inflation, when possible, and to remain alert to signs that it is spreading into broader prices or expectations."
+    },
+    {
+     "end": 15745,
+     "paragraph": 32,
+     "start": 15579,
+     "text": "AI-related debt has been rising rapidly, with notable gains in corporate bonds, private credit, and project finance, and is on track to exceed $800 billion this year."
+    },
+    {
+     "end": 19566,
+     "paragraph": 39,
+     "start": 19449,
+     "text": "Today, I am seeing signs that inflation pressures are persisting, while labor market conditions appear to be firming."
+    }
+   ],
+   "source": {
+    "chars": 21427,
+    "chars_sent": 21428,
+    "method": "html-selector",
+    "paragraphs_sent": 46,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 2095,
+        "paragraph": 9,
+        "start": 1965,
+        "text": "At last month's FOMC meeting, I joined my colleagues to support holding the federal funds rate target range at 3-3/4 to 4 percent."
+       },
+       {
+        "end": 2256,
+        "paragraph": 9,
+        "start": 2096,
+        "text": "This approach was consistent with my view that further changes in the policy rate should wait until we had a better understanding of how conditions would evolve"
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Governor Bowman says she supported holding the federal funds rate target range at 3-3/4 to 4 percent at last month's FOMC meeting, while awaiting a better understanding of evolving conditions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3000,
+        "paragraph": 10,
+        "start": 2881,
+        "text": "real gross domestic product (GDP) likely increased at an even stronger pace of more than 3 percent in the third quarter"
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governor Bowman says real gross domestic product (GDP) likely increased at a pace of more than 3 percent in the third quarter."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5517,
+        "paragraph": 14,
+        "start": 5397,
+        "text": "Today's consumer price index suggests that 12-month core PCE inflation likely moved up further to 3.3 percent in October"
+       },
+       {
+        "end": 7124,
+        "paragraph": 16,
+        "start": 7048,
+        "text": "my forecast is for core PCE inflation to move closer to 2 percent next year."
+       }
+      ],
+      "paragraphs": [
+       14,
+       16
+      ]
+     },
+     "text": "Governor Bowman says 12-month core PCE inflation likely moved up further to 3.3 percent in October, while her forecast is for it to move closer to 2 percent next year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11218,
+        "paragraph": 24,
+        "start": 11051,
+        "text": "my approach is to look through temporary energy-driven inflation, when possible, and to remain alert to signs that it is spreading into broader prices or expectations."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Governor Bowman says her approach is to look through temporary energy-driven inflation, when possible, and remain alert to signs that it is spreading into broader prices or expectations."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15745,
+        "paragraph": 32,
+        "start": 15579,
+        "text": "AI-related debt has been rising rapidly, with notable gains in corporate bonds, private credit, and project finance, and is on track to exceed $800 billion this year."
+       },
+       {
+        "end": 15956,
+        "paragraph": 32,
+        "start": 15873,
+        "text": "their potential payments are estimated at more than three times the amount of debt."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "Governor Bowman says AI-related debt is on track to exceed $800 billion this year, while potential payments on other obligations are estimated at more than three times the amount of debt."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 19566,
+        "paragraph": 39,
+        "start": 19449,
+        "text": "Today, I am seeing signs that inflation pressures are persisting, while labor market conditions appear to be firming."
+       },
+       {
+        "end": 20188,
+        "paragraph": 40,
+        "start": 20035,
+        "text": "At each FOMC meeting, my colleagues and I will evaluate incoming data, the evolving outlook, and the implications for the risks to our dual-mandate goals"
+       }
+      ],
+      "paragraphs": [
+       39,
+       40
+      ]
+     },
+     "text": "Governor Bowman says inflation pressures are persisting while labor market conditions appear to be firming, and that she and her colleagues will evaluate incoming data at each FOMC meeting."
+    }
+   ],
+   "title": "Bowman, The U.S. Economy and Considerations for Monetary Policy",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/bowman20261110a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5593,
+    "output_tokens": 1843,
+    "reasoning_tokens": 1034
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      6,
      8,
      12,
