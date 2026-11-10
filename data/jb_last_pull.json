@@ -1,12 +1,12 @@
 {
- "last_success_utc_date": "2026-11-06",
- "last_success_at": "2026-11-06T19:05:55.124145",
+ "last_success_utc_date": "2026-11-10",
+ "last_success_at": "2026-11-10T19:05:44.248776",
  "endpoint": "today",
- "rows": 7,
- "actuals": 7,
- "last_attempt_at": "2026-11-09T19:05:48.637279",
- "last_status": "empty",
+ "rows": 1,
+ "actuals": 1,
+ "last_attempt_at": "2026-11-10T19:05:44.248776",
+ "last_status": "ok",
  "last_http_status": 200,
- "last_error": "payload mapped 0 events",
+ "last_error": null,
  "last_rate_limit_headers": {}
 }
