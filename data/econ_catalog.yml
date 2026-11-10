@@ -27,7 +27,16 @@
 #   indicator_key   — src/economic_compute.py / data/economic_indicators.yaml key.
 #                     null only for a `policy` entry with no matching series
 #                     (BAND_TEXT_ONLY, FAZA 0.5) — carries target_note instead.
-#   role            — market | secondary | policy
+#                     Absent on an `official` entry (which uses `key`).
+#   key             — (official only) the entry's selection key (URL / UI
+#                     chip; emitted as the payload's indicator_key). Unique
+#                     per (category, currency) and never equal to any
+#                     data/economic_indicators.yaml key.
+#   official_series — (official only) series_id in data/official_series.parquet
+#                     (src/official_series.py SERIES_META: source, anchor FF
+#                     series, transform). Display-only: never scored.
+#   role            — market | secondary | policy | official (display-only
+#                     series from a statistics agency, not from the FF feed)
 #   rank            — display order within (category, currency)
 #   display_label   — derived from the REAL name_raw feeding this key (FAZA 0.6
 #                     Bloc D), NOT the canonical label where the two differ.
@@ -228,15 +237,44 @@ categories:
         # -at-24 reasoning. AUD inflation is now a single market chip.
 
     NZD:
+      # 2026-11 (P2) — official display-only y/y from Stats NZ (CPIQ.SE9A,
+      # All groups for New Zealand, index June 2017 quarter = 1000), stored in
+      # data/official_series.parquet by src.official_fetch. One point per real
+      # FF "CPI q/q" publication (y/y of that publication's reference
+      # quarter); never scored, no y/y consensus. Validated 16/16 against the
+      # published y/y and q/q (P1, investigate/nzd-cpi-yoy-source).
+      - key: cpi_yoy_official
+        official_series: statsnz_cpi
+        role: official
+        rank: 1
+        display_label: "CPI (YoY)"
+        unit: pct
+        transform_real: YoY
+        target:
+          kind: band
+          low: 1.0
+          high: 3.0
+          # PENDING — effective_from and source_note must come from the
+          # official RBNZ pages only (PTA history: 1-3% band since 2002, 2%
+          # focus since 2012; Remit in force from 20 Dec 2023; target defined
+          # on the All Groups CPI published by Stats NZ). rbnz.govt.nz refused
+          # automated reads (HTTP 403) on 2026-11-10, so nothing is filled in
+          # here until those dates are confirmed from the source itself.
+          effective_from: null
+          effective_to: null
+          source_note: >-
+            PENDING verification against rbnz.govt.nz (PTA history and the
+            Monetary Policy Remit) — not yet confirmed from the primary source.
+          label: "RBNZ 1-3% (focus 2%)"
       - indicator_key: cpi_yoy
         role: market
-        rank: 1
+        rank: 2
         display_label: "CPI (QoQ)"
         unit: pct
         transform_real: QoQ
-        mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI q/q') is QoQ — no y/y series exists in any local layer"
-        # FAZA 2B 3.2 — QoQ: a y/y target line would be a unit error here
-        # (no y/y series exists locally to plot instead). Text only.
+        mismatch_note: "canonical label 'CPI y/y'; real feed (name_raw 'CPI q/q') is QoQ — the y/y is the official Stats NZ series (cpi_yoy_official, rank 1)"
+        # FAZA 2B 3.2 — QoQ: a y/y target line would be a unit error here;
+        # the band is drawn on the official y/y entry above. Text only.
         target_note: "RBNZ: 1-3%, focus 2% (target on headline CPI, annual)"
 
     CHF:
@@ -564,10 +602,11 @@ categories:
 # — schema is `target: {kind: point|band, value|low/high, effective_from,
 # effective_to, source_note, label}` on every currency where the target's own
 # transform (always y/y) matches a series actually charted (EUR/GBP/AUD/USD
-# market entries; CAD market+secondary; JPY market). `target_note` (free
-# text, no chart overlay) covers every m/m or q/q series instead — a unit
-# mismatch means the target can only ever be described, never drawn as a
-# line/band on that chart (NZD/CHF market; USD's Core CPI MoM secondary).
+# market entries; CAD market+secondary; JPY market; NZD's official y/y entry,
+# 2026-11). `target_note` (free text, no chart overlay) covers every m/m or
+# q/q series instead — a unit mismatch means the target can only ever be
+# described, never drawn as a line/band on that chart (NZD QoQ market;
+# CHF market; USD's Core CPI MoM secondary).
 # `comparable_with_target` (history_compute.build_payload, derived from
 # transform_real=="YoY") is the runtime gate the UI actually checks before
 # drawing anything — this section is the human-readable rationale behind it.
@@ -582,5 +621,8 @@ categories:
 #
 # All target dates verified against an official primary source (central-bank
 # press release, remit letter, or FAQ — see each source_note) — not guessed.
+# EXCEPTION, open: NZD's official-y/y band (2026-11) — effective_from and
+# source_note are PENDING until read from rbnz.govt.nz (HTTP 403 to automated
+# reads on 2026-11-10); left null/pending rather than filled from memory.
 # effective_to is null throughout: no subsequent reframing found for any of
 # them as of 2026-08-25.

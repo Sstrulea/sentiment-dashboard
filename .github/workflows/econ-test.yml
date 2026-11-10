@@ -28,3 +28,20 @@ jobs:
 
       - name: Ce s-ar fi schimbat
         run: git status --short
+
+  official_fetch_dry_run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - name: Official series dry-run (Stats NZ — download + G1/G2, no write)
+        run: python -m src.official_fetch --dry-run --force
+
+      - name: Store unchanged
+        run: git status --short data/official_series.parquet

@@ -45,22 +45,37 @@ def _build_quarantine_df(ff: pd.DataFrame, matcher: CompiledMatcher) -> pd.DataF
     return build_quarantine_proposal(ghosts, zeros)
 
 
-def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
-    as_of = as_of or pd.Timestamp.now()
-    if not FF_PARQUET.exists():
-        return {"meta": {"generated_at": as_of.isoformat(), "catalog_version": "unavailable",
-                        "as_of": as_of.isoformat()}, "categories": {},
-               "health": {"no_data": [], "stale": []}}
+CATALOG_VERSION = "2026-11-10-official-series"
 
+
+def compute_history_series(as_of: pd.Timestamp, catalog: dict | None = None):
+    """(catalog, ind_cfg, series_cache) exactly as /history computes them
+    (FF + manual overrides -> quarantine -> compute_catalog). `catalog` may be
+    a SUBSET of the real one (src.official_fetch passes just the anchor's
+    (category, currency) slot) — same inputs, same functions, only fewer
+    series computed. None when the FF parquet is absent."""
+    if not FF_PARQUET.exists():
+        return None
     ff = read_ff_parquet(FF_PARQUET, overrides_path=hc.MANUAL_ACTUALS_OVERRIDES)
     ff["datetime_utc"] = pd.to_datetime(ff["datetime_utc"])
     ind_cfg = hc.load_indicators_cfg()
     matcher = build_matcher()
-    catalog = hc.load_catalog()   # all 4 categories (FAZA 1D)
+    catalog = catalog if catalog is not None else hc.load_catalog()   # all 4 categories (FAZA 1D)
 
     quarantine_df = _build_quarantine_df(ff, matcher)
     series_cache = hc.compute_catalog(ff, ind_cfg, catalog, quarantine_df, as_of=as_of)
-    return hc.build_payload(catalog, series_cache, catalog_version="2026-08-20-faza1d",
+    return catalog, ind_cfg, series_cache
+
+
+def build_history_payload(as_of: pd.Timestamp | None = None) -> dict:
+    as_of = as_of or pd.Timestamp.now()
+    computed = compute_history_series(as_of)
+    if computed is None:
+        return {"meta": {"generated_at": as_of.isoformat(), "catalog_version": "unavailable",
+                        "as_of": as_of.isoformat()}, "categories": {},
+               "health": {"no_data": [], "stale": [], "official_pending": []}}
+    catalog, ind_cfg, series_cache = computed
+    return hc.build_payload(catalog, series_cache, catalog_version=CATALOG_VERSION,
                             ind_cfg=ind_cfg, as_of=as_of)
 
 
