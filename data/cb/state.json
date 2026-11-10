@@ -30,7 +30,7 @@
     },
     "latest": {
       "etag": null,
-      "last_modified": "Mon, 09 Nov 2026 11:04:16 GMT"
+      "last_modified": "Tue, 10 Nov 2026 11:41:25 GMT"
     }
   },
   "eurex_ois_chf": {
@@ -178,26 +178,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-10T10:42:17Z",
-      "calls": 1,
-      "cost_usd": 0.0344,
+      "at": "2026-11-10T12:43:13Z",
+      "calls": 2,
+      "cost_usd": 0.0686,
       "failed_validation": 0,
-      "input_tokens": 5765,
+      "input_tokens": 21778,
       "new": 1,
       "no_text": 0,
-      "output_tokens": 1906,
+      "output_tokens": 2085,
       "pending": 0,
-      "reasoning_tokens": 1034,
+      "reasoning_tokens": 487,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 128,
+      "unchanged": 129,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 238,
-      "input_tokens": 1509068,
-      "output_tokens": 267859,
-      "summaries": 158
+      "calls": 240,
+      "input_tokens": 1530846,
+      "output_tokens": 269944,
+      "summaries": 159
     }
   }
 }

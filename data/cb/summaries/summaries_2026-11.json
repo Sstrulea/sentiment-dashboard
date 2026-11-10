@@ -2555,6 +2555,298 @@
    }
   },
   {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     28,
+     32,
+     71,
+     93,
+     129,
+     153,
+     222,
+     225
+    ],
+    "paragraphs_sent": 243,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:7e1bc8c8f3d4",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-10T12:43:13Z",
+   "input_sha256": "e0cb9adb8438d85362e9120e9841441682a78040cdef832f031f1207d41db366",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 4274,
+     "point": 2,
+     "source_text": "3",
+     "start": 4273,
+     "text": "3%"
+    },
+    {
+     "end": 3373,
+     "point": 2,
+     "source_text": "2",
+     "start": 3372,
+     "text": "2%"
+    },
+    {
+     "end": 15345,
+     "point": 3,
+     "source_text": "16",
+     "start": 15343,
+     "text": "16"
+    },
+    {
+     "end": 15351,
+     "point": 3,
+     "source_text": "24",
+     "start": 15349,
+     "text": "24"
+    },
+    {
+     "end": 15345,
+     "point": 3,
+     "source_text": "16",
+     "start": 15343,
+     "text": "16"
+    },
+    {
+     "end": 15351,
+     "point": 3,
+     "source_text": "24",
+     "start": 15349,
+     "text": "24"
+    },
+    {
+     "end": 3163,
+     "point": 3,
+     "source_text": "2022",
+     "start": 3159,
+     "text": "2022"
+    },
+    {
+     "end": 8221,
+     "point": 6,
+     "source_text": "8",
+     "start": 8220,
+     "text": "8"
+    },
+    {
+     "end": 2560,
+     "point": 6,
+     "source_text": "1",
+     "start": 2559,
+     "text": "1"
+    },
+    {
+     "end": 35730,
+     "point": 6,
+     "source_text": "25 basis points",
+     "start": 35715,
+     "text": "25 basis points"
+    },
+    {
+     "end": 3155,
+     "point": 6,
+     "source_text": "4%",
+     "start": 3153,
+     "text": "4%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-10",
+   "quotes": [
+    {
+     "end": 5380,
+     "paragraph": 28,
+     "start": 5223,
+     "text": "In the recent labour market loosening, firms have so far adjusted much more through reducing demand for new workers than through shedding existing employees."
+    },
+    {
+     "end": 24132,
+     "paragraph": 129,
+     "start": 24010,
+     "text": "Unemployment could remain higher for longer without producing the easing in wage pressure that we would ordinarily expect."
+    },
+    {
+     "end": 35737,
+     "paragraph": 222,
+     "start": 35593,
+     "text": "Taking these developments together, at our meeting last week, the MPC voted by a majority of 8–1 to increase Bank Rate by 25 basis points to 4%."
+    },
+    {
+     "end": 37446,
+     "paragraph": 225,
+     "start": 37290,
+     "text": "In the absence of evidence of weaker inflation pressures, I continue to think there is likely to be a case for a further increase in rates in the near term."
+    }
+   ],
+   "source": {
+    "chars": 42417,
+    "chars_sent": 42418,
+    "method": "html-selector",
+    "paragraphs_sent": 243,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5380,
+        "paragraph": 28,
+        "start": 5223,
+        "text": "In the recent labour market loosening, firms have so far adjusted much more through reducing demand for new workers than through shedding existing employees."
+       },
+       {
+        "end": 5705,
+        "paragraph": 32,
+        "start": 5653,
+        "text": "Weaker hiring is by far the more significant driver."
+       }
+      ],
+      "paragraphs": [
+       28,
+       32
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says firms have adjusted much more by reducing demand for new workers than by shedding existing employees, and weaker hiring is by far the more significant driver of the unemployment rise."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 12225,
+        "paragraph": 71,
+        "start": 12149,
+        "text": "Thirty years ago, more than 3% of employed people changed jobs each quarter."
+       },
+       {
+        "end": 12292,
+        "paragraph": 71,
+        "start": 12226,
+        "text": "Over the past year, the quarterly rate has been a little above 2%."
+       }
+      ],
+      "paragraphs": [
+       71
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says the job-to-job switching rate has a pronounced downward trend, with more than 3% of employed people changing jobs each quarter thirty years ago and a little above 2% over the past year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15421,
+        "paragraph": 93,
+        "start": 15324,
+        "text": "Unemployment among 16 to 24-year-olds has risen much faster than for other age groups (Chart 14)."
+       },
+       {
+        "end": 15721,
+        "paragraph": 93,
+        "start": 15549,
+        "text": "Despite accounting for only around 12.5% of the labour force, 16 to 24-year-olds account for more than half of the rise in aggregate unemployment since mid-2022 (Chart 15)."
+       }
+      ],
+      "paragraphs": [
+       93
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says unemployment among 16 to 24-year-olds has risen much faster than for other age groups, and 16 to 24-year-olds account for more than half of the rise in aggregate unemployment since mid-2022."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 24009,
+        "paragraph": 129,
+        "start": 23875,
+        "text": "if jobseekers are not well matched to the vacancies available, a given rise in unemployment may exert less downward pressure on wages."
+       },
+       {
+        "end": 24132,
+        "paragraph": 129,
+        "start": 24010,
+        "text": "Unemployment could remain higher for longer without producing the easing in wage pressure that we would ordinarily expect."
+       }
+      ],
+      "paragraphs": [
+       129
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says that if jobseekers are not well matched to available vacancies, unemployment could remain higher for longer without producing the easing in wage pressure ordinarily expected."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 31052,
+        "paragraph": 153,
+        "start": 30923,
+        "text": "Business leaders are increasing their investment in AI, and expect AI to raise productivity meaningfully over the next few years."
+       },
+       {
+        "end": 31155,
+        "paragraph": 153,
+        "start": 31053,
+        "text": "They expect this effect to be split broadly equally between increasing output and reducing employment."
+       }
+      ],
+      "paragraphs": [
+       153
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says business leaders expect AI to raise productivity meaningfully over the next few years, split broadly equally between increasing output and reducing employment."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 35737,
+        "paragraph": 222,
+        "start": 35655,
+        "text": "the MPC voted by a majority of 8–1 to increase Bank Rate by 25 basis points to 4%."
+       },
+       {
+        "end": 37446,
+        "paragraph": 225,
+        "start": 37348,
+        "text": "I continue to think there is likely to be a case for a further increase in rates in the near term."
+       }
+      ],
+      "paragraphs": [
+       222,
+       225
+      ]
+     },
+     "text": "Deputy Governor Clare Lombardelli says the MPC voted by 8–1 to increase Bank Rate by 25 basis points to 4%, and she continues to think there is likely to be a case for a further increase in rates in the near term."
+    }
+   ],
+   "title": "The low-gear labour market − speech by Clare Lombardelli",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/november/clare-lombardelli-speech-at-the-bank-watchers-conference",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 21778,
+    "output_tokens": 2085,
+    "reasoning_tokens": 487
+   }
+  },
+  {
    "changes_vs_previous": {
     "added_words": 233,
     "changes": [
