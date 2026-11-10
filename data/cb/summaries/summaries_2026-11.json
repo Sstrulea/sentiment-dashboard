@@ -1230,6 +1230,297 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     11,
+     19,
+     24,
+     32,
+     35,
+     38,
+     41
+    ],
+    "paragraphs_sent": 41,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:deliberations:2026-10-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-10T18:42:31Z",
+   "input_sha256": "1bb6730dd3fb2f017e6cb41352ca669cf6f741af980138ff6f691188a1c6004f",
+   "meeting_date": "2026-10-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 141,
+     "point": 2,
+     "source_text": "2026",
+     "start": 137,
+     "text": "2026"
+    },
+    {
+     "end": 5809,
+     "point": 2,
+     "source_text": "1%",
+     "start": 5807,
+     "text": "1%"
+    },
+    {
+     "end": 3707,
+     "point": 2,
+     "source_text": "2%",
+     "start": 3705,
+     "text": "2%"
+    },
+    {
+     "end": 1924,
+     "point": 2,
+     "source_text": "2027",
+     "start": 1920,
+     "text": "2027"
+    },
+    {
+     "end": 1933,
+     "point": 2,
+     "source_text": "2028",
+     "start": 1929,
+     "text": "2028"
+    },
+    {
+     "end": 8205,
+     "point": 3,
+     "source_text": "3½%",
+     "start": 8202,
+     "text": "3½%"
+    },
+    {
+     "end": 141,
+     "point": 3,
+     "source_text": "2026",
+     "start": 137,
+     "text": "2026"
+    },
+    {
+     "end": 3707,
+     "point": 3,
+     "source_text": "2%",
+     "start": 3705,
+     "text": "2%"
+    },
+    {
+     "end": 1933,
+     "point": 3,
+     "source_text": "2028",
+     "start": 1929,
+     "text": "2028"
+    },
+    {
+     "end": 11731,
+     "point": 5,
+     "source_text": "2.25%",
+     "start": 11726,
+     "text": "2.25%"
+    },
+    {
+     "end": 11764,
+     "point": 5,
+     "source_text": "2.5%",
+     "start": 11760,
+     "text": "2.5%"
+    },
+    {
+     "end": 11764,
+     "point": 5,
+     "source_text": "2.5%",
+     "start": 11760,
+     "text": "2.5%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-10",
+   "quotes": [
+    {
+     "end": 2854,
+     "paragraph": 11,
+     "start": 2758,
+     "text": "Financial conditions were tighter, with sovereign bond yields up across most advanced economies."
+    },
+    {
+     "end": 5867,
+     "paragraph": 19,
+     "start": 5743,
+     "text": "Overall, members revised up their outlook for growth in 2026 to 1% and expected growth to strengthen to 2% in 2027 and 2028."
+    },
+    {
+     "end": 8333,
+     "paragraph": 24,
+     "start": 8164,
+     "text": "CPI inflation was expected to rise to 3½% at the end of 2026 and remain above 3% through much of 2027, before gradually declining to the 2% target by the middle of 2028."
+    },
+    {
+     "end": 13221,
+     "paragraph": 38,
+     "start": 12976,
+     "text": "After considering both options, Governing Council decided to raise the policy rate to 2.5% to reduce the risk that persistently high energy prices would lead to broader price increases in other goods and services and become persistent inflation."
+    },
+    {
+     "end": 13976,
+     "paragraph": 41,
+     "start": 13742,
+     "text": "Governing Council members agreed there could be a need to increase the policy rate further, but given the uncertainty, they would take monetary policy decisions one meeting at a time with the benefit of the best available information."
+    }
+   ],
+   "source": {
+    "chars": 13976,
+    "chars_sent": 13977,
+    "method": "html-selector",
+    "paragraphs_sent": 41,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2854,
+        "paragraph": 11,
+        "start": 2758,
+        "text": "Financial conditions were tighter, with sovereign bond yields up across most advanced economies."
+       },
+       {
+        "end": 3194,
+        "paragraph": 11,
+        "start": 3044,
+        "text": "Equity markets had been volatile since the July Report, in part due to investor concerns about the sustainability of earnings growth in the AI sector."
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Members reported tighter financial conditions, with sovereign bond yields up across most advanced economies and equity markets volatile since the July Report."
+    },
+    {
+     "evidence": {
+      "coverage": 0.857,
+      "fragments": [
+       {
+        "end": 5867,
+        "paragraph": 19,
+        "start": 5743,
+        "text": "Overall, members revised up their outlook for growth in 2026 to 1% and expected growth to strengthen to 2% in 2027 and 2028."
+       },
+       {
+        "end": 5997,
+        "paragraph": 19,
+        "start": 5868,
+        "text": "Members agreed that there was still some slack in the economy but that the pickup in growth would gradually absorb excess supply."
+       }
+      ],
+      "paragraphs": [
+       19
+      ]
+     },
+     "text": "Members revised up their outlook for growth in 2026 to 1% and expected growth to strengthen to 2% in 2027 and 2028, while agreeing that some slack remained."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 8163,
+        "paragraph": 24,
+        "start": 8088,
+        "text": "members raised their outlook for inflation substantially, relative to July."
+       },
+       {
+        "end": 8333,
+        "paragraph": 24,
+        "start": 8164,
+        "text": "CPI inflation was expected to rise to 3½% at the end of 2026 and remain above 3% through much of 2027, before gradually declining to the 2% target by the middle of 2028."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Members raised their outlook for inflation substantially relative to July, with CPI inflation expected to rise to 3½% at the end of 2026 and reach the 2% target by the middle of 2028."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11230,
+        "paragraph": 32,
+        "start": 11027,
+        "text": "Against this backdrop, members agreed that the risks had shifted: the prolonged energy shock and a resilient economy meant the risk that high inflation could persist and become broad‑based had increased."
+       }
+      ],
+      "paragraphs": [
+       32
+      ]
+     },
+     "text": "Members agreed that the prolonged energy shock and a resilient economy had increased the risk that high inflation could persist and become broad-based."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11765,
+        "paragraph": 35,
+        "start": 11647,
+        "text": "Governing Council members deliberated two options: maintain the policy rate at 2.25% or raise the policy rate to 2.5%."
+       },
+       {
+        "end": 13066,
+        "paragraph": 38,
+        "start": 12976,
+        "text": "After considering both options, Governing Council decided to raise the policy rate to 2.5%"
+       }
+      ],
+      "paragraphs": [
+       35,
+       38
+      ]
+     },
+     "text": "Members deliberated maintaining the policy rate at 2.25% or raising it to 2.5%, and Governing Council decided to raise the policy rate to 2.5%."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13976,
+        "paragraph": 41,
+        "start": 13742,
+        "text": "Governing Council members agreed there could be a need to increase the policy rate further, but given the uncertainty, they would take monetary policy decisions one meeting at a time with the benefit of the best available information."
+       }
+      ],
+      "paragraphs": [
+       41
+      ]
+     },
+     "text": "Members agreed there could be a need to increase the policy rate further, but would take monetary policy decisions one meeting at a time with the best available information."
+    }
+   ],
+   "title": "Summary of Governing Council deliberations: Fixed announcement date of October&nbsp;28, 2026",
+   "type": "deliberations",
+   "url": "https://www.bankofcanada.ca/2026/11/summary-of-governing-council-deliberations-fixed-announcement-date-of-october-28-2026/",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 9259,
+    "output_tokens": 2052,
+    "reasoning_tokens": 356
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      4,
      5,
@@ -1976,6 +2267,179 @@
     "input_tokens": 10350,
     "output_tokens": 1207,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     58,
+     67,
+     98,
+     99
+    ],
+    "paragraphs_sent": 99,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:380ce0e2b072",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-10T18:42:31Z",
+   "input_sha256": "a62334b1e911ebe17fe8b90c581f3c9ccf16faabb7c0b607837f43c423f50703",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-10",
+   "quotes": [
+    {
+     "end": 32995,
+     "paragraph": 98,
+     "start": 32729,
+     "text": "In particular, I have highlighted that new text-based tools, including large language models, allow us to measure central bank communication more systematically, and these confirm that what we say moves financial markets, between meetings as well as on meeting days."
+    },
+    {
+     "end": 33255,
+     "paragraph": 98,
+     "start": 32996,
+     "text": "Relative to markets-orientated communication, reaching households and firms is more challenging: their attention to inflation rises and falls with inflation itself, which makes clear and consistent communication even more important when inflation is elevated."
+    },
+    {
+     "end": 17870,
+     "paragraph": 67,
+     "start": 17687,
+     "text": "When economic conditions are changing rapidly, it may be preferable to place greater emphasis on the current state of the economy than on precise indications about the distant future."
+    },
+    {
+     "end": 33440,
+     "paragraph": 99,
+     "start": 33256,
+     "text": "In relation to the practice of monetary policy communication, framework guidance is more effective than rate forward guidance when policy rates are away from the effective lower bound."
+    }
+   ],
+   "source": {
+    "chars": 33822,
+    "chars_sent": 33823,
+    "method": "html-selector",
+    "paragraphs_sent": 99,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 32889,
+        "paragraph": 98,
+        "start": 32768,
+        "text": "new text-based tools, including large language models, allow us to measure central bank communication more systematically"
+       },
+       {
+        "end": 32994,
+        "paragraph": 98,
+        "start": 32914,
+        "text": "what we say moves financial markets, between meetings as well as on meeting days"
+       }
+      ],
+      "paragraphs": [
+       98
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says large language models allow central bank communication to be measured more systematically, and that communication moves financial markets between meetings and on meeting days."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 33091,
+        "paragraph": 98,
+        "start": 32996,
+        "text": "Relative to markets-orientated communication, reaching households and firms is more challenging"
+       },
+       {
+        "end": 33159,
+        "paragraph": 98,
+        "start": 33093,
+        "text": "their attention to inflation rises and falls with inflation itself"
+       }
+      ],
+      "paragraphs": [
+       98
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says reaching households and firms is more challenging than markets-orientated communication, and their attention to inflation rises and falls with inflation itself."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13893,
+        "paragraph": 58,
+        "start": 13780,
+        "text": "Unexpected shifts in monetary policy communication (“communication shocks”) can influence activity and inflation."
+       },
+       {
+        "end": 14108,
+        "paragraph": 58,
+        "start": 13990,
+        "text": "the effects of “communication shocks” tend to be smaller and slower to materialise but can nevertheless be significant"
+       }
+      ],
+      "paragraphs": [
+       58
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says unexpected shifts in monetary policy communication can influence activity and inflation, with effects that tend to be smaller and slower to materialise than unexpected interest rate decisions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17870,
+        "paragraph": 67,
+        "start": 17687,
+        "text": "When economic conditions are changing rapidly, it may be preferable to place greater emphasis on the current state of the economy than on precise indications about the distant future."
+       }
+      ],
+      "paragraphs": [
+       67
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says that when economic conditions are changing rapidly, it may be preferable to place greater emphasis on the current state of the economy than on precise indications about the distant future."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 33439,
+        "paragraph": 99,
+        "start": 33318,
+        "text": "framework guidance is more effective than rate forward guidance when policy rates are away from the effective lower bound"
+       }
+      ],
+      "paragraphs": [
+       99
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says framework guidance is more effective than rate forward guidance when policy rates are away from the effective lower bound."
+    }
+   ],
+   "title": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 7928,
+    "output_tokens": 1633,
+    "reasoning_tokens": 1015
    }
   },
   {
