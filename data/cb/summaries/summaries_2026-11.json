@@ -2847,6 +2847,277 @@
     "output_tokens": 1132,
     "reasoning_tokens": 0
    }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     8,
+     12,
+     13,
+     24,
+     28,
+     34,
+     35
+    ],
+    "paragraphs_sent": 44,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:8cdfc14340a4",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-10T10:42:17Z",
+   "input_sha256": "870c4e70746580b61be9f038ba7c9189f6c7f7a6d502fa10485fc329f93ecf39",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 14161,
+     "point": 5,
+     "source_text": "0.5 percent",
+     "start": 14150,
+     "text": "0.5 percent"
+    },
+    {
+     "end": 14190,
+     "point": 5,
+     "source_text": "3.7 percent",
+     "start": 14179,
+     "text": "3.7 percent"
+    },
+    {
+     "end": 3195,
+     "point": 5,
+     "source_text": "12",
+     "start": 3193,
+     "text": "12"
+    },
+    {
+     "end": 14290,
+     "point": 5,
+     "source_text": "0.3 percent",
+     "start": 14279,
+     "text": "0.3 percent"
+    },
+    {
+     "end": 14319,
+     "point": 5,
+     "source_text": "3.1 percent",
+     "start": 14308,
+     "text": "3.1 percent"
+    },
+    {
+     "end": 8975,
+     "point": 6,
+     "source_text": "25",
+     "start": 8973,
+     "text": "25 basis point"
+    },
+    {
+     "end": 18734,
+     "point": 6,
+     "source_text": "50 basis point",
+     "start": 18720,
+     "text": "50 basis point"
+    },
+    {
+     "end": 14290,
+     "point": 6,
+     "source_text": "0.3 percent",
+     "start": 14279,
+     "text": "0.3 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-10",
+   "quotes": [
+    {
+     "end": 848,
+     "paragraph": 6,
+     "start": 514,
+     "text": "The U.S. economy is growing strongly, with a labor market that has brought employment close to its long-term rate. But inflation remains too high, so I will explain why I believe further tightening of monetary policy will be needed, sooner rather than later, to return inflation to a path that will reach 2 percent in the medium term."
+    },
+    {
+     "end": 4775,
+     "paragraph": 13,
+     "start": 4602,
+     "text": "I am concerned that the low hire, low fire equilibrium in the labor market means it has lost some of its dynamism, which is important for productivity growth and real wages."
+    },
+    {
+     "end": 14029,
+     "paragraph": 28,
+     "start": 13965,
+     "text": "September's inflation data were bad. There was no silver lining."
+    },
+    {
+     "end": 18804,
+     "paragraph": 35,
+     "start": 18694,
+     "text": "In that case, I believe a 50 basis point hike in the policy rate should be considered at the December meeting."
+    }
+   ],
+   "source": {
+    "chars": 20596,
+    "chars_sent": 20597,
+    "method": "html-selector",
+    "paragraphs_sent": 44,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 628,
+        "paragraph": 6,
+        "start": 514,
+        "text": "The U.S. economy is growing strongly, with a labor market that has brought employment close to its long-term rate."
+       },
+       {
+        "end": 771,
+        "paragraph": 6,
+        "start": 629,
+        "text": "But inflation remains too high, so I will explain why I believe further tightening of monetary policy will be needed, sooner rather than later"
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Waller says the U.S. economy is growing strongly and inflation remains too high, and he believes further tightening of monetary policy will be needed sooner rather than later."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1451,
+        "paragraph": 8,
+        "start": 1343,
+        "text": "At our most recent meeting, I supported the FOMC majority in holding monetary policy at its current setting."
+       },
+       {
+        "end": 1654,
+        "paragraph": 8,
+        "start": 1524,
+        "text": "the Committee's communication about the likely tightening of policy had already led financial markets to price in some tightening."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governor Waller says he supported holding monetary policy at its current setting because the Committee's communication about likely tightening had already led financial markets to price in some tightening."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3592,
+        "paragraph": 12,
+        "start": 3469,
+        "text": "While the labor market has been stable, for over a year now it has been what is best characterized as \"low hire, low fire.\""
+       },
+       {
+        "end": 4775,
+        "paragraph": 13,
+        "start": 4602,
+        "text": "I am concerned that the low hire, low fire equilibrium in the labor market means it has lost some of its dynamism, which is important for productivity growth and real wages."
+       }
+      ],
+      "paragraphs": [
+       12,
+       13
+      ]
+     },
+     "text": "Governor Waller says the labor market has been \"low hire, low fire,\" and he is concerned it has lost some dynamism important for productivity growth and real wages."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11526,
+        "paragraph": 24,
+        "start": 11424,
+        "text": "a low hiring rate means that those who do become unemployed may experience longer unemployment spells."
+       },
+       {
+        "end": 12166,
+        "paragraph": 24,
+        "start": 12027,
+        "text": "the share of new labor force entrants in unemployment has been rising and has reached close to the highest levels of the past twenty years."
+       }
+      ],
+      "paragraphs": [
+       24
+      ]
+     },
+     "text": "Governor Waller says a low hiring rate means unemployed workers may experience longer unemployment spells, and the share of new labor force entrants in unemployment has been rising."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14219,
+        "paragraph": 28,
+        "start": 14030,
+        "text": "Inflation based on personal consumption expenditures (PCE), the measure targeted by the FOMC, rose at a monthly rate of 0.5 percent in September and 3.7 percent over the previous 12 months."
+       },
+       {
+        "end": 14345,
+        "paragraph": 28,
+        "start": 14220,
+        "text": "Core PCE inflation, excluding food and energy prices, rose 0.3 percent in September and 3.1 percent from that time last year."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Governor Waller says PCE inflation rose at a monthly rate of 0.5 percent in September and 3.7 percent over the previous 12 months, while core PCE inflation rose 0.3 percent in September and 3.1 percent from that time last year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 18447,
+        "paragraph": 34,
+        "start": 18335,
+        "text": "I am leaning toward supporting an increase in our policy rate of 25 basis points at the FOMC's December meeting."
+       },
+       {
+        "end": 18804,
+        "paragraph": 35,
+        "start": 18694,
+        "text": "In that case, I believe a 50 basis point hike in the policy rate should be considered at the December meeting."
+       }
+      ],
+      "paragraphs": [
+       34,
+       35
+      ]
+     },
+     "text": "Governor Waller says he is leaning toward supporting a 25 basis point policy-rate increase at the FOMC's December meeting, but believes a 50 basis point hike should be considered if core CPI inflation is around 0.3 percent or higher."
+    }
+   ],
+   "title": "Waller, The Economic Outlook and Some Thoughts on Labor Market Dynamism",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/waller20261110a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5765,
+    "output_tokens": 1906,
+    "reasoning_tokens": 1034
+   }
   }
  ],
  "version": 1
