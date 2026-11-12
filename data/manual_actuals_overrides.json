@@ -2055,5 +2055,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-04T20:40:20+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_ppi",
+  "currency": "JPY",
+  "indicator_key": "ppi_yoy",
+  "datetime_utc": "2026-11-11 23:50:00",
+  "actual": 7.1,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-12T11:54:18+00:00",
+  "note": ""
  }
 ]
