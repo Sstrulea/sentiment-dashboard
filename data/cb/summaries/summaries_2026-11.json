@@ -3608,6 +3608,230 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     4,
+     7,
+     9,
+     10,
+     11
+    ],
+    "paragraphs_sent": 13,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:summary_of_opinions:2026-10-30",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-11-13T00:42:39Z",
+   "input_sha256": "112188843154f96bb2d56b404df01e3facfbf09fb6a1e2aaa753ec73ed865ebd",
+   "meeting_date": "2026-10-30",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 86,
+     "point": 1,
+     "source_text": "2026",
+     "start": 82,
+     "text": "2026"
+    },
+    {
+     "end": 173,
+     "point": 2,
+     "source_text": "2",
+     "start": 172,
+     "text": "2 percent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-09",
+   "quotes": [
+    {
+     "end": 425,
+     "paragraph": 4,
+     "start": 276,
+     "text": "Japan's economy has recovered moderately, although some weakness has been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "end": 3122,
+     "paragraph": 7,
+     "start": 2848,
+     "text": "Given developments in various indicators related to underlying CPI inflation and the economic and price developments that lie behind them, it can be judged that underlying CPI inflation is at a level that is generally consistent with the price stability target of 2 percent."
+    },
+    {
+     "end": 6807,
+     "paragraph": 9,
+     "start": 6574,
+     "text": "Given that a little more examination of risks surrounding economic activity and prices and of developments in financial conditions is necessary, it is appropriate for the Bank to maintain the current policy interest rate at this MPM."
+    },
+    {
+     "end": 7538,
+     "paragraph": 10,
+     "start": 7145,
+     "text": "Given that underlying CPI inflation is at a level that is generally consistent with the price stability target of 2 percent and financial conditions have been accommodative, it is appropriate for the Bank to continue to raise the policy interest rate and adjust the degree of monetary accommodation, in response to developments in economic activity a nd prices as well as financial conditions."
+    }
+   ],
+   "source": {
+    "chars": 12906,
+    "chars_sent": 12907,
+    "method": "pypdf",
+    "paragraphs_sent": 13,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 362,
+        "paragraph": 4,
+        "start": 276,
+        "text": "Japan's economy has recovered moderately, although some weakness has been seen in part"
+       },
+       {
+        "end": 626,
+        "paragraph": 4,
+        "start": 538,
+        "text": "Japan's economy is expected to continue growing moderately, albeit at a decelerated rate"
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Members stated that Japan's economy has recovered moderately, although some weakness has been seen in part, and is expected to continue growing moderately in fiscal 2026 at a decelerated rate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3122,
+        "paragraph": 7,
+        "start": 2987,
+        "text": "it can be judged that underlying CPI inflation is at a level that is generally consistent with the price stability target of 2 percent."
+       },
+       {
+        "end": 3345,
+        "paragraph": 7,
+        "start": 3243,
+        "text": "close attention is warranted on factors such as firms' price-setting behavior and consumers' reactions"
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Members judged that underlying CPI inflation is generally consistent with the price stability target of 2 percent, while stating that close attention is warranted on wage and price developments."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 6807,
+        "paragraph": 9,
+        "start": 6719,
+        "text": "it is appropriate for the Bank to maintain the current policy interest rate at this MPM."
+       },
+       {
+        "end": 6717,
+        "paragraph": 9,
+        "start": 6585,
+        "text": "a little more examination of risks surrounding economic activity and prices and of developments in financial conditions is necessary"
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Some members said that the Bank should maintain the current policy interest rate at this MPM to examine risks surrounding economic activity, prices, and financial conditions."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 7317,
+        "paragraph": 10,
+        "start": 7156,
+        "text": "underlying CPI inflation is at a level that is generally consistent with the price stability target of 2 percent and financial conditions have been accommodative"
+       },
+       {
+        "end": 7443,
+        "paragraph": 10,
+        "start": 7319,
+        "text": "it is appropriate for the Bank to continue to raise the policy interest rate and adjust the degree of monetary accommodation"
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Other members said that, with underlying CPI inflation at the price stability target and financial conditions accommodative, the Bank should continue to raise the policy interest rate and adjust monetary accommodation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6062,
+        "paragraph": 9,
+        "start": 5914,
+        "text": "it is appropriate to assess them using three measures: the real interest rate gap, corporate finance and the bank lending channel, and asset prices."
+       },
+       {
+        "end": 6426,
+        "paragraph": 9,
+        "start": 6337,
+        "text": "the rise in stock prices has been mainly led by the global expansion in AI-related demand"
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Members said that asset prices should be assessed as part of financial conditions, while noting that stock-price rises have mainly been led by global AI-related demand and other factors can change these prices."
+    },
+    {
+     "evidence": {
+      "coverage": 0.857,
+      "fragments": [
+       {
+        "end": 11091,
+        "paragraph": 11,
+        "start": 10974,
+        "text": "Considering these circumstances, it is appropriate for the Bank to change the pace of sales of ETFs at this juncture."
+       },
+       {
+        "end": 11215,
+        "paragraph": 11,
+        "start": 11094,
+        "text": "It is desirable for the Bank to reassess the volume of sales of ETFs that would have the least possible disruptive effect"
+       }
+      ],
+      "paragraphs": [
+       11
+      ]
+     },
+     "text": "Members said it was appropriate and desirable to change the pace of ETF sales, based on sales since January of this year and while seeking the least possible disruptive effect."
+    }
+   ],
+   "title": "Bank of Japan summary of opinions of the 30 October 2026 meeting",
+   "type": "summary_of_opinions",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi261030.pdf",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 3986,
+    "output_tokens": 1062,
+    "reasoning_tokens": 265
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      9,
      10,
      14,
