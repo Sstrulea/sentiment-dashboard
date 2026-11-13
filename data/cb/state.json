@@ -149,7 +149,7 @@
   },
   "jpx_tona": {
     "etag": null,
-    "last_modified": "Thu, 12 Nov 2026 07:38:20 GMT"
+    "last_modified": "Fri, 13 Nov 2026 07:39:42 GMT"
   },
   "official:rba": {
     "etag": null,
@@ -183,26 +183,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-13T00:42:39Z",
-      "calls": 1,
-      "cost_usd": 0.0207,
+      "at": "2026-11-13T08:42:21Z",
+      "calls": 2,
+      "cost_usd": 0.0475,
       "failed_validation": 0,
-      "input_tokens": 3986,
+      "input_tokens": 13535,
       "new": 1,
       "no_text": 0,
-      "output_tokens": 1062,
+      "output_tokens": 1703,
       "pending": 0,
-      "reasoning_tokens": 265,
+      "reasoning_tokens": 341,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 133,
+      "unchanged": 134,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 245,
-      "input_tokens": 1557612,
-      "output_tokens": 276534,
-      "summaries": 163
+      "calls": 247,
+      "input_tokens": 1571147,
+      "output_tokens": 278237,
+      "summaries": 164
     }
   }
 }

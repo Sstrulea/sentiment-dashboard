@@ -2584,6 +2584,218 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     12,
+     25,
+     38,
+     40,
+     64,
+     88,
+     89,
+     103,
+     104
+    ],
+    "paragraphs_sent": 125,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:b0a1c9bf225c",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-13T08:42:21Z",
+   "input_sha256": "e098d4a23ed7edf42cc6e1cf9ccc642657c4aca211a81014728ddf1ae857cad4",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 1179,
+     "point": 6,
+     "source_text": "28",
+     "start": 1177,
+     "text": "28"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-13",
+   "quotes": [
+    {
+     "end": 1706,
+     "paragraph": 12,
+     "start": 1591,
+     "text": "Europe stands out globally for its quality of life, built on strong economic, social and institutional foundations."
+    },
+    {
+     "end": 11933,
+     "paragraph": 64,
+     "start": 11717,
+     "text": "Rather, it is a sustained weakness in domestic demand that makes Germany’s economy more prone than others to crises abroad. Especially in a more fragmented world, its export-driven business model is no longer viable."
+    },
+    {
+     "end": 16614,
+     "paragraph": 88,
+     "start": 16562,
+     "text": "In other words, Europe’s problem is a lack of scale."
+    },
+    {
+     "end": 19613,
+     "paragraph": 103,
+     "start": 19448,
+     "text": "The concept is simple: under a 28th regime, a company could choose to incorporate as a genuinely European firm, which the European Commission refers to as “EU Inc.”."
+    }
+   ],
+   "source": {
+    "chars": 23506,
+    "chars_sent": 23507,
+    "method": "html-selector",
+    "paragraphs_sent": 125,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1706,
+        "paragraph": 12,
+        "start": 1591,
+        "text": "Europe stands out globally for its quality of life, built on strong economic, social and institutional foundations."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says Europe stands out globally for its quality of life, built on strong economic, social and institutional foundations."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4079,
+        "paragraph": 25,
+        "start": 3979,
+        "text": "First, a large part of the gap in income levels reflects less work rather than less productive work."
+       }
+      ],
+      "paragraphs": [
+       25
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says a large part of the income-level gap reflects less work rather than less productive work."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6629,
+        "paragraph": 38,
+        "start": 6523,
+        "text": "this growth is threatened by persistently weak productivity growth in the euro area – the third dimension."
+       },
+       {
+        "end": 7107,
+        "paragraph": 40,
+        "start": 7039,
+        "text": "closing this gap has rightly become a key policy priority in Europe."
+       }
+      ],
+      "paragraphs": [
+       38,
+       40
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says persistently weak productivity growth in the euro area threatens sustained growth, and closing the gap has become a key policy priority in Europe."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11840,
+        "paragraph": 64,
+        "start": 11725,
+        "text": "it is a sustained weakness in domestic demand that makes Germany’s economy more prone than others to crises abroad."
+       },
+       {
+        "end": 11933,
+        "paragraph": 64,
+        "start": 11841,
+        "text": "Especially in a more fragmented world, its export-driven business model is no longer viable."
+       }
+      ],
+      "paragraphs": [
+       64
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says Germany has sustained weakness in domestic demand and that its export-driven business model is no longer viable in a more fragmented world."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16614,
+        "paragraph": 88,
+        "start": 16562,
+        "text": "In other words, Europe’s problem is a lack of scale."
+       },
+       {
+        "end": 16771,
+        "paragraph": 89,
+        "start": 16619,
+        "text": "Despite decades of integration, regulatory and administrative barriers still obstruct the free movement of services and goods through the Single Market."
+       }
+      ],
+      "paragraphs": [
+       88,
+       89
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says Europe’s problem is a lack of scale, while regulatory and administrative barriers still obstruct free movement through the Single Market."
+    },
+    {
+     "evidence": {
+      "coverage": 0.941,
+      "fragments": [
+       {
+        "end": 19558,
+        "paragraph": 103,
+        "start": 19471,
+        "text": "under a 28th regime, a company could choose to incorporate as a genuinely European firm"
+       },
+       {
+        "end": 19775,
+        "paragraph": 104,
+        "start": 19618,
+        "text": "That company would operate under a unified set of rules for core elements of company law, governance, shareholder rights and employee financial compensation."
+       }
+      ],
+      "paragraphs": [
+       103,
+       104
+      ]
+     },
+     "text": "Member of the Executive Board Isabel Schnabel says a 28th regime would let a company incorporate as a genuinely European firm under unified rules for core elements of company law, governance, shareholder rights and employee financial compensation."
+    }
+   ],
+   "title": "Isabel Schnabel: Made in Europe",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261113~3883f1f187.en.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 13535,
+    "output_tokens": 1703,
+    "reasoning_tokens": 341
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      4,
      8,
      12,
