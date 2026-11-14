@@ -2,7 +2,7 @@
 
     python scripts/cb_nzd_bkbm_spread.py [--start 2015-01] [--out config/cb_nzd_spread.yaml] [--dry-run]
 
-3M NZ interbank rate (OECD, monthly): FRED IR3TIB01NZM156N through the keyless fredgraph CSV the collector already uses;
+3M NZ interbank rate (OECD, monthly): FRED IR3TIB01NZM156N through the FRED API client (src/fred_api.py, key FRED_API_KEY);
 OCR: BIS WS_CBPOL (NZ, daily) through the same API as cb_official. Rule in src/cb_compute/nzd_spread.py (median of 3M - OCR
 over the months with no OCR change in the month and the 3 after it). Run by hand when `--status` says the file is older than
 100 days; the engine reads the file through src/cb_loader.py.
@@ -19,8 +19,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.cb_compute.nzd_spread import bkbm_ocr_spread              # noqa: E402
-from src.cb_sources.base import NON_BROWSER_UA, HttpSource         # noqa: E402
-from src.cb_sources.official import load_official, parse_bis, parse_fred   # noqa: E402
+from src.cb_sources.base import HttpSource                         # noqa: E402
+from src.cb_sources.official import load_official, parse_bis       # noqa: E402
+from src import fred_api                                            # noqa: E402
 
 FRED_ID = "IR3TIB01NZM156N"
 OUT = ROOT / "config" / "cb_nzd_spread.yaml"
@@ -29,15 +30,15 @@ OUT = ROOT / "config" / "cb_nzd_spread.yaml"
 def fetch(since: date) -> tuple:
     prov = load_official()["providers"]
     http = HttpSource()
-    fred_url = prov["fred"]["url"].format(key=FRED_ID, since=since.isoformat())
     bis_url = prov["bis"]["url"].format(areas="NZ", since=since.isoformat())
-    r1, _, _ = http.get_url(fred_url, ua=NON_BROWSER_UA)
-    if r1 is None:
-        raise SystemExit(f"FRED {FRED_ID}: {http.last_status} {http.last_note}")
+    try:
+        m3 = [(d, v) for d, v in fred_api.observations(FRED_ID, since) if v is not None and d >= since]
+    except fred_api.FredApiError as e:
+        raise SystemExit(f"FRED {FRED_ID}: {fred_api.redact(e)}") from None
     r2, _, _ = http.get_url(bis_url)
     if r2 is None:
         raise SystemExit(f"BIS WS_CBPOL NZ: {http.last_status} {http.last_note}")
-    return parse_fred(r1.text, since), parse_bis(r2.text, since).get("NZ", []), fred_url, bis_url
+    return m3, parse_bis(r2.text, since).get("NZ", []), fred_api.provenance(FRED_ID), bis_url
 
 
 def document(res, fred_url: str, bis_url: str, today: date) -> dict:
@@ -46,7 +47,7 @@ def document(res, fred_url: str, bis_url: str, today: date) -> dict:
         "iqr_bp": [round(x, 1) for x in res.iqr_bp], "computed_on": today,
         "rule": "median over months of (3M NZ interbank, monthly) - (mean OCR of the month); only months with no OCR change in the month "
                 "and the 3 months after it (src/cb_compute/nzd_spread.py)",
-        "sources": {"rate_3m": {"series": f"FRED {FRED_ID} (OECD, 3-month interbank rate, NZ, monthly)", "url": fred_url},
+        "sources": {"rate_3m": {"series": f"FRED {FRED_ID} (OECD, 3-month interbank rate, NZ, monthly)", "series_id": FRED_ID},
                     "ocr": {"series": "BIS WS_CBPOL D.NZ (Official Cash Rate, daily)", "url": bis_url}},
         "months": [{"month": m, "diff_bp": round(x, 1)} for m, x in res.months],
     }

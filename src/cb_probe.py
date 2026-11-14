@@ -234,12 +234,15 @@ class CbSource(BaseSource):
 # ---------------------------------------------------------------------------
 
 def _fred_csv(src: CbSource, sid: str) -> Optional[list]:
-    r = src.get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}", ua=FRED_UA, retries=3)
-    if r is None or src._check_botwall(r):
+    """A FRED series through the FRED API client (src/fred_api.py); "." -> missing."""
+    from .fred_api import FredApiError, observations, redact
+    try:
+        obs = observations(sid)
+    except FredApiError as e:
+        src.last_status, src.last_note = "UNREACHABLE", redact(e)
         return None
-    df = pd.read_csv(io.StringIO(r.text))
-    d = pd.to_datetime(df.iloc[:, 0], errors="coerce")
-    v = pd.to_numeric(df.iloc[:, 1].replace(".", np.nan), errors="coerce")
+    d = pd.to_datetime([x for x, _ in obs])
+    v = pd.to_numeric(pd.Series([y for _, y in obs], dtype="float64"), errors="coerce")
     return _pts(d, v) or None
 
 

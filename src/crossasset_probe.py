@@ -31,48 +31,24 @@ def probe_dfii10() -> None:
     print("[a] US 10y REAL YIELD — FRED DFII10")
     print("=" * 78)
 
-    # The existing FRED adapter is CURRENCY-keyed (returns a per-ccy YieldSeries):
-    #   src/rate_sources FredSource.SERIES = {"USD": ("DGS2", "2y")}
-    # DFII10 is NOT a currency 2y — it's a single US real-yield series — so the
-    # cross-asset layer should fetch it via the SAME keyless FRED-CSV mechanism
-    # (same URL + parse), as a small generic FRED-series reader rather than the
-    # currency adapter. Confirm the contract is already present:
+    # FRED is read ONLY through the official API with a key (src/fred_api.py, FRED terms):
+    # DFII10 comes from the generic reader src/rate_sources.FredSeriesSource.
+    print("  FRED reader: src/rate_sources.FredSeriesSource -> src/fred_api (API key FRED_API_KEY)")
+    print("\n  live fetch: FRED API series/observations DFII10")
     try:
-        from src.rate_sources import FredSource, BaseSource, _mk  # noqa: F401
-        fs = FredSource()
-        print("  FRED adapter present: src/rate_sources.FredSource")
-        print(f"    currency-keyed SERIES = {fs.SERIES}  (returns YieldSeries per ccy)")
-        print("    mechanism = keyless GET https://fred.stlouisfed.org/graph/fredgraph.csv?id=<ID>")
-        print("    -> DFII10 reuses this exact mechanism; add as a generic FRED series")
-        print("       reader (NOT a currency adapter, since it isn't a 2y per ccy).")
-    except Exception as e:
-        print(f"  ! could not import FRED adapter: {e}")
-
-    # Live reachability check (read-only GET). FRED is often blocked in the CC
-    # sandbox — that is expected; validate from the residential terminal.
-    url = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFII10"
-    print(f"\n  live fetch: GET {url}")
-    try:
-        import requests
-        ua = {"User-Agent": "Mozilla/5.0 (probe; read-only)"}
-        r = requests.get(url, headers=ua, timeout=20)
-        if r.status_code != 200:
-            print(f"    HTTP {r.status_code} — likely sandbox block; validate on residential terminal.")
+        from src.rate_sources import FredSeriesSource
+        src = FredSeriesSource("DFII10")
+        ok = src.fetch_series()
+        if ok is None:
+            print(f"    failed: {src.last_status} {src.last_note}")
         else:
-            df = pd.read_csv(io.StringIO(r.text))
-            dcol = df.columns[0]
-            vcol = [c for c in df.columns if c != dcol][0]
-            df[dcol] = pd.to_datetime(df[dcol], errors="coerce")
-            df[vcol] = pd.to_numeric(df[vcol].replace(".", None), errors="coerce")
-            ok = df.dropna(subset=[vcol])
-            print(f"    OK rows={len(df)} non-null={len(ok)} "
-                  f"history {ok[dcol].min().date()} → {ok[dcol].max().date()}")
+            print(f"    OK non-null={len(ok)} history {ok['date'].min().date()} → {ok['date'].max().date()}")
             print("    last 3:")
             for _, row in ok.tail(3).iterrows():
-                print(f"      {row[dcol].date()} = {row[vcol]:.2f}%")
+                print(f"      {row['date'].date()} = {row['value']:.2f}%")
     except Exception as e:
-        print(f"    fetch failed ({type(e).__name__}: {e}) — expected if FRED is blocked here.")
-        print("    ACTION: confirm on residential terminal that DFII10 returns a recent value + history.")
+        from src.fred_api import redact
+        print(f"    fetch failed ({type(e).__name__}: {redact(e)})")
 
 
 # ---------------------------------------------------------------------------
