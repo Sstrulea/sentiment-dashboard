@@ -24,7 +24,7 @@ on:
       stage:
         description: "Run only this stage (default all: every stage, then the summaries when the OPENAI_API_KEY secret exists)"
         type: choice
-        options: [all, market, official, decisions, documents, projections, calendar, schedule, summaries, macro, framework]
+        options: [all, market, official, decisions, documents, projections, calendar, schedule, summaries, macro, framework, stance]
         default: all
       event:
         description: "Set by the external trigger. decision = watch for the statement of the decision of `bank` on `date`, then that bank's documents, decisions, the statement's summary; conference = that bank's documents (transcript, video) and summaries"
@@ -126,12 +126,12 @@ jobs:
       # Stance S0a: official inflation / unemployment series (zero requests when no new period is due) and the framework
       # watch (at most weekly, detection only). Only in the daily scheduled run - never in the Worker's dispatches nor on
       # decision days - or when a dispatch asks for the stage. A failure never fails the job.
-      - name: Stance data (macro series, framework watch)
+      - name: Stance data (macro series, framework watch, stance snapshot)
         if: ${{ github.event.schedule == '23 7 * * *' }}
         continue-on-error: true
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py): PCEPI, PCEPILFE, UNRATE
-        run: python -m src.cb_collect --stage macro --stage framework
+        run: python -m src.cb_collect --stage macro --stage framework --stage stance
 
       - name: Collect one stage
         if: ${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}

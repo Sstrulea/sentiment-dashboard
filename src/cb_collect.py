@@ -530,9 +530,9 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "macro", "framework", "summaries")
-DEFAULT_STAGES = STAGES[:-3]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret);
-                                             # `macro` and `framework` (stance S0a) run only in the daily scheduled run (cb-refresh cron 23 7 * * *) or when asked for
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "macro", "framework", "stance", "summaries")
+DEFAULT_STAGES = STAGES[:-4]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret);
+                                             # `macro`, `framework` (stance S0a) and `stance` (S1) run only in the daily scheduled run (cb-refresh cron 23 7 * * *) or when asked for
 
 
 def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
@@ -666,6 +666,15 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("framework stage failed")
             emit(f"framework: FAILED {type(e).__name__}: {e}", f"### framework watch\n\nFAILED `{type(e).__name__}: {e}`")
+    if "stance" in stages:                                           # stance S1: today's snapshot, append-only (data/cb/stance_history/)
+        try:
+            from . import cb_stance_history as SH
+            from .cb_loader import load_stance
+            _, _, _, results = load_stance(a.data_dir, today)
+            emit(*SH.report(SH.append(paths, results, today)))
+        except Exception as e:
+            log.exception("stance stage failed")
+            emit(f"stance: FAILED {type(e).__name__}: {e}", f"### stance\n\nFAILED `{type(e).__name__}: {e}`")
     if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
         try:
             from .cb_summarize import run as sum_run
