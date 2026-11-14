@@ -61,11 +61,18 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 7. **Conversii:** rata implicită dintr-un futures = **100 − preț**; MPT rămâne în **bp**.
 8. **AUD primar = ASX IB** (1M, lanț pe ședință); RBA bank bills = doar cross-check / PROXY. Seriile OIS din RBA F1 sunt
    oprite din 2022-12 și **nu se colectează**.
-9. Plătit: respins. La final: repo privat + poarta `middleware.js`. Tot afișajul rămâne în spatele porții; nimic public
+9. **FRED doar prin API cu cheie; fredgraph interzis (termenii FRED).** Termenii FRED interzic descărcarea automată a CSV-urilor
+   de pe site și includerea conținutului FRED în altă bază de date în afara API-ului; tot repo-ul citește FRED numai prin
+   `src/fred_api.py` (endpoint `fred/series/observations`, cheia `FRED_API_KEY` din `.env` local / secretul din CI; fără cheie →
+   eroare în raportul stage-ului, datele rămân neatinse; niciun fallback). „.” = lipsă, niciodată zero. Cheia nu apare în URL-uri
+   stocate, loguri, rapoarte sau date (redactare). Proveniența = pagina seriei (`fred.stlouisfed.org/series/<ID>`) + „via FRED API”.
+   Fiecare pagină poartă notița cerută de termeni (`templates/_footer.html.j2`). Registrul seriilor și notele de copyright:
+   `config/fred_series.yaml` (`scripts/fred_series_audit.py`).
+10. Plătit: respins. La final: repo privat + poarta `middleware.js`. Tot afișajul rămâne în spatele porții; nimic public
    fără permisiune scrisă a furnizorilor (Atlanta Fed / CME, BoE, ASX, MX, JPX); UI afișează atribuirea din câmpul
    `license` al fiecărei surse.
 
-10. **Ședința viitoare — o singură regulă** (`engine.is_upcoming` / `upcoming_meetings`, folosită de engine, analysis și payload): o ședință e viitoare
+11. **Ședința viitoare — o singură regulă** (`engine.is_upcoming` / `upcoming_meetings`, folosită de engine, analysis și payload): o ședință e viitoare
    dacă `decision > asof`, sau dacă `decision == asof` și **nu există încă un rând în `decisions.parquet`** pentru ea. Motivul: as-of-ul global e cea mai nouă
    dată a oricărei surse (ASX / JPX au ziua T de la ~08:40 UTC, Eurex rămâne la T−1, MX până seara), iar fără regulă ședința din ziua T dispărea înainte de
    anunț. Un rând apare doar după anunț (verificat: FF are `actual` gol până la publicare; seria oficială e citită la data efectivă — la BoE, singura cu
