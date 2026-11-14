@@ -1,0 +1,15 @@
+# Stance S2 - display configuration of the stance (NOT pre-registered: nothing here changes a number of the computation).
+#
+# next_test: the release of each bank's underlying inflation measure in the ForexFactory calendar the site already collects
+# (data/ff_raw/ff_weekly_*.json, read only; it lists the current week). The bank zone shows "Next test: <date>" with
+# "schedule: ForexFactory"; a bank without an entry shows nothing. ff_titles = the FF event title(s), exactly as FF prints them;
+# the first one is displayed. The release carries the underlying measure the stance uses (data/cb/manual/mandates.yaml).
+next_test:
+  USD: {ff_titles: ["Core PCE Price Index m/m"], measure: "PCE price index excluding food and energy (BEA)"}
+  EUR: {ff_titles: ["Core CPI Flash Estimate y/y"], measure: "HICP excluding energy, food, alcohol and tobacco (Eurostat flash)"}
+  GBP: {ff_titles: ["Core CPI y/y", "CPI y/y"], measure: "CPI excluding energy, food, alcohol and tobacco (ONS)"}
+  JPY: {ff_titles: ["National Core CPI y/y"], measure: "CPI all items less fresh food and energy (national CPI release, MIC)"}
+  CAD: {ff_titles: ["Trimmed CPI y/y", "Median CPI y/y"], measure: "CPI-trim and CPI-median (Statistics Canada CPI release)"}
+  AUD: {ff_titles: ["Trimmed Mean CPI m/m", "CPI y/y"], measure: "Monthly CPI, trimmed mean (ABS)"}
+  NZD: {ff_titles: ["CPI q/q"], measure: "CPI ex food and energy (Stats NZ quarterly CPI release)"}
+  CHF: {ff_titles: ["CPI m/m"], measure: "Core inflation 1 (FSO CPI release)"}
