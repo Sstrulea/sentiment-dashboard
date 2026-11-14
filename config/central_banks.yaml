@@ -51,7 +51,7 @@ banks:
       ff_name: "Federal Funds Rate"            # FF row name; matched on (currency, name)
       official: {lower: "fred:DFEDTARL", upper: "fred:DFEDTARU"}    # series ids in config/cb_official.yaml
     overnight_benchmark: {name: SOFR, source: fred, id: SOFR,
-                          url: "https://fred.stlouisfed.org/graph/fredgraph.csv?id=SOFR", series_id: "fred:SOFR"}
+                          url: "https://fred.stlouisfed.org/series/SOFR", series_id: "fred:SOFR"}   # provenance only: data via the FRED API (src/fred_api.py)
     effective_rule: {kind: calendar_days, days: 1, verified: true, source: "fred:DFEDTARU",
                      note: "4/4 changes since 2025-09 land on decision+1 (2025-09-18, 2025-10-30, 2025-12-11, 2026-09-17); BIS WS_CBPOL US changes on the same days; Fed implementation note of 16 Sep 2026: 'effective September 17, 2026'"}
     projections: {name: SEP (dot plot), months: [3, 6, 9, 12], source: calendar_page_asterisk}

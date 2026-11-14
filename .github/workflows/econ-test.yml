@@ -15,12 +15,16 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: FRED probe (decide splitul)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: |
           python -m src.rate_fetch      || echo "FAIL rate_fetch"
           python -m src.realyield_fetch || echo "FAIL realyield_fetch"
           python -m src.liquidity_fetch || echo "FAIL liquidity_fetch"
 
-      - name: FF probe (keyless)
+      - name: FF probe
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: python -m src.ff_refresh
 
       - name: Render probe

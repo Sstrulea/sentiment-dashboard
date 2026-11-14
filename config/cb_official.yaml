@@ -21,9 +21,9 @@ meta:
 providers:
   fred:
     adapter: FredSeries
-    url: "https://fred.stlouisfed.org/graph/fredgraph.csv?id={key}&cosd={since}"
-    ua: non_browser                # a Chrome UA is tarpitted
-    license: "FRED (Federal Reserve Bank of St. Louis); series sourced from the Federal Reserve Board / NY Fed."
+    client: src.fred_api           # FRED API with a key (FRED_API_KEY); no URL here - the FRED CSV download downloads are forbidden by the FRED terms
+    provenance: "https://fred.stlouisfed.org/series/{key} (via FRED API)"
+    license: "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Series sourced from the Federal Reserve Board / NY Fed."
   ecb:
     adapter: EcbSeries
     url: "https://data-api.ecb.europa.eu/service/data/{key}?format=csvdata&startPeriod={since}"

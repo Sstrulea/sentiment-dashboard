@@ -117,12 +117,15 @@ jobs:
 
       - name: Collect
         if: ${{ !inputs.event && (!inputs.stage || inputs.stage == 'all') }}
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: python -m src.cb_collect ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
 
       - name: Collect one stage
         if: ${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}
         env:
           STAGE: ${{ inputs.stage }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: python -m src.cb_collect --stage "$STAGE" ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
 
       # Phase 2b: factual summaries of the collected texts (src/cb_summarize, config/cb_summaries.yaml). Last of the stages, and only when the secret exists.
