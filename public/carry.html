@@ -134,5 +134,15 @@
   <script>window.CARRY_DATA_URL = "/data/carry.json";</script>
   <script src="/score-palette.js"></script>
   <script src="/carry.js"></script>
+<footer class="fred-notice" role="contentinfo">
+  <p>This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.
+    <a href="https://fred.stlouisfed.org/docs/api/terms_of_use.html" target="_blank" rel="noopener noreferrer">FRED® API Terms of Use</a></p>
+</footer>
+<style>
+  .fred-notice { margin: 32px auto 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 1100px;
+                 border-top: 1px solid var(--border, #d0d7de); color: var(--muted, #6b7280); font-size: 12px; line-height: 1.5; text-align: center; }
+  .fred-notice p { margin: 0; overflow-wrap: anywhere; }
+  .fred-notice a { color: inherit; text-decoration: underline; white-space: nowrap; }
+</style>
 </body>
 </html>
