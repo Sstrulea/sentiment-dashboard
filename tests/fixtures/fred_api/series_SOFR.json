@@ -1,0 +1,22 @@
+{
+ "realtime_start": "2026-11-13",
+ "realtime_end": "2026-11-13",
+ "seriess": [
+  {
+   "id": "SOFR",
+   "realtime_start": "2026-11-13",
+   "realtime_end": "2026-11-13",
+   "title": "Secured Overnight Financing Rate",
+   "observation_start": "2018-04-03",
+   "observation_end": "2026-11-12",
+   "frequency": "Daily",
+   "frequency_short": "D",
+   "units": "Percent",
+   "units_short": "%",
+   "seasonal_adjustment": "Not Seasonally Adjusted",
+   "seasonal_adjustment_short": "NSA",
+   "last_updated": "2026-11-13 07:02:33-06",
+   "popularity": 91
+  }
+ ]
+}

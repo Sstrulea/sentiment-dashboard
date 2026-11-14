@@ -181,7 +181,7 @@ def test_the_summaries_step_runs_only_with_the_secret_and_never_fails_the_workfl
     assert holders == ["Check for the summaries key", "Summaries", "Freshness status"]                                # the presence check, the paid step, the read-only status
     assert "ANTHROPIC_API_KEY" not in (ROOT / ".github/workflows/cb-refresh.yml").read_text()                          # the provider in use is OpenAI
     collect = by["Collect"]
-    assert "--stage" not in collect["run"] and "env" not in collect                                                    # a plain run does not include the paid stage
+    assert "--stage" not in collect["run"] and collect.get("env") == {"FRED_API_KEY": "${{ secrets.FRED_API_KEY }}"}   # a plain run does not include the paid stage; only the FRED API key (fix/fred-api)
 
 
 def test_a_dispatch_can_choose_the_stage_the_bank_and_the_type_without_shell_injection(workflow):
@@ -196,7 +196,7 @@ def test_a_dispatch_can_choose_the_stage_the_bank_and_the_type_without_shell_inj
     by = steps_of(workflow)
     assert by["Collect"]["if"] == "${{ !inputs.event && (!inputs.stage || inputs.stage == 'all') }}"                     # a plain run and the schedule: as before (an event of the trigger has its own steps)
     one = by["Collect one stage"]
-    assert one["if"] == "${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}" and one["env"] == {"STAGE": "${{ inputs.stage }}"}
+    assert one["if"] == "${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}" and one["env"] == {"STAGE": "${{ inputs.stage }}", "FRED_API_KEY": "${{ secrets.FRED_API_KEY }}"}
     assert '--stage "$STAGE"' in one["run"]
     s = by["Summaries"]
     assert s["env"]["BANK"] == "${{ inputs.bank }}" and s["env"]["TYPE"] == "${{ inputs.type }}" and s["env"]["DOC"] == "${{ inputs.doc }}"

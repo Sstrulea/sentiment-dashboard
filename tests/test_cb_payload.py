@@ -249,8 +249,9 @@ def test_html_is_a_shell_nothing_hardcoded(site):
     assert 'data-page="bank"' in html and '"ccy": "USD"' in html and '/data/cb/{ccy}.json' in html and 'id="cbRoot"' in html
     assert '<a class="nav-sub-link active" href="/central-banks" aria-current="page">Central Banks</a>' in html and "/cb.js" in html and "/chart.umd.min.js" in html
     assert 'class="nav-group active" href="/carry" data-nav-group="macro"' in html                                   # a bank page marks Macro -> Central Banks
+    shell = html.split('<footer class="fred-notice"')[0]                         # the FRED API terms notice (templates/_footer.html.j2) names the St. Louis Fed by design
     for forbidden in ("3.875", "4.290", "Federal Reserve", "+41.5"):
-        assert forbidden not in html
+        assert forbidden not in shell
     over = (pub / "central-banks.html").read_text()
     assert 'data-page="overview"' in over and "/chart.umd.min.js" in over and "/chartjs-plugin-annotation.min.js" in over      # the Compare chart (stage 3)
     pair = (pub / "central-banks" / "pair" / "eurusd.html").read_text()

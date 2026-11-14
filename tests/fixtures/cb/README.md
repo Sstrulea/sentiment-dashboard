@@ -20,7 +20,7 @@ were dropped (and, for the workbooks, re-saved with openpyxl). Used by `tests/te
 
 | file | source | what was kept |
 |---|---|---|
-| `fred_dfedtaru_cut.csv`, `fred_sofr_cut.csv` | FRED `fredgraph.csv` | 14-19 Sep 2026 (target upper limit); 3-10 Sep 2026 SOFR with the empty Labor Day cell |
+| `fred_dfedtaru_cut.json`, `fred_sofr_cut.json`, `nzd_fred_ir3tib_cut.json` | FRED API `fred/series/observations` (cut from the real responses, 2026-11-14; no key inside) | 14-19 Sep 2026 (target upper limit); 3-10 Sep 2026 SOFR with the "." Labor Day observation; IR3TIB01NZM156N 2022-01..2026-08 |
 | `ecb_dfr_cut.csv`, `ecb_dfr_2024_cut.csv`, `ecb_mro_2024_cut.csv` | ECB FM `DFR` / `MRR_FR` | 14-18 Sep 2026; 10-20 Sep 2024 (the spread MRO - DFR moves from 0.50 to 0.15 on 18 Sep 2024) |
 | `boe_iadb_cut.csv` | BoE IADB `IUDBEDR,IUDSOIA` | 10-17 Sep 2026 |
 | `boj_call_cut.json` | BoJ API `FM01 STRDCLUCON` | last 6 survey dates (weekend nulls) |
