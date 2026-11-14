@@ -4568,6 +4568,282 @@
     "output_tokens": 1906,
     "reasoning_tokens": 1034
    }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     12,
+     13,
+     20,
+     21,
+     26,
+     27,
+     28,
+     30
+    ],
+    "paragraphs_sent": 54,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:9ea035670127",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-14T00:42:44Z",
+   "input_sha256": "1b9b1a9cd979acfbb7c73ddf539142f80e4df4b9be7780d07af437fd44841165",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 5908,
+     "point": 1,
+     "source_text": "40",
+     "start": 5906,
+     "text": "40"
+    },
+    {
+     "end": 5922,
+     "point": 1,
+     "source_text": "50 percent",
+     "start": 5912,
+     "text": "50 percent"
+    },
+    {
+     "end": 15084,
+     "point": 4,
+     "source_text": "3.4 percent",
+     "start": 15073,
+     "text": "3.4 percent"
+    },
+    {
+     "end": 16194,
+     "point": 5,
+     "source_text": "2 percent",
+     "start": 16185,
+     "text": "2 percent"
+    },
+    {
+     "end": 16209,
+     "point": 5,
+     "source_text": "12",
+     "start": 16207,
+     "text": "12"
+    },
+    {
+     "end": 16319,
+     "point": 5,
+     "source_text": "3.6 percent",
+     "start": 16308,
+     "text": "3.6 percent"
+    },
+    {
+     "end": 16804,
+     "point": 5,
+     "source_text": "3.1 percent",
+     "start": 16793,
+     "text": "3.1 percent"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-14",
+   "quotes": [
+    {
+     "end": 10690,
+     "paragraph": 20,
+     "start": 10433,
+     "text": "All told, my judgement is that the evidence so far appears consistent with a contribution to aggregate productivity that is limited, but with the potential to grow quite substantially, broadly in line with historical episodes of technological breakthroughs."
+    },
+    {
+     "end": 11025,
+     "paragraph": 21,
+     "start": 10890,
+     "text": "My baseline view is that adoption of new technology will ultimately lift the economy's productive capacity substantially but gradually."
+    },
+    {
+     "end": 16202,
+     "paragraph": 28,
+     "start": 16053,
+     "text": "Turning to the price-stability side of our dual mandate, inflation remains notably above the Federal Open Market Committee's (FOMC) 2 percent target."
+    },
+    {
+     "end": 17635,
+     "paragraph": 30,
+     "start": 17487,
+     "text": "At the FOMC policy meeting last month, I joined the majority of my colleagues in voting to hold the federal funds rate steady, as shown in figure 7."
+    }
+   ],
+   "source": {
+    "chars": 23779,
+    "chars_sent": 23780,
+    "method": "html-selector",
+    "paragraphs_sent": 54,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5979,
+        "paragraph": 12,
+        "start": 5871,
+        "text": "Surveys of workers have found that 40 to 50 percent of working adults are using the technology in their jobs"
+       },
+       {
+        "end": 6218,
+        "paragraph": 13,
+        "start": 6146,
+        "text": "In addition, the adoption rate appears to vary widely across industries."
+       }
+      ],
+      "paragraphs": [
+       12,
+       13
+      ]
+     },
+     "text": "Governor Jefferson says surveys find that 40 to 50 percent of working adults use generative AI in their jobs, and that adoption varies widely across industries."
+    },
+    {
+     "evidence": {
+      "coverage": 0.938,
+      "fragments": [
+       {
+        "end": 10616,
+        "paragraph": 20,
+        "start": 10464,
+        "text": "the evidence so far appears consistent with a contribution to aggregate productivity that is limited, but with the potential to grow quite substantially"
+       },
+       {
+        "end": 10785,
+        "paragraph": 20,
+        "start": 10702,
+        "text": "the magnitude and timing of forthcoming productivity gains remain highly uncertain."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "Governor Jefferson judges that evidence so far is consistent with a limited contribution to aggregate productivity, with potential to grow substantially, while the magnitude and timing remain highly uncertain."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11025,
+        "paragraph": 21,
+        "start": 10890,
+        "text": "My baseline view is that adoption of new technology will ultimately lift the economy's productive capacity substantially but gradually."
+       },
+       {
+        "end": 11154,
+        "paragraph": 21,
+        "start": 11026,
+        "text": "Expectations of those longer-term gains on the supply side of the economy are already increasing aggregate demand significantly."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Governor Jefferson’s baseline view is that new-technology adoption will ultimately lift productive capacity substantially but gradually, while expectations of longer-term supply-side gains are already increasing aggregate demand significantly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 15111,
+        "paragraph": 26,
+        "start": 15055,
+        "text": "GDP expanded at a 3.4 percent pace in the third quarter."
+       },
+       {
+        "end": 15282,
+        "paragraph": 26,
+        "start": 15197,
+        "text": "I expect the expansion will continue roughly in line with potential output next year."
+       },
+       {
+        "end": 15753,
+        "paragraph": 27,
+        "start": 15673,
+        "text": "I expect the unemployment rate to stay around its current level in the near term"
+       }
+      ],
+      "paragraphs": [
+       26,
+       27
+      ]
+     },
+     "text": "Governor Jefferson says GDP expanded at a 3.4 percent pace in the third quarter, expects expansion roughly in line with potential output next year, and expects unemployment to stay around its current level in the near term."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16202,
+        "paragraph": 28,
+        "start": 16110,
+        "text": "inflation remains notably above the Federal Open Market Committee's (FOMC) 2 percent target."
+       },
+       {
+        "end": 16333,
+        "paragraph": 28,
+        "start": 16203,
+        "text": "The 12-month change in the personal consumption expenditures price index, the blue line in figure 6, was 3.6 percent in September."
+       },
+       {
+        "end": 16818,
+        "paragraph": 28,
+        "start": 16655,
+        "text": "The 12-month change in core PCE inflation, which excludes volatile food and energy prices and is shown by the dashed red dashed line, was 3.1 percent in September."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Governor Jefferson says inflation remains notably above the FOMC’s 2 percent target, with the 12-month changes in the PCE price index and core PCE inflation at 3.6 percent and 3.1 percent in September."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17635,
+        "paragraph": 30,
+        "start": 17526,
+        "text": "I joined the majority of my colleagues in voting to hold the federal funds rate steady, as shown in figure 7."
+       },
+       {
+        "end": 17968,
+        "paragraph": 30,
+        "start": 17824,
+        "text": "Accordingly, I see the trajectory of inflation as providing the more important signal for determining the appropriate stance of monetary policy."
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "Governor Jefferson says he voted with the majority to hold the federal funds rate steady last month and sees the trajectory of inflation as more important for determining the appropriate stance of monetary policy."
+    }
+   ],
+   "title": "Jefferson, New Technology, Old Questions: Productivity Puzzles and the Macroeconomy",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/jefferson20261113a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 6412,
+    "output_tokens": 1665,
+    "reasoning_tokens": 849
+   }
   }
  ],
  "version": 1
