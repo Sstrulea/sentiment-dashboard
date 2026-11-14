@@ -1,0 +1,195 @@
+# Neutral policy-rate estimates (stance phase S0a) - DATA, edited by hand only; validated at load
+# (src/cb_datasets.validate_neutral). Nothing is computed here: real -> nominal (+ target) and the combination rules are
+# in config/cb_stance.yaml (applied in phase S1). USD has no entry: its neutral is the longer-run dots of the Fed SEP
+# (data/cb/projections.parquet).
+#
+# banks.<CCY>: status filled|pending|not_published; flag (= mandates.yaml neutral.flag)
+#   estimates [{label, member (GBP), basis nominal|real, point | low/high, published, quote (<= 30 words),
+#               source {url, page, retrieved}, transcription manual|file}]
+#   pending:  reason + next_step;   not_published: evidence {url, page, retrieved, quote} + policy_quote
+# GBP: every text on bankofengland.co.uk with an explicit number for neutral in the last 24 months (to 2026-11-14) is
+# stored; the 12-month window is applied by S1. Searched: all 160 speeches of the BoE sitemap (Nov 2024 - Nov 2026) and the
+# 16 Monetary Policy Summaries and minutes of the same period.
+
+meta:
+  version: 1
+  updated: 2026-11-14
+
+banks:
+  EUR:
+    status: filled
+    flag: STAFF_ESTIMATE
+    estimates:
+      - label: "real r*, model estimates updated to end-2024 (dark blue and dark yellow intervals of Chart A)"
+        role: primary
+        basis: real
+        low: -0.5
+        high: 0.5
+        published: 2025-02-13
+        quote: "the most recent estimates of real r* span a range between -½% and +½%"
+        source: {url: "https://www.ecb.europa.eu/press/economic-bulletin/focus/2025/html/ecb.ebbox202501_08~3be5a005f9.en.html", page: "Economic Bulletin 1/2025, box 'Natural rate estimates for the euro area', footnote 2", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "nominal r*, the same measures"
+        role: primary_nominal
+        basis: nominal
+        low: 1.75
+        high: 2.25
+        published: 2025-02-13
+        quote: "the estimates of the nominal r* from the most recent interval range between 1¾% and 2¼%"
+        source: {url: "https://www.ecb.europa.eu/press/economic-bulletin/focus/2025/html/ecb.ebbox202501_08~3be5a005f9.en.html", page: "Economic Bulletin 1/2025, box 'Natural rate estimates for the euro area', footnote 4", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "real r* including the three HLW-type estimates"
+        role: alternative
+        basis: real
+        low: -0.5
+        high: 1.0
+        published: 2025-02-13
+        quote: "When the three estimates derived from versions of the HLW model are factored in, the range of real r* is -½% to 1%"
+        source: {url: "https://www.ecb.europa.eu/press/economic-bulletin/focus/2025/html/ecb.ebbox202501_08~3be5a005f9.en.html", page: "Economic Bulletin 1/2025, box 'Natural rate estimates for the euro area', footnote 2", retrieved: 2026-11-14}
+        transcription: manual
+    note: "latest ECB staff estimate with explicit numbers; no 2026 update found on ecb.europa.eu (searched 2026-11-14): older than the 15-month staleness limit"
+
+  GBP:
+    status: filled
+    flag: MEMBERS_VIEW
+    estimates:
+      - label: "Alan Taylor, speech at Leeds University (Inflation dynamics and outlook)"
+        member: Alan Taylor
+        basis: real
+        point: 0.75
+        published: 2025-01-15
+        quote: "Taking from among these 0.75% as a central estimate of r*, and adding the inflation target of 2%"
+        source: {url: "https://www.bankofengland.co.uk/speech/2025/january/alan-taylor-speech-at-leeds-university-inflation-dynamics-and-outlook", page: "web page", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Alan Taylor, panellist at the ECB Forum on Central Banking 2025"
+        member: Alan Taylor
+        basis: nominal
+        low: 2.75
+        high: 3.0
+        published: 2025-07-02
+        quote: "I estimate the UK neutral real rate to be about 0.75 to 1 percent, putting the neutral nominal rate at around 2.75 to 3 percent"
+        source: {url: "https://www.bankofengland.co.uk/speech/2025/july/alan-taylor-panellist-at-ecb-forum-on-central-banking-2025", page: "web page", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Alan Taylor, Monetary Policy Summary December 2025 (member paragraph)"
+        member: Alan Taylor
+        basis: nominal
+        point: 3.0
+        published: 2025-12-18
+        quote: "I see neutral at about 3%."
+        source: {url: "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2025/december-2025", page: "web page, Alan Taylor's paragraph", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Dave Ramsden, Monetary Policy Summary February 2026 (member paragraph)"
+        member: Dave Ramsden
+        basis: nominal
+        point: 3.0
+        published: 2026-02-05
+        quote: "with my starting point for an estimate of the neutral rate of around 3%, I judge that policy should be less restrictive"
+        source: {url: "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/february-2026", page: "web page, Dave Ramsden's paragraph", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Alan Taylor, Monetary Policy Summary April 2026 (member paragraph)"
+        member: Alan Taylor
+        basis: nominal
+        point: 3.0
+        published: 2026-04-30
+        quote: "Given neutral at 3%, it makes sense to hold"
+        source: {url: "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/april-2026", page: "web page, Alan Taylor's paragraph", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Alan Taylor, speech 'Central reservations' (Barclays and CEPR)"
+        member: Alan Taylor
+        basis: nominal
+        point: 3.0
+        published: 2026-06-23
+        quote: "UK nominal neutral rate of 3% (see Annex 1 of the November 2025 Monetary Policy Report ). This level equates with my own central estimate of neutral"
+        source: {url: "https://www.bankofengland.co.uk/speech/2026/june/alan-taylor-speech-at-the-barclays-and-centre-for-economic-policy-research", page: "web page", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Alan Taylor, Monetary Policy Summary September 2026 (member paragraph)"
+        member: Alan Taylor
+        basis: nominal
+        point: 3.0
+        published: 2026-09-17
+        quote: "Bank Rate remains materially above my estimate of neutral at 3%"
+        source: {url: "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026", page: "web page, Alan Taylor's paragraph", retrieved: 2026-11-14}
+        transcription: manual
+      - label: "Alan Taylor, speech 'Searching for signposts'"
+        member: Alan Taylor
+        basis: nominal
+        low: 2.75
+        high: 3.0
+        published: 2026-09-29
+        quote: "remain substantially restrictive relative to my estimate of nominal R*, of 2.75% to 3%"
+        source: {url: "https://www.bankofengland.co.uk/speech/2026/september/searching-for-signposts-speech-by-alan-taylor", page: "web page", retrieved: 2026-11-14}
+        transcription: manual
+    excluded:
+      - label: "Catherine L Mann, speech at Leeds Beckett University (11 February 2025), footnote"
+        url: "https://www.bankofengland.co.uk/speech/2025/february/catherine-l-mann-speech-at-leeds-beckett-university-economic-prospects"
+        quote: "At the time, long-term R* was estimated to have to fallen to around 0-1% with a most likely estimate of ¼ percent in real terms."
+        reason: "describes an estimate 'at the time' (a past estimate in a footnote), not the member's current view"
+      - label: "Bank staff (COMPASS) central estimate of 3% nominal, cited in Alan Taylor's June 2026 speech"
+        url: "https://www.bankofengland.co.uk/speech/2026/june/alan-taylor-speech-at-the-barclays-and-centre-for-economic-policy-research"
+        quote: "now embeds the staff's assessment of a central estimate of the UK nominal neutral rate of 3%"
+        reason: "a staff estimate, not a member's view (flag MEMBERS_VIEW); the MPR Annex it cites (November 2025) was not transcribed"
+    note: "only two members gave a number in 24 months (Taylor 7 times, Ramsden once); within the last 12 months: Taylor x5, Ramsden x1"
+
+  JPY:
+    status: filled
+    flag: STAFF_ESTIMATE
+    estimates:
+      - label: "BoJ Monetary Affairs Department, six models, as of 2025/Q3 (Review 2026-E-4)"
+        basis: real
+        low: -0.9
+        high: 0.5
+        published: 2026-03-27
+        quote: "the estimates of the natural rate of interest across the six models were in the range of around -0.9 percent to +0.5 percent"
+        source: {url: "https://www.boj.or.jp/en/research/wps_rev/rev_2026/data/rev26e04a.pdf", page: "p. 3", retrieved: 2026-11-14}
+        transcription: manual
+
+  CAD:
+    status: filled
+    flag: BANK_ESTIMATE
+    estimates:
+      - label: "Bank of Canada annual assessment, MPR April 2026 appendix"
+        basis: nominal
+        low: 2.25
+        high: 3.25
+        published: 2026-04-29
+        quote: "The Canadian nominal neutral rate is estimated to be within the range of 2.25% to 3.25%, unchanged from that in the April 2025 Report."
+        source: {url: "https://www.bankofcanada.ca/publications/mpr/mpr-2026-04-29/appendix/", page: "web page, 'Neutral rate'", retrieved: 2026-11-14}
+        transcription: manual
+    note: "the October 2026 MPR assumes the midpoint of the same range (PDF p. 22, printed p. 21: 'assumed to be at the midpoint of its estimated range of 2.25% to 3.25%')"
+
+  AUD:
+    status: filled
+    flag: STAFF_ESTIMATE
+    estimates:
+      - {label: "TVP-VAR Model 1, 2026 Q2", basis: nominal, point: 4.193964989513948, published: 2026-11-03, source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/xlsx/smp-graph-data.xlsx", page: "sheet 'Financial Conditions', Graph 1.1 'Nominal Neutral Rate', column TVP-VAR Model 1, row 2026-06", retrieved: 2026-11-14}, transcription: file}
+      - {label: "TVP-VAR Model 2, 2026 Q2", basis: nominal, point: 3.659528095190119, published: 2026-11-03, source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/xlsx/smp-graph-data.xlsx", page: "sheet 'Financial Conditions', Graph 1.1, column TVP-VAR Model 2, row 2026-06", retrieved: 2026-11-14}, transcription: file}
+      - {label: "TVP-VAR Model 3, 2026 Q2", basis: nominal, point: 4.416598826587419, published: 2026-11-03, source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/xlsx/smp-graph-data.xlsx", page: "sheet 'Financial Conditions', Graph 1.1, column TVP-VAR Model 3, row 2026-06", retrieved: 2026-11-14}, transcription: file}
+      - {label: "Semi-structural Model 1, 2026 Q2", basis: nominal, point: 3.32158218543885, published: 2026-11-03, source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/xlsx/smp-graph-data.xlsx", page: "sheet 'Financial Conditions', Graph 1.1, column Semi-structural Model 1, row 2026-06", retrieved: 2026-11-14}, transcription: file}
+      - {label: "Semi-structural Model 2, 2026 Q2", basis: nominal, point: 3.169446731565178, published: 2026-11-03, source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/xlsx/smp-graph-data.xlsx", page: "sheet 'Financial Conditions', Graph 1.1, column Semi-structural Model 2, row 2026-06", retrieved: 2026-11-14}, transcription: file}
+      - {label: "Semi-structural Model 3, 2026 Q2", basis: nominal, point: 3.02024403284537, published: 2026-11-03, source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/xlsx/smp-graph-data.xlsx", page: "sheet 'Financial Conditions', Graph 1.1, column Semi-structural Model 3, row 2026-06", retrieved: 2026-11-14}, transcription: file}
+    quote: "Estimates of the neutral rate in Australia have increased over recent years to be above their pre-pandemic levels, partly reversing a long-run decline"
+    quote_source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/pdf/statement-on-monetary-policy-2026-11.pdf", page: "Box B, p. 29 (PDF p. 32)", retrieved: 2026-11-14}
+    note: "the SMP text gives no number for neutral (Graph 1.4's 'range of central estimates' is 'Data restricted' in the graph-data file); the six model series of Graph 1.1 are the official numbers, read from the RBA file (not typed)"
+
+  NZD:
+    status: pending
+    flag: BANK_ESTIMATE
+    estimates: []
+    reason: "the September 2026 MPS shows the long-run nominal neutral OCR indicator suite only as a chart (Figure 6.4, p. 55 / PDF p. 58: 'range between the maximum and minimum values from our suite'); no number in the text or tables (re-read 2026-11-14); no 'policy horizon' estimate is printed"
+    next_step: "George: from the September 2026 MPS page on rbnz.govt.nz (bot-walled for scripts) download the chart-data XLSX of the MPS and send the Figure 6.4 sheet (or the latest numbers of the nominal neutral indicator suite); then fill the min/max with page and retrieval date"
+
+  CHF:
+    status: not_published
+    flag: NOT_PUBLISHED
+    estimates: []
+    evidence:
+      url: "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/strategy"
+      page: "web page, 'Monetary policy strategy' (definition of price stability, conditional inflation forecast, SNB policy rate)"
+      retrieved: 2026-11-14
+      quote: "It has been in place since 2000, and consists of three elements."
+      note: "the strategy's three elements contain no neutral rate; no SNB speech, news conference or assessment of 2025-2026 read for S0a gives a number (searched 2026-11-14)"
+    policy_quote:
+      quote: "What effect is our monetary policy having? It is currently expansionary."
+      url: "https://www.snb.ch/public/asset/en/www-snb-ch/publications/communication/speeches/2026/ref_20260424_msl/publications0_en/ref_20260424_msl.en.pdf"
+      page: "p. 4 (Martin Schlegel, 'Comments on Swiss monetary policy', 118th General Meeting of Shareholders, 24 April 2026)"
+      retrieved: 2026-11-14

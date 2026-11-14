@@ -1,0 +1,310 @@
+# Mandates of the 8 central banks (stance phase S0a) - DATA with sources, not config. Edited by hand only.
+# Nothing writes this file automatically: the framework watch (config/cb_framework.yaml) only DETECTS a change; the new
+# version is added here after verification, with its source. Validated at load (src/cb_datasets.validate_mandates).
+#
+# banks.<CCY>.versions[] - versioned; exactly one version is current at a date; future versions already published are
+# allowed (CAD 2027); historical versions for replay are phase S0b.
+#   effective_from / effective_to (null = open)   change_reason bank_framework | bank_measures | dashboard_choice
+#   target     {kind point|band, value | low/high, midpoint (only when the bank declares it: {value, quote}), measure}
+#   mandate    {type price_stability|dual|hierarchical, quote}
+#   horizon    {text, forward_looking, quote}
+#   headline   series_id (config/cb_official.yaml macro) of the measure the target is defined on
+#   underlying {primary (series id, or a list combined by `combine`), secondary[], rule_applied (1|2|3 of
+#              config/cb_stance.yaml underlying_rule), evidence_url}
+#   slack      {type unemployment_gap|output_gap|none, source}
+#   neutral    {source fed_sep|manual, flag BANK_ESTIMATE|STAFF_ESTIMATE|SEP_LONGER_RUN|MEMBERS_VIEW|NOT_PUBLISHED}
+#   forecasts  {source fed_sep|manual, conditioning own_path|market|constant_rate|unpublished}
+#   sources    [{title, url, page, retrieved}]     last_verified {date, checked [url]}
+# Every quote was re-read in the source on the retrieval date (transcription: manual).
+
+meta:
+  version: 1
+  updated: 2026-11-14
+  transcription: manual
+
+banks:
+  USD:
+    versions:
+      - effective_from: 2025-08-22
+        effective_to: null
+        change_reason: bank_framework
+        target: {kind: point, value: 2.0, measure: "PCE price index, annual change"}
+        mandate:
+          type: dual
+          quote: "statutory mandate from Congress of promoting maximum employment, stable prices, and moderate long-term interest rates"
+        horizon:
+          text: "over the longer run"
+          forward_looking: true
+          quote: "inflation at the rate of 2 percent, as measured by the annual change in the price index for personal consumption expenditures, is most consistent over the longer run"
+        headline: fred:PCEPI
+        underlying:
+          primary: fred:PCEPILFE
+          secondary: []
+          rule_applied: 2
+          evidence_url: "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm"
+          note: "the SEP projects core PCE inflation (rule 2); the Fed designates no official core measure"
+        slack: {type: unemployment_gap, source: "fred:UNRATE minus the median longer-run unemployment rate of the latest SEP (data/cb/projections.parquet)"}
+        neutral: {source: fed_sep, flag: SEP_LONGER_RUN}
+        forecasts: {source: fed_sep, conditioning: own_path}
+        sources:
+          - {title: "Statement on Longer-Run Goals and Monetary Policy Strategy (adopted effective January 24, 2012; as reaffirmed effective January 27, 2026)", url: "https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals.pdf", page: "p. 1-2", retrieved: 2026-11-14}
+          - {title: "Review of Monetary Policy Strategy, Tools, and Communications (On August 22, 2025, the FOMC released a revised Statement)", url: "https://www.federalreserve.gov/monetarypolicy/review-of-monetary-policy-strategy-tools-and-communications.htm", page: "web page, 2025 Review: Overview", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals.pdf", "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm"]
+
+  EUR:
+    versions:
+      - effective_from: 2025-06-30
+        effective_to: null
+        change_reason: bank_framework
+        target: {kind: point, value: 2.0, measure: "HICP, annual change"}
+        mandate:
+          type: hierarchical
+          quote: "The primary objective of the ECB is to maintain price stability in the euro area. Without prejudice to the price stability objective"
+        horizon:
+          text: "over the medium term"
+          forward_looking: true
+          quote: "price stability is best maintained by aiming for two per cent inflation over the medium term"
+        headline: ecb:HICP_000000
+        underlying:
+          primary: ecb:HICP_XEF000
+          secondary: []
+          rule_applied: 2
+          evidence_url: "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html"
+          note: "the staff projections project HICP excluding energy and food (Table 1, Table 3) = XEF000 (energy, food, alcohol and tobacco)"
+        slack: {type: none, source: "the ECB publishes no output-gap estimate in its projections"}
+        neutral: {source: manual, flag: STAFF_ESTIMATE}
+        forecasts: {source: manual, conditioning: market}
+        sources:
+          - {title: "The ECB's monetary policy strategy statement (2025)", url: "https://www.ecb.europa.eu/mopo/strategy/strategy-review/ecb.strategyreview202506_strategy_statement.en.html", page: "web page, paragraphs 1 and 4", retrieved: 2026-11-14}
+          - {title: "Our 2025 strategy assessment (concluded 30 June 2025)", url: "https://www.ecb.europa.eu/mopo/strategy/strategy-review/strategy-review-assessment-2025/html/index.en.html", page: "web page", retrieved: 2026-11-14}
+          - {title: "Monetary policy strategy (landing)", url: "https://www.ecb.europa.eu/mopo/strategy/html/index.en.html", page: "web page", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.ecb.europa.eu/mopo/strategy/strategy-review/ecb.strategyreview202506_strategy_statement.en.html", "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html"]
+
+  GBP:
+    versions:
+      - effective_from: 2026-10-28
+        effective_to: null
+        change_reason: bank_framework
+        target: {kind: point, value: 2.0, measure: "CPI, 12-month increase"}
+        mandate:
+          type: hierarchical
+          quote: "This reflects the primacy of price stability and the forward-looking inflation target"
+        horizon:
+          text: "medium term"
+          forward_looking: true
+          quote: "The inflation target is forward-looking to ensure inflation expectations are firmly anchored in the medium term."
+        headline: ons:D7G7
+        underlying:
+          primary: ons:DKO8
+          secondary: [ons:D7NN]
+          rule_applied: 3
+          evidence_url: "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/dko8/mm23"
+          note: "the MPR projects CPI only (Table 3.B); the Bank designates no core measure: ONS CPI excluding energy, food, alcohol and tobacco (rule 3); services CPI secondary"
+        slack: {type: output_gap, source: "MPR Table 3.B 'Excess supply/excess demand' (per cent of potential GDP) - explicit numbers"}
+        neutral: {source: manual, flag: MEMBERS_VIEW}
+        forecasts: {source: manual, conditioning: market}
+        sources:
+          - {title: "Remit for the Monetary Policy Committee - October 2026 (letter of 28 October 2026)", url: "https://www.bankofengland.co.uk/-/media/boe/files/letter/2026/mpc-letter-remit-2026.pdf", page: "p. 1-2", retrieved: 2026-11-14}
+          - {title: "Remit (same letter, GOV.UK)", url: "https://www.gov.uk/government/publications/monetary-policy-remit-budget-2026/letter-from-chancellor-of-the-exchequer-to-govenor-of-the-bank-of-england", page: "web page", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.bankofengland.co.uk/letter/2026/mpc-remit-2026", "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-report/2026/november/monetary-policy-report-november-2026.pdf"]
+
+  JPY:
+    versions:
+      - effective_from: 2013-01-22
+        effective_to: null
+        change_reason: bank_framework
+        target: {kind: point, value: 2.0, measure: "CPI all items, year-on-year"}
+        mandate:
+          type: price_stability
+          quote: "aimed at achieving price stability, thereby contributing to the sound development of the national economy"
+        horizon:
+          text: "at the earliest possible time"
+          forward_looking: false
+          quote: "has made a commitment to achieving this target at the earliest possible time"
+          note: "the source does not describe the target as forward-looking"
+        headline: statjp:2025:0001
+        underlying:
+          primary: statjp:2025:0178
+          secondary: [statjp:2025:0161]
+          rule_applied: 2
+          evidence_url: "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf"
+          note: "the Outlook Report projects CPI (all items less fresh food) and, for reference, CPI (all items less fresh food and energy) - rule 2 = the one that excludes food and energy"
+        slack: {type: output_gap, source: "BoJ Research and Statistics Department output-gap estimate (gap.xlsx)"}
+        neutral: {source: manual, flag: STAFF_ESTIMATE}
+        forecasts: {source: manual, conditioning: unpublished}
+        sources:
+          - {title: "Outline of Monetary Policy - Price Stability and the 'Price Stability Target' of 2 Percent", url: "https://www.boj.or.jp/en/mopo/outline/index.htm", page: "web page", retrieved: 2026-11-14}
+          - {title: "Outlook for Economic Activity and Prices, October 2026 (The Bank's View), Appendix", url: "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf", page: "p. 10", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.boj.or.jp/en/mopo/outline/index.htm", "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf"]
+
+  CAD:
+    versions:
+      - effective_from: 2022-01-01
+        effective_to: 2026-12-31
+        change_reason: bank_framework
+        target: {kind: band, low: 1.0, high: 3.0, midpoint: {value: 2.0, quote: "The inflation target will continue to be the 2 percent mid-point of the 1 to 3 percent inflation-control range."}, measure: "total CPI, 12-month rate of change"}
+        mandate:
+          type: hierarchical
+          quote: "continue to focus on price stability. The Government and the Bank also agree that monetary policy should continue to support maximum sustainable employment"
+        horizon:
+          text: "medium term"
+          forward_looking: true
+          quote: "only to an extent that is consistent with keeping medium-term inflation expectations well anchored at 2 percent"
+        headline: boc:STATIC_TOTALCPICHANGE
+        underlying:
+          primary: [boc:CPI_TRIM, boc:CPI_MEDIAN]
+          combine: mean
+          secondary: []
+          rule_applied: 1
+          evidence_url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/"
+          note: "the Bank's 'Preferred measures of core inflation': CPI-trim and CPI-median (rule 1); the mean of the two is computed in code"
+        slack: {type: output_gap, source: "MPR: the Bank's estimated range of the output gap"}
+        neutral: {source: manual, flag: BANK_ESTIMATE}
+        forecasts: {source: manual, conditioning: unpublished}
+        sources:
+          - {title: "Joint Statement of the Government of Canada and the Bank of Canada on the Renewal of the Monetary Policy Framework (December 13, 2021)", url: "https://www.bankofcanada.ca/2021/12/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework/", page: "web page", retrieved: 2026-11-14}
+          - {title: "Consumer price index - Preferred measures of core inflation", url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/", page: "web page", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.bankofcanada.ca/2021/12/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework/", "https://www.bankofcanada.ca/rates/price-indexes/cpi/"]
+      - effective_from: 2027-01-01
+        effective_to: 2031-12-31
+        change_reason: bank_framework
+        target: {kind: band, low: 1.0, high: 3.0, midpoint: {value: 2.0, quote: "The inflation target will continue to be 2%, the midpoint of the 1% to 3% inflation-control range"}, measure: "consumer price index, 12-month rate of change"}
+        mandate:
+          type: hierarchical
+          quote: "Monetary policy will maintain a primary focus on keeping inflation low and well anchored, while allowing for flexibility in its implementation to support economic growth"
+        horizon:
+          text: "over time"
+          forward_looking: false
+          quote: "maintaining a clear focus on returning inflation to target over time"
+          note: "the 2026 agreement names no horizon and does not call the target forward-looking"
+        headline: boc:STATIC_TOTALCPICHANGE
+        underlying:
+          primary: [boc:CPI_TRIM, boc:CPI_MEDIAN]
+          combine: mean
+          secondary: []
+          rule_applied: 1
+          evidence_url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/"
+          note: "the 2026 agreement says nothing about core measures; the Bank's CPI page still lists CPI-trim and CPI-median as the preferred measures (re-verify when the 2027 framework takes effect)"
+        slack: {type: output_gap, source: "MPR: the Bank's estimated range of the output gap"}
+        neutral: {source: manual, flag: BANK_ESTIMATE}
+        forecasts: {source: manual, conditioning: unpublished}
+        sources:
+          - {title: "Joint Statement of the Government of Canada and the Bank of Canada on the Renewal of the Monetary Policy Framework (November 5, 2026)", url: "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/", page: "web page", retrieved: 2026-11-14}
+          - {title: "Consumer price index - Preferred measures of core inflation", url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/", page: "web page", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"]
+
+  AUD:
+    versions:
+      - effective_from: 2025-07-10
+        effective_to: null
+        change_reason: bank_framework
+        target:
+          kind: band
+          low: 2.0
+          high: 3.0
+          midpoint: {value: 2.5, quote: "The Monetary Policy Board sets monetary policy such that inflation is expected to return to the midpoint of the target."}
+          measure: "consumer price inflation"
+        mandate:
+          type: dual
+          quote: "conducting monetary policy in a way that will best contribute to both price stability and full employment"
+        horizon:
+          text: "the appropriate timeframe depends on economic circumstances"
+          forward_looking: true
+          quote: "sets monetary policy such that inflation is expected to return to the midpoint of the target. The appropriate timeframe for this depends on economic circumstances"
+        headline: abs:CPI.10001
+        underlying:
+          primary: abs:CPI.999902
+          secondary: []
+          rule_applied: 1
+          evidence_url: "https://www.rba.gov.au/publications/smp/2026/nov/outlook.html"
+          note: "trimmed mean, monthly (ABS complete monthly CPI, from 2025-04); the RBA G1 quarterly trimmed mean is the crosscheck (rba:GCPIOCPMTMYP)"
+        slack: {type: unemployment_gap, source: "RBA H5 unemployment rate (rba:GLFSURSA) minus the SMP's numeric NAIRU assessment (forecasts.yaml)"}
+        neutral: {source: manual, flag: STAFF_ESTIMATE}
+        forecasts: {source: manual, conditioning: market}
+        sources:
+          - {title: "Statement on the Conduct of Monetary Policy - 10 July 2025", url: "https://www.rba.gov.au/monetary-policy/framework/stmt-conduct-mp-9-2025-07-10.html", page: "web page, 'Objectives of Monetary Policy'", retrieved: 2026-11-14}
+          - {title: "Statement on Monetary Policy, November 2026, Table 3.1", url: "https://www.rba.gov.au/publications/smp/2026/nov/outlook.html", page: "section 3.5", retrieved: 2026-11-14}
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.rba.gov.au/monetary-policy/framework/stmt-conduct-mp-9-2025-07-10.html", "https://www.rba.gov.au/publications/smp/2026/nov/outlook.html"]
+
+  NZD:
+    versions:
+      - effective_from: 2023-12-20
+        effective_to: null
+        change_reason: bank_framework
+        target:
+          kind: band
+          low: 1.0
+          high: 3.0
+          midpoint: {value: 2.0, quote: "returns sustainably to the 2 percent target mid-point over the medium term"}
+          measure: "CPI, annual"
+        mandate:
+          type: price_stability
+          quote: "The new Remit has been issued to align with the amendment to the Act to remove the economic objective to support maximum sustainable employment."
+        horizon:
+          text: "medium term"
+          forward_looking: true
+          quote: "The inflation target range is for future inflation over the medium term, not current inflation."
+        headline: statsnz:CPIQ.SE9A
+        underlying:
+          primary: statsnz:CPIQ.SE9NS1450
+          secondary: []
+          rule_applied: 3
+          evidence_url: "https://www.stats.govt.nz/information-releases/consumers-price-index-september-2026-quarter/"
+          note: "the RBNZ designates no single core measure (MPS Table 6.2 lists several): Stats NZ CPI excluding food, household energy and vehicle fuels (rule 3)"
+        slack: {type: output_gap, source: "MPS: output gap (% of potential GDP)"}
+        neutral: {source: manual, flag: BANK_ESTIMATE}
+        forecasts: {source: manual, conditioning: own_path}
+        sources:
+          - {title: "NZ Gazette 2023-go5845: Remit Issued for the Monetary Policy Committee of the Reserve Bank of New Zealand (issued 12 Dec 2023, in effect 20 Dec 2023)", url: "https://gazette.govt.nz/notice/id/2023-go5845", page: "notice text", retrieved: 2026-11-14}
+          - {title: "Monetary Policy Statement, September 2026 (PDF downloaded by hand; rbnz.govt.nz is bot-walled)", url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf", page: "summary PDF p. 2; Box B p. 22 (PDF p. 25)", retrieved: 2026-11-14}
+        transcription_note: "the Remit text itself is on rbnz.govt.nz (bot-walled): the band and the 2% mid-point come from the MPS of September 2026 quoting it; re-check the Remit by hand"
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://gazette.govt.nz/notice/id/2023-go5845", "~/Downloads/mps_report_sep2026.pdf"]
+
+  CHF:
+    versions:
+      - effective_from: 2000-01-01
+        effective_to: null
+        change_reason: bank_framework
+        target: {kind: band, low: 0.0, high: 2.0, measure: "Swiss CPI, annual change"}
+        target_quote: "the range consistent with price stability, which we equate with an inflation rate of between 0% and 2%"   # introductory remarks, 24 Sep 2026 (sources)
+        mandate:
+          type: hierarchical
+          quote: "resolving in the best general interests any conflicts arising between the objective of price stability and business cycle considerations, giving priority to price stability"
+        horizon:
+          text: "medium and long term"
+          forward_looking: true
+          quote: "The objective of the SNB's monetary policy is to ensure price stability in the medium and long term."
+        headline: snb:plkoprinfla:TLK
+        underlying:
+          primary: snb:plkoprinfla:K1
+          secondary: []
+          rule_applied: 3
+          evidence_url: "https://data.snb.ch/en/topics/uvo/cube/plkoprinfla"
+          note: "FSO core inflation 1 (rule 3). The same SNB cube also carries the SNB's own trimmed mean (KGM): reported as a divergence, not used"
+        slack: {type: none, source: "the SNB publishes no output-gap estimate"}
+        neutral: {source: manual, flag: NOT_PUBLISHED}
+        forecasts: {source: manual, conditioning: constant_rate}
+        sources:
+          - {title: "SNB - Monetary policy strategy (in place since 2000)", url: "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/strategy", page: "web page, 'Definition of price stability'", retrieved: 2026-11-14}
+          - {title: "Monetary policy assessment of 24 September 2026", url: "https://www.snb.ch/public/asset/en/www-snb-ch/publications/communication/press-releases-restricted/pre_20260924/publications0_en/pre_20260924.en.pdf", page: "p. 1", retrieved: 2026-11-14}
+          - {title: "Introductory remarks, news conference, 24 September 2026 (Martin Schlegel)", url: "https://www.snb.ch/en/publications/communication/speeches-restricted/ref_20260924_mslanmargpe", page: "web page, paragraph on the conditional inflation forecast", retrieved: 2026-11-14}
+        transcription_note: "effective_from 2000-01-01 = 'It has been in place since 2000' (the strategy page gives the year only)"
+        last_verified:
+          date: 2026-11-14
+          checked: ["https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/strategy", "https://www.snb.ch/public/asset/en/www-snb-ch/publications/communication/press-releases-restricted/pre_20260924/publications0_en/pre_20260924.en.pdf"]
