@@ -73,14 +73,23 @@ def reference_quarter(release_dt) -> str:
 
 # -------------------------------------------------------------- percent -----
 
-def pct_change(cur, base) -> Optional[Decimal]:
-    """(cur/base - 1) * 100, one decimal, Decimal ROUND_HALF_UP (never round())."""
+def pct_change(cur, base, places: int = 1) -> Optional[Decimal]:
+    """(cur/base - 1) * 100, `places` decimals (default one), Decimal ROUND_HALF_UP (never round())."""
     if cur is None or base is None:
         return None
     c, b = Decimal(str(cur)), Decimal(str(base))
     if b == 0:
         return None
-    return ((c / b - 1) * 100).quantize(D1, rounding=ROUND_HALF_UP)
+    return ((c / b - 1) * 100).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+
+
+def period_shift(p: str, k: int) -> str:
+    """A monthly ('2026-09') or quarterly ('2026Q3') period shifted by k periods."""
+    if "Q" in p:
+        return quarter_shift(p, k)
+    y, m = int(p[:4]), int(p[5:7])
+    i = y * 12 + (m - 1) + k
+    return f"{i // 12}-{i % 12 + 1:02d}"
 
 
 def transform(index: dict[str, object], q: str, kind: str) -> Optional[Decimal]:
