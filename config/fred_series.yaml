@@ -278,6 +278,26 @@ series:
     status: active
     scope: general
     copyright: null
+  PCEPI:
+    title: 'Personal Consumption Expenditures: Chain-type Price Index'
+    frequency: M
+    units: Index 2017=100
+    provenance: https://fred.stlouisfed.org/series/PCEPI (via FRED API)
+    used_by:
+    - 'src/cb_macro stage macro (stance S0a: USD headline PCE, BEA)'
+    status: active
+    scope: general
+    copyright: null
+  PCEPILFE:
+    title: Personal Consumption Expenditures Excluding Food and Energy (Chain-Type Price Index)
+    frequency: M
+    units: Index 2017=100
+    provenance: https://fred.stlouisfed.org/series/PCEPILFE (via FRED API)
+    used_by:
+    - 'src/cb_macro stage macro (stance S0a: USD core PCE, BEA)'
+    status: active
+    scope: general
+    copyright: null
   RRPONTSYD:
     title: 'Overnight Reverse Repurchase Agreements: Treasury Securities Sold by the Federal Reserve in the Temporary Open Market Operations'
     frequency: D
@@ -311,6 +331,16 @@ series:
     copyright:
       notice: Copyright © 2016, S&P Dow Jones Indices LLC.
       owner: S&P Dow Jones Indices LLC
+  UNRATE:
+    title: Unemployment Rate
+    frequency: M
+    units: '%'
+    provenance: https://fred.stlouisfed.org/series/UNRATE (via FRED API)
+    used_by:
+    - 'src/cb_macro stage macro (stance S0a: USD unemployment rate, BLS)'
+    status: active
+    scope: general
+    copyright: null
   WALCL:
     title: 'Assets: Total Assets: Total Assets (Less Eliminations from Consolidation): Wednesday Level'
     frequency: W

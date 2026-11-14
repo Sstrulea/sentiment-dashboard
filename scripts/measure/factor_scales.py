@@ -407,7 +407,7 @@ def config_sigmas(inp) -> dict:
 
 
 def _fred(series: str, cache_dir: Path) -> pd.Series:
-    """A FRED series through the FRED API client (src/fred_api.py; the FRED CSV download downloads are forbidden by the FRED
+    """A FRED series through the FRED API client (src/fred_api.py; downloads of the FRED website CSV are forbidden by the FRED
     terms), cached as date,value CSV; "." stays missing."""
     path = cache_dir / f"fredapi_{series}.csv"
     if not path.exists():

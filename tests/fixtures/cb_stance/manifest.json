@@ -1,0 +1,116 @@
+{
+ "macro/ecb_hicp_xef000.csv": {
+  "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.XEF000.4D0.ANR?format=csvdata&startPeriod=2025-06",
+  "retrieved": "2026-11-14",
+  "trim": "none (startPeriod=2025-06)",
+  "sha256_of_stored": "fa924a5dc65075d31fcd640e5513207e334cf4b9b4468fc9614898b833ddcdd7"
+ },
+ "macro/ons_dko8.json": {
+  "url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/dko8/mm23/data",
+  "retrieved": "2026-11-14",
+  "trim": "description + the last 24 'months' entries",
+  "sha256_of_stored": "194edf19b86a0820a7c07a0ca903306026275fc5a48105ef17892efadfbe7484"
+ },
+ "macro/abs_cpi_999902.csv": {
+  "url": "https://data.api.abs.gov.au/rest/data/ABS,CPI,2.0.0/3.999902.20.50.M?startPeriod=2025-04&format=csv",
+  "retrieved": "2026-11-14",
+  "trim": "none",
+  "sha256_of_stored": "a3f8af91d03e76b8e9e009ce517b4483417e7c49882d6c7208ecccfbd36d073c"
+ },
+ "macro/statjp_zmi2025aa.csv": {
+  "url": "https://www.stat.go.jp/data/cpi/2025/csv/zmi2025aa.csv",
+  "retrieved": "2026-11-14",
+  "trim": "columns Group/Item, 0001, 0161, 0178 only (all rows), re-encoded cp932",
+  "sha256_of_stored": "272578b9cf752a09af91fcaafbd81596cca8e1be0e5ae1e1f6545916b58cc017"
+ },
+ "macro/rba_g1.csv": {
+  "url": "https://www.rba.gov.au/statistics/tables/csv/g1-data.csv",
+  "retrieved": "2026-11-14",
+  "trim": "header block + the last 6 rows with data",
+  "sha256_of_stored": "044e04c5ee40039cf0d5b565688ce24ab5aa06b916eaadd38962db4e6400709e"
+ },
+ "macro/rba_h5.csv": {
+  "url": "https://www.rba.gov.au/statistics/tables/csv/h5-data.csv",
+  "retrieved": "2026-11-14",
+  "trim": "header block + the last 6 rows with data",
+  "sha256_of_stored": "e203fd57210449fbd1d4d76621381600c1d79508216c115bae775c319be79c79"
+ },
+ "macro/snb_plkoprinfla.csv": {
+  "url": "https://data.snb.ch/api/cube/plkoprinfla/data/csv/en?fromDate=2025-06",
+  "retrieved": "2026-11-14",
+  "trim": "none (fromDate=2025-06)",
+  "sha256_of_stored": "df5133f62b48f9760c706a288673f6ba15df7f54f0f1ffdcd4d94c411d40204b"
+ },
+ "macro/valet_cpi.json": {
+  "url": "https://www.bankofcanada.ca/valet/observations/CPI_TRIM,CPI_MEDIAN,STATIC_TOTALCPICHANGE/json?start_date=2025-09-01",
+  "retrieved": "2026-11-14",
+  "trim": "none",
+  "sha256_of_stored": "319cc0e913e1772d415d6117c2a5289597a1266e49698babb8a9edc8c47d8da0"
+ },
+ "macro/statsnz_infoshare_2026Q3.csv": {
+  "url": "https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2026-quarter/Download-data/consumers-price-index-september-2026-quarter-infoshare-data.csv",
+  "retrieved": "2026-11-14",
+  "trim": "header + rows CPIQ.SE9A, SE9NS1450, SE9NS1410",
+  "sha256_of_stored": "dafc5ae01003c4ff12ac1aabc71bdd573dada051bd8207cfbb0d30cd46dfafcc"
+ },
+ "macro/statsnz_page_2026Q3.html": {
+  "url": "https://www.stats.govt.nz/information-releases/consumers-price-index-september-2026-quarter/",
+  "retrieved": "2026-11-14",
+  "trim": "only the DocumentLink entries of the DocumentBlock JSON",
+  "sha256_of_stored": "b20de7992014576aeefaa1af6ff2648825b8aaaf64e0a90ac292737e29378890"
+ },
+ "macro/statsnz_infoshare_2025Q3.csv": {
+  "url": "https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2025-quarter/Download-data/consumers-price-index-september-2025-quarter-infoshare-data-updated.csv",
+  "retrieved": "2026-11-14",
+  "trim": "header + rows CPIQ.SE9A, SE9NS1450, SE9NS1410",
+  "sha256_of_stored": "8576d27a4db5b7ee03f9365b5c3a333fdae0ef0ce1347035bbbc977d581f8a11"
+ },
+ "macro/statsnz_page_2025Q3.html": {
+  "url": "https://www.stats.govt.nz/information-releases/consumers-price-index-september-2025-quarter/",
+  "retrieved": "2026-11-14",
+  "trim": "only the DocumentLink entries of the DocumentBlock JSON",
+  "sha256_of_stored": "0175da7c6b19ea9d175a38b9b9f4ae93b352a4f7eeac515c26389dd8ec1ca304"
+ },
+ "framework/boc_js2021_main.html": {
+  "url": "https://www.bankofcanada.ca/2021/12/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework/",
+  "retrieved": "2026-11-14",
+  "trim": "the <main> element only",
+  "sha256_of_stored": "b43bc8cb365db43e7f59b7123ca64ee961bb9c47eea8c07b32d78d8c48a9eee2"
+ },
+ "framework/boc_js2026_main.html": {
+  "url": "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/",
+  "retrieved": "2026-11-14",
+  "trim": "the <main> element only",
+  "sha256_of_stored": "0cf228d9d135c902b2c8e721464057b2c92643660e4e468039ab2c672a518797"
+ },
+ "framework/boc_agreements_main.html": {
+  "url": "https://www.bankofcanada.ca/core-functions/monetary-policy/agreement-inflation-control-target/",
+  "retrieved": "2026-11-14",
+  "trim": "the <main> element only",
+  "sha256_of_stored": "754f80dd1df4f2830af6cb26a37e7aab87579a140d67cd66c8b8dcc4d1709eeb"
+ },
+ "framework/boe_remit_2025.paras.json": {
+  "url": "https://www.bankofengland.co.uk/-/media/boe/files/letter/2025/mpc-letter-remit-2025.pdf",
+  "retrieved": "2026-11-14",
+  "trim": "src.cb_docs.extract.pdf_paragraphs of the official PDF (sha256 cbb5be38a93c4f186bb157d1f2d5f28a69eefb19e2f0b6ec8153b309be6fcbb4)",
+  "sha256_of_stored": "3d363f463e60565d49e2060f8a421644bdb8927e93aca08efa5ec71bb110314a"
+ },
+ "framework/boe_remit_2026.paras.json": {
+  "url": "https://www.bankofengland.co.uk/-/media/boe/files/letter/2026/mpc-letter-remit-2026.pdf",
+  "retrieved": "2026-11-14",
+  "trim": "src.cb_docs.extract.pdf_paragraphs of the official PDF (sha256 a5d72a3a1655d9049a3b5b1f33a6c7d1f156959c879f4a3ab04481751bbbab65)",
+  "sha256_of_stored": "5d7ceade9ef0851e3f175c8fa7df14e9a56b4016432b08622b518ff07f5e64c0"
+ },
+ "macro/fred_pcepi.json": {
+  "url": "https://api.stlouisfed.org/fred/series/observations?series_id=PCEPI&observation_start=2024-08-01&observation_end=2026-09-01&file_type=json (key omitted)",
+  "retrieved": "2026-11-14",
+  "trim": "none",
+  "provenance": "https://fred.stlouisfed.org/series/PCEPI (via FRED API)"
+ },
+ "macro/fred_pcepilfe.json": {
+  "url": "https://api.stlouisfed.org/fred/series/observations?series_id=PCEPILFE&observation_start=2024-08-01&observation_end=2026-09-01&file_type=json (key omitted)",
+  "retrieved": "2026-11-14",
+  "trim": "none",
+  "provenance": "https://fred.stlouisfed.org/series/PCEPILFE (via FRED API)"
+ }
+}

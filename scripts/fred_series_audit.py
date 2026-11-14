@@ -41,6 +41,9 @@ USED_BY = {
     "SOFR": ["src/cb_sources/official FredSeries (overnight benchmark)", "src/cb_probe"],
     "DFF": ["src/cb_probe (probe only)"],
     "IR3TIB01NZM156N": ["scripts/cb_nzd_bkbm_spread.py (NZD BKBM-OCR spread estimate)"],
+    "PCEPI": ["src/cb_macro stage macro (stance S0a: USD headline PCE, BEA)"],
+    "PCEPILFE": ["src/cb_macro stage macro (stance S0a: USD core PCE, BEA)"],
+    "UNRATE": ["src/cb_macro stage macro (stance S0a: USD unemployment rate, BLS)"],
     **{s: ["scripts/measure/factor_scales.py (measurement only)"] for s in
        ("DEXUSEU", "DEXUSUK", "DEXUSAL", "DEXUSNZ", "DEXJPUS", "DEXCAUS", "DEXSZUS", "DTWEXBGS", "SP500", "DJIA", "NASDAQCOM", "NIKKEI225")},
 }

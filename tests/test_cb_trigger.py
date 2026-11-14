@@ -377,7 +377,7 @@ def test_the_github_schedules_are_only_the_backup_and_are_guarded_against_double
     cb, econ = workflow("cb-refresh"), workflow("econ-refresh")
     cb_crons = [c["cron"] for c in cb[True]["schedule"]]
     econ_crons = [c["cron"] for c in econ[True]["schedule"]]
-    assert cb_crons == ["47 */6 * * *"] and econ_crons == ["35 */3 * * 1-5", "35 */6 * * 0,6"]                                 # every 6 h / every 3 h: below the Worker's 2 h / 1 h
+    assert cb_crons == ["47 */6 * * *", "23 7 * * *"] and econ_crons == ["35 */3 * * 1-5", "35 */6 * * 0,6"]                                 # every 6 h / every 3 h: below the Worker's 2 h / 1 h
     for wf in (cb, econ):
         guard, refresh = wf["jobs"]["guard"], wf["jobs"]["refresh"]
         assert guard["if"] == "github.event_name == 'schedule'" and guard["permissions"] == {"actions": "read"}                 # a dispatch never pays for the guard

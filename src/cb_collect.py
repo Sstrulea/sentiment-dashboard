@@ -327,7 +327,7 @@ def run_official(paths: Paths, *, only: list[str] | None = None, backfill_from: 
     clock = now or (lambda: datetime.now(timezone.utc))
     today = clock().date()
     since = backfill_from or (today - timedelta(days=lookback_days or cfg["meta"]["lookback_days"]))
-    names = only or list(cfg["providers"])
+    names = only or [p for p in cfg["providers"] if any(sc["provider"] == p for sc in cfg["series"].values())]   # macro-only providers: src/cb_macro.py
     unknown = [n for n in names if n not in cfg["providers"]]
     if unknown:
         raise SystemExit(f"unknown provider(s): {unknown}; known: {list(cfg['providers'])}")
@@ -530,8 +530,9 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "summaries")
-DEFAULT_STAGES = STAGES[:-1]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret)
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "macro", "framework", "summaries")
+DEFAULT_STAGES = STAGES[:-3]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret);
+                                             # `macro` and `framework` (stance S0a) run only in the daily scheduled run (cb-refresh cron 23 7 * * *) or when asked for
 
 
 def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
@@ -544,9 +545,9 @@ def main(argv: list[str] | None = None) -> int:
                                              "projections, calendar check")
     ap.add_argument("--stage", action="append", choices=STAGES, help="stage to run (repeatable); default: every stage except summaries")
     ap.add_argument("--source", action="append", help="market source id (repeatable); default all")
-    ap.add_argument("--provider", action="append", help="official-series provider (repeatable); default all")
+    ap.add_argument("--provider", action="append", help="official-series / macro provider (repeatable); default all")
     ap.add_argument("--backfill", action="store_true",
-                    help="market: official-history sources from meta.backfill_from; official series from theirs")
+                    help="market: official-history sources from meta.backfill_from; official and macro series from theirs")
     ap.add_argument("--backfill-from", type=date.fromisoformat, help="explicit backfill start (YYYY-MM-DD), both datasets")
     ap.add_argument("--lookback-days", type=int, default=LOOKBACK_DAYS)
     ap.add_argument("--force-calendar-check", action="store_true", help="run the weekly meetings check now")
@@ -560,6 +561,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--summaries-effort", choices=("low", "medium", "high"), help="summaries stage: the reasoning effort of this run (default: the config's)")
     ap.add_argument("--summaries-scratch", action="store_true", help="summaries stage: a measurement - write the summaries to a scratch directory and leave data/ and state.json alone")
     ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
+    ap.add_argument("--force-framework", action="store_true", help="framework stage: run the watch now (it otherwise runs at most once a week)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
     a = ap.parse_args(argv)
@@ -647,6 +649,23 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("trigger schedule failed")
             emit(f"trigger schedule: FAILED {type(e).__name__}: {e}", f"### trigger schedule\n\nFAILED `{type(e).__name__}: {e}`")
+    if "macro" in stages:                                            # stance S0a: official inflation / unemployment series (zero requests when no period is due)
+        try:
+            from . import cb_macro
+            bf = a.backfill_from or (load_official()["macro"]["meta"]["backfill_from"] if a.backfill else None)
+            if isinstance(bf, str):
+                bf = date.fromisoformat(bf)
+            emit(*cb_macro.macro_report(cb_macro.run_macro(paths, today, backfill_from=bf, only=a.provider), today))
+        except Exception as e:
+            log.exception("macro stage failed")
+            emit(f"macro: FAILED {type(e).__name__}: {e}", f"### macro series\n\nFAILED `{type(e).__name__}: {e}`")
+    if "framework" in stages:                                        # stance S0a: framework watch (at most weekly; detection only, never writes mandates.yaml)
+        try:
+            from . import cb_framework
+            emit(*cb_framework.framework_report(cb_framework.run_framework(paths, today, force=a.force_framework)))
+        except Exception as e:
+            log.exception("framework stage failed")
+            emit(f"framework: FAILED {type(e).__name__}: {e}", f"### framework watch\n\nFAILED `{type(e).__name__}: {e}`")
     if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
         try:
             from .cb_summarize import run as sum_run

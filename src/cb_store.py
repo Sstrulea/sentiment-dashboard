@@ -1,8 +1,9 @@
 """Deterministic parquet stores for the Central Banks module.
 
 Two shapes, one serializer:
-  * `Dataset`  - append-only, monthly partitions `<dir>/<prefix>_YYYY-MM.parquet` keyed by `key`, partitioned on the
-                 month of `month_field` (market quotes by as-of, official series by date). A row whose content is
+  * `Dataset`  - append-only partitions `<dir>/<prefix>_<part>.parquet` keyed by `key`, partitioned on `month_field`:
+                 monthly (`YYYY-MM`, the default: market quotes by as-of, official series by date) or yearly (`YYYY`,
+                 `granularity="year"`: the macro series of the stance phase by period start). A row whose content is
                  unchanged keeps its stored `fetched_at`, so idle runs leave no diff; only changed partitions are
                  rewritten.
   * `write_table_file` - a single small file (decisions, projections) rewritten only when its bytes change.
@@ -27,8 +28,9 @@ class Dataset:
     prefix: str                        # partition file prefix
     schema: pa.Schema
     key: tuple
-    month_field: str
+    month_field: str                   # the date column that picks the partition
     content: tuple                     # columns compared to decide "unchanged"
+    granularity: str = "month"         # month -> `<prefix>_YYYY-MM.parquet`; year -> `<prefix>_YYYY.parquet`
 
     @property
     def columns(self) -> list:
@@ -43,13 +45,25 @@ class Dataset:
     def partition(self, base: Path, month: str) -> Path:
         return self.directory(base) / f"{self.prefix}_{month}.parquet"
 
+    def part_of(self, d: date) -> str:
+        """The partition label of a date: 'YYYY-MM' (month) or 'YYYY' (year)."""
+        return str(d.year) if self.granularity == "year" else month_of(d)
+
+    @property
+    def glob(self) -> str:
+        return f"{self.prefix}_????.parquet" if self.granularity == "year" else f"{self.prefix}_????-??.parquet"
+
 
 def month_of(d: date) -> str:
     return f"{d.year}-{d.month:02d}"
 
 
-def _as_month(v) -> Optional[str]:
-    return month_of(v) if isinstance(v, date) else v
+def _as_part(ds: "Dataset", v) -> Optional[str]:
+    if isinstance(v, date):
+        return ds.part_of(v)
+    if v and ds.granularity == "year":
+        return str(v)[:4]
+    return v
 
 
 def _sort_key(row: dict, key: tuple) -> tuple:
@@ -82,12 +96,12 @@ def _write_bytes(f: Path, data: bytes) -> bool:
 
 def list_partitions(ds: Dataset, base: Path) -> dict:
     d = ds.directory(base)
-    return {f.stem.removeprefix(ds.prefix + "_"): f for f in sorted(d.glob(f"{ds.prefix}_????-??.parquet"))} if d.exists() else {}
+    return {f.stem.removeprefix(ds.prefix + "_"): f for f in sorted(d.glob(ds.glob))} if d.exists() else {}
 
 
 def load(ds: Dataset, base: Path, start=None, end=None) -> dict:
-    """Every partition, or only the months in [start, end] (inclusive, 'YYYY-MM' or a date)."""
-    lo, hi = _as_month(start), _as_month(end)
+    """Every partition, or only the partitions in [start, end] (inclusive: 'YYYY-MM' / 'YYYY' or a date)."""
+    lo, hi = _as_part(ds, start), _as_part(ds, end)
     store: dict = {}
     for month, f in list_partitions(ds, base).items():
         if (lo and month < lo) or (hi and month > hi):
@@ -99,10 +113,10 @@ def load(ds: Dataset, base: Path, start=None, end=None) -> dict:
 
 def write(ds: Dataset, base: Path, store: dict, months: Optional[Iterable[str]] = None) -> list:
     """Rewrite only the partitions in `months` (default all) and only when their bytes differ.
-    Returns the months actually written."""
+    Returns the partitions actually written."""
     by_month: dict = {}
     for r in store.values():
-        by_month.setdefault(month_of(r[ds.month_field]), []).append(r)
+        by_month.setdefault(ds.part_of(r[ds.month_field]), []).append(r)
     written = []
     for month in sorted(months if months is not None else by_month):
         rows = by_month.get(month)
@@ -116,7 +130,7 @@ class Merge:
     new: int = 0
     updated: int = 0
     unchanged: int = 0
-    months: set = field(default_factory=set)       # partitions with a new / changed row
+    months: set = field(default_factory=set)       # partitions with a new / changed row (months, or years)
 
 
 def merge(ds: Dataset, store: dict, rows: Iterable[dict]) -> Merge:
@@ -129,7 +143,7 @@ def merge(ds: Dataset, store: dict, rows: Iterable[dict]) -> Merge:
             st.unchanged += 1
             continue
         store[k] = row
-        st.months.add(month_of(row[ds.month_field]))
+        st.months.add(ds.part_of(row[ds.month_field]))
         if old is None:
             st.new += 1
         else:

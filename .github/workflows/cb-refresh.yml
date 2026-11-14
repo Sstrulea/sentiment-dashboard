@@ -14,6 +14,7 @@ name: cb-refresh
 on:
   schedule:
     - cron: '47 */6 * * *'                   # backup only (the Worker fires every 2 hours); off the Worker's :37 so that the two never start together
+    - cron: '23 7 * * *'                     # stance S0a: the daily run of the macro series + the weekly framework watch (never skipped by the guard)
   workflow_dispatch:
     inputs:
       force_calendar_check:
@@ -23,7 +24,7 @@ on:
       stage:
         description: "Run only this stage (default all: every stage, then the summaries when the OPENAI_API_KEY secret exists)"
         type: choice
-        options: [all, market, official, decisions, documents, projections, calendar, schedule, summaries]
+        options: [all, market, official, decisions, documents, projections, calendar, schedule, summaries, macro, framework]
         default: all
       event:
         description: "Set by the external trigger. decision = watch for the statement of the decision of `bank` on `date`, then that bank's documents, decisions, the statement's summary; conference = that bank's documents (transcript, video) and summaries"
@@ -78,6 +79,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ "${{ github.event.schedule }}" = "23 7 * * *" ]; then echo "daily stance-data run: never skipped"; echo "skip=false" >> "$GITHUB_OUTPUT"; exit 0; fi
           since=$(date -u -d '3 hours ago' +%FT%TZ)
           n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow cb-refresh.yml --status success --created ">=$since" --json event -q '[.[] | select(.event == "workflow_dispatch")] | length') || n=0
           echo "recent successful dispatch runs: $n"
@@ -120,6 +122,16 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: python -m src.cb_collect ${{ inputs.force_calendar_check && '--force-calendar-check' || '' }}
+
+      # Stance S0a: official inflation / unemployment series (zero requests when no new period is due) and the framework
+      # watch (at most weekly, detection only). Only in the daily scheduled run - never in the Worker's dispatches nor on
+      # decision days - or when a dispatch asks for the stage. A failure never fails the job.
+      - name: Stance data (macro series, framework watch)
+        if: ${{ github.event.schedule == '23 7 * * *' }}
+        continue-on-error: true
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py): PCEPI, PCEPILFE, UNRATE
+        run: python -m src.cb_collect --stage macro --stage framework
 
       - name: Collect one stage
         if: ${{ !inputs.event && inputs.stage && inputs.stage != 'all' && inputs.stage != 'summaries' }}

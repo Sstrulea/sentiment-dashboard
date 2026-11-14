@@ -1,0 +1,23 @@
+Indicators for Core CPI
+日本語
+Research Data
+Explanation and Related Materials
+Notices of Changes
+Notice
+Inquiries
+Core inflation indicators -- obtained by removing transitory disturbances and institutional factors from the actual movements observed in the consumer prices -- are frequently used for inflation analysis. Such "core indicators" are essential for identifying the underlying inflation rate, together with other indicators including the output gap, labor market tightness, inflation expectations, and wage growth rate.
+This page presents the Bank of Japan's Research and Statistics Department staff estimates for core indicators, including (i) consumer price indices that exclude "institutional factors" (Note 1), as well as (ii) indicators based on the distribution of price changes across items (the trimmed mean; the weighted median; the mode; and the diffusion index of increasing/decreasing items) (Note 2).
+Data are, in principle, released at 2:00 p.m., two business days after the release of the official CPI for Japan.
+(Note 1) The Bank of Japan's Research and Statistics Department staff estimates exclude the effects of institutional factors from official data released by the Ministry of Internal Affairs and Communications. These institutional factors include: (1) changes in the consumption tax rate; (2) policies concerning the provision of free education (including the free school lunches starting in April 2026); (3) the reduction in mobile phone charges in 2021; (4) travel subsidy programs; and (5) measures to reduce the energy cost burden (such as gasoline prices, electricity and gas charges). Please note that the definition of institutional factors may be subject to change without prior notice.
+(Note 2) For more information on the estimation procedures and characteristics of the trimmed mean, the weighted median, the mode, and the diffusion index of increasing/decreasing items, please see the Bank of Japan Review Series below. Hogen, Kawamoto, and Nakahama (2015) "Core Inflation and the Business Cycle," Bank of Japan Review Series (2015-E-6). Shiratsuka (2015) "Performance of Core Indicators of Japan's Consumer Price Index," Bank of Japan Review Series (2015-E-7).
+Research Data
+Explanation and Related Materials
+Bank of Japan Review Series
+Hogen, Kawamoto, and Nakahama (2015) "Core Inflation and the Business Cycle," Bank of Japan Review Series (2015-E-6).
+Shiratsuka (2015) "Performance of Core Indicators of Japan's Consumer Price Index," Bank of Japan Review Series (2015-E-7).
+Notices of Changes
+Notice
+Charts and data available here are provided to inform some of the Bank of Japan's research and analysis to a wide range of users with interests in economic and financial developments. Please note that these charts and data are subject to unscheduled changes, revisions, and terminations. Please contact the Bank of Japan's Research and Statistics Department to request permission when reproducing or copying the content of these charts and data for commercial purposes. Please credit the source when quoting, reproducing, or copying the content of these charts and data.
+Inquiries
+Economic Assessment and Projection Group, Economic Research Division, Research and Statistics Department
+Tel : +81-3-3279-1111

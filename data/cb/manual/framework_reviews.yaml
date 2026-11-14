@@ -1,0 +1,75 @@
+# Framework watch - the reviews (stance phase S0a). EDITED BY HAND ONLY: the watch (src/cb_framework.py) never writes here.
+# targets.<id>: confirmed_hash = the normalised-text hash accepted at the last review (an alert `page_changed` is open while
+#   the current hash in data/cb/state.json `_framework` differs); reviewed (date); result no_change | new_version |
+#   not_material; note. RBNZ (manual_only): mps_reviewed = the last Monetary Policy Statement checked by hand (alert
+#   `rbnz_manual` at each newer MPS).
+# keyword_flags_reviewed: [{doc_id, reviewed, result, note}] - a keyword flag (data/cb/framework_watch/keyword_flags.json)
+#   stays an open alert until its doc_id is listed here.
+# Seed 2026-11-14: today's hashes, reviewed by the S0a verification (mandates.yaml).
+meta:
+  version: 1
+  updated: 2026-11-14
+  note: edited by hand after each review; the watch never writes here
+targets:
+  USD.framework:
+    confirmed_hash: 2c01f6e1eedaf54acd07ab052ab7ddae82e1bca805aa30032c586b14d801fb9f
+    reviewed: 2026-11-14
+    result: no_change
+    note: Statement on Longer-Run Goals (revised 2025-08-22, reaffirmed effective 2026-01-27) = mandates.yaml USD
+  EUR.framework:
+    confirmed_hash: 6b66343dc784252d6e04d0287a3cce50a0b53d4a5efb75ab8c072ddf00f38988
+    reviewed: 2026-11-14
+    result: no_change
+    note: '2025 strategy statement: symmetric 2% HICP over the medium term = mandates.yaml EUR'
+  EUR.review:
+    confirmed_hash: 0b71bb9a9b23c092baf62abc05f2970102591743dab90142ffe04817ec4727dd
+    reviewed: 2026-11-14
+    result: no_change
+    note: next assessment scheduled for 2030 (config/cb_framework.yaml calendar)
+  GBP.framework:
+    confirmed_hash: 963f18eb69d223cd0c272e669fadf42c2ece388cb8ddd9beb7ff90d6fb1fa655
+    reviewed: 2026-11-14
+    result: new_version
+    note: 'Remit for the MPC - October 2026 (28 Oct 2026): 2% CPI re-confirmed; entered as the current GBP version'
+  JPY.framework:
+    confirmed_hash: 080c0896af906ed3f94c2c7558b997cc7f2dfdf06a5992961056e2621a9379c1
+    reviewed: 2026-11-14
+    result: no_change
+    note: price stability target 2% CPI (January 2013); the November 2025 note only renames a government body
+  JPY.measures:
+    confirmed_hash: fa4ae9ea3e20035ed53a9e27ae1b0f3a8da2b53a6fc8822a4b1ed82d6f24fa50
+    reviewed: 2026-11-14
+    result: no_change
+    note: BoJ core indicators page (staff estimates); the projected measure stays CPI less fresh food and energy
+  CAD.framework:
+    confirmed_hash: 21e66577febe3867ebda071d5362fd19a4d45351b8044be9d824b54a8b793a6b
+    reviewed: 2026-11-14
+    result: new_version
+    note: 'listing shows the 2026 Joint Statement (5 Nov 2026, 2027-2031): entered as the CAD version from 2027-01-01'
+  CAD.measures:
+    confirmed_hash: b62d78aa1c1fddea79430d1dfdcd3838fed124c3c24c3ae0f49b8efd8dbf2105
+    reviewed: 2026-11-14
+    result: no_change
+    note: 'Preferred measures of core inflation: CPI-trim and CPI-median'
+  AUD.framework:
+    confirmed_hash: e3f774d53df70c3a88e3004c26e68f5ceb0be632577aa2cad800039a8410859d
+    reviewed: 2026-11-14
+    result: no_change
+    note: 'latest Statement on the Conduct of Monetary Policy: July 2025 = mandates.yaml AUD'
+  AUD.measures:
+    confirmed_hash: 72d80421c038dad4285411b9b22922892fac131820d16ab31ec76a7d0fe34cdd
+    reviewed: 2026-11-14
+    result: no_change
+    note: Measures of Consumer Price Inflation page (complete monthly CPI since the October 2025 transition)
+  CHF.framework:
+    confirmed_hash: 10df8958c82f9943a28a34ab0f4eb3d535ea8e73d93324d7b5cfb6465226bed9
+    reviewed: 2026-11-14
+    result: no_change
+    note: 'strategy in place since 2000: CPI < 2% a year, deflation excluded'
+  NZD.framework:
+    manual_only: true
+    reviewed: 2026-11-14
+    mps_reviewed: 2026-09-02
+    result: no_change
+    note: Remit of 12 Dec 2023 (NZ Gazette 2023-go5845, in effect 20 Dec 2023); MPS September 2026 read by hand (PDF downloaded by George)
+keyword_flags_reviewed: []

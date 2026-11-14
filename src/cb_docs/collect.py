@@ -66,6 +66,7 @@ class _Run:
         self.dec = {(r["currency"], r["meeting_date"]): r for r in ds.load_decisions(paths)}
         self.roster = roster or {}
         self.texts: dict = {}                                  # (ccy, date) -> statement text
+        self.new_ids: list = []                                # doc_ids first stored by this run (scanned for framework keywords)
         self.votes = {(r["currency"], r["meeting_date"]): r for r in ST.load_votes(paths)}
         self.feeds: dict = {}
 
@@ -92,6 +93,7 @@ class _Run:
         self.rep.by_type[row["type"]] = self.rep.by_type.get(row["type"], 0) + 1
         if old is None:
             self.rep.new += 1
+            self.new_ids.append(row["doc_id"])
             return "new"
         self.rep.updated += 1
         return "updated"
@@ -592,6 +594,10 @@ def run_documents(paths, today: date, *, fetcher: Optional[Fetcher] = None, now:
     rep.written["votes"] = ST.write_votes(paths, sorted(run.votes.values(), key=lambda r: (r["currency"], r["meeting_date"])))
     rep.written["redlines"] = ST.write_redlines(paths, ST.merge_table(ST.load_redlines(paths), rl_rows, ST.REDLINES_KEY))
     rep.requests = f.requests_made
+    from ..cb_framework import scan_documents                              # stance S0a: change-signalling phrases in the new texts (a flag, no interpretation)
+    flags = scan_documents(paths, [run.docs[(i,)] for i in run.new_ids if (i,) in run.docs])
+    if flags:
+        rep.notes.append("framework keyword flags: " + ", ".join(f"{k} ({', '.join(v['hits'])})" for k, v in sorted(flags.items())))
     if f.validators is not state.get(STATE_KEY):
         state[STATE_KEY] = f.validators
     save_state(paths, state)

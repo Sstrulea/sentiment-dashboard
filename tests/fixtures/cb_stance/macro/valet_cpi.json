@@ -1,0 +1,204 @@
+{
+    "terms": {
+        "url": "https://www.bankofcanada.ca/terms/"
+    },
+    "seriesDetail": {
+        "CPI_MEDIAN": {
+            "label": "CPI-median",
+            "description": "The monthly value of the median Consumer Price Index (CPI). This series measures the central tendency of price changes across CPI components, excluding extreme movements.",
+            "dimension": {
+                "key": "d",
+                "name": "Date"
+            },
+            "dateFormat": "monthly",
+            "metadata": {
+                "unit": "Percent",
+                "frequency": "Monthly"
+            }
+        },
+        "CPI_TRIM": {
+            "label": "CPI-trim",
+            "description": "The monthly value of the trim component of the Consumer Price Index (CPI). This measure excludes CPI components whose rates of change in a given month are located in the tails of the distribution of price changes.",
+            "dimension": {
+                "key": "d",
+                "name": "Date"
+            },
+            "dateFormat": "monthly",
+            "metadata": {
+                "unit": "Percent",
+                "frequency": "Monthly"
+            }
+        },
+        "STATIC_TOTALCPICHANGE": {
+            "label": "Total CPI, percentage change year-over-year (unadjusted)",
+            "description": "The unadjusted percentage change in the total Consumer Price Index (CPI) compared to the same month one year earlier.",
+            "dimension": {
+                "key": "d",
+                "name": "Date"
+            },
+            "dateFormat": "monthly",
+            "metadata": {
+                "unit": "Percent",
+                "frequency": "Monthly"
+            }
+        }
+    },
+    "observations": [
+        {
+            "d": "2025-09-01",
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.4"
+            },
+            "CPI_MEDIAN": {
+                "v": "3.1"
+            },
+            "CPI_TRIM": {
+                "v": "3.1"
+            }
+        },
+        {
+            "d": "2025-10-01",
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.2"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.9"
+            },
+            "CPI_TRIM": {
+                "v": "3.0"
+            }
+        },
+        {
+            "d": "2025-11-01",
+            "CPI_TRIM": {
+                "v": "2.9"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.2"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.8"
+            }
+        },
+        {
+            "d": "2025-12-01",
+            "CPI_TRIM": {
+                "v": "2.7"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.4"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.6"
+            }
+        },
+        {
+            "d": "2026-01-01",
+            "CPI_TRIM": {
+                "v": "2.4"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.3"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.5"
+            }
+        },
+        {
+            "d": "2026-02-01",
+            "CPI_TRIM": {
+                "v": "2.3"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "1.8"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.3"
+            }
+        },
+        {
+            "d": "2026-03-01",
+            "CPI_TRIM": {
+                "v": "2.2"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.3"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.4"
+            }
+        },
+        {
+            "d": "2026-04-01",
+            "CPI_TRIM": {
+                "v": "2.0"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.8"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.1"
+            }
+        },
+        {
+            "d": "2026-05-01",
+            "CPI_MEDIAN": {
+                "v": "2.1"
+            },
+            "CPI_TRIM": {
+                "v": "2.0"
+            },
+            "STATIC_TOTALCPICHANGE": {
+                "v": "3.2"
+            }
+        },
+        {
+            "d": "2026-06-01",
+            "STATIC_TOTALCPICHANGE": {
+                "v": "2.8"
+            },
+            "CPI_TRIM": {
+                "v": "1.9"
+            },
+            "CPI_MEDIAN": {
+                "v": "1.9"
+            }
+        },
+        {
+            "d": "2026-07-01",
+            "STATIC_TOTALCPICHANGE": {
+                "v": "3.0"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.0"
+            },
+            "CPI_TRIM": {
+                "v": "1.9"
+            }
+        },
+        {
+            "d": "2026-08-01",
+            "STATIC_TOTALCPICHANGE": {
+                "v": "3.0"
+            },
+            "CPI_MEDIAN": {
+                "v": "2.0"
+            },
+            "CPI_TRIM": {
+                "v": "1.9"
+            }
+        },
+        {
+            "d": "2026-09-01",
+            "STATIC_TOTALCPICHANGE": {
+                "v": "3.1"
+            },
+            "CPI_MEDIAN": {
+                "v": "1.9"
+            },
+            "CPI_TRIM": {
+                "v": "1.8"
+            }
+        }
+    ]
+}

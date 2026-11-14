@@ -1,0 +1,18 @@
+Consumer price index
+See also: Inflation
+Definitions
+Consumer price index (total CPI)
+The Consumer Price Index (CPI) is an indicator of changes in consumer prices experienced by Canadians. It is obtained by comparing, over time, the cost of a fixed basket of goods and services purchased by consumers.
+The CPI is widely used as an indicator of the change in the general level of consumer prices or the rate of inflation. Since the purchasing power of money is affected by changes in prices, the CPI is useful to virtually all Canadians.
+Core inflation measures
+The prices of certain CPI components can be particularly volatile. These components, as well as changes in indirect taxes such as GST, can cause sizeable fluctuations in total CPI. In setting monetary policy, the Bank seeks to look through such transitory movements in total CPI inflation and focusses on “core” inflation measures that better reflect the underlying trend of inflation.
+CPI-trim
+CPI-trim is a measure of core inflation that excludes CPI components whose rates of change in a given month are located in the tails of the distribution of price changes. This measure helps filter out extreme price movements that might be caused by factors specific to certain components. In particular, CPI-trim excludes 20 per cent of the weighted monthly price variations at both the bottom and top of the distribution of price changes, and thus it always removes 40 per cent of the total CPI basket. These excluded components can change from month to month, depending on which are extreme at a given time. A good example would be the impact of severe weather on the prices of certain food components. This approach differs from traditional a priori exclusion-based measures (e.g. CPIX), which every month omit a pre-specified list of components from the CPI basket.
+CPI-median
+CPI-median is a measure of core inflation corresponding to the price change located at the 50th percentile (in terms of the CPI basket weights) of the distribution of price changes in a given month. This measure helps filter out extreme price movements specific to certain components. This approach is similar to CPI-trim as it eliminates all the weighted monthly price variations at both the bottom and top of the distribution of price changes in any given month, except the price change for the component that is the midpoint of that distribution.
+CPIX
+The CPI excluding eight of the most volatile components (fruit, vegetables, gasoline, fuel oil, natural gas, mortgage interest, inter-city transportation and tobacco products) as well as the effect of changes in indirect taxes on the remaining components.
+CPI-XFET
+The CPI excluding food, energy and the effect of changes in indirect taxes.
+CPIW
+CPIW adjusts each CPI basket weight by a factor that is inversely proportional to the component's variability and is adjusted to exclude the effect of changes in indirect taxes.

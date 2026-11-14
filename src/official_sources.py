@@ -55,20 +55,31 @@ class FetchResult:
 # ------------------------------------------------------------ Stats NZ ------
 
 class StatsNzCpi:
+    """One Stats NZ CPI series. `series_ref` and the release file (`file_kind`) are parameters: the default is the
+    All groups index (CPIQ.SE9A) from the `-index-numbers.csv` file (whole history); the stance phase also reads the
+    non-standard series of the `-infoshare-data[-updated].csv` file (only the release's own quarter, cp1252)."""
     series_id = "statsnz_cpi"
     series_ref = "CPIQ.SE9A"
+    file_kind = "index-numbers"
     base = "https://www.stats.govt.nz"
     release_url_tpl = base + "/information-releases/consumers-price-index-{month}-{year}-quarter/"
     _MONTH = {1: "march", 2: "june", 3: "september", 4: "december"}
+
+    def __init__(self, series_ref: Optional[str] = None, file_kind: Optional[str] = None) -> None:
+        if series_ref:
+            self.series_ref = series_ref
+        if file_kind:
+            self.file_kind = file_kind
 
     def release_page_url(self, quarter: str) -> str:
         return self.release_url_tpl.format(month=self._MONTH[int(quarter[-1])], year=quarter[:4])
 
     @staticmethod
-    def discover_csv_url(page_html: str, base: str = "https://www.stats.govt.nz") -> Optional[str]:
+    def discover_csv_url(page_html: str, base: str = "https://www.stats.govt.nz",
+                         file_kind: str = "index-numbers") -> Optional[str]:
         text = html.unescape(page_html).replace("\\/", "/")
         links = re.findall(r'"DocumentLink":"(/assets/[^"]+?\.csv)"', text)
-        hit = next((u for u in links if u.endswith("-index-numbers.csv")), None)
+        hit = next((u for u in links if re.search(rf"-{re.escape(file_kind)}(-updated)?\.csv$", u)), None)
         return base + hit if hit else None
 
     @staticmethod
@@ -77,14 +88,17 @@ class StatsNzCpi:
         return f"{y}Q{int(m) // 3}"
 
     def parse_index_csv(self, content: bytes) -> tuple[dict[str, float], dict[str, str]]:
-        df = pd.read_csv(io.BytesIO(content), dtype=str, keep_default_na=False)
+        try:
+            df = pd.read_csv(io.BytesIO(content), dtype=str, keep_default_na=False)
+        except UnicodeDecodeError:                       # the infoshare file is cp1252 (en dash in titles)
+            df = pd.read_csv(io.BytesIO(content), dtype=str, keep_default_na=False, encoding="cp1252")
         cols = {c.lower(): c for c in df.columns}
         ref, per, val = cols.get("series_reference"), cols.get("period"), cols.get("data_value")
         if not (ref and per and val):
             raise ValueError(f"unexpected CSV columns: {list(df.columns)}")
         s = df[df[ref].str.strip() == self.series_ref]
         raw = {self.period_to_quarter(p): v.strip() for p, v in zip(s[per], s[val])
-               if v.strip() not in ("", "NA")}
+               if v.strip() not in ("", "NA") and str(p).strip() not in ("", "NA")}
         return {q: float(v) for q, v in raw.items()}, raw
 
     def fetch(self, quarter: str, get: Getter = _default_get) -> FetchResult:
@@ -97,9 +111,9 @@ class StatsNzCpi:
                 return FetchResult("not_yet", f"release page 404: {page_url}")
             if r.status_code != 200:
                 return FetchResult("error", f"release page HTTP {r.status_code}: {page_url}")
-            csv_url = self.discover_csv_url(r.text, self.base)
+            csv_url = self.discover_csv_url(r.text, self.base, self.file_kind)
             if not csv_url:
-                return FetchResult("not_yet", f"no -index-numbers.csv DocumentLink on {page_url}")
+                return FetchResult("not_yet", f"no -{self.file_kind}.csv DocumentLink on {page_url}")
             c = get(csv_url)
             if c.status_code != 200:
                 return FetchResult("error", f"CSV HTTP {c.status_code}: {csv_url}", source_url=csv_url)

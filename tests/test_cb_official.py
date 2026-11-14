@@ -38,8 +38,9 @@ def test_the_18_requested_series_are_configured_with_their_roles():
                    "boe:IUDBEDR", "boe:IUDSOIA", "boj:STRDCLUCON", "bis:JP", "boc:V39079", "boc:AVG.INTWO",
                    "rba:FIRMMCRTD", "rba:FIRMMCRID", "bis:NZ", "snb:LZ", "snb:SARON"}
     assert cfg["meta"]["backfill_from"] == D(2025, 9, 1)
-    assert set(cfg["providers"]) == set(PROVIDERS) == {"fred", "ecb", "boe", "boj", "boc", "rba", "bis", "snb"}
-    assert {s["provider"] for s in cfg["series"].values()} == set(cfg["providers"])
+    assert set(cfg["providers"]) == set(PROVIDERS)
+    assert {s["provider"] for s in cfg["series"].values()} == {"fred", "ecb", "boe", "boj", "boc", "rba", "bis", "snb"}   # rate series; abs/ons/statjp/statsnz serve only the stance `macro:` section
+    assert {s["provider"] for s in cfg["series"].values()} | {s["provider"] for s in cfg["macro"]["series"].values()} == set(cfg["providers"])
     assert cfg["series"]["bis:JP"]["role"] == "policy_bis" and cfg["series"]["bis:NZ"]["role"] == "policy_bis"
     assert cfg["series"]["ecb:MRO"]["role"] == "policy_mro"
     assert not any("FIRMMOIS" in json.dumps(s) for s in cfg["series"].values())        # RBA OIS stopped in 2022-12
@@ -248,7 +249,7 @@ def test_run_official_writes_monthly_partitions_keyed_by_series_and_date(tmp_pat
     router(monkeypatch)
     paths = cc.Paths(tmp_path / "cb")
     reps = cc.run_official(paths, now=lambda: NOW, backfill_from=D(2025, 9, 1))
-    assert {r.id for r in reps} == {f"official:{p}" for p in PROVIDERS} and all(r.status == "ok" for r in reps), [(r.id, r.status, r.note) for r in reps]
+    assert {r.id for r in reps} == {f"official:{p}" for p in ("fred", "ecb", "boe", "boj", "boc", "rba", "bis", "snb")} and all(r.status == "ok" for r in reps), [(r.id, r.status, r.note) for r in reps]
     files = sorted(f.name for f in (paths.dir / "official_series").glob("*"))
     assert files == ["official_series_2026-06.parquet", "official_series_2026-09.parquet"] and not (paths.dir / "official_series.parquet").exists()
     t = pq.read_table(paths.dir / "official_series" / "official_series_2026-09.parquet")

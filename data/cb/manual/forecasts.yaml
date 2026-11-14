@@ -1,0 +1,157 @@
+# Latest projection publication of each bank at the date of the run (stance phase S0a) - DATA, edited by hand only;
+# validated at load (src/cb_datasets.validate_forecasts). USD has no entry: the Fed SEP is collected automatically
+# (data/cb/projections.parquet). The RBNZ OCR track stays in data/cb/manual/rbnz.yaml (not duplicated here; the NZD entry
+# must be the same meeting as the latest MPS there).
+#
+# banks.<CCY>: publication, published (date), meeting (meetings.yaml), status filled|pending, conditioning (== mandates.yaml
+#   forecasts.conditioning), cutoff (date of the market curve when published, else null), source {url, page, retrieved}
+#   series [{role headline|underlying|secondary|unemployment|output_gap|rate_assumption|nairu, variable (label as printed),
+#            transform annual_average|q4_q4|yoy_quarter|fiscal_year|quarter_level|year_average_march|horizon_level,
+#            unit, values [{horizon (YYYY | YYYYQn | FYYYYY | MYYYY = March year | all), value | low/high (| value + low/high)}],
+#            source (only when it differs from the publication's), status (pending: reason + quote)}]
+# Values are exactly as printed (rounding included); conversions are done in code. Every value was re-read in the
+# source table after transcription (2026-11-14).
+# Maintenance rule: when a new publication is entered, re-verify the bank's mandate in the SAME commit (target, measures,
+# projected measure) and update mandates.yaml last_verified.
+
+meta:
+  version: 1
+  updated: 2026-11-14
+  transcription: manual
+
+banks:
+  EUR:
+    publication: "ECB staff macroeconomic projections for the euro area, September 2026"
+    published: 2026-09-10
+    meeting: 2026-09-10
+    status: filled
+    conditioning: market
+    cutoff: 2026-08-19
+    source: {url: "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html", page: "Table 1, Table 2, Table 3, Box 2 'Technical assumptions'", retrieved: 2026-11-14}
+    series:
+      - {role: headline, variable: "HICP", transform: annual_average, unit: percent, values: [{horizon: "2026", value: 3.0}, {horizon: "2027", value: 2.5}, {horizon: "2028", value: 2.1}]}
+      - {role: underlying, variable: "HICP excluding energy and food", transform: annual_average, unit: percent, values: [{horizon: "2026", value: 2.5}, {horizon: "2027", value: 2.6}, {horizon: "2028", value: 2.3}]}
+      - {role: unemployment, variable: "Unemployment rate", transform: annual_average, unit: percent, values: [{horizon: "2026", value: 6.2}, {horizon: "2027", value: 6.1}, {horizon: "2028", value: 5.9}]}
+      - {role: rate_assumption, variable: "Three-month EURIBOR (percentage per annum)", transform: annual_average, unit: percent,
+         instrument: "three-month EURIBOR, market expectations (futures), ten working days ending on the cut-off date",
+         values: [{horizon: "2026", value: 2.4}, {horizon: "2027", value: 3.0}, {horizon: "2028", value: 3.0}]}
+
+  GBP:
+    publication: "Monetary Policy Report, November 2026"
+    published: 2026-11-05
+    meeting: 2026-11-05
+    status: filled
+    conditioning: market
+    cutoff: 2026-10-27
+    cutoff_note: "market curve for Bank Rate over the 15 UK working days to 27 October (Table 3.A)"
+    source: {url: "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-report/2026/november/monetary-policy-report-november-2026.pdf", page: "Table 3.B, p. 75 (PDF p. 76), central projection", retrieved: 2026-11-14}
+    series:
+      - {role: headline, variable: "CPI inflation (four-quarter inflation rate, D7BT)", transform: yoy_quarter, unit: percent, values: [{horizon: 2026Q4, value: 3.8}, {horizon: 2027Q4, value: 4.0}, {horizon: 2028Q4, value: 2.0}, {horizon: 2029Q4, value: 1.8}]}
+      - {role: unemployment, variable: "Unemployment rate (ILO, MGSX)", transform: quarter_level, unit: percent, values: [{horizon: 2026Q4, value: 4.8}, {horizon: 2027Q4, value: 5.0}, {horizon: 2028Q4, value: 5.1}, {horizon: 2029Q4, value: 5.0}]}
+      - {role: output_gap, variable: "Excess supply/excess demand (per cent of potential GDP)", transform: quarter_level, unit: percent, values: [{horizon: 2026Q4, value: -1.0}, {horizon: 2027Q4, value: -1.2}, {horizon: 2028Q4, value: -1.3}, {horizon: 2029Q4, value: -1.1}]}
+      - {role: rate_assumption, variable: "Bank Rate (path implied by forward market interest rates)", transform: quarter_level, unit: percent,
+         instrument: "OIS-based forward curve for Bank Rate", values: [{horizon: 2026Q4, value: 3.9}, {horizon: 2027Q4, value: 4.9}, {horizon: 2028Q4, value: 4.9}, {horizon: 2029Q4, value: 4.7}]}
+    note: "the MPR projects no core CPI: the underlying forecast uses the headline, flagged (config/cb_stance.yaml basis)"
+
+  JPY:
+    publication: "Outlook for Economic Activity and Prices, October 2026 (The Bank's View)"
+    published: 2026-10-30
+    meeting: 2026-10-30
+    status: filled
+    conditioning: unpublished
+    cutoff: null
+    source: {url: "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf", page: "p. 10, Appendix 'Forecasts of the Majority of the Policy Board Members' (value = median, low/high = range)", retrieved: 2026-11-14}
+    series:
+      - {role: underlying, variable: "CPI (all items less fresh food and energy) (Reference)", transform: fiscal_year, unit: percent,
+         values: [{horizon: FY2026, value: 2.4, low: 2.4, high: 2.5}, {horizon: FY2027, value: 2.7, low: 2.4, high: 2.7}, {horizon: FY2028, value: 2.3, low: 2.2, high: 2.4}]}
+      - {role: secondary, variable: "CPI (all items less fresh food)", transform: fiscal_year, unit: percent,
+         values: [{horizon: FY2026, value: 2.5, low: 2.4, high: 2.6}, {horizon: FY2027, value: 2.6, low: 2.4, high: 2.7}, {horizon: FY2028, value: 2.0, low: 2.0, high: 2.1}]}
+      - {role: output_gap, variable: "Output gap (Research and Statistics Department estimate)", transform: quarter_level, unit: percent,
+         values: [{horizon: 2026Q2, value: 0.5497362361895087}],
+         source: {url: "https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx", page: "sheet data1, row 2026.2Q, column 'Output gap' (updated Oct. 5, 2026)", retrieved: 2026-11-14}, transcription: file}
+    note: "the BoJ projects no all-items CPI (headline). Note 3 of the table: forecasts are made 'with reference to views incorporated in financial markets regarding the future conduct of policy', but no rate path is published (conditioning kept 'unpublished', reported as a divergence). FY2027 CPI excludes the proposed consumption-tax cut (note 4)."
+
+  CAD:
+    publication: "Monetary Policy Report, October 2026"
+    published: 2026-10-28
+    meeting: 2026-10-28
+    status: filled
+    conditioning: unpublished
+    cutoff: null
+    source: {url: "https://www.bankofcanada.ca/wp-content/uploads/2026/10/mpr-2026-10-28.pdf", page: "Table 2 p. 40 (PDF p. 41), Table 3 p. 41 (PDF p. 42), output gap p. 9 (PDF p. 10)", retrieved: 2026-11-14}
+    series:
+      - {role: headline, variable: "CPI inflation (year-over-year percentage change), Table 3", transform: yoy_quarter, unit: percent,
+         values: [{horizon: 2026Q3, value: 3.0}, {horizon: 2026Q4, value: 3.4}, {horizon: 2027Q4, value: 2.6}, {horizon: 2028Q4, value: 2.1}]}
+      - {role: headline, variable: "CPI inflation (memo item of Table 2)", transform: annual_average, unit: percent,
+         values: [{horizon: "2026", value: 2.9}, {horizon: "2027", value: 3.1}, {horizon: "2028", value: 2.2}]}
+      - {role: underlying, variable: "CPI-trim / CPI-median", transform: yoy_quarter, unit: percent, values: [],
+         status: pending, reason: "the October 2026 MPR prints no number for the projected core measures",
+         quote: "With measures of core inflation still near 2%, high energy costs have not yet spread broadly to other prices.",
+         quote_page: "p. 1 (PDF p. 2)", next_step: "re-check the January 2027 MPR (27 Jan 2027) for an explicit core projection"}
+      - {role: output_gap, variable: "Output gap (Bank's estimated range)", transform: quarter_level, unit: percent,
+         values: [{horizon: 2026Q3, low: -1.25, high: -0.25}]}
+    note: "the projection assumes the nominal neutral rate at the midpoint of 2.25%-3.25% (PDF p. 22); no policy-rate path is published"
+
+  AUD:
+    publication: "Statement on Monetary Policy, November 2026"
+    published: 2026-11-03
+    meeting: 2026-11-03
+    status: filled
+    conditioning: market
+    cutoff: 2026-10-28
+    cutoff_note: "cash rate in line with expectations derived from financial market pricing as per 28 October; forecasts finalised on 28 October"
+    source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/outlook.html", page: "Table 3.1 Detailed Forecast Table, section 3.5 (PDF p. 77, PDF file page 80); Dec 2026 onwards are forecasts", retrieved: 2026-11-14}
+    series:
+      - {role: headline, variable: "Consumer Price Index (percentage change through the four quarters)", transform: yoy_quarter, unit: percent,
+         values: [{horizon: 2026Q4, value: 4.5}, {horizon: 2027Q2, value: 3.7}, {horizon: 2027Q4, value: 2.7}, {horizon: 2028Q2, value: 2.5}, {horizon: 2028Q4, value: 2.4}]}
+      - {role: underlying, variable: "Trimmed mean inflation", transform: yoy_quarter, unit: percent,
+         values: [{horizon: 2026Q4, value: 3.6}, {horizon: 2027Q2, value: 3.5}, {horizon: 2027Q4, value: 2.9}, {horizon: 2028Q2, value: 2.5}, {horizon: 2028Q4, value: 2.4}]}
+      - {role: unemployment, variable: "Unemployment rate (quarterly, %)", transform: quarter_level, unit: percent,
+         values: [{horizon: 2026Q4, value: 4.7}, {horizon: 2027Q2, value: 4.8}, {horizon: 2027Q4, value: 4.9}, {horizon: 2028Q2, value: 5.0}, {horizon: 2028Q4, value: 5.1}]}
+      - {role: rate_assumption, variable: "Cash rate (%)", transform: quarter_level, unit: percent,
+         instrument: "cash rate expectations derived from financial market pricing (note c)",
+         values: [{horizon: 2026Q4, value: 4.7}, {horizon: 2027Q2, value: 4.9}, {horizon: 2027Q4, value: 4.8}, {horizon: 2028Q2, value: 4.8}, {horizon: 2028Q4, value: 4.8}]}
+      - {role: nairu, variable: "NAIRU (assessment)", transform: horizon_level, unit: percent, values: [{horizon: all, value: 4.75}],
+         quote: "we are increasing our assessment of the NAIRU to around 4¾ per cent",
+         source: {url: "https://www.rba.gov.au/publications/smp/2026/nov/pdf/statement-on-monetary-policy-2026-11.pdf", page: "section 2.5 'Assessment of spare capacity', p. 50 (PDF p. 53)", retrieved: 2026-11-14}}
+
+  NZD:
+    publication: "Monetary Policy Statement, September 2026"
+    published: 2026-09-02
+    meeting: 2026-09-02
+    status: filled
+    conditioning: own_path
+    cutoff: null
+    projections_finalised: 2026-08-26
+    source: {url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf", page: "Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)", retrieved: 2026-11-14}
+    transcription_note: "from ~/Downloads/mps_report_sep2026.pdf (downloaded by George; rbnz.govt.nz is bot-walled). The OCR track is in rbnz.yaml (same meeting)."
+    series:
+      - {role: headline, variable: "CPI inflation, annual (Table 6.1)", transform: yoy_quarter, unit: percent,
+         values: [{horizon: 2026Q3, value: 3.9}, {horizon: 2026Q4, value: 3.9}, {horizon: 2027Q1, value: 3.7}, {horizon: 2027Q2, value: 2.6}, {horizon: 2027Q3, value: 2.4}, {horizon: 2027Q4, value: 2.1},
+                  {horizon: 2028Q1, value: 1.9}, {horizon: 2028Q2, value: 2.0}, {horizon: 2028Q3, value: 2.0}, {horizon: 2028Q4, value: 2.0}, {horizon: 2029Q1, value: 2.0}, {horizon: 2029Q2, value: 2.0}, {horizon: 2029Q3, value: 2.0}]}
+      - {role: unemployment, variable: "Unemployment rate (Table 6.1)", transform: quarter_level, unit: percent,
+         values: [{horizon: 2026Q3, value: 5.5}, {horizon: 2026Q4, value: 5.5}, {horizon: 2027Q1, value: 5.4}, {horizon: 2027Q2, value: 5.3}, {horizon: 2027Q3, value: 5.2}, {horizon: 2027Q4, value: 5.1},
+                  {horizon: 2028Q1, value: 5.0}, {horizon: 2028Q2, value: 4.9}, {horizon: 2028Q3, value: 4.8}, {horizon: 2028Q4, value: 4.7}, {horizon: 2029Q1, value: 4.6}, {horizon: 2029Q2, value: 4.6}, {horizon: 2029Q3, value: 4.5}]}
+      - {role: output_gap, variable: "Output gap (% of potential GDP, year average, March years; Table 6.5)", transform: year_average_march, unit: percent,
+         values: [{horizon: M2027, value: -1.4}, {horizon: M2028, value: -0.9}, {horizon: M2029, value: -0.3}]}
+      - {role: output_gap, variable: "Output gap, June 2026 quarter (estimate, text)", transform: quarter_level, unit: percent,
+         values: [{horizon: 2026Q2, value: -1.5}],
+         quote: "The output gap is estimated to have declined to -1.5 percent of potential GDP in the June 2026 quarter."}
+    note: "the MPS projects no CPI excluding food and energy: the underlying forecast uses the headline, flagged"
+
+  CHF:
+    publication: "Monetary policy assessment of 24 September 2026 (conditional inflation forecast)"
+    published: 2026-09-24
+    meeting: 2026-09-24
+    status: filled
+    conditioning: constant_rate
+    cutoff: null
+    source: {url: "https://www.snb.ch/public/asset/en/www-snb-ch/publications/communication/press-releases-restricted/pre_20260924/publications0_en/pre_20260924.en.pdf", page: "p. 1", retrieved: 2026-11-14}
+    series:
+      - {role: headline, variable: "Conditional inflation forecast (average annual inflation)", transform: annual_average, unit: percent,
+         values: [{horizon: "2026", value: 0.7}, {horizon: "2027", value: 0.8}, {horizon: "2028", value: 0.8}],
+         quote: "It puts average annual inflation at 0.7% for 2026, 0.8% for 2027 and 0.8% for 2028 (cf. table)."}
+      - {role: rate_assumption, variable: "SNB policy rate (assumption)", transform: horizon_level, unit: percent, instrument: "SNB policy rate, held constant",
+         values: [{horizon: all, value: 0.0}],
+         quote: "The forecast is based on the assumption that the SNB policy rate is 0% over the entire forecast horizon."}
+    note: "the quarterly forecast table of the release is an image (no text): the annual averages printed in the text are transcribed"
