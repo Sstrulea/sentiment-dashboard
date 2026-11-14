@@ -318,19 +318,21 @@ def compute_decision(bank: str, cfg: dict, meeting: dict, calendars: dict, view:
     }
 
 
-def select_meetings(meetings: list, today: date, n: int = 4) -> list:
-    """The last `n` meetings whose decision day is on or before today."""
+def select_meetings(meetings: list, today: date, n: int = 4, since: Optional[date] = None) -> list:
+    """The last `n` meetings whose decision day is on or before today; with `since`, every such meeting from that day on."""
     past = sorted((m for m in meetings if m["date"] <= today), key=lambda m: m["date"])
+    if since is not None:
+        return [m for m in past if m["date"] >= since]
     return past[-n:]
 
 
 def compute_all(cfgs: dict, meetings: dict, calendars: dict, view: SeriesView, ff_by_bank: dict, today: date,
-                manual: Optional[dict] = None, n: int = 4, statements: Optional[dict] = None) -> tuple:
+                manual: Optional[dict] = None, n: int = 4, statements: Optional[dict] = None, since: Optional[date] = None) -> tuple:
     """Rows for the last `n` meetings of every bank; also the list of (bank, date) that no source could resolve."""
     rows, unresolved = [], []
     for bank, cfg in cfgs.items():
         every = sorted(meetings.get(bank, []), key=lambda x: x["date"])
-        for m in select_meetings(every, today, n):
+        for m in select_meetings(every, today, n, since):
             man = (manual or {}).get((bank, m["date"]))
             prev = next((x for x in reversed(every) if x["date"] < m["date"]), None)
             row = compute_decision(bank, cfg, m, calendars, view, ff_by_bank.get(bank, []), man, (statements or {}).get((bank, m["date"])), prev)

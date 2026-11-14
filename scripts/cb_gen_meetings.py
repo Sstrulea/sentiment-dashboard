@@ -40,11 +40,18 @@ def main() -> int:
         if page is None:
             sys.exit(f"{bank}: calendar page unavailable ({src.last_status} {src.last_note}) - nothing written")
         parsed[bank] = page
+    from src.cb_sources.meetings import RANGE
+    past = {}
+    for bank in ("USD", "GBP", "JPY", "CAD"):                                  # meetings already held: the current pages list only upcoming ones
+        rows = src.past_meetings(bank, banks[bank]["calendar_url"], RANGE[0], date(2025, 12, 31))
+        if rows is None:
+            sys.exit(f"{bank}: archive unavailable ({src.last_status} {src.last_note}) - nothing written")
+        past[bank] = rows
     ff = ds.read_ff_parquet(ds.FF_PARQUET)
     ecb = ff[(ff["currency"] == "EUR") & (ff["name_raw"] == banks["EUR"]["policy_rate"]["ff_name"]) & ff["actual"].notna()]
     ecb_days = local_days([t.to_pydatetime() for t in ecb["datetime_utc"]], banks["EUR"]["tz"])
     rbnz = ds.load_rbnz(ROOT / "data" / "cb" / "manual" / "rbnz.yaml")["published_calendar"]["meetings"]
-    text = build(parsed, banks, a.evidence_date, ecb_days, rbnz)
+    text = build(parsed, banks, a.evidence_date, ecb_days, rbnz, past=past, past_evidence=a.evidence_date)
     out = Path(a.out)
     if a.check:
         cur = out.read_text() if out.exists() else ""

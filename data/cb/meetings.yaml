@@ -7,7 +7,8 @@
 #   has_projections the meeting publishes the bank's own projections (Fed SEP, ECB staff, BoE/BoC MPR, BoJ Outlook,
 #                   RBA SMP, RBNZ MPS, SNB conditional forecast).
 #   has_presser     press conference on decision day (transcript/video expected).
-#   source          official = date read from the bank's calendar page | ff = decision day seen only in FF rows
+#   source          official = date read from the bank's calendar page | official_archive = a meeting already held, read from the
+#                   bank's official archive (BoC key-rate table, BoJ decisions index, BoE Monetary Policy Summary pages) | ff = decision day seen only in FF rows
 #                   (not official; confirm) | manual = hand-transcribed (RBNZ site is bot-walled).
 #   verified        date on which the decision DATE was matched to its source; false = not verified against
 #                   an official page (also for dates the bank itself calls provisional: BoE 2027). The two flags
@@ -16,10 +17,13 @@
 #
 # RBNZ stays manual (data/cb/manual/rbnz.yaml): published calendar to February 2028 (rows up to the end of the range).
 
-meta: {version: 2, evidence_date: 2026-09-20, range: [2026-01-01, 2027-12-31], extra: {CHF: "from 2025-09-01 (the last 4 SNB decisions)"}}
+meta: {version: 2, evidence_date: 2026-09-20, range: [2025-09-01, 2027-12-31], extra: {past: "2025 meetings already held (S1.1, archives read 2026-11-14): USD/GBP/JPY/CAD official_archive, EUR ff; AUD (no RBA archive page with 2025 dates) and NZD (RBNZ bot-walled) not available"}}
 
 meetings:
   USD:     # dates + projections (SEP asterisk) from the FOMC calendar page; presser: every meeting (config), the page announces it only for past/near meetings
+    - {date: 2025-09-17, first_day: 2025-09-16, has_projections: true, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-10-29, first_day: 2025-10-28, has_projections: false, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-12-10, first_day: 2025-12-09, has_projections: true, has_presser: true, source: official_archive, verified: 2026-11-14}
     - {date: 2026-01-28, first_day: 2026-01-27, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-03-18, first_day: 2026-03-17, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-04-29, first_day: 2026-04-28, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
@@ -37,6 +41,9 @@ meetings:
     - {date: 2027-10-27, first_day: 2027-10-26, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2027-12-08, first_day: 2027-12-07, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
   EUR:     # decision dates from the ECB GC calendar page (it lists upcoming meetings only): 2026 meetings already held come from FF decision rows (source: ff, NOT official); presser from the page; projections derived (Mar/Jun/Sep/Dec staff projections, ECB practice, not stated on the page)
+    - {date: 2025-09-11, first_day: 2025-09-10, has_projections: true, has_presser: true, source: ff, verified: false}
+    - {date: 2025-10-30, first_day: 2025-10-29, has_projections: false, has_presser: true, source: ff, verified: false}
+    - {date: 2025-12-18, first_day: 2025-12-17, has_projections: true, has_presser: true, source: ff, verified: false}
     - {date: 2026-02-05, first_day: 2026-02-04, has_projections: false, has_presser: true, source: ff, verified: false}
     - {date: 2026-03-19, first_day: 2026-03-18, has_projections: true, has_presser: true, source: ff, verified: false}
     - {date: 2026-04-30, first_day: 2026-04-29, has_projections: false, has_presser: true, source: ff, verified: false}
@@ -54,6 +61,9 @@ meetings:
     - {date: 2027-10-28, first_day: 2027-10-27, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2027-12-16, first_day: 2027-12-15, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
   GBP:     # dates from the BoE MPC page (2026 and 2027 confirmed - the page re-read 2026-10-09; 2027 was provisional until then); projections = Monetary Policy Report days; presser = MPR days only (config)
+    - {date: 2025-09-18, has_projections: false, has_presser: false, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-11-06, has_projections: true, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-12-18, has_projections: false, has_presser: false, source: official_archive, verified: 2026-11-14}
     - {date: 2026-02-05, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
     - {date: 2026-03-19, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
     - {date: 2026-04-30, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
@@ -71,6 +81,9 @@ meetings:
     - {date: 2027-11-04, has_projections: true, has_presser: true, source: official, verified: 2026-10-09}
     - {date: 2027-12-16, has_projections: false, has_presser: false, source: official, verified: 2026-10-09}
   JPY:     # dates + Outlook Report (projections) from the BoJ schedule page; presser: every meeting (config), not stated on the schedule page
+    - {date: 2025-09-19, has_projections: false, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-10-30, has_projections: true, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-12-19, has_projections: false, has_presser: true, source: official_archive, verified: 2026-11-14}
     - {date: 2026-01-23, first_day: 2026-01-22, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-03-19, first_day: 2026-03-18, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-04-28, first_day: 2026-04-27, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
@@ -88,6 +101,9 @@ meetings:
     - {date: 2027-10-29, first_day: 2027-10-28, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2027-12-17, first_day: 2027-12-16, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
   CAD:     # dates + MPR from the BoC schedule page; presser at every decision (BoC blackout page)
+    - {date: 2025-09-17, has_projections: false, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-10-29, has_projections: true, has_presser: true, source: official_archive, verified: 2026-11-14}
+    - {date: 2025-12-10, has_projections: false, has_presser: true, source: official_archive, verified: 2026-11-14}
     - {date: 2026-01-28, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-03-18, has_projections: false, has_presser: true, source: official, verified: 2026-09-20}
     - {date: 2026-04-29, has_projections: true, has_presser: true, source: official, verified: 2026-09-20}

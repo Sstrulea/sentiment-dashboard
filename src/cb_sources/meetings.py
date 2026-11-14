@@ -8,8 +8,11 @@ Row rules
   has_projections   the page's own flag where it states one (Fed asterisk, BoE / BoC MPR, BoJ Outlook Report), else the
                     bank's projection months from config (ECB, RBA, SNB, RBNZ MPS list).
   has_presser       every_meeting / quarterly banks: true; mpr_only (BoE): the projections flag.
-  source            official (page) | ff (ECB, decision day only from FF rows) | manual (RBNZ).
-  verified          the evidence date for an official row, false for ff / manual / dates the bank calls provisional.
+  source            official (page) | official_archive (a meeting already held, from the bank's archive: Fed calendar 2025
+                    section, BoC key-rate table, BoJ decisions index, BoE Monetary Policy Summary pages; the BoJ index has
+                    no first day, so those rows carry none) | ff (ECB, decision day only from FF rows) | manual (RBNZ).
+  verified          the evidence date for an official row (archive rows: the date the archive was read), false for ff /
+                    manual / dates the bank calls provisional.
 """
 from __future__ import annotations
 
@@ -18,8 +21,10 @@ from typing import Optional
 
 ORDER = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF"]
 MULTI_DAY = {"USD", "EUR", "JPY", "AUD"}
-RANGE = (date(2026, 1, 1), date(2027, 12, 31))
+RANGE = (date(2025, 9, 1), date(2027, 12, 31))          # from 2025-09-01 for every bank (S1.1: the decisions behind the cycle; same start as the official series)
 CHF_FROM = date(2025, 9, 1)                     # the last 4 SNB decisions
+PAST_NOTE = ("2025 meetings already held (S1.1, archives read 2026-11-14): USD/GBP/JPY/CAD official_archive, EUR ff; "
+             "AUD (no RBA archive page with 2025 dates) and NZD (RBNZ bot-walled) not available")
 
 BASIS = {
     "USD": "dates + projections (SEP asterisk) from the FOMC calendar page; presser: every meeting (config), the page announces it only for past/near meetings",
@@ -42,7 +47,8 @@ HEADER = [
     "#   has_projections the meeting publishes the bank's own projections (Fed SEP, ECB staff, BoE/BoC MPR, BoJ Outlook,",
     "#                   RBA SMP, RBNZ MPS, SNB conditional forecast).",
     "#   has_presser     press conference on decision day (transcript/video expected).",
-    "#   source          official = date read from the bank's calendar page | ff = decision day seen only in FF rows",
+    "#   source          official = date read from the bank's calendar page | official_archive = a meeting already held, read from the",
+    "#                   bank's official archive (BoC key-rate table, BoJ decisions index, BoE Monetary Policy Summary pages) | ff = decision day seen only in FF rows",
     "#                   (not official; confirm) | manual = hand-transcribed (RBNZ site is bot-walled).",
     "#   verified        date on which the decision DATE was matched to its source; false = not verified against",
     "#                   an official page (also for dates the bank itself calls provisional: BoE 2027). The two flags",
@@ -63,7 +69,7 @@ def _has_presser(banks: dict, bank: str, projections: bool) -> bool:
 
 
 def build_rows(bank: str, page: list, banks: dict, evidence: date, ff_days: Optional[list] = None,
-               manual: Optional[list] = None) -> list:
+               manual: Optional[list] = None, past: Optional[list] = None, past_evidence: Optional[date] = None) -> list:
     """[(date, first_day | None, has_projections, has_presser, source, verified)] for one bank, sorted by date."""
     months = set(banks[bank]["projections"]["months"])
     rows: dict = {}
@@ -81,6 +87,12 @@ def build_rows(bank: str, page: list, banks: dict, evidence: date, ff_days: Opti
                 continue
             proj = m["has_projections"] if m.get("has_projections") is not None else m["date"].month in months
             add(m["date"], m.get("first_day"), bool(proj), "official", False if m.get("provisional") else evidence)
+        first_on_page = min((d for d in rows), default=None)
+        for m in past or []:                                        # held meetings from the bank's official archive (USD, GBP, JPY, CAD)
+            d = m["date"]
+            if in_scope(bank, d) and (first_on_page is None or d < first_on_page) and d not in rows:
+                proj = m["has_projections"] if m.get("has_projections") is not None else d.month in months
+                add(d, m.get("first_day"), bool(proj), "official_archive", past_evidence or evidence)
     if bank == "EUR":                                               # meetings already held: only FF knows them
         first_on_page = min((d for d in rows), default=None)
         for d in sorted(set(ff_days or [])):
@@ -92,7 +104,7 @@ def build_rows(bank: str, page: list, banks: dict, evidence: date, ff_days: Opti
 def render(rows_by_bank: dict, evidence: date) -> str:
     lines = list(HEADER) + [
         f"meta: {{version: 2, evidence_date: {evidence.isoformat()}, range: [{RANGE[0].isoformat()}, {RANGE[1].isoformat()}], "
-        f"extra: {{CHF: \"from {CHF_FROM.isoformat()} (the last 4 SNB decisions)\"}}}}",
+        f"extra: {{past: \"{PAST_NOTE}\"}}}}",
         "", "meetings:"]
     for bank in ORDER:
         lines.append(f"  {bank}:     # {BASIS[bank]}")
@@ -105,8 +117,11 @@ def render(rows_by_bank: dict, evidence: date) -> str:
 
 
 def build(parsed: dict, banks: dict, evidence: date, ff_ecb_days: Optional[list] = None,
-          rbnz_manual: Optional[list] = None, evidence_by_bank: Optional[dict] = None) -> str:
+          rbnz_manual: Optional[list] = None, evidence_by_bank: Optional[dict] = None, past: Optional[dict] = None,
+          past_evidence: Optional[date] = None) -> str:
     """`parsed` = {bank: parsed page meetings} for USD, EUR, GBP, JPY, CAD, AUD, CHF. `evidence_by_bank` = the date a bank's
-    page was read when it is not the common evidence date (BoE re-read 2026-10-09)."""
+    page was read when it is not the common evidence date (BoE re-read 2026-10-09). `past` = {bank: meetings already held,
+    from the official archive}, read on `past_evidence`."""
     ev = evidence_by_bank or {}
-    return render({b: build_rows(b, parsed.get(b, []), banks, ev.get(b, evidence), ff_ecb_days, rbnz_manual) for b in ORDER}, evidence)
+    return render({b: build_rows(b, parsed.get(b, []), banks, ev.get(b, evidence), ff_ecb_days, rbnz_manual, (past or {}).get(b), past_evidence)
+                   for b in ORDER}, evidence)

@@ -100,7 +100,7 @@ def statement_rates(paths) -> dict:
 
 
 def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: dict | None = None,
-                  meetings: dict | None = None, ff_path: Path | str | None = None, n: int = 4) -> DecisionsReport:
+                  meetings: dict | None = None, ff_path: Path | str | None = None, n: int = 4, since: date | None = None) -> DecisionsReport:
     from .cb_collect import load_official_store                         # late import: cb_collect imports this module
     banks = banks or load_banks()
     calendars = calendars or load_calendars()
@@ -108,7 +108,7 @@ def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: d
     view = SeriesView(list(load_official_store(paths).values()))
     ff = read_ff_parquet(ff_path or FF_PARQUET)
     rows, unresolved = compute_all(banks, meetings, calendars, view, ff_by_bank(banks, ff), today,
-                                   load_manual_decisions(paths.manual / "decisions.yaml"), n, statement_rates(paths))
+                                   load_manual_decisions(paths.manual / "decisions.yaml"), n, statement_rates(paths), since)
     keep = {(r["currency"], r["meeting_date"]): r for r in cs.read_table_file(paths.decisions)}
     for r in rows:
         keep[(r["currency"], r["meeting_date"])] = r                    # recomputed inside the window; older rows stay

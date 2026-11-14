@@ -561,6 +561,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--summaries-effort", choices=("low", "medium", "high"), help="summaries stage: the reasoning effort of this run (default: the config's)")
     ap.add_argument("--summaries-scratch", action="store_true", help="summaries stage: a measurement - write the summaries to a scratch directory and leave data/ and state.json alone")
     ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
+    ap.add_argument("--decisions-since", type=date.fromisoformat, help="decisions stage: recompute every meeting from this day (default: the last 4 of each bank)")
     ap.add_argument("--force-framework", action="store_true", help="framework stage: run the watch now (it otherwise runs at most once a week)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
@@ -616,7 +617,7 @@ def main(argv: list[str] | None = None) -> int:
     from . import cb_datasets as dsets
     if "decisions" in stages:
         try:
-            emit(*dsets.decisions_report(dsets.run_decisions(paths, today), today))
+            emit(*dsets.decisions_report(dsets.run_decisions(paths, today, since=a.decisions_since), today))
         except Exception as e:
             log.exception("decisions stage failed")
             emit(f"decisions: FAILED {type(e).__name__}: {e}", f"### decisions\n\nFAILED `{type(e).__name__}: {e}`")
