@@ -1,0 +1,90 @@
+# Pre-registration — reaction layer v0 (phase 2, feat/reaction-layer). Attempt #2 in docs/eval/attempts.md.
+# Committed BEFORE any forward return was computed. scripts/measure/reaction_v0.py refuses to run
+# while this file has uncommitted changes and prints its commit hash. Any change after the first
+# measurement = a new pre-registration.
+id: reaction_v0
+written: 2026-10-30
+attempt: 2
+frozen_with_this_commit: [src/tree/backbone.py, src/tree/reaction.py, data/trees/reaction.yml,
+                          scripts/fetch_backbone.py, scripts/build_reaction_events.py,
+                          scripts/measure/reaction_v0.py]
+inputs: [data/backbone_rates.parquet (fetched 2026-10-30), data/reaction_events.parquet,
+         data/tree_inputs.parquet (risk_regime_v0 of phase 1)]
+
+backbone:
+  y2:
+    USD: "FRED DGS2"
+    EUR: "ECB YC B.U2.EUR.4F.G_N_A.SV_C_YM.SR_2Y (AAA spot 2Y) from 2004-09-06; Bundesbank BBSIS D.I.ZST.ZI.EUR.S1311.B.A604.R02XX.R.A.A._Z._Z.A before"
+    GBP: "BoE GLC nominal spot curve, 2.0y (from 2010)"
+    JPY: "MoF jgbcm 2年"
+    CAD: "BoC Valet BD.CDN.2YR.DQ.YLD"
+    AUD: "RBA F2 FCMYGBAG2D (rows held in data/rates.parquet; the live table answers 403 from here)"
+    NZD: "none — RBNZ B2 behind a Cloudflare wall, not bypassed; 2Y nodes missing"
+    CHF: "SNB rendoblid D0=2J; daily values published monthly, last 2025-07-31; 2Y nodes missing"
+  policy: "BIS WS_CBPOL daily, areas US XM GB JP CA AU NZ CH"
+  fx: "FRED H.10 (DEXUSEU DEXUSUK DEXUSAL DEXUSNZ DEXJPUS DEXCAUS DEXSZUS), log value in USD; USD = 0"
+  fx_choice: "H.10, not MT5 D1: MT5 D1 covers 2024-12 -> 2026-08 only"
+  basket: "currency log value minus the equal-weight mean of the other 7 (USD included)"
+  as_of:
+    daily: "observation date + 1 day"
+    chf_2y: "first day of month M+2 + 10 days (rendoblid publishes month M around the first working day of M+2)"
+  alignment:
+    rates: "first local close of the currency's 2Y after the release (closes: USD 15:30 New York, EUR 17:30 Berlin, GBP 16:30 London, JPY 15:00 Tokyo, CAD 16:00 Toronto, AUD 16:30 Sydney, CHF 17:00 Zurich); move = y[d] - y[previous obs], dropped across a gap > 5 days"
+    fx: "first H.10 noon New York fixing after the release, minus the previous fixing"
+    us_control: "US 2Y daily move whose close is nearest in time to the currency's close"
+    us_surprise_same_day: "sum of US z_raw released in the US close window chosen as control"
+
+events:
+  source: "data/economic_calendar_ff.parquet via src.ff_scoring.to_scoring_frame + scoring_view (zero-placeholder quarantine, can_be_zero)"
+  scope: "(currency, indicator) pairs of data/econ_catalog.yml; category from the catalog (Inflation / Labor / Growth / Rates)"
+  window: "2023-01-04 -> 2026-10-29 (the FF calendar starts 2023-01-02, not 2022-01)"
+  actual: "as stored at release (FF first print); manual_actuals_overrides.json not applied"
+  z: "src.economic_compute.compute_indicator_score as of the release (z_signed = direction x surprise / sigma of the last 12 prints); z_raw = z_signed x direction; fallback / no-consensus prints have no z"
+  meetings: "calendar interest_rate_decision rows + data/cb/meetings.yaml"
+  regime: "risk_regime_v0 (phase 1) as of the release day"
+
+nodes:                       # src/tree/reaction.py constants
+  beta_data_rates: "joint Huber (c 1.345, IRLS, MAD scale) on event days: d2y ~ 1 + sum beta_i z_raw_i + gamma us_d2y (non-USD); days of the last 24 scored releases of each indicator; indicators with < 6 non-zero days are left out of the regression (category beta only); needs n_days >= params + 10"
+  shrinkage: "polarity-aligned: a_i = direction_i beta_i; a_cat = n-weighted mean of a_i (n_i >= 6); a = w a_i + (1 - w) a_cat, w = n / (n + 12); beta = direction_i a"
+  digest_rates_4w: "day residual = d2y - fitted (betas as of the release day); sum over releases of the last 28 days; z = sum / std of the same sum on the 52 previous Fridays (>= 26 values)"
+  beta_rates_fx: "OLS of daily basket return (bp) on d(2Y_c - mean 2Y of the other currencies in {USD EUR GBP JPY CAD AUD}) (bp), trailing 365 days, >= 150 obs; vs-USD: on d(2Y_c - 2Y_USD); same calendar date for the fixing and the close"
+  digest_fx_Nd: "sum over the last N fixings of (basket return - beta_rates_fx x relative 2Y move); z = sum / std of the N-day sum over the trailing 365 days"
+  gnbp_4w: "count of releases in the last 28 days with z_signed >= +1 and (day residual <= 0 OR event-window basket move <= 0); intensity = sum |z|"
+  bngp_4w: "z_signed <= -1 and (residual >= 0 OR basket move >= 0)"
+  focus_map: "shares of sum |contracted beta| by category"
+  focus_shift_labor_3m: "Labor share now - Labor share 91 days earlier"
+  event_risk_2w: "sum |beta| x std(z_raw, last 12) over releases due in 14 days: week 1 from the calendar rows, week 2 from cadence (last + median gap of the last 12); status context, not tested"
+
+harness:
+  panel: "Fridays 2022-01-07 -> last Friday with the forward return; 8 currencies; forward returns vs basket at 1/2/4/8/13 weeks (H.10 fixing at the last date <= t to the last date <= t + 7h, both within 4 days)"
+  universe_digest: [USD, EUR, GBP, JPY, CAD, AUD]   # the currencies with a daily 2Y
+  min_cross_section: 5
+  ic: "Spearman rank IC across currencies each week -> mean; t = mean / (sd / sqrt(n)) on the non-overlapping weekly series (every h-th Friday from the first)"
+  long_short: "long top-2 / short bottom-2, 1/2 each leg, rebalanced every h weeks on the non-overlapping grid; cost 3 bp x |change in weight| per side; bp per period, Sharpe = mean/sd x sqrt(52/h), max drawdown of the cumulative bp"
+  pairs: "28 pairs; hit = sign(score_a - score_b) == sign(ret_a - ret_b), non-overlapping weeks, both present"
+  abstention: "cross-sectional z of the score each week; |cs z| < 0.5 -> abstain; coverage = share predicting; accuracy = sign(score) == sign(ret) among predictions"
+  baselines:
+    carry: "policy rate level (BIS, as of t)"
+    momentum: "13-week basket return to the last fixing <= t - 1 day"
+    random: "uniform scores, numpy seed 20261030"
+    v3: "scoring-tournament reconstruction A1 (production v3), ~/.cache/macro-tournament/scores_main.parquet, view ccy, Fridays 21:00 UTC -> that Friday"
+  halves: {first: [2022-01-07, 2024-05-31], second: [2024-06-01, end]}
+
+hypotheses:
+  H1: {signal: "digest_rates_4w z", target: "forward change of the currency's 2Y (bp), last close <= t -> last close <= t + 7h", horizons: [2, 4],
+       metric: "pooled Spearman IC over currency-weeks; t on the non-overlapping grid, t = IC sqrt((n - 2)/(1 - IC^2))", expected_sign: "+"}
+  H2: {signals: ["digest_fx_20d z", "digest_fx_10d z"], target: "forward basket return", horizons: [2, 4],
+       metric: "cross-sectional IC (harness)", expected_sign: "+",
+       discrete: "pooled currency-weeks: mean forward basket return when gnbp_4w >= 2 vs gnbp_4w == 0, same for bngp_4w (descriptive, no gate)"}
+  H3: {events: "z_signed >= +1, currency with an H.10 fixing", target: "basket move from the event fixing to 5 fixings later (days +1..+5)",
+       metric: "mean bp, cost 6 bp round trip subtracted, t of the net mean with standard errors clustered on the release date", per: "currency and pooled"}
+  H4: {descriptive: true, cut: "first policy cut after a pause = a cut (BIS level falls) whose previous change was a hike or came > 180 days earlier, 2023-06 ->",
+       compare: "focus_shift_labor_3m on Fridays in the 12 weeks before the cut vs the other Fridays of the same currency"}
+
+criteria:
+  H1: ["IC >= 0.05", "t >= 2", "IC same sign in both halves"]
+  H2: ["IC >= 0.05", "t >= 2", "IC same sign in both halves", "IC - momentum IC (same universe, same horizon) >= 0.03"]
+  H3: ["net mean (gross - 6 bp) >= 5 bp", "t of the net mean >= 2.5"]
+  empty_half: "a half with fewer than 10 non-overlapping weeks has no IC -> the halves criterion fails"
+  promotion: "H1 pass at h -> digest_rates_4w signal at h; H2 pass at h -> that digest_fx signal at h; H3 pass -> filter (pooled, or the currency); otherwise context"
+  count: "every test run is counted and reported (H1 2, H2 4 + 4 discrete, H3 9, H4 1)"

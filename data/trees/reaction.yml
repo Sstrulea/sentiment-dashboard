@@ -1,0 +1,32 @@
+# Reaction layer v0 (phase 2): per-currency nodes, as-of. Not a decision tree: a
+# snapshot of how rates and FX react to data. Rules and constants are fixed in
+# src/tree/reaction.py and pre-registered in scripts/measure/prereg_reaction_v0.yml.
+# Inputs: data/backbone_rates.parquet, data/reaction_events.parquet.
+layer_id: reaction
+note: v0; everything context until the pre-registered tests promote a node
+currencies: [USD, EUR, GBP, JPY, CAD, AUD, NZD, CHF]
+nodes:
+  - {id: beta_data_rates, fn: reaction_beta_data_rates, inputs: [Y2, EVENTS], status: context, stale_after_days: 60}
+  - {id: digest_rates_4w, fn: reaction_digest_rates, inputs: [Y2, EVENTS], status: context, stale_after_days: 60}
+  - {id: beta_rates_fx, fn: reaction_beta_rates_fx, inputs: [Y2, FX], status: context, stale_after_days: 10}
+  - {id: digest_fx_10d, fn: reaction_digest_fx, inputs: [beta_rates_fx], params: {days: 10}, status: context, stale_after_days: 10}
+  - {id: digest_fx_20d, fn: reaction_digest_fx, inputs: [beta_rates_fx], params: {days: 20}, status: context, stale_after_days: 10}
+  - {id: gnbp_4w, fn: reaction_news_price_flag, inputs: [EVENTS, FX], params: {kind: gnbp}, status: context, stale_after_days: 60}
+  - {id: bngp_4w, fn: reaction_news_price_flag, inputs: [EVENTS, FX], params: {kind: bngp}, status: context, stale_after_days: 60}
+  - {id: focus_map, fn: reaction_focus_map, inputs: [beta_data_rates], status: context, stale_after_days: 60}
+  - {id: focus_shift_labor_3m, fn: reaction_focus_shift, inputs: [beta_data_rates], params: {category: Labor, days: 91},
+     status: context, stale_after_days: 60}
+  - {id: event_risk_2w, fn: reaction_event_risk, inputs: [beta_data_rates, EVENTS], status: context, stale_after_days: 60}
+
+# A daily 2Y the layer cannot use as of a date -> the 2Y-based nodes are missing with this reason.
+missing_by_ccy:
+  beta_data_rates: &no2y
+    NZD: "no NZD 2Y: RBNZ B2 is behind a Cloudflare wall (HTTP 403), not bypassed"
+    CHF: "CHF 2Y is monthly (SNB rendoblid: daily values published with M+2 lag; last value 2025-07-31)"
+  digest_rates_4w: *no2y
+  beta_rates_fx: *no2y
+  digest_fx_10d: *no2y
+  digest_fx_20d: *no2y
+  focus_map: *no2y
+  focus_shift_labor_3m: *no2y
+  event_risk_2w: *no2y

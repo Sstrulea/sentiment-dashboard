@@ -1,0 +1,70 @@
+# Pre-registration — phase 4 (feat/v4-score). Attempt #4 in docs/eval/attempts.md:
+# "last round of historical search; after it, no new hypothesis is tested on the same data".
+# Committed BEFORE any new score touched a forward return; scripts/measure/phase4.py refuses
+# to run while this file has uncommitted changes.
+id: phase4
+written: 2026-10-30
+attempt: 4
+frozen_with_this_commit: [src/tree/v4.py, scripts/fetch_phase4.py, scripts/measure/phase4.py, data/trees/v4.yml]
+inputs: [data/cftc_tff.parquet, data/cftc_legacy.parquet, data/bis_reer.parquet, data/fomc_dates.parquet,
+         data/v3_reconstruction.parquet (copy of the scoring-tournament A1/B2/D1, 2023-09-22 -> 2026-10-09),
+         data/backbone_rates.parquet, data/reaction_events.parquet, data/regime_inputs.parquet, all of 2026-10-30]
+nzd_2y: "data/manual/rbnz/hb2-daily-close.xlsx absent on 2026-10-30 -> NZD stays without 2Y"
+
+harness:
+  panel: "Fridays 2000-01-07 -> last Friday with the return; 8 currencies; forward basket return (H.10), bp"
+  ic: "weekly cross-sectional Spearman (>= 5 currencies), mean on the non-overlapping grid of the test window, t = mean / (sd / sqrt(n))"
+  long_short: "top-2 / bottom-2, 1/2 each, rebalanced every h weeks on the grid, 3 bp per side x |weight change| (net)"
+  halves: "the test window split at its middle date"
+  as_of: "FX / rates: date <= t - 1; COT / TFF: report + 6 days; REER: month end + 25 days; v3 reconstruction: previous Friday's value"
+  hard_gate_A: ["sign of the IC = the pre-registered sign (IC > 0 for the signal as defined)", "t >= 3", "same sign in both halves",
+                "same sign at the neighbouring horizons of the test's horizon list", "net L/S > 0"]
+
+stage_A:
+  A1_tff: {signal: "-(3-year percentile of asset-manager (long - short) / OI)", window: "2006-06 -> (first Friday with >= 5 currencies)",
+           horizons: [4, 8, 13], gate: hard_gate_A, descriptive: "leveraged funds, same construction; TFF vs Legacy OI reconciliation"}
+  A2_pre_meeting:
+    events: "FF interest_rate_decision rows 2023 -> with a consensus; expected = sign(consensus - previous); meetings with expected != 0"
+    window: "basket return from the H.10 fixing 10 fixings before day -1 to day -1 (day -1 = last fixing before the decision date), in the sign of the expected change, minus 6 bp"
+    gate: ["mean net >= 15 bp", "t >= 3 (SE clustered on the decision date)", "mean net > 0 in both halves (2023-01 -> 2024-11, 2024-12 ->)"]
+    descriptive: ["expected-no-change meetings: unconditional mean", "2000 -> proxy: BIS rate changes as meetings, expected = direction of the last change in the previous 6 months (PROXY)"]
+  A3_fed_shock:
+    days: "FOMC scheduled meetings + conference calls / unscheduled actions with a BIS US policy-rate change within 2 days (federalreserve.gov calendars)"
+    shock: "policy shock when d2Y (DGS2 on the day) and the equity return of the day (NASDAQCOM to 2016-12-31, SP500 after) have opposite non-zero signs; information shock when the same sign"
+    target: "USD vs basket from the first fixing after the decision day (day +1) to day +10, in the sign of d2Y, minus 6 bp"
+    gate: ["mean net >= 15 bp", "t >= 3 (SE clustered on the date)", "mean net > 0 in both halves (2000-2012, 2013-2026)"]
+    descriptive: "other banks: FF decisions 2023 -> (events table d2y, SP500 return on the 2Y close day), same split"
+  A4_reer: {signal: "-(ln REER - mean ln REER of the previous 60 months, >= 36)", horizons: [8, 13, 26], window: 2000 ->, gate: hard_gate_A}
+  A5_carry_26w: {signal: "carry (policy rate)", horizons_reported: [2, 4, 8, 13, 26], gate_at: 26,
+                 gate: ["IC >= 0.05", "t >= 3", "same sign in both halves", "neighbour (13w) same sign", "net L/S > 0"]}
+  A6_crowding:
+    crowding: "sum_c (carry rank_c - mean rank) x z_c(non-commercial net / OI, own 156 weeks, >= 104); percentile in the previous 260 Fridays (>= 104)"
+    portfolio: "carry top-2 / bottom-2, weekly, 3 bp per side; filtered: weights x (1 - pct / 100) when pct > 70"
+    gate: ["Sharpe filtered - Sharpe plain >= 0.10", "max drawdown filtered <= 0.75 x plain", "both, in 2000-2012 and in 2013-2026"]
+  count: 10                       # A1 3 + A2 1 + A3 1 + A4 3 + A5 1 + A6 1
+
+stage_B:
+  ms: "z_cs(surprises: per catalog indicator mean sign(direction x surprise) of the last 12 releases, summed) + z_cs(COT net / OI 3-year percentile, trend-following) + z_cs(sign of 13-week move vs USD); requires all three; 2023 ->"
+  ms_lite: "z_cs(COT pct) + z_cs(momentum sign); 2000 ->"
+
+stage_C:
+  v4_0: "carry_z + macro_z (v3 macro block B2, previous Friday, cross-sectional z; 0 before 2023-09-29)"
+  regime_gate: {liquidity_stress: "carry part x (1 - crowding pct); confidence halved", inflation_shock: "confidence halved", growth_scare: "confidence halved", calm: unchanged}
+  passing_nodes: "every stage-A node that passes enters with weight 1 (its cross-sectional z) at the horizons where it passed; the others stay context"
+  calibration: "logistic P(basket return > 0) on the score, walk-forward on training rows whose target ended before t - 1 day; >= 156 weeks of score history (v3 / MS: >= 52 weeks, they start in 2023); regime model when that regime has >= 100 rows, else global"
+  confidence_halving: "P -> 0.5 + (P - 0.5) / 2 outside calm (v4 only)"
+  abstain: "0.45 <= P <= 0.55"
+  concentration: "share of the top-2 / bottom-2 portfolio variance on PC1 of the 7 vs-USD daily returns over 365 days; flag >= 0.60; no gate"
+  v4_1: "descriptive: yearly NNLS weights on carry_z and macro_z"
+
+stage_D:
+  windows: {recent: "2023-09-29 -> (v4, v3 A1 lagged 1 week, carry, MS)", long: "2016-01-01 -> (v4 carry-only + regime gate, carry, MS-lite)"}
+  horizons: [2, 4, 8, 13]
+  gate_horizon: 4
+  gate_recent: ["v4 L/S Sharpe >= 1.3 x MS Sharpe and >= 1.0 x v3 Sharpe, and > 0", "v4 max drawdown <= 0.7 x MS",
+                "Brier v4 <= Brier v3 (Friday-currency cells where both have P)", "IC v4 >= IC v3 - 0.02"]
+  gate_long: ["v4-carry Sharpe >= 1.3 x MS-lite Sharpe and > 0", "v4-carry max drawdown <= 0.7 x MS-lite"]
+  sharpe_and_drawdown: "the rank L/S without abstention (net, grid); the abstention variant (long the <= 2 highest P > 0.55, short the <= 2 lowest P < 0.45) is reported, not gated"
+  count: 2
+
+totals: {phase4_gated: 12, cumulative_gated: "phase 1: 25 (5 signal + 20 cell), phase 2: 15, phase 3: 10, phase 4: 12 = 62"}
