@@ -98,9 +98,10 @@ def load_stance(data_dir: Path | str | None = None, asof: Optional[date] = None,
     ctx = ctx or load_context(data_dir)
     asof = asof or ctx.market.newest()
     params = ds.load_stance_config()
-    mand = ds.load_mandates(paths, today=asof, validate=True)
-    neut = ds.load_neutral(paths, today=asof, validate=True, mandates=mand)
-    fc = ds.load_forecasts(paths, today=asof, validate=True, mandates=mand)
+    vday = max(asof, date.today())               # file validation is against the real day (a file read after a past as-of is not "in the future");
+    mand = ds.load_mandates(paths, today=vday, validate=True)          # the as-of only selects what was known (point-in-time, in stance.py)
+    neut = ds.load_neutral(paths, today=vday, validate=True, mandates=mand)
+    fc = ds.load_forecasts(paths, today=vday, validate=True, mandates=mand)
     cur = {b: current_version(v, asof) for b, v in ds.mandate_versions(mand).items()}
     mcfg = load_official()["macro"]
     per = cb_macro.by_series(cb_macro.load_macro(paths, end=asof))

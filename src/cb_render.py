@@ -4,7 +4,7 @@
 
 Reads data/cb through `cb_loader`, computes with `cb_compute` and writes ONLY
 
-    public/data/cb/overview.json, public/data/cb/<ccy>.json (8), public/data/cb/pairs.json
+    public/data/cb/overview.json, public/data/cb/<ccy>.json (8), public/data/cb/pairs.json   (+ the `stance` block of each, S2)
     public/central-banks.html, public/central-banks/<ccy>.html (8), public/central-banks/pair/<pair>.html (28)
 
 All 37 pages come from ONE template; the browser fills them from the JSON (nothing is hardcoded in the HTML). Deterministic: the
@@ -55,6 +55,78 @@ def page_config(page: str, ccy: Optional[str] = None, pair: Optional[str] = None
                                                             "bank": f"{DATA_URL}/{{ccy}}.json", "overview_page": P.BASE_URL + ".html"}}
 
 
+FF_RAW = ROOT / "data" / "ff_raw"
+STANCE_UI_YAML = ROOT / "config" / "cb_stance_ui.yaml"
+
+
+def ff_week_events(asof: date, raw_dir: Path = FF_RAW) -> list:
+    """The ForexFactory weekly calendar the site already collects (read only): the newest data/ff_raw/ff_weekly_<day>.json on or
+    before the as-of -> [{currency, name_raw, datetime_utc}]."""
+    from datetime import datetime, timezone
+    files = sorted(f for f in raw_dir.glob("ff_weekly_*.json") if f.stem[len("ff_weekly_"):] <= asof.isoformat())
+    if not files:
+        return []
+    out = []
+    for e in json.loads(files[-1].read_text(encoding="utf-8")):
+        try:
+            dt = datetime.fromisoformat(str(e.get("date"))).astimezone(timezone.utc)
+        except ValueError:
+            continue
+        out.append({"currency": str(e.get("country", "")).strip(), "name_raw": str(e.get("title", "")).strip(), "datetime_utc": dt})
+    return out
+
+
+def stance_blocks(data_dir, ctx, asof: date, out: dict) -> dict:
+    """{ccy: bank stance block} (S1 computation, S2 texts) or {"na": reason}. A failure never blocks the rest of the render."""
+    import yaml
+    from . import cb_datasets as ds
+    from . import cb_stance_history as SH
+    from .cb_collect import Paths
+    from .cb_compute.stance_inputs import current_version
+    from .cb_compute.stance_ui import HOW_TO_READ, history_points, mandate_card, next_test
+    from .cb_loader import load_stance
+    from .cb_sources.official import load_official
+    try:
+        _, params, inputs, res = load_stance(data_dir, asof, ctx)
+        paths = Paths(data_dir)
+        vday = max(asof, date.today())                                   # as in load_stance: validation against the real day
+        mand = ds.load_mandates(paths, today=vday, validate=True)
+        fc = ds.load_forecasts(paths, today=vday, validate=True, mandates=mand)
+        hist = SH.load(paths)
+    except Exception as e:                                               # noqa: BLE001 - logged, the page says why
+        log.exception("stance payload failed")
+        return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
+    try:
+        return _stance_banks(asof, out, params, res, mand, fc, hist)
+    except Exception as e:                                               # noqa: BLE001 - logged, the page says why
+        log.exception("stance payload failed")
+        return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
+
+
+def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
+    import yaml
+    from . import cb_datasets as ds
+    from .cb_compute.stance_inputs import current_version
+    from .cb_compute.stance_ui import HOW_TO_READ, history_points, mandate_card, next_test
+    from .cb_sources.official import load_official
+    names = {sid: s["name"] for sid, s in load_official()["macro"]["series"].items()}
+    mapping = (yaml.safe_load(STANCE_UI_YAML.read_text(encoding="utf-8")) or {}).get("next_test") or {}
+    events = ff_week_events(asof)
+    versions = ds.mandate_versions(mand)
+    banks = {}
+    for c, r in res.items():
+        path = out["overview"]["paths"].get(c)
+        cur = current_version(versions.get(c) or [], asof)
+        raw = next((v for v in ((mand.get("banks") or {}).get(c) or {}).get("versions") or [] if cur and str(v["effective_from"]) == str(cur.effective_from)), None)
+        rate = (path or {}).get("current") or {}
+        banks[c] = P.stance_page(r, path, ((fc.get("banks") or {}).get(c)), mandate_card(raw, names, params["underlying_rule"]) if raw else None,
+                                 next_test(c, events, mapping, asof), history_points([h for (b, _), h in hist.items() if b == c]),
+                                 {k: rate.get(k) for k in ("rate", "lower", "upper", "range")})
+    return {"banks": banks, "params": {"delta_pp": params["situations"]["delta_pp"], "epsilon_pp": params["situations"]["epsilon_pp"],
+                                       "inflation_response": params["rule"]["inflation_response"], "version": params["version"]},
+            "how_to_read": HOW_TO_READ, "na": None}
+
+
 def render(data_dir: Path | str | None = None, public_dir: Path | str | None = None, asof: Optional[date] = None) -> dict:
     """Write everything; returns {"asof": date, "files": [paths written], "unchanged": n}."""
     ctx = load_context(data_dir)
@@ -63,6 +135,14 @@ def render(data_dir: Path | str | None = None, public_dir: Path | str | None = N
         raise SystemExit("no market quotes on record: nothing to render")
     pub = Path(public_dir) if public_dir else PUBLIC_DIR
     out = P.build(ctx, asof, load_pair_defs())
+    st = stance_blocks(data_dir, ctx, asof, out)                         # S2: the stance on the overview (tab Stance) and each bank page
+    out["overview"]["stance"] = ({"na": st["na"]} if st.get("na") else
+                                 {**{k: v for k, v in st.items() if k != "banks"},
+                                  "banks": {c: {**{k: v for k, v in b.items() if k not in ("history", "calc")},
+                                                "calc": {k: v for k, v in b["calc"].items() if k != "inputs"}} for c, b in st["banks"].items()}})
+    for c, page in out["banks"].items():
+        page["stance"] = ({"na": st["na"]} if st.get("na") else
+                          {**st["banks"][c], "how_to_read": st["how_to_read"], "params": st["params"]} if c in st["banks"] else {"na": "no stance for this bank"})
     tpl = _env().get_template("central_banks.html.j2")
     written, same = [], 0
 

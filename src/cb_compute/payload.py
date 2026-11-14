@@ -830,7 +830,7 @@ def build(ctx: Context, asof: date, pair_defs: list, currencies=ORDER) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Stance (phase S1): pure payload of one bank - tested, NOT written to public/ (writing and the UI are phase S2)
+# Stance (phase S1; written to public/ by cb_render since S2): pure payload of one bank
 # ---------------------------------------------------------------------------
 
 STANCE_ND = 6                                                      # the UI rounds; keep the computation's precision
@@ -853,23 +853,51 @@ def stance_json(r: dict) -> dict:
     basis_flag = "headline_basis" if r.get("pi_12m_basis") == "headline" else None
     return {
         "bank": r["currency"], "asof": r["asof"], "flags": fl, "mandate_id": r["mandate_id"], "stance_version": r["stance_version"],
-        "code_version": r["code_version"],
+        "code_version": r["code_version"], "flags_12m": list(r.get("flags_12m") or []),
         "situation": _sm(r.get("situation"), fl, no_n, direction=r.get("direction")),
         "situation_12m": _sm(r.get("situation_12m"), fl, r.get("na_12m") or no_n, flag=basis_flag, direction=r.get("direction_12m"),
                              basis=r.get("pi_12m_basis") or None),
         "stance": _sm(r.get("S"), fl, no_n, flag=N["flag"] if N else None, lo=num(r.get("S_lo"), STANCE_ND), hi=num(r.get("S_hi"), STANCE_ND)),
         "need": _sm(r.get("x"), fl, "no underlying inflation"),
         "need_headline": _sm(r.get("x_headline"), fl, "no headline inflation"),
+        "need_12m": _sm(r.get("x_12m"), fl, r.get("na_12m") or "no projection for the 12-month period", basis=r.get("pi_12m_basis") or None,
+                        period=r.get("pi_12m_period")),
+        "pressure_12m": _sm(r.get("G_12m"), fl, r.get("na_12m") if r.get("x_12m") is None else no_n,
+                            lo=num(r.get("G_12m_lo"), STANCE_ND), hi=num(r.get("G_12m_hi"), STANCE_ND)),
         "pressure": _sm(r.get("G"), fl, no_n, lo=num(r.get("G_lo"), STANCE_ND), hi=num(r.get("G_hi"), STANCE_ND)),
         "pivot": _sm(r.get("pivot"), fl, "no declared target point (band) or no neutral"),
-        "lens": _sm(lens_v, fl, lens.get("na") or "n/a", flag=lens.get("flag"), kind=lens.get("kind"),
-                    horizon_gap=num(lens.get("horizon_gap"), STANCE_ND), consistent=lens.get("consistent")),
+        "lens": _sm(lens_v, fl, lens.get("na") or "n/a", flag=lens.get("flag"), kind=lens.get("kind"), basis=lens.get("basis"), year=lens.get("year"),
+                    horizon_gap=num(lens.get("horizon_gap"), STANCE_ND), horizon_period=lens.get("horizon_period"),
+                    horizon_basis=lens.get("horizon_basis"), consistent=lens.get("consistent")),
         "cycle": r.get("cycle"), "market": r.get("market"),
         "calc": {"rate": r.get("rate"), "target": r.get("target_star"), "band": list(r["band"]) if r.get("band") else None,
                  "pi_under": r.get("pi_under"), "pi_head": r.get("pi_head"), "gap_under": r.get("gap_under"), "gap_head": r.get("gap_head"),
                  "y": r.get("y"), "y_how": r.get("y_how"), "x": r.get("x"),
                  "neutral": None if not N else {"mid": N["mid"], "lo": N["lo"], "hi": N["hi"], "asof": N["asof"], "flag": N["flag"],
                                                 "stale": N["stale"], "nominal_from": N["nominal_from"]},
-                 "S": r.get("S"), "G": r.get("G"), "pi_12m": r.get("pi_12m"), "pi_12m_period": r.get("pi_12m_period"),
-                 "y_12m": r.get("y_12m"), "x_12m": r.get("x_12m"), "G_12m": r.get("G_12m"), "inputs": r.get("inputs")},
+                 "S": r.get("S"), "S_lo": r.get("S_lo"), "S_hi": r.get("S_hi"), "G": r.get("G"), "G_lo": r.get("G_lo"), "G_hi": r.get("G_hi"),
+                 "x_headline": r.get("x_headline"), "pivot": r.get("pivot"),
+                 "pi_12m": r.get("pi_12m"), "pi_12m_period": r.get("pi_12m_period"), "pi_12m_basis": r.get("pi_12m_basis"), "gap_12m": r.get("gap_12m"),
+                 "y_12m": r.get("y_12m"), "y_12m_how": r.get("y_12m_how"), "x_12m": r.get("x_12m"), "G_12m": r.get("G_12m"),
+                 "neutral_check": N.get("check") if N else None, "inputs": r.get("inputs")},
     }
+
+
+def stance_page(r: dict, path: Optional[dict], fc: Optional[dict], mandate: Optional[dict], next_test: Optional[dict], history: list,
+                rate: Optional[dict]) -> dict:
+    """The stance block of a bank page (and, without the history, of the overview): stance_json + the deterministic texts (S2)."""
+    from . import stance_ui as U
+    j = stance_json(r)
+    why = next((n[len("neutral: "):] for n in r.get("notes") or [] if n.startswith("neutral: ")), None)
+    if why == "neutral not_published":
+        why = "the bank does not publish a neutral-rate estimate"
+    if why and j["stance"]["v"] is None:                     # the bank's own reason for the missing neutral (pending, ...)
+        for k in ("stance", "pressure", "situation", "pivot"):
+            j[k]["na"] = f"no neutral estimate: {why}"
+    j.update(
+        chip=U.chip(r.get("situation"), r.get("direction")), chip_12m=U.chip(r.get("situation_12m"), r.get("direction_12m")),
+        summary=U.summary(r, path, fc), cycle_line=U.cycle_line(r.get("cycle")), market_line=U.market_line(path),
+        m12_bp=num(((path or {}).get("m12") or {}).get("cum_bp"), 2), m12_est=bool(((path or {}).get("m12") or {}).get("est")),
+        publication=(fc or {}).get("publication"), rate_display=rate, mandate=mandate, next_test=next_test, history=history,
+        notes=list(r.get("notes") or []))
+    return j

@@ -156,6 +156,7 @@
       '<div class="cb-legend-box" id="cbCompareLegend"></div><div class="cb-chart-wrap cb-chart-tall cb-compare-wrap"><canvas id="cbCompareChart"></canvas></div>' +
       howToRead(COMPARE_HELP) + "</section>" +
       '<div class="desk-only" id="cbCompareTable"></div><div class="phone-only" id="cbCompareList"></div></section>' +
+      '<section id="cbStance" hidden></section>' +
       '<section id="cbPairs" hidden><p class="muted cb-loading">Loading pairs…</p></section>';
     let mode = "bp", chart = null;
     const canvas = document.getElementById("cbCompareChart");
@@ -174,8 +175,9 @@
     });
     sortable(document.getElementById("cbCompareTable"), "next", function (k) { return upcomingTableHtml(ov.paths, k); });
     sortable(document.getElementById("cbCompareList"), "next", function (k) { return upcomingListHtml(ov.paths, k); });
-    let pairsLoaded = false;
-    const show = function (tab) {                                     // Compare / Pairs: the two first items of the bank bar (#pairs)
+    let pairsLoaded = false, stanceDrawn = false;
+    const tabOf = function () { const h = window.location.hash; return h === "#pairs" ? "pairs" : h === "#stance" || h === "#stance-how" ? "stance" : "compare"; };
+    const show = function (tab) {                                     // Compare / Stance / Pairs: the first items of the bank bar (#stance, #pairs)
       root.querySelectorAll(".cb-bankbar-item").forEach(function (x) {
         const on = (x.dataset.k === tab);
         x.classList.toggle("active", on);
@@ -183,6 +185,13 @@
       });
       document.getElementById("cbCompare").hidden = tab !== "compare";
       document.getElementById("cbPairs").hidden = tab !== "pairs";
+      document.getElementById("cbStance").hidden = tab !== "stance";
+      if (tab === "stance" && !stanceDrawn) {                          // drawn when first shown (the map needs a visible canvas)
+        stanceDrawn = true;
+        renderStanceTab(document.getElementById("cbStance"), ov.stance);
+        paintSwatches();
+      }
+      if (tab === "stance" && window.location.hash === "#stance-how") { const h = document.getElementById("cbStanceHow"); if (h) { h.open = true; h.scrollIntoView({ block: "start" }); } }
       if (tab === "pairs" && !pairsLoaded) {
         pairsLoaded = true;
         getJSON(CFG.urls.pairs).then(function (pj) {
@@ -194,18 +203,18 @@
         }).catch(function (e) { document.getElementById("cbPairs").innerHTML = failHtml(e); });
       }
     };
-    root.querySelectorAll('.cb-bankbar-item[data-k="compare"], .cb-bankbar-item[data-k="pairs"]').forEach(function (a) {
+    root.querySelectorAll('.cb-bankbar-item[data-k="compare"], .cb-bankbar-item[data-k="stance"], .cb-bankbar-item[data-k="pairs"]').forEach(function (a) {
       a.addEventListener("click", function (ev) {
         ev.preventDefault();
-        if (history.replaceState) history.replaceState(null, "", a.dataset.k === "pairs" ? "#pairs" : window.location.pathname);
+        if (history.replaceState) history.replaceState(null, "", a.dataset.k === "compare" ? window.location.pathname : "#" + a.dataset.k);
         show(a.dataset.k);
       });
     });
-    show(window.location.hash === "#pairs" ? "pairs" : "compare");
+    show(tabOf());
     if (window.PhoneUI) window.PhoneUI.foldHowToRead();
     if (!hashWired) {
       hashWired = true;
-      window.addEventListener("hashchange", function () { show(window.location.hash === "#pairs" ? "pairs" : "compare"); });
+      window.addEventListener("hashchange", function () { show(tabOf()); });
     }
     if (!themeWatched) { themeWatched = true; watchTheme(); }
     paintSwatches();
@@ -551,11 +560,12 @@
     });
   }
   function bankBar(active) {
-    const items = [{ k: "compare", label: "Compare", href: CFG.urls.overview_page }, { k: "pairs", label: "Pairs", href: CFG.urls.overview_page + "#pairs" }]
+    const items = [{ k: "compare", label: "Compare", href: CFG.urls.overview_page }, { k: "stance", label: "Stance", href: CFG.urls.overview_page + "#stance" },
+                   { k: "pairs", label: "Pairs", href: CFG.urls.overview_page + "#pairs" }]
       .concat(BANK_ORDER.map(function (c) { return { k: c, label: c, href: bankUrlPage(c) }; }));
     return '<nav class="cb-bankbar" aria-label="Central banks">' + items.map(function (it) {
       return '<a class="cb-bankbar-item' + (it.k === active ? " active" : "") + '" data-k="' + esc(it.k) + '" href="' + esc(it.href) + '"' + (it.k === active ? ' aria-current="page"' : "") + ">" +
-        (it.k === "compare" || it.k === "pairs" ? "" : '<span class="cb-swatch" data-ccy="' + esc(it.k) + '"></span>') + esc(it.label) + "</a>";
+        (it.k === "compare" || it.k === "pairs" || it.k === "stance" ? "" : '<span class="cb-swatch" data-ccy="' + esc(it.k) + '"></span>') + esc(it.label) + "</a>";
     }).join("") + "</nav>";
   }
   function bankUrlPage(c) { return CFG.urls.overview_page.replace(/\.html$/, "").replace(/\/$/, "") + "/" + c.toLowerCase() + ".html"; }
@@ -1359,14 +1369,390 @@
     }
     const latest = latestDecisionBlock(d);
     const dayLatest = dayMode && latest ? '<section class="cb-card cb-bblock cb-daycard"><div class="cb-daytag">Decision day</div><h3>' + esc(latest.title) + "</h3>" + latest.html + "</section>" : "";
-    root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + dayLatest : "") + pathCards(d) + '<div class="cb-pathgrid">' + pathTableHtml(d.path, d.calendar) + pathChartCard(d) + "</div>" +
+    root.innerHTML = bankBar(d.ccy) + (dayMode ? nextCard(d, true) + dayLatest : "") + pathCards(d) + '<div class="cb-pathgrid">' + pathTableHtml(d.path, d.calendar) + pathChartCard(d) + "</div>" + stanceZoneHtml(d) +
       '<h2 class="cb-zone">The bank</h2>' + (dayMode || !latest ? "" : bankCard({ title: latest.title, sub: "", html: latest.html })) + bankCard(projectionsBlock(d)) + bankCard(speechesBlock(d)) + bankCard(decisionHistoryBlock(d)) +
       referencePanel(d);
     wirePathChart(d.path);
+    wireStanceZone(d);
     if (!themeWatched) { themeWatched = true; watchTheme(); }
     paintSwatches();
     document.querySelectorAll("[data-open-method]").forEach(function (a) { a.addEventListener("click", function () { document.getElementById("cbMethod").open = true; }); });
     tick();
+  }
+
+  // ---- stance (S2): the mandate benchmark - tab "Stance" on the overview and the zone "Stance and need" on the bank page ----------
+  // Every number comes from the `stance` block of the JSON (src/cb_compute/payload.stance_page) and is rounded here by one rule (B.4):
+  // pp with 2 decimals and a sign, bp as signed integers, inflation and rates as published. A rendered number carries data-k (its key in
+  // the stance block) and data-f (its format) so the page can be checked against the payload. Texts are the payload's templates.
+  const ST_FLAGS = {
+    boundary: ["near a threshold", "The situation is within 0.05 pp of a threshold of the rule."],
+    neutral_sensitive: ["neutral-sensitive", "Depends on where neutral is: the situation differs at the two ends of the neutral interval."],
+    headline_basis: ["headline basis", "The bank does not project its underlying measure for this period: the headline projection is used."],
+    estimate: ["estimate", "An input is an estimate (the market side or the publication cutoff)."],
+    stale: ["stale", "An input is older than its freshness threshold"],
+    pending: ["pending", "An input the rule needs has not been entered yet."],
+    slack_held: ["slack held", "The bank publishes no slack projection for the 12-month period: today's slack is held."],
+    no_slack: ["no slack estimate", "The bank publishes no estimate of spare capacity: the slack term is left out."],
+    need_only: ["need only", "No neutral-rate estimate: only the need is shown (no stance, pressure or situation)."]
+  };
+  const ST_FLAG_ORDER = ["boundary", "neutral_sensitive", "headline_basis", "estimate", "stale", "pending", "slack_held", "no_slack", "need_only"];
+  function fmtPP(v) { return isNum(v) ? fmtSigned(v, 2) : NA; }
+  function fmtBP(v) {
+    if (!isNum(v)) return NA;
+    const n = Math.floor(Math.abs(Number(v)) + 0.5);
+    return n === 0 ? "0" : (Number(v) > 0 ? "+" : MINUS) + n;
+  }
+  function fmtPub(v) { return isNum(v) ? String(Number(v)) : NA; }                       // inflation / rates as published
+  const ST_FMT = { pp: fmtPP, bp: fmtBP, pub: fmtPub, lvl: function (v) { return isNum(v) ? Number(v).toFixed(2) : NA; },
+                   bp100: function (v) { return fmtBP(isNum(v) ? Number(v) * 100 : v); } };
+  // a number with its key and format; n/a = "—" with the reason
+  function stNum(v, f, k, na, cls) {
+    if (!isNum(v)) return '<span class="cb-na" title="' + esc(na || "n/a") + '">' + NA + "</span>";
+    const txt = ST_FMT[f](v), zero = /^0(\.0+)?$/.test(txt);                  // a value that rounds to zero is neutral, not blue / red
+    const tone = cls === "tone" ? (zero ? "" : Number(v) > 0 ? " cb-hawk" : Number(v) < 0 ? " cb-dove" : "") : (cls ? " " + cls : "");
+    return '<span class="cb-st-n' + tone + '"' + (k ? ' data-k="' + esc(k) + '"' : "") + ' data-f="' + f + '" data-v="' + esc(v) + '">' + ST_FMT[f](v) + "</span>";
+  }
+  function stChip(label, sit, dir, extra) {
+    if (!label) return '<span class="cb-st-chip cb-st-na" title="' + esc(extra || "no neutral estimate (need only)") + '">need only</span>';
+    return '<span class="cb-st-chip cb-st-' + esc(sit) + (dir > 0 ? " up" : dir < 0 ? " down" : "") + '"' + (extra ? ' title="' + esc(extra) + '"' : "") + ">" + esc(label) + "</span>";
+  }
+  function stFlagChips(flags, when, s) {
+    return (flags || []).filter(function (f) { return ST_FLAGS[f] && f !== "need_only"; }).sort(function (a, b) { return ST_FLAG_ORDER.indexOf(a) - ST_FLAG_ORDER.indexOf(b); }).map(function (f) {
+      let tip = ST_FLAGS[f][1];
+      if (f === "stale") tip += " (as of " + fmtDate(s && s.asof) + ").";
+      if (f === "pending" && s && s.notes && s.notes.length) tip += " " + s.notes.join("; ");
+      return '<span class="cb-st-flag" data-flag="' + esc(f) + '" title="' + esc((when ? when + ": " : "") + tip) + '">' + esc((when ? when + " " : "") + ST_FLAGS[f][0]) + "</span>";
+    }).join("");
+  }
+  function stRate(r) {
+    if (!r || !isNum(r.rate)) return NA;
+    return r.range && isNum(r.lower) ? fmtRate(r.lower) + EN + fmtRate(r.upper) + "%" : fmtRateAuto(r.rate) + "%";
+  }
+  function stAsof(s) { return "as of " + fmtDate(s.asof); }
+
+  // ---- the map: x = need, y = stance; hold band |1.5x − y| ≤ δ; hike zone below it, cut zone above; dotted x = ±ε ----
+  function stanceMapModel(banks, params) {
+    const k = params.inflation_response, d = params.delta_pp, e = params.epsilon_pp;
+    const pts = [], out = [];
+    BANK_ORDER.forEach(function (c) {
+      const s = banks[c];
+      if (!s) return;
+      if (!isNum(s.stance.v) || !isNum(s.need.v)) { out.push({ ccy: c, reason: s.stance.na || s.need.na || "n/a" }); return; }
+      pts.push({ ccy: c, x: Number(s.need.v), y: Number(s.stance.v), lo: Number(s.stance.lo), hi: Number(s.stance.hi),
+                 x12: isNum(s.need_12m.v) ? Number(s.need_12m.v) : null, y12: Number(s.stance.v) });
+    });
+    const xs = [-2 * e, 2 * e], ys = [-1, 1];
+    pts.forEach(function (p) { xs.push(p.x); if (p.x12 !== null) xs.push(p.x12); ys.push(p.lo, p.hi, p.y); });
+    const pad = 0.25;
+    const xr = [Math.floor((Math.min.apply(null, xs) - pad) * 4) / 4, Math.ceil((Math.max.apply(null, xs) + pad) * 4) / 4];
+    const yr = [Math.floor((Math.min.apply(null, ys) - pad) * 4) / 4, Math.ceil((Math.max.apply(null, ys) + pad) * 4) / 4];
+    const line = function (off) { return [{ x: xr[0], y: k * xr[0] + off }, { x: xr[1], y: k * xr[1] + off }]; };
+    return { xr: xr, yr: yr, k: k, delta: d, eps: e, band: { lower: line(-d), upper: line(d) }, eps_lines: [-e, e],
+             points: pts, whiskers: pts.map(function (p) { return { ccy: p.ccy, from: { x: p.x, y: p.lo }, to: { x: p.x, y: p.hi } }; }),
+             arrows: pts.filter(function (p) { return p.x12 !== null; }).map(function (p) { return { ccy: p.ccy, from: { x: p.x, y: p.y }, to: { x: p.x12, y: p.y12 } }; }),
+             excluded: out };
+  }
+  // the zone of a point: hike (G > δ, below the band), cut (G < −δ, above it), hold (inside)
+  function stanceZone(m, x, y) { const g = m.k * x - y; return g > m.delta ? "hike" : g < -m.delta ? "cut" : "hold"; }
+  function stanceTipHtml(c, s) {
+    const row = function (lab, html) { return '<tr><td>' + lab + "</td><td>" + html + "</td></tr>"; };
+    return '<div class="cb-tt-title"><span class="cb-tt-sq" style="background:' + bankColor(c) + '"></span>' + esc(c) + " · " + esc(stAsof(s)) + "</div>" +
+      '<table class="cb-tt-table">' +
+      row("Need", stNum(s.need.v, "pp", "need.v") + " pp") +
+      row("Stance", stNum(s.stance.v, "pp", "stance.v") + " pp (" + stNum(s.stance.lo, "pp", "stance.lo") + " to " + stNum(s.stance.hi, "pp", "stance.hi") + ")") +
+      row("Pressure", stNum(s.pressure.v, "bp100", "pressure.v") + " bp (" + stNum(s.pressure.lo, "bp100", "pressure.lo") + " to " + stNum(s.pressure.hi, "bp100", "pressure.hi") + ")") +
+      row("Today", stChip(s.chip, s.situation.v, s.situation.direction)) +
+      row("In 12m, held", stChip(s.chip_12m, s.situation_12m.v, s.situation_12m.direction, s.situation_12m.na)) + "</table>";
+  }
+  function drawStanceMap(canvas, st, small) {
+    const c = colors(), m = stanceMapModel(st.banks, st.params);
+    const hawk = c.blue, dove = c.red;
+    const edge = function (data, fill, col) { return { type: "line", data: data, borderColor: withAlpha(col, 0.35), borderWidth: 1, pointRadius: 0, fill: fill, backgroundColor: withAlpha(col, 0.07), order: 9 }; };
+    const ds = [
+      edge(m.band.lower, "start", hawk),                                     // hike zone: below the band
+      edge(m.band.upper, "end", dove),                                       // cut zone: above the band
+      Object.assign(edge(m.band.lower, false, c.muted), { borderColor: "transparent" }),
+      Object.assign(edge(m.band.upper, "-1", c.muted), { borderColor: "transparent", backgroundColor: withAlpha(c.muted, 0.16) })   // hold band
+    ];
+    m.whiskers.forEach(function (w) { ds.push({ type: "line", data: [w.from, w.to], borderColor: withAlpha(bankColor(w.ccy), 0.8), borderWidth: 2, pointRadius: 0, order: 3 }); });
+    m.arrows.forEach(function (a) {
+      const col = bankColor(a.ccy), right = a.to.x >= a.from.x;
+      const mid = { x: a.from.x + (a.to.x - a.from.x) * 0.82, y: a.from.y };
+      ds.push({ type: "line", data: [a.from, a.to], borderColor: col, borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, order: 4 });
+      ds.push({ type: "scatter", data: [mid], pointStyle: "triangle", rotation: right ? 90 : -90, pointRadius: Math.abs(a.to.x - a.from.x) > 0.05 ? 4 : 0, backgroundColor: col, borderColor: col, order: 4 });
+      ds.push({ type: "scatter", data: [a.to], pointRadius: 5, pointBorderWidth: 2, borderColor: col, backgroundColor: c.surface, order: 2, $cbLater: a.ccy });
+    });
+    m.points.forEach(function (p) { ds.push({ type: "scatter", data: [{ x: p.x, y: p.y }], pointRadius: small ? 5 : 6, pointHoverRadius: 8, backgroundColor: bankColor(p.ccy), borderColor: c.surface, borderWidth: 1.5, order: 1, $cbToday: p.ccy }); });
+    // direct labels: for each dot the first of 8 positions around it that hits no other label, no dot (filled or hollow) and stays inside
+    // the plot; the rectangles are kept on the chart ($cbLabels) for the automated check
+    const labels = { id: "cbStLabels", afterDatasetsDraw: function (ch) {
+      const g = ch.ctx, ca = ch.chartArea, fs = small ? 10 : 12, R = 7;
+      g.save();
+      g.font = fs + "px system-ui, sans-serif";
+      g.textBaseline = "middle";
+      const px = function (p) { return { x: ch.scales.x.getPixelForValue(p.x), y: ch.scales.y.getPixelForValue(p.y) }; };
+      const dots = m.points.map(function (p) { return px(p); }).concat(m.arrows.map(function (a) { return px(a.to); }));
+      const hit = function (r, o) { return r.x < o.x + o.w && o.x < r.x + r.w && r.y < o.y + o.h && o.y < r.y + r.h; };
+      const placed = [];
+      m.points.forEach(function (p) {
+        const c0 = px(p), text = small ? p.ccy.slice(0, 1) + p.ccy.slice(1).toLowerCase() : p.ccy, w = g.measureText(text).width + 2, h = fs + 2;
+        const cand = [[R, -h - 1], [R, 1], [-R - w, -h - 1], [-R - w, 1], [-w / 2, -h - R], [-w / 2, R], [R + 4, -h / 2], [-R - w - 4, -h / 2]];
+        let best = null;
+        for (let k = 0; k < cand.length && !best; k++) {
+          const r = { x: c0.x + cand[k][0], y: c0.y + cand[k][1], w: w, h: h };
+          const inside = r.x >= ca.left && r.x + r.w <= ca.right && r.y >= ca.top && r.y + r.h <= ca.bottom;
+          const free = placed.every(function (o) { return !hit(r, o); }) && dots.every(function (d) { return !hit(r, { x: d.x - R, y: d.y - R, w: 2 * R, h: 2 * R }); });
+          if (inside && free) best = r;
+        }
+        best = best || { x: c0.x + cand[0][0], y: c0.y + cand[0][1], w: w, h: h };
+        placed.push(Object.assign({ ccy: p.ccy }, best));
+        g.fillStyle = withAlpha(c.surface, 0.75);
+        g.fillRect(best.x - 1, best.y, best.w, best.h);
+        g.fillStyle = bankColor(p.ccy);
+        g.fillText(text, best.x, best.y + h / 2);
+      });
+      ch.$cbLabels = placed;
+      ch.$cbDots = dots;
+      if (!small) {
+        g.fillStyle = c.muted;
+        g.fillText("hike zone (pressure up)", ca.right - 150, ca.bottom - 12);
+        g.fillText("cut zone (pressure down)", ca.left + 8, ca.top + 12);
+      }
+      g.restore();
+    } };
+    const ann = {};
+    m.eps_lines.forEach(function (x, i) { ann["eps" + i] = { type: "line", xMin: x, xMax: x, borderColor: withAlpha(c.muted, 0.8), borderWidth: 1, borderDash: [2, 3] }; });
+    ann.zero = { type: "line", yMin: 0, yMax: 0, borderColor: withAlpha(c.muted, 0.5), borderWidth: 1 };
+    const chart = new Chart(canvas, {
+      data: { datasets: ds }, plugins: [labels],
+      options: { responsive: true, maintainAspectRatio: false, animation: false, parsing: false, events: [],
+        scales: { x: { type: "linear", min: m.xr[0], max: m.xr[1], grid: { color: withAlpha(c.border, 0.7) }, ticks: { color: c.muted, stepSize: 0.5, callback: function (v) { return Math.abs(v * 2 - Math.round(v * 2)) < 1e-9 ? v : ""; } }, title: { display: true, text: "Need, pp", color: c.muted } },
+                  y: { type: "linear", min: m.yr[0], max: m.yr[1], grid: { color: withAlpha(c.border, 0.7) }, ticks: { color: c.muted, stepSize: 0.5, callback: function (v) { return Math.abs(v * 2 - Math.round(v * 2)) < 1e-9 ? v : ""; } }, title: { display: true, text: "Stance, pp", color: c.muted } } },
+        plugins: { legend: { display: false }, tooltip: { enabled: false }, annotation: { annotations: ann } } }
+    });
+    const tip = tipBox(canvas);
+    const near = function (ev) {
+      const r = canvas.getBoundingClientRect(), x = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left, y = (ev.touches ? ev.touches[0].clientY : ev.clientY) - r.top;
+      let best = null, bd = 18;
+      m.points.forEach(function (p) {
+        const dx = chart.scales.x.getPixelForValue(p.x) - x, dy = chart.scales.y.getPixelForValue(p.y) - y, dd = Math.sqrt(dx * dx + dy * dy);
+        if (dd < bd) { bd = dd; best = p; }
+      });
+      return best ? { p: best, x: x, y: y } : null;
+    };
+    const move = function (ev) { const h = near(ev); if (!h) { tip.hidden = true; return; } placeTip(tip, canvas, { x: h.x, y: h.y }, stanceTipHtml(h.p.ccy, st.banks[h.p.ccy])); };
+    canvas.addEventListener("mousemove", move);
+    canvas.addEventListener("click", move);
+    canvas.addEventListener("touchstart", move, { passive: true });
+    canvas.addEventListener("mouseleave", function () { tip.hidden = true; });
+    state.charts.push(chart);
+    return chart;
+  }
+  // the text alternative of the map: one line per point (bank, need, stance, situation today and in 12 months)
+  function stanceMapAlt(st, m) {
+    return '<ul class="cb-sr-only" id="cbStanceMapAlt">' + m.points.map(function (p) {
+      const s = st.banks[p.ccy];
+      return "<li>" + esc(p.ccy) + ": need " + fmtPP(s.need.v) + " pp, stance " + fmtPP(s.stance.v) + " pp (neutral interval " + fmtPP(s.stance.lo) + " to " + fmtPP(s.stance.hi) +
+        "), situation " + esc(s.chip || "n/a") + "; if the rate is held, in 12 months: need " + fmtPP(s.need_12m.v) + " pp, " + esc(s.chip_12m || "n/a") + "</li>";
+    }).join("") + "</ul>";
+  }
+  function stanceMapCard(st) {
+    const m = stanceMapModel(st.banks, st.params);
+    const note = m.excluded.length ? '<p class="cb-sub cb-st-note">Not on the map (no neutral-rate estimate, need only): ' +
+      m.excluded.map(function (x) { return '<span data-ccy="' + esc(x.ccy) + '"><b>' + esc(x.ccy) + "</b> — " + esc(x.reason) + " (need " + stNum(st.banks[x.ccy].need.v, "pp", "need.v") + " pp)</span>"; }).join("; ") + ".</p>" : "";
+    return '<section class="cb-card cb-chartcard cb-st-mapcard"><h3>Need and stance <small class="muted">filled = today · whisker = the neutral interval · hollow = if the rate is held, in 12 months</small></h3>' +
+      '<div class="cb-chart-wrap cb-st-map"><canvas id="cbStanceMap" role="img" aria-label="Map of need (x, pp) and stance (y, pp) of each bank with a neutral estimate; ' +
+      'the points are listed below the chart" aria-describedby="cbStanceMapAlt"></canvas></div>' + stanceMapAlt(st, m) + note + "</section>";
+  }
+
+  // ---- the table (8 rows): Cycle and market | Mandate check ----
+  function cycleCell(s) {
+    const c = s.cycle || {};
+    if (!c.direction) return '<span class="cb-na" title="' + esc(c.na || "n/a") + '">' + NA + "</span>";
+    const arrow = c.direction === "hike" ? "↑" : "↓", prev = c.previous;
+    return '<span title="' + esc(s.cycle_line || "") + '">' + arrow + c.count + (prev ? ' <span class="muted">after ' + (prev.direction === "hike" ? "↑" : "↓") + prev.count + "</span>" : "") +
+      (c.holds_since ? ' <span class="muted">· ' + c.holds_since + " hold" + (c.holds_since === 1 ? "" : "s") + "</span>" : "") + "</span>";
+  }
+  const LENS_KIND = { own_path: "vs the bank's path", market: "since the projection cutoff", constant_rate: "vs the assumed constant rate", unpublished: "no published rate path" };
+  function lensCell(s) {
+    const l = s.lens;
+    if (!isNum(l.v)) return '<span class="cb-na" title="' + esc(l.na || "n/a") + '">' + NA + '</span><div class="cb-st-subline">' + esc(LENS_KIND[l.kind] || "") + "</div>";
+    const est = l.flag === "ESTIMATE";
+    return (est ? "≈ " : "") + stNum(l.v, "bp", "lens.v", null, "tone") + '<div class="cb-st-subline">' + esc(LENS_KIND[l.kind] + (l.year ? " " + l.year : "")) + "</div>";
+  }
+  function stanceBar(s) {
+    const c = s.calc || {}, n = c.neutral;
+    if (!n || !isNum(c.rate)) return '<span class="cb-na" title="' + esc(s.stance.na) + '">' + NA + "</span>";
+    const lo = Math.min(n.lo, c.rate) - 0.25, hi = Math.max(n.hi, c.rate) + 0.25, w = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(1) + "%"; };
+    const tip = "Policy rate " + stRate(s.rate_display) + " vs neutral " + fmtPub(n.mid) + "% (" + fmtPub(n.lo) + EN + fmtPub(n.hi) + "%, " + n.flag + ", " + fmtDate(n.asof) + ")";
+    return '<span class="cb-st-bar" title="' + esc(tip) + '"><span class="cb-st-bar-n" style="left:' + w(n.lo) + ";width:calc(" + w(n.hi) + " - " + w(n.lo) + ')"></span>' +
+      '<span class="cb-st-bar-i" style="left:' + w(c.rate) + '"></span></span> ' + stNum(s.stance.v, "pp", "stance.v") + ' <small class="muted">pp</small>';
+  }
+  function needCell(s) {
+    return stNum(s.need.v, "pp", "need.v", s.need.na) + " → " + stNum(s.need_12m.v, "pp", "need_12m.v", s.need_12m.na) +
+      '<div class="cb-st-subline">headline gap ' + stNum(s.calc.gap_head, "pp", "calc.gap_head", "no headline inflation") + "</div>";
+  }
+  function situationCell(s) {
+    return stChip(s.chip, s.situation.v, s.situation.direction, s.situation.na) + " → " + stChip(s.chip_12m, s.situation_12m.v, s.situation_12m.direction, s.situation_12m.na) +
+      '<div class="cb-st-flags">' + stFlagChips(s.flags, "", s) + stFlagChips(s.flags_12m, "12m", s) + "</div>";
+  }
+  function pressureCell(s, unit) {
+    if (!isNum(s.pressure.v)) return '<span class="cb-na" title="' + esc(s.pressure.na) + '">' + NA + "</span>";
+    return stNum(s.pressure.v, "bp100", "pressure.v", null, "tone") + (unit ? ' <small class="muted">' + unit + "</small>" : "") + '<div class="cb-st-subline">' + stNum(s.pressure.lo, "bp100", "pressure.lo") + " to " + stNum(s.pressure.hi, "bp100", "pressure.hi") + "</div>";
+  }
+  const STANCE_SORTS = [["m12", "Market 12M"], ["pressure", "Pressure"], ["lens", "Bank vs market"]];
+  function stanceRows(st, key) {
+    const val = function (s) { return key === "pressure" ? s.pressure.v : key === "lens" ? s.lens.v : s.m12_bp; };
+    return BANK_ORDER.filter(function (c) { return st.banks[c]; }).map(function (c) { return st.banks[c]; }).sort(function (a, b) {
+      const va = val(a), vb = val(b);
+      if (!isNum(va) && !isNum(vb)) return BANK_ORDER.indexOf(a.bank) - BANK_ORDER.indexOf(b.bank);
+      if (!isNum(va)) return 1;
+      if (!isNum(vb)) return -1;
+      return Number(vb) - Number(va) || BANK_ORDER.indexOf(a.bank) - BANK_ORDER.indexOf(b.bank);
+    });
+  }
+  function stancePills(key) {
+    return '<span class="cb-pills"><span class="cb-pills-label">Sort by:</span>' + STANCE_SORTS.map(function (x) {
+      return '<button type="button" class="cb-pill' + (x[0] === key ? " active" : "") + '" data-sort="' + x[0] + '" aria-pressed="' + (x[0] === key) + '">' + x[1] + "</button>";
+    }).join("") + "</span>";
+  }
+  function m12Cell(s) { return isNum(s.m12_bp) ? (s.m12_est ? "≈ " : "") + stNum(s.m12_bp, "bp", "m12_bp", null, "tone") : '<span class="cb-na">' + NA + "</span>"; }
+  function stanceTableHtml(st, key) {
+    const rows = stanceRows(st, key).map(function (s) {
+      return '<tr class="cb-row" tabindex="0" data-ccy="' + esc(s.bank) + '" data-href="' + esc(bankUrlPage(s.bank)) + '#cbStanceZone">' +
+        '<td><span class="cb-swatch" data-ccy="' + esc(s.bank) + '"></span><b>' + esc(s.bank) + '</b> <small class="muted">' + esc(stRate(s.rate_display)) + "</small></td>" +
+        "<td>" + cycleCell(s) + '</td><td class="cb-n">' + m12Cell(s) + '</td><td class="cb-n cb-grp-end">' + lensCell(s) + "</td>" +
+        "<td>" + stanceBar(s) + '</td><td class="cb-n">' + needCell(s) + "</td><td>" + situationCell(s) + '</td><td class="cb-n">' + pressureCell(s) + "</td></tr>";
+    }).join("");
+    return '<div class="cb-tablehead"><h3>Stance by bank <small class="muted">' + esc(stAsof(stanceAny(st))) + "</small></h3>" + stancePills(key) + "</div>" +
+      '<div class="cb-scroll"><table class="cb-table cb-st-table" id="cbStanceTable"><thead>' +
+      '<tr class="cb-grp"><th></th><th colspan="3" class="cb-grp-end">Cycle and market</th><th colspan="4">Mandate check</th></tr>' +
+      '<tr><th>Bank</th><th>Cycle</th><th class="cb-n">Mkt 12M (bp)</th><th class="cb-n cb-grp-end">Bank vs market (bp)</th><th>Stance</th><th class="cb-n">Need now → 12m (pp)</th><th>Situation</th><th class="cb-n">Pressure (bp)</th></tr>' +
+      "</thead><tbody>" + rows + "</tbody></table></div>";
+  }
+  function stanceListHtml(st, key) {
+    const items = stanceRows(st, key).map(function (s) {
+      const kv = function (k, v) { return '<div class="cb-st-kv"><span class="muted">' + k + "</span><span>" + v + "</span></div>"; };
+      return '<a class="cb-st-item" data-ccy="' + esc(s.bank) + '" href="' + esc(bankUrlPage(s.bank)) + '#cbStanceZone"><div class="cb-st-item-head"><span class="cb-swatch" data-ccy="' + esc(s.bank) + '"></span><b>' + esc(s.bank) + "</b> " +
+        '<small class="muted">' + esc(stRate(s.rate_display)) + "</small><span class=\"cb-st-item-chips\">" + situationCell(s) + "</span></div>" +
+        kv("Cycle", cycleCell(s)) + kv("Mkt 12M", m12Cell(s) + " bp") + kv("Bank vs market", lensCell(s)) + kv("Stance", stanceBar(s)) + kv("Need now → 12m", needCell(s)) + kv("Pressure", pressureCell(s, "bp")) + "</a>";
+    }).join("");
+    return '<div class="cb-tablehead"><h3>Stance by bank</h3>' + stancePills(key) + '</div><div class="cb-st-list">' + items + "</div>";
+  }
+  function stanceAny(st) { return st.banks[BANK_ORDER.find(function (c) { return st.banks[c]; })] || {}; }
+  function stanceHowHtml(how, id) {
+    return '<details class="cb-htr cb-st-how" id="' + (id || "cbStanceHow") + '"><summary>ⓘ How to read</summary><div class="cb-sub"><ul class="cb-st-howlist">' +
+      (how || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></div></details>";
+  }
+  function renderStanceTab(box, st) {
+    if (!st || st.na || !st.banks) { box.innerHTML = '<p class="cb-loading">' + esc((st && st.na) || "The stance is written by the next Central Banks refresh.") + "</p>"; return; }
+    box.innerHTML = '<p class="cb-sub cb-st-intro">A mandate benchmark for each bank: the need its own mandate creates, where its rate stands against its own neutral estimate, and the rule that joins them. ' +
+      '<a href="#stance-how" data-open-how="cbStanceHow">How to read</a></p>' + stanceHowHtml(st.how_to_read) +
+      '<div class="desk-only" id="cbStanceTableBox"></div><div class="phone-only" id="cbStanceListBox"></div>' + stanceMapCard(st);
+    sortable(document.getElementById("cbStanceTableBox"), "m12", function (k) { return stanceTableHtml(st, k); });
+    sortable(document.getElementById("cbStanceListBox"), "m12", function (k) { return stanceListHtml(st, k); });
+    const canvas = document.getElementById("cbStanceMap");
+    registerRedraw(function () { drawStanceMap(canvas, st, isPhone()); });
+    wireHowLinks(box);
+  }
+  function wireHowLinks(scope) {
+    scope.querySelectorAll("[data-open-how]").forEach(function (a) {
+      a.addEventListener("click", function (ev) { const d = document.getElementById(a.dataset.openHow); if (d) { ev.preventDefault(); d.open = true; d.scrollIntoView({ block: "nearest" }); } });
+    });
+  }
+
+  // ---- bank page: zone "Stance and need" (below the trajectory zone) ----
+  function calcLines(s) {
+    const c = s.calc, n = c.neutral, inp = c.inputs || {}, r = s.rate_display || {};
+    const L = [];
+    const pi = function (v, k) { return stNum(v, "pub", k) + "%"; };
+    const tgt = isNum(c.target) ? pi(c.target, "calc.target") : "band " + fmtPub(c.band[0]) + EN + fmtPub(c.band[1]) + "%";
+    L.push("i = " + stNum(c.rate, "pub", "calc.rate") + "%" + (r.range ? " (midpoint of the target range " + fmtRate(r.lower) + EN + fmtRate(r.upper) + "%)" : "") + " · " + esc(((inp.rate || {}).source) || ""));
+    L.push("π underlying = " + pi(c.pi_under, "calc.pi_under") + " (" + esc(((inp.pi_under || {}).asof) || "") + ") · π* = " + tgt);
+    L.push("gap = " + (isNum(c.target) ? pi(c.pi_under, "calc.pi_under") + " − " + pi(c.target, "calc.target") : "distance to the band") + " = " + stNum(c.gap_under, "pp", "calc.gap_under") + " pp");
+    L.push("y = " + stNum(c.y, "pp", "calc.y", "no slack estimate: the term is left out") + (c.y_how ? " (" + esc(c.y_how) + ")" : "") + " · y/3 = " + stNum(isNum(c.y) ? c.y / 3 : null, "pp", null, "0 (no slack)"));
+    L.push("need x = gap + y/3 = " + stNum(c.x, "pp", "calc.x") + " pp · headline: gap " + stNum(c.gap_head, "pp", "calc.gap_head") + " → x " + stNum(c.x_headline, "pp", "calc.x_headline"));
+    if (n) {
+      L.push("neutral N = " + stNum(n.mid, "pub", "calc.neutral.mid") + "% (" + stNum(n.lo, "pub", "calc.neutral.lo") + EN + stNum(n.hi, "pub", "calc.neutral.hi") + "%) · " + esc(n.flag) + " · " + esc(fmtDate(n.asof)) + (n.stale ? " · stale" : ""));
+      if (c.neutral_check) L.push("check: median of " + c.neutral_check.dots + " longer-run dots " + fmtPub(c.neutral_check.from_dots) + " → rounded " + fmtPub(c.neutral_check.rounded) + " vs published " + fmtPub(c.neutral_check.published) + (c.neutral_check.ok ? " ✓" : " — MISMATCH"));
+      L.push("stance S = i − N = " + stNum(c.rate, "pub", "calc.rate") + " − " + stNum(n.mid, "pub", "calc.neutral.mid") + " = " + stNum(c.S, "pp", "calc.S") + " pp (" + stNum(c.S_lo, "pp", "calc.S_lo") + " to " + stNum(c.S_hi, "pp", "calc.S_hi") + ")");
+      L.push("pressure G = 1.5 × " + stNum(c.x, "pp", "calc.x") + " − " + stNum(c.S, "pp", "calc.S") + " = " + stNum(c.G, "pp", "calc.G") + " pp = " + stNum(c.G, "bp100", "calc.G") + " bp (" + stNum(c.G_lo, "bp100", "calc.G_lo") + " to " + stNum(c.G_hi, "bp100", "calc.G_hi") + ")");
+      L.push("situation today: " + stChip(s.chip, s.situation.v, s.situation.direction) + " (δ " + s.params.delta_pp + " pp, ε " + s.params.epsilon_pp + " pp)");
+      L.push("pivot = π* + S/1.5 − y/3 = " + stNum(c.pivot, "lvl", "calc.pivot", s.pivot.na) + "% (underlying inflation at which the pressure is zero)");
+    } else {
+      L.push("neutral: n/a — " + esc(s.stance.na) + " (need only)");
+    }
+    L.push("in 12 months: π = " + stNum(c.pi_12m, "pub", "calc.pi_12m", s.need_12m.na) + "% (" + esc(c.pi_12m_period || "") + ", " + esc(c.pi_12m_basis || "") + ") · gap " + stNum(c.gap_12m, "pp", "calc.gap_12m") +
+      " · y " + stNum(c.y_12m, "pp", "calc.y_12m", "no slack") + (c.y_12m_how ? " (" + esc(c.y_12m_how) + ")" : "") + " · x " + stNum(c.x_12m, "pp", "calc.x_12m"));
+    if (n && isNum(c.G_12m)) L.push("G in 12 months = 1.5 × " + stNum(c.x_12m, "pp", "calc.x_12m") + " − " + stNum(c.S, "pp", "calc.S") + " = " + stNum(c.G_12m, "pp", "calc.G_12m") + " pp → " + stChip(s.chip_12m, s.situation_12m.v, s.situation_12m.direction));
+    return L;
+  }
+  function stanceHistoryHtml(s) {
+    const h = s.history || [];
+    if (h.length < 5) return '<p class="cb-sub" data-st-history="text">History starts on ' + esc(h.length ? fmtDate(h[0].date) : "the first daily snapshot") + ".</p>";
+    return '<div class="cb-chart-wrap cb-st-hist"><canvas id="cbStanceHist" aria-label="Pressure over time"></canvas></div>';
+  }
+  function drawStanceHistory(canvas, s, ccy) {
+    const c = colors(), col = bankColor(ccy), h = s.history.filter(function (p) { return isNum(p.G_bp); });
+    const pts = function (k) { return h.map(function (p) { return { x: ms(p.date), y: p[k] }; }); };
+    const chart = new Chart(canvas, {
+      data: { datasets: [{ type: "line", data: pts("G_lo_bp"), borderColor: "transparent", pointRadius: 0, fill: false },
+                         { type: "line", data: pts("G_hi_bp"), borderColor: "transparent", pointRadius: 0, fill: "-1", backgroundColor: withAlpha(col, 0.15) },
+                         { type: "line", data: pts("G_bp"), borderColor: col, backgroundColor: col, pointRadius: 2, borderWidth: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: false, parsing: false, events: [],
+                 scales: { x: { type: "linear", ticks: { color: c.muted, callback: function (v) { return fmtDay(isoOf(v)); } }, grid: { color: withAlpha(c.border, 0.7) } },
+                           y: { ticks: { color: c.muted }, grid: { color: withAlpha(c.border, 0.7) }, title: { display: true, text: "Pressure, bp", color: c.muted } } },
+                 plugins: { legend: { display: false }, tooltip: { enabled: false },
+                            annotation: { annotations: { zero: { type: "line", yMin: 0, yMax: 0, borderColor: withAlpha(c.muted, 0.6), borderWidth: 1 } } } } }
+    });
+    state.charts.push(chart);
+  }
+  function stanceZoneHtml(d) {
+    const s = d.stance;
+    if (!s || s.na) return '<h2 class="cb-zone" id="cbStanceZone">Stance and need</h2><p class="cb-loading">' + esc((s && s.na) || "The stance is written by the next Central Banks refresh.") + "</p>";
+    const m = s.mandate || {}, nt = s.next_test, lens = s.lens;
+    const head = '<div class="cb-st-head">' + stChip(s.chip, s.situation.v, s.situation.direction, s.situation.na) + ' <span class="muted">today →</span> ' +
+      stChip(s.chip_12m, s.situation_12m.v, s.situation_12m.direction, s.situation_12m.na) + ' <span class="muted">in 12 months, rate held</span> ' +
+      stFlagChips(s.flags, "", s) + stFlagChips(s.flags_12m, "12m", s) +
+      ((s.flags || []).indexOf("mandate_review_pending") >= 0 ? ' <span class="cb-st-badge" title="The framework watch found a change on the bank\'s framework pages; the mandate entry is reviewed by hand.">Framework change detected — pending review</span>' : "") + "</div>";
+    const lines = '<p class="cb-st-lines">' + [s.cycle_line, s.market_line].filter(Boolean).map(esc).join(" · ") + "</p>";
+    const sum = '<p class="cb-st-summary">' + (s.summary || []).map(esc).join(" ") + "</p>";
+    const p = d.path || {}, first = (p.points || []).find(function (x) { return p.next && x.meeting === p.next.decision; });
+    const mk = '<section class="cb-card cb-st-card"><h3>Market · pricing</h3>' +
+      '<div class="cb-st-kv"><span class="muted">Next meeting</span><span>' + (p.next ? esc(fmtDate(p.next.decision)) : NA) + (first && first.prob ? " · " + esc(probText(first.prob)) : first && isNum(first.cum_bp) ? " · ≈ " + fmtBP(first.cum_bp) + " bp" : "") + "</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">12 months</span><span>' + m12Cell(s) + " bp" + (p.m12 && p.m12.meeting ? ' <small class="muted">after ' + esc(fmtDay(p.m12.meeting)) + "</small>" : "") + "</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">Data</span><span>' + esc(dataDateText(p) || stAsof(s)) + "</span></div></section>";
+    const bk = '<section class="cb-card cb-st-card"><h3>Bank · projections</h3>' +
+      '<div class="cb-st-kv"><span class="muted">Bank vs market</span><span>' + lensCell(s) + "</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">Publication</span><span>' + esc(s.publication || (d.ccy === "USD" ? "FOMC Summary of Economic Projections" : NA)) + "</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">Horizon projection</span><span>' + (isNum(lens.horizon_gap) ? "gap " + stNum(lens.horizon_gap, "pp", "lens.horizon_gap") + " pp (" + esc(lens.horizon_period || "") + ") · " +
+        '<span class="cb-st-cons ' + (lens.consistent ? "ok" : "no") + '">' + (lens.consistent ? "consistent" : "inconsistent") + "</span>" : '<span class="cb-na">' + NA + "</span>") + "</span></div></section>";
+    const ru = '<section class="cb-card cb-st-card"><h3>Rule · mandate check</h3>' +
+      '<div class="cb-st-kv"><span class="muted">Need now → 12m</span><span>' + needCell(s) + "</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">Stance</span><span>' + stanceBar(s) + "</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">Pressure</span><span>' + pressureCell(s, "bp") + "</span></div>" +
+      '<dl class="cb-st-mandate">' +
+      "<dt>Target</dt><dd>" + esc(m.target || NA) + (m.target_measure ? " · " + esc(m.target_measure) : "") + "</dd>" +
+      "<dt>Underlying</dt><dd>" + esc(m.underlying || NA) + (m.rule_text ? ' <small class="muted">rule ' + esc(m.rule_text) + "</small>" : "") + "</dd>" +
+      "<dt>Horizon</dt><dd>" + esc(m.horizon || NA) + "</dd><dt>Mandate</dt><dd>" + esc(m.mandate_type || NA) + "</dd>" +
+      "<dt>Version</dt><dd>from " + esc(fmtDate(m.effective_from)) + (m.effective_to ? " to " + esc(fmtDate(m.effective_to)) : "") + "</dd>" +
+      "<dt>Last verified</dt><dd>" + esc(fmtDate(m.last_verified)) + "</dd>" +
+      "<dt>Source</dt><dd>" + (m.source_url ? '<a href="' + esc(m.source_url) + '" target="_blank" rel="noopener">' + esc(m.source_title || m.source_url) + "</a>" : NA) + "</dd></dl></section>";
+    // Next test only with a date in the calendar (S2.1); the pivot stays, on its own when there is no date
+    const pivot = isNum(s.pivot.v) ? '<span class="cb-st-pivot">Pivot ' + stNum(s.pivot.v, "lvl", "pivot.v") + '% <small class="muted">underlying inflation at which the pressure is zero</small></span>' : "";
+    const test = '<div class="cb-st-test">' + (nt && nt.date ? '<span data-st-next>Next test: <b>' + esc(fmtDate(nt.date)) + "</b> " + esc(nt.title) +
+      ' <small class="muted">schedule: ' + esc(nt.schedule) + "</small></span>" + (pivot ? " · " : "") : "") + pivot + "</div>";
+    const calc = '<details class="cb-st-calc" id="cbStanceCalc"><summary>Show calculation</summary><ol class="cb-st-calclist">' + calcLines(s).map(function (l) { return "<li>" + l + "</li>"; }).join("") + "</ol></details>";
+    const hist = '<div class="cb-st-histbox"><b>History</b> <small class="muted">pressure, bp, one point per daily snapshot</small>' + stanceHistoryHtml(s) + "</div>";
+    const how = '<a href="' + esc(CFG.urls.overview_page) + '#stance-how" class="cb-st-howlink">How to read</a>';
+    return '<h2 class="cb-zone" id="cbStanceZone">Stance and need</h2><section class="cb-st-zone">' + head + lines + sum +
+      '<div class="cb-st-cards">' + mk + bk + ru + "</div>" + '<div class="cb-st-foot">' + test + calc + hist + how + "</div></section>";
+  }
+  function wireStanceZone(d) {
+    const s = d.stance;
+    if (!s || s.na) return;
+    const cv = document.getElementById("cbStanceHist");
+    if (cv) registerRedraw(function () { drawStanceHistory(cv, s, d.ccy); });
   }
 
   // ---- phone (Faza 11C), max-width 600px ------------------------------------------------------------------------------------
@@ -1387,7 +1773,7 @@
   }
   function renderBankPhone(d, dayMode) {
     const blocks = [["cbAccLatest", latestDecisionBlock(d), true], ["cbAccProj", projectionsBlock(d), false], ["cbAccSpeeches", speechesBlock(d), false], ["cbAccDecisions", decisionHistoryBlock(d), false]];
-    root.innerHTML = bankBar(d.ccy) + pathCards(d) + '<div class="cb-pathgrid">' + pathTableHtml(d.path, d.calendar) + pathChartCard(d) + "</div>" + '<h2 class="cb-zone">The bank</h2><div class="cb-accs">' +
+    root.innerHTML = bankBar(d.ccy) + pathCards(d) + '<div class="cb-pathgrid">' + pathTableHtml(d.path, d.calendar) + pathChartCard(d) + "</div>" + stanceZoneHtml(d) + '<h2 class="cb-zone">The bank</h2><div class="cb-accs">' +
       blocks.filter(function (x) { return x[1]; }).map(function (x) { return acc(x[0], x[1].title, x[1].sub, x[1].html, x[2]); }).join("") +
       acc("cbAccMethod", "How is this calculated?", "methodology, sources, calendar", referencePanel(d).replace(/^<details[^>]*><summary>[^<]*<\/summary>/, "").replace(/<\/details>$/, "")
         .replace("<th>Official time (UTC)</th><th>First seen (UTC)</th>", "<th>Official, UTC</th><th>Seen, UTC</th>"), false) +
@@ -1400,6 +1786,7 @@
       });
     });
     wirePathChart(d.path);
+    wireStanceZone(d);
     paintSwatches();
   }
 
