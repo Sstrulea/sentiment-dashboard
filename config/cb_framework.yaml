@@ -1,0 +1,104 @@
+# Framework watch (stance phase S0a): automatic DETECTION of a change of mandate, target or measures; the update itself
+# stays manual (data/cb/manual/mandates.yaml is never written by code). Code: src/cb_framework.py (I/O, stage `framework`
+# of src/cb_collect.py) + src/cb_compute/framework_watch.py (pure). Reviews: data/cb/manual/framework_reviews.yaml.
+#
+# watch      the STABLE official pages on which the CURRENT framework document appears (not the document itself: the BoE
+#            remit is a new PDF every year, the BoC agreement every five years) and, where one exists, the page that
+#            defines the measures of underlying inflation (the mandate's underlying.evidence_url).
+#              type      framework_landing | measures
+#              sel       the container [tag, id, class] whose paragraphs are the page (src/cb_docs/extract.html_paragraphs)
+#              select    keep only the paragraphs matching this regex (a page that also lists things that move weekly)
+#              drop      remove the paragraphs matching this regex (live figures shown next to the framework text)
+#              manual_only  the site refuses automated clients (RBNZ, Cloudflare): never fetched, a reminder at each MPS
+# calendar   scheduled reviews exactly as the bank / government publishes them (null = none published). due + precision
+#            day | month | year; `calendar_due` fires within +-meta.calendar_window_days (precision year: the whole year).
+# keywords   phrases that signal a CHANGE (not routine mentions), scanned in every new official text collected by phase
+#            2a (title + stored text + first paragraph). Calibrated on the existing 2a corpus: at most 1 false flag per bank
+#            (scripts/cb_framework_calibrate.py; result in docs/central-banks/ARCHITECTURE.md section 23).
+
+meta:
+  version: 1
+  frozen: 2026-11-14
+  every_days: 7                    # the watch fetches at most once a week (state.json `_framework.checked`)
+  calendar_window_days: 30
+  verification_max_days: 365       # a mandate is re-verified at each projection publication, and at least yearly
+
+keywords:
+  - framework review
+  - review of the monetary policy framework
+  - monetary policy framework review
+  - framework renewal
+  - renewal of the monetary policy framework
+  - renewal of the inflation-control target
+  - renewing Canada's monetary policy framework
+  - strategy assessment
+  - strategy review
+  - Statement on Longer-Run Goals
+  - new measure of underlying inflation
+  - new measure of core inflation
+  - new core inflation measure
+  - revised target
+  - new inflation target
+  - change to the inflation target
+  - changes to the inflation target
+  - remit for the Monetary Policy Committee
+  - Statement on the Conduct of Monetary Policy
+  - Policy Targets Agreement
+  - new Remit
+
+banks:
+  USD:
+    watch:
+      - {id: USD.framework, type: framework_landing, url: "https://www.federalreserve.gov/monetarypolicy/review-of-monetary-policy-strategy-tools-and-communications.htm", sel: [div, content, null]}
+    calendar:
+      - {event: "FOMC annual organizational meeting - review of the Statement on Longer-Run Goals", due: 2027-01-27, precision: day,
+         url: "https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals.pdf",
+         quote: "The Committee intends to review these principles and to make adjustments as appropriate at its annual organizational meeting each January"}
+      - {event: "FOMC public review of the strategy, tools and communication practices (roughly every 5 years after the 2025 review)", due: 2030, precision: year,
+         url: "https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals.pdf",
+         quote: "to undertake roughly every 5 years a thorough public review of its monetary policy strategy, tools, and communication practices"}
+  EUR:
+    watch:
+      - {id: EUR.framework, type: framework_landing, url: "https://www.ecb.europa.eu/mopo/strategy/html/index.en.html", sel: [main, null, null]}
+      - {id: EUR.review, type: framework_landing, url: "https://www.ecb.europa.eu/mopo/strategy/strategy-review/html/index.en.html", sel: [main, null, null], select: "assessment|strategy|2%|target"}
+    calendar:
+      - {event: "ECB strategy assessment", due: 2030, precision: year, url: "https://www.ecb.europa.eu/mopo/strategy/strategy-review/html/index.en.html",
+         quote: "Our next assessment is scheduled for 2030."}
+  GBP:
+    watch:
+      - {id: GBP.framework, type: framework_landing, url: "https://www.bankofengland.co.uk/monetary-policy", sel: [main, null, null],
+         select: "remit|2% target|inflation at 2%|target set for us"}
+    calendar:
+      - {event: "Remit: the Chancellor must specify price stability at least once in every 12-month period from 1 June (Bank of England Act 1998)", due: 2027-05-31, precision: day,
+         url: "https://www.bankofengland.co.uk/letter/2026/mpc-remit-2026",
+         quote: "at least once in every period of 12 months beginning on the anniversary of the day the Act came into force"}
+  JPY:
+    watch:
+      - {id: JPY.framework, type: framework_landing, url: "https://www.boj.or.jp/en/mopo/outline/index.htm", sel: [main, null, null]}
+      - {id: JPY.measures, type: measures, url: "https://www.boj.or.jp/en/research/research_data/cpi/index.htm", sel: [main, null, null]}
+    calendar: null
+  CAD:
+    watch:
+      - {id: CAD.framework, type: framework_landing, url: "https://www.bankofcanada.ca/core-functions/monetary-policy/agreement-inflation-control-target/", sel: [main, null, null]}
+      - {id: CAD.measures, type: measures, url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/", sel: [main, null, null]}
+    calendar:
+      - {event: "Renewal of the monetary policy framework (the 2027-2031 agreement ends)", due: 2031-12-31, precision: day,
+         url: "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/",
+         quote: "The agreement will run for another five-year period, ending December 31, 2031."}
+  AUD:
+    watch:
+      - {id: AUD.framework, type: framework_landing, url: "https://www.rba.gov.au/monetary-policy/framework/", sel: [div, content, null]}
+      - {id: AUD.measures, type: measures, url: "https://www.rba.gov.au/inflation/measures-cpi.html", sel: [main, null, null]}
+    calendar: null                 # the 2025 Statement promises a framework review "every five years" without a date
+  NZD:
+    watch:
+      - {id: NZD.framework, type: framework_landing, manual_only: true, url: "https://www.rbnz.govt.nz/monetary-policy/about-monetary-policy/monetary-policy-framework",
+         note: "rbnz.govt.nz answers 403 (Cloudflare) to every script; reviewed by hand at each MPS (alert rbnz_manual)"}
+    calendar:
+      - {event: "Five-yearly review of the MPC Remit (Treasury Report T2023/2001, p. 9 of OIA 20260099: the first review was completed in 2023)", due: 2028, precision: year,
+         url: "https://www.treasury.govt.nz/sites/default/files/2026-04/oia-20260099.pdf",
+         quote: "The MPC Remit must be reviewed every 5 years, with the first Remit review being completed earlier this year."}
+  CHF:
+    watch:
+      - {id: CHF.framework, type: framework_landing, url: "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/strategy", sel: [main, null, null]}
+    calendar: null

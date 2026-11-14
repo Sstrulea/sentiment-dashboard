@@ -1,0 +1,54 @@
+# Stance (S0a) - PRE-REGISTERED parameters, frozen 2026-11-14. Display-only (ARCHITECTURE section 4).
+# Any change = a new entry in `versions` (with the reason), never an edit of a frozen one. The computation is phase S1
+# (src/cb_compute/, pure); this file is only read and validated in S0a (src/cb_datasets.load_stance_config).
+#
+#   stance  = policy rate - neutral (nominal)
+#   x       = (pi_underlying - target) + y / 3          need; y = output gap, or -okun * (u - u*)
+#   G       = inflation_response * x - stance            pressure
+#   situations (delta, epsilon in pp):  |x| <= epsilon:  S0 if |G| <= delta, else S2
+#                                        otherwise d = sign(x):  S1 if d * G > delta, else S3
+#   computed on today's data and "in 12 months if the rate stays" (horizon_months).
+
+meta:
+  version: 1
+  frozen: 2026-11-14
+  current: 1
+
+versions:
+  - version: 1
+    frozen: 2026-11-14
+    reason: "initial pre-registration (prompt S0a)"
+    rule:
+      inflation_response: 1.5
+      output_gap_response: 0.5
+      okun_coefficient: 2.0            # y = -2 * (u - u*)  where the bank's slack measure is an unemployment gap
+      need: "x = (pi_underlying - target) + y / 3"
+      pressure: "G = 1.5 * x - stance"
+    gap:
+      point_target: "pi - value"
+      band_with_declared_midpoint: "pi - midpoint"
+      band_without_declared_midpoint: "distance to the nearest band edge; 0 inside the band (CHF)"
+    situations:
+      delta_pp: 0.25
+      epsilon_pp: 0.5
+      rule: "|x| <= epsilon: S0 if |G| <= delta else S2; otherwise d = sign(x): S1 if d*G > delta else S3"
+    horizon_months: 12
+    underlying_rule:                   # applied in order; data/cb/manual/mandates.yaml records which one each bank uses
+      - "(1) the core measure officially designated by the bank"
+      - "(2) the measure projected by the bank that excludes food and energy"
+      - "(3) the statistics institute's measure excluding food and energy"
+    basis:
+      today: "underlying (the headline is shown next to it)"
+      forecast: "the same measure; otherwise the headline, flagged"
+    slack: "only the bank's own estimate; missing = none (no proxy)"
+    neutral_combine:
+      USD: "mid = median of the longer-run dots; range = min-max of the longer-run dots"
+      NZD: "mid = the 'policy horizon' estimate when published; range = min-max of the estimates"
+      GBP: "mid = median of the members' statements of the last 12 months; range = min-max (only with >= 2 statements)"
+      other: "as published: a point -> mid; low/high -> range with mid = their mean"
+      real_to_nominal: "+ the target (point or midpoint)"
+    staleness:
+      forecast: "a newer projection publication has passed (meetings.yaml has_projections)"
+      neutral_months: 15
+      macro: "the last period is older than its frequency + the typical lag (config/cb_official.yaml macro lag_days + stale_grace_days)"
+    verification: "the mandate is re-verified at every new projection publication of the bank; at most 12 months"

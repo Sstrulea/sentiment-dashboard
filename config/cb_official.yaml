@@ -42,18 +42,35 @@ providers:
     license: "Bank of Canada Terms of Use s.1: freely use, copy, distribute and transmit with attribution."
   rba:
     adapter: RbaSeries
-    url: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv"
+    url: "https://www.rba.gov.au/statistics/tables/csv/{table}-data.csv"   # {table}: per-series `table` (default f1)
     ua: non_browser
     conditional: true              # Last-Modified
-    license: "RBA statistical table F1."
+    license: "RBA statistical tables (F1; G1 and H5 for the stance phase)."
   bis:
     adapter: BisSeries
     url: "https://stats.bis.org/api/v2/data/dataflow/BIS/WS_CBPOL/1.0/D.{areas}?startPeriod={since}&format=csv"
     license: "BIS statistics WS_CBPOL: source acknowledgement."
   snb:
     adapter: SnbSeries
-    url: "https://data.snb.ch/api/cube/snbgwdzid/data/csv/en?fromDate={since}"
+    url: "https://data.snb.ch/api/cube/{cube}/data/csv/en?fromDate={since}"  # {cube}: per-series `cube` (default snbgwdzid)
     license: "Swiss National Bank data portal: source acknowledgement."
+  # --- providers used only by the `macro:` section (stance phase S0a) ---
+  abs:
+    adapter: AbsSeries
+    url: "https://data.api.abs.gov.au/rest/data/ABS,{flow}/{key}?startPeriod={since}&format=csv"
+    license: "Australian Bureau of Statistics, CC BY 4.0."
+  ons:
+    adapter: OnsSeries
+    url: "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/{cdid}/{dataset}/data"
+    license: "Office for National Statistics, Open Government Licence v3.0."
+  statjp:
+    adapter: StatJpSeries
+    url: "https://www.stat.go.jp/data/cpi/{file}"
+    license: "Statistics Bureau of Japan (MIC): source acknowledgement (Terms of Use)."
+  statsnz:
+    adapter: StatsNzSeries
+    url: "https://www.stats.govt.nz/information-releases/consumers-price-index-{month}-{year}-quarter/"   # the release page; the CSV link is discovered on it
+    license: "Stats NZ, CC BY 4.0."
 
 series:
   fred:DFEDTARL: {currency: USD, role: policy_lower, provider: fred, key: DFEDTARL, unit: percent, calendar_id: US, name: "Federal funds target range - lower limit"}
@@ -81,3 +98,65 @@ series:
 
   snb:LZ:    {currency: CHF, role: policy_level, provider: snb, key: LZ,    unit: percent, calendar_id: CH, name: "SNB policy rate (cube snbgwdzid, D0=LZ)"}
   snb:SARON: {currency: CHF, role: overnight,    provider: snb, key: SARON, unit: percent, calendar_id: CH, name: "SARON (cube snbgwdzid)"}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Stance phase S0a: official inflation (and, where the bank's slack measure needs it, unemployment) series, stored in
+# data/cb/macro_series/macro_series_YYYY.parquet (yearly partitions, key (series_id, period)) by the stage `macro` of
+# src/cb_collect.py (code in src/cb_macro.py). Values are stored as published: `published_as: yoy` = the agency prints the
+# 12-month rate; `published_as: index` = the agency prints an index and the y/y is computed in code
+# (src/cb_compute/macro_yoy.py, one decimal, ROUND_HALF_UP). Providers are the common ones above.
+#
+#   role         headline (the measure the target is defined on) | underlying (primary underlying measure) |
+#                secondary (data/cb/manual/mandates.yaml underlying.secondary) | unemployment (slack: u - u*) |
+#                crosscheck (an alternative official source of the same measure, never used for the stance)
+#   measure      what the series measures (several series may carry one measure: index bases, crosschecks)
+#   freq         M | Q;  lag_days = typical days from the END of a period to its first release (gating + staleness)
+#   base         the index base of a Statistics Bureau of Japan series (a new base = a new series, never a rewrite)
+#   release_url  the official release (communiqué) a value is cross-checked against
+# ---------------------------------------------------------------------------------------------------------------------
+macro:
+  meta:
+    version: 1
+    backfill_from: 2015-01-01
+    check_lead_days: 5            # start asking for a period this many days before its typical release
+    stale_grace_days: 7           # stale = the next period is overdue by more than lag_days + this
+    guard:                        # a fetch that changes the stored history this much is refused (rebasing / redefinition)
+      min_changed: 6              # at least this many stored periods changed ...
+      max_changed_share: 0.5      # ... and more than this share of the overlapping periods
+  series:
+    # USD - BEA price indexes (FRED is the exact mirror), BLS unemployment rate
+    fred:PCEPI:    {currency: USD, role: headline,     measure: pce,       provider: fred, key: PCEPI,    freq: M, unit: index,   published_as: index, lag_days: 28, name: "PCE price index (BEA, via FRED)", release_url: "https://www.bea.gov/data/personal-consumption-expenditures-price-index"}
+    fred:PCEPILFE: {currency: USD, role: underlying,   measure: core_pce,  provider: fred, key: PCEPILFE, freq: M, unit: index,   published_as: index, lag_days: 28, name: "PCE price index excluding food and energy (BEA, via FRED)", release_url: "https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy"}
+    fred:UNRATE:   {currency: USD, role: unemployment, measure: unemployment_rate, provider: fred, key: UNRATE, freq: M, unit: percent, published_as: rate, lag_days: 7, name: "Unemployment rate (BLS, via FRED)", release_url: "https://www.bls.gov/news.release/empsit.toc.htm"}
+    # EUR - Eurostat HICP via the ECB data portal (dataflow HICP; the old ICP flow stops at 2025-12)
+    ecb:HICP_000000: {currency: EUR, role: headline,   measure: hicp,  provider: ecb, key: "HICP/M.U2.N.000000.4D0.ANR", freq: M, unit: percent, published_as: yoy, lag_days: 2, name: "HICP - overall index, annual rate (euro area, changing composition)", release_url: "https://ec.europa.eu/eurostat/news/euro-indicators"}
+    ecb:HICP_XEF000: {currency: EUR, role: underlying, measure: hicpx, provider: ecb, key: "HICP/M.U2.N.XEF000.4D0.ANR", freq: M, unit: percent, published_as: yoy, lag_days: 2, name: "HICP excluding energy, food, alcohol and tobacco, annual rate", release_url: "https://ec.europa.eu/eurostat/news/euro-indicators"}
+    # GBP - ONS (MM23)
+    ons:D7G7: {currency: GBP, role: headline,   measure: cpi,          provider: ons, key: D7G7, dataset: MM23, freq: M, unit: percent, published_as: yoy, lag_days: 18, name: "CPI annual rate, all items", release_url: "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/latest"}
+    ons:DKO8: {currency: GBP, role: underlying, measure: core_cpi,     provider: ons, key: DKO8, dataset: MM23, freq: M, unit: percent, published_as: yoy, lag_days: 18, name: "CPI 12-month rate excluding energy, food, alcoholic beverages and tobacco", release_url: "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/latest"}
+    ons:D7NN: {currency: GBP, role: secondary,  measure: services_cpi, provider: ons, key: D7NN, dataset: MM23, freq: M, unit: percent, published_as: yoy, lag_days: 18, name: "CPI annual rate, services", release_url: "https://www.ons.gov.uk/economy/inflationandpriceindices/bulletins/consumerpriceinflation/latest"}
+    # JPY - Statistics Bureau of Japan national CPI, item-index CSVs (BoJ stat-search does not carry the MIC CPI). Two
+    # bases: 2025 (official from the August 2026 release, indices from 2025-01) and 2020 (history from 2020-01, calculated
+    # until December 2026). e-Stat was not needed.
+    statjp:2025:0001: {currency: JPY, role: headline,   measure: cpi,               base: 2025, provider: statjp, file: "2025/csv/zmi2025aa.csv", key: "0001", freq: M, unit: index, published_as: index, lag_days: 21, name: "CPI all items (2025=100)", release_url: "https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html"}
+    statjp:2025:0178: {currency: JPY, role: underlying, measure: cpi_ex_ff_energy, base: 2025, provider: statjp, file: "2025/csv/zmi2025aa.csv", key: "0178", freq: M, unit: index, published_as: index, lag_days: 21, name: "CPI all items, less fresh food and energy (2025=100)", release_url: "https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html"}
+    statjp:2025:0161: {currency: JPY, role: secondary,  measure: cpi_ex_ff,        base: 2025, provider: statjp, file: "2025/csv/zmi2025aa.csv", key: "0161", freq: M, unit: index, published_as: index, lag_days: 21, name: "CPI all items, less fresh food (2025=100)", release_url: "https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html"}
+    statjp:2020:0001: {currency: JPY, role: headline,   measure: cpi,               base: 2020, provider: statjp, file: "2020/csv/zmi2020aa.csv", key: "0001", freq: M, unit: index, published_as: index, lag_days: 21, name: "CPI all items (2020=100)", release_url: "https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html"}
+    statjp:2020:0178: {currency: JPY, role: underlying, measure: cpi_ex_ff_energy, base: 2020, provider: statjp, file: "2020/csv/zmi2020aa.csv", key: "0178", freq: M, unit: index, published_as: index, lag_days: 21, name: "CPI all items, less fresh food and energy (2020=100)", release_url: "https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html"}
+    statjp:2020:0161: {currency: JPY, role: secondary,  measure: cpi_ex_ff,        base: 2020, provider: statjp, file: "2020/csv/zmi2020aa.csv", key: "0161", freq: M, unit: index, published_as: index, lag_days: 21, name: "CPI all items, less fresh food (2020=100)", release_url: "https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html"}
+    # CAD - Statistics Canada CPI and the Bank's preferred core measures, via Valet
+    boc:STATIC_TOTALCPICHANGE: {currency: CAD, role: headline,   measure: cpi,        provider: boc, key: STATIC_TOTALCPICHANGE, freq: M, unit: percent, published_as: yoy, lag_days: 17, name: "Total CPI, 12-month change (unadjusted)", release_url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/"}
+    boc:CPI_TRIM:              {currency: CAD, role: underlying, measure: cpi_trim,   provider: boc, key: CPI_TRIM,              freq: M, unit: percent, published_as: yoy, lag_days: 17, name: "CPI-trim, 12-month change", release_url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/"}
+    boc:CPI_MEDIAN:            {currency: CAD, role: underlying, measure: cpi_median, provider: boc, key: CPI_MEDIAN,            freq: M, unit: percent, published_as: yoy, lag_days: 17, name: "CPI-median, 12-month change", release_url: "https://www.bankofcanada.ca/rates/price-indexes/cpi/"}
+    # AUD - ABS complete monthly CPI (headline + trimmed mean, annual rates); RBA G1 quarterly = crosscheck; RBA H5 unemployment
+    abs:CPI.10001:   {currency: AUD, role: headline,   measure: cpi,          provider: abs, flow: "CPI,2.0.0", key: "3.10001.10.50.M",  freq: M, unit: percent, published_as: yoy, lag_days: 25, name: "Monthly CPI, all groups, annual change (original)", release_url: "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release"}
+    abs:CPI.999902:  {currency: AUD, role: underlying, measure: trimmed_mean, provider: abs, flow: "CPI,2.0.0", key: "3.999902.20.50.M", freq: M, unit: percent, published_as: yoy, lag_days: 25, name: "Monthly CPI, trimmed mean, annual change (seasonally adjusted)", release_url: "https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release"}
+    rba:GCPIAGYP:     {currency: AUD, role: crosscheck, measure: cpi,          provider: rba, table: g1, key: GCPIAGYP,     freq: Q, unit: percent, published_as: yoy, lag_days: 29, name: "CPI all groups, year-ended (RBA G1, quarterly)", release_url: "https://www.rba.gov.au/statistics/tables/"}
+    rba:GCPIOCPMTMYP: {currency: AUD, role: crosscheck, measure: trimmed_mean, provider: rba, table: g1, key: GCPIOCPMTMYP, freq: Q, unit: percent, published_as: yoy, lag_days: 29, name: "Trimmed mean, year-ended (RBA G1, quarterly)", release_url: "https://www.rba.gov.au/statistics/tables/"}
+    rba:GLFSURSA:     {currency: AUD, role: unemployment, measure: unemployment_rate, provider: rba, table: h5, key: GLFSURSA, freq: M, unit: percent, published_as: rate, lag_days: 16, name: "Unemployment rate, seasonally adjusted (RBA H5, ABS Labour Force)", release_url: "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release"}
+    # NZD - Stats NZ quarterly CPI index (1000 = June 2017 quarter)
+    statsnz:CPIQ.SE9A:      {currency: NZD, role: headline,   measure: cpi,                provider: statsnz, key: CPIQ.SE9A,      file: index-numbers,  freq: Q, unit: index, published_as: index, lag_days: 20, name: "CPI All groups for New Zealand (index)", release_url: "https://www.stats.govt.nz/information-releases/"}
+    statsnz:CPIQ.SE9NS1450: {currency: NZD, role: underlying, measure: cpi_ex_food_energy, provider: statsnz, key: CPIQ.SE9NS1450, file: infoshare-data, freq: Q, unit: index, published_as: index, lag_days: 20, name: "CPI All groups less food group, household energy subgroup and vehicle fuels (non-standard series)", release_url: "https://www.stats.govt.nz/information-releases/"}
+    # CHF - FSO CPI inflation and core inflation 1, via the SNB data portal (cube plkoprinfla, one decimal as published)
+    snb:plkoprinfla:TLK: {currency: CHF, role: headline,   measure: cpi,       provider: snb, cube: plkoprinfla, key: TLK, freq: M, unit: percent, published_as: yoy, lag_days: 21, name: "Inflation according to the national CPI (SFSO)", release_url: "https://www.bfs.admin.ch/bfs/en/home/statistics/prices/consumer-price-index.html"}
+    snb:plkoprinfla:K1:  {currency: CHF, role: underlying, measure: core1,     provider: snb, cube: plkoprinfla, key: K1,  freq: M, unit: percent, published_as: yoy, lag_days: 21, name: "Core inflation 1 (SFSO)", release_url: "https://www.bfs.admin.ch/bfs/en/home/statistics/prices/consumer-price-index.html"}
