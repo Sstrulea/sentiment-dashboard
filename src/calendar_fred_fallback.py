@@ -74,8 +74,8 @@ TARGETS: list[Target] = [
         Candidate("NAEXKP01CHQ657S", "growth_as_is", "OECD Real GDP QoQ (unadjusted)"),
     ], note="Switzerland GDP q/q (sporting-event-adjusted variant not on FRED)"),
     Target("AUD", "retail_sales", [
-        Candidate("AUSSARTMISMEI", "level_mom", "OECD Retail Trade index"),
-    ], note="Australia Retail Sales m/m (MT5 series discontinued after 2025-07)"),
+        # AUSSARTMISMEI (OECD Retail Trade index) removed 2026-11-14: discontinued on FRED ("The series does not exist").
+    ], note="Australia Retail Sales m/m (MT5 series discontinued after 2025-07); no FRED candidate left (AUSSARTMISMEI discontinued)"),
 ]
 
 

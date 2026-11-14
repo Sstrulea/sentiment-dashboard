@@ -67,7 +67,10 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
    eroare în raportul stage-ului, datele rămân neatinse; niciun fallback). „.” = lipsă, niciodată zero. Cheia nu apare în URL-uri
    stocate, loguri, rapoarte sau date (redactare). Proveniența = pagina seriei (`fred.stlouisfed.org/series/<ID>`) + „via FRED API”.
    Fiecare pagină poartă notița cerută de termeni (`templates/_footer.html.j2`). Registrul seriilor și notele de copyright:
-   `config/fred_series.yaml` (`scripts/fred_series_audit.py`).
+   `config/fred_series.yaml` (`scripts/fred_series_audit.py`). Seriile FRED cu copyright de terți (CLVMNACSCAB1GQCH, JPNRGDPEXP,
+   SP500, DJIA, NASDAQCOM, NIKKEI225) au `scope: personal_only`: **dacă dashboard-ul devine public sau multi-user, aceste serii se
+   înlocuiesc sau se cere permisiunea proprietarului** (termenii FRED). Seriile dispărute de pe FRED rămân în registru cu
+   `status: discontinued` și se scot din cod (AUSSARTMISMEI, 2026-11-14).
 10. Plătit: respins. La final: repo privat + poarta `middleware.js`. Tot afișajul rămâne în spatele porții; nimic public
    fără permisiune scrisă a furnizorilor (Atlanta Fed / CME, BoE, ASX, MX, JPX); UI afișează atribuirea din câmpul
    `license` al fiecărei surse.

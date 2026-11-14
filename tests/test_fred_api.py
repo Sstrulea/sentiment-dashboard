@@ -163,3 +163,14 @@ def test_fred_provider_config_has_no_url_and_carries_the_notice():
     from src.cb_sources.official import load_official
     p = load_official()["providers"]["fred"]
     assert "url" not in p and F.NOTICE in p["license"]
+
+
+def test_registry_discontinued_and_personal_only_scopes():
+    import yaml
+    reg = yaml.safe_load((ROOT / "config" / "fred_series.yaml").read_text())["series"]
+    assert reg["AUSSARTMISMEI"]["status"] == "discontinued"
+    assert "AUSSARTMISMEI" not in "".join(l for l in (ROOT / "src" / "calendar_fred_fallback.py").read_text().splitlines() if "Candidate(" in l)
+    copyrighted = {k for k, v in reg.items() if v.get("copyright")}
+    assert copyrighted == {"CLVMNACSCAB1GQCH", "JPNRGDPEXP", "SP500", "DJIA", "NASDAQCOM", "NIKKEI225"}
+    assert all(reg[k]["scope"] == "personal_only" and reg[k]["copyright"]["owner"] and reg[k]["copyright"]["notice"] for k in copyrighted)
+    assert all(v["scope"] == "general" for k, v in reg.items() if k not in copyrighted and v["status"] == "active")

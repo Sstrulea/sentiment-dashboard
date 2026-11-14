@@ -14,13 +14,16 @@ series:
     provenance: https://fred.stlouisfed.org/series/A191RL1Q225SBEA (via FRED API)
     used_by:
     - src/ff_fred_crosscheck (US GDP q/q check of FF actuals)
+    status: active
+    scope: general
     copyright: null
   AUSSARTMISMEI:
-    available: false
+    status: discontinued
     error: 'FRED API series AUSSARTMISMEI: HTTP 400: Bad Request.  The series does not exist.'
     provenance: https://fred.stlouisfed.org/series/AUSSARTMISMEI (via FRED API)
     used_by:
-    - src/calendar_fred_fallback (AUD retail candidate, manual run)
+    - (none since 2026-11-14 - removed from src/calendar_fred_fallback)
+    scope: none
     copyright: null
   CLVMNACSCAB1GQCH:
     title: Real Gross Domestic Product for Switzerland
@@ -29,6 +32,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/CLVMNACSCAB1GQCH (via FRED API)
     used_by:
     - src/calendar_fred_fallback (CHF GDP candidate, manual run)
+    status: active
+    scope: personal_only
     copyright:
       notice: 'Eurostat unit ID: CLV10_MNAC Eurostat item ID: B1GQ Eurostat country ID: CH Copyright, European Union, http://ec.europa.eu, 1995-2016.'
       owner: European Union
@@ -39,6 +44,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/CPIAUCSL (via FRED API)
     used_by:
     - src/ff_fred_crosscheck (US CPI y/y check of FF actuals)
+    status: active
+    scope: general
     copyright: null
   DEXCAUS:
     title: Canadian Dollars to U.S. Dollar Spot Exchange Rate
@@ -47,6 +54,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXCAUS (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DEXJPUS:
     title: Japanese Yen to U.S. Dollar Spot Exchange Rate
@@ -55,6 +64,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXJPUS (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DEXSZUS:
     title: Swiss Francs to U.S. Dollar Spot Exchange Rate
@@ -63,6 +74,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXSZUS (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DEXUSAL:
     title: U.S. Dollars to Australian Dollar Spot Exchange Rate
@@ -71,6 +84,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXUSAL (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DEXUSEU:
     title: U.S. Dollars to Euro Spot Exchange Rate
@@ -79,6 +94,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXUSEU (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DEXUSNZ:
     title: U.S. Dollars to New Zealand Dollar Spot Exchange Rate
@@ -87,6 +104,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXUSNZ (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DEXUSUK:
     title: U.S. Dollars to U.K. Pound Sterling Spot Exchange Rate
@@ -95,6 +114,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DEXUSUK (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   DFEDTARL:
     title: Federal Funds Target Range - Lower Limit
@@ -104,6 +125,8 @@ series:
     used_by:
     - src/cb_sources/official FredSeries (fed funds target, lower)
     - src/cb_probe
+    status: active
+    scope: general
     copyright: null
   DFEDTARU:
     title: Federal Funds Target Range - Upper Limit
@@ -113,6 +136,8 @@ series:
     used_by:
     - src/cb_sources/official FredSeries (fed funds target, upper)
     - src/cb_probe
+    status: active
+    scope: general
     copyright: null
   DFF:
     title: Federal Funds Effective Rate
@@ -121,6 +146,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DFF (via FRED API)
     used_by:
     - src/cb_probe (probe only)
+    status: active
+    scope: general
     copyright: null
   DFII10:
     title: Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis, Inflation-Indexed
@@ -130,6 +157,8 @@ series:
     used_by:
     - src/realyield_fetch (US 10y real yield)
     - src/crossasset_probe
+    status: active
+    scope: general
     copyright: null
   DGS2:
     title: Market Yield on U.S. Treasury Securities at 2-Year Constant Maturity, Quoted on an Investment Basis
@@ -138,6 +167,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DGS2 (via FRED API)
     used_by:
     - src/rate_sources FredSource (USD 2y, /economic carry & rates)
+    status: active
+    scope: general
     copyright: null
   DJIA:
     title: Dow Jones Industrial Average
@@ -146,6 +177,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DJIA (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: personal_only
     copyright:
       notice: Copyright Â© 2016, S&P Dow Jones Indices LLC.
       owner: S&P Dow Jones Indices LLC
@@ -156,6 +189,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/DTWEXBGS (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: general
     copyright: null
   EFFR:
     title: Effective Federal Funds Rate
@@ -164,6 +199,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/EFFR (via FRED API)
     used_by:
     - src/cb_sources/official FredSeries (overnight benchmark)
+    status: active
+    scope: general
     copyright: null
   IR3TIB01NZM156N:
     title: 'Interest Rates: 3-Month or 90-Day Rates and Yields: Interbank Rates: Total for New Zealand'
@@ -172,6 +209,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/IR3TIB01NZM156N (via FRED API)
     used_by:
     - scripts/cb_nzd_bkbm_spread.py (NZD BKBM-OCR spread estimate)
+    status: active
+    scope: general
     copyright: null
   JPNRGDPEXP:
     title: Real Gross Domestic Product for Japan
@@ -180,6 +219,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/JPNRGDPEXP (via FRED API)
     used_by:
     - src/calendar_fred_fallback (JPY GDP candidate, manual run)
+    status: active
+    scope: personal_only
     copyright:
       notice: Copyright, 2016, Cabinet Office of Japan.
       owner: Cabinet Office of Japan
@@ -190,6 +231,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/NAEXKP01CHQ657S (via FRED API)
     used_by:
     - src/calendar_fred_fallback (CHF GDP candidate, manual run)
+    status: active
+    scope: general
     copyright: null
   NAEXKP01JPQ657S:
     title: 'National Accounts: GDP by Expenditure: Constant Prices: Gross Domestic Product: Total for Japan'
@@ -198,6 +241,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/NAEXKP01JPQ657S (via FRED API)
     used_by:
     - src/calendar_fred_fallback (JPY GDP candidate, manual run)
+    status: active
+    scope: general
     copyright: null
   NASDAQCOM:
     title: NASDAQ Composite
@@ -206,6 +251,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/NASDAQCOM (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: personal_only
     copyright:
       notice: Copyright Â© 2016, NASDAQ OMX Group, Inc.
       owner: NASDAQ OMX Group
@@ -216,6 +263,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/NIKKEI225 (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: personal_only
     copyright:
       notice: Copyright, 2016, Nikkei Inc.
       owner: Nikkei Inc
@@ -226,6 +275,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/PAYEMS (via FRED API)
     used_by:
     - src/ff_fred_crosscheck (NFP check of FF actuals)
+    status: active
+    scope: general
     copyright: null
   RRPONTSYD:
     title: 'Overnight Reverse Repurchase Agreements: Treasury Securities Sold by the Federal Reserve in the Temporary Open Market Operations'
@@ -234,6 +285,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/RRPONTSYD (via FRED API)
     used_by:
     - src/liquidity_fetch (net liquidity)
+    status: active
+    scope: general
     copyright: null
   SOFR:
     title: Secured Overnight Financing Rate
@@ -243,6 +296,8 @@ series:
     used_by:
     - src/cb_sources/official FredSeries (overnight benchmark)
     - src/cb_probe
+    status: active
+    scope: general
     copyright: null
   SP500:
     title: S&P 500
@@ -251,6 +306,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/SP500 (via FRED API)
     used_by:
     - scripts/measure/factor_scales.py (measurement only)
+    status: active
+    scope: personal_only
     copyright:
       notice: Copyright © 2016, S&P Dow Jones Indices LLC.
       owner: S&P Dow Jones Indices LLC
@@ -261,6 +318,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/WALCL (via FRED API)
     used_by:
     - src/liquidity_fetch (net liquidity)
+    status: active
+    scope: general
     copyright: null
   WRBWFRBL:
     title: 'Liabilities and Capital: Other Factors Draining Reserve Balances: Reserve Balances with Federal Reserve Banks: Wednesday Level'
@@ -269,6 +328,8 @@ series:
     provenance: https://fred.stlouisfed.org/series/WRBWFRBL (via FRED API)
     used_by:
     - src/liquidity_fetch (reserves)
+    status: active
+    scope: general
     copyright: null
   WTREGEN:
     title: 'Liabilities and Capital: Liabilities: Deposits with F.R. Banks, Other Than Reserve Balances: U.S. Treasury, General Account: Week Average'
@@ -277,4 +338,6 @@ series:
     provenance: https://fred.stlouisfed.org/series/WTREGEN (via FRED API)
     used_by:
     - src/liquidity_fetch (net liquidity)
+    status: active
+    scope: general
     copyright: null
