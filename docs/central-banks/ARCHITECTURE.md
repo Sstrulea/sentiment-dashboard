@@ -106,6 +106,7 @@ Bănci: Fed/USD, ECB/EUR, BoE/GBP, BoJ/JPY, BoC/CAD, RBA/AUD, RBNZ/NZD, SNB/CHF.
 | **E2** | metoda `FIT` (estimare, flag ESTIMATE) pentru CAD dincolo de lanțul COA și pentru NZD (ASX BB, cu spread BKBM–OCR estimat); fereastra intraday MX de la 06:00 UTC; anul BoE din titlu (§18) |
 | **E3** | pagina nouă: Compare (toate băncile pe un grafic + tabel), pagina băncii cu Now / 1w / 3w, bara de bănci, `BANK_COLORS` (§19) |
 | **E3.1** | ziua deciziei (regula ședinței viitoare), 1w / 3w de la data datelor băncii, „Up next” în browser + `joint`, nota de sensibilitate NZD, MX la sărbători (§20) |
+| **S0a** | stance — date, config și actualizare continuă: mandate versionate, neutral, proiecții, serii oficiale de inflație / șomaj (stage `macro`), framework watch (stage `framework`); fără calcul, fără UI (§23) |
 
 ## 8. Ce există după 1B-1
 
@@ -1119,3 +1120,121 @@ tooltip-ul datei, Latest decision); `test_latency_block.cjs` taie acum până la
 - „By meeting”: badge-ul de metodă doar când nu e EXACT / CURVE (`QUIET_FLAGS`); pentru acestea metoda e în tooltip-ul datei. Eticheta de proiecții rămâne.
 - Hover legat: rând → grafic (`showAtMeeting`: crosshair + card la ședință, punctul mărit prin `setActiveElements`); grafic → rând (`hoverChart` → `after` →
   `highlightRow`, clasa `cb-row-hl`). Test: `tests/cb_js/test_bank_side_by_side.cjs`.
+
+## 23. Stance — S0a: date, config și actualizare continuă (fără calcul, fără UI)
+
+Feature nou pe bancă: **stance = rata − neutral**; **nevoia x = (π_underlying − țintă) + y/3** (y = output gap, sau −2·(u − u*)); **presiunea
+G = 1.5·x − stance**; situațiile S0–S3, azi și „în 12 luni dacă rata rămâne”. **S0a** pune fundația de date și mecanismul care o ține la zi.
+Display-only (§4): nimic din stance / macro / framework nu e importat de `economic_compute`, `economic_render`, `ff_scoring`, `history_compute`
+(test). Calculul = S1, UI = S2.
+
+```
+data/cb/manual/mandates.yaml          mandatul fiecărei bănci, versionat (date cu surse; NUMAI de mână)
+data/cb/manual/neutral.yaml           estimările de neutral (fără USD: SEP)
+data/cb/manual/forecasts.yaml         ultima publicație cu proiecții (fără USD: SEP)
+data/cb/manual/framework_reviews.yaml hash-ul confirmat al fiecărei pagini urmărite + keyword flags revizuite (NUMAI de mână)
+config/cb_stance.yaml                 parametri pre-înregistrați, frozen 2026-11-14 (versionat)
+config/cb_official.yaml  macro:       seriile oficiale de inflație / șomaj (furnizorii rămân comuni)
+config/cb_framework.yaml              paginile urmărite, calendarul revizuirilor, keywords
+src/cb_macro.py                       stage `macro`: fetch, guard, store anual, --status
+src/cb_framework.py                   stage `framework`: watch săptămânal, snapshot-uri, keyword flags, alerte
+src/cb_compute/macro_yoy.py           y/y din index (pur; aritmetica din src/official_series.py)
+src/cb_compute/framework_watch.py     normalizare, hash, keyword hits, alerte (pur)
+src/cb_compute/stance_inputs.py       dataclass-uri pure (MandateVersion, Observation, NeutralEstimate, Projection, StanceInputs)
+src/cb_datasets.py                    loadere + validatori (mandates / neutral / forecasts), projections_view, stance_inputs, stance_status
+data/cb/macro_series/                 macro_series_YYYY.parquet (scris de CI)
+data/cb/framework_watch/<id>/<hash16>.txt, keyword_flags.json   (scrise de CI)
+scripts/cb_framework_calibrate.py     calibrarea keywords pe corpusul 2a
+```
+
+### Contractul
+
+**Mandatul** (`mandates.yaml`, `banks.<CCY>.versions[]`): `effective_from` / `effective_to` (null = deschis), `change_reason`
+(bank_framework | bank_measures | dashboard_choice), `target` {point | band, value | low/high, `midpoint` doar declarat de bancă, cu citat,
+measure}, `mandate` {price_stability | dual | hierarchical, quote}, `horizon` {text, forward_looking, quote}, `headline` (series_id),
+`underlying` {primary (CAD: listă + `combine: mean`), secondary[], rule_applied 1|2|3, evidence_url}, `slack` {unemployment_gap | output_gap |
+none, source}, `neutral` {fed_sep | manual, flag}, `forecasts` {fed_sep | manual, conditioning}, `sources` [{title, url, page, retrieved}],
+`last_verified` {date, checked}. Versiunea curentă = singura valabilă la data cerută; versiunile viitoare publicate sunt permise (CAD: acordul din
+2021 până la 2026-12-31 și cel din 5 nov. 2026 de la 2027-01-01). Versiunile istorice (replay) = S0b.
+
+**Regula underlying** (în `cb_stance.yaml`, în ordine): (1) măsura core desemnată oficial de bancă; (2) măsura proiectată de bancă ce exclude
+food și energy; (3) măsura ex food & energy a institutului de statistică.
+
+| bancă | țintă | underlying (regula) | slack | neutral | forecasts · conditioning |
+|---|---|---|---|---|---|
+| USD | 2% PCE | core PCE (2) | unemployment_gap: UNRATE − mediana LR din SEP | SEP_LONGER_RUN | SEP · own_path |
+| EUR | 2% HICP | HICPX (2) | none | STAFF_ESTIMATE | staff projections · market |
+| GBP | 2% CPI | core CPI ONS (3); services CPI | output_gap (MPR Table 3.B, număr explicit) | MEMBERS_VIEW | MPR · market |
+| JPY | 2% CPI all items | CPI less fresh food & energy (2); less fresh food | output_gap (BoJ RSD) | STAFF_ESTIMATE | Outlook · unpublished |
+| CAD | 2%, banda 1–3 | media CPI-trim și CPI-median (1) | output_gap (intervalul din MPR) | BANK_ESTIMATE | MPR · unpublished |
+| AUD | 2–3, midpoint 2.5 (declarat) | trimmed mean lunar ABS (1); G1 trimestrial = cross-check | unemployment_gap (NAIRU ≈ 4¾ în SMP nov. 2026) | STAFF_ESTIMATE | SMP · market |
+| NZD | 1–3, midpoint 2 | Stats NZ CPI ex food, household energy & vehicle fuels (3) | output_gap (MPS) | BANK_ESTIMATE | MPS · own_path (OCR track în rbnz.yaml) |
+| CHF | 0–2 | FSO core inflation 1 (3) | none | NOT_PUBLISHED | conditional forecast · constant_rate |
+
+**Parametrii** (`config/cb_stance.yaml`, versiunea 1, frozen 2026-11-14; orice schimbare = versiune nouă + motiv): inflation_response 1.5,
+output_gap_response 0.5, okun_coefficient 2.0; gap față de ținta punctuală sau midpoint-ul declarat, banda fără midpoint (CHF) = distanța până la
+margine, 0 în bandă; δ = 0.25 pp, ε = 0.5 pp (|x| ≤ ε: S0 dacă |G| ≤ δ, altfel S2; altfel d = sign(x): S1 dacă d·G > δ, altfel S3); orizont 12 luni;
+baza: azi = underlying (headline alături), forecast = aceeași măsură, altfel headline cu flag; slack doar estimarea băncii; combinarea neutralului
+(USD mediana / min–max dots LR; NZD „policy horizon”; GBP mediana declarațiilor membrilor din ultimele 12 luni, ≥ 2 declarații; restul ca publicat;
+real → nominal = + ținta); staleness (forecast: o publicație mai nouă; neutral > 15 luni; macro: perioada + lag); mandatul re-verificat la fiecare
+publicație de proiecții, maxim 12 luni.
+
+**Seriile macro** (`data/cb/macro_series/`, cheia (series_id, period), partiții anuale prin `cb_store.Dataset(granularity="year")`): series_id,
+currency, period ('2026-09' | '2026Q3'), period_start, freq M|Q, value, unit, published_as index | yoy | rate, release_date (null când sursa nu o
+dă), fetched_at, source_url. Se stochează exact ce publică sursa; y/y din index se calculează în cod (rotunjire 1 zecimală ROUND_HALF_UP).
+
+| bancă | headline | underlying (+ secundar) | furnizor (adaptor) |
+|---|---|---|---|
+| USD | PCEPI (index) | PCEPILFE (index); șomaj UNRATE | FRED = oglinda BEA / BLS |
+| EUR | HICP 000000 ANR | HICP XEF000 ANR | ECB data portal, dataflow **HICP** (vechiul `ICP` se oprește la 2025-12) |
+| GBP | D7G7 | DKO8; D7NN | ONS time-series JSON (adaptor nou) |
+| JPY | 0001 (index) | 0178; 0161 | Statistics Bureau CSV (adaptor nou): 2025-base (din 2025-01) + 2020-base (din 2020-01); BoJ stat-search nu are CPI-ul MIC, e-Stat nu a fost necesar |
+| CAD | STATIC_TOTALCPICHANGE | CPI_TRIM + CPI_MEDIAN | BoC Valet |
+| AUD | ABS CPI 10001 (lunar) | ABS 999902 (lunar); G1 GCPIAGYP / GCPIOCPMTMYP = crosscheck; șomaj RBA H5 GLFSURSA | ABS Data API (adaptor nou: RBA nu are seria lunară); RBA (tabelul = parametru) |
+| NZD | CPIQ.SE9A (index) | CPIQ.SE9NS1450 (index, fișierul infoshare) | Stats NZ (`official_sources.StatsNzCpi`, series_ref + fișier = parametri) |
+| CHF | plkoprinfla TLK | plkoprinfla K1 | SNB data portal (cube = parametru) |
+
+**Guard la fiecare fetch** (per serie, înainte de scriere): reviziile puține se acceptă și se loghează (vechi → nou, în raportul stage-ului); dacă
+≥ 6 perioade **și** > 50% din suprapunere se schimbă (rebazare, redefinire), seria e refuzată, nu se scrie nimic din ea, refuzul stă în
+`state.json` (`_macro_refused`) și apare în `--status` până trece un fetch. O bază nouă = o serie nouă în config, nu o rescriere.
+
+**Validarea la încărcare** (`StanceDataError`): filled fără url + pagină; pending fără motiv + pas următor; valoare în afara −5…25; low > high;
+dată în viitor (excepție effective_from / effective_to); rol / transform / orizont necunoscut; conditioning ≠ mandat; series_id lipsă din config;
+versiuni suprapuse sau nu exact una curentă; effective_to < effective_from; citat > 30 de cuvinte (neutral); NZD forecasts ≠ ultimul MPS din rbnz.yaml.
+
+**Un singur view de proiecții** (`projections_view`): ultimul SEP din `projections.parquet` (scris doar de CI) + publicațiile din `forecasts.yaml`.
+
+### Cum rămâne la zi
+
+| ce | automat | detectat (alertă în `--status`) | manual (cine, când) |
+|---|---|---|---|
+| seriile macro | stage `macro`, **doar** în rularea zilnică programată (`cb-refresh`, cron `23 7 * * *`; guard-ul nu o sare; dispatch-urile Worker-ului și cele din ziua deciziei nu o rulează). Zero requesturi când nicio serie a furnizorului nu așteaptă o perioadă nouă (perioada următoare e cerută de la `lag_days − 5` zile după sfârșitul ei). | serie stale (perioada următoare întârzie peste `lag_days + 7`); refuzurile guard-ului; reviziile (în raportul stage-ului) | o bază nouă / o serie redefinită: serie nouă în `config/cb_official.yaml` |
+| proiecțiile | SEP (stage `projections`) | `forecasts.yaml` mai vechi decât ultima ședință `has_projections` | George / dev: transcrie publicația nouă în `forecasts.yaml` + re-verifică mandatul în același commit |
+| neutral | SEP (USD) | estimare > 15 luni | transcriere manuală cu sursă |
+| mandatul | — (niciun cod nu scrie `mandates.yaml`) | `page_changed` (hash ≠ confirmat, cu redline față de snapshot-ul confirmat), `keyword_hit` (documente 2a noi), `calendar_due` (±30 zile), `verification_overdue` (last_verified < ultima publicație de proiecții sau > 12 luni), `rbnz_manual` (la fiecare MPS) | verificare, versiune nouă cu sursă, apoi hash-ul nou / doc_id-ul în `framework_reviews.yaml` |
+
+Framework watch: cel mult o dată pe săptămână (`state.json` `_framework.checked`), politicos (Fetcher-ul din 2a: robots.txt, 2 s / host, cerere
+condiționată ETag / Last-Modified; validatorii avansează doar când textul stocat se schimbă), textul principal extras cu extractorul 2a
+(container fix / PDF), normalizat (fără nav, footer, date de afișare; `select` / `drop` pe pagini cu cifre live) și hașat. Keyword flags: fiecare
+document **nou** al stage-ului `documents` (titlu + textul stocat + primul paragraf) e scanat la colectare → `keyword_flags.json`, fără
+interpretare. Calibrare pe corpusul 2a existent (300 de documente, 14 nov. 2026): **0 flag-uri** (0 false); flag-ul „adevărat” al reînnoirii BoC
+nu e în corpus (2a nu colectează comunicatele de framework) și e acoperit de test pe textele oficiale + de watch-ul paginii CAD.
+
+### Faze
+
+| fază | conținut |
+|---|---|
+| **S0a** | datele, config-ul, actualizarea continuă (acest capitol) |
+| **S0b** | versiunile istorice ale mandatelor + point-in-time pentru seriile macro (replay) |
+| **S1** | calculul (pur, `src/cb_compute/`): stance, x, G, situațiile, azi și la 12 luni |
+| **S2** | UI: blocul stance pe pagina băncii, badge-ul „Framework change detected — pending review” |
+| **S3–S4** | evaluare / extinderi (de definit) |
+
+### Ce e pending (2026-11-14)
+
+- **NZD neutral**: MPS sept. 2026 arată suita de indicatori de neutral doar ca grafic (Figure 6.4) — George descarcă XLSX-ul cu datele graficelor
+  de pe pagina MPS (rbnz.govt.nz blochează scripturile).
+- **CAD forecasts underlying**: MPR oct. 2026 nu tipărește o proiecție numerică pentru CPI-trim / CPI-median — se re-verifică la MPR din ian. 2027.
+- **EUR neutral**: ultima estimare staff explicită e din Economic Bulletin 1/2025 (13 feb. 2025) → apare stale (> 15 luni).
+- **Limitări de backfill**: ABS lunar (complete monthly CPI) există doar din 2025-04 (înainte: G1 trimestrial); Stats NZ ex food/energy din
+  2022Q2 (publicațiile mai vechi sunt arhive zip); JPY y/y din 2021-01 (fișierul 2020-base începe în 2020-01).
