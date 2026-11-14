@@ -82,3 +82,41 @@ def load_pair_defs(path: Path | str | None = None) -> list:
 def load_pairs(path: Path | str | None = None) -> list:
     """[(name, base, quote)] of the same pairs."""
     return [(n, b, q) for n, b, q, _ in load_pair_defs(path)]
+
+
+# ---------------------------------------------------------------------------
+# Stance (phase S1): every read for src/cb_compute/stance.py (which stays pure)
+# ---------------------------------------------------------------------------
+
+def load_stance(data_dir: Path | str | None = None, asof: Optional[date] = None, ctx: Optional[Context] = None) -> tuple:
+    """(asof, params, inputs {ccy: BankInputs}, results {ccy: dict}). Validates the manual files (StanceDataError on an error)."""
+    from . import cb_framework, cb_macro
+    from .cb_compute import stance as ST
+    from .cb_compute.framework_watch import last_projection_dates
+    from .cb_compute.stance_inputs import current_version
+    paths = cc.Paths(data_dir)
+    ctx = ctx or load_context(data_dir)
+    asof = asof or ctx.market.newest()
+    params = ds.load_stance_config()
+    mand = ds.load_mandates(paths, today=asof, validate=True)
+    neut = ds.load_neutral(paths, today=asof, validate=True, mandates=mand)
+    fc = ds.load_forecasts(paths, today=asof, validate=True, mandates=mand)
+    cur = {b: current_version(v, asof) for b, v in ds.mandate_versions(mand).items()}
+    mcfg = load_official()["macro"]
+    per = cb_macro.by_series(cb_macro.load_macro(paths, end=asof))
+    stale = {sid for sid, s in mcfg["series"].items()
+             if cb_macro.is_stale(max((p for p, r in (per.get(sid) or {}).items() if r["period_start"] <= asof), default=None),
+                                  s["lag_days"], asof, mcfg["meta"]["stale_grace_days"])}
+    roster = yaml.safe_load((Path(__file__).resolve().parent.parent / "config" / "cb_roster.yaml").read_text(encoding="utf-8"))
+    try:
+        alerts = cb_framework.open_alerts(paths, asof)
+    except Exception:                                                     # noqa: BLE001 - a broken watch must not block the stance
+        alerts = []
+    lastp = last_projection_dates(ds.load_meetings(paths.meetings), asof)
+    sep_last = max((r["meeting_date"] for r in ctx.projections if r["meeting_date"] <= asof), default=None)
+    entered = {b: (sep_last if b == "USD" else ((fc.get("banks") or {}).get(b) or {}).get("meeting")) for b in ST.BANKS}
+    newer = {b: bool(lastp.get(b) and entered.get(b) and lastp[b] > entered[b]) for b in ST.BANKS}
+    from . import cb_policy_history as PH
+    hist = PH.by_currency(PH.load(paths, end=asof), PH.load_config()["series"], asof)
+    inputs = ST.assemble(ctx, cur, neut, fc, per, mcfg["series"], roster, {a.bank for a in alerts}, params, asof, stale, newer, hist)
+    return asof, params, inputs, ST.compute_all(inputs, params)

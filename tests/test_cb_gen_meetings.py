@@ -21,6 +21,7 @@ BANKS = ds.load_banks()
 EVIDENCE = D(2026, 9, 20)
 BOE_EVIDENCE = D(2026, 10, 9)                     # the BoE page re-read: 2027 confirmed (cal_boe_cut_20261009.htm)
 BY_BANK = {"GBP": BOE_EVIDENCE}
+PAST_EVIDENCE = D(2026, 11, 14)                   # S1.1: the official archives of the 2025 meetings, read on this day
 
 
 def cut(name, suffix=""):
@@ -35,6 +36,15 @@ def parsed():
 
 
 @pytest.fixture(scope="module")
+def past():
+    """The meetings already held (2025-09..12) from the official archives (cuts read 2026-11-14)."""
+    boe = [C._m(C.parse_boe_summary(line.split("\t")[1])) for line in (FIX / "cal_boe_summaries_2025_cut_20261114.txt").read_text().splitlines()]
+    return {"USD": C.parse_fed((FIX / "cal_fed_2025_cut_20261114.htm").read_text()),
+            "CAD": C.parse_boc_history((FIX / "cal_boc_history_cut_20261114.htm").read_text()),
+            "JPY": C.parse_boj_decisions((FIX / "cal_boj_decisions_2025_cut_20261114.htm").read_text()), "GBP": boe}
+
+
+@pytest.fixture(scope="module")
 def ecb_days():
     ff = pd.read_parquet(FIX / "meetings_ff_ecb_cut.parquet")
     ff = ff[ff["actual"].notna()]
@@ -46,19 +56,32 @@ def rbnz():
     return ds.load_rbnz(ROOT / "data" / "cb" / "manual" / "rbnz.yaml")["published_calendar"]["meetings"]
 
 
-def test_the_generator_reproduces_the_committed_file_byte_for_byte(parsed, ecb_days, rbnz):
-    text = M.build(parsed, BANKS, EVIDENCE, ecb_days, rbnz, BY_BANK)
+def test_the_generator_reproduces_the_committed_file_byte_for_byte(parsed, ecb_days, rbnz, past):
+    text = M.build(parsed, BANKS, EVIDENCE, ecb_days, rbnz, BY_BANK, past, PAST_EVIDENCE)
     assert text == (ROOT / "data" / "cb" / "meetings.yaml").read_text()
 
 
-def test_ecb_meetings_already_held_come_only_from_ff_and_only_from_2026(parsed, ecb_days, rbnz):
-    assert D(2025, 9, 11) in ecb_days and D(2026, 9, 10) in ecb_days                   # the cut also carries 2025 rows ...
+def test_ecb_meetings_already_held_come_only_from_ff_and_only_from_2025_09(parsed, ecb_days, rbnz):
+    assert D(2025, 9, 11) in ecb_days and D(2026, 9, 10) in ecb_days
     rows = M.build_rows("EUR", parsed["EUR"], BANKS, EVIDENCE, ecb_days)
     ff = [r for r in rows if r[4] == "ff"]
-    assert [r[0] for r in ff] == [D(2026, 2, 5), D(2026, 3, 19), D(2026, 4, 30), D(2026, 6, 11), D(2026, 7, 23), D(2026, 9, 10)]
-    assert all(r[5] is False and r[1] == r[0] - (r[0] - r[1]) and (r[0] - r[1]).days == 1 for r in ff)      # ... which are not used
+    assert [r[0] for r in ff] == [D(2025, 9, 11), D(2025, 10, 30), D(2025, 12, 18),
+                                  D(2026, 2, 5), D(2026, 3, 19), D(2026, 4, 30), D(2026, 6, 11), D(2026, 7, 23), D(2026, 9, 10)]
+    assert all(r[5] is False and (r[0] - r[1]).days == 1 for r in ff)
     assert all(r[4] == "official" and r[5] == EVIDENCE for r in rows if r[0] >= D(2026, 10, 29))
-    assert len({r[0] for r in rows}) == len(rows) == 16
+    assert len({r[0] for r in rows}) == len(rows) == 19
+
+
+def test_past_meetings_come_from_the_official_archives_and_fill_only_before_the_page(past):
+    assert [m["date"] for m in past["CAD"] if m["date"] < D(2026, 1, 1)][:3] == [D(2025, 12, 10), D(2025, 10, 29), D(2025, 9, 17)]
+    assert [m["date"] for m in past["JPY"]][-3:] == [D(2025, 9, 19), D(2025, 10, 30), D(2025, 12, 19)]
+    assert all(m["first_day"] is None for m in past["JPY"])                           # the BoJ index has no first day
+    assert [m["date"] for m in past["GBP"]] == [D(2025, 9, 18), D(2025, 11, 6), D(2025, 12, 18), D(2025, 8, 7)]
+    rows = M.build_rows("CAD", [{"date": D(2026, 1, 28), "has_projections": True}], BANKS, EVIDENCE, past=past["CAD"], past_evidence=PAST_EVIDENCE)
+    assert [(r[0], r[4], r[5]) for r in rows] == [(D(2025, 9, 17), "official_archive", PAST_EVIDENCE), (D(2025, 10, 29), "official_archive", PAST_EVIDENCE),
+                                                  (D(2025, 12, 10), "official_archive", PAST_EVIDENCE), (D(2026, 1, 28), "official", EVIDENCE)]
+    usd = {r[0]: r for r in M.build_rows("USD", [], BANKS, EVIDENCE, past=past["USD"], past_evidence=PAST_EVIDENCE)}
+    assert set(usd) == {D(2025, 9, 17), D(2025, 10, 29), D(2025, 12, 10)} and usd[D(2025, 9, 17)][1:3] == (D(2025, 9, 16), True)
 
 
 def test_boe_2027_was_provisional_on_the_old_page(parsed):

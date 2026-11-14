@@ -149,16 +149,18 @@ def test_eurex_entries_share_one_file_and_carry_their_curve(sources):
 def test_meetings_cover_2026_2027_with_the_specified_fields(meetings):
     assert list(meetings) == BANKS
     counts = {b: len(m) for b, m in meetings.items()}
-    assert counts == {"USD": 16, "EUR": 16, "GBP": 16, "JPY": 16, "CAD": 16, "AUD": 16, "NZD": 15, "CHF": 10}   # CHF from 2025-09 (last 4 decisions)
+    # from 2025-09 (S1.1: the 2025 meetings, so every BIS rate change since 2025-09 has a decision row); AUD and NZD have no
+    # machine-readable 2025 meeting archive (RBA none, RBNZ blocked) so they start in 2026
+    assert counts == {"USD": 19, "EUR": 19, "GBP": 19, "JPY": 19, "CAD": 19, "AUD": 16, "NZD": 15, "CHF": 10}
     for b, rows in meetings.items():
         dates = [r["date"] for r in rows]
         assert dates == sorted(set(dates)), b
-        lo = date(2025, 9, 1) if b == "CHF" else date(2026, 1, 1)
+        lo = date(2025, 9, 1) if b not in ("AUD", "NZD") else date(2026, 1, 1)
         assert all(lo <= d <= date(2027, 12, 31) for d in dates), b
         for r in rows:
             assert set(r) - {"first_day"} == {"date", "has_projections", "has_presser", "source", "verified"}, (b, r)
             assert r.get("first_day") is None or (isinstance(r["first_day"], date) and r["first_day"] < r["date"]), (b, r)
-            assert r["source"] in {"official", "ff", "manual"}
+            assert r["source"] in {"official", "official_archive", "ff", "manual"}
             assert isinstance(r["has_projections"], bool) and isinstance(r["has_presser"], bool)
             assert r["verified"] is False or isinstance(r["verified"], date)
 
@@ -169,7 +171,9 @@ def test_meeting_sources_and_verification_are_honest(meetings):
     assert date(2027, 2, 17) not in {r["date"] for r in meetings["NZD"]}                         # the old release's date, replaced by 2027-02-10
     assert {b for b, rows in meetings.items() if any(r["source"] == "ff" for r in rows)} == {"EUR"}
     assert all(r["date"] < date(2026, 10, 1) and r["verified"] is False for r in meetings["EUR"] if r["source"] == "ff")
-    assert all(r["verified"] == date(2026, 10, 9) for r in meetings["GBP"])                      # BoE page re-read: 2027 confirmed
+    assert all(r["verified"] == date(2026, 10, 9) for r in meetings["GBP"] if r["source"] == "official")      # BoE page re-read: 2027 confirmed
+    assert all(r["verified"] == date(2026, 11, 14) and r["date"] < date(2026, 1, 1)
+               for rows in meetings.values() for r in rows if r["source"] == "official_archive")              # S1.1: the 2025 archives
     for b, rows in meetings.items():
         for r in rows:
             if r["source"] == "official" and b != "GBP":
@@ -260,13 +264,13 @@ def test_multi_day_meetings_carry_first_day_and_one_day_meetings_do_not(meetings
     multi = {"USD", "EUR", "JPY", "AUD"}
     for b, rows in meetings.items():
         for r in rows:
-            if b in multi:
+            if b in multi and not (b == "JPY" and r["source"] == "official_archive"):      # the BoJ decisions index has no first day
                 assert isinstance(r.get("first_day"), date) and 0 < (r["date"] - r["first_day"]).days <= 3, (b, r["date"])
             else:
                 assert r.get("first_day") is None, (b, r["date"])
     by = {r["date"]: r for r in meetings["USD"]}
     assert by[date(2026, 9, 16)]["first_day"] == date(2026, 9, 15)            # Tue-Wed FOMC
-    assert {r["date"]: r["first_day"] for r in meetings["JPY"]}[date(2026, 9, 18)] == date(2026, 9, 17)
+    assert {r["date"]: r.get("first_day") for r in meetings["JPY"]}[date(2026, 9, 18)] == date(2026, 9, 17)
     assert {r["date"]: r["first_day"] for r in meetings["AUD"]}[date(2026, 9, 29)] == date(2026, 9, 28)
     ecb = {r["date"]: r for r in meetings["EUR"]}
     assert ecb[date(2026, 9, 10)]["first_day"] == date(2026, 9, 9) and ecb[date(2026, 9, 10)]["source"] == "ff"     # derived, unverified

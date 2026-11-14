@@ -438,3 +438,14 @@ def test_committed_decisions_are_consistent():
         else:
             assert r["surprise_consensus_bp"] is None
     assert all((r["consensus"] is None) for r in rows if r["currency"] == "CHF")
+
+
+def test_select_meetings_since_takes_every_held_meeting_from_that_day():
+    """S1.1: `--decisions-since` backfills the decisions behind the cycle (the default window is the last 4 meetings)."""
+    from datetime import date as D
+    from src.cb_compute.decisions import select_meetings
+    ms = [{"date": D(2025, m, 15)} for m in (7, 9, 10, 12)] + [{"date": D(2026, m, 15)} for m in (2, 3, 12)]
+    today = D(2026, 4, 1)
+    assert [m["date"] for m in select_meetings(ms, today)] == [D(2025, 10, 15), D(2025, 12, 15), D(2026, 2, 15), D(2026, 3, 15)]
+    assert [m["date"] for m in select_meetings(ms, today, since=D(2025, 9, 1))] == [D(2025, 9, 15), D(2025, 10, 15), D(2025, 12, 15),
+                                                                                    D(2026, 2, 15), D(2026, 3, 15)]

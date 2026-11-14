@@ -258,7 +258,7 @@ def test_the_watch_cli_reads_its_timing_from_the_config_and_runs_the_documents_o
     monkeypatch.setattr(W, "watch_statement", lambda paths, ccy, day, **kw: (calls.append(("watch", ccy, day, kw["minutes"], kw["poll_seconds"])), W.WatchReport(ccy, day))[1])
     from src.cb_docs import collect as dcol
     monkeypatch.setattr(dcol, "run_documents", lambda paths, today, **kw: (calls.append(("documents", kw.get("banks"))), dcol.DocsReport())[1])
-    monkeypatch.setattr(ds, "run_decisions", lambda paths, today: (calls.append(("decisions",)), ds.DecisionsReport())[1])
+    monkeypatch.setattr(ds, "run_decisions", lambda paths, today, **kw: (calls.append(("decisions",)), ds.DecisionsReport())[1])
     d = tmp_path / "cb"
     d.mkdir()
     rc = cc.main(["--watch-decision", "USD", "--decision-date", "2026-09-16", "--data-dir", str(d)])
@@ -271,7 +271,7 @@ def test_the_watch_cli_never_fails_the_job(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(W, "watch_statement", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
     from src.cb_docs import collect as dcol
     monkeypatch.setattr(dcol, "run_documents", lambda paths, today, **kw: dcol.DocsReport())
-    monkeypatch.setattr(ds, "run_decisions", lambda paths, today: ds.DecisionsReport())
+    monkeypatch.setattr(ds, "run_decisions", lambda paths, today, **kw: ds.DecisionsReport())
     d = tmp_path / "cb"
     d.mkdir()
     assert cc.main(["--watch-decision", "USD", "--decision-date", "2026-09-16", "--data-dir", str(d)]) == 0

@@ -4,6 +4,7 @@
 Extracts, per SEP:
   * the medians of Table 1 for every variable (change in real GDP, unemployment rate, PCE inflation, core PCE
     inflation, federal funds rate) and every horizon - as published (rounded to 0.1);
+  * the Range columns of Table 1 (lowest-highest projection), as published: kinds range_low / range_high (S1.1);
   * every dot of the "appropriate policy path" chart: participants per 25 bp level, per year and longer run;
   * the federal-funds median recomputed from those dots (exact, e.g. 4.125 where Table 1 prints 4.1).
 Pure functions over the page text; the I/O source only lists the SEP links on the FOMC calendar page and fetches the
@@ -63,6 +64,27 @@ def median_from_dots(counts: dict) -> Optional[float]:
     return flat[m // 2] if m % 2 else (flat[m // 2 - 1] + flat[m // 2]) / 2
 
 
+def parse_range(cell: str) -> Optional[tuple]:
+    """'2.6–3.9' -> (2.6, 3.9); a single published value '2.0' -> (2.0, 2.0); empty -> None."""
+    parts = [p.strip() for p in re.split(r"[–—-]", cell.strip()) if p.strip()]
+    vals = [_safe_float(p) for p in parts]
+    if not vals or any(v is None for v in vals) or len(vals) > 2:
+        return None
+    return (vals[0], vals[-1])
+
+
+def page_text(content: bytes, fallback: str) -> str:
+    """The page is UTF-8 without a charset header (requests falls back to latin-1 and garbles the en dash of the ranges)."""
+    try:
+        return content.decode("utf-8")
+    except UnicodeDecodeError:
+        return fallback
+
+
+def has_range(rows) -> bool:
+    return any(r["kind"] == "range_low" for r in rows)
+
+
 def parse_sep(page: str, meeting_date: date, bank: str = "USD") -> list:
     """Rows: dicts with bank, meeting_date, variable, horizon, kind (median_published | median_from_dots | dot),
     level (dot level, else None), count (participants), value (median, else None), unit, source_url."""
@@ -87,6 +109,12 @@ def parse_sep(page: str, meeting_date: date, bank: str = "USD") -> list:
             v = _safe_float(cell)
             if v is not None:
                 out.append(row(VARIABLES[name], h, "median_published", value=v))
+        n = len(horizons)
+        for h, cell in zip(horizons, r[1 + 2 * n:1 + 3 * n]):          # the third block: Range
+            lo_hi = parse_range(cell)
+            if lo_hi is not None:
+                out.append(row(VARIABLES[name], h, "range_low", value=lo_hi[0]))
+                out.append(row(VARIABLES[name], h, "range_high", value=lo_hi[1]))
     if not any(o["variable"] == FFR for o in out):
         raise ValueError("no federal funds rate median row in Table 1")
 
@@ -131,7 +159,7 @@ class FedSepSource(HttpSource):
         self.last_status = self.last_note = ""
         try:
             r, _, _ = self.get_url(SEP_URL.format(ymd=d.strftime("%Y%m%d")))
-            return None if r is None else r.text
+            return None if r is None else page_text(r.content, r.text)
         except Exception as e:
             self._parse_fail(f"{type(e).__name__}: {e}")
             return None

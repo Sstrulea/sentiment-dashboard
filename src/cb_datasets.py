@@ -100,7 +100,7 @@ def statement_rates(paths) -> dict:
 
 
 def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: dict | None = None,
-                  meetings: dict | None = None, ff_path: Path | str | None = None, n: int = 4) -> DecisionsReport:
+                  meetings: dict | None = None, ff_path: Path | str | None = None, n: int = 4, since: date | None = None) -> DecisionsReport:
     from .cb_collect import load_official_store                         # late import: cb_collect imports this module
     banks = banks or load_banks()
     calendars = calendars or load_calendars()
@@ -108,7 +108,7 @@ def run_decisions(paths, today: date, *, banks: dict | None = None, calendars: d
     view = SeriesView(list(load_official_store(paths).values()))
     ff = read_ff_parquet(ff_path or FF_PARQUET)
     rows, unresolved = compute_all(banks, meetings, calendars, view, ff_by_bank(banks, ff), today,
-                                   load_manual_decisions(paths.manual / "decisions.yaml"), n, statement_rates(paths))
+                                   load_manual_decisions(paths.manual / "decisions.yaml"), n, statement_rates(paths), since)
     keep = {(r["currency"], r["meeting_date"]): r for r in cs.read_table_file(paths.decisions)}
     for r in rows:
         keep[(r["currency"], r["meeting_date"])] = r                    # recomputed inside the window; older rows stay
@@ -150,7 +150,7 @@ def run_projections(paths, today: date, *, source: FedSepSource | None = None,
         return rep
     rep.sep_dates = ds[-n:]
     rows = {tuple(r[k] for k in PROJECTIONS_KEY): r for r in cs.read_table_file(paths.projections)}
-    have = {r["meeting_date"] for r in rows.values()}
+    have = {r["meeting_date"] for r in rows.values() if r["kind"] == "range_low"}     # S1.1: a SEP stored without its Table 1 range is re-read
     for d in rep.sep_dates:
         if d in have:
             continue
@@ -733,6 +733,12 @@ def validate_mandates(doc: dict, today: date, series_ids: set) -> list:
                 err.append(f"{tag}: no sources")
             for k, s in enumerate(srcs):
                 _check_source(err, f"{tag}.sources[{k}]", s, today)
+            for k, c in enumerate(v.get("corrections") or []):
+                ct = f"{tag}.corrections[{k}]"
+                _check_date(err, f"{ct}.date", c.get("date"), today)
+                if not (c.get("field") and c.get("reason")):
+                    err.append(f"{ct}: a correction needs field and reason")
+                _check_source(err, ct, c.get("source"), today)
             lv = v.get("last_verified") or {}
             _check_date(err, f"{tag}.last_verified.date", lv.get("date"), today)
             if not lv.get("checked"):
@@ -866,6 +872,8 @@ def validate_forecasts(doc: dict, today: date, mandates: dict | None = None, rbn
             err.append(f"{tag}: conditioning {e.get('conditioning')} != mandates.yaml {cur[b].conditioning}")
         _check_date(err, f"{tag}.published", e.get("published"), today)
         _check_date(err, f"{tag}.cutoff", e.get("cutoff"), today, required=False)
+        if e.get("cutoff_flag") not in (None, "ESTIMATE"):
+            err.append(f"{tag}: cutoff_flag must be ESTIMATE when present")
         if st == "filled":
             _check_source(err, tag, e.get("source"), today)
         for i, s in enumerate(e.get("series") or []):
@@ -997,4 +1005,10 @@ def stance_status(paths, today: date) -> tuple:
                 notes.append(f"PENDING forecasts {b} {s['role']}: {s.get('reason')} | next: {s.get('next_step')}")
         if f and f.get("status") == "pending":
             notes.append(f"PENDING forecasts {b}: {f.get('reason')} | next: {f.get('next_step')}")
+    if sep_last is not None:                                             # S1.1 A3: the published longer-run median vs the dots
+        from .cb_compute.stance import sep_dots_check
+        chk = sep_dots_check(load_projections(paths), sep_last)
+        if not chk["ok"]:
+            notes.append(f"ALERT SEP {chk['sep']}: the median of the {chk['dots']} longer-run dots ({chk['from_dots']}) rounds to {chk['rounded']}, "
+                         f"Table 1 publishes {chk['published']} - check the dot chart parse")
     return ("stance inputs (S0a manual files)", ["cur", "mandate from", "forecasts of", "latest projection meeting", "neutral", "newest neutral", "stale"], rows, notes)

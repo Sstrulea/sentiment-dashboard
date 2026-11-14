@@ -530,9 +530,9 @@ def _summary(md: str) -> None:
             fh.write(md + "\n\n")
 
 
-STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "macro", "framework", "summaries")
-DEFAULT_STAGES = STAGES[:-3]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret);
-                                             # `macro` and `framework` (stance S0a) run only in the daily scheduled run (cb-refresh cron 23 7 * * *) or when asked for
+STAGES = ("market", "official", "decisions", "documents", "projections", "calendar", "schedule", "macro", "framework", "stance", "summaries")
+DEFAULT_STAGES = STAGES[:-4]                 # `summaries` calls a paid API: it runs only when asked for (--stage summaries; a workflow step with the secret);
+                                             # `macro`, `framework` (stance S0a) and `stance` (S1) run only in the daily scheduled run (cb-refresh cron 23 7 * * *) or when asked for
 
 
 def _run_stage_report(title: str, reports: list, today: date) -> tuple[str, str]:
@@ -561,6 +561,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--summaries-effort", choices=("low", "medium", "high"), help="summaries stage: the reasoning effort of this run (default: the config's)")
     ap.add_argument("--summaries-scratch", action="store_true", help="summaries stage: a measurement - write the summaries to a scratch directory and leave data/ and state.json alone")
     ap.add_argument("--summaries-dry-run", action="store_true", help="summaries stage: measure what is still to summarise and estimate the cost; no model call, no key needed")
+    ap.add_argument("--decisions-since", type=date.fromisoformat, help="decisions stage: recompute every meeting from this day (default: the last 4 of each bank)")
     ap.add_argument("--force-framework", action="store_true", help="framework stage: run the watch now (it otherwise runs at most once a week)")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--data-dir", help="override data/cb (tests, dry runs)")
@@ -616,7 +617,7 @@ def main(argv: list[str] | None = None) -> int:
     from . import cb_datasets as dsets
     if "decisions" in stages:
         try:
-            emit(*dsets.decisions_report(dsets.run_decisions(paths, today), today))
+            emit(*dsets.decisions_report(dsets.run_decisions(paths, today, since=a.decisions_since), today))
         except Exception as e:
             log.exception("decisions stage failed")
             emit(f"decisions: FAILED {type(e).__name__}: {e}", f"### decisions\n\nFAILED `{type(e).__name__}: {e}`")
@@ -666,6 +667,17 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             log.exception("framework stage failed")
             emit(f"framework: FAILED {type(e).__name__}: {e}", f"### framework watch\n\nFAILED `{type(e).__name__}: {e}`")
+    if "stance" in stages:                                           # stance S1: today's snapshot, append-only (data/cb/stance_history/)
+        try:
+            from . import cb_policy_history as PH
+            from . import cb_stance_history as SH
+            from .cb_loader import load_stance
+            emit(*PH.history_report(PH.run_history(paths, today, backfill=a.backfill)))     # S1.1: the rate trajectory behind the cycle
+            _, _, _, results = load_stance(a.data_dir, today)
+            emit(*SH.report(SH.append(paths, results, today)))
+        except Exception as e:
+            log.exception("stance stage failed")
+            emit(f"stance: FAILED {type(e).__name__}: {e}", f"### stance\n\nFAILED `{type(e).__name__}: {e}`")
     if "summaries" in stages:                                        # last: after every text it summarises has been collected; a failure here never fails the run
         try:
             from .cb_summarize import run as sum_run

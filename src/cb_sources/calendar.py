@@ -140,6 +140,34 @@ def parse_snb(schedule_page: str, archive_page: Optional[str]) -> list:
 
 
 PARSERS: dict = {"USD": parse_fed, "EUR": parse_ecb, "GBP": parse_boe, "JPY": parse_boj, "CAD": parse_boc, "AUD": parse_rba}
+
+
+# ---- meetings already held, from official archive pages (S1.1: the calendar from 2025-09-01; the current pages list only
+# upcoming meetings for these banks). Each parser returns decision dates only.
+
+def parse_boc_history(page: str) -> list:
+    """The table of past decisions on the BoC key-interest-rate page: 'December 10, 2025 2.25 ---'."""
+    out = []
+    for mon, d, y in re.findall(rf"({_MON}) (\d{{1,2}}), (\d{{4}}) \d+\.\d+ (?:---|[-+]\d+\.\d+)", _text(page)):
+        out.append(_m(_dm(int(d), mon, int(y))))
+    return out
+
+
+def parse_boj_decisions(index_page: str) -> list:
+    """The BoJ decisions index of a year (mpmdeci/mpr_YYYY/index.htm): statement links state_YYYY/kYYMMDDa.htm."""
+    days = sorted({datetime.strptime(x, "%y%m%d").date() for x in re.findall(r"state_\d{4}/k(\d{6})a\.htm", index_page)})
+    return [_m(d) for d in days]
+
+
+def parse_boe_summary(page: str) -> Optional[date]:
+    """The announcement date of a BoE Monetary Policy Summary page: 'Published on 18 December 2025'."""
+    m = re.search(rf"Published on (\d{{1,2}}) ({_MON}) (\d{{4}})", _text(page))
+    return _dm(int(m.group(1)), m.group(2), int(m.group(3))) if m else None
+
+
+BOJ_DECISIONS = "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_{year}/index.htm"
+BOE_SITEMAP = "https://www.bankofengland.co.uk/_api/sitemap/getsitemap"
+BOE_SUMMARY_RX = r"<loc>(https://www\.bankofengland\.co\.uk/monetary-policy-summary-and-minutes/(\d{4})/[a-z]+-\d{4})</loc>"
 SNB_ARCHIVE = "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/decisions"
 
 
@@ -161,9 +189,46 @@ class CalendarPages(HttpSource):
             self._parse_fail(f"{type(e).__name__}: {e}")
             return None
 
+    def past_meetings(self, bank: str, url: str, since: date, until: date) -> Optional[list]:
+        """Meetings already held in [since, until] from the bank's official archive (USD calendar page past years, CAD, JPY,
+        GBP); [] for a bank whose current page already lists them (CHF) or that has no archive parser; None on a fetch failure."""
+        self.last_status = self.last_note = ""
+        try:
+            if bank == "USD":                                       # the FOMC calendar page also carries the past years
+                r, _, _ = self.get_url(url)
+                rows = parse_fed(r.text) if r is not None else None
+            elif bank == "CAD":
+                r, _, _ = self.get_url(url)
+                rows = parse_boc_history(r.text) if r is not None else None
+            elif bank == "JPY":
+                rows = []
+                for y in range(since.year, until.year + 1):
+                    r, _, _ = self.get_url(BOJ_DECISIONS.format(year=y))
+                    if r is None:
+                        return None
+                    rows += parse_boj_decisions(r.text)
+            elif bank == "GBP":
+                r, _, _ = self.get_url(BOE_SITEMAP)
+                if r is None:
+                    return None
+                rows = []
+                for loc, y in sorted(set(re.findall(BOE_SUMMARY_RX, r.text))):
+                    if not (since.year <= int(y) <= until.year):
+                        continue
+                    p, _, _ = self.get_url(loc)
+                    d = parse_boe_summary(p.text) if p is not None else None
+                    if d is not None:
+                        rows.append(_m(d))
+            else:
+                return []
+            return None if rows is None else [m for m in rows if since <= m["date"] <= until]
+        except Exception as e:
+            self._parse_fail(f"{type(e).__name__}: {e}")
+            return None
+
 
 def _in_scope(bank: str, d: date) -> bool:
-    return date(2026, 1, 1) <= d <= date(2027, 12, 31) or (bank == "CHF" and d >= date(2025, 9, 1))
+    return date(2025, 9, 1) <= d <= date(2027, 12, 31)          # = meetings.RANGE (from 2025-09-01 for every bank since S1.1)
 
 
 def check_meetings(bank: str, page: list, rows: list, today: date) -> list:

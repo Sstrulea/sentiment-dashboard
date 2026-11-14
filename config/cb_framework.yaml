@@ -69,7 +69,7 @@ banks:
       - {id: GBP.framework, type: framework_landing, url: "https://www.bankofengland.co.uk/monetary-policy", sel: [main, null, null],
          select: "remit|2% target|inflation at 2%|target set for us"}
     calendar:
-      - {event: "Remit: the Chancellor must specify price stability at least once in every 12-month period from 1 June (Bank of England Act 1998)", due: 2027-05-31, precision: day,
+      - {event: "Remit: the Chancellor must specify price stability at least once in every 12-month period (Bank of England Act 1998)", due: null, precision: day,       # no date is printed in an official source (the 1 June anniversary is derived): null (S1 correction A4)
          url: "https://www.bankofengland.co.uk/letter/2026/mpc-remit-2026",
          quote: "at least once in every period of 12 months beginning on the anniversary of the day the Act came into force"}
   JPY:

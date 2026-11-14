@@ -64,7 +64,7 @@ def test_status_warns_that_the_key_is_missing_and_counts_what_waits(paths, monke
 
 
 def test_the_summaries_stage_is_last_and_not_part_of_a_plain_run():
-    assert cc.STAGES[-1] == "summaries" and "summaries" not in cc.DEFAULT_STAGES and cc.DEFAULT_STAGES == cc.STAGES[:-3] and cc.STAGES[-3:-1] == ("macro", "framework")   # stance S0a stages: only the daily scheduled run
+    assert cc.STAGES[-1] == "summaries" and "summaries" not in cc.DEFAULT_STAGES and cc.DEFAULT_STAGES == cc.STAGES[:-4] and cc.STAGES[-4:-1] == ("macro", "framework", "stance")   # stance S0a/S1 stages: only the daily scheduled run
 
 
 # --- the good path and the contract ----------------------------------------------------------------------------------------------------------

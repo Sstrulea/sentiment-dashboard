@@ -58,8 +58,9 @@ banks:
     published: 2026-10-30
     meeting: 2026-10-30
     status: filled
-    conditioning: unpublished
-    cutoff: null
+    conditioning: market                         # corrected 2026-11-14 (mandates.yaml JPY corrections[]): note 3 of the table
+    cutoff: 2026-10-30                           # NOT published: the Outlook date stands in for the market cutoff
+    cutoff_flag: ESTIMATE
     source: {url: "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf", page: "p. 10, Appendix 'Forecasts of the Majority of the Policy Board Members' (value = median, low/high = range)", retrieved: 2026-11-14}
     series:
       - {role: underlying, variable: "CPI (all items less fresh food and energy) (Reference)", transform: fiscal_year, unit: percent,
@@ -69,7 +70,7 @@ banks:
       - {role: output_gap, variable: "Output gap (Research and Statistics Department estimate)", transform: quarter_level, unit: percent,
          values: [{horizon: 2026Q2, value: 0.5497362361895087}],
          source: {url: "https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx", page: "sheet data1, row 2026.2Q, column 'Output gap' (updated Oct. 5, 2026)", retrieved: 2026-11-14}, transcription: file}
-    note: "the BoJ projects no all-items CPI (headline). Note 3 of the table: forecasts are made 'with reference to views incorporated in financial markets regarding the future conduct of policy', but no rate path is published (conditioning kept 'unpublished', reported as a divergence). FY2027 CPI excludes the proposed consumption-tax cut (note 4)."
+    note: "the BoJ projects no all-items CPI (headline). Note 3 of the table: forecasts are made 'with reference to views incorporated in financial markets regarding the future conduct of policy', but no rate path is published (conditioning corrected to 'market' on 2026-11-14; the cutoff is the Outlook date, flagged ESTIMATE). FY2027 CPI excludes the proposed consumption-tax cut (note 4)."
 
   CAD:
     publication: "Monetary Policy Report, October 2026"
