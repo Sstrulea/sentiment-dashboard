@@ -12,7 +12,7 @@
 meta:
   version: 1
   frozen: 2026-11-14
-  current: 1
+  current: 2
 
 versions:
   - version: 1
@@ -51,4 +51,59 @@ versions:
       forecast: "a newer projection publication has passed (meetings.yaml has_projections)"
       neutral_months: 15
       macro: "the last period is older than its frequency + the typical lag (config/cb_official.yaml macro lag_days + stale_grace_days)"
+    verification: "the mandate is re-verified at every new projection publication of the bank; at most 12 months"
+
+  - version: 2
+    frozen: 2026-11-14
+    reason: "S0a review (prompt S1, part A3), before any computation - the pre-registration stays valid. Rules v1 left implicit are made explicit."
+    changes:
+      - {field: neutral_combine.GBP, reason: "v1 took every statement of the last 12 months: one member who speaks often (Taylor x5) would dominate the median; one value per member in office is the members' view"}
+      - {field: neutral_combine.model_list, reason: "v1 had no rule for a list of model estimates (RBA: 6 models); median / min-max as for the dots"}
+      - {field: neutral_combine.nominal, reason: "v1 converted everything real -> nominal; a source that publishes nominal (ECB) is used directly, no double conversion"}
+      - {field: slack.today, reason: "v1 'only the bank's estimate' did not say which period; the latest estimate for a period already begun at the as-of"}
+      - {field: horizon_rule, reason: "v1 did not say how '12 months' maps onto annual / fiscal / March-year / quarterly publications; no interpolation"}
+      - {field: boundary_tol_pp, reason: "new: flags a situation within 0.05 pp of its threshold"}
+      - {field: horizon_consistency_pp, reason: "new: market lens - the bank's last projection within 0.25 pp of the target = consistent"}
+      - {field: staleness.neutral_stale, reason: "v1 did not say what stale does; it is a flag only, never n/a"}
+    rule:
+      inflation_response: 1.5
+      output_gap_response: 0.5
+      okun_coefficient: 2.0
+      need: "x = gap(pi_underlying) + y / 3;  x_headline = gap(pi_headline) + y / 3"
+      pressure: "G = 1.5 * x - S;  S = i - N_mid (S_lo = i - N_hi, S_hi = i - N_lo)"
+    gap:
+      point_target: "pi - value"
+      band_with_declared_midpoint: "pi - midpoint"
+      band_without_declared_midpoint: "max(0, pi - high) + min(0, pi - low) (CHF)"
+    situations:
+      delta_pp: 0.25
+      epsilon_pp: 0.5
+      rule: "|x| <= epsilon: S0 if |G| <= delta else S2 (direction sign(G)); otherwise d = sign(x): S1 (direction d) if d*G > delta else S3; no neutral: situation null + need_only"
+    boundary_tol_pp: 0.05
+    horizon_consistency_pp: 0.25
+    horizon_months: 12
+    horizon_rule: "the projection for the PUBLISHED period (calendar year, fiscal year, year ended in March, quarter) that contains as-of + 12 months; the narrowest such period; no interpolation; a publication that does not cover it -> n/a; slack without a projection -> today's slack + flag slack_held"
+    underlying_rule:
+      - "(1) the core measure officially designated by the bank"
+      - "(2) the measure projected by the bank that excludes food and energy"
+      - "(3) the statistics institute's measure excluding food and energy"
+    basis:
+      today: "underlying (the headline is shown next to it)"
+      forecast: "the same measure; otherwise the headline, flag headline_basis"
+    slack:
+      source: "only the bank's own estimate; missing = none (flag no_slack, the term is left out)"
+      today: "the latest published estimate for a period already begun at the as-of (latest start; a tie -> the narrower period); a range -> its midpoint, the range is kept"
+      unemployment: "y = -okun * (u - u*), u = the latest official observation, u* = the SEP longer-run median (USD) or the SMP NAIRU (AUD)"
+    neutral_combine:
+      USD: "mid = median of the longer-run dots; range = min-max of the longer-run dots"
+      GBP: "MPC members in office at the as-of (config/cb_roster.yaml); the LATEST statement of each in the last 12 months; member value = the point or the middle of the member's range; mid = median over members; range = min-max over members"
+      model_list: "a list of model estimates (RBA: 6 models): mid = median, range = min-max"
+      NZD: "mid = the 'policy horizon' estimate when published; range = min-max of the estimates"
+      other: "as published: a point -> mid; low/high -> range with mid = their mean"
+      nominal: "a source that publishes nominal (ECB) is used directly; otherwise real + the target (point or declared midpoint)"
+    staleness:
+      forecast: "a newer projection publication has passed (meetings.yaml has_projections)"
+      neutral_months: 15
+      neutral_stale: "a flag only, never n/a"
+      macro: "the next period is overdue by more than lag_days + stale_grace_days (config/cb_official.yaml macro)"
     verification: "the mandate is re-verified at every new projection publication of the bank; at most 12 months"

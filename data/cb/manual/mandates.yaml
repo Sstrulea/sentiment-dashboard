@@ -15,6 +15,9 @@
 #   neutral    {source fed_sep|manual, flag BANK_ESTIMATE|STAFF_ESTIMATE|SEP_LONGER_RUN|MEMBERS_VIEW|NOT_PUBLISHED}
 #   forecasts  {source fed_sep|manual, conditioning own_path|market|constant_rate|unpublished}
 #   sources    [{title, url, page, retrieved}]     last_verified {date, checked [url]}
+#   corrections [{date, field, from, to, reason, source {url, page, retrieved}}] - a CORRECTION of our own classification is
+#              edited in the current version and logged here; a NEW version is added only for a real change at the bank
+#              (ARCHITECTURE section 23, "corectura vs schimbare").
 # Every quote was re-read in the source on the retrieval date (transcription: manual).
 
 meta:
@@ -137,7 +140,14 @@ banks:
           note: "the Outlook Report projects CPI (all items less fresh food) and, for reference, CPI (all items less fresh food and energy) - rule 2 = the one that excludes food and energy"
         slack: {type: output_gap, source: "BoJ Research and Statistics Department output-gap estimate (gap.xlsx)"}
         neutral: {source: manual, flag: STAFF_ESTIMATE}
-        forecasts: {source: manual, conditioning: unpublished}
+        forecasts: {source: manual, conditioning: market}
+        corrections:
+          - date: 2026-11-14
+            field: forecasts.conditioning
+            from: unpublished
+            to: market
+            reason: "S0a review: note 3 of the Outlook forecast table says the forecasts are made with reference to market views of future policy; no path or cutoff is published (cutoff = the Outlook date, flag ESTIMATE in forecasts.yaml)"
+            source: {url: "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf", page: "p. 10, note 3 of the Appendix table", retrieved: 2026-11-14}
         sources:
           - {title: "Outline of Monetary Policy - Price Stability and the 'Price Stability Target' of 2 Percent", url: "https://www.boj.or.jp/en/mopo/outline/index.htm", page: "web page", retrieved: 2026-11-14}
           - {title: "Outlook for Economic Activity and Prices, October 2026 (The Bank's View), Appendix", url: "https://www.boj.or.jp/en/mopo/outlook/gor2610a.pdf", page: "p. 10", retrieved: 2026-11-14}

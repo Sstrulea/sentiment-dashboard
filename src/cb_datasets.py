@@ -733,6 +733,12 @@ def validate_mandates(doc: dict, today: date, series_ids: set) -> list:
                 err.append(f"{tag}: no sources")
             for k, s in enumerate(srcs):
                 _check_source(err, f"{tag}.sources[{k}]", s, today)
+            for k, c in enumerate(v.get("corrections") or []):
+                ct = f"{tag}.corrections[{k}]"
+                _check_date(err, f"{ct}.date", c.get("date"), today)
+                if not (c.get("field") and c.get("reason")):
+                    err.append(f"{ct}: a correction needs field and reason")
+                _check_source(err, ct, c.get("source"), today)
             lv = v.get("last_verified") or {}
             _check_date(err, f"{tag}.last_verified.date", lv.get("date"), today)
             if not lv.get("checked"):
@@ -866,6 +872,8 @@ def validate_forecasts(doc: dict, today: date, mandates: dict | None = None, rbn
             err.append(f"{tag}: conditioning {e.get('conditioning')} != mandates.yaml {cur[b].conditioning}")
         _check_date(err, f"{tag}.published", e.get("published"), today)
         _check_date(err, f"{tag}.cutoff", e.get("cutoff"), today, required=False)
+        if e.get("cutoff_flag") not in (None, "ESTIMATE"):
+            err.append(f"{tag}: cutoff_flag must be ESTIMATE when present")
         if st == "filled":
             _check_source(err, tag, e.get("source"), today)
         for i, s in enumerate(e.get("series") or []):
