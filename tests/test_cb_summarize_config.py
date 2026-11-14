@@ -191,7 +191,7 @@ def test_a_dispatch_can_choose_the_stage_the_bank_and_the_type_without_shell_inj
     assert inputs["effort"]["type"] == "choice" and inputs["effort"]["options"] == ["", "low", "medium", "high"] and inputs["effort"]["default"] == ""
     assert inputs["scratch"]["type"] == "boolean" and inputs["scratch"]["default"] is False
     assert inputs["stage"]["type"] == "choice" and inputs["stage"]["default"] == "all"
-    assert inputs["stage"]["options"] == ["all", "market", "official", "decisions", "documents", "projections", "calendar", "schedule", "summaries", "macro", "framework"]
+    assert inputs["stage"]["options"] == ["all", "market", "official", "decisions", "documents", "projections", "calendar", "schedule", "summaries", "macro", "framework", "stance"]
     assert inputs["bank"]["type"] == inputs["type"]["type"] == inputs["doc"]["type"] == "string" and inputs["bank"]["default"] == inputs["type"]["default"] == inputs["doc"]["default"] == ""
     by = steps_of(workflow)
     assert by["Collect"]["if"] == "${{ !inputs.event && (!inputs.stage || inputs.stage == 'all') }}"                     # a plain run and the schedule: as before (an event of the trigger has its own steps)

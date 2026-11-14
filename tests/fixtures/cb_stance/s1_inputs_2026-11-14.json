@@ -1,0 +1,1063 @@
+{
+ "asof": "2026-11-14",
+ "banks": {
+  "AUD": {
+   "asof": "2026-11-14",
+   "band": [
+    2.0,
+    3.0
+   ],
+   "conditioning": "market",
+   "currency": "AUD",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 0,
+    "last_change": "2026-11-03",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-03-17"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-05-05"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-09-29"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-11-03"
+     }
+    ]
+   },
+   "flags": [],
+   "last_projection": {
+    "asof": "2028Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Statement on Monetary Policy, November 2026: Trimmed mean inflation",
+    "v": 2.4
+   },
+   "last_projection_basis": "underlying",
+   "lens": {
+    "cutoff": "2026-10-28",
+    "cutoff_flag": null,
+    "delta_bp": -12.642857142857178,
+    "flag": "EXACT",
+    "flag_cutoff": "EXACT",
+    "flag_today": "EXACT",
+    "kind": "market",
+    "na": null,
+    "rate_cutoff_curve": 4.8525000000000045,
+    "rate_today_curve": 4.726071428571433,
+    "target_date": "2027-11-14"
+   },
+   "mandate_id": "2025-07-10",
+   "market": {
+    "m12": {
+     "cum_bp": -12.392857142856695,
+     "flag": "EXACT",
+     "meeting": "2027-11-02",
+     "na": null,
+     "rate": 4.726071428571433
+    },
+    "next": {
+     "flag": "EXACT",
+     "meeting": "2026-12-08",
+     "na": null,
+     "stale": false,
+     "step_bp": 0.673913043478791
+    }
+   },
+   "neutral": {
+    "asof": "2026-11-03",
+    "flag": "STAFF_ESTIMATE",
+    "hi": 4.416598826587419,
+    "lo": 3.02024403284537,
+    "mid": 3.490555140314484,
+    "nominal_from": "nominal",
+    "source": "data/cb/manual/neutral.yaml",
+    "stale": false,
+    "used": [
+     [
+      "TVP-VAR Model 1, 2026 Q2",
+      4.193964989513948
+     ],
+     [
+      "TVP-VAR Model 2, 2026 Q2",
+      3.659528095190119
+     ],
+     [
+      "TVP-VAR Model 3, 2026 Q2",
+      4.416598826587419
+     ],
+     [
+      "Semi-structural Model 1, 2026 Q2",
+      3.32158218543885
+     ],
+     [
+      "Semi-structural Model 2, 2026 Q2",
+      3.169446731565178
+     ],
+     [
+      "Semi-structural Model 3, 2026 Q2",
+      3.02024403284537
+     ]
+    ]
+   },
+   "neutral_status": "filled",
+   "notes": [],
+   "pi_12m": {
+    "asof": "2027Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Statement on Monetary Policy, November 2026: Trimmed mean inflation",
+    "v": 2.9
+   },
+   "pi_12m_basis": "underlying",
+   "pi_head": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "abs:CPI.10001 (https://data.api.abs.gov.au/rest/data/ABS,CPI,2.0.0/3.10001.10.50.M?startPeriod=2015-01-01&format=csv)",
+    "v": 4.3
+   },
+   "pi_under": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "abs:CPI.999902 (https://data.api.abs.gov.au/rest/data/ABS,CPI,2.0.0/3.999902.20.50.M?startPeriod=2015-01-01&format=csv)",
+    "v": 3.6
+   },
+   "rate": {
+    "asof": "2026-11-03",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 4.85
+   },
+   "slack_type": "unemployment_gap",
+   "target_kind": "band",
+   "target_star": 2.5,
+   "u": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "released 2026-10-16",
+    "source": "rba:GLFSURSA (https://www.rba.gov.au/statistics/tables/csv/h5-data.csv)",
+    "v": 4.7
+   },
+   "u_12m": {
+    "asof": "2027Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Statement on Monetary Policy, November 2026: Unemployment rate (quarterly, %)",
+    "v": 4.9
+   },
+   "u_star": {
+    "asof": "2026-11-03",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Statement on Monetary Policy, November 2026: NAIRU [https://www.rba.gov.au/publications/smp/2026/nov/pdf/statement-on-monetary-policy-2026-11.pdf section 2.5 'Assessment of spare capacity', p. 50 (PDF p. 53)]",
+    "v": 4.75
+   },
+   "y_12m": null,
+   "y_today": null
+  },
+  "CAD": {
+   "asof": "2026-11-14",
+   "band": [
+    1.0,
+    3.0
+   ],
+   "conditioning": "unpublished",
+   "currency": "CAD",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 0,
+    "last_change": "2026-10-28",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-10-28"
+     }
+    ]
+   },
+   "flags": [
+    "estimate",
+    "headline_basis",
+    "pending"
+   ],
+   "last_projection": {
+    "asof": "2028Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Report, October 2026: CPI inflation (year-over-year percentage change), Table 3",
+    "v": 2.1
+   },
+   "last_projection_basis": "headline",
+   "lens": {
+    "delta_bp": null,
+    "kind": "unpublished",
+    "na": "the bank publishes no rate conditioning"
+   },
+   "mandate_id": "2022-01-01",
+   "market": {
+    "m12": {
+     "cum_bp": 82.6320213911699,
+     "flag": "ESTIMATE",
+     "meeting": "2027-10-27",
+     "na": null,
+     "rate": 3.326320213911699
+    },
+    "next": {
+     "flag": "EXACT",
+     "meeting": "2026-12-09",
+     "na": null,
+     "stale": false,
+     "step_bp": 15.499999999999359
+    }
+   },
+   "neutral": {
+    "asof": "2026-04-29",
+    "flag": "BANK_ESTIMATE",
+    "hi": 3.25,
+    "lo": 2.25,
+    "mid": 2.75,
+    "nominal_from": "nominal",
+    "source": "data/cb/manual/neutral.yaml",
+    "stale": false,
+    "used": [
+     [
+      "Bank of Canada annual assessment, MPR April 2026 appendix",
+      2.75
+     ]
+    ]
+   },
+   "neutral_status": "filled",
+   "notes": [],
+   "pi_12m": {
+    "asof": "2027Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Report, October 2026: CPI inflation (year-over-year percentage change), Table 3",
+    "v": 2.6
+   },
+   "pi_12m_basis": "headline",
+   "pi_head": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "boc:STATIC_TOTALCPICHANGE (https://www.bankofcanada.ca/valet/observations/STATIC_TOTALCPICHANGE/json?start_date=2015-01-01)",
+    "v": 3.1
+   },
+   "pi_under": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "mean of 1.8, 1.9",
+    "source": "boc:CPI_TRIM (https://www.bankofcanada.ca/valet/observations/CPI_TRIM/json?start_date=2015-01-01) + boc:CPI_MEDIAN (https://www.bankofcanada.ca/valet/observations/CPI_MEDIAN/json?start_date=2015-01-01)",
+    "v": 1.85
+   },
+   "rate": {
+    "asof": "2026-10-28",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 2.5
+   },
+   "slack_type": "output_gap",
+   "target_kind": "band",
+   "target_star": 2.0,
+   "u": null,
+   "u_12m": null,
+   "u_star": null,
+   "y_12m": null,
+   "y_today": {
+    "asof": "2026Q3",
+    "hi": -0.25,
+    "lo": -1.25,
+    "note": "",
+    "source": "Monetary Policy Report, October 2026: Output gap (Bank's estimated range) [https://www.bankofcanada.ca/wp-content/uploads/2026/10/mpr-2026-10-28.pdf Table 2 p. 40 (PDF p. 41), Table 3 p. 41 (PDF p. 42), output gap p. 9 (PDF p. 10)]",
+    "v": -0.75
+   }
+  },
+  "CHF": {
+   "asof": "2026-11-14",
+   "band": [
+    0.0,
+    2.0
+   ],
+   "conditioning": "constant_rate",
+   "currency": "CHF",
+   "cycle": {
+    "direction": null,
+    "holds_since": 5,
+    "last_change": null,
+    "moves": []
+   },
+   "flags": [
+    "headline_basis"
+   ],
+   "last_projection": {
+    "asof": "2028",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast): Conditional inflation forecast (average annual inflation)",
+    "v": 0.8
+   },
+   "last_projection_basis": "headline",
+   "lens": {
+    "assumed_rate": 0.0,
+    "delta_bp": 52.37620352024408,
+    "flag": "CURVE",
+    "flag_today": "CURVE",
+    "kind": "constant_rate",
+    "na": null,
+    "rate_today_curve": 0.5237620352024408,
+    "target_date": "2027-11-14"
+   },
+   "mandate_id": "2000-01-01",
+   "market": {
+    "m12": {
+     "cum_bp": 52.37620352024408,
+     "flag": "CURVE",
+     "meeting": "2027-09-23",
+     "na": null,
+     "rate": 0.5237620352024408
+    },
+    "next": {
+     "flag": "CURVE",
+     "meeting": "2026-12-10",
+     "na": null,
+     "stale": false,
+     "step_bp": 3.2873551836676285
+    }
+   },
+   "neutral": null,
+   "neutral_status": "not_published",
+   "notes": [
+    "neutral: neutral not_published"
+   ],
+   "pi_12m": {
+    "asof": "2027",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast): Conditional inflation forecast (average annual inflation)",
+    "v": 0.8
+   },
+   "pi_12m_basis": "headline",
+   "pi_head": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "released 2026-10-21",
+    "source": "snb:plkoprinfla:TLK (https://data.snb.ch/api/cube/plkoprinfla/data/csv/en?fromDate=2015-01-01)",
+    "v": 1.0
+   },
+   "pi_under": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "released 2026-10-21",
+    "source": "snb:plkoprinfla:K1 (https://data.snb.ch/api/cube/plkoprinfla/data/csv/en?fromDate=2015-01-01)",
+    "v": 0.5
+   },
+   "rate": {
+    "asof": "2026-09-24",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 0.0
+   },
+   "slack_type": "none",
+   "target_kind": "band",
+   "target_star": null,
+   "u": null,
+   "u_12m": null,
+   "u_star": null,
+   "y_12m": null,
+   "y_today": null
+  },
+  "EUR": {
+   "asof": "2026-11-14",
+   "band": null,
+   "conditioning": "market",
+   "currency": "EUR",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 1,
+    "last_change": "2026-09-10",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-06-11"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-09-10"
+     }
+    ]
+   },
+   "flags": [
+    "stale"
+   ],
+   "last_projection": {
+    "asof": "2028",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "ECB staff macroeconomic projections for the euro area, September 2026: HICP excluding energy and food",
+    "v": 2.3
+   },
+   "last_projection_basis": "underlying",
+   "lens": {
+    "cutoff": "2026-08-19",
+    "cutoff_flag": null,
+    "delta_bp": null,
+    "flag_today": "CURVE",
+    "kind": "market",
+    "na": "no market history at the cutoff 2026-08-19 (first data 2026-10-08)",
+    "rate_today_curve": 3.1977314825215286,
+    "target_date": "2027-11-14"
+   },
+   "mandate_id": "2025-06-30",
+   "market": {
+    "m12": {
+     "cum_bp": 69.77314825215286,
+     "flag": "CURVE",
+     "meeting": "2027-10-28",
+     "na": null,
+     "rate": 3.1977314825215286
+    },
+    "next": {
+     "flag": "CURVE",
+     "meeting": "2026-12-17",
+     "na": null,
+     "stale": false,
+     "step_bp": 24.207037639989437
+    }
+   },
+   "neutral": {
+    "asof": "2025-02-13",
+    "flag": "STAFF_ESTIMATE",
+    "hi": 2.25,
+    "lo": 1.75,
+    "mid": 2.0,
+    "nominal_from": "nominal",
+    "source": "data/cb/manual/neutral.yaml",
+    "stale": true,
+    "used": [
+     [
+      "nominal r*, the same measures",
+      2.0
+     ]
+    ]
+   },
+   "neutral_status": "filled",
+   "notes": [],
+   "pi_12m": {
+    "asof": "2027",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "ECB staff macroeconomic projections for the euro area, September 2026: HICP excluding energy and food",
+    "v": 2.6
+   },
+   "pi_12m_basis": "underlying",
+   "pi_head": {
+    "asof": "2026-10",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "ecb:HICP_000000 (https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata&startPeriod=2015-01-01)",
+    "v": 4.0
+   },
+   "pi_under": {
+    "asof": "2026-10",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "ecb:HICP_XEF000 (https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.XEF000.4D0.ANR?format=csvdata&startPeriod=2015-01-01)",
+    "v": 2.5
+   },
+   "rate": {
+    "asof": "2026-10-29",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 2.5
+   },
+   "slack_type": "none",
+   "target_kind": "point",
+   "target_star": 2.0,
+   "u": null,
+   "u_12m": null,
+   "u_star": null,
+   "y_12m": null,
+   "y_today": null
+  },
+  "GBP": {
+   "asof": "2026-11-14",
+   "band": null,
+   "conditioning": "market",
+   "currency": "GBP",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 0,
+    "last_change": "2026-11-05",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-11-05"
+     }
+    ]
+   },
+   "flags": [
+    "headline_basis"
+   ],
+   "last_projection": {
+    "asof": "2029Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Report, November 2026: CPI inflation (four-quarter inflation rate, D7BT)",
+    "v": 1.8
+   },
+   "last_projection_basis": "headline",
+   "lens": {
+    "cutoff": "2026-10-27",
+    "cutoff_flag": null,
+    "delta_bp": -0.3319407846621658,
+    "flag": "CURVE",
+    "flag_cutoff": "CURVE",
+    "flag_today": "CURVE",
+    "kind": "market",
+    "na": null,
+    "rate_cutoff_curve": 4.90596915554066,
+    "rate_today_curve": 4.9026497476940385,
+    "target_date": "2027-11-14"
+   },
+   "mandate_id": "2026-10-28",
+   "market": {
+    "m12": {
+     "cum_bp": 90.26497476940385,
+     "flag": "CURVE",
+     "meeting": "2027-11-04",
+     "na": null,
+     "rate": 4.9026497476940385
+    },
+    "next": {
+     "flag": "CURVE",
+     "meeting": "2026-12-17",
+     "na": null,
+     "stale": false,
+     "step_bp": 20.08041531024185
+    }
+   },
+   "neutral": {
+    "asof": "2026-09-29",
+    "flag": "MEMBERS_VIEW",
+    "hi": 3.0,
+    "lo": 2.875,
+    "mid": 2.9375,
+    "nominal_from": "nominal",
+    "source": "data/cb/manual/neutral.yaml",
+    "stale": false,
+    "used": [
+     [
+      "Alan Taylor (2026-09-29)",
+      2.875
+     ],
+     [
+      "Dave Ramsden (2026-02-05)",
+      3.0
+     ]
+    ]
+   },
+   "neutral_status": "filled",
+   "notes": [],
+   "pi_12m": {
+    "asof": "2027Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Report, November 2026: CPI inflation (four-quarter inflation rate, D7BT)",
+    "v": 4.0
+   },
+   "pi_12m_basis": "headline",
+   "pi_head": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "released 2026-10-21",
+    "source": "ons:D7G7 (https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7g7/mm23/data)",
+    "v": 3.5
+   },
+   "pi_under": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "released 2026-10-21",
+    "source": "ons:DKO8 (https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/dko8/mm23/data)",
+    "v": 2.8
+   },
+   "rate": {
+    "asof": "2026-11-05",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 4.0
+   },
+   "slack_type": "output_gap",
+   "target_kind": "point",
+   "target_star": 2.0,
+   "u": null,
+   "u_12m": null,
+   "u_star": null,
+   "y_12m": {
+    "asof": "2027Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP)",
+    "v": -1.2
+   },
+   "y_today": {
+    "asof": "2026Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP) [https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-report/2026/november/monetary-policy-report-november-2026.pdf Table 3.B, p. 75 (PDF p. 76), central projection]",
+    "v": -1.0
+   }
+  },
+  "JPY": {
+   "asof": "2026-11-14",
+   "band": null,
+   "conditioning": "market",
+   "currency": "JPY",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 1,
+    "last_change": "2026-09-18",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-06-16"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-09-18"
+     }
+    ]
+   },
+   "flags": [
+    "estimate"
+   ],
+   "last_projection": {
+    "asof": "FY2028",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): CPI (all items less fresh food and energy) (Reference)",
+    "v": 2.3
+   },
+   "last_projection_basis": "underlying",
+   "lens": {
+    "cutoff": "2026-10-30",
+    "cutoff_flag": "ESTIMATE",
+    "delta_bp": -3.1320542668411555,
+    "flag": "CURVE",
+    "flag_cutoff": "CURVE",
+    "flag_today": "CURVE",
+    "kind": "market",
+    "na": null,
+    "rate_cutoff_curve": 1.984705046839346,
+    "rate_today_curve": 1.9533845041709343,
+    "target_date": "2027-11-14"
+   },
+   "mandate_id": "2013-01-22",
+   "market": {
+    "m12": {
+     "cum_bp": 70.33845041709344,
+     "flag": "CURVE",
+     "meeting": "2027-10-29",
+     "na": null,
+     "rate": 1.9533845041709343
+    },
+    "next": {
+     "flag": "CURVE",
+     "meeting": "2026-12-18",
+     "na": null,
+     "stale": false,
+     "step_bp": 21.224670871955453
+    }
+   },
+   "neutral": {
+    "asof": "2026-03-27",
+    "flag": "STAFF_ESTIMATE",
+    "hi": 2.5,
+    "lo": 1.1,
+    "mid": 1.8,
+    "nominal_from": "real+target",
+    "source": "data/cb/manual/neutral.yaml",
+    "stale": false,
+    "used": [
+     [
+      "BoJ Monetary Affairs Department, six models, as of 2025/Q3 (Review 2026-E-4)",
+      1.8
+     ]
+    ]
+   },
+   "neutral_status": "filled",
+   "notes": [],
+   "pi_12m": {
+    "asof": "FY2027",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): CPI (all items less fresh food and energy) (Reference)",
+    "v": 2.7
+   },
+   "pi_12m_basis": "underlying",
+   "pi_head": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "statjp:2025:0001 (https://www.stat.go.jp/data/cpi/2025/csv/zmi2025aa.csv)",
+    "v": 2.1
+   },
+   "pi_under": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "statjp:2025:0178 (https://www.stat.go.jp/data/cpi/2025/csv/zmi2025aa.csv)",
+    "v": 2.4
+   },
+   "rate": {
+    "asof": "2026-10-30",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 1.25
+   },
+   "slack_type": "output_gap",
+   "target_kind": "point",
+   "target_star": 2.0,
+   "u": null,
+   "u_12m": null,
+   "u_star": null,
+   "y_12m": null,
+   "y_today": {
+    "asof": "2026Q2",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): Output gap (Research and Statistics Department estimate) [https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx sheet data1, row 2026.2Q, column 'Output gap' (updated Oct. 5, 2026)]",
+    "v": 0.5497362361895087
+   }
+  },
+  "NZD": {
+   "asof": "2026-11-14",
+   "band": [
+    1.0,
+    3.0
+   ],
+   "conditioning": "own_path",
+   "currency": "NZD",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 1,
+    "last_change": "2026-09-02",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-07-08"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-09-02"
+     }
+    ]
+   },
+   "flags": [
+    "estimate",
+    "headline_basis",
+    "pending"
+   ],
+   "last_projection": {
+    "asof": "2029Q3",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Statement, September 2026: CPI inflation, annual (Table 6.1)",
+    "v": 2.0
+   },
+   "last_projection_basis": "headline",
+   "lens": {
+    "gap_bp": null,
+    "kind": "own_path",
+    "na": "the 2026-09-02 MPS tables carry no 90-day bank bill projection: only the OCR track (a different basis from the ASX BB) - shown separately, not compared",
+    "source": "engine GAP (n/a)"
+   },
+   "mandate_id": "2023-12-20",
+   "market": {
+    "m12": {
+     "cum_bp": 100.37794311746646,
+     "flag": "ESTIMATE",
+     "meeting": "2027-10-27",
+     "na": null,
+     "rate": 3.7537794311746646
+    },
+    "next": {
+     "flag": "ESTIMATE",
+     "meeting": "2026-12-09",
+     "na": null,
+     "stale": false,
+     "step_bp": 31.56349418570592
+    }
+   },
+   "neutral": null,
+   "neutral_status": "pending",
+   "notes": [
+    "neutral: the September 2026 MPS shows the long-run nominal neutral OCR indicator suite only as a chart (Figure 6.4, p. 55 / PDF p. 58: 'range between the maximum and minimum values from our suite'); no number in the text or tables (re-read 2026-11-14); no 'policy horizon' estimate is printed"
+   ],
+   "pi_12m": {
+    "asof": "2027Q4",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Statement, September 2026: CPI inflation, annual (Table 6.1)",
+    "v": 2.1
+   },
+   "pi_12m_basis": "headline",
+   "pi_head": {
+    "asof": "2026Q3",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "statsnz:CPIQ.SE9A (https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2026-quarter/Download-data/consumers-price-index-september-2026-quarter-index-numbers.csv)",
+    "v": 3.7
+   },
+   "pi_under": {
+    "asof": "2026Q3",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "statsnz:CPIQ.SE9NS1450 (https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2026-quarter/Download-data/consumers-price-index-september-2026-quarter-infoshare-data.csv)",
+    "v": 2.9
+   },
+   "rate": {
+    "asof": "2026-10-28",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 2.75
+   },
+   "slack_type": "output_gap",
+   "target_kind": "band",
+   "target_star": 2.0,
+   "u": null,
+   "u_12m": null,
+   "u_star": null,
+   "y_12m": {
+    "asof": "M2028",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5)",
+    "v": -0.9
+   },
+   "y_today": {
+    "asof": "2026Q2",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "Monetary Policy Statement, September 2026: Output gap, June 2026 quarter (estimate, text) [https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)]",
+    "v": -1.5
+   }
+  },
+  "USD": {
+   "asof": "2026-11-14",
+   "band": null,
+   "conditioning": "own_path",
+   "currency": "USD",
+   "cycle": {
+    "direction": "hike",
+    "holds_since": 1,
+    "last_change": "2026-09-16",
+    "moves": [
+     {
+      "bp": 25.0,
+      "date": "2026-09-16"
+     }
+    ]
+   },
+   "flags": [],
+   "last_projection": {
+    "asof": "2029",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "FOMC SEP 2026-09-16: core PCE inflation",
+    "v": 2.0
+   },
+   "last_projection_basis": "underlying",
+   "lens": {
+    "bank": 4.125,
+    "flag": "CURVE",
+    "gap_bp": 57.68679231410117,
+    "kind": "own_path",
+    "market": 4.701867923141012,
+    "na": null,
+    "source": "engine GAP (dots, 2026-09-16)",
+    "year": 2027
+   },
+   "mandate_id": "2025-08-22",
+   "market": {
+    "m12": {
+     "cum_bp": 84.85408826160948,
+     "flag": "CURVE",
+     "meeting": "2027-10-27",
+     "na": null,
+     "rate": 4.723540882616095
+    },
+    "next": {
+     "flag": "CURVE",
+     "meeting": "2026-12-09",
+     "na": null,
+     "stale": false,
+     "step_bp": 27.48920504505037
+    }
+   },
+   "neutral": {
+    "asof": "2026-09-16",
+    "flag": "SEP_LONGER_RUN",
+    "hi": 3.875,
+    "lo": 2.875,
+    "mid": 3.25,
+    "nominal_from": "nominal",
+    "source": "data/cb/projections.parquet (SEP 2026-09-16, 18 longer-run dots)",
+    "stale": false,
+    "used": [
+     [
+      "longer-run dots",
+      18
+     ]
+    ]
+   },
+   "neutral_status": "fed_sep",
+   "notes": [],
+   "pi_12m": {
+    "asof": "2027",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "FOMC SEP 2026-09-16: core PCE inflation (Q4/Q4)",
+    "v": 2.5
+   },
+   "pi_12m_basis": "underlying",
+   "pi_head": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "fred:PCEPI (https://fred.stlouisfed.org/series/PCEPI (via FRED API))",
+    "v": 3.6
+   },
+   "pi_under": {
+    "asof": "2026-09",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "fred:PCEPILFE (https://fred.stlouisfed.org/series/PCEPILFE (via FRED API))",
+    "v": 3.1
+   },
+   "rate": {
+    "asof": "2026-10-28",
+    "hi": null,
+    "lo": null,
+    "note": "Fed: midpoint of the target range",
+    "source": "data/cb/decisions.parquet (engine.base_rate)",
+    "v": 3.875
+   },
+   "slack_type": "unemployment_gap",
+   "target_kind": "point",
+   "target_star": 2.0,
+   "u": {
+    "asof": "2026-10",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "fred:UNRATE (https://fred.stlouisfed.org/series/UNRATE (via FRED API))",
+    "v": 4.1
+   },
+   "u_12m": {
+    "asof": "2027",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "FOMC SEP 2026-09-16: unemployment rate (Q4 average)",
+    "v": 4.1
+   },
+   "u_star": {
+    "asof": "2026-09-16",
+    "hi": null,
+    "lo": null,
+    "note": "",
+    "source": "FOMC SEP 2026-09-16: longer-run median unemployment rate",
+    "v": 4.2
+   },
+   "y_12m": null,
+   "y_today": null
+  }
+ },
+ "generated_by": "load_stance(asof=2026-11-14) on main d69c54cd + S1 corrections (frozen inputs for the golden tests)",
+ "params": {
+  "boundary_tol_pp": 0.05,
+  "horizon_consistency_pp": 0.25,
+  "horizon_months": 12,
+  "rule": {
+   "inflation_response": 1.5,
+   "need": "x = gap(pi_underlying) + y / 3;  x_headline = gap(pi_headline) + y / 3",
+   "okun_coefficient": 2.0,
+   "output_gap_response": 0.5,
+   "pressure": "G = 1.5 * x - S;  S = i - N_mid (S_lo = i - N_hi, S_hi = i - N_lo)"
+  },
+  "situations": {
+   "delta_pp": 0.25,
+   "epsilon_pp": 0.5,
+   "rule": "|x| <= epsilon: S0 if |G| <= delta else S2 (direction sign(G)); otherwise d = sign(x): S1 (direction d) if d*G > delta else S3; no neutral: situation null + need_only"
+  },
+  "staleness": {
+   "forecast": "a newer projection publication has passed (meetings.yaml has_projections)",
+   "macro": "the next period is overdue by more than lag_days + stale_grace_days (config/cb_official.yaml macro)",
+   "neutral_months": 15,
+   "neutral_stale": "a flag only, never n/a"
+  },
+  "version": 2
+ }
+}
