@@ -1,0 +1,18 @@
+Measures of Consumer Price Inflation
+The consumer price index (CPI) is a measure of inflation published by the Australian Bureau of Statistics (ABS).
+The data presented on a ‘quarterly collection’ basis are based on the pre-October 2025 collection frequency.
+CPI
+Source: ABS
+Year-ended percentage change
+Sources: ABS; RBA
+Quarterly percentage change
+Sources: ABS; RBA
+Related Information
+Box C: The Transition to a Complete Monthly CPI, Statement on Monetary Policy, November 2025
+Historical Series and Explanatory Notes 74KB
+Inflation Calculator
+Seasonal Factors Note on Seasonal Factors Following the publication of the ABS Information Paper Seasonal Adjustment of Consumer Price Indexes, 2011 the RBA will no longer be publishing seasonal factors on its website. Requests for seasonal factors should be directed to: prices.statistics@abs.gov.au
+Consumer Price Index Excluding Tax Effects
+The costs of high inflation
+Introducing the Consumer Price Indexes' new monthly time series, ABS 2025
+Australian Bureau of Statistics
