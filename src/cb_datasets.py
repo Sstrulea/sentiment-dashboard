@@ -591,4 +591,410 @@ def extra_status(paths, today: date, *, banks: dict | None = None, official_cfg:
             [[d["currency"], d["carry"], "" if d["cb"] is None else d["cb"], "" if d["diff_bp"] is None else d["diff_bp"],
               d["cb_status"] or "", d["cb_meeting"] or "", d["cb_effective"] or ""] for d in diff],
             [f"DIFF {d['currency']}: Carry {d['carry']} vs CB {d['cb']} ({d['diff_bp']} bp)" for d in diff if d["diff_bp"]])
+
+    # stance phase S0a: macro series, manual stance files, framework-watch alerts (each section guarded: --status never fails)
+    from . import cb_framework, cb_macro
+    for title, fn in (("macro series (stance S0a)", lambda: cb_macro.status_section(paths, today)),
+                      ("stance inputs (S0a manual files)", lambda: stance_status(paths, today)),
+                      ("framework watch (stance S0a): open alerts", lambda: cb_framework.status_section(paths, today))):
+        try:
+            if title.startswith("macro") and not (Path(paths.dir) / cb_macro.MACRO.name).exists():
+                add(title, ["note"], [["no macro series stored yet (stage macro: python -m src.cb_collect --stage macro --backfill)"]])
+                continue
+            if not (Path(paths.manual) / "mandates.yaml").exists() and not title.startswith("macro"):
+                continue
+            add(*fn())
+        except Exception as e:                                            # noqa: BLE001 - a broken section is reported, not raised
+            add(title, ["error"], [[f"{type(e).__name__}: {e}"]])
     return "\n".join(text), "\n".join(md)
+
+
+# ---------------------------------------------------------------------------
+# Stance phase S0a: mandates, neutral, forecasts (manual files) - loading and validation; no stance computation
+# ---------------------------------------------------------------------------
+
+STANCE_YAML = ROOT / "config" / "cb_stance.yaml"
+STANCE_BANKS = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")
+VALUE_RANGE = (-5.0, 25.0)
+HORIZON_RX = re.compile(r"^(\d{4}|\d{4}Q[1-4]|FY\d{4}|M\d{4}|all)$")
+
+
+class StanceDataError(ValueError):
+    """A manual stance file failed validation: it is not loaded (the message lists every error)."""
+
+
+def _yaml(path: Path) -> dict:
+    return yaml.safe_load(Path(path).read_text(encoding="utf-8")) if Path(path).exists() else {}
+
+
+def load_stance_config(path: Path | str | None = None) -> dict:
+    doc = _yaml(Path(path or STANCE_YAML))
+    cur = next((v for v in doc.get("versions", []) if v["version"] == doc["meta"]["current"]), None)
+    if cur is None:
+        raise StanceDataError("config/cb_stance.yaml: no version matches meta.current")
+    return cur
+
+
+def _num_ok(v) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and VALUE_RANGE[0] <= v <= VALUE_RANGE[1]
+
+
+def _check_values(err: list, tag: str, d: dict, keys=("value", "point", "low", "high")) -> None:
+    for k in keys:
+        if d.get(k) is not None and not _num_ok(d[k]):
+            err.append(f"{tag}: {k}={d[k]!r} outside {VALUE_RANGE[0]}..{VALUE_RANGE[1]} or not a number")
+    if d.get("low") is not None and d.get("high") is not None and _num_ok(d["low"]) and _num_ok(d["high"]) and d["low"] > d["high"]:
+        err.append(f"{tag}: low {d['low']} > high {d['high']}")
+
+
+def _check_date(err: list, tag: str, v, today: date, *, future_ok: bool = False, required: bool = True) -> None:
+    if v is None:
+        if required:
+            err.append(f"{tag}: missing date")
+        return
+    if not isinstance(v, date):
+        err.append(f"{tag}: {v!r} is not a date")
+    elif not future_ok and v > today:
+        err.append(f"{tag}: {v} is in the future")
+
+
+def _check_source(err: list, tag: str, src, today: date) -> None:
+    if not isinstance(src, dict) or not src.get("url") or not src.get("page"):
+        err.append(f"{tag}: a filled entry needs source.url and source.page")
+        return
+    _check_date(err, f"{tag}.retrieved", src.get("retrieved"), today)
+
+
+def macro_series_ids(official: dict | None = None) -> set:
+    from .cb_sources.official import load_official
+    return set(((official or load_official()).get("macro") or {}).get("series", {}))
+
+
+def validate_mandates(doc: dict, today: date, series_ids: set) -> list:
+    from .cb_compute import stance_inputs as SI
+    err: list = []
+    banks = (doc or {}).get("banks") or {}
+    for b in STANCE_BANKS:
+        if b not in banks:
+            err.append(f"mandates: bank {b} missing")
+    for b, entry in banks.items():
+        vers = entry.get("versions") or []
+        if not vers:
+            err.append(f"mandates {b}: no versions")
+            continue
+        for i, v in enumerate(vers):
+            tag = f"mandates {b}[{i}]"
+            ef, et = v.get("effective_from"), v.get("effective_to")
+            _check_date(err, f"{tag}.effective_from", ef, today, future_ok=True)
+            _check_date(err, f"{tag}.effective_to", et, today, future_ok=True, required=False)
+            if isinstance(ef, date) and isinstance(et, date) and et < ef:
+                err.append(f"{tag}: effective_to {et} < effective_from {ef}")
+            if v.get("change_reason") not in SI.CHANGE_REASONS:
+                err.append(f"{tag}: change_reason must be one of {SI.CHANGE_REASONS}")
+            t = v.get("target") or {}
+            if t.get("kind") == "point":
+                if t.get("value") is None:
+                    err.append(f"{tag}: point target needs value")
+            elif t.get("kind") == "band":
+                if t.get("low") is None or t.get("high") is None:
+                    err.append(f"{tag}: band target needs low and high")
+            else:
+                err.append(f"{tag}: target.kind must be point | band")
+            _check_values(err, f"{tag}.target", t)
+            mp = t.get("midpoint")
+            if mp is not None:
+                if not isinstance(mp, dict) or not mp.get("quote") or not _num_ok(mp.get("value")):
+                    err.append(f"{tag}: a declared midpoint needs value and quote")
+            if (v.get("mandate") or {}).get("type") not in SI.MANDATE_TYPES or not (v.get("mandate") or {}).get("quote"):
+                err.append(f"{tag}: mandate needs type {SI.MANDATE_TYPES} and quote")
+            h = v.get("horizon") or {}
+            if not h.get("text") or not isinstance(h.get("forward_looking"), bool) or not h.get("quote"):
+                err.append(f"{tag}: horizon needs text, forward_looking (bool) and quote")
+            u = v.get("underlying") or {}
+            prim = u.get("primary")
+            prims = prim if isinstance(prim, list) else [prim]
+            for sid in [v.get("headline")] + prims + list(u.get("secondary") or []):
+                if sid not in series_ids:
+                    err.append(f"{tag}: series_id {sid!r} not in config/cb_official.yaml macro.series")
+            if len(prims) > 1 and u.get("combine") != "mean":
+                err.append(f"{tag}: several underlying primaries need combine: mean")
+            if u.get("rule_applied") not in (1, 2, 3) or not u.get("evidence_url"):
+                err.append(f"{tag}: underlying needs rule_applied 1|2|3 and evidence_url")
+            if (v.get("slack") or {}).get("type") not in SI.SLACK_TYPES:
+                err.append(f"{tag}: slack.type must be one of {SI.SLACK_TYPES}")
+            n = v.get("neutral") or {}
+            if n.get("source") not in ("fed_sep", "manual") or n.get("flag") not in SI.NEUTRAL_FLAGS:
+                err.append(f"{tag}: neutral needs source fed_sep|manual and a flag in {SI.NEUTRAL_FLAGS}")
+            fc = v.get("forecasts") or {}
+            if fc.get("source") not in ("fed_sep", "manual") or fc.get("conditioning") not in SI.CONDITIONING:
+                err.append(f"{tag}: forecasts needs source fed_sep|manual and conditioning in {SI.CONDITIONING}")
+            srcs = v.get("sources") or []
+            if not srcs:
+                err.append(f"{tag}: no sources")
+            for k, s in enumerate(srcs):
+                _check_source(err, f"{tag}.sources[{k}]", s, today)
+            lv = v.get("last_verified") or {}
+            _check_date(err, f"{tag}.last_verified.date", lv.get("date"), today)
+            if not lv.get("checked"):
+                err.append(f"{tag}: last_verified.checked lists no url")
+        try:
+            vs = mandate_versions({"banks": {b: entry}})[b]
+        except Exception:                                                   # noqa: BLE001 - the field errors above say why
+            continue
+        from .cb_compute.stance_inputs import overlaps
+        for a, c in overlaps(vs):
+            err.append(f"mandates {b}: versions starting {a} and {c} overlap")
+        if sum(1 for x in vs if x.current_at(today)) != 1:
+            err.append(f"mandates {b}: not exactly one version current at {today}")
+    return err
+
+
+def mandate_versions(doc: dict) -> dict:
+    """{currency: [MandateVersion]} (no validation)."""
+    from .cb_compute.stance_inputs import MandateVersion, Target
+    out: dict = {}
+    for b, entry in ((doc or {}).get("banks") or {}).items():
+        for v in entry.get("versions") or []:
+            t = v["target"]
+            mp = t.get("midpoint")
+            u = v["underlying"]
+            prim = u["primary"] if isinstance(u["primary"], list) else [u["primary"]]
+            out.setdefault(b, []).append(MandateVersion(
+                currency=b, effective_from=v["effective_from"], effective_to=v.get("effective_to"),
+                target=Target(t["kind"], t.get("value"), t.get("low"), t.get("high"), (mp or {}).get("value") if isinstance(mp, dict) else None, t.get("measure", "")),
+                mandate_type=v["mandate"]["type"], horizon_text=v["horizon"]["text"], forward_looking=v["horizon"]["forward_looking"],
+                headline=v["headline"], underlying=tuple(prim), underlying_combine=u.get("combine"), secondary=tuple(u.get("secondary") or []),
+                rule_applied=u["rule_applied"], slack_type=v["slack"]["type"], neutral_source=v["neutral"]["source"], neutral_flag=v["neutral"]["flag"],
+                forecasts_source=v["forecasts"]["source"], conditioning=v["forecasts"]["conditioning"],
+                last_verified=(v.get("last_verified") or {}).get("date")))
+    return out
+
+
+def load_mandates(paths, *, today: date | None = None, validate: bool = False, series_ids: set | None = None) -> dict:
+    doc = _yaml(Path(paths.manual) / "mandates.yaml")
+    if validate:
+        errs = validate_mandates(doc, today or date.today(), series_ids if series_ids is not None else macro_series_ids())
+        if errs:
+            raise StanceDataError("data/cb/manual/mandates.yaml:\n  " + "\n  ".join(errs))
+    return doc
+
+
+def _current_mandates(mandates: dict, today: date) -> dict:
+    from .cb_compute.stance_inputs import current_version
+    return {b: current_version(vs, today) for b, vs in mandate_versions(mandates).items()}
+
+
+def validate_neutral(doc: dict, today: date, mandates: dict | None = None) -> list:
+    err: list = []
+    banks = (doc or {}).get("banks") or {}
+    cur = _current_mandates(mandates, today) if mandates else {}
+    for b in STANCE_BANKS:
+        if b == "USD":
+            if b in banks:
+                err.append("neutral: USD must have no entry (its neutral is the Fed SEP longer-run dots)")
+            continue
+        if b not in banks:
+            err.append(f"neutral: bank {b} missing")
+    for b, e in banks.items():
+        tag = f"neutral {b}"
+        st = e.get("status")
+        if st not in ("filled", "pending", "not_published"):
+            err.append(f"{tag}: status must be filled | pending | not_published")
+        if cur.get(b) is not None and e.get("flag") != cur[b].neutral_flag:
+            err.append(f"{tag}: flag {e.get('flag')} != mandates.yaml neutral.flag {cur[b].neutral_flag}")
+        ests = e.get("estimates") or []
+        if st == "filled" and not ests:
+            err.append(f"{tag}: filled without estimates")
+        if st == "pending" and not (e.get("reason") and e.get("next_step")):
+            err.append(f"{tag}: pending needs reason and next_step")
+        if st == "not_published":
+            ev = e.get("evidence") or {}
+            if not (ev.get("url") and ev.get("page") and ev.get("quote")):
+                err.append(f"{tag}: not_published needs evidence url, page and quote")
+            pq = e.get("policy_quote") or {}
+            if not (pq.get("quote") and pq.get("url") and pq.get("page")):
+                err.append(f"{tag}: not_published needs the bank's quote about its own policy (quote, url, page)")
+        for i, x in enumerate(ests):
+            t = f"{tag}.estimates[{i}]"
+            if x.get("basis") not in ("nominal", "real"):
+                err.append(f"{t}: basis must be nominal | real")
+            if x.get("point") is None and (x.get("low") is None or x.get("high") is None):
+                err.append(f"{t}: needs point or low/high")
+            _check_values(err, t, x)
+            _check_date(err, f"{t}.published", x.get("published"), today)
+            _check_source(err, t, x.get("source"), today)
+            if x.get("quote") and len(x["quote"].split()) > 30:
+                err.append(f"{t}: quote longer than 30 words")
+            if x.get("transcription") == "manual" and not x.get("quote"):
+                err.append(f"{t}: a manual transcription needs the quote")
+            if b == "GBP" and not x.get("member"):
+                err.append(f"{t}: GBP estimates need the member")
+    return err
+
+
+def load_neutral(paths, *, today: date | None = None, validate: bool = False, mandates: dict | None = None) -> dict:
+    doc = _yaml(Path(paths.manual) / "neutral.yaml")
+    if validate:
+        errs = validate_neutral(doc, today or date.today(), mandates)
+        if errs:
+            raise StanceDataError("data/cb/manual/neutral.yaml:\n  " + "\n  ".join(errs))
+    return doc
+
+
+def validate_forecasts(doc: dict, today: date, mandates: dict | None = None, rbnz: dict | None = None) -> list:
+    from .cb_compute import stance_inputs as SI
+    err: list = []
+    banks = (doc or {}).get("banks") or {}
+    cur = _current_mandates(mandates, today) if mandates else {}
+    for b in STANCE_BANKS:
+        if b == "USD":
+            if b in banks:
+                err.append("forecasts: USD must have no entry (Fed SEP in data/cb/projections.parquet)")
+            continue
+        if b not in banks:
+            err.append(f"forecasts: bank {b} missing")
+    for b, e in banks.items():
+        tag = f"forecasts {b}"
+        st = e.get("status")
+        if st not in ("filled", "pending"):
+            err.append(f"{tag}: status must be filled | pending")
+        if st == "pending" and not (e.get("reason") and e.get("next_step")):
+            err.append(f"{tag}: pending needs reason and next_step")
+        if e.get("conditioning") not in SI.CONDITIONING:
+            err.append(f"{tag}: conditioning must be one of {SI.CONDITIONING}")
+        if cur.get(b) is not None and e.get("conditioning") != cur[b].conditioning:
+            err.append(f"{tag}: conditioning {e.get('conditioning')} != mandates.yaml {cur[b].conditioning}")
+        _check_date(err, f"{tag}.published", e.get("published"), today)
+        _check_date(err, f"{tag}.cutoff", e.get("cutoff"), today, required=False)
+        if st == "filled":
+            _check_source(err, tag, e.get("source"), today)
+        for i, s in enumerate(e.get("series") or []):
+            t = f"{tag}.series[{i}]"
+            if s.get("role") not in SI.ROLES:
+                err.append(f"{t}: unknown role {s.get('role')!r}")
+            if s.get("transform") not in SI.TRANSFORMS:
+                err.append(f"{t}: unknown transform {s.get('transform')!r}")
+            if s.get("role") == "rate_assumption" and not s.get("instrument"):
+                err.append(f"{t}: a rate assumption needs its instrument")
+            if s.get("status") == "pending":
+                if not (s.get("reason") and s.get("next_step")):
+                    err.append(f"{t}: pending needs reason and next_step")
+            elif not s.get("values"):
+                err.append(f"{t}: no values")
+            if s.get("source") is not None:
+                _check_source(err, t, s["source"], today)
+            for k, v in enumerate(s.get("values") or []):
+                if not HORIZON_RX.match(str(v.get("horizon"))):
+                    err.append(f"{t}.values[{k}]: unknown horizon {v.get('horizon')!r}")
+                if v.get("value") is None and (v.get("low") is None or v.get("high") is None):
+                    err.append(f"{t}.values[{k}]: needs value or low/high")
+                _check_values(err, f"{t}.values[{k}]", v)
+    if rbnz and "NZD" in banks:
+        filled = sorted(m["meeting"] for m in (rbnz.get("mps") or []) if m.get("status") == "filled")
+        if filled and banks["NZD"].get("meeting") != filled[-1]:
+            err.append(f"forecasts NZD: meeting {banks['NZD'].get('meeting')} != latest filled MPS in rbnz.yaml {filled[-1]}")
+    return err
+
+
+def load_forecasts(paths, *, today: date | None = None, validate: bool = False, mandates: dict | None = None) -> dict:
+    doc = _yaml(Path(paths.manual) / "forecasts.yaml")
+    if validate:
+        errs = validate_forecasts(doc, today or date.today(), mandates, load_rbnz(Path(paths.manual) / "rbnz.yaml"))
+        if errs:
+            raise StanceDataError("data/cb/manual/forecasts.yaml:\n  " + "\n  ".join(errs))
+    return doc
+
+
+def projections_view(paths, forecasts: dict | None = None) -> dict:
+    """ONE view of the projections: {currency: Projection} - the latest Fed SEP from data/cb/projections.parquet (written by
+    CI only) + the manual publications of forecasts.yaml."""
+    from .cb_compute.stance_inputs import ForecastPoint, Projection
+    out: dict = {}
+    sep = load_projections(paths)
+    if sep:
+        last = max(r["meeting_date"] for r in sep)
+        roles = {"pce_inflation": "headline", "core_pce_inflation": "underlying", "unemployment_rate": "unemployment", "federal_funds_rate": "rate_assumption"}
+        pts = tuple(ForecastPoint(roles[r["variable"]], r["variable"], "q4_q4" if "inflation" in r["variable"] else "quarter_level",
+                                  "all" if r["horizon"] == "longer_run" else r["horizon"], r["value"])
+                    for r in sep if r["meeting_date"] == last and r["kind"] == "median_published" and r["variable"] in roles)
+        out["USD"] = Projection("USD", f"FOMC Summary of Economic Projections {last}", last, "own_path", None, "fed_sep", pts,
+                                next((r["source_url"] for r in sep if r["meeting_date"] == last), ""))
+    for b, e in ((forecasts if forecasts is not None else load_forecasts(paths)).get("banks") or {}).items():
+        pts = tuple(ForecastPoint(s["role"], s["variable"], s["transform"], str(v["horizon"]), v.get("value"), v.get("low"), v.get("high"))
+                    for s in e.get("series") or [] for v in s.get("values") or [])
+        out[b] = Projection(b, e["publication"], e["published"], e["conditioning"], e.get("cutoff"), "manual", pts, (e.get("source") or {}).get("url", ""))
+    return out
+
+
+def stance_inputs(paths, asof: date) -> dict:
+    """{currency: StanceInputs} for `asof` - validated manual files + the macro store. Raises StanceDataError when a manual
+    file is invalid."""
+    from . import cb_macro
+    from .cb_compute.macro_yoy import yoy
+    from .cb_compute.stance_inputs import NeutralEstimate, Observation, StanceInputs, current_version
+    mand = load_mandates(paths, today=asof, validate=True)
+    neut = load_neutral(paths, today=asof, validate=True, mandates=mand)
+    fc = load_forecasts(paths, today=asof, validate=True, mandates=mand)
+    proj = projections_view(paths, fc)
+    per = cb_macro.by_series(cb_macro.load_macro(paths, end=asof))
+    out = {}
+    for b, vs in mandate_versions(mand).items():
+        mv = current_version(vs, asof)
+        si = StanceInputs(b, asof, mv, projection=proj.get(b))
+        if mv is not None:
+            roles = {"headline": [mv.headline], "underlying": list(mv.underlying), "secondary": list(mv.secondary)}
+            for role, sids in roles.items():
+                for sid in sids:
+                    rows = {p: r for p, r in (per.get(sid) or {}).items() if r["period_start"] <= asof}
+                    if not rows:
+                        si.pending.append(f"{role} {sid}: no observation stored")
+                        continue
+                    p = max(rows)
+                    r = rows[p]
+                    y = float(yoy({k: x["value"] for k, x in rows.items()}, p)) if r["published_as"] == "index" and yoy({k: x["value"] for k, x in rows.items()}, p) is not None else (r["value"] if r["published_as"] == "yoy" else None)
+                    si.observations.setdefault(role, []).append(Observation(sid, p, r["value"], r["published_as"], y, r["release_date"], r["source_url"]))
+        e = (neut.get("banks") or {}).get(b) or {}
+        si.neutral_status = "fed_sep" if b == "USD" else e.get("status", "")
+        si.neutral = [NeutralEstimate(x["label"], x["basis"], x.get("point"), x.get("low"), x.get("high"), x["published"], x.get("member"),
+                                      (x.get("source") or {}).get("url", ""), (x.get("source") or {}).get("page", "")) for x in e.get("estimates") or []]
+        if e.get("status") == "pending":
+            si.pending.append(f"neutral: {e.get('reason')} -> {e.get('next_step')}")
+        out[b] = si
+    return out
+
+
+def stance_status(paths, today: date) -> tuple:
+    """--status section for the manual stance files: validation, projections newer than forecasts.yaml, stale neutral, pending."""
+    from .cb_compute.framework_watch import last_projection_dates
+    rows, notes = [], []
+    try:
+        mand = load_mandates(paths, today=today, validate=True)
+        neut = load_neutral(paths, today=today, validate=True, mandates=mand)
+        fc = load_forecasts(paths, today=today, validate=True, mandates=mand)
+    except StanceDataError as e:
+        return ("stance inputs (S0a manual files)", ["error"], [[str(e).split(chr(10))[0]]], [f"INVALID {x.strip()}" for x in str(e).split("\n")[1:]])
+    cfg = load_stance_config()
+    lastp = last_projection_dates(load_meetings(paths.meetings), today)
+    from .cb_compute.stance_inputs import current_version
+    cur = {b: current_version(v, today) for b, v in mandate_versions(mand).items()}
+    sep_last = max((r["meeting_date"] for r in load_projections(paths)), default=None)
+    for b in STANCE_BANKS:
+        f = (fc.get("banks") or {}).get(b)
+        pub = sep_last if b == "USD" else (f or {}).get("meeting")
+        n = (neut.get("banks") or {}).get(b) or {}
+        newest = max((x["published"] for x in n.get("estimates") or []), default=None)
+        stale_n = newest is not None and (today.year - newest.year) * 12 + today.month - newest.month > cfg["staleness"]["neutral_months"]
+        rows.append([b, (cur[b].effective_from if cur.get(b) else "NONE"), pub or "", lastp.get(b, ""), "fed_sep" if b == "USD" else n.get("status", ""), newest or "",
+                     "STALE" if stale_n else ""])
+        if lastp.get(b) and pub and lastp[b] > pub:
+            notes.append(f"WARN forecasts {b}: a newer projection publication ({lastp[b]}) than the one entered ({pub}) - enter it and re-verify the mandate")
+        if stale_n:
+            notes.append(f"WARN neutral {b}: newest estimate published {newest}, older than {cfg['staleness']['neutral_months']} months")
+        if n.get("status") == "pending":
+            notes.append(f"PENDING neutral {b}: {n.get('reason')} | next: {n.get('next_step')}")
+        for s in (f or {}).get("series") or []:
+            if s.get("status") == "pending":
+                notes.append(f"PENDING forecasts {b} {s['role']}: {s.get('reason')} | next: {s.get('next_step')}")
+        if f and f.get("status") == "pending":
+            notes.append(f"PENDING forecasts {b}: {f.get('reason')} | next: {f.get('next_step')}")
+    return ("stance inputs (S0a manual files)", ["cur", "mandate from", "forecasts of", "latest projection meeting", "neutral", "newest neutral", "stale"], rows, notes)
