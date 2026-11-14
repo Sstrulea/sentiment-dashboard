@@ -129,6 +129,8 @@ jobs:
       - name: Stance data (macro series, framework watch)
         if: ${{ github.event.schedule == '23 7 * * *' }}
         continue-on-error: true
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py): PCEPI, PCEPILFE, UNRATE
         run: python -m src.cb_collect --stage macro --stage framework
 
       - name: Collect one stage

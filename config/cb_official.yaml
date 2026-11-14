@@ -21,7 +21,7 @@ meta:
 providers:
   fred:
     adapter: FredSeries
-    client: src.fred_api           # FRED API with a key (FRED_API_KEY); no URL here - the FRED CSV download downloads are forbidden by the FRED terms
+    client: src.fred_api           # FRED API with a key (FRED_API_KEY); no URL here - downloads of the FRED website CSV are forbidden by the FRED terms
     provenance: "https://fred.stlouisfed.org/series/{key} (via FRED API)"
     license: "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. Series sourced from the Federal Reserve Board / NY Fed."
   ecb:

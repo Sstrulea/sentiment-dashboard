@@ -1,16 +1,4 @@
 {
- "macro/fred_pcepi.csv": {
-  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PCEPI&cosd=2024-08-01",
-  "retrieved": "2026-11-14",
-  "trim": "none (cosd=2024-08-01)",
-  "sha256_of_stored": "8cc5b3840eb0a38402f4f044eed1ce66942bd273755c6b32c7c8e5620eed16bb"
- },
- "macro/fred_pcepilfe.csv": {
-  "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PCEPILFE&cosd=2024-08-01",
-  "retrieved": "2026-11-14",
-  "trim": "none (cosd=2024-08-01)",
-  "sha256_of_stored": "e3d025fdf37ae9c14ba5a1dbe350f50a3bfeb75a29aceded09c15bdbba8904db"
- },
  "macro/ecb_hicp_xef000.csv": {
   "url": "https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.XEF000.4D0.ANR?format=csvdata&startPeriod=2025-06",
   "retrieved": "2026-11-14",
@@ -112,5 +100,17 @@
   "retrieved": "2026-11-14",
   "trim": "src.cb_docs.extract.pdf_paragraphs of the official PDF (sha256 a5d72a3a1655d9049a3b5b1f33a6c7d1f156959c879f4a3ab04481751bbbab65)",
   "sha256_of_stored": "5d7ceade9ef0851e3f175c8fa7df14e9a56b4016432b08622b518ff07f5e64c0"
+ },
+ "macro/fred_pcepi.json": {
+  "url": "https://api.stlouisfed.org/fred/series/observations?series_id=PCEPI&observation_start=2024-08-01&observation_end=2026-09-01&file_type=json (key omitted)",
+  "retrieved": "2026-11-14",
+  "trim": "none",
+  "provenance": "https://fred.stlouisfed.org/series/PCEPI (via FRED API)"
+ },
+ "macro/fred_pcepilfe.json": {
+  "url": "https://api.stlouisfed.org/fred/series/observations?series_id=PCEPILFE&observation_start=2024-08-01&observation_end=2026-09-01&file_type=json (key omitted)",
+  "retrieved": "2026-11-14",
+  "trim": "none",
+  "provenance": "https://fred.stlouisfed.org/series/PCEPILFE (via FRED API)"
  }
 }

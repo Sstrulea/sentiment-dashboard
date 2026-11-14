@@ -138,7 +138,7 @@ def _source_url(prov_cfg: dict, s: dict, since: date) -> str:
         def __missing__(self, k):
             return "{" + k + "}"
     vals = _Keep({**{k: v for k, v in s.items() if isinstance(v, (str, int))}, "since": since.isoformat()})
-    return string.Formatter().vformat(prov_cfg.get("url", ""), (), vals)
+    return string.Formatter().vformat(prov_cfg.get("url") or prov_cfg.get("provenance", ""), (), vals)   # FRED: the series page (no download URL)
 
 
 # ---------------------------------------------------------------------------

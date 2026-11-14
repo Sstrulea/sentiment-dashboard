@@ -30,8 +30,9 @@ def _t(name: str, enc: str = "utf-8") -> str:
 
 def test_fred_index_and_official_yoy_pce_september_2026():
     """BEA, Personal Income and Outlays September 2026: PCE +3.6 %, excluding food and energy +3.1 % from one year ago."""
-    head = dict((d.strftime("%Y-%m"), v) for d, v in O.parse_fred(_t("fred_pcepi.csv"), SINCE))
-    core = dict((d.strftime("%Y-%m"), v) for d, v in O.parse_fred(_t("fred_pcepilfe.csv"), SINCE))
+    from src.fred_api import parse_observations                          # FRED API JSON (fixture cut from the real response)
+    head = {d.strftime("%Y-%m"): v for d, v in parse_observations(json.loads(_t("fred_pcepi.json"))) if v is not None}
+    core = {d.strftime("%Y-%m"): v for d, v in parse_observations(json.loads(_t("fred_pcepilfe.json"))) if v is not None}
     assert yoy(head, "2026-09") == Decimal("3.6")
     assert yoy(core, "2026-09") == Decimal("3.1")
 
