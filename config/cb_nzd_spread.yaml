@@ -12,7 +12,7 @@ rule: median over months of (3M NZ interbank, monthly) - (mean OCR of the month)
 sources:
   rate_3m:
     series: FRED IR3TIB01NZM156N (OECD, 3-month interbank rate, NZ, monthly)
-    url: https://fred.stlouisfed.org/graph/fredgraph.csv?id=IR3TIB01NZM156N&cosd=2015-01-01
+    series_id: IR3TIB01NZM156N
   ocr:
     series: BIS WS_CBPOL D.NZ (Official Cash Rate, daily)
     url: https://stats.bis.org/api/v2/data/dataflow/BIS/WS_CBPOL/1.0/D.NZ?startPeriod=2015-01-01&format=csv

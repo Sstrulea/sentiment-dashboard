@@ -298,22 +298,28 @@ def test_print_report_shows_legs_when_present(capsys):
 
 
 # ---------------------------------------------------------------------------
-# FredSeriesSource: shared CSV parser + curl second-attempt fallback (no network).
+# FredSeriesSource through the FRED API client (src/fred_api.py), no network.
 # ---------------------------------------------------------------------------
 
-FRED_CSV = "observation_date,DFII10\n2026-01-02,2.10\n2026-01-03,.\n2026-01-06,2.15\n"
+FRED_JSON = {"count": 3, "observations": [{"date": "2026-01-02", "value": "2.10"}, {"date": "2026-01-03", "value": "."},
+                                          {"date": "2026-01-06", "value": "2.15"}]}
 
 
-def test_parse_fred_csv_drops_na_marker():
-    out = FredSeriesSource("DFII10")._parse_fred_csv(FRED_CSV)
-    assert len(out) == 2                               # FRED '.' NA row dropped
-    assert list(out["value"]) == [2.10, 2.15]
+def test_fred_series_source_drops_the_na_marker(monkeypatch):
+    from src import fred_api
+    monkeypatch.setattr(fred_api, "observations", lambda sid, start=None, **k: fred_api.parse_observations(FRED_JSON))
+    out = FredSeriesSource("DFII10").fetch_series()
+    assert len(out) == 2                               # FRED '.' NA row dropped, never 0
+    assert list(out["value"]) == [2.10, 2.15] and set(out["source"]) == {"fred_series"}
 
 
-def test_curl_fallback_used_when_requests_fails(monkeypatch):
+def test_fred_series_source_api_failure_is_redacted_and_returns_none(monkeypatch):
+    from src import fred_api
+    monkeypatch.setenv("FRED_API_KEY", "secret-key-0123456789")
+
+    def boom(sid, start=None, **k):
+        raise fred_api.FredApiError(fred_api.redact("HTTP 500 for url https://api.stlouisfed.org/fred/series/observations?series_id=DFII10&api_key=secret-key-0123456789"))
+    monkeypatch.setattr(fred_api, "observations", boom)
     src = FredSeriesSource("DFII10")
-    monkeypatch.setattr(src, "_get", lambda *a, **k: None)       # requests path fails
-    monkeypatch.setattr(src, "_curl_csv", lambda url: FRED_CSV)  # curl succeeds
-    out = src._fetch_series()
-    assert out is not None and len(out) == 2
-    assert list(out["value"]) == [2.10, 2.15]
+    assert src.fetch_series() is None and src.last_status == "UNREACHABLE"
+    assert "secret-key" not in src.last_note and "api_key=REDACTED" in src.last_note

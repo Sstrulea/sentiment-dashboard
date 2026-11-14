@@ -54,6 +54,8 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Calendar FF
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: python -m src.ff_refresh
 
       - name: Actuals JBlanked
@@ -70,6 +72,8 @@ jobs:
         run: python -m src.official_fetch
 
       - name: FRED
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: |
           python -m src.rate_fetch
           python -m src.realyield_fetch

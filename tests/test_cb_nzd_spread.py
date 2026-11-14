@@ -13,7 +13,14 @@ import yaml
 
 from src.cb_compute.nzd_spread import bkbm_ocr_spread, ocr_months
 from src.cb_loader import load_estimated_spreads
-from src.cb_sources.official import parse_bis, parse_fred
+from src.cb_sources.official import parse_bis
+from src.fred_api import parse_observations
+
+
+def _ir3tib():
+    """IR3TIB01NZM156N from the FRED API JSON (cut from the real response, 2022-01..2026-08); \".\" is missing."""
+    import json
+    return [(d, v) for d, v in parse_observations(json.loads((FIX / "nzd_fred_ir3tib_cut.json").read_text())) if v is not None]
 
 FIX = Path(__file__).parent / "fixtures" / "cb"
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,7 +73,7 @@ def test_no_quiet_month_gives_no_value():
 
 
 def test_real_cuts_fred_ir3tib_and_bis_cbpol():
-    m3 = parse_fred((FIX / "nzd_fred_ir3tib_cut.csv").read_text(), D(2022, 1, 1))
+    m3 = _ir3tib()
     ocr = parse_bis((FIX / "nzd_bis_cbpol_cut.csv").read_text(), D(2022, 1, 1))["NZ"]
     res = bkbm_ocr_spread(m3, ocr, (2022, 1))
     # independent recomputation: month means of the non-NaN days, changes between consecutive observed days
@@ -98,7 +105,7 @@ def test_the_committed_spread_file_and_the_loader():
 def test_the_script_document_shape(monkeypatch):
     sys.path.insert(0, str(ROOT / "scripts"))
     import cb_nzd_bkbm_spread as S
-    m3 = parse_fred((FIX / "nzd_fred_ir3tib_cut.csv").read_text(), D(2022, 1, 1))
+    m3 = _ir3tib()
     ocr = parse_bis((FIX / "nzd_bis_cbpol_cut.csv").read_text(), D(2022, 1, 1))["NZ"]
     res = bkbm_ocr_spread(m3, ocr, (2022, 1))
     doc = S.document(res, "fred-url", "bis-url", D(2026, 10, 9))

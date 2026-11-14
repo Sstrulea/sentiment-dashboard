@@ -391,7 +391,6 @@ def scores(df: pd.DataFrame, inp: Inputs, version: str, sigma=None) -> pd.Series
 # Report (thresholds, C3/C4, informative hit rate) — on the cached weeks
 # ---------------------------------------------------------------------------
 
-FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
 # H.10: True = quoted as units of the currency per USD
 FRED_FX = {"EUR": ("DEXUSEU", False), "GBP": ("DEXUSUK", False), "AUD": ("DEXUSAL", False),
            "NZD": ("DEXUSNZ", False), "JPY": ("DEXJPUS", True), "CAD": ("DEXCAUS", True),
@@ -408,13 +407,13 @@ def config_sigmas(inp) -> dict:
 
 
 def _fred(series: str, cache_dir: Path) -> pd.Series:
-    path = cache_dir / f"fred_{series}.csv"
+    """A FRED series through the FRED API client (src/fred_api.py; the FRED CSV download downloads are forbidden by the FRED
+    terms), cached as date,value CSV; "." stays missing."""
+    path = cache_dir / f"fredapi_{series}.csv"
     if not path.exists():
-        import requests
-        r = requests.get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}",
-                         headers={"User-Agent": FRED_UA}, timeout=60)
-        r.raise_for_status()
-        path.write_text(r.text)
+        from src.fred_api import observations
+        obs = observations(series)
+        path.write_text("date,value\n" + "".join(f"{d},{'' if v is None else v}\n" for d, v in obs))
     df = pd.read_csv(path)
     df.columns = ["date", "v"]
     df["v"] = pd.to_numeric(df["v"], errors="coerce")

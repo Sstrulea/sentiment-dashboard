@@ -28,7 +28,6 @@ import io
 import logging
 import re
 import socket
-import subprocess
 import time
 from dataclasses import dataclass, field
 from datetime import date, datetime
@@ -59,10 +58,9 @@ UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 )
-# FRED (fredgraph.csv) TARPITS browser User-Agents — a Chrome UA hangs/ReadTimeouts
-# while a simple non-browser UA is served instantly. Used ONLY for the FRED CSV
-# sources below (FredSource, FredSeriesSource); non-FRED sources keep `UA` (some,
-# e.g. Stooq/RBA/BoE, need a browser UA to clear their own bot-walls).
+# An honest non-browser UA (historically the FRED one; FRED itself is now read only through
+# src/fred_api.py, the official API with a key). Still used by the CB adapters (RBA, ...) that
+# 403 a Chrome UA; non-FRED sources keep `UA` (Stooq/RBA/BoE bot-walls).
 FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
 
 # Qualification thresholds.
@@ -299,8 +297,22 @@ class StooqSource(BaseSource):
 
 
 # ---------------------------------------------------------------------------
-# (b) FRED CSV — US 2y (DGS2)
+# (b) FRED — US 2y (DGS2), through the FRED API client (src/fred_api.py)
 # ---------------------------------------------------------------------------
+
+def _fred_frame(series_id: str) -> pd.DataFrame:
+    """(date, value) of a FRED series via the API client; FRED's "." -> NaN (missing, never zero). Raises FredApiError."""
+    from ..fred_api import observations
+    obs = observations(series_id)
+    return pd.DataFrame({"date": pd.to_datetime([d for d, _ in obs]),
+                         "value": pd.to_numeric(pd.Series([v for _, v in obs], dtype="float64"), errors="coerce")})
+
+
+def _fred_failure(src: "BaseSource", e: Exception) -> None:
+    from ..fred_api import FredKeyMissing, redact
+    src.last_status = "NO-KEY" if isinstance(e, FredKeyMissing) else "UNREACHABLE"
+    src.last_note = redact(e)
+
 
 class FredSource(BaseSource):
     name = "fred"
@@ -310,25 +322,15 @@ class FredSource(BaseSource):
         return currency in self.SERIES
 
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
+        from ..fred_api import FredApiError
         sid, tenor = self.SERIES[currency]
-        r = self._get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}", retries=3,
-                      extra_headers={"User-Agent": FRED_UA})
-        if r is None:
+        require_2y(self.name, sid == "DGS2", f"series {sid!r}, expected 'DGS2'")      # the API returns exactly the requested series
+        try:
+            df = _fred_frame(sid)
+        except FredApiError as e:
+            _fred_failure(self, e)
             return None
-        if self._check_botwall(r):
-            return None
-        df = pd.read_csv(io.StringIO(r.text))
-        date_col = df.columns[0]
-        val_cols = [c for c in df.columns if c != date_col]
-        if not val_cols:
-            self._parse_fail(f"cols {list(df.columns)}")
-            return None
-        # fredgraph names the value column after the series id (DGS2 = 2-year)
-        require_2y(self.name, str(val_cols[0]).strip() == sid,
-                   f"value column {val_cols[0]!r}, expected {sid!r}")
-        vals = pd.to_numeric(df[val_cols[0]].replace(".", np.nan), errors="coerce")
-        s = _mk(currency, self.name, tenor, "daily",
-                pd.to_datetime(df[date_col], errors="coerce"), vals, note=f"id={sid}")
+        s = _mk(currency, self.name, tenor, "daily", df["date"], df["value"], note=f"id={sid}")
         if not s:
             self._parse_fail("no numeric observations")
         return s
@@ -339,10 +341,9 @@ class FredSource(BaseSource):
 # ---------------------------------------------------------------------------
 
 class FredSeriesSource(BaseSource):
-    """Keyless reader for any single FRED series (e.g. DFII10), via the same
-    fredgraph CSV mechanism used by FredSource. Returns a tidy DataFrame
-    (date, value, source) — NOT a per-currency YieldSeries — so it stays out of
-    the currency rate registry. `.` is treated as missing (FRED's NA marker).
+    """Reader for any single FRED series (e.g. DFII10) through the FRED API client (src/fred_api.py). Returns a tidy
+    DataFrame (date, value, source) - NOT a per-currency YieldSeries - so it stays out of the currency rate registry.
+    FRED's "." is missing (dropped), never zero.
     """
     name = "fred_series"
 
@@ -352,57 +353,24 @@ class FredSeriesSource(BaseSource):
 
     def fetch_series(self) -> Optional[pd.DataFrame]:
         """Read-only fetch; returns DataFrame(date, value, source) or None.
-        Never raises — failures are captured in last_status/last_note."""
+        Never raises — failures are captured in last_status/last_note (redacted)."""
         self.last_status = ""
         self.last_note = ""
         try:
             return self._fetch_series()
         except Exception as e:
-            self._parse_fail(f"{type(e).__name__}: {e}")
+            from ..fred_api import redact
+            self._parse_fail(f"{type(e).__name__}: {redact(e)}")
             return None
 
     def _fetch_series(self) -> Optional[pd.DataFrame]:
-        url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={self.series_id}"
-        r = self._get(url, retries=3, extra_headers={"User-Agent": FRED_UA})
-        text = None if (r is None or self._check_botwall(r)) else r.text
-        if not text or not text.strip():
-            # requests timed out / empty / tarpitted — retry with curl, which uses a
-            # different network stack (Happy Eyeballs) and sometimes succeeds when
-            # requests hangs on the same FRED series. Absolute path for launchd PATH.
-            text = self._curl_csv(url)
-        if not text or not text.strip():
-            return None
-        return self._parse_fred_csv(text)
-
-    def _curl_csv(self, url: str) -> Optional[str]:
-        """Second-attempt fetch via /usr/bin/curl. Returns CSV text or None."""
+        from ..fred_api import FredApiError
         try:
-            p = subprocess.run(
-                ["/usr/bin/curl", "-s", "--max-time", "20", "--compressed",
-                 "-H", f"User-Agent: {FRED_UA}", url],
-                capture_output=True, text=True, timeout=25,
-            )
-        except (OSError, subprocess.SubprocessError) as e:
-            self._parse_fail(f"curl fallback {type(e).__name__}: {e}")
+            df = _fred_frame(self.series_id)
+        except FredApiError as e:
+            _fred_failure(self, e)
             return None
-        if p.returncode != 0 or not p.stdout.strip():
-            self._parse_fail(f"curl fallback rc={p.returncode}")
-            return None
-        return p.stdout
-
-    def _parse_fred_csv(self, text: str) -> Optional[pd.DataFrame]:
-        df = pd.read_csv(io.StringIO(text))
-        date_col = df.columns[0]
-        val_cols = [c for c in df.columns if c != date_col]
-        if not val_cols:
-            self._parse_fail(f"cols {list(df.columns)}")
-            return None
-        out = pd.DataFrame({
-            "date": pd.to_datetime(df[date_col], errors="coerce"),
-            "value": pd.to_numeric(df[val_cols[0]].replace(".", np.nan), errors="coerce"),
-            "source": self.name,
-        })
-        out = out.dropna(subset=["date", "value"]).sort_values("date").reset_index(drop=True)
+        out = df.assign(source=self.name).dropna(subset=["date", "value"]).sort_values("date").reset_index(drop=True)
         if out.empty:
             self._parse_fail("no numeric observations")
             return None
@@ -412,7 +380,7 @@ class FredSeriesSource(BaseSource):
 class TreasuryRealYieldSource(BaseSource):
     """Keyless reader for the US Treasury 10y REAL yield (TIPS real yield curve).
 
-    Backup/alternate for FRED DFII10 — works when fredgraph is down. The daily
+    Backup/alternate for FRED DFII10 — works when the FRED CSV download is down. The daily
     real yield curve is published per-year as CSV with header
     `Date,"5 YR","7 YR","10 YR","20 YR","30 YR"`; we take the "10 YR" column.
     Fetches the requested years and concatenates (≥3y gives enough history for

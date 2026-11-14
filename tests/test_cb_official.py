@@ -12,9 +12,10 @@ import pytest
 from requests.structures import CaseInsensitiveDict
 
 from src import cb_collect as cc
+from src import fred_api
 from src.cb_sources.official import (PROVIDERS, BisSeries, BocSeries, BoeSeries, BojSeries, EcbSeries, FredSeries,
                                      RbaSeries, SnbSeries, load_official, parse_bis, parse_boe, parse_boj,
-                                     parse_ecb, parse_fred, parse_rba_f1, parse_snb, parse_valet)
+                                     parse_ecb, parse_rba_f1, parse_snb, parse_valet)
 
 FIX = Path(__file__).parent / "fixtures" / "cb"
 NOW = datetime(2026, 9, 20, 9, 0, tzinfo=timezone.utc)
@@ -63,12 +64,12 @@ def test_banks_reference_configured_series():
 # ---------------------------------------------------------------------------
 
 def test_fred_upper_limit_and_missing_observations():
-    assert parse_fred(text("fred_dfedtaru_cut.csv"), ALL) == [
+    """FRED API JSON (fixtures cut from the real API responses, 2026-11-14)."""
+    assert fred_api.parse_observations(json.loads(text("fred_dfedtaru_cut.json"))) == [
         (D(2026, 9, 14), 3.75), (D(2026, 9, 15), 3.75), (D(2026, 9, 16), 3.75), (D(2026, 9, 17), 4.0),
         (D(2026, 9, 18), 4.0), (D(2026, 9, 19), 4.0)]
-    sofr = parse_fred(text("fred_sofr_cut.csv"), ALL)
-    assert D(2026, 9, 7) not in [d for d, _ in sofr] and len(sofr) == 5             # Labor Day: FRED's empty cell is skipped
-    assert parse_fred(text("fred_dfedtaru_cut.csv"), D(2026, 9, 18)) == [(D(2026, 9, 18), 4.0), (D(2026, 9, 19), 4.0)]
+    sofr = fred_api.parse_observations(json.loads(text("fred_sofr_cut.json")))
+    assert (D(2026, 9, 7), None) in sofr and len([v for _, v in sofr if v is not None]) == 5     # Labor Day: "." is missing, never 0
 
 
 def test_ecb_dfr_and_the_2024_spread_change():
@@ -137,22 +138,27 @@ class Resp:
 @pytest.fixture(autouse=True)
 def _no_sleep(monkeypatch):
     monkeypatch.setattr("src.rate_sources.time.sleep", lambda s: None)
+    monkeypatch.setattr("src.fred_api.time.sleep", lambda s: None)
+    monkeypatch.setenv("FRED_API_KEY", "test-key-0123456789")
 
 
 def router(monkeypatch, overrides=None):
     """Serve every provider from the fixtures; `overrides` maps a URL needle to a Resp / callable."""
     calls = []
     table = [
-        ("id=DFEDTARU", "fred_dfedtaru_cut.csv", {}), ("id=DFEDTARL", "fred_dfedtaru_cut.csv", {}),
-        ("id=EFFR", "fred_sofr_cut.csv", {}), ("id=SOFR", "fred_sofr_cut.csv", {}),
+        ("series_id=DFEDTARU", "fred_dfedtaru_cut.json", {}), ("series_id=DFEDTARL", "fred_dfedtaru_cut.json", {}),
+        ("series_id=EFFR", "fred_sofr_cut.json", {}), ("series_id=SOFR", "fred_sofr_cut.json", {}),
         ("KR.DFR.LEV", "ecb_dfr_cut.csv", {}), ("KR.MRR_FR.LEV", "ecb_dfr_cut.csv", {}), ("EST/B.EU000A2X2A25.WT", "ecb_dfr_cut.csv", {}),
         ("fromshowcolumns.asp", "boe_iadb_cut.csv", {}), ("getDataCode", "boj_call_cut.json", {}),
         ("valet/observations", "valet_policy_cut.json", {}), ("f1-data.csv", "rba_f1_cut.csv", {"Last-Modified": "Thu, 17 Sep 2026 23:00:50 GMT"}),
         ("WS_CBPOL", "bis_cbpol_cut.csv", {}), ("snbgwdzid", "snb_cube_cut.csv", {}),
     ]
 
-    def get(url, headers=None, timeout=None, **kw):
+    def get(url, headers=None, timeout=None, params=None, **kw):
         h = headers or {}
+        if params:                                                   # the FRED API client passes its query as params (the key is never part of the routed url)
+            from urllib.parse import urlencode
+            url = url + "?" + urlencode({k: v for k, v in params.items() if k != "api_key"})
         calls.append((url, dict(h)))
         for needle, resp in (overrides or {}).items():
             if needle in url:
@@ -164,6 +170,7 @@ def router(monkeypatch, overrides=None):
                 return Resp(200, (FIX / name).read_bytes(), hdrs)
         raise AssertionError(f"unrouted {url}")
     monkeypatch.setattr("src.rate_sources.requests.get", get)
+    monkeypatch.setattr("src.fred_api.requests.get", get)
     return calls
 
 
@@ -172,11 +179,11 @@ def mk(cls, **kw):
 
 
 def test_fred_adapter_keeps_a_failed_series_out_of_the_way_of_the_others(monkeypatch):
-    router(monkeypatch, {"id=EFFR": Resp(503), "id=DFEDTARL": Resp(200, "<html>Just a moment... requires JavaScript</html>")})
+    router(monkeypatch, {"series_id=EFFR": Resp(503), "series_id=DFEDTARL": Resp(200, "<html>Just a moment... requires JavaScript</html>")})
     s = mk(FredSeries)
     res = s.fetch(since=D(2026, 9, 1))
     assert {o.series_id for o in res.obs} == {"fred:DFEDTARU", "fred:SOFR"}
-    assert set(res.failed) == {"fred:EFFR", "fred:DFEDTARL"} and "503" in res.failed["fred:EFFR"] and "BOT-WALL" in res.failed["fred:DFEDTARL"]
+    assert set(res.failed) == {"fred:EFFR", "fred:DFEDTARL"} and "503" in res.failed["fred:EFFR"] and "not JSON" in res.failed["fred:DFEDTARL"]
     assert all(o.currency == "USD" and o.unit == "percent" and o.fetched_at == NOW for o in res.obs)
 
 
@@ -217,7 +224,7 @@ def test_since_is_passed_to_the_provider_urls(monkeypatch):
     mk(BoeSeries).fetch(since=D(2025, 9, 1))
     mk(BojSeries).fetch(since=D(2025, 9, 1))
     urls = [u for u, _ in calls]
-    assert any("cosd=2025-09-01" in u for u in urls) and any("Datefrom=01/Sep/2025" in u for u in urls) and any("startDate=202509" in u for u in urls)
+    assert any("observation_start=2025-09-01" in u for u in urls) and any("Datefrom=01/Sep/2025" in u for u in urls) and any("startDate=202509" in u for u in urls)
 
 
 # ---------------------------------------------------------------------------
@@ -273,7 +280,7 @@ def test_a_revised_value_is_a_last_write_wins_update_and_history_survives(tmp_pa
     router(monkeypatch)
     paths = cc.Paths(tmp_path / "cb")
     cc.run_official(paths, now=lambda: NOW, backfill_from=D(2025, 9, 1), only=["fred"])
-    router(monkeypatch, {"id=SOFR": Resp(200, "observation_date,SOFR\n2026-09-10,3.65\n")})       # SOFR revised, window moved
+    router(monkeypatch, {"series_id=SOFR": Resp(200, json.dumps({"count": 1, "observations": [{"date": "2026-09-10", "value": "3.65"}]}))})   # SOFR revised, window moved
     (rep,) = cc.run_official(paths, now=lambda: NOW + timedelta(days=1), only=["fred"], backfill_from=D(2026, 9, 10))
     assert rep.merge.updated == 1
     by = {(r["series_id"], r["date"]): r["value"] for r in official_rows(paths)}

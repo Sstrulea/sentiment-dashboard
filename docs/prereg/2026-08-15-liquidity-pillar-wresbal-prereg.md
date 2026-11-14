@@ -78,7 +78,7 @@ using compute_liquidity_score() in src/liquidity_compute.py with
 smooth=5, band_hi=0.0201, band_lo=0.0098, W=21.
 We are testing whether bank reserves are a better input series.
 
-DATA TO FETCH (FRED, keyless, via the existing FredSeriesSource in
+DATA TO FETCH (FRED - since 2026-11 through the FRED API with a key, src/fred_api.py; keyless at the time of this prereg - via the existing FredSeriesSource in
 src/rate_sources.py):
 WRESBAL reserve balances, week average, ending Wednesday
 WRBWFRBL reserve balances, Wednesday level

@@ -1,0 +1,93 @@
+"""Registry + copyright audit of every FRED series the repo reads -> config/fred_series.yaml.
+
+    python scripts/fred_series_audit.py            # reads fred/series for each id (FRED API, key FRED_API_KEY), rewrites the file
+
+For each series: who uses it, the native frequency and units, and - when the FRED `notes` carry a copyright notice -
+the notice text and its owner, kept next to the series for attribution. Nothing is removed or changed here: the FRED terms
+require the owner's permission for third-party copyrighted series used beyond personal use; that decision is George's.
+"""
+from __future__ import annotations
+
+import re
+import sys
+from datetime import date
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from src import fred_api  # noqa: E402
+
+OUT = ROOT / "config" / "fred_series.yaml"
+
+# id -> who reads it (file: function / purpose). Kept by hand next to the code that uses the series.
+USED_BY = {
+    "DGS2": ["src/rate_sources FredSource (USD 2y, /economic carry & rates)"],
+    "DFII10": ["src/realyield_fetch (US 10y real yield)", "src/crossasset_probe"],
+    "WALCL": ["src/liquidity_fetch (net liquidity)"], "WTREGEN": ["src/liquidity_fetch (net liquidity)"],
+    "RRPONTSYD": ["src/liquidity_fetch (net liquidity)"], "WRBWFRBL": ["src/liquidity_fetch (reserves)"],
+    "CPIAUCSL": ["src/ff_fred_crosscheck (US CPI y/y check of FF actuals)"],
+    "PAYEMS": ["src/ff_fred_crosscheck (NFP check of FF actuals)"],
+    "A191RL1Q225SBEA": ["src/ff_fred_crosscheck (US GDP q/q check of FF actuals)"],
+    "NAEXKP01JPQ657S": ["src/calendar_fred_fallback (JPY GDP candidate, manual run)"],
+    "JPNRGDPEXP": ["src/calendar_fred_fallback (JPY GDP candidate, manual run)"],
+    "CLVMNACSCAB1GQCH": ["src/calendar_fred_fallback (CHF GDP candidate, manual run)"],
+    "NAEXKP01CHQ657S": ["src/calendar_fred_fallback (CHF GDP candidate, manual run)"],
+    "AUSSARTMISMEI": ["(none since 2026-11-14 - removed from src/calendar_fred_fallback)"],
+    "DFEDTARL": ["src/cb_sources/official FredSeries (fed funds target, lower)", "src/cb_probe"],
+    "DFEDTARU": ["src/cb_sources/official FredSeries (fed funds target, upper)", "src/cb_probe"],
+    "EFFR": ["src/cb_sources/official FredSeries (overnight benchmark)"],
+    "SOFR": ["src/cb_sources/official FredSeries (overnight benchmark)", "src/cb_probe"],
+    "DFF": ["src/cb_probe (probe only)"],
+    "IR3TIB01NZM156N": ["scripts/cb_nzd_bkbm_spread.py (NZD BKBM-OCR spread estimate)"],
+    **{s: ["scripts/measure/factor_scales.py (measurement only)"] for s in
+       ("DEXUSEU", "DEXUSUK", "DEXUSAL", "DEXUSNZ", "DEXJPUS", "DEXCAUS", "DEXSZUS", "DTWEXBGS", "SP500", "DJIA", "NASDAQCOM", "NIKKEI225")},
+}
+
+
+# Status / scope decided by George (2026-11-14): discontinued series are kept only as a record; third-party copyrighted
+# series are for personal use only (ARCHITECTURE section 5: replace them or ask the owner before any public / multi-user use).
+STATUS = {"AUSSARTMISMEI": "discontinued"}
+PERSONAL_ONLY = ("CLVMNACSCAB1GQCH", "JPNRGDPEXP", "SP500", "DJIA", "NASDAQCOM", "NIKKEI225")
+
+
+def copyright_of(notes: str) -> tuple:
+    """(notice text, owner) when the notes carry a copyright notice, else (None, None)."""
+    if not notes or "copyright" not in notes.lower():
+        return None, None
+    sents = re.split(r"(?<=[.!?])\s+", " ".join(notes.split()))
+    hit = [s for s in sents if "copyright" in s.lower()]
+    text = " ".join(hit)[:600]
+    m = re.search(r"Copyright[\s,©Â]*(?:\(c\))?[\s,]*(?:\d{4}(?:\s*-\s*\d{4})?[\s,]*)?([A-Z][^.,;]{2,80})", text)
+    return text, (m.group(1).strip() if m else None)
+
+
+def main() -> int:
+    out = {"meta": {"generated": date.today(), "by": "scripts/fred_series_audit.py", "notice": fred_api.NOTICE,
+                    "terms": fred_api.TERMS_URL}, "series": {}}
+    for sid in sorted(USED_BY):
+        try:
+            info = fred_api.series_info(sid)
+        except fred_api.FredApiError as e:                       # e.g. a discontinued series: recorded, not fatal
+            out["series"][sid] = {"status": STATUS.get(sid, "unavailable"), "error": str(e), "provenance": fred_api.provenance(sid),
+                                  "used_by": USED_BY[sid], "scope": "none", "copyright": None}
+            continue
+        text, owner = copyright_of(info.get("notes") or "")
+        out["series"][sid] = {"title": info.get("title"), "frequency": info.get("frequency_short"), "units": info.get("units_short"),
+                              "provenance": fred_api.provenance(sid), "used_by": USED_BY[sid], "status": STATUS.get(sid, "active"),
+                              "scope": "personal_only" if sid in PERSONAL_ONLY else "general",
+                              "copyright": {"notice": text, "owner": owner} if text else None}
+        if text and sid not in PERSONAL_ONLY:
+            raise SystemExit(f"{sid} carries a copyright notice but has no scope decision: add it to PERSONAL_ONLY or ask George")
+    head = ("# FRED series read by the repo (all through the FRED API: src/fred_api.py). GENERATED by scripts/fred_series_audit.py.\n"
+            "# `copyright`: the notice found in the series notes (fred/series) and its owner - kept for attribution; third-party\n"
+            "# copyrighted series need the owner's permission beyond personal use (FRED terms) - decision pending (George).\n")
+    OUT.write_text(head + yaml.safe_dump(out, sort_keys=False, allow_unicode=True, width=160))
+    n = sum(1 for v in out["series"].values() if v.get("copyright"))
+    print(f"{len(out['series'])} series, {n} with a copyright notice -> {OUT.relative_to(ROOT)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

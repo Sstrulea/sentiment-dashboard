@@ -160,7 +160,6 @@ def _serve_one(monkeypatch, src, body: bytes, as_json: bool = False):
     monkeypatch.setattr(src, "_get", lambda url, extra_headers=None, retries=0: resp)
 
 
-FRED = (FIX / "fred_dgs2.csv").read_bytes()
 ECB = (FIX / "ecb_sr_2y.csv").read_bytes()
 BOC = (FIX / "boc_2yr.json").read_bytes()
 DBN = (FIX / "dbnomics_sveny02.json").read_bytes()
@@ -168,7 +167,6 @@ RBA = (FIX / "rba_f2_head.csv").read_bytes()   # layout of the published F2 (web
 
 CASES = [
     # (adapter, currency, good fixture, json?, same payload saying another tenor)
-    (FredSource, "USD", FRED, False, FRED.replace(b"DGS2", b"DGS5")),
     (EcbSource, "EUR", ECB, False, ECB.replace(b"SR_2Y", b"SR_5Y")),
     (BocValetSource, "CAD", BOC, True,
      BOC.replace(b"Benchmark bond yield, 2-year", b"Benchmark bond yield, 5-year")),
@@ -334,3 +332,38 @@ def test_gap_the_archive_does_not_cover_yet_is_retried_next_day(gap_env):
                                                       date(2026, 10, 1)))
     assert later == [(date(2026, 9, 28), 2.0), (date(2026, 9, 30), 2.1)]
     assert st2["x"]["confirmed_no_data"] == ["2026-09-29"]
+
+
+# --- FRED through the API client (src/fred_api.py); fixture cut from the real API response (2026-11-14) ---
+
+def _fred_api(monkeypatch, name):
+    import json as _json
+    from src import fred_api
+    payload = _json.loads((ROOT_FIX_FRED / name).read_text())
+    monkeypatch.setattr(fred_api, "observations", lambda sid, start=None, **k: fred_api.parse_observations(payload))
+
+
+ROOT_FIX_FRED = Path(__file__).parent / "fixtures" / "fred_api"
+
+
+def test_fred_source_reads_dgs2_through_the_api_client(monkeypatch):
+    _fred_api(monkeypatch, "obs_DGS2.json")
+    s = FredSource().fetch("USD")
+    assert s is not None and s.tenor == "2y" and s.n_points > 0
+
+
+def test_fred_source_tenor_guard_on_the_requested_series(monkeypatch):
+    _fred_api(monkeypatch, "obs_DGS2.json")
+    src = FredSource()
+    monkeypatch.setattr(src, "SERIES", {"USD": ("DGS5", "2y")})
+    with pytest.raises(TenorMismatch):
+        src.fetch("USD")
+    assert src.last_status == "TENOR-MISMATCH"
+
+
+def test_fred_source_without_key_fails_cleanly(monkeypatch):
+    from src import fred_api
+    monkeypatch.delenv("FRED_API_KEY", raising=False)
+    monkeypatch.setattr(fred_api, "_load_dotenv", lambda: None)
+    src = FredSource()
+    assert src.fetch("USD") is None and src.last_status == "NO-KEY" and "FRED_API_KEY" in src.last_note

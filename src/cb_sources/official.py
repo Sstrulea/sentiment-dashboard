@@ -115,18 +115,6 @@ def _num(x) -> Optional[float]:
     return _safe_float(x)
 
 
-def parse_fred(text: str, since: date) -> list:
-    rows = list(csv.reader(io.StringIO(text.lstrip("﻿"))))
-    out = []
-    for r in rows[1:]:
-        if len(r) < 2 or not re.match(r"\d{4}-\d{2}-\d{2}$", r[0]):
-            continue
-        d, v = date.fromisoformat(r[0]), _num(r[1])            # "." (no observation) -> None
-        if v is not None and d >= since:
-            out.append((d, v))
-    return out
-
-
 def parse_ecb(text: str, since: date) -> list:
     out = []
     for r in csv.DictReader(io.StringIO(text.lstrip("﻿"))):
@@ -250,14 +238,25 @@ class _PerSeries(OfficialSource):
         return self._finish(out, failed)
 
 
-class FredSeries(_PerSeries):
+class FredSeries(OfficialSource):
+    """FRED through the official API with a key (src/fred_api.py) - never the CSV download links of the FRED website (FRED terms). One request per
+    series; "." (missing) is skipped, never stored as zero. No key -> every series fails with NO-KEY, nothing is written."""
     provider = "fred"
 
-    def url_for(self, s, since):
-        return self.cfg["url"].format(key=s["key"], since=since.isoformat())
-
-    def parse(self, r, s, since):
-        return parse_fred(r.text, since)
+    def _fetch(self, since, state):
+        from ..fred_api import FredApiError, FredKeyMissing, observations, redact
+        out, failed = [], {}
+        for sid, s in self.series.items():
+            try:
+                obs = observations(s["key"], since)
+            except FredKeyMissing as e:
+                failed[sid] = f"NO-KEY {redact(e)}"
+                continue
+            except FredApiError as e:
+                failed[sid] = f"UNREACHABLE {redact(e)}"
+                continue
+            out += [self.obs(sid, d, v) for d, v in obs if v is not None and d >= since]
+        return self._finish(out, failed)
 
 
 class EcbSeries(_PerSeries):
