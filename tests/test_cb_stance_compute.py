@@ -1,4 +1,4 @@
-"""Stance S1 - golden 8/8 (today + 12 months) on the frozen S0a inputs of 2026-11-14, edge cases, purity, append-only, payload,
+"""Stance S1 (+ S1.1 corrections, cb_stance v3) - golden 8/8 (today + 12 months) on the frozen S0a inputs of 2026-11-14, edge cases, purity, append-only, payload,
 display-only guard. The golden expectations are computed HERE with explicit arithmetic - never by calling stance.py."""
 from __future__ import annotations
 
@@ -100,9 +100,17 @@ def test_golden_literal_values():
     """A few values written out by hand from the official inputs of 2026-11-14."""
     usd = ST.compute(inputs("USD"), P)
     assert usd["x"] == pytest.approx((3.1 - 2.0) + (-2.0 * (4.1 - 4.2)) / 3)                 # core PCE 3.1, UNRATE 4.1, u* 4.2
-    assert usd["S"] == pytest.approx(3.875 - 3.25) and usd["situation"] == "S1"            # midpoint 3.75-4.00; median of 18 LR dots
+    assert usd["S"] == pytest.approx(3.875 - 3.2) and usd["situation"] == "S1"             # midpoint 3.75-4.00; SEP Table 1 longer-run median 3.2
+    assert (usd["N"]["lo"], usd["N"]["hi"]) == (2.9, 3.9)                                   # Table 1 longer-run Range (S1.1 A3)
+    assert usd["N"]["check"] == {"sep": "2026-09-16", "published": 3.2, "from_dots": 3.25, "rounded": 3.2, "dots": 18, "ok": True}
+    assert usd["situation_12m"] == "S3" and "boundary" not in usd["flags_12m"]             # pre-registered: S3 without boundary
     gbp = ST.compute(inputs("GBP"), P)
     assert gbp["N"]["mid"] == pytest.approx(statistics.median([(2.75 + 3.0) / 2, 3.0]))     # Taylor 29 Sep 2026, Ramsden 5 Feb 2026
+    assert (gbp["N"]["lo"], gbp["N"]["hi"]) == (2.75, 3.0)                                  # every declared bound (S1.1 A6)
+    assert -0.55 <= gbp["G"] <= -0.30 and (gbp["situation"], gbp["direction"]) == ("S2", -1)
+    nzd = ST.compute(inputs("NZD"), P)
+    assert nzd["y"] == -1.4 and nzd["x"] == pytest.approx(0.4333, abs=5e-5)                 # MPS Sep 2026 output gap, March-year 2027 (S1.1 A5)
+    assert inputs("NZD").y_today.asof == "M2027" and inputs("CAD").pi_12m.asof == "2027Q4"
     jpy = ST.compute(inputs("JPY"), P)
     assert (jpy["N"]["lo"], jpy["N"]["hi"]) == (pytest.approx(-0.9 + 2.0), pytest.approx(0.5 + 2.0))                 # real + target
     eur = ST.compute(inputs("EUR"), P)
@@ -166,10 +174,18 @@ def test_period_containing_as_of_plus_12_months(points, d, want):
     assert (got or {}).get("horizon") == want
 
 
-def test_slack_today_latest_period_already_begun():
+def test_single_period_rule_today_and_12_months():
+    """cb_stance v3 period_rule: the shortest published period containing the date; for today, if none contains the as-of, the last
+    period that has ended."""
     pts = [{"horizon": "2026Q2", "transform": "quarter_level", "value": -1.5}, {"horizon": "M2027", "transform": "year_average_march", "value": -1.4},
            {"horizon": "M2028", "transform": "year_average_march", "value": -0.9}]
-    assert ST.pick_begun(pts, date(2026, 11, 14))["horizon"] == "2026Q2"                   # tie of starts -> the narrower period
+    assert ST.pick_period(pts, date(2026, 11, 14), today=True)["horizon"] == "M2027"      # NZD: contains the as-of (v2 read 2026Q2)
+    q = [{"horizon": "2026Q1", "transform": "quarter_level"}, {"horizon": "2026Q2", "transform": "quarter_level"}, {"horizon": "2025", "transform": "annual_average"}]
+    assert ST.pick_period(q, date(2026, 11, 14), today=True)["horizon"] == "2026Q2"        # none contains it: the last ended
+    assert ST.pick_period(q, date(2026, 11, 14)) is None                                   # 12 months: never the fallback
+    tie = [{"horizon": "2026", "transform": "annual_average"}, {"horizon": "2026Q4", "transform": "quarter_level"}]
+    assert ST.pick_period(tie, date(2027, 2, 1), today=True)["horizon"] == "2026Q4"        # same end: the shorter
+    assert ST.pick_period(tie, date(2026, 11, 14), today=True)["horizon"] == "2026Q4"      # containing: the shorter
     assert ST.point_value({"low": -1.25, "high": -0.25}) == (-0.75, -1.25, -0.25)
 
 
@@ -184,7 +200,8 @@ def test_gbp_members_in_office_latest_statement_last_12_months():
         _est("C", date(2026, 6, 1), point=3.25),                                  # not in office: out
         _est("D", date(2026, 10, 1), point=0.75, basis="real")]}
     n, _ = ST.neutral_from_estimates("GBP", entry, 2.0, date(2026, 11, 14), {"A", "B", "D"}, 15)
-    assert sorted(v for _, v in n.used) == [2.75, 2.875] and n.mid == pytest.approx(2.8125) and (n.lo, n.hi) == (2.75, 2.875)
+    assert sorted(v for _, v in n.used) == [2.75, 2.875] and n.mid == pytest.approx(2.8125)
+    assert (n.lo, n.hi) == (2.75, 3.0)                                       # S1.1 A6: min-max of every declared bound (B 2.75-3.0, D 0.75+2)
 
 
 def test_real_to_nominal_vs_nominal_published():
@@ -231,12 +248,103 @@ def test_rate_at_uses_the_last_meeting_effective_before_the_date():
     assert ST.rate_at(tr, date(2027, 11, 14))[0] == 4.25 and ST.rate_at(tr, date(2026, 11, 20))[0] == 3.75
 
 
-def test_cycle():
+def _hist(*pairs):
+    return [(date.fromisoformat(d), v) for d, v in pairs]
+
+
+def test_cycle_stages_from_the_full_history():
+    """S1.1 A1: moves = changes in the history; date = the decision day when decisions.parquet has it, else the effective date (marked);
+    moves after the last history observation from decisions.parquet; holds between moves do not break a stage."""
     D = date
-    rows = [{"meeting_date": D(2026, 1, 1), "delta_bp": -25}, {"meeting_date": D(2026, 3, 1), "delta_bp": 25},
-            {"meeting_date": D(2026, 5, 1), "delta_bp": 25}, {"meeting_date": D(2026, 7, 1), "delta_bp": 0}, {"meeting_date": D(2026, 9, 1), "delta_bp": 0}]
-    c = ST.cycle_of(rows, D(2026, 11, 14))
-    assert c["direction"] == "hike" and [m["date"] for m in c["moves"]] == ["2026-03-01", "2026-05-01"] and c["holds_since"] == 2
+    hist = _hist(("2024-01-01", 5.0), ("2024-06-12", 4.75), ("2024-09-18", 4.5), ("2025-09-18", 4.25), ("2025-10-30", 4.0), ("2026-01-05", 4.0),
+                 ("2026-06-17", 4.25), ("2026-11-05", 4.25))
+    decs = [{"meeting_date": D(2025, 9, 17), "effective_date": D(2025, 9, 18), "delta_bp": -25}, {"meeting_date": D(2025, 10, 29), "effective_date": D(2025, 10, 30), "delta_bp": -25},
+            {"meeting_date": D(2026, 3, 18), "effective_date": D(2026, 3, 19), "delta_bp": 0}, {"meeting_date": D(2026, 6, 16), "effective_date": D(2026, 6, 17), "delta_bp": 25},
+            {"meeting_date": D(2026, 9, 16), "effective_date": D(2026, 9, 17), "delta_bp": 0}, {"meeting_date": D(2026, 11, 10), "effective_date": D(2026, 11, 11), "delta_bp": 25}]
+    c = ST.cycle_of(hist, decs, D(2026, 11, 14), "hist:x")
+    assert (c["direction"], c["count"], c["first_move"], c["last_move"]) == ("hike", 2, "2026-06-16", "2026-11-10")
+    assert [m["date_source"] for m in c["moves"]] == ["decision", "decision_recent"]          # 11-11 is after the last history day 11-05
+    assert c["previous"] == {"direction": "cut", "count": 4, "first_move": "2024-06-12", "last_move": "2025-10-29"}
+    assert c["holds_since"] == 0 and c["holds_from"] is None and c["history"] == {"series": "hist:x", "from": "2024-01-01", "to": "2026-11-05"}
+    c = ST.cycle_of(hist, decs, D(2026, 10, 1))                                                # as-of: nothing after it is used
+    assert (c["count"], c["holds_since"], c["last_move"]) == (1, 1, "2026-06-16")
+    prev = ST.cycle_of(hist, decs, D(2026, 10, 1))["previous"]
+    assert prev["count"] == 4 and ST.cycle_of(hist, decs, D(2024, 12, 1))["moves"][0]["date_source"] == "history_effective"
+
+
+def test_cycle_holds_counted_from_the_first_decision_and_no_history():
+    D = date
+    hist = _hist(("2025-01-01", 1.0), ("2025-06-20", 0.0), ("2026-11-10", 0.0))
+    decs = [{"meeting_date": D(2025, 9, 25), "effective_date": D(2025, 9, 26), "delta_bp": 0}, {"meeting_date": D(2025, 12, 11), "effective_date": D(2025, 12, 12), "delta_bp": 0}]
+    c = ST.cycle_of(hist, decs, D(2026, 11, 14))
+    assert (c["direction"], c["count"], c["holds_since"], c["holds_from"]) == ("cut", 1, 2, "2025-09-25")       # decisions start after the last move
+    assert c["previous"] is None and "no earlier stage" in c["previous_na"]
+    c = ST.cycle_of([], [{"meeting_date": D(2026, 1, 1), "effective_date": D(2026, 1, 2), "delta_bp": 25}], D(2026, 11, 14))
+    assert (c["direction"], c["count"], c["moves"][0]["date_source"]) == ("hike", 1, "decision_recent")
+
+
+def test_cycle_golden_from_the_seed_inputs():
+    """The pre-registered cycles (S1.1 expected values) as read from the history on 2026-11-14."""
+    want = {"USD": ("hike", 1, ("cut", 6)), "EUR": ("hike", 2, ("cut", 8)), "GBP": ("hike", 1, ("cut", 6)), "JPY": ("hike", 6, None),
+            "CAD": ("hike", 1, ("cut", 9)), "AUD": ("hike", 5, ("cut", 3)), "NZD": ("hike", 2, ("cut", 9)), "CHF": ("cut", 6, ("hike", 5))}
+    for cur, (d, n, prev) in want.items():
+        c = FIX["banks"][cur]["cycle"]
+        assert (c["direction"], c["count"]) == (d, n), cur
+        assert (None if c["previous"] is None else (c["previous"]["direction"], c["previous"]["count"])) == prev, cur
+    assert FIX["banks"]["JPY"]["cycle"]["first_move"].startswith("2024-03")
+    chf = FIX["banks"]["CHF"]["cycle"]
+    assert chf["last_move"].startswith("2025-06") and chf["holds_since"] == 5
+
+
+def test_flags_for_the_12_month_classification():
+    """S1.1 A2: boundary / neutral_sensitive computed apart for the 12-month situation (explicit arithmetic)."""
+    for cur in ST.BANKS:
+        r = ST.compute(inputs(cur), P)
+        if r["G_12m"] is None:
+            assert r["flags_12m"] == [], cur
+            continue
+        b = FIX["banks"][cur]
+        i, n = b["rate"]["v"], b["neutral"]
+        x12 = r["x_12m"]
+        s_lo, s_hi = exp_situation(x12, 1.5 * x12 - (i - n["lo"])), exp_situation(x12, 1.5 * x12 - (i - n["hi"]))
+        assert ("neutral_sensitive" in r["flags_12m"]) == (s_lo != s_hi or r["situation_12m_at_N_lo"] != r["situation_12m_at_N_hi"]), cur
+        assert ("boundary" in r["flags_12m"]) == (r["margin_12m"] < TOL), cur
+    usd = ST.compute(inputs("USD"), P)
+    assert "neutral_sensitive" in usd["flags_12m"] and "neutral_sensitive" not in usd["flags"]       # 12m S3 at mid, S1 at N low
+
+
+def test_horizon_gap_label_at_every_bank():
+    """S1.1 A7: consistent / inconsistent wherever the bank has a projection (JPY +0.3 -> inconsistent)."""
+    for cur in ST.BANKS:
+        r = ST.compute(inputs(cur), P)
+        assert r["lens"].get("consistent") in (True, False), cur
+        assert r["lens"]["consistent"] == (abs(r["lens"]["horizon_gap"]) <= P["horizon_consistency_pp"] + 1e-12), cur
+    jpy = ST.compute(inputs("JPY"), P)
+    assert jpy["lens"]["horizon_gap"] == pytest.approx(0.3) and jpy["lens"]["consistent"] is False
+
+
+def test_own_path_lens_is_the_bank_page_comparison():
+    """S1.1 A4: USD = the page GAP vs dots for the year of as-of + 12 months; NZD = OCR track vs market (ESTIMATE), not 'GAP n/a'."""
+    usd, nzd = FIX["banks"]["USD"]["lens"], FIX["banks"]["NZD"]["lens"]
+    assert (usd["kind"], usd["basis"], usd["year"], usd["gap_bp"], usd["flag"]) == ("own_path", "gap", 2027, 57.7, "CURVE")
+    assert (nzd["kind"], nzd["basis"], nzd["year"], nzd["gap_bp"], nzd["flag"]) == ("own_path", "ocr_track", 2027, 55.7, "ESTIMATE")
+    assert "estimate" in inputs("NZD").flags
+
+
+def test_sep_neutral_is_the_published_median_and_range_and_the_dots_only_check():
+    D = date(2026, 9, 16)
+
+    def row(kind, value=None, level=None, count=None, variable="federal_funds_rate", horizon="longer_run"):
+        return {"meeting_date": D, "variable": variable, "horizon": horizon, "kind": kind, "value": value, "level": level, "count": count}
+    dots = [row("dot", level=lv, count=c) for lv, c in ((2.875, 3), (3.0, 4), (3.125, 2), (3.375, 4), (3.5, 3), (3.875, 2))]
+    proj = [row("median_published", 3.2), row("range_low", 2.9), row("range_high", 3.9)] + dots
+    n, _ = ST.sep_neutral(proj, date(2026, 11, 14))
+    assert (n.mid, n.lo, n.hi, n.flag) == (3.2, 2.9, 3.9, "SEP_LONGER_RUN")
+    assert n.check["from_dots"] == 3.25 and n.check["rounded"] == 3.2 and n.check["ok"] is True       # 3.25 -> 3.2: half to even
+    bad = [row("median_published", 3.4), row("range_low", 2.9), row("range_high", 3.9)] + dots
+    assert ST.sep_neutral(bad, date(2026, 11, 14))[0].check["ok"] is False
+    assert ST.sep_neutral([row("median_published", 3.2)] + dots, date(2026, 11, 14))[0] is None      # no Range stored -> n/a
+    assert [ST.fed_round(v) for v in (3.25, 3.35, 3.125, 3.0625, 2.875)] == [3.2, 3.4, 3.1, 3.1, 2.9]
 
 
 def test_add_months_end_of_month():
@@ -272,7 +380,7 @@ def test_history_append_only_refuses_a_rewrite(tmp_path):
     assert r2.written == [] and sorted(r2.refused) == sorted(ST.BANKS) and f.read_bytes() == before
     rows = SH.load(paths)
     usd = rows[("USD", date(2026, 11, 14))]
-    assert usd["x"] == res["USD"]["x"] and usd["mandate_id"] == "2025-08-22" and usd["stance_version"] == 2 and usd["code_version"] == ST.STANCE_CODE_VERSION
+    assert usd["x"] == res["USD"]["x"] and usd["mandate_id"] == "2025-08-22" and usd["stance_version"] == 3 and usd["code_version"] == ST.STANCE_CODE_VERSION
     assert json.loads(usd["inputs_json"])["pi_under"]["source"].startswith("fred:PCEPILFE")
     r3 = SH.append(paths, res, date(2026, 11, 15), now)
     assert sorted(r3.written) == sorted(ST.BANKS)
@@ -303,3 +411,17 @@ def test_economic_modules_do_not_import_the_stance():
 def test_payload_is_not_written_to_public():
     for f in ("src/cb_render.py",):
         assert "stance_json" not in (ROOT / f).read_text()
+
+
+def test_status_alerts_when_the_dots_do_not_reproduce_the_published_median(monkeypatch):
+    """S1.1 A3: --status carries an ALERT line when the dots median (rounded half-even) differs from Table 1."""
+    from src import cb_datasets as ds
+    real = ds.load_projections(cc.Paths())
+    sec = ds.stance_status(cc.Paths(), date(2026, 11, 14))
+    assert not any("ALERT SEP" in n for n in sec[3])                                      # 3.25 -> 3.2 = published 3.2
+    sep = max(r["meeting_date"] for r in real)
+    bad = [dict(r, value=3.4) if (r["meeting_date"] == sep and r["kind"] == "median_published" and r["variable"] == "federal_funds_rate"
+                                  and r["horizon"] == "longer_run") else r for r in real]
+    monkeypatch.setattr(ds, "load_projections", lambda paths: bad)
+    sec = ds.stance_status(cc.Paths(), date(2026, 11, 14))
+    assert any(n.startswith(f"ALERT SEP {sep}") and "Table 1 publishes 3.4" in n for n in sec[3])

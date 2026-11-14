@@ -100,6 +100,30 @@ series:
   snb:SARON: {currency: CHF, role: overnight,    provider: snb, key: SARON, unit: percent, calendar_id: CH, name: "SARON (cube snbgwdzid)"}
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Stance S1.1: the full official policy-rate trajectory from 2015, for the CYCLE only (never for decisions, never for the
+# rate of the stance). Stored in data/cb/policy_history/policy_history_YYYY.parquet (yearly partitions, key
+# (series_id, date)), values as published (days without a value are not stored). Refreshed by the `stance` stage of
+# src/cb_collect.py (code in src/cb_policy_history.py) before the daily snapshot; `--backfill` reads from meta.from.
+#
+#   role   policy_bis_history       BIS WS_CBPOL (daily, by effective date; the BIS value of the Fed is the target-range midpoint)
+#          policy_official_history  the bank's own series where the BIS one is not the rate the bank sets (EUR: BIS gives
+#                                   the MRO until 2024; the ECB steers with the deposit facility rate)
+# ---------------------------------------------------------------------------------------------------------------------
+policy_history:
+  meta:
+    from: 2015-01-01
+    lookback_days: 30
+  series:
+    hist:bis:US: {currency: USD, role: policy_bis_history,      provider: bis, key: US, unit: percent, name: "Fed funds target (range midpoint) - BIS WS_CBPOL"}
+    hist:ecb:DFR: {currency: EUR, role: policy_official_history, provider: ecb, key: "FM/D.U2.EUR.4F.KR.DFR.LEV", unit: percent, name: "ECB deposit facility rate (ECB Data Portal)"}
+    hist:bis:GB: {currency: GBP, role: policy_bis_history,      provider: bis, key: GB, unit: percent, name: "Bank Rate - BIS WS_CBPOL"}
+    hist:bis:JP: {currency: JPY, role: policy_bis_history,      provider: bis, key: JP, unit: percent, name: "BoJ policy rate - BIS WS_CBPOL (from 2016-09-21)"}
+    hist:bis:CA: {currency: CAD, role: policy_bis_history,      provider: bis, key: CA, unit: percent, name: "Target for the overnight rate - BIS WS_CBPOL"}
+    hist:bis:AU: {currency: AUD, role: policy_bis_history,      provider: bis, key: AU, unit: percent, name: "Cash rate target - BIS WS_CBPOL"}
+    hist:bis:NZ: {currency: NZD, role: policy_bis_history,      provider: bis, key: NZ, unit: percent, name: "Official Cash Rate - BIS WS_CBPOL"}
+    hist:bis:CH: {currency: CHF, role: policy_bis_history,      provider: bis, key: CH, unit: percent, name: "SNB policy rate - BIS WS_CBPOL"}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Stance phase S0a: official inflation (and, where the bank's slack measure needs it, unemployment) series, stored in
 # data/cb/macro_series/macro_series_YYYY.parquet (yearly partitions, key (series_id, period)) by the stage `macro` of
 # src/cb_collect.py (code in src/cb_macro.py). Values are stored as published: `published_as: yoy` = the agency prints the

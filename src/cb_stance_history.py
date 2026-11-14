@@ -25,7 +25,7 @@ F64, STR = pa.float64(), pa.string()
 NUMERIC = ("rate", "pi_under", "pi_head", "gap_under", "gap_head", "y", "x", "x_headline", "N_mid", "N_lo", "N_hi", "S", "S_lo", "S_hi",
            "G", "G_lo", "G_hi", "margin", "pi_12m", "gap_12m", "y_12m", "x_12m", "G_12m", "pivot", "lens_value", "horizon_gap")
 TEXT = ("asof", "N_asof", "N_flag", "situation", "situation_12m", "pi_12m_period", "pi_12m_basis", "lens_kind", "lens_flag", "lens_na",
-        "flags", "mandate_id", "code_version")
+        "flags", "flags_12m", "mandate_id", "code_version")
 SCHEMA = pa.schema([("bank", STR), ("snapshot_date", pa.date32())]
                    + [(c, F64) for c in NUMERIC] + [(c, STR) for c in TEXT]
                    + [("direction", pa.int32()), ("direction_12m", pa.int32()), ("consistent", pa.bool_()), ("stance_version", pa.int32()),
@@ -45,7 +45,7 @@ def row_of(r: dict, snapshot: date, now: datetime) -> dict:
             "situation": r.get("situation"), "situation_12m": r.get("situation_12m"), "pi_12m_period": r.get("pi_12m_period"),
             "pi_12m_basis": r.get("pi_12m_basis") or None, "lens_kind": lens.get("kind"), "lens_value": lv, "lens_flag": lens.get("flag"),
             "lens_na": lens.get("na"), "horizon_gap": lens.get("horizon_gap"), "consistent": lens.get("consistent"),
-            "flags": ",".join(r.get("flags") or []), "mandate_id": r["mandate_id"], "code_version": r["code_version"],
+            "flags": ",".join(r.get("flags") or []), "flags_12m": ",".join(r.get("flags_12m") or []), "mandate_id": r["mandate_id"], "code_version": r["code_version"],
             "direction": r.get("direction"), "direction_12m": r.get("direction_12m"), "stance_version": r["stance_version"],
             "inputs_json": json.dumps(r.get("inputs"), sort_keys=True, default=str), "lens_json": json.dumps(lens, sort_keys=True, default=str),
             "cycle_json": json.dumps(r.get("cycle"), sort_keys=True, default=str), "market_json": json.dumps(r.get("market"), sort_keys=True, default=str),

@@ -116,5 +116,7 @@ def load_stance(data_dir: Path | str | None = None, asof: Optional[date] = None,
     sep_last = max((r["meeting_date"] for r in ctx.projections if r["meeting_date"] <= asof), default=None)
     entered = {b: (sep_last if b == "USD" else ((fc.get("banks") or {}).get(b) or {}).get("meeting")) for b in ST.BANKS}
     newer = {b: bool(lastp.get(b) and entered.get(b) and lastp[b] > entered[b]) for b in ST.BANKS}
-    inputs = ST.assemble(ctx, cur, neut, fc, per, mcfg["series"], roster, {a.bank for a in alerts}, params, asof, stale, newer)
+    from . import cb_policy_history as PH
+    hist = PH.by_currency(PH.load(paths, end=asof), PH.load_config()["series"], asof)
+    inputs = ST.assemble(ctx, cur, neut, fc, per, mcfg["series"], roster, {a.bank for a in alerts}, params, asof, stale, newer, hist)
     return asof, params, inputs, ST.compute_all(inputs, params)

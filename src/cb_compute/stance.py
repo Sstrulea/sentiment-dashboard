@@ -1,4 +1,4 @@
-"""Stance (phase S1) - pure computation, no I/O. ARCHITECTURE section 23 (S1 contract); parameters config/cb_stance.yaml v2.
+"""Stance (phase S1) - pure computation, no I/O. ARCHITECTURE section 23 (S1 contract); parameters config/cb_stance.yaml v3 (S1.1).
 
     gap(pi)   = pi - pi*                     (band without declared midpoint, CHF: max(0, pi - high) + min(0, pi - low))
     y         = output gap as published, or -okun * (u - u*)          (none -> the term is left out, flag no_slack)
@@ -23,7 +23,7 @@ from typing import Optional
 from .engine import base_rate, next_meeting, trajectory, weakest
 from .macro_yoy import yoy
 
-STANCE_CODE_VERSION = "s1.0"
+STANCE_CODE_VERSION = "s1.1"
 BANKS = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")
 FLAGS = ("stale", "pending", "estimate", "headline_basis", "slack_held", "no_slack", "neutral_sensitive", "boundary", "need_only",
          "mandate_review_pending")
@@ -56,6 +56,7 @@ class Neutral:
     nominal_from: str = "nominal"                # nominal | real+target
     used: list = field(default_factory=list)     # [(label, nominal value)]
     source: str = ""
+    check: Optional[dict] = None                 # USD: the dots check of the published median (S1.1 A3)
 
 
 @dataclass
@@ -139,13 +140,17 @@ def pick_containing(points: list, d: date) -> Optional[dict]:
     return min(cands, key=lambda t: t[0])[1] if cands else None
 
 
-def pick_begun(points: list, d: date) -> Optional[dict]:
-    """The latest estimate for a period already begun at d: the latest start, a tie -> the narrower period."""
+def pick_period(points: list, d: date, today: bool = False) -> Optional[dict]:
+    """The single period rule (cb_stance v3, S1.1 A5): the SHORTEST published period that contains d; for "today", when no period
+    contains the as-of, the last period that has ended (latest end; a tie -> the shorter)."""
+    p = pick_containing(points, d)
+    if p is not None or not today:
+        return p
     cands = []
-    for p in points:
-        b = period_bounds(p["horizon"], p["transform"])
-        if b is not None and b[0] <= d:
-            cands.append((b[0], -_span(b), p))
+    for q in points:
+        b = period_bounds(q["horizon"], q["transform"])
+        if b is not None and b[1] < d:
+            cands.append((b[1], -_span(b), q))
     return max(cands, key=lambda t: (t[0], t[1]))[2] if cands else None
 
 
@@ -223,7 +228,12 @@ def neutral_from_estimates(cur: str, entry: dict, target_star: Optional[float], 
             return None, "no statement of a member in office in the last 12 months"
         vals = {m: nominal(e, val(e)) for m, e in latest.items()}
         xs = sorted(v for v in vals.values() if v is not None)
-        n = Neutral(statistics.median(xs), min(xs), max(xs), max(e["published"] for e in latest.values()).isoformat(), entry["flag"],
+        bounds = []                                                # S1.1 A6: the interval = min-max of every bound members declared
+        for e in latest.values():
+            for k in ("point", "low", "high"):
+                if e.get(k) is not None and nominal(e, e[k]) is not None:
+                    bounds.append(nominal(e, e[k]))
+        n = Neutral(statistics.median(xs), min(bounds), max(bounds), max(e["published"] for e in latest.values()).isoformat(), entry["flag"],
                     used=[(f"{m} ({latest[m]['published']})", vals[m]) for m in sorted(vals)],
                     nominal_from="nominal" if all(e["basis"] == "nominal" for e in latest.values()) else "real+target")
     else:
@@ -251,18 +261,47 @@ def neutral_from_estimates(cur: str, entry: dict, target_star: Optional[float], 
     return n, ""
 
 
+def fed_round(x: float, nd: int = 1) -> float:
+    """The rounding that reproduces the Table 1 medians from the dots: half to even at one decimal (3.25 -> 3.2, 3.125 -> 3.1)."""
+    from decimal import ROUND_HALF_EVEN, Decimal
+    return float(Decimal(str(x)).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_EVEN))
+
+
+def sep_dots_check(projections: list, sep: date, horizon: str = "longer_run") -> dict:
+    """The published federal-funds median vs the median of the dots, rounded the Fed's way. ok False -> an alert."""
+    pub = sep_value(projections, sep, "federal_funds_rate", horizon)
+    xs = sorted(r["level"] for r in projections if r["meeting_date"] == sep and r["kind"] == "dot" and r["horizon"] == horizon
+                for _ in range(int(r["count"])))
+    med = statistics.median(xs) if xs else None
+    rounded = None if med is None else fed_round(med)
+    return {"sep": sep.isoformat(), "published": pub, "from_dots": med, "rounded": rounded, "dots": len(xs),
+            "ok": pub is not None and rounded is not None and abs(rounded - pub) < 1e-9}
+
+
+def sep_range(projections: list, sep: date, variable: str, horizon: str) -> tuple:
+    lo = next((r["value"] for r in projections if r["meeting_date"] == sep and r["variable"] == variable and r["horizon"] == horizon
+               and r["kind"] == "range_low"), None)
+    hi = next((r["value"] for r in projections if r["meeting_date"] == sep and r["variable"] == variable and r["horizon"] == horizon
+               and r["kind"] == "range_high"), None)
+    return lo, hi
+
+
 def sep_neutral(projections: list, asof: date) -> tuple:
-    """USD: mid = median of the SEP longer-run dots, range = min-max of the dots."""
-    seps = sorted({r["meeting_date"] for r in projections if r["kind"] == "dot" and r["meeting_date"] <= asof})
+    """USD (S1.1 A3): mid = the longer-run federal-funds median published in SEP Table 1; interval = the longer-run Range of Table 1.
+    The dots are only a check (`check`): their median rounded the Fed's way must equal the published median."""
+    seps = sorted({r["meeting_date"] for r in projections if r["kind"] == "median_published" and r["meeting_date"] <= asof})
     if not seps:
         return None, "no SEP on record"
     sep = seps[-1]
-    dots = [(r["level"], r["count"]) for r in projections if r["meeting_date"] == sep and r["kind"] == "dot" and r["horizon"] == "longer_run"]
-    xs = sorted(lv for lv, c in dots for _ in range(int(c)))
-    if not xs:
-        return None, f"the {sep} SEP has no longer-run dot"
-    return Neutral(statistics.median(xs), xs[0], xs[-1], sep.isoformat(), "SEP_LONGER_RUN", used=[("longer-run dots", len(xs))],
-                   source=f"data/cb/projections.parquet (SEP {sep}, {len(xs)} longer-run dots)"), ""
+    mid = sep_value(projections, sep, "federal_funds_rate", "longer_run")
+    lo, hi = sep_range(projections, sep, "federal_funds_rate", "longer_run")
+    if mid is None:
+        return None, f"the {sep} SEP has no published longer-run median"
+    if lo is None or hi is None:
+        return None, f"the {sep} SEP has no longer-run Range stored (Table 1)"
+    chk = sep_dots_check(projections, sep)
+    return Neutral(mid, lo, hi, sep.isoformat(), "SEP_LONGER_RUN", used=[("Table 1 longer-run median", mid), ("Table 1 longer-run range", f"{lo}-{hi}")],
+                   source=f"FOMC SEP {sep}, Table 1 (federalreserve.gov fomcprojtabl{sep.strftime('%Y%m%d')}.htm)", check=chk), ""
 
 
 def sep_value(projections: list, sep: date, variable: str, horizon: str) -> Optional[float]:
@@ -300,22 +339,68 @@ def market_m12(tr, asof: date, days: int = 365) -> dict:
     return {"meeting": last.meeting.isoformat(), "rate": last.rate, "cum_bp": last.cum_bp, "flag": last.flag, "na": None}
 
 
-def cycle_of(decisions: list, asof: date) -> dict:
-    """Direction of the last change, the consecutive moves in that direction since the last reversal (with dates), the holds since."""
-    rows = sorted((d for d in decisions if d["meeting_date"] <= asof and d.get("delta_bp") is not None), key=lambda d: d["meeting_date"])
-    changes = [d for d in rows if d["delta_bp"] != 0]
-    if not changes:
-        return {"direction": None, "moves": [], "holds_since": len(rows), "last_change": None}
-    last = changes[-1]
-    d = sign(last["delta_bp"])
-    run = []
-    for c in reversed(changes):
-        if sign(c["delta_bp"]) != d:
-            break
-        run.append({"date": c["meeting_date"].isoformat(), "bp": c["delta_bp"]})
-    holds = sum(1 for r in rows if r["meeting_date"] > last["meeting_date"] and r["delta_bp"] == 0)
-    return {"direction": "hike" if d > 0 else "cut", "moves": list(reversed(run)), "holds_since": holds,
-            "last_change": last["meeting_date"].isoformat()}
+def _stage(moves: list) -> list:
+    """Split moves into stages: maximal runs of moves in one direction (holds between them do not break a stage)."""
+    out: list = []
+    for m in moves:
+        if out and sign(out[-1][-1]["bp"]) == sign(m["bp"]):
+            out[-1].append(m)
+        else:
+            out.append([m])
+    return out
+
+
+def _stage_info(st: list) -> dict:
+    return {"direction": "hike" if st[-1]["bp"] > 0 else "cut", "count": len(st), "first_move": st[0]["date"], "last_move": st[-1]["date"]}
+
+
+def cycle_of(history: list, decisions: list, asof: date, history_sid: str = "", match_days: int = 7) -> dict:
+    """The cycle from the full official rate trajectory (S1.1 A1).
+
+    history    [(effective date, rate)] of the bank's policy_history series (BIS WS_CBPOL; EUR the ECB DFR), days without a value
+               already dropped. Every change of value is a move; its date is the decision day of the decisions.parquet row with the
+               same sign whose effective date is within `match_days`, else the effective date itself (date_source
+               `history_effective`, marked).
+    decisions  decisions.parquet rows: moves decided after the last history observation are added from here
+               (date_source `decision_recent`); the holds since the last move are counted here.
+    A stage = the consecutive moves in one direction (holds in between allowed). Returns the current stage (direction, count,
+    first and last move, its moves), the holds since the last move, the previous stage (direction + count)."""
+    pts = [(d, v) for d, v in history if d <= asof]
+    decs = sorted((d for d in decisions if d["meeting_date"] <= asof and d.get("delta_bp") is not None), key=lambda d: d["meeting_date"])
+    moves, used = [], set()
+    for (_, pv), (d, v) in zip(pts, pts[1:]):
+        if v == pv:
+            continue
+        bp = round((v - pv) * 100, 4)
+        m = next((x for x in decs if x["delta_bp"] and sign(x["delta_bp"]) == sign(bp) and id(x) not in used
+                  and abs(((x.get("effective_date") or x["meeting_date"]) - d).days) <= match_days), None)
+        if m is not None:
+            used.add(id(m))
+            moves.append({"date": m["meeting_date"].isoformat(), "bp": bp, "date_source": "decision", "effective": d.isoformat()})
+        else:
+            moves.append({"date": d.isoformat(), "bp": bp, "date_source": "history_effective", "effective": d.isoformat()})
+    last_obs = pts[-1][0] if pts else None
+    for x in decs:                                                    # decided after the last history observation (publication lag)
+        eff = x.get("effective_date") or x["meeting_date"]
+        if x["delta_bp"] != 0 and id(x) not in used and (last_obs is None or eff > last_obs):
+            moves.append({"date": x["meeting_date"].isoformat(), "bp": float(x["delta_bp"]), "date_source": "decision_recent",
+                          "effective": eff.isoformat()})
+    moves.sort(key=lambda m: m["date"])
+    hist = {"series": history_sid or None, "from": pts[0][0].isoformat() if pts else None, "to": last_obs.isoformat() if last_obs else None}
+    if not moves:
+        return {"direction": None, "count": 0, "first_move": None, "last_move": None, "moves": [], "holds_since": len(decs),
+                "holds_from": decs[0]["meeting_date"].isoformat() if decs else None, "previous": None, "last_change": None,
+                "history": hist, "na": "no rate change in the history" if pts else "no policy-rate history"}
+    stages = _stage(moves)
+    cur = stages[-1]
+    last = date.fromisoformat(cur[-1]["date"])
+    holds = [x for x in decs if x["meeting_date"] > last and x["delta_bp"] == 0]
+    first_dec = decs[0]["meeting_date"] if decs else None
+    holds_from = first_dec.isoformat() if first_dec is not None and first_dec > last else None     # decisions start after the last move
+    prev = _stage_info(stages[-2]) if len(stages) > 1 else None
+    return {**_stage_info(cur), "moves": cur, "holds_since": len(holds) if first_dec is not None else None, "holds_from": holds_from,
+            "previous": prev, "previous_na": None if prev else f"no earlier stage in the history (from {hist['from']})",
+            "last_change": cur[-1]["date"], "history": hist}
 
 
 # ---------------------------------------------------------------------------
@@ -352,8 +437,9 @@ def _forecast_points(entry: dict, role: str) -> list:
 
 
 def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, macro_per: dict, macro_cfg: dict, roster: dict,
-             open_alert_banks: set, params: dict, asof: date, stale_series: set, newer_projection: dict) -> dict:
-    """{currency: BankInputs}. mandates_cur: {ccy: MandateVersion}; macro_per: {series_id: {period: row}} (cb_macro.by_series);
+             open_alert_banks: set, params: dict, asof: date, stale_series: set, newer_projection: dict,
+             policy_history: Optional[dict] = None) -> dict:
+    """{currency: BankInputs}. policy_history: {ccy: (series_id, [(date, rate)])} (src/cb_policy_history.by_currency). mandates_cur: {ccy: MandateVersion}; macro_per: {series_id: {period: row}} (cb_macro.by_series);
     stale_series: macro series ids stale at the as-of; newer_projection: {ccy: True} when a newer projection publication than
     the one entered has passed."""
     out = {}
@@ -389,9 +475,9 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
         fc = (forecasts_doc.get("banks") or {}).get(cur)
         # slack today
         if mv.slack_type == "output_gap":
-            p = pick_begun(_forecast_points(fc, "output_gap"), asof)
+            p = pick_period(_forecast_points(fc, "output_gap"), asof, today=True)
             if p is None:
-                inp.notes.append("output gap: no estimate for a period already begun")
+                inp.notes.append("output gap: no published period contains the as-of and none has ended")
             else:
                 v, lo, hi = point_value(p)
                 inp.y_today = Val(v, p["horizon"], f"{fc['publication']}: {p['variable']} [{p['src']}]", lo=lo, hi=hi)
@@ -424,6 +510,9 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
             if inp.neutral_status == "pending":
                 inp.flags.add("pending")
         else:
+            if cur == "USD" and n.check and not n.check["ok"]:
+                inp.notes.append(f"ALERT SEP {n.check['sep']}: median of the {n.check['dots']} longer-run dots {n.check['from_dots']} rounds to "
+                                 f"{n.check['rounded']}, Table 1 publishes {n.check['published']}")
             if cur == "USD":
                 n.stale = _months_between(date.fromisoformat(n.asof), asof) > params["staleness"]["neutral_months"]
             inp.neutral = n
@@ -436,8 +525,8 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
                 sep = seps[-1]
                 pts = [{"horizon": r["horizon"], "transform": "q4_q4", "value": r["value"], "variable": r["variable"]}
                        for r in ctx.projections if r["meeting_date"] == sep and r["kind"] == "median_published" and r["horizon"] != "longer_run"]
-                core = pick_containing([p for p in pts if p["variable"] == "core_pce_inflation"], T)
-                un = pick_containing([p for p in pts if p["variable"] == "unemployment_rate"], T)
+                core = pick_period([p for p in pts if p["variable"] == "core_pce_inflation"], T)
+                un = pick_period([p for p in pts if p["variable"] == "unemployment_rate"], T)
                 if core:
                     inp.pi_12m, inp.pi_12m_basis = Val(core["value"], core["horizon"], f"FOMC SEP {sep}: core PCE inflation (Q4/Q4)"), "underlying"
                 if un:
@@ -446,20 +535,20 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
                 if last:
                     inp.last_projection, inp.last_projection_basis = Val(last["value"], last["horizon"], f"FOMC SEP {sep}: core PCE inflation"), "underlying"
         elif fc:
-            und = pick_containing(_forecast_points(fc, "underlying"), T)
+            und = pick_period(_forecast_points(fc, "underlying"), T)
             if und is not None:
                 inp.pi_12m, inp.pi_12m_basis = Val(point_value(und)[0], und["horizon"], f"{fc['publication']}: {und['variable']}"), "underlying"
             else:
-                hd = pick_containing(_forecast_points(fc, "headline"), T)
+                hd = pick_period(_forecast_points(fc, "headline"), T)
                 if hd is not None:
                     inp.pi_12m, inp.pi_12m_basis = Val(point_value(hd)[0], hd["horizon"], f"{fc['publication']}: {hd['variable']}"), "headline"
                     inp.flags.add("headline_basis")
             if mv.slack_type == "output_gap":
-                og = pick_containing(_forecast_points(fc, "output_gap"), T)
+                og = pick_period(_forecast_points(fc, "output_gap"), T)
                 if og is not None:
                     inp.y_12m = Val(point_value(og)[0], og["horizon"], f"{fc['publication']}: {og['variable']}", lo=og.get("low"), hi=og.get("high"))
             elif mv.slack_type == "unemployment_gap":
-                un = pick_containing(_forecast_points(fc, "unemployment"), T)
+                un = pick_period(_forecast_points(fc, "unemployment"), T)
                 if un is not None:
                     inp.u_12m = Val(point_value(un)[0], un["horizon"], f"{fc['publication']}: {un['variable']}")
             for role in ROLES_FOR_PI:                               # the furthest projection: underlying, else headline
@@ -482,7 +571,10 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
         inp.lens = lens_inputs(ctx, cur, mv.conditioning, fc, tr, asof, T)
         if inp.lens.get("flag") == "ESTIMATE" or inp.lens.get("cutoff_flag") == "ESTIMATE":
             inp.flags.add("estimate")
-        inp.cycle = cycle_of(decs, asof)
+        hsid, hpts = (policy_history or {}).get(cur, (None, []))
+        inp.cycle = cycle_of(hpts, decs, asof, hsid or "")
+        if not hpts:
+            inp.notes.append("cycle: no policy-rate history (decisions only)")
         nm = next_meeting(tr)
         inp.market = {"next": {"meeting": nm.decision.isoformat() if nm.decision else None, "step_bp": nm.step_bp, "flag": nm.flag,
                                "stale": nm.stale, "na": nm.step_reason or None},
@@ -494,15 +586,28 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
 
 
 def lens_inputs(ctx, cur: str, conditioning: str, fc: Optional[dict], tr, asof: date, T: date) -> dict:
-    """The bank-vs-market lens by conditioning (S1 B.10). own_path reuses the engine's GAP (not recomputed)."""
+    """The bank-vs-market lens by conditioning (S1 B.10). own_path (S1.1 A4) = exactly the comparison the bank page already shows
+    (the existing payload, not recomputed): the GAP vs the bank's path (USD: dots) for the year of as-of + 12 months, else the
+    RBNZ OCR track vs the market (`bank.vs_market`, ESTIMATE) for that year."""
     if conditioning == "own_path":
-        from .analysis import gap_for
-        g = gap_for(ctx, cur, tr, asof)
-        gy = next((y for y in g.years if getattr(y, "year", None) == T.year), None)
-        if gy is None:
-            return {"kind": "own_path", "gap_bp": None, "na": g.reason or f"no GAP for {T.year}", "source": f"engine GAP ({g.kind})"}
-        return {"kind": "own_path", "year": T.year, "gap_bp": gy.gap_bp, "bank": gy.bank_median, "market": gy.market_rate, "flag": gy.market_flag,
-                "na": None if gy.gap_bp is not None else (gy.note or "n/a"), "source": f"engine GAP ({g.kind}, {g.sep or ''})"}
+        from .analysis import bank_report
+        from .payload import gap_json, ocr_vs_market_json
+        rep = bank_report(ctx, cur, asof, with_history=False)
+        g = gap_json(rep)
+        gy = (g.get("years") or {}).get(str(T.year))
+        if g["kind"] != "n/a" and gy is not None:
+            return {"kind": "own_path", "basis": "gap", "year": T.year, "gap_bp": gy["v"], "bank": gy.get("bank"), "market": gy.get("market"),
+                    "flag": gy.get("flag"), "na": gy.get("na") if gy["v"] is None else None,
+                    "source": f"bank page GAP ({g['kind']}, {g.get('sep') or ''})"}
+        if rep.bank_path is not None and rep.bank_path.kind not in ("n/a", "dots"):
+            vm = ocr_vs_market_json(rep)
+            row = next((y for y in vm["years"] if y["year"] == T.year), None)
+            if row is not None:
+                return {"kind": "own_path", "basis": "ocr_track", "year": T.year, "gap_bp": row["gap_bp"], "bank": row["bank"], "market": row["market"],
+                        "flag": row["flag"], "na": None, "source": f"bank page OCR track vs market ({vm['note']})"}
+            return {"kind": "own_path", "basis": "ocr_track", "year": T.year, "gap_bp": None, "na": f"no OCR track vs market for {T.year}",
+                    "source": "bank page OCR track vs market"}
+        return {"kind": "own_path", "gap_bp": None, "na": g.get("na") or f"no GAP for {T.year}", "source": f"bank page GAP ({g['kind']})"}
     if conditioning in ("market", "constant_rate"):
         today, f1, why1 = rate_at(tr, T)
         out = {"kind": conditioning, "target_date": T.isoformat(), "rate_today_curve": today, "flag_today": f1}
@@ -551,6 +656,7 @@ def compute(inp: BankInputs, params: dict) -> dict:
     tol, cons = params["boundary_tol_pp"], params["horizon_consistency_pp"]
     okun, infl = params["rule"]["okun_coefficient"], params["rule"]["inflation_response"]
     flags = set(inp.flags)
+    flags_12m: set = set()
     r: dict = {"currency": inp.currency, "asof": inp.asof, "mandate_id": inp.mandate_id, "stance_version": params["version"],
                "code_version": STANCE_CODE_VERSION, "target_star": inp.target_star, "band": inp.band, "rate": inp.rate.v}
     gu, gh = gap(inp.pi_under.v, inp), gap(inp.pi_head.v, inp)
@@ -575,7 +681,7 @@ def compute(inp: BankInputs, params: dict) -> dict:
     if n is None or inp.rate.v is None:
         flags.add("need_only")
         r.update(N=None, S=None, S_lo=None, S_hi=None, G=None, G_lo=None, G_hi=None, situation=None, direction=None, margin=None,
-                 pivot=None, G_12m=None, situation_12m=None, direction_12m=None)
+                 pivot=None, G_12m=None, situation_12m=None, direction_12m=None, margin_12m=None, G_12m_lo=None, G_12m_hi=None)
     else:
         i = inp.rate.v
         S, S_lo, S_hi = i - n.mid, i - n.hi, i - n.lo
@@ -591,20 +697,28 @@ def compute(inp: BankInputs, params: dict) -> dict:
         pivot = None if inp.target_star is None else inp.target_star + S / infl - third
         G12 = None if x12 is None else infl * x12 - S
         c12 = classify(x12, G12, delta, eps)
+        G12_lo = None if x12 is None else infl * x12 - S_hi          # S1.1 A2: the same two flags for the 12-month classification
+        G12_hi = None if x12 is None else infl * x12 - S_lo
+        c12_lo, c12_hi = classify(x12, G12_lo, delta, eps), classify(x12, G12_hi, delta, eps)
+        if c12["situation"] is not None and (c12_lo["situation"] != c12_hi["situation"] or c12_lo["direction"] != c12_hi["direction"]):
+            flags_12m.add("neutral_sensitive")
+        if c12["margin"] is not None and c12["margin"] < tol:
+            flags_12m.add("boundary")
         r.update(N={"mid": n.mid, "lo": n.lo, "hi": n.hi, "asof": n.asof, "flag": n.flag, "stale": n.stale, "nominal_from": n.nominal_from,
-                    "used": n.used, "source": n.source},
+                    "used": n.used, "source": n.source, "check": n.check},
                  S=S, S_lo=S_lo, S_hi=S_hi, G=G, G_lo=G_at_lo, G_hi=G_at_hi, situation=c["situation"], direction=c["direction"], margin=c["margin"],
                  situation_at_N_lo=c_lo["situation"], situation_at_N_hi=c_hi["situation"], pivot=pivot,
-                 G_12m=G12, situation_12m=c12["situation"], direction_12m=c12["direction"])
+                 G_12m=G12, situation_12m=c12["situation"], direction_12m=c12["direction"], margin_12m=c12["margin"],
+                 G_12m_lo=G12_lo, G_12m_hi=G12_hi, situation_12m_at_N_lo=c12_lo["situation"], situation_12m_at_N_hi=c12_hi["situation"])
     # lens + horizon gap
     lens = dict(inp.lens)
-    if lens.get("kind") in ("market", "constant_rate") and inp.last_projection is not None and inp.last_projection.v is not None:
+    if inp.last_projection is not None and inp.last_projection.v is not None:         # S1.1 A7: the label at every bank
         hg = gap(inp.last_projection.v, inp)
         lens.update(horizon_gap=hg, horizon_period=inp.last_projection.asof, horizon_basis=inp.last_projection_basis,
                     consistent=abs(hg) <= cons)
         if inp.last_projection_basis == "headline":
             lens["horizon_flag"] = "headline_basis"
-    r.update(lens=lens, cycle=inp.cycle, market=inp.market, flags=sorted(flags), notes=list(inp.notes),
+    r.update(lens=lens, cycle=inp.cycle, market=inp.market, flags=sorted(flags), flags_12m=sorted(flags_12m), notes=list(inp.notes),
              inputs=inputs_record(inp))
     return r
 

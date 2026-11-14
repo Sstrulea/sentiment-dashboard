@@ -1,4 +1,4 @@
-# Stance (S0a) - PRE-REGISTERED parameters, frozen 2026-11-14. Display-only (ARCHITECTURE section 4).
+# Stance (S0a) - PRE-REGISTERED parameters, frozen 2026-11-14 (v3: S1.1 corrections, same day). Display-only (ARCHITECTURE section 4).
 # Any change = a new entry in `versions` (with the reason), never an edit of a frozen one. The computation is phase S1
 # (src/cb_compute/, pure); this file is only read and validated in S0a (src/cb_datasets.load_stance_config).
 #
@@ -12,7 +12,7 @@
 meta:
   version: 1
   frozen: 2026-11-14
-  current: 2
+  current: 3
 
 versions:
   - version: 1
@@ -97,6 +97,67 @@ versions:
     neutral_combine:
       USD: "mid = median of the longer-run dots; range = min-max of the longer-run dots"
       GBP: "MPC members in office at the as-of (config/cb_roster.yaml); the LATEST statement of each in the last 12 months; member value = the point or the middle of the member's range; mid = median over members; range = min-max over members"
+      model_list: "a list of model estimates (RBA: 6 models): mid = median, range = min-max"
+      NZD: "mid = the 'policy horizon' estimate when published; range = min-max of the estimates"
+      other: "as published: a point -> mid; low/high -> range with mid = their mean"
+      nominal: "a source that publishes nominal (ECB) is used directly; otherwise real + the target (point or declared midpoint)"
+    staleness:
+      forecast: "a newer projection publication has passed (meetings.yaml has_projections)"
+      neutral_months: 15
+      neutral_stale: "a flag only, never n/a"
+      macro: "the next period is overdue by more than lag_days + stale_grace_days (config/cb_official.yaml macro)"
+    verification: "the mandate is re-verified at every new projection publication of the bank; at most 12 months"
+  - version: 3
+    frozen: 2026-11-14
+    reason: "S1 review (prompt S1.1 + S2, part A) - corrections before the S1 merge; the rule, the parameters and the situations are unchanged"
+    changes:
+      - {field: cycle, reason: "v2 counted the cycle on decisions.parquet (from 2025-09, with gaps); the full official trajectory from 2015 (BIS WS_CBPOL, EUR the ECB DFR) is needed to know the stage"}
+      - {field: period_rule, reason: "v2 had two rules (today: latest start; 12 months: narrowest containing) that disagreed (NZD slack today read 2026Q2 instead of the March-year 2027 that contains the as-of); one rule"}
+      - {field: neutral_combine.USD, reason: "v2 recomputed the median from the dots (3.25) where Table 1 publishes 3.2; the published median and range are the Fed's own figures, the dots are only a check"}
+      - {field: neutral_combine.GBP, reason: "v2 took the range from the members' midpoints only, losing the bounds a member declared (Taylor 2.75-3.0)"}
+      - {field: flags_12m, reason: "boundary and neutral_sensitive were computed only for today; the 12-month situation has the same thresholds and the same neutral interval"}
+      - {field: horizon_consistency, reason: "v2 labelled the horizon gap only for the market / constant_rate lens; the label applies to every bank with a projection"}
+      - {field: lens.own_path, reason: "v2 recomputed a GAP for own_path banks (NZD showed GAP n/a); the lens is exactly the comparison the bank page shows (USD vs dots, NZD vs OCR track, ESTIMATE)"}
+    rule:
+      inflation_response: 1.5
+      output_gap_response: 0.5
+      okun_coefficient: 2.0
+      need: "x = gap(pi_underlying) + y / 3;  x_headline = gap(pi_headline) + y / 3"
+      pressure: "G = 1.5 * x - S;  S = i - N_mid (S_lo = i - N_hi, S_hi = i - N_lo)"
+    gap:
+      point_target: "pi - value"
+      band_with_declared_midpoint: "pi - midpoint"
+      band_without_declared_midpoint: "max(0, pi - high) + min(0, pi - low) (CHF)"
+    situations:
+      delta_pp: 0.25
+      epsilon_pp: 0.5
+      rule: "|x| <= epsilon: S0 if |G| <= delta else S2 (direction sign(G)); otherwise d = sign(x): S1 (direction d) if d*G > delta else S3; no neutral: situation null + need_only"
+    boundary_tol_pp: 0.05
+    horizon_consistency_pp: 0.25
+    horizon_months: 12
+    period_rule: "one rule for every projection read: the SHORTEST published period (calendar year, fiscal year, year ended in March, quarter) that contains the target date; for today (target = as-of), when no period contains the as-of, the last period that has ended (latest end; a tie -> the shorter); no interpolation"
+    horizon_rule: "the projection chosen by period_rule for as-of + 12 months; a publication that does not cover it -> n/a; slack without a projection -> today's slack + flag slack_held"
+    flags_12m: "boundary and neutral_sensitive are computed for the 12-month classification too (same tolerance, same neutral interval), reported apart from today's flags"
+    horizon_consistency: "every bank with a projection: |gap of the bank's furthest projection| <= horizon_consistency_pp -> consistent, else inconsistent"
+    lens:
+      own_path: "exactly the bank page comparison (existing payload): the GAP vs the bank's path for the year of as-of + 12 months (USD: dots); RBNZ: OCR track vs the market (ESTIMATE)"
+      market: "the market move since the projection cutoff to as-of + 12 months, in bp"
+      constant_rate: "the market rate at as-of + 12 months minus the constant rate assumed in the forecast, in bp"
+    cycle: "from the full official trajectory (config/cb_official.yaml policy_history: BIS WS_CBPOL from 2015, EUR the ECB DFR); a move = a change of value; date = the decision day (decisions.parquet, same sign, effective within 7 days), else the effective date, marked; moves after the last history observation from decisions.parquet; stage = consecutive moves in one direction (holds in between allowed); holds since the last move counted on decisions.parquet"
+    underlying_rule:
+      - "(1) the core measure officially designated by the bank"
+      - "(2) the measure projected by the bank that excludes food and energy"
+      - "(3) the statistics institute's measure excluding food and energy"
+    basis:
+      today: "underlying (the headline is shown next to it)"
+      forecast: "the same measure; otherwise the headline, flag headline_basis"
+    slack:
+      source: "only the bank's own estimate; missing = none (flag no_slack, the term is left out)"
+      today: "the estimate chosen by period_rule for the as-of; a range -> its midpoint, the range is kept"
+      unemployment: "y = -okun * (u - u*), u = the latest official observation, u* = the SEP longer-run median (USD) or the SMP NAIRU (AUD)"
+    neutral_combine:
+      USD: "mid = the longer-run federal funds median published in SEP Table 1; range = the longer-run Range of Table 1; check: the median of the dots rounded half to even at 0.1 must equal the published median, else an alert (--status, report)"
+      GBP: "MPC members in office at the as-of (config/cb_roster.yaml); the LATEST statement of each in the last 12 months; member value = the point or the middle of the member's range; mid = median over members; range = min-max of every bound the members declared (points, lows, highs)"
       model_list: "a list of model estimates (RBA: 6 models): mid = median, range = min-max"
       NZD: "mid = the 'policy horizon' estimate when published; range = min-max of the estimates"
       other: "as published: a point -> mid; low/high -> range with mid = their mean"

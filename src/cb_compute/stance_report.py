@@ -41,6 +41,10 @@ def bank_block(r: dict, params: dict) -> str:
         used = "; ".join(f"{lab}: {f(v) if isinstance(v, float) else v}" for lab, v in N["used"])
         out.append(f"| N (neutral, nominal) | mid {f(N['mid'])}, lo {f(N['lo'])}, hi {f(N['hi'])} - as-of {N['asof']} - {N['flag']}"
                    f"{' STALE' if N['stale'] else ''} - from {N['nominal_from']} - {N['source']} [{used}] |")
+        if N.get("check"):
+            c = N["check"]
+            out.append(f"| SEP dots check | median of {c['dots']} longer-run dots {f(c['from_dots'])} -> rounded half-even {c['rounded']} vs published "
+                       f"{c['published']}: {'OK' if c['ok'] else 'ALERT - mismatch'} |")
     else:
         out.append(f"| N (neutral) | n/a - {inp['neutral_status']} |")
     out += [f"| pi (12 months) | {_val(inp['pi_12m'])} - basis {inp['pi_12m_basis'] or 'n/a'} |"]
@@ -64,7 +68,9 @@ def bank_block(r: dict, params: dict) -> str:
             f"- pi_12m = {f(r['pi_12m'])} (period {r.get('pi_12m_period')}, basis {r.get('pi_12m_basis') or 'n/a'})" + (f" - {r['na_12m']}" if r.get("na_12m") else ""),
             f"- gap_12m = {f(r['gap_12m'])};  y_12m = {f(r['y_12m'])} ({r.get('y_12m_how') or 'none'});  x_12m = **{f(r['x_12m'])}**"]
     if N:
-        out.append(f"- G_12m = 1.5 * {f(r['x_12m'])} - {f(r['S'])} = **{f(r['G_12m'])}** -> **{r['situation_12m']}** direction {r['direction_12m']}")
+        out.append(f"- G_12m = 1.5 * {f(r['x_12m'])} - {f(r['S'])} = **{f(r['G_12m'])}** -> **{r['situation_12m']}** direction {r['direction_12m']}"
+                   f" (at N_lo {f(r.get('G_12m_lo'))} {r.get('situation_12m_at_N_lo')}, at N_hi {f(r.get('G_12m_hi'))} {r.get('situation_12m_at_N_hi')}; "
+                   f"distance to the threshold {f(r.get('margin_12m'))}; flags 12 months: {', '.join(r.get('flags_12m') or []) or 'none'})")
     lens = r["lens"]
     lines = [f"kind {lens.get('kind')}"]
     for k in ("year", "bank", "market", "gap_bp", "target_date", "rate_today_curve", "flag_today", "cutoff", "cutoff_flag", "rate_cutoff_curve",
@@ -73,10 +79,15 @@ def bank_block(r: dict, params: dict) -> str:
             v = lens[k]
             lines.append(f"{k} {f(v) if isinstance(v, float) else v}")
     cyc = r["cycle"]
-    moves = ", ".join(f"{m['date']} {m['bp']:+.0f}" for m in cyc.get("moves") or [])
+    moves = ", ".join(f"{m['date']} {m['bp']:+.0f}" + ("" if m["date_source"] == "decision" else f" [{m['date_source']}]") for m in cyc.get("moves") or [])
+    prev = cyc.get("previous")
+    prev_t = f"{prev['direction']} x{prev['count']} ({prev['first_move']}..{prev['last_move']})" if prev else (cyc.get("previous_na") or "n/a")
+    hist = cyc.get("history") or {}
     mk = r["market"]
     out += ["", f"**Lens (bank vs market):** {'; '.join(lines)}", "",
-            f"**Cycle:** last change {cyc.get('last_change')} ({cyc.get('direction')}); moves since the last reversal: {moves or 'none'}; holds since: {cyc.get('holds_since')}", "",
+            f"**Cycle** (history {hist.get('series')} {hist.get('from')}..{hist.get('to')} + decisions.parquet): current stage {cyc.get('direction')} "
+            f"x{cyc.get('count')} ({cyc.get('first_move')}..{cyc.get('last_move')}): {moves or 'none'}; holds since the last move: {cyc.get('holds_since')}"
+            + (f" (decisions from {cyc['holds_from']})" if cyc.get("holds_from") else "") + f"; previous stage: {prev_t}", "",
             f"**Market:** next meeting {mk['next']['meeting']} step {f(mk['next']['step_bp'], 2)} bp [{mk['next']['flag']}]"
             + (f" ({mk['next']['na']})" if mk['next'].get('na') else "")
             + f"; 12 months: {mk['m12'].get('meeting')} rate {f(mk['m12'].get('rate'))} cum {f(mk['m12'].get('cum_bp'), 2)} bp [{mk['m12'].get('flag')}]"
@@ -88,14 +99,14 @@ def bank_block(r: dict, params: dict) -> str:
 
 
 def summary_table(results: dict) -> str:
-    rows = ["| bank | i | N mid (lo..hi) | S | x | x_headline | y | G (lo..hi) | today | 12 months (basis) | pivot | flags |",
-            "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    rows = ["| bank | i | N mid (lo..hi) | S | x | x_headline | y | G (lo..hi) | today | 12 months (basis) | pivot | flags | flags 12 months |",
+            "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for c, r in results.items():
         N = r["N"]
         rows.append(f"| {c} | {f(r['rate'], 3)} | {('%s (%s..%s)' % (f(N['mid'], 3), f(N['lo'], 3), f(N['hi'], 3))) if N else 'n/a'} | {f(r['S'], 3)} | "
                     f"{f(r['x'], 3)} | {f(r['x_headline'], 3)} | {f(r['y'], 3)} | "
                     f"{('%s (%s..%s)' % (f(r['G'], 3), f(r['G_lo'], 3), f(r['G_hi'], 3))) if r['G'] is not None else 'n/a'} | {r['situation'] or 'n/a'} | "
-                    f"{r['situation_12m'] or 'n/a'} ({r.get('pi_12m_basis') or 'n/a'}) | {f(r['pivot'], 3)} | {', '.join(r['flags'])} |")
+                    f"{r['situation_12m'] or 'n/a'} ({r.get('pi_12m_basis') or 'n/a'}) | {f(r['pivot'], 3)} | {', '.join(r['flags'])} | {', '.join(r.get('flags_12m') or [])} |")
     return "\n".join(rows) + "\n"
 
 

@@ -150,7 +150,7 @@ def run_projections(paths, today: date, *, source: FedSepSource | None = None,
         return rep
     rep.sep_dates = ds[-n:]
     rows = {tuple(r[k] for k in PROJECTIONS_KEY): r for r in cs.read_table_file(paths.projections)}
-    have = {r["meeting_date"] for r in rows.values()}
+    have = {r["meeting_date"] for r in rows.values() if r["kind"] == "range_low"}     # S1.1: a SEP stored without its Table 1 range is re-read
     for d in rep.sep_dates:
         if d in have:
             continue
@@ -1005,4 +1005,10 @@ def stance_status(paths, today: date) -> tuple:
                 notes.append(f"PENDING forecasts {b} {s['role']}: {s.get('reason')} | next: {s.get('next_step')}")
         if f and f.get("status") == "pending":
             notes.append(f"PENDING forecasts {b}: {f.get('reason')} | next: {f.get('next_step')}")
+    if sep_last is not None:                                             # S1.1 A3: the published longer-run median vs the dots
+        from .cb_compute.stance import sep_dots_check
+        chk = sep_dots_check(load_projections(paths), sep_last)
+        if not chk["ok"]:
+            notes.append(f"ALERT SEP {chk['sep']}: the median of the {chk['dots']} longer-run dots ({chk['from_dots']}) rounds to {chk['rounded']}, "
+                         f"Table 1 publishes {chk['published']} - check the dot chart parse")
     return ("stance inputs (S0a manual files)", ["cur", "mandate from", "forecasts of", "latest projection meeting", "neutral", "newest neutral", "stale"], rows, notes)

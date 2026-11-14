@@ -1301,3 +1301,20 @@ fiecare zi păstrează exact inputurile cunoscute în acea zi.
 test prin aritmetică explicită; cazuri limită (banda CHF, boundary, neutral_sensitive, neutral stale, no_slack, headline_basis CAD/BoE/NZD,
 selecția perioadei FY/an/Q4/martie, GBP pe membri, real → nominal vs nominal publicat, BoJ ESTIMATE, SNB constant_rate, lipsă istoric la cutoff,
 need_only); puritate; append-only; payload; guard display-only.
+
+### 23c. Stance — S1.1: corecturi înainte de merge (cb_stance v3)
+
+`config/cb_stance.yaml` **v3** (frozen 2026-11-14, motiv per schimbare; v1 și v2 păstrate). Regula, parametrii și situațiile nu se schimbă.
+
+| # | corectură | unde |
+|---|---|---|
+| A1 | **Ciclul** din traiectoria oficială completă: istoric din 2015 în `data/cb/policy_history/policy_history_YYYY.parquet` (secțiunea `policy_history:` din `config/cb_official.yaml`; rol `policy_bis_history` = BIS WS_CBPOL pentru 7 bănci, `policy_official_history` = ECB DFR pentru EUR, fiindcă BIS dă MRO până în 2024). Folosit DOAR pentru ciclu. O mișcare = o schimbare de valoare; data = ziua deciziei din decisions.parquet (același semn, efectivă în ±7 zile), altfel data efectivă (marcată `history_effective`); deciziile de după ultima observație din istoric vin din decisions.parquet (`decision_recent`). Etapă = mișcări consecutive în aceeași direcție (hold-urile dintre ele permise). Ieșiri: direcția, numărul de mișcări, prima/ultima mișcare, hold-urile de la ultima mișcare (din decisions.parquet; `holds_from` când deciziile încep după ultima mișcare), etapa anterioară (direcție + număr). Reîmprospătat de stage-ul `stance` (lookback 30 zile; `--backfill` din 2015). | `src/cb_policy_history.py`, `stance.cycle_of` |
+| A1 | **Reconciliere**: fiecare schimbare BIS din 2025-09 are rând în decisions.parquet. Cauza lipsurilor: meetings.yaml începea la 2026-01-01 și stage-ul decisions recalculează doar ultimele 4 ședințe. Reparat: RANGE din 2025-09-01, ședințele ținute citite din arhivele oficiale (`source: official_archive` — secțiunea 2025 a calendarului FOMC, tabelul de rate BoC, indexul deciziilor BoJ fără prima zi, paginile Monetary Policy Summary BoE), `cb_collect --stage decisions --decisions-since 2025-09-01`. AUD 2025 (fără arhivă RBA) și NZD 2025 (RBNZ blocat de Cloudflare) rămân indisponibile. | `calendar.past_meetings`, `meetings.build(past=…)`, `decisions.select_meetings(since=…)` |
+| A2 | `boundary` și `neutral_sensitive` și pentru clasificarea la 12 luni (`flags_12m`, `margin_12m`, `G_12m_lo/hi`), separat de flag-urile de azi. | `stance.compute` |
+| A3 | **Neutral USD** = mediana longer-run publicată în SEP Table 1; intervalul = Range longer-run din Table 1 (parserul SEP citește acum coloanele Range: `range_low`/`range_high`; un SEP stocat fără Range e recitit o dată). Dots doar verificare: mediana lor rotunjită half-even la 0.1 trebuie să fie egală cu cea publicată (3.25 → 3.2), altfel ALERT în `--status` și în raport. | `fed_sep.parse_sep`, `stance.sep_neutral`, `stance.sep_dots_check`, `cb_datasets.stance_status` |
+| A4 | Lentila own_path = exact comparația din pagina băncii (payload existent): USD `gap_json` (dots) pentru anul as-of + 12 luni; NZD `ocr_vs_market_json` (traiectoria OCR vs piața, ESTIMATE). | `stance.lens_inputs` |
+| A5 | O singură regulă de perioadă: cea mai scurtă perioadă publicată care conține data țintă; pentru „azi”, dacă nicio perioadă nu conține as-of, ultima perioadă încheiată. | `stance.pick_period` |
+| A6 | GBP: intervalul = min–max al tuturor limitelor declarate de membri (puncte, low, high), nu doar al mijloacelor. | `stance.neutral_from_estimates` |
+| A7 | Eticheta consistent/inconsistent la orice bancă cu proiecție. | `stance.compute` |
+
+`STANCE_CODE_VERSION = "s1.1"`; istoricul are coloana `flags_12m`. Seed-ul snapshot 2026-11-14 regenerat cu v3 (S1 nu fusese încă unit în main).

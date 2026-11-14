@@ -669,8 +669,10 @@ def main(argv: list[str] | None = None) -> int:
             emit(f"framework: FAILED {type(e).__name__}: {e}", f"### framework watch\n\nFAILED `{type(e).__name__}: {e}`")
     if "stance" in stages:                                           # stance S1: today's snapshot, append-only (data/cb/stance_history/)
         try:
+            from . import cb_policy_history as PH
             from . import cb_stance_history as SH
             from .cb_loader import load_stance
+            emit(*PH.history_report(PH.run_history(paths, today, backfill=a.backfill)))     # S1.1: the rate trajectory behind the cycle
             _, _, _, results = load_stance(a.data_dir, today)
             emit(*SH.report(SH.append(paths, results, today)))
         except Exception as e:

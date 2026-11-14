@@ -64,7 +64,22 @@ def test_sep_2026_09_16_published_medians_of_table_1():
     assert pub["pce_inflation"] == {"2026": 3.7, "2027": 2.3, "2028": 2.1, "2029": 2.0, "longer_run": 2.0}
     assert pub["core_pce_inflation"] == {"2026": 3.4, "2027": 2.5, "2028": 2.2, "2029": 2.0}          # no longer-run column for core
     assert sum(1 for r in rows_of("20260916") if r["kind"] == "median_published") == 24
-    assert len(rows_of("20260916")) == 55
+    assert len(rows_of("20260916")) == 55 + 48                                                   # + the Table 1 Range (S1.1)
+
+
+def test_sep_2026_09_16_table_1_range_as_published():
+    """S1.1 A3: the Range columns of Table 1 (lowest-highest projection) - the USD neutral interval is the longer-run Range."""
+    rng = {}
+    for r in rows_of("20260916"):
+        if r["kind"] in ("range_low", "range_high"):
+            rng.setdefault((r["variable"], r["horizon"]), {})[r["kind"]] = r["value"]
+    assert rng[("federal_funds_rate", "longer_run")] == {"range_low": 2.9, "range_high": 3.9}
+    assert rng[("change_in_real_gdp", "2026")] == {"range_low": 2.1, "range_high": 2.6}
+    assert rng[("pce_inflation", "longer_run")] == {"range_low": 2.0, "range_high": 2.0}             # a single published value
+    assert len(rng) == 24 and all(set(v) == {"range_low", "range_high"} for v in rng.values())
+    from src.cb_sources.fed_sep import page_text, parse_range
+    assert parse_range("2.6\u20133.9") == (2.6, 3.9) and parse_range("2.0") == (2.0, 2.0) and parse_range("") is None
+    assert page_text("2.6\u20133.9".encode("utf-8"), "garbled") == "2.6\u20133.9" and page_text(b"\xff\xfe", "fallback") == "fallback"
 
 
 def test_the_horizons_follow_each_pages_own_header():
@@ -133,7 +148,7 @@ def test_projections_file_fetches_only_what_is_missing_and_is_idempotent(tmp_pat
     src = FakeSep([D(2025, 12, 10), D(2026, 3, 18), D(2026, 9, 16)])
     rep = ds.run_projections(paths, D(2026, 9, 20), source=src)
     assert rep.fetched == [D(2025, 12, 10), D(2026, 3, 18), D(2026, 9, 16)] and rep.written and not rep.failed
-    assert rep.total == 64 + 51 + 55
+    assert rep.total == (64 + 48) + (51 + 38) + (55 + 48)                                       # medians/dots + Table 1 Range
     first = sha(paths.projections)
     src2 = FakeSep([D(2025, 12, 10), D(2026, 3, 18), D(2026, 9, 16)])
     rep = ds.run_projections(paths, D(2026, 9, 21), source=src2)
@@ -152,7 +167,21 @@ def test_a_new_sep_is_appended_without_touching_the_old_rows(tmp_path):
     rep = ds.run_projections(paths, D(2026, 9, 20), source=src)
     assert src.fetched == [D(2026, 9, 16)] and rep.fetched == [D(2026, 9, 16)]
     new = {(r["meeting_date"], r["variable"], r["horizon"], r["kind"], r["level"]): r for r in ds.load_projections(paths)}
-    assert all(new[k] == v for k, v in old.items()) and len(new) == len(old) + 55
+    assert all(new[k] == v for k, v in old.items()) and len(new) == len(old) + 55 + 48
+
+
+def test_a_sep_stored_without_its_range_is_read_again(tmp_path):
+    """S1.1: SEPs stored before the Range was parsed are fetched once more; the existing rows stay identical."""
+    paths = cc.Paths(tmp_path / "cb")
+    ds.run_projections(paths, D(2026, 9, 20), source=FakeSep([D(2026, 9, 16)]))
+    from src import cb_store as cs
+    rows = [r for r in ds.load_projections(paths) if not r["kind"].startswith("range")]
+    cs.write_table_file(paths.projections, ds.PROJECTIONS_SCHEMA, ds.PROJECTIONS_KEY, rows)          # the store as written before S1.1
+    src = FakeSep([D(2026, 9, 16)])
+    rep = ds.run_projections(paths, D(2026, 9, 20), source=src)
+    assert src.fetched == [D(2026, 9, 16)] and rep.total == 103
+    new = {(r["variable"], r["horizon"], r["kind"], r["level"]): r for r in ds.load_projections(paths)}
+    assert all(new[(r["variable"], r["horizon"], r["kind"], r["level"])] == r for r in rows)
 
 
 def test_only_the_last_four_seps_are_kept_in_view_and_failures_are_reported(tmp_path):

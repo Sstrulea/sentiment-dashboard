@@ -10,27 +10,57 @@
    "conditioning": "market",
    "currency": "AUD",
    "cycle": {
+    "count": 5,
     "direction": "hike",
+    "first_move": "2026-02-03",
+    "history": {
+     "from": "2015-01-02",
+     "series": "hist:bis:AU",
+     "to": "2026-11-05"
+    },
+    "holds_from": null,
     "holds_since": 0,
     "last_change": "2026-11-03",
+    "last_move": "2026-11-03",
     "moves": [
      {
       "bp": 25.0,
-      "date": "2026-03-17"
+      "date": "2026-02-03",
+      "date_source": "decision",
+      "effective": "2026-02-04"
      },
      {
       "bp": 25.0,
-      "date": "2026-05-05"
+      "date": "2026-03-17",
+      "date_source": "decision",
+      "effective": "2026-03-18"
      },
      {
       "bp": 25.0,
-      "date": "2026-09-29"
+      "date": "2026-05-05",
+      "date_source": "decision",
+      "effective": "2026-05-06"
      },
      {
       "bp": 25.0,
-      "date": "2026-11-03"
+      "date": "2026-09-29",
+      "date_source": "decision",
+      "effective": "2026-09-30"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-11-03",
+      "date_source": "decision",
+      "effective": "2026-11-04"
      }
-    ]
+    ],
+    "previous": {
+     "count": 3,
+     "direction": "cut",
+     "first_move": "2025-02-19",
+     "last_move": "2025-08-13"
+    },
+    "previous_na": null
    },
    "flags": [],
    "last_projection": {
@@ -74,6 +104,7 @@
    },
    "neutral": {
     "asof": "2026-11-03",
+    "check": null,
     "flag": "STAFF_ESTIMATE",
     "hi": 4.416598826587419,
     "lo": 3.02024403284537,
@@ -182,15 +213,33 @@
    "conditioning": "unpublished",
    "currency": "CAD",
    "cycle": {
+    "count": 1,
     "direction": "hike",
+    "first_move": "2026-10-28",
+    "history": {
+     "from": "2015-01-01",
+     "series": "hist:bis:CA",
+     "to": "2026-11-09"
+    },
+    "holds_from": null,
     "holds_since": 0,
     "last_change": "2026-10-28",
+    "last_move": "2026-10-28",
     "moves": [
      {
       "bp": 25.0,
-      "date": "2026-10-28"
+      "date": "2026-10-28",
+      "date_source": "decision",
+      "effective": "2026-10-29"
      }
-    ]
+    ],
+    "previous": {
+     "count": 9,
+     "direction": "cut",
+     "first_move": "2024-06-06",
+     "last_move": "2025-10-29"
+    },
+    "previous_na": null
    },
    "flags": [
     "estimate",
@@ -230,6 +279,7 @@
    },
    "neutral": {
     "asof": "2026-04-29",
+    "check": null,
     "flag": "BANK_ESTIMATE",
     "hi": 3.25,
     "lo": 2.25,
@@ -304,10 +354,63 @@
    "conditioning": "constant_rate",
    "currency": "CHF",
    "cycle": {
-    "direction": null,
+    "count": 6,
+    "direction": "cut",
+    "first_move": "2024-03-22",
+    "history": {
+     "from": "2015-01-01",
+     "series": "hist:bis:CH",
+     "to": "2026-11-10"
+    },
+    "holds_from": "2025-09-25",
     "holds_since": 5,
-    "last_change": null,
-    "moves": []
+    "last_change": "2025-06-20",
+    "last_move": "2025-06-20",
+    "moves": [
+     {
+      "bp": -25.0,
+      "date": "2024-03-22",
+      "date_source": "history_effective",
+      "effective": "2024-03-22"
+     },
+     {
+      "bp": -25.0,
+      "date": "2024-06-21",
+      "date_source": "history_effective",
+      "effective": "2024-06-21"
+     },
+     {
+      "bp": -25.0,
+      "date": "2024-09-27",
+      "date_source": "history_effective",
+      "effective": "2024-09-27"
+     },
+     {
+      "bp": -50.0,
+      "date": "2024-12-13",
+      "date_source": "history_effective",
+      "effective": "2024-12-13"
+     },
+     {
+      "bp": -25.0,
+      "date": "2025-03-21",
+      "date_source": "history_effective",
+      "effective": "2025-03-21"
+     },
+     {
+      "bp": -25.0,
+      "date": "2025-06-20",
+      "date_source": "history_effective",
+      "effective": "2025-06-20"
+     }
+    ],
+    "previous": {
+     "count": 5,
+     "direction": "hike",
+     "first_move": "2022-06-17",
+     "last_move": "2023-06-23"
+    },
+    "previous_na": null
    },
    "flags": [
     "headline_basis"
@@ -401,19 +504,39 @@
    "conditioning": "market",
    "currency": "EUR",
    "cycle": {
+    "count": 2,
     "direction": "hike",
+    "first_move": "2026-06-11",
+    "history": {
+     "from": "2015-01-01",
+     "series": "hist:ecb:DFR",
+     "to": "2026-11-14"
+    },
+    "holds_from": null,
     "holds_since": 1,
     "last_change": "2026-09-10",
+    "last_move": "2026-09-10",
     "moves": [
      {
       "bp": 25.0,
-      "date": "2026-06-11"
+      "date": "2026-06-11",
+      "date_source": "decision",
+      "effective": "2026-06-17"
      },
      {
       "bp": 25.0,
-      "date": "2026-09-10"
+      "date": "2026-09-10",
+      "date_source": "decision",
+      "effective": "2026-09-16"
      }
-    ]
+    ],
+    "previous": {
+     "count": 8,
+     "direction": "cut",
+     "first_move": "2024-06-12",
+     "last_move": "2025-06-11"
+    },
+    "previous_na": null
    },
    "flags": [
     "stale"
@@ -456,6 +579,7 @@
    },
    "neutral": {
     "asof": "2025-02-13",
+    "check": null,
     "flag": "STAFF_ESTIMATE",
     "hi": 2.25,
     "lo": 1.75,
@@ -520,15 +644,33 @@
    "conditioning": "market",
    "currency": "GBP",
    "cycle": {
+    "count": 1,
     "direction": "hike",
+    "first_move": "2026-11-05",
+    "history": {
+     "from": "2015-01-02",
+     "series": "hist:bis:GB",
+     "to": "2026-11-09"
+    },
+    "holds_from": null,
     "holds_since": 0,
     "last_change": "2026-11-05",
+    "last_move": "2026-11-05",
     "moves": [
      {
       "bp": 25.0,
-      "date": "2026-11-05"
+      "date": "2026-11-05",
+      "date_source": "decision",
+      "effective": "2026-11-05"
      }
-    ]
+    ],
+    "previous": {
+     "count": 6,
+     "direction": "cut",
+     "first_move": "2024-08-01",
+     "last_move": "2025-12-18"
+    },
+    "previous_na": null
    },
    "flags": [
     "headline_basis"
@@ -574,9 +716,10 @@
    },
    "neutral": {
     "asof": "2026-09-29",
+    "check": null,
     "flag": "MEMBERS_VIEW",
     "hi": 3.0,
-    "lo": 2.875,
+    "lo": 2.75,
     "mid": 2.9375,
     "nominal_from": "nominal",
     "source": "data/cb/manual/neutral.yaml",
@@ -656,19 +799,58 @@
    "conditioning": "market",
    "currency": "JPY",
    "cycle": {
+    "count": 6,
     "direction": "hike",
+    "first_move": "2024-03-21",
+    "history": {
+     "from": "2016-09-21",
+     "series": "hist:bis:JP",
+     "to": "2026-11-10"
+    },
+    "holds_from": null,
     "holds_since": 1,
     "last_change": "2026-09-18",
+    "last_move": "2026-09-18",
     "moves": [
      {
-      "bp": 25.0,
-      "date": "2026-06-16"
+      "bp": 15.0,
+      "date": "2024-03-21",
+      "date_source": "history_effective",
+      "effective": "2024-03-21"
+     },
+     {
+      "bp": 20.0,
+      "date": "2024-08-01",
+      "date_source": "history_effective",
+      "effective": "2024-08-01"
      },
      {
       "bp": 25.0,
-      "date": "2026-09-18"
+      "date": "2025-01-27",
+      "date_source": "history_effective",
+      "effective": "2025-01-27"
+     },
+     {
+      "bp": 25.0,
+      "date": "2025-12-19",
+      "date_source": "decision",
+      "effective": "2025-12-22"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-06-16",
+      "date_source": "decision",
+      "effective": "2026-06-17"
+     },
+     {
+      "bp": 25.0,
+      "date": "2026-09-18",
+      "date_source": "decision",
+      "effective": "2026-09-24"
      }
-    ]
+    ],
+    "previous": null,
+    "previous_na": "no earlier stage in the history (from 2016-09-21)"
    },
    "flags": [
     "estimate"
@@ -714,6 +896,7 @@
    },
    "neutral": {
     "asof": "2026-03-27",
+    "check": null,
     "flag": "STAFF_ESTIMATE",
     "hi": 2.5,
     "lo": 1.1,
@@ -788,19 +971,39 @@
    "conditioning": "own_path",
    "currency": "NZD",
    "cycle": {
+    "count": 2,
     "direction": "hike",
+    "first_move": "2026-07-08",
+    "history": {
+     "from": "2015-01-01",
+     "series": "hist:bis:NZ",
+     "to": "2026-11-06"
+    },
+    "holds_from": null,
     "holds_since": 1,
     "last_change": "2026-09-02",
+    "last_move": "2026-09-02",
     "moves": [
      {
       "bp": 25.0,
-      "date": "2026-07-08"
+      "date": "2026-07-08",
+      "date_source": "decision",
+      "effective": "2026-07-09"
      },
      {
       "bp": 25.0,
-      "date": "2026-09-02"
+      "date": "2026-09-02",
+      "date_source": "decision",
+      "effective": "2026-09-03"
      }
-    ]
+    ],
+    "previous": {
+     "count": 9,
+     "direction": "cut",
+     "first_move": "2024-08-15",
+     "last_move": "2025-11-27"
+    },
+    "previous_na": null
    },
    "flags": [
     "estimate",
@@ -817,10 +1020,15 @@
    },
    "last_projection_basis": "headline",
    "lens": {
-    "gap_bp": null,
+    "bank": 3.2,
+    "basis": "ocr_track",
+    "flag": "ESTIMATE",
+    "gap_bp": 55.7,
     "kind": "own_path",
-    "na": "the 2026-09-02 MPS tables carry no 90-day bank bill projection: only the OCR track (a different basis from the ASX BB) - shown separately, not compared",
-    "source": "engine GAP (n/a)"
+    "market": 3.757,
+    "na": null,
+    "source": "bank page OCR track vs market (RBNZ: Q4 average of the published OCR track vs the market at year-end; the market side is an estimate (BKBM-OCR spread).)",
+    "year": 2027
    },
    "mandate_id": "2023-12-20",
    "market": {
@@ -892,12 +1100,12 @@
     "v": -0.9
    },
    "y_today": {
-    "asof": "2026Q2",
+    "asof": "M2027",
     "hi": null,
     "lo": null,
     "note": "",
-    "source": "Monetary Policy Statement, September 2026: Output gap, June 2026 quarter (estimate, text) [https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)]",
-    "v": -1.5
+    "source": "Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5) [https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)]",
+    "v": -1.4
    }
   },
   "USD": {
@@ -906,15 +1114,33 @@
    "conditioning": "own_path",
    "currency": "USD",
    "cycle": {
+    "count": 1,
     "direction": "hike",
+    "first_move": "2026-09-16",
+    "history": {
+     "from": "2015-01-01",
+     "series": "hist:bis:US",
+     "to": "2026-11-10"
+    },
+    "holds_from": null,
     "holds_since": 1,
     "last_change": "2026-09-16",
+    "last_move": "2026-09-16",
     "moves": [
      {
       "bp": 25.0,
-      "date": "2026-09-16"
+      "date": "2026-09-16",
+      "date_source": "decision",
+      "effective": "2026-09-17"
      }
-    ]
+    ],
+    "previous": {
+     "count": 6,
+     "direction": "cut",
+     "first_move": "2024-09-19",
+     "last_move": "2025-12-10"
+    },
+    "previous_na": null
    },
    "flags": [],
    "last_projection": {
@@ -928,12 +1154,13 @@
    "last_projection_basis": "underlying",
    "lens": {
     "bank": 4.125,
+    "basis": "gap",
     "flag": "CURVE",
-    "gap_bp": 57.68679231410117,
+    "gap_bp": 57.7,
     "kind": "own_path",
-    "market": 4.701867923141012,
+    "market": 4.702,
     "na": null,
-    "source": "engine GAP (dots, 2026-09-16)",
+    "source": "bank page GAP (dots, 2026-09-16)",
     "year": 2027
    },
    "mandate_id": "2025-08-22",
@@ -955,17 +1182,29 @@
    },
    "neutral": {
     "asof": "2026-09-16",
+    "check": {
+     "dots": 18,
+     "from_dots": 3.25,
+     "ok": true,
+     "published": 3.2,
+     "rounded": 3.2,
+     "sep": "2026-09-16"
+    },
     "flag": "SEP_LONGER_RUN",
-    "hi": 3.875,
-    "lo": 2.875,
-    "mid": 3.25,
+    "hi": 3.9,
+    "lo": 2.9,
+    "mid": 3.2,
     "nominal_from": "nominal",
-    "source": "data/cb/projections.parquet (SEP 2026-09-16, 18 longer-run dots)",
+    "source": "FOMC SEP 2026-09-16, Table 1 (federalreserve.gov fomcprojtabl20260916.htm)",
     "stale": false,
     "used": [
      [
-      "longer-run dots",
-      18
+      "Table 1 longer-run median",
+      3.2
+     ],
+     [
+      "Table 1 longer-run range",
+      "2.9-3.9"
      ]
     ]
    },
@@ -1035,11 +1274,70 @@
    "y_today": null
   }
  },
- "generated_by": "load_stance(asof=2026-11-14) on main d69c54cd + S1 corrections (frozen inputs for the golden tests)",
+ "generated_by": "load_stance(asof=2026-11-14) on feat/cb-stance-compute + S1.1 corrections A1-A7 (cb_stance v3; frozen inputs for the golden tests)",
  "params": {
+  "basis": {
+   "forecast": "the same measure; otherwise the headline, flag headline_basis",
+   "today": "underlying (the headline is shown next to it)"
+  },
   "boundary_tol_pp": 0.05,
+  "changes": [
+   {
+    "field": "cycle",
+    "reason": "v2 counted the cycle on decisions.parquet (from 2025-09, with gaps); the full official trajectory from 2015 (BIS WS_CBPOL, EUR the ECB DFR) is needed to know the stage"
+   },
+   {
+    "field": "period_rule",
+    "reason": "v2 had two rules (today: latest start; 12 months: narrowest containing) that disagreed (NZD slack today read 2026Q2 instead of the March-year 2027 that contains the as-of); one rule"
+   },
+   {
+    "field": "neutral_combine.USD",
+    "reason": "v2 recomputed the median from the dots (3.25) where Table 1 publishes 3.2; the published median and range are the Fed's own figures, the dots are only a check"
+   },
+   {
+    "field": "neutral_combine.GBP",
+    "reason": "v2 took the range from the members' midpoints only, losing the bounds a member declared (Taylor 2.75-3.0)"
+   },
+   {
+    "field": "flags_12m",
+    "reason": "boundary and neutral_sensitive were computed only for today; the 12-month situation has the same thresholds and the same neutral interval"
+   },
+   {
+    "field": "horizon_consistency",
+    "reason": "v2 labelled the horizon gap only for the market / constant_rate lens; the label applies to every bank with a projection"
+   },
+   {
+    "field": "lens.own_path",
+    "reason": "v2 recomputed a GAP for own_path banks (NZD showed GAP n/a); the lens is exactly the comparison the bank page shows (USD vs dots, NZD vs OCR track, ESTIMATE)"
+   }
+  ],
+  "cycle": "from the full official trajectory (config/cb_official.yaml policy_history: BIS WS_CBPOL from 2015, EUR the ECB DFR); a move = a change of value; date = the decision day (decisions.parquet, same sign, effective within 7 days), else the effective date, marked; moves after the last history observation from decisions.parquet; stage = consecutive moves in one direction (holds in between allowed); holds since the last move counted on decisions.parquet",
+  "flags_12m": "boundary and neutral_sensitive are computed for the 12-month classification too (same tolerance, same neutral interval), reported apart from today's flags",
+  "frozen": "2026-11-14",
+  "gap": {
+   "band_with_declared_midpoint": "pi - midpoint",
+   "band_without_declared_midpoint": "max(0, pi - high) + min(0, pi - low) (CHF)",
+   "point_target": "pi - value"
+  },
+  "horizon_consistency": "every bank with a projection: |gap of the bank's furthest projection| <= horizon_consistency_pp -> consistent, else inconsistent",
   "horizon_consistency_pp": 0.25,
   "horizon_months": 12,
+  "horizon_rule": "the projection chosen by period_rule for as-of + 12 months; a publication that does not cover it -> n/a; slack without a projection -> today's slack + flag slack_held",
+  "lens": {
+   "constant_rate": "the market rate at as-of + 12 months minus the constant rate assumed in the forecast, in bp",
+   "market": "the market move since the projection cutoff to as-of + 12 months, in bp",
+   "own_path": "exactly the bank page comparison (existing payload): the GAP vs the bank's path for the year of as-of + 12 months (USD: dots); RBNZ: OCR track vs the market (ESTIMATE)"
+  },
+  "neutral_combine": {
+   "GBP": "MPC members in office at the as-of (config/cb_roster.yaml); the LATEST statement of each in the last 12 months; member value = the point or the middle of the member's range; mid = median over members; range = min-max of every bound the members declared (points, lows, highs)",
+   "NZD": "mid = the 'policy horizon' estimate when published; range = min-max of the estimates",
+   "USD": "mid = the longer-run federal funds median published in SEP Table 1; range = the longer-run Range of Table 1; check: the median of the dots rounded half to even at 0.1 must equal the published median, else an alert (--status, report)",
+   "model_list": "a list of model estimates (RBA: 6 models): mid = median, range = min-max",
+   "nominal": "a source that publishes nominal (ECB) is used directly; otherwise real + the target (point or declared midpoint)",
+   "other": "as published: a point -> mid; low/high -> range with mid = their mean"
+  },
+  "period_rule": "one rule for every projection read: the SHORTEST published period (calendar year, fiscal year, year ended in March, quarter) that contains the target date; for today (target = as-of), when no period contains the as-of, the last period that has ended (latest end; a tie -> the shorter); no interpolation",
+  "reason": "S1 review (prompt S1.1 + S2, part A) - corrections before the S1 merge; the rule, the parameters and the situations are unchanged",
   "rule": {
    "inflation_response": 1.5,
    "need": "x = gap(pi_underlying) + y / 3;  x_headline = gap(pi_headline) + y / 3",
@@ -1052,12 +1350,23 @@
    "epsilon_pp": 0.5,
    "rule": "|x| <= epsilon: S0 if |G| <= delta else S2 (direction sign(G)); otherwise d = sign(x): S1 (direction d) if d*G > delta else S3; no neutral: situation null + need_only"
   },
+  "slack": {
+   "source": "only the bank's own estimate; missing = none (flag no_slack, the term is left out)",
+   "today": "the estimate chosen by period_rule for the as-of; a range -> its midpoint, the range is kept",
+   "unemployment": "y = -okun * (u - u*), u = the latest official observation, u* = the SEP longer-run median (USD) or the SMP NAIRU (AUD)"
+  },
   "staleness": {
    "forecast": "a newer projection publication has passed (meetings.yaml has_projections)",
    "macro": "the next period is overdue by more than lag_days + stale_grace_days (config/cb_official.yaml macro)",
    "neutral_months": 15,
    "neutral_stale": "a flag only, never n/a"
   },
-  "version": 2
+  "underlying_rule": [
+   "(1) the core measure officially designated by the bank",
+   "(2) the measure projected by the bank that excludes food and energy",
+   "(3) the statistics institute's measure excluding food and energy"
+  ],
+  "verification": "the mandate is re-verified at every new projection publication of the bank; at most 12 months",
+  "version": 3
  }
 }
