@@ -1345,3 +1345,30 @@ Fiecare număr randat poartă `data-k` (cheia în blocul stance), `data-f` (form
 pagina cu payload-ul. USD: rata ca interval peste tot, midpoint-ul doar în Show calculation. Teste: `tests/test_cb_stance_ui.py` (șabloanele pe
 toate combinațiile, schema scrisă, determinismul, o eroare de stance nu blochează render-ul) și `tests/cb_js/test_stance.cjs` (formatare, chip-uri,
 geometria hărții, sortarea, Show calculation, istoricul).
+
+**Contractul UI (S2 / S2.1)**
+
+- **Șabloane** (deterministe, `stance_ui.py`, fără AI), ordinea Market → Bank → Rule; **degradare pe clauze**: o clauză fără date dispare
+  singură, o propoziție dispare doar când toate clauzele ei sunt n/a.
+  - Market: „The market prices {a hike | a cut | no change} at the next meeting ({p}%)” | fără probabilitate (ESTIMATE / FIT):
+    „about {±X} bp at the next meeting (estimate)” · „and {±Y} bp over 12 months”.
+  - Bank: own_path „The market is {X} bp {above | below} the bank's own path for {year}.”; market „Since the {publication} cutoff the market has
+    moved {±X} bp; the bank sees {measure} at {v}% at the horizon ({consistent with | above | below} target).” (fără Δ: „The bank sees …”; fără
+    proiecție: doar prima clauză); constant_rate „The market prices {±X} bp more than the constant rate assumed in the bank's forecast.”;
+    unpublished „The bank does not publish a rate path.”
+  - Rule: „On today's data: {S}.” · „If the rate is held: {S12} in 12 months{ (on headline inflation)}.” (S0 „roughly in balance”, S1 „behind the
+    curve, more {hikes | cuts} needed”, S2 „room to move {up | down} toward neutral”, S3 „at or past the required level, hold”).
+- **Afișare (B.4)**: pp cu 2 zecimale și semn, bp întregi cu semn (jumătate departe de zero), inflația și ratele ca publicate, probabilități cu o
+  zecimală; o valoare care se rotunjește la zero e neutră (fără albastru / roșu); as-of pe fiecare bloc; n/a = „—” cu motivul în tooltip (la
+  need_only motivul băncii, ex. NZD pending); USD = interval (3.75–4.00%), midpoint-ul doar în Show calculation. Next test apare doar cu o dată în
+  calendarul FF; pivotul rămâne singur.
+- **Chip-uri**: „S0 balanced”, „S1 hike”, „S1 cut”, „S2 up”, „S2 down”, „S3 hold”, „need only”. **Flag-uri** (tooltip): near a threshold,
+  neutral-sensitive, headline basis, estimate, stale (cu data), pending (cu motivul), slack held, no slack estimate; cele la 12 luni prefixate „12m”;
+  need_only e chip-ul, nu și flag.
+- **Harta**: etichetele directe se așază fără suprapuneri (8 poziții candidate; nu peste alte etichete, puncte pline sau goale, în aria graficului);
+  axe pe multipli de 0.5; zonele hike (albastru) / cut (roșu) și banda hold vizibile în ambele teme.
+- **Telefon (≤ 600 px)**: tabelul devine listă de carduri, harta sub listă cu etichete reduse, fără scroll orizontal.
+- **Teme**: culorile din variabilele temei (`--accent`, `--warning-fg`, `--muted`); contrastul textului ≥ 4.5 verificat automat în ambele teme.
+- **Accesibilitate**: canvas-ul hărții are `role="img"`, `aria-label` și `aria-describedby` către lista `#cbStanceMapAlt` (ascunsă vizual): un rând
+  per punct — banca, need, stance (cu intervalul), situația azi și la 12 luni.
+- **Verificare**: `scripts/check_stance_ui.py` rulează în dark și light (233 de verificări, capturile din `reports/stance-ui/`, local).

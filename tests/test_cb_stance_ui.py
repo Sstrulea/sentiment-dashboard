@@ -50,10 +50,13 @@ def test_market_sentence(prob, word, p):
     assert U.market_sentence(_path(prob)) == f"The market prices {word} at the next meeting ({p}) and +85 bp over 12 months."
 
 
-def test_market_sentence_na_is_omitted():
-    assert U.market_sentence(_path(None, cum=32.0)) is None                  # an estimate: no probability
-    assert U.market_sentence(_path({"dir": "hike", "n": 0, "p": 0.9}, m12=None)) is None
-    assert U.market_sentence(None) is None
+def test_market_sentence_degrades_by_clause():
+    """S2.1: a clause without data drops alone; the sentence goes only when both clauses are n/a."""
+    assert U.market_sentence(_path(None, cum=32.0, m12=99.6)) == \
+        "The market prices about +32 bp at the next meeting (estimate) and +100 bp over 12 months."            # NZD: FIT, no probability
+    assert U.market_sentence(_path({"dir": "hike", "n": 0, "p": 0.9}, m12=None)) == "The market prices a hike at the next meeting (90.0%)."
+    assert U.market_sentence(_path(None, cum=None, m12=-12.3)) == f"The market prices {M}12 bp over 12 months."
+    assert U.market_sentence(_path(None, cum=None, m12=None)) is None and U.market_sentence(None) is None
     assert U.market_line(_path(None, cum=32.0, m12=99.6, est=True)) == "Market: 9 Dec ≈ +32 bp · 12M ≈ +100 bp"
     assert U.market_line(_path({"dir": "hike", "n": 0, "p": 0.968})) == "Market: 9 Dec 96.8% hike · 12M +85 bp"
     assert U.market_line(_path({"dir": "hike", "n": 0, "p": 0.027})) == "Market: 9 Dec 97.3% hold · 12M +85 bp"
@@ -80,11 +83,20 @@ def test_bank_sentence_every_conditioning():
     assert U.bank_sentence(_r("unpublished"), None) == "The bank does not publish a rate path."
 
 
+def test_bank_sentence_degrades_by_clause():
+    """S2.1: market conditioning without the move since the cutoff (EUR: no market history at the cutoff) keeps the horizon clause."""
+    assert U.bank_sentence(_r("market", delta_bp=None, consistent=False, horizon_gap=0.3), FC) == \
+        "The bank sees CPI inflation at 1.8% at the horizon (above target)."
+    assert U.bank_sentence(_r("market", delta_bp=-13.4, consistent=None, horizon_gap=None), FC) == \
+        f"Since the Monetary Policy Report, November 2026 cutoff the market has moved {M}13 bp."
+    assert U.bank_sentence(_r("market", delta_bp=-13.4, consistent=True, horizon_gap=0.1), None) == \
+        "The bank sees CPI inflation at 1.8% at the horizon (consistent with target)."                          # no publication: no cutoff clause
+
+
 @pytest.mark.parametrize("r, fc", [
-    (_r("own_path", gap_bp=None, year=2027), None), (_r("market", delta_bp=None, consistent=True, horizon_gap=0.1), FC),
-    (_r("market", delta_bp=3.0, consistent=True, horizon_gap=0.1), None), (_r("market", delta_bp=3.0, consistent=None, horizon_gap=None), FC),
+    (_r("own_path", gap_bp=None, year=2027), None), (_r("market", delta_bp=None, consistent=None, horizon_gap=None), FC),
     (_r("constant_rate", delta_bp=None), None), (_r("whatever"), None)])
-def test_bank_sentence_na_is_omitted(r, fc):
+def test_bank_sentence_all_clauses_na_is_omitted(r, fc):
     assert U.bank_sentence(r, fc) is None
 
 
@@ -104,11 +116,83 @@ def test_rule_sentence_every_combination(today, later, basis):
 
 def test_rule_sentence_na_and_order():
     assert U.rule_sentence({"situation": None, "situation_12m": None}) is None                  # need only
-    assert U.rule_sentence({"situation": "S1", "direction": 1, "situation_12m": None}) is None
+    assert U.rule_sentence({"situation": "S1", "direction": 1, "situation_12m": None}) == "On today's data: behind the curve, more hikes needed."
+    assert U.rule_sentence({"situation": None, "situation_12m": "S2", "direction_12m": -1, "pi_12m_basis": "headline"}) == \
+        "If the rate is held: room to move down toward neutral in 12 months (on headline inflation)."
     r = {**_r("unpublished"), "situation": "S0", "direction": 0, "situation_12m": "S3", "direction_12m": 1, "pi_12m_basis": "underlying"}
     s = U.summary(r, _path({"dir": "hike", "n": 0, "p": 0.6}), None)
     assert [x.split()[1] for x in s] == ["market", "bank", "today's"]                            # Market -> Bank -> Rule
     assert U.summary({**_r("own_path", gap_bp=None), "situation": None, "situation_12m": None}, None, None) == []
+
+
+@pytest.fixture(scope="module")
+def real():
+    """The 8 banks' real inputs (golden fixture of S1.1) and paths (rendered payload)."""
+    from src.cb_loader import load_context
+    from src.cb_compute.payload import build
+    from src.cb_loader import load_pair_defs
+    import tests.test_cb_stance_compute as T
+    paths = build(load_context(None), date(2026, 11, 13), load_pair_defs())["overview"]["paths"]
+    return {c: (T.ST.compute(T.inputs(c), T.P), paths[c]) for c in T.ST.BANKS}
+
+
+CLAUSES = list(itertools.product((True, False), repeat=6))      # next meeting, 12M, moved since cutoff, horizon, today, 12 months
+
+
+@pytest.mark.parametrize("cur", ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF"))
+def test_every_clause_combination_for_every_bank(real, cur):
+    """S2.1: for each bank, each of the 2^6 combinations of available / n/a clauses: a clause with data is present, an n/a one is
+    absent, a sentence is absent only when all its clauses are n/a; the order stays Market -> Bank -> Rule."""
+    import copy
+    r0, p0 = real[cur]
+    for nxt, m12, moved, sees, today, later in CLAUSES:
+        r, p = copy.deepcopy(r0), copy.deepcopy(p0)
+        pt = U.first_point(p)
+        if not nxt and pt is not None:
+            pt["prob"], pt["cum_bp"] = None, None
+        if not m12:
+            p["m12"]["cum_bp"] = None
+        lens = r["lens"]
+        if not moved:
+            lens["delta_bp"] = lens["gap_bp"] = None
+        if not sees:
+            lens["consistent"] = None
+        if not today:
+            r["situation"] = None
+        if not later:
+            r["situation_12m"] = None
+        fc = {"publication": "Pub"}
+        out = U.summary(r, p, fc)
+        mk = U.market_sentence(p)
+        has_next = U.first_point(p0) is not None and nxt
+        has_m12 = p0["m12"].get("cum_bp") is not None and m12
+        assert (mk is None) == (not has_next and not has_m12), (cur, nxt, m12)
+        if mk:
+            assert ("next meeting" in mk) == bool(has_next) and ("over 12 months" in mk) == bool(has_m12), (cur, mk)
+        rl = U.rule_sentence(r)
+        t_ok, l_ok = today and r0["situation"] is not None, later and r0["situation_12m"] is not None
+        assert (rl is None) == (not t_ok and not l_ok), (cur, today, later)
+        if rl:
+            assert ("On today's data" in rl) == bool(t_ok) and ("If the rate is held" in rl) == bool(l_ok), (cur, rl)
+        bk = U.bank_sentence(r, fc)
+        kind = r0["lens"]["kind"]
+        if kind == "market":
+            m_ok = moved and r0["lens"].get("delta_bp") is not None
+            s_ok = sees and r0["lens"].get("consistent") is not None
+            assert (bk is None) == (not m_ok and not s_ok) and (bk is None or (("cutoff" in bk) == bool(m_ok) and ("sees" in bk) == bool(s_ok))), (cur, bk)
+        elif kind in ("own_path", "constant_rate"):
+            assert (bk is None) == (not moved or (r0["lens"].get("gap_bp") if kind == "own_path" else r0["lens"].get("delta_bp")) is None), (cur, bk)
+        else:
+            assert bk == "The bank does not publish a rate path."
+        assert out == [x for x in (mk, bk, rl) if x]
+
+
+def test_nzd_and_eur_sentences_on_the_real_data(real):
+    """The two cases of S2.1 A1, on the real inputs."""
+    nzd = U.summary(real["NZD"][0], real["NZD"][1], None)
+    assert nzd[0].startswith("The market prices about +") and "at the next meeting (estimate) and +" in nzd[0]
+    eur = U.bank_sentence(real["EUR"][0], {"publication": "Eurosystem staff macroeconomic projections, September 2026"})
+    assert eur.startswith("The bank sees ") and eur.endswith("at the horizon (above target).")
 
 
 # ------------------------------------------------------------------------------------------------ cycle line --

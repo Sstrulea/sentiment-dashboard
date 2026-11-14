@@ -2858,9 +2858,10 @@ table.cb-pathtable tr[data-meeting] { cursor: default; }
 }
 
 /* ---- Stance (S2): tab Stance + bank zone "Stance and need" ---- */
+.cb-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .cb-st-chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border); white-space: nowrap; }
 .cb-st-chip.up { color: var(--accent); border-color: var(--accent); }
-.cb-st-chip.down { color: #d32f2f; border-color: #d32f2f; }
+.cb-st-chip.down { color: var(--warning-fg); border-color: var(--warning-fg); }
 .cb-st-chip.cb-st-na { color: var(--muted); }
 .cb-st-flag { display: inline-block; margin: 2px 4px 0 0; padding: 0 6px; border-radius: 4px; font-size: 11px; background: var(--surface-alt); color: var(--muted); }
 .cb-st-badge { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 12px; background: var(--warn-mid-bg, #fff3e0); color: var(--warn-mid-fg, #bf5a00); }
@@ -2884,7 +2885,8 @@ table.cb-pathtable tr[data-meeting] { cursor: default; }
 .cb-st-foot { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
 .cb-st-summary { line-height: 1.5; }
 .cb-st-cons.ok { color: var(--accent); }
-.cb-st-cons.no { color: #d32f2f; }
+.cb-st-cons.no { color: var(--warning-fg); }
+.cb-st-howlink { color: var(--accent); }
 .cb-st-list { display: flex; flex-direction: column; gap: 10px; }
 .cb-st-item { display: block; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; color: inherit; text-decoration: none; }
 .cb-st-item-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px; }

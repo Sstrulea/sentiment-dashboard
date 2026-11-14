@@ -101,11 +101,20 @@ def first_point(path: dict) -> Optional[dict]:
 
 
 def market_sentence(path: Optional[dict]) -> Optional[str]:
-    o = next_outcome(first_point(path or {}))
+    """Two clauses, each dropped alone when n/a (S2.1): the next meeting (the likeliest outcome with its probability; an estimate
+    without a probability -> "about ±X bp ... (estimate)") and the 12 months. None only when both are n/a."""
+    pt = first_point(path or {})
+    o = next_outcome(pt)
     m12 = ((path or {}).get("m12") or {}).get("cum_bp")
-    if o is None or m12 is None:
-        return None
-    return f"The market prices {o[0]} at the next meeting ({pct1(o[1])}) and {bp(m12)} bp over 12 months."
+    if o is not None:
+        nxt = f"{o[0]} at the next meeting ({pct1(o[1])})"
+    elif pt is not None and pt.get("cum_bp") is not None:
+        nxt = f"about {bp(pt['cum_bp'])} bp at the next meeting (estimate)"
+    else:
+        nxt = None
+    yr = None if m12 is None else f"{bp(m12)} bp over 12 months"
+    parts = [x for x in (nxt, yr) if x]
+    return f"The market prices {' and '.join(parts)}." if parts else None
 
 
 def market_line(path: Optional[dict]) -> Optional[str]:
@@ -135,15 +144,22 @@ def bank_sentence(r: dict, fc: Optional[dict]) -> Optional[str]:
         if g is None or lens.get("year") is None:
             return None
         return f"The market is {bp_abs(g)} bp {'above' if g >= 0 else 'below'} the bank's own path for {lens['year']}."
-    if kind == "market":
+    if kind == "market":                                   # two clauses: the move since the cutoff, the bank's horizon projection
         d = lens.get("delta_bp")
         lp = (r.get("inputs") or {}).get("last_projection") or {}
-        if d is None or not fc or not fc.get("publication") or lp.get("v") is None or lens.get("consistent") is None:
-            return None
-        measure = str(lp.get("source", "")).split(": ", 1)[-1]
-        rel = "consistent with" if lens["consistent"] else ("above" if lens["horizon_gap"] > 0 else "below")
-        return (f"Since the {fc['publication']} cutoff the market has moved {bp(d)} bp; the bank sees {measure} at {lp['v']:g}% "
-                f"at the horizon ({rel} target).")
+        moved = None if d is None or not fc or not fc.get("publication") else f"the {fc['publication']} cutoff the market has moved {bp(d)} bp"
+        sees = None
+        if lp.get("v") is not None and lens.get("consistent") is not None:
+            measure = str(lp.get("source", "")).split(": ", 1)[-1]
+            rel = "consistent with" if lens["consistent"] else ("above" if lens["horizon_gap"] > 0 else "below")
+            sees = f"bank sees {measure} at {lp['v']:g}% at the horizon ({rel} target)"
+        if moved and sees:
+            return f"Since {moved}; the {sees}."
+        if moved:
+            return f"Since {moved}."
+        if sees:
+            return f"The {sees}."
+        return None
     if kind == "constant_rate":
         d = lens.get("delta_bp")
         if d is None:
@@ -166,11 +182,12 @@ def s_text(situation: str, direction: Optional[int]) -> str:
 
 
 def rule_sentence(r: dict) -> Optional[str]:
-    if r.get("situation") is None or r.get("situation_12m") is None:
-        return None
+    """Two clauses (today; held, in 12 months), each dropped alone when n/a; None only when both are."""
+    today = None if r.get("situation") is None else f"On today's data: {s_text(r['situation'], r.get('direction'))}."
     head = " (on headline inflation)" if r.get("pi_12m_basis") == "headline" else ""
-    return (f"On today's data: {s_text(r['situation'], r.get('direction'))}. "
-            f"If the rate is held: {s_text(r['situation_12m'], r.get('direction_12m'))} in 12 months{head}.")
+    later = None if r.get("situation_12m") is None else f"If the rate is held: {s_text(r['situation_12m'], r.get('direction_12m'))} in 12 months{head}."
+    parts = [x for x in (today, later) if x]
+    return " ".join(parts) if parts else None
 
 
 def summary(r: dict, path: Optional[dict], fc: Optional[dict]) -> list:

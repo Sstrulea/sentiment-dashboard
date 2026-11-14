@@ -1408,7 +1408,8 @@
   // a number with its key and format; n/a = "—" with the reason
   function stNum(v, f, k, na, cls) {
     if (!isNum(v)) return '<span class="cb-na" title="' + esc(na || "n/a") + '">' + NA + "</span>";
-    const tone = cls === "tone" ? (Number(v) > 0 ? " cb-hawk" : Number(v) < 0 ? " cb-dove" : "") : (cls ? " " + cls : "");
+    const txt = ST_FMT[f](v), zero = /^0(\.0+)?$/.test(txt);                  // a value that rounds to zero is neutral, not blue / red
+    const tone = cls === "tone" ? (zero ? "" : Number(v) > 0 ? " cb-hawk" : Number(v) < 0 ? " cb-dove" : "") : (cls ? " " + cls : "");
     return '<span class="cb-st-n' + tone + '"' + (k ? ' data-k="' + esc(k) + '"' : "") + ' data-f="' + f + '" data-v="' + esc(v) + '">' + ST_FMT[f](v) + "</span>";
   }
   function stChip(label, sit, dir, extra) {
@@ -1482,20 +1483,40 @@
       ds.push({ type: "scatter", data: [a.to], pointRadius: 5, pointBorderWidth: 2, borderColor: col, backgroundColor: c.surface, order: 2, $cbLater: a.ccy });
     });
     m.points.forEach(function (p) { ds.push({ type: "scatter", data: [{ x: p.x, y: p.y }], pointRadius: small ? 5 : 6, pointHoverRadius: 8, backgroundColor: bankColor(p.ccy), borderColor: c.surface, borderWidth: 1.5, order: 1, $cbToday: p.ccy }); });
+    // direct labels: for each dot the first of 8 positions around it that hits no other label, no dot (filled or hollow) and stays inside
+    // the plot; the rectangles are kept on the chart ($cbLabels) for the automated check
     const labels = { id: "cbStLabels", afterDatasetsDraw: function (ch) {
-      const g = ch.ctx;
+      const g = ch.ctx, ca = ch.chartArea, fs = small ? 10 : 12, R = 7;
       g.save();
-      g.font = (small ? "10px" : "12px") + " system-ui, sans-serif";
+      g.font = fs + "px system-ui, sans-serif";
       g.textBaseline = "middle";
+      const px = function (p) { return { x: ch.scales.x.getPixelForValue(p.x), y: ch.scales.y.getPixelForValue(p.y) }; };
+      const dots = m.points.map(function (p) { return px(p); }).concat(m.arrows.map(function (a) { return px(a.to); }));
+      const hit = function (r, o) { return r.x < o.x + o.w && o.x < r.x + r.w && r.y < o.y + o.h && o.y < r.y + r.h; };
+      const placed = [];
       m.points.forEach(function (p) {
+        const c0 = px(p), text = small ? p.ccy.slice(0, 1) + p.ccy.slice(1).toLowerCase() : p.ccy, w = g.measureText(text).width + 2, h = fs + 2;
+        const cand = [[R, -h - 1], [R, 1], [-R - w, -h - 1], [-R - w, 1], [-w / 2, -h - R], [-w / 2, R], [R + 4, -h / 2], [-R - w - 4, -h / 2]];
+        let best = null;
+        for (let k = 0; k < cand.length && !best; k++) {
+          const r = { x: c0.x + cand[k][0], y: c0.y + cand[k][1], w: w, h: h };
+          const inside = r.x >= ca.left && r.x + r.w <= ca.right && r.y >= ca.top && r.y + r.h <= ca.bottom;
+          const free = placed.every(function (o) { return !hit(r, o); }) && dots.every(function (d) { return !hit(r, { x: d.x - R, y: d.y - R, w: 2 * R, h: 2 * R }); });
+          if (inside && free) best = r;
+        }
+        best = best || { x: c0.x + cand[0][0], y: c0.y + cand[0][1], w: w, h: h };
+        placed.push(Object.assign({ ccy: p.ccy }, best));
+        g.fillStyle = withAlpha(c.surface, 0.75);
+        g.fillRect(best.x - 1, best.y, best.w, best.h);
         g.fillStyle = bankColor(p.ccy);
-        const px = ch.scales.x.getPixelForValue(p.x), py = ch.scales.y.getPixelForValue(p.y);
-        g.fillText(small ? p.ccy.slice(0, 1) + p.ccy.slice(1).toLowerCase() : p.ccy, px + 8, py - 9);
+        g.fillText(text, best.x, best.y + h / 2);
       });
+      ch.$cbLabels = placed;
+      ch.$cbDots = dots;
       if (!small) {
-        g.fillStyle = withAlpha(c.muted, 0.9);
-        g.fillText("hike zone", ch.chartArea.right - 70, ch.chartArea.bottom - 12);
-        g.fillText("cut zone", ch.chartArea.left + 8, ch.chartArea.top + 12);
+        g.fillStyle = c.muted;
+        g.fillText("hike zone (pressure up)", ca.right - 150, ca.bottom - 12);
+        g.fillText("cut zone (pressure down)", ca.left + 8, ca.top + 12);
       }
       g.restore();
     } };
@@ -1505,8 +1526,8 @@
     const chart = new Chart(canvas, {
       data: { datasets: ds }, plugins: [labels],
       options: { responsive: true, maintainAspectRatio: false, animation: false, parsing: false, events: [],
-        scales: { x: { type: "linear", min: m.xr[0], max: m.xr[1], grid: { color: withAlpha(c.border, 0.7) }, ticks: { color: c.muted, stepSize: 0.5 }, title: { display: true, text: "Need, pp", color: c.muted } },
-                  y: { type: "linear", min: m.yr[0], max: m.yr[1], grid: { color: withAlpha(c.border, 0.7) }, ticks: { color: c.muted, stepSize: 0.5 }, title: { display: true, text: "Stance, pp", color: c.muted } } },
+        scales: { x: { type: "linear", min: m.xr[0], max: m.xr[1], grid: { color: withAlpha(c.border, 0.7) }, ticks: { color: c.muted, stepSize: 0.5, callback: function (v) { return Math.abs(v * 2 - Math.round(v * 2)) < 1e-9 ? v : ""; } }, title: { display: true, text: "Need, pp", color: c.muted } },
+                  y: { type: "linear", min: m.yr[0], max: m.yr[1], grid: { color: withAlpha(c.border, 0.7) }, ticks: { color: c.muted, stepSize: 0.5, callback: function (v) { return Math.abs(v * 2 - Math.round(v * 2)) < 1e-9 ? v : ""; } }, title: { display: true, text: "Stance, pp", color: c.muted } } },
         plugins: { legend: { display: false }, tooltip: { enabled: false }, annotation: { annotations: ann } } }
     });
     const tip = tipBox(canvas);
@@ -1527,12 +1548,21 @@
     state.charts.push(chart);
     return chart;
   }
+  // the text alternative of the map: one line per point (bank, need, stance, situation today and in 12 months)
+  function stanceMapAlt(st, m) {
+    return '<ul class="cb-sr-only" id="cbStanceMapAlt">' + m.points.map(function (p) {
+      const s = st.banks[p.ccy];
+      return "<li>" + esc(p.ccy) + ": need " + fmtPP(s.need.v) + " pp, stance " + fmtPP(s.stance.v) + " pp (neutral interval " + fmtPP(s.stance.lo) + " to " + fmtPP(s.stance.hi) +
+        "), situation " + esc(s.chip || "n/a") + "; if the rate is held, in 12 months: need " + fmtPP(s.need_12m.v) + " pp, " + esc(s.chip_12m || "n/a") + "</li>";
+    }).join("") + "</ul>";
+  }
   function stanceMapCard(st) {
     const m = stanceMapModel(st.banks, st.params);
     const note = m.excluded.length ? '<p class="cb-sub cb-st-note">Not on the map (no neutral-rate estimate, need only): ' +
       m.excluded.map(function (x) { return '<span data-ccy="' + esc(x.ccy) + '"><b>' + esc(x.ccy) + "</b> — " + esc(x.reason) + " (need " + stNum(st.banks[x.ccy].need.v, "pp", "need.v") + " pp)</span>"; }).join("; ") + ".</p>" : "";
     return '<section class="cb-card cb-chartcard cb-st-mapcard"><h3>Need and stance <small class="muted">filled = today · whisker = the neutral interval · hollow = if the rate is held, in 12 months</small></h3>' +
-      '<div class="cb-chart-wrap cb-st-map"><canvas id="cbStanceMap" aria-label="Need (x) and stance (y) of each bank"></canvas></div>' + note + "</section>";
+      '<div class="cb-chart-wrap cb-st-map"><canvas id="cbStanceMap" role="img" aria-label="Map of need (x, pp) and stance (y, pp) of each bank with a neutral estimate; ' +
+      'the points are listed below the chart" aria-describedby="cbStanceMapAlt"></canvas></div>' + stanceMapAlt(st, m) + note + "</section>";
   }
 
   // ---- the table (8 rows): Cycle and market | Mandate check ----
@@ -1566,9 +1596,9 @@
     return stChip(s.chip, s.situation.v, s.situation.direction, s.situation.na) + " → " + stChip(s.chip_12m, s.situation_12m.v, s.situation_12m.direction, s.situation_12m.na) +
       '<div class="cb-st-flags">' + stFlagChips(s.flags, "", s) + stFlagChips(s.flags_12m, "12m", s) + "</div>";
   }
-  function pressureCell(s) {
+  function pressureCell(s, unit) {
     if (!isNum(s.pressure.v)) return '<span class="cb-na" title="' + esc(s.pressure.na) + '">' + NA + "</span>";
-    return stNum(s.pressure.v, "bp100", "pressure.v", null, "tone") + '<div class="cb-st-subline">' + stNum(s.pressure.lo, "bp100", "pressure.lo") + " to " + stNum(s.pressure.hi, "bp100", "pressure.hi") + "</div>";
+    return stNum(s.pressure.v, "bp100", "pressure.v", null, "tone") + (unit ? ' <small class="muted">' + unit + "</small>" : "") + '<div class="cb-st-subline">' + stNum(s.pressure.lo, "bp100", "pressure.lo") + " to " + stNum(s.pressure.hi, "bp100", "pressure.hi") + "</div>";
   }
   const STANCE_SORTS = [["m12", "Market 12M"], ["pressure", "Pressure"], ["lens", "Bank vs market"]];
   function stanceRows(st, key) {
@@ -1605,7 +1635,7 @@
       const kv = function (k, v) { return '<div class="cb-st-kv"><span class="muted">' + k + "</span><span>" + v + "</span></div>"; };
       return '<a class="cb-st-item" data-ccy="' + esc(s.bank) + '" href="' + esc(bankUrlPage(s.bank)) + '#cbStanceZone"><div class="cb-st-item-head"><span class="cb-swatch" data-ccy="' + esc(s.bank) + '"></span><b>' + esc(s.bank) + "</b> " +
         '<small class="muted">' + esc(stRate(s.rate_display)) + "</small><span class=\"cb-st-item-chips\">" + situationCell(s) + "</span></div>" +
-        kv("Cycle", cycleCell(s)) + kv("Mkt 12M", m12Cell(s) + " bp") + kv("Bank vs market", lensCell(s)) + kv("Stance", stanceBar(s)) + kv("Need now → 12m", needCell(s)) + kv("Pressure", pressureCell(s)) + "</a>";
+        kv("Cycle", cycleCell(s)) + kv("Mkt 12M", m12Cell(s) + " bp") + kv("Bank vs market", lensCell(s)) + kv("Stance", stanceBar(s)) + kv("Need now → 12m", needCell(s)) + kv("Pressure", pressureCell(s, "bp")) + "</a>";
     }).join("");
     return '<div class="cb-tablehead"><h3>Stance by bank</h3>' + stancePills(key) + '</div><div class="cb-st-list">' + items + "</div>";
   }
@@ -1700,7 +1730,7 @@
     const ru = '<section class="cb-card cb-st-card"><h3>Rule · mandate check</h3>' +
       '<div class="cb-st-kv"><span class="muted">Need now → 12m</span><span>' + needCell(s) + "</span></div>" +
       '<div class="cb-st-kv"><span class="muted">Stance</span><span>' + stanceBar(s) + "</span></div>" +
-      '<div class="cb-st-kv"><span class="muted">Pressure</span><span>' + pressureCell(s) + " bp</span></div>" +
+      '<div class="cb-st-kv"><span class="muted">Pressure</span><span>' + pressureCell(s, "bp") + "</span></div>" +
       '<dl class="cb-st-mandate">' +
       "<dt>Target</dt><dd>" + esc(m.target || NA) + (m.target_measure ? " · " + esc(m.target_measure) : "") + "</dd>" +
       "<dt>Underlying</dt><dd>" + esc(m.underlying || NA) + (m.rule_text ? ' <small class="muted">rule ' + esc(m.rule_text) + "</small>" : "") + "</dd>" +
@@ -1708,8 +1738,10 @@
       "<dt>Version</dt><dd>from " + esc(fmtDate(m.effective_from)) + (m.effective_to ? " to " + esc(fmtDate(m.effective_to)) : "") + "</dd>" +
       "<dt>Last verified</dt><dd>" + esc(fmtDate(m.last_verified)) + "</dd>" +
       "<dt>Source</dt><dd>" + (m.source_url ? '<a href="' + esc(m.source_url) + '" target="_blank" rel="noopener">' + esc(m.source_title || m.source_url) + "</a>" : NA) + "</dd></dl></section>";
-    const test = nt ? '<span class="cb-st-test">Next test: ' + (nt.date ? "<b>" + esc(fmtDate(nt.date)) + "</b> " + esc(nt.title) : '<span class="cb-na" title="' + esc(nt.na) + '">' + NA + "</span> " + esc(nt.title)) +
-      ' <small class="muted">schedule: ' + esc(nt.schedule) + "</small>" + (isNum(s.pivot.v) ? " · pivot " + stNum(s.pivot.v, "lvl", "pivot.v") + '% <small class="muted">underlying inflation at which the pressure is zero</small>' : "") + "</span>" : "";
+    // Next test only with a date in the calendar (S2.1); the pivot stays, on its own when there is no date
+    const pivot = isNum(s.pivot.v) ? '<span class="cb-st-pivot">Pivot ' + stNum(s.pivot.v, "lvl", "pivot.v") + '% <small class="muted">underlying inflation at which the pressure is zero</small></span>' : "";
+    const test = '<div class="cb-st-test">' + (nt && nt.date ? '<span data-st-next>Next test: <b>' + esc(fmtDate(nt.date)) + "</b> " + esc(nt.title) +
+      ' <small class="muted">schedule: ' + esc(nt.schedule) + "</small></span>" + (pivot ? " · " : "") : "") + pivot + "</div>";
     const calc = '<details class="cb-st-calc" id="cbStanceCalc"><summary>Show calculation</summary><ol class="cb-st-calclist">' + calcLines(s).map(function (l) { return "<li>" + l + "</li>"; }).join("") + "</ol></details>";
     const hist = '<div class="cb-st-histbox"><b>History</b> <small class="muted">pressure, bp, one point per daily snapshot</small>' + stanceHistoryHtml(s) + "</div>";
     const how = '<a href="' + esc(CFG.urls.overview_page) + '#stance-how" class="cb-st-howlink">How to read</a>';
