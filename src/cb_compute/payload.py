@@ -888,6 +888,12 @@ def stance_page(r: dict, path: Optional[dict], fc: Optional[dict], mandate: Opti
     """The stance block of a bank page (and, without the history, of the overview): stance_json + the deterministic texts (S2)."""
     from . import stance_ui as U
     j = stance_json(r)
+    why = next((n[len("neutral: "):] for n in r.get("notes") or [] if n.startswith("neutral: ")), None)
+    if why == "neutral not_published":
+        why = "the bank does not publish a neutral-rate estimate"
+    if why and j["stance"]["v"] is None:                     # the bank's own reason for the missing neutral (pending, ...)
+        for k in ("stance", "pressure", "situation", "pivot"):
+            j[k]["na"] = f"no neutral estimate: {why}"
     j.update(
         chip=U.chip(r.get("situation"), r.get("direction")), chip_12m=U.chip(r.get("situation_12m"), r.get("direction_12m")),
         summary=U.summary(r, path, fc), cycle_line=U.cycle_line(r.get("cycle")), market_line=U.market_line(path),

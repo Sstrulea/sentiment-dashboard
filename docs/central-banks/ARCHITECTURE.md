@@ -1318,3 +1318,30 @@ need_only); puritate; append-only; payload; guard display-only.
 | A7 | Eticheta consistent/inconsistent la orice bancă cu proiecție. | `stance.compute` |
 
 `STANCE_CODE_VERSION = "s1.1"`; istoricul are coloana `flags_12m`. Seed-ul snapshot 2026-11-14 regenerat cu v3 (S1 nu fusese încă unit în main).
+
+### 23d. Stance — S2: UI (tab-ul Stance + zona „Stance and need”)
+
+```
+src/cb_compute/stance_ui.py   pur: șabloanele deterministe (Market → Bank → Rule), linia ciclului / pieței, chip-urile, cardul de mandat,
+                              Next test, istoricul; HOW_TO_READ (textul exact); formatarea B.4 (pp 2 zecimale cu semn, bp întregi cu semn)
+src/cb_compute/payload.py     stance_page(): stance_json + textele (S1.1: flags_12m, need_12m, pressure_12m, lens.year/basis, calc complet)
+src/cb_render.py              stance_blocks(): blocul `stance` în overview.json (fără history și calc.inputs) și în <ccy>.json; o eroare →
+                              {"na": motiv}, restul render-ului continuă; validarea fișierelor manuale față de ziua reală (as-of-ul render-ului
+                              = data pieței, alege doar ce era cunoscut)
+config/cb_stance_ui.yaml      Next test: titlurile FF ale publicării măsurii underlying (citire din data/ff_raw/ff_weekly_*.json, săptămâna curentă)
+static/cb.js                  tab „Stance” între Compare și Pairs (#stance, #stance-how): harta (Chart.js; banda |1.5x − y| ≤ δ, zonele hike / cut,
+                              x = ±ε punctat, punct plin azi, mustață = intervalul neutral, săgeată punctată spre punctul gol „held, 12m”, card de hover),
+                              nota need_only sub hartă, tabelul de 8 rânduri (Cycle and market | Mandate check; sortare Market 12M / Pressure /
+                              Bank vs market), „How to read”; pe telefon lista de carduri, harta dedesubt. Pagina băncii: zona „Stance and need” sub
+                              traiectorie (chip-uri azi → 12 luni, flag-uri, badge framework, ciclu + piață, rezumatul, cele 3 carduri, Next test + pivot,
+                              Show calculation, History — grafic de la 5 snapshot-uri, altfel „History starts on …”, link How to read)
+scripts/check_stance_ui.py    Playwright: 8 rânduri / 8 carduri, punctele hărții = băncile cu neutral, nota need_only, fiecare număr afișat =
+                              valoarea din payload rotunjită B.4 (data-k / data-f / data-v), Show calculation, fără scroll orizontal la 390 px,
+                              zero erori în consolă, footer-ul FRED, DOM-ul celorlalte pagini CB și /economic identic cu baseline-ul; capturile
+                              din reports/stance-ui/
+```
+
+Fiecare număr randat poartă `data-k` (cheia în blocul stance), `data-f` (formatul) și `data-v` (valoarea), ca verificarea automată să compare
+pagina cu payload-ul. USD: rata ca interval peste tot, midpoint-ul doar în Show calculation. Teste: `tests/test_cb_stance_ui.py` (șabloanele pe
+toate combinațiile, schema scrisă, determinismul, o eroare de stance nu blochează render-ul) și `tests/cb_js/test_stance.cjs` (formatare, chip-uri,
+geometria hărții, sortarea, Show calculation, istoricul).

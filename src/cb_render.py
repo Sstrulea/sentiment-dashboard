@@ -138,7 +138,8 @@ def render(data_dir: Path | str | None = None, public_dir: Path | str | None = N
     st = stance_blocks(data_dir, ctx, asof, out)                         # S2: the stance on the overview (tab Stance) and each bank page
     out["overview"]["stance"] = ({"na": st["na"]} if st.get("na") else
                                  {**{k: v for k, v in st.items() if k != "banks"},
-                                  "banks": {c: {k: v for k, v in b.items() if k not in ("history", "calc")} for c, b in st["banks"].items()}})
+                                  "banks": {c: {**{k: v for k, v in b.items() if k not in ("history", "calc")},
+                                                "calc": {k: v for k, v in b["calc"].items() if k != "inputs"}} for c, b in st["banks"].items()}})
     for c, page in out["banks"].items():
         page["stance"] = ({"na": st["na"]} if st.get("na") else
                           {**st["banks"][c], "how_to_read": st["how_to_read"], "params": st["params"]} if c in st["banks"] else {"na": "no stance for this bank"})

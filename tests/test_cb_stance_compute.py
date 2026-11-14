@@ -408,9 +408,9 @@ def test_economic_modules_do_not_import_the_stance():
     assert r.returncode == 0, r.stdout + r.stderr
 
 
-def test_payload_is_not_written_to_public():
-    for f in ("src/cb_render.py",):
-        assert "stance_json" not in (ROOT / f).read_text()
+def test_payload_is_written_by_the_cb_render():
+    """S2: the stance payload reaches public/data/cb only through cb_render (stance_page -> stance_json); schema in test_cb_stance_ui."""
+    assert "P.stance_page(" in (ROOT / "src" / "cb_render.py").read_text()
 
 
 def test_status_alerts_when_the_dots_do_not_reproduce_the_published_median(monkeypatch):

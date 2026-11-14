@@ -1416,7 +1416,7 @@
     return '<span class="cb-st-chip cb-st-' + esc(sit) + (dir > 0 ? " up" : dir < 0 ? " down" : "") + '"' + (extra ? ' title="' + esc(extra) + '"' : "") + ">" + esc(label) + "</span>";
   }
   function stFlagChips(flags, when, s) {
-    return (flags || []).filter(function (f) { return ST_FLAGS[f]; }).sort(function (a, b) { return ST_FLAG_ORDER.indexOf(a) - ST_FLAG_ORDER.indexOf(b); }).map(function (f) {
+    return (flags || []).filter(function (f) { return ST_FLAGS[f] && f !== "need_only"; }).sort(function (a, b) { return ST_FLAG_ORDER.indexOf(a) - ST_FLAG_ORDER.indexOf(b); }).map(function (f) {
       let tip = ST_FLAGS[f][1];
       if (f === "stale") tip += " (as of " + fmtDate(s && s.asof) + ").";
       if (f === "pending" && s && s.notes && s.notes.length) tip += " " + s.notes.join("; ");
@@ -1530,7 +1530,7 @@
   function stanceMapCard(st) {
     const m = stanceMapModel(st.banks, st.params);
     const note = m.excluded.length ? '<p class="cb-sub cb-st-note">Not on the map (no neutral-rate estimate, need only): ' +
-      m.excluded.map(function (x) { return "<b>" + esc(x.ccy) + "</b> — " + esc(x.reason) + " (need " + stNum(st.banks[x.ccy].need.v, "pp", "need.v") + " pp)"; }).join("; ") + ".</p>" : "";
+      m.excluded.map(function (x) { return '<span data-ccy="' + esc(x.ccy) + '"><b>' + esc(x.ccy) + "</b> — " + esc(x.reason) + " (need " + stNum(st.banks[x.ccy].need.v, "pp", "need.v") + " pp)</span>"; }).join("; ") + ".</p>" : "";
     return '<section class="cb-card cb-chartcard cb-st-mapcard"><h3>Need and stance <small class="muted">filled = today · whisker = the neutral interval · hollow = if the rate is held, in 12 months</small></h3>' +
       '<div class="cb-chart-wrap cb-st-map"><canvas id="cbStanceMap" aria-label="Need (x) and stance (y) of each bank"></canvas></div>' + note + "</section>";
   }
@@ -1546,9 +1546,9 @@
   const LENS_KIND = { own_path: "vs the bank's path", market: "since the projection cutoff", constant_rate: "vs the assumed constant rate", unpublished: "no published rate path" };
   function lensCell(s) {
     const l = s.lens;
-    if (!isNum(l.v)) return '<span class="cb-na" title="' + esc(l.na || "n/a") + '">' + NA + '</span> <small class="muted">' + esc(LENS_KIND[l.kind] || "") + "</small>";
+    if (!isNum(l.v)) return '<span class="cb-na" title="' + esc(l.na || "n/a") + '">' + NA + '</span><div class="cb-st-subline">' + esc(LENS_KIND[l.kind] || "") + "</div>";
     const est = l.flag === "ESTIMATE";
-    return (est ? "≈ " : "") + stNum(l.v, "bp", "lens.v", null, "tone") + ' <small class="muted">' + esc(LENS_KIND[l.kind] + (l.year ? " " + l.year : "")) + "</small>";
+    return (est ? "≈ " : "") + stNum(l.v, "bp", "lens.v", null, "tone") + '<div class="cb-st-subline">' + esc(LENS_KIND[l.kind] + (l.year ? " " + l.year : "")) + "</div>";
   }
   function stanceBar(s) {
     const c = s.calc || {}, n = c.neutral;
@@ -1568,7 +1568,7 @@
   }
   function pressureCell(s) {
     if (!isNum(s.pressure.v)) return '<span class="cb-na" title="' + esc(s.pressure.na) + '">' + NA + "</span>";
-    return stNum(s.pressure.v, "bp100", "pressure.v", null, "tone") + ' <small class="muted">(' + stNum(s.pressure.lo, "bp100", "pressure.lo") + " to " + stNum(s.pressure.hi, "bp100", "pressure.hi") + ")</small>";
+    return stNum(s.pressure.v, "bp100", "pressure.v", null, "tone") + '<div class="cb-st-subline">' + stNum(s.pressure.lo, "bp100", "pressure.lo") + " to " + stNum(s.pressure.hi, "bp100", "pressure.hi") + "</div>";
   }
   const STANCE_SORTS = [["m12", "Market 12M"], ["pressure", "Pressure"], ["lens", "Bank vs market"]];
   function stanceRows(st, key) {
@@ -1711,7 +1711,7 @@
     const test = nt ? '<span class="cb-st-test">Next test: ' + (nt.date ? "<b>" + esc(fmtDate(nt.date)) + "</b> " + esc(nt.title) : '<span class="cb-na" title="' + esc(nt.na) + '">' + NA + "</span> " + esc(nt.title)) +
       ' <small class="muted">schedule: ' + esc(nt.schedule) + "</small>" + (isNum(s.pivot.v) ? " · pivot " + stNum(s.pivot.v, "lvl", "pivot.v") + '% <small class="muted">underlying inflation at which the pressure is zero</small>' : "") + "</span>" : "";
     const calc = '<details class="cb-st-calc" id="cbStanceCalc"><summary>Show calculation</summary><ol class="cb-st-calclist">' + calcLines(s).map(function (l) { return "<li>" + l + "</li>"; }).join("") + "</ol></details>";
-    const hist = '<details class="cb-st-histbox"' + ((s.history || []).length >= 5 ? " open" : "") + '><summary>History</summary>' + stanceHistoryHtml(s) + "</details>";
+    const hist = '<div class="cb-st-histbox"><b>History</b> <small class="muted">pressure, bp, one point per daily snapshot</small>' + stanceHistoryHtml(s) + "</div>";
     const how = '<a href="' + esc(CFG.urls.overview_page) + '#stance-how" class="cb-st-howlink">How to read</a>';
     return '<h2 class="cb-zone" id="cbStanceZone">Stance and need</h2><section class="cb-st-zone">' + head + lines + sum +
       '<div class="cb-st-cards">' + mk + bk + ru + "</div>" + '<div class="cb-st-foot">' + test + calc + hist + how + "</div></section>";
