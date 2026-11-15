@@ -1,14 +1,23 @@
 {
   "_calendar_check": {
-    "checked": "2026-11-08",
+    "checked": "2026-11-15",
     "failed": {},
     "signatures": {
       "CH": {
-        "etag": "\"25b6b-65fab0f396f90\"",
+        "etag": "\"25b6b-66034eae796fb\"",
         "length": 154475
       }
     },
     "warnings": [
+      "USD: 2025-09-17 is on the official page but meetings.yaml has it as source=official_archive",
+      "USD: 2025-10-29 is on the official page but meetings.yaml has it as source=official_archive",
+      "USD: 2025-12-10 is on the official page but meetings.yaml has it as source=official_archive",
+      "USD: 2027-01-25 is on the official page but not in meetings.yaml",
+      "USD: 2027-11-17 is on the official page but not in meetings.yaml",
+      "USD: 2027-03-17 has_projections is False on the page, True in meetings.yaml",
+      "USD: 2027-06-09 has_projections is False on the page, True in meetings.yaml",
+      "USD: 2027-09-15 has_projections is False on the page, True in meetings.yaml",
+      "USD: 2027-12-08 is in meetings.yaml but no longer on the official page (moved or cancelled?)",
       "HOLIDAYS NZ: 2026-04-27 (Anzac Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2026-12-28 (Boxing Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
       "HOLIDAYS NZ: 2027-01-04 (Day after New Year's Day (observed)) is in cb_calendars.yaml as verified but no longer on the official page",
