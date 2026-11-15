@@ -28,6 +28,80 @@
       "HOLIDAYS CH: the official file changed (154475 -> 154475 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
     ]
   },
+  "_framework": {
+    "checked": "2026-11-15",
+    "targets": {
+      "AUD.framework": {
+        "hash": "e3f774d53df70c3a88e3004c26e68f5ceb0be632577aa2cad800039a8410859d",
+        "since": "2026-11-15",
+        "url": "https://www.rba.gov.au/monetary-policy/framework/"
+      },
+      "AUD.measures": {
+        "hash": "72d80421c038dad4285411b9b22922892fac131820d16ab31ec76a7d0fe34cdd",
+        "since": "2026-11-15",
+        "url": "https://www.rba.gov.au/inflation/measures-cpi.html"
+      },
+      "CAD.framework": {
+        "hash": "21e66577febe3867ebda071d5362fd19a4d45351b8044be9d824b54a8b793a6b",
+        "since": "2026-11-15",
+        "url": "https://www.bankofcanada.ca/core-functions/monetary-policy/agreement-inflation-control-target/"
+      },
+      "CAD.measures": {
+        "hash": "b62d78aa1c1fddea79430d1dfdcd3838fed124c3c24c3ae0f49b8efd8dbf2105",
+        "since": "2026-11-15",
+        "url": "https://www.bankofcanada.ca/rates/price-indexes/cpi/"
+      },
+      "CHF.framework": {
+        "hash": "10df8958c82f9943a28a34ab0f4eb3d535ea8e73d93324d7b5cfb6465226bed9",
+        "since": "2026-11-15",
+        "url": "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/strategy"
+      },
+      "EUR.framework": {
+        "hash": "6b66343dc784252d6e04d0287a3cce50a0b53d4a5efb75ab8c072ddf00f38988",
+        "since": "2026-11-15",
+        "url": "https://www.ecb.europa.eu/mopo/strategy/html/index.en.html"
+      },
+      "EUR.review": {
+        "hash": "0b71bb9a9b23c092baf62abc05f2970102591743dab90142ffe04817ec4727dd",
+        "since": "2026-11-15",
+        "url": "https://www.ecb.europa.eu/mopo/strategy/strategy-review/html/index.en.html"
+      },
+      "GBP.framework": {
+        "hash": "963f18eb69d223cd0c272e669fadf42c2ece388cb8ddd9beb7ff90d6fb1fa655",
+        "since": "2026-11-15",
+        "url": "https://www.bankofengland.co.uk/monetary-policy"
+      },
+      "JPY.framework": {
+        "hash": "080c0896af906ed3f94c2c7558b997cc7f2dfdf06a5992961056e2621a9379c1",
+        "since": "2026-11-15",
+        "url": "https://www.boj.or.jp/en/mopo/outline/index.htm"
+      },
+      "JPY.measures": {
+        "hash": "fa4ae9ea3e20035ed53a9e27ae1b0f3a8da2b53a6fc8822a4b1ed82d6f24fa50",
+        "since": "2026-11-15",
+        "url": "https://www.boj.or.jp/en/research/research_data/cpi/index.htm"
+      },
+      "USD.framework": {
+        "hash": "2c01f6e1eedaf54acd07ab052ab7ddae82e1bca805aa30032c586b14d801fb9f",
+        "since": "2026-11-15",
+        "url": "https://www.federalreserve.gov/monetarypolicy/review-of-monetary-policy-strategy-tools-and-communications.htm"
+      }
+    },
+    "validators": {
+      "https://www.boj.or.jp/en/mopo/outline/index.htm": {
+        "etag": "\"245679\"",
+        "sha256": "080c0896af906ed3f94c2c7558b997cc7f2dfdf06a5992961056e2621a9379c1"
+      },
+      "https://www.boj.or.jp/en/research/research_data/cpi/index.htm": {
+        "etag": "\"245679\"",
+        "sha256": "fa4ae9ea3e20035ed53a9e27ae1b0f3a8da2b53a6fc8822a4b1ed82d6f24fa50"
+      },
+      "https://www.federalreserve.gov/monetarypolicy/review-of-monetary-policy-strategy-tools-and-communications.htm": {
+        "last_modified": "Thu, 26 Feb 2026 21:40:08 GMT",
+        "sha256": "2c01f6e1eedaf54acd07ab052ab7ddae82e1bca805aa30032c586b14d801fb9f"
+      }
+    }
+  },
   "atlantafed_mpt": {
     "etag": "7de42f53610444a2abb36fcdebe54e49",
     "last_modified": "Fri, 13 Nov 2026 18:26:14 GMT"
