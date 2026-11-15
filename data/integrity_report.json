@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-15T08:12:13.537342",
+ "as_of": "2026-11-15T12:06:31.887444",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -536,7 +536,7 @@
      "threshold": 0.59478,
      "n_revision_pairs": 42,
      "level": "INFO",
-     "new": true
+     "new": false
     },
     {
      "canonical_id": "usd_initial_jobless_claims",
@@ -2279,5 +2279,5 @@
    "INFO": 30
   }
  },
- "generated_at": "2026-11-15T08:12:19+00:00"
+ "generated_at": "2026-11-15T12:06:38+00:00"
 }
