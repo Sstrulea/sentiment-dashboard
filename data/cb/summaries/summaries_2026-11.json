@@ -3820,6 +3820,223 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     9,
+     10,
+     14,
+     26,
+     29,
+     44,
+     51
+    ],
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:speech:d0149ad4ee46",
+   "dropped_points": [
+    {
+     "errors": [
+      "evidence fragment 1 of summary point 2 is not verbatim in the paragraph(s) it cites [14] (that text is not in the document verbatim - copy it character for character, curly quotes included)",
+      "summary point 2 has a negation but the closest clause of the paragraph(s) it cites has none: “It was sustained because the nonfinancial corporate sector behaved in an extraordinary way (Chart 6).” (its clause: “Governor Kazuo Ueda says the external surplus did not disappear because the nonfinancial corporate s”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Governor Kazuo Ueda says the external surplus did not disappear because the nonfinancial corporate sector behaved in an extraordinary way, as corporate investment rates fell and corporate saving trended upward."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-16T02:41:19Z",
+   "input_sha256": "ac2216ea288e6b3e6e20d9cd77b5b662988fd8e2521df8d25dba296726da38c2",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 3621,
+     "point": 2,
+     "source_text": "1990",
+     "start": 3617,
+     "text": "1990"
+    },
+    {
+     "end": 7515,
+     "point": 2,
+     "source_text": "2010",
+     "start": 7511,
+     "text": "2010"
+    },
+    {
+     "end": 8357,
+     "point": 3,
+     "source_text": "2012",
+     "start": 8353,
+     "text": "2012"
+    },
+    {
+     "end": 12415,
+     "point": 4,
+     "source_text": "70 percent",
+     "start": 12405,
+     "text": "70 percent"
+    },
+    {
+     "end": 12482,
+     "point": 4,
+     "source_text": "2023",
+     "start": 12478,
+     "text": "2023"
+    },
+    {
+     "end": 9389,
+     "point": 4,
+     "source_text": "2024",
+     "start": 9385,
+     "text": "2024"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-12",
+   "quotes": [
+    {
+     "end": 2142,
+     "paragraph": 10,
+     "start": 2019,
+     "text": "Net income earned on foreign investments has thus become the principal source of Japan's current account surplus (Chart 3)."
+    },
+    {
+     "end": 4241,
+     "paragraph": 14,
+     "start": 4100,
+     "text": "In the late 1990s, Japanese firms shifted from being net borrowers to chronic, massive net savers -- and have remained net savers ever since."
+    },
+    {
+     "end": 8770,
+     "paragraph": 29,
+     "start": 8648,
+     "text": "Since 2012, outward FDI has eclipsed portfolio investment as the dominant vehicle for Japan's capital outflows (Chart 10)."
+    },
+    {
+     "end": 14344,
+     "paragraph": 51,
+     "start": 14201,
+     "text": "Even after this adjustment had largely run its course, corporate saving remained high, while overseas investment became increasingly important."
+    }
+   ],
+   "source": {
+    "chars": 17408,
+    "chars_sent": 17409,
+    "method": "html-selector",
+    "paragraphs_sent": 72,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 1611,
+        "paragraph": 9,
+        "start": 1573,
+        "text": "It then moved into persistent surplus."
+       },
+       {
+        "end": 2131,
+        "paragraph": 10,
+        "start": 2019,
+        "text": "Net income earned on foreign investments has thus become the principal source of Japan's current account surplus"
+       }
+      ],
+      "paragraphs": [
+       9,
+       10
+      ]
+     },
+     "text": "Governor Kazuo Ueda says Japan's current account moved into persistent surplus, while net income earned on foreign investments became its principal source."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 7728,
+        "paragraph": 26,
+        "start": 7626,
+        "text": "Debt repayment became a major priority for Japanese firms from the late 1990s through the early 2010s."
+       },
+       {
+        "end": 8000,
+        "paragraph": 26,
+        "start": 7891,
+        "text": "That defensive stance did not dissipate once solvency was restored and that surplus has persisted ever since."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Governor Kazuo Ueda says Japanese firms made debt repayment a major priority from the late 1990s through the early 2010s, and that defensive stance did not dissipate once solvency was restored."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8488,
+        "paragraph": 29,
+        "start": 8433,
+        "text": "Corporate saving, however, remained exceptionally high."
+       },
+       {
+        "end": 8758,
+        "paragraph": 29,
+        "start": 8648,
+        "text": "Since 2012, outward FDI has eclipsed portfolio investment as the dominant vehicle for Japan's capital outflows"
+       }
+      ],
+      "paragraphs": [
+       29
+      ]
+     },
+     "text": "Governor Kazuo Ueda says corporate saving remained exceptionally high and outward FDI has eclipsed portfolio investment as Japan's dominant vehicle for capital outflows since 2012."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12508,
+        "paragraph": 44,
+        "start": 12395,
+        "text": "more than 70 percent of Japanese firms reported investing more actively at home in 2023-2024 than in prior years."
+       },
+       {
+        "end": 12605,
+        "paragraph": 44,
+        "start": 12521,
+        "text": "the most common reason cited was the urgent need to address domestic labor shortages"
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "Governor Kazuo Ueda says more than 70 percent of Japanese firms reported investing more actively at home in 2023-2024, with the urgent need to address domestic labor shortages the most common reason cited."
+    }
+   ],
+   "title": "Japan's current account surplus and corporate adjustment",
+   "type": "speech",
+   "url": "https://www.bis.org/speeches/20261112-japans-current-account-surplus-and-corporate-adjustment",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10971,
+    "output_tokens": 1826,
+    "reasoning_tokens": 595
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      4,
      7,
      9,
