@@ -81,7 +81,7 @@ class StatsNzCpi:
                          file_kind: str = "index-numbers") -> Optional[str]:
         text = html.unescape(page_html).replace("\\/", "/")
         links = re.findall(r'"DocumentLink":"(/assets/[^"]+?\.csv)"', text)
-        hit = next((u for u in links if re.search(rf"-{re.escape(file_kind)}(-updated)?\.csv$", u)), None)
+        hit = next((u for u in links if re.search(rf"-{re.escape(file_kind)}(-updated|-corrected)?\.csv$", u, re.I)), None)   # a re-issued file carries -updated or -corrected (Dec 2025 quarter); case varies (Dec 2022: Infoshare)
         return base + hit if hit else None
 
     @staticmethod
@@ -94,7 +94,7 @@ class StatsNzCpi:
             df = pd.read_csv(io.BytesIO(content), dtype=str, keep_default_na=False)
         except UnicodeDecodeError:                       # the infoshare file is cp1252 (en dash in titles)
             df = pd.read_csv(io.BytesIO(content), dtype=str, keep_default_na=False, encoding="cp1252")
-        cols = {c.lower(): c for c in df.columns}
+        cols = {c.lower().replace(" ", ""): c for c in df.columns}       # Dec 2022 file: "Data _Value", "Status  Code "
         ref, per, val = cols.get("series_reference"), cols.get("period"), cols.get("data_value")
         if not (ref and per and val):
             raise ValueError(f"unexpected CSV columns: {list(df.columns)}")

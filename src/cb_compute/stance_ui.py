@@ -1,5 +1,5 @@
-"""Stance S2 - the UI payload of the stance (pure, deterministic, no AI): the summary sentences, the cycle and market lines, the
-mandate card, the next test, the history. ARCHITECTURE section 23d.
+"""Stance UI (v5) - the parts of the bank zone that are not computed by stance_v5.py: the mandate card, the next test, the history,
+the "How to read it" text. Pure, deterministic, no AI. ARCHITECTURE section 23d.
 
 Every text is a fixed template filled with payload values (B.4 rounding: pp 2 decimals with a sign, bp signed integers, inflation as
 published, probabilities with one decimal). A sentence whose value is n/a is omitted (None). DISPLAY-ONLY: never imported by /economic.
@@ -12,34 +12,14 @@ from typing import Optional
 MINUS = "−"
 MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-S_TEXT = {"S0": "roughly in balance", "S1": "behind the curve, more {moves} needed", "S2": "room to move {way} toward neutral",
-          "S3": "at or past the required level, hold"}
-CHIPS = {("S0", 0): "S0 balanced", ("S1", 1): "S1 hike", ("S1", -1): "S1 cut", ("S2", 1): "S2 up", ("S2", -1): "S2 down",
-         ("S3", 1): "S3 hold", ("S3", -1): "S3 hold", ("S3", 0): "S3 hold"}
-FLAG_TIPS = {
-    "boundary": ("near a threshold", "The situation is within 0.05 pp of a threshold of the rule."),
-    "neutral_sensitive": ("neutral-sensitive", "Depends on where neutral is: the situation differs at the two ends of the neutral interval."),
-    "headline_basis": ("headline basis", "The bank does not project its underlying measure for this period: the headline projection is used."),
-    "estimate": ("estimate", "An input is an estimate (market side or publication cutoff)."),
-    "stale": ("stale", "An input is older than its freshness threshold."),
-    "pending": ("pending", "An input the rule needs has not been entered yet (see the reason)."),
-    "slack_held": ("slack held", "The bank publishes no slack projection for the 12-month period: today's slack is held."),
-    "no_slack": ("no slack estimate", "The bank publishes no estimate of spare capacity: the slack term is left out."),
-    "need_only": ("need only", "No neutral-rate estimate: only the need is shown, no stance, pressure or situation."),
-}
-FLAG_ORDER = ("boundary", "neutral_sensitive", "headline_basis", "estimate", "stale", "pending", "slack_held", "no_slack", "need_only")
-
-
 HOW_TO_READ = [
-    "Need: how far the bank's preferred underlying inflation is from target, plus one third of the bank's own estimate of spare capacity (pp).",
-    "Stance: policy rate minus the bank's own neutral-rate estimate (pp). Above zero is restrictive, below zero is stimulative.",
-    "Pressure: 1.5 \u00d7 need \u2212 stance (bp). Positive points up, negative points down.",
-    "S0 \u00b7 Balanced: little need and the rate is close to where the rule puts it. Hold.",
-    "S1 \u00b7 Behind the curve: clear need and the rate has not caught up. Keep moving in the same direction.",
-    "S2 \u00b7 Room to normalise: little need, but the rate is away from neutral. Moves toward neutral only if the data allow.",
-    "S3 \u00b7 At or past the level: clear need, but the rate already matches or exceeds what the rule asks. Hold; reverse when the need fades.",
-    "If held, in 12 months: the same rule on the bank's own projections, with the rate unchanged.",
-    "This is a mandate benchmark, not a forecast. Market pricing already reflects these data; read it together with the cycle, the market and the bank's projections.",
+    "Position: the policy rate minus the bank's own estimate of the neutral rate (pp). Above zero policy is restrictive, below zero stimulative.",
+    "Need: the bank's preferred core inflation minus its target (pp). For a target range: 0 inside the range, otherwise the distance to the nearest edge.",
+    "Both bars use the same scale, \u00b12 pp, capped at the ends.",
+    "Why: the likely next move. Where the bank publishes its own rate path (Fed dots, RBNZ OCR track) it is read from that path; "
+    "otherwise from the bank's own inflation forecast and the rate path that forecast assumes.",
+    "Borderline: the conclusion would change inside the bank's published neutral range or within 0.05 pp of a threshold.",
+    "A reading of each bank's own numbers, not a forecast. Market pricing already reflects these data.",
 ]
 
 
@@ -74,165 +54,6 @@ def pct1(p: float) -> str:
 def day(iso: str) -> str:
     y, m, d = (int(x) for x in str(iso)[:10].split("-"))
     return f"{d} {MONTHS[m - 1]}"
-
-
-def chip(situation: Optional[str], direction: Optional[int]) -> Optional[str]:
-    if situation is None:
-        return None
-    return CHIPS.get((situation, direction if situation != "S0" else 0), situation)
-
-
-# ---------------------------------------------------------------- market --
-
-def next_outcome(point: Optional[dict]) -> Optional[tuple]:
-    """(word, probability) of the most likely outcome at the next meeting: n or n+1 moves of the priced step, whichever is likelier;
-    None for an estimate (no probability)."""
-    if not point or not point.get("prob"):
-        return None
-    pr = point["prob"]
-    k, p = (pr["n"] + 1, pr["p"]) if pr["p"] > 0.5 else (pr["n"], 1 - pr["p"])
-    word = "no change" if k == 0 else ("a hike" if pr["dir"] == "hike" else "a cut")
-    return word, p
-
-
-def first_point(path: dict) -> Optional[dict]:
-    nxt = (path or {}).get("next") or {}
-    return next((p for p in (path or {}).get("points") or [] if p.get("meeting") == nxt.get("decision")), None)
-
-
-def market_sentence(path: Optional[dict]) -> Optional[str]:
-    """Two clauses, each dropped alone when n/a (S2.1): the next meeting (the likeliest outcome with its probability; an estimate
-    without a probability -> "about ±X bp ... (estimate)") and the 12 months. None only when both are n/a."""
-    pt = first_point(path or {})
-    o = next_outcome(pt)
-    m12 = ((path or {}).get("m12") or {}).get("cum_bp")
-    if o is not None:
-        nxt = f"{o[0]} at the next meeting ({pct1(o[1])})"
-    elif pt is not None and pt.get("cum_bp") is not None:
-        nxt = f"about {bp(pt['cum_bp'])} bp at the next meeting (estimate)"
-    else:
-        nxt = None
-    yr = None if m12 is None else f"{bp(m12)} bp over 12 months"
-    parts = [x for x in (nxt, yr) if x]
-    return f"The market prices {' and '.join(parts)}." if parts else None
-
-
-def market_line(path: Optional[dict]) -> Optional[str]:
-    """"Market: 9 Dec 61.2% hike · 12M +85 bp" (an estimate: "≈ +45 bp" instead of the probability)."""
-    pt, m12 = first_point(path or {}), ((path or {}).get("m12") or {})
-    if pt is None:
-        return None
-    o = next_outcome(pt)
-    if o is not None:
-        nxt = "hold" if o[0] == "no change" else o[0][2:]
-        head = f"{day(pt['meeting'])} {pct1(o[1])} {nxt}"
-    elif pt.get("cum_bp") is not None:
-        head = f"{day(pt['meeting'])} ≈ {bp(pt['cum_bp'])} bp"
-    else:
-        head = f"{day(pt['meeting'])} n/a"
-    tail = f" · 12M {'≈ ' if m12.get('est') else ''}{bp(m12['cum_bp'])} bp" if m12.get("cum_bp") is not None else ""
-    return f"Market: {head}{tail}"
-
-
-# ---------------------------------------------------------------- bank --
-
-def bank_sentence(r: dict, fc: Optional[dict]) -> Optional[str]:
-    lens = r.get("lens") or {}
-    kind = lens.get("kind")
-    if kind == "own_path":
-        g = lens.get("gap_bp")
-        if g is None or lens.get("year") is None:
-            return None
-        return f"The market is {bp_abs(g)} bp {'above' if g >= 0 else 'below'} the bank's own path for {lens['year']}."
-    if kind == "market":                                   # two clauses: the move since the cutoff, the bank's horizon projection
-        d = lens.get("delta_bp")
-        lp = (r.get("inputs") or {}).get("last_projection") or {}
-        moved = None if d is None or not fc or not fc.get("publication") else f"the {fc['publication']} cutoff the market has moved {bp(d)} bp"
-        sees = None
-        if lp.get("v") is not None and lens.get("consistent") is not None:
-            measure = str(lp.get("source", "")).split(": ", 1)[-1]
-            rel = "consistent with" if lens["consistent"] else ("above" if lens["horizon_gap"] > 0 else "below")
-            sees = f"bank sees {measure} at {lp['v']:g}% at the horizon ({rel} target)"
-        if moved and sees:
-            return f"Since {moved}; the {sees}."
-        if moved:
-            return f"Since {moved}."
-        if sees:
-            return f"The {sees}."
-        return None
-    if kind == "constant_rate":
-        d = lens.get("delta_bp")
-        if d is None:
-            return None
-        return f"The market prices {bp(d)} bp more than the constant rate assumed in the bank's forecast."
-    if kind == "unpublished":
-        return "The bank does not publish a rate path."
-    return None
-
-
-# ---------------------------------------------------------------- rule --
-
-def s_text(situation: str, direction: Optional[int]) -> str:
-    t = S_TEXT[situation]
-    if situation == "S1":
-        return t.format(moves="hikes" if direction == 1 else "cuts")
-    if situation == "S2":
-        return t.format(way="up" if direction == 1 else "down")
-    return t
-
-
-def rule_sentence(r: dict) -> Optional[str]:
-    """Two clauses (today; held, in 12 months), each dropped alone when n/a; None only when both are."""
-    today = None if r.get("situation") is None else f"On today's data: {s_text(r['situation'], r.get('direction'))}."
-    head = " (on headline inflation)" if r.get("pi_12m_basis") == "headline" else ""
-    later = None if r.get("situation_12m") is None else f"If the rate is held: {s_text(r['situation_12m'], r.get('direction_12m'))} in 12 months{head}."
-    parts = [x for x in (today, later) if x]
-    return " ".join(parts) if parts else None
-
-
-def summary(r: dict, path: Optional[dict], fc: Optional[dict]) -> list:
-    """The three sentences in the order Market -> Bank -> Rule; an n/a one is left out."""
-    return [s for s in (market_sentence(path), bank_sentence(r, fc), rule_sentence(r)) if s]
-
-
-# ---------------------------------------------------------------- cycle --
-
-def _mon(iso: str) -> tuple:
-    y, m = int(iso[:4]), int(iso[5:7])
-    return y, MONTHS[m - 1]
-
-
-def _months(moves: list) -> str:
-    """'Jun, Sep 2026' / 'Dec 2025, Jun, Sep 2026' (up to 3 moves); 'Mar 2024–Sep 2026' beyond."""
-    if len(moves) > 3:
-        a, b = _mon(moves[0]["date"]), _mon(moves[-1]["date"])
-        return f"{a[1]}–{b[1]} {b[0]}" if a[0] == b[0] else f"{a[1]} {a[0]}–{b[1]} {b[0]}"
-    groups: list = []
-    for m in moves:
-        y, mo = _mon(m["date"])
-        if groups and groups[-1][0] == y:
-            groups[-1][1].append(mo)
-        else:
-            groups.append((y, [mo]))
-    return ", ".join(", ".join(ms) + f" {y}" for y, ms in groups)
-
-
-def _n(n: int, word: str) -> str:
-    return f"{n} {word}{'' if n == 1 else 's'}"
-
-
-def cycle_line(c: Optional[dict]) -> Optional[str]:
-    """'Cycle: hiking · 2 hikes (Jun, Sep 2026) after 8 cuts' (+ ' · 5 holds since' when the bank has held since)."""
-    if not c or not c.get("direction"):
-        return None
-    word = "hike" if c["direction"] == "hike" else "cut"
-    out = f"Cycle: {'hiking' if word == 'hike' else 'cutting'} · {_n(c['count'], word)} ({_months(c['moves'])})"
-    p = c.get("previous")
-    if p:
-        out += f" after {_n(p['count'], 'hike' if p['direction'] == 'hike' else 'cut')}"
-    if c.get("holds_since"):
-        out += f" · {_n(c['holds_since'], 'hold')} since"
-    return out
 
 
 # ---------------------------------------------------------------- mandate, next test, history --
@@ -274,10 +95,10 @@ def next_test(cur: str, events: list, mapping: dict, asof: date) -> Optional[dic
 
 
 def history_points(rows: list) -> list:
-    """Pressure over time from data/cb/stance_history (bp, as stored; the UI rounds)."""
+    """Position (S) and Need (gap_under) over time from data/cb/stance_history (pp, as stored; the UI rounds)."""
     out = []
     for r in sorted(rows, key=lambda r: r["snapshot_date"]):
-        f = lambda k: None if r.get(k) is None else round(r[k] * 100, 4)          # noqa: E731
-        out.append({"date": r["snapshot_date"].isoformat(), "G_bp": f("G"), "G_lo_bp": f("G_lo"), "G_hi_bp": f("G_hi"),
-                    "situation": r.get("situation"), "direction": r.get("direction")})
+        p = r.get("v5_position") if r.get("v5_position") is not None else r.get("S")
+        n = r.get("v5_need") if r.get("v5_need") is not None else r.get("gap_under")
+        out.append({"date": r["snapshot_date"].isoformat(), "position": None if p is None else round(p, 6), "need": None if n is None else round(n, 6)})
     return out

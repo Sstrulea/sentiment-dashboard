@@ -78,6 +78,7 @@ class BankInputs:
     neutral_status: str = ""
     pi_12m: Optional[Val] = None
     pi_12m_basis: str = ""                       # underlying | headline
+    pi_12m_transform: str = ""                   # the transform of the projection read (q4_q4, annual_average, ...) - stance v5 texts
     y_12m: Optional[Val] = None                  # projected output gap for the period containing as-of + 12 months
     u_12m: Optional[Val] = None                  # projected unemployment rate for that period
     conditioning: str = ""
@@ -529,6 +530,7 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
                 un = pick_period([p for p in pts if p["variable"] == "unemployment_rate"], T)
                 if core:
                     inp.pi_12m, inp.pi_12m_basis = Val(core["value"], core["horizon"], f"FOMC SEP {sep}: core PCE inflation (Q4/Q4)"), "underlying"
+                    inp.pi_12m_transform = "q4_q4"
                 if un:
                     inp.u_12m = Val(un["value"], un["horizon"], f"FOMC SEP {sep}: unemployment rate (Q4 average)")
                 last = max((p for p in pts if p["variable"] == "core_pce_inflation"), key=lambda p: p["horizon"], default=None)
@@ -538,10 +540,12 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
             und = pick_period(_forecast_points(fc, "underlying"), T)
             if und is not None:
                 inp.pi_12m, inp.pi_12m_basis = Val(point_value(und)[0], und["horizon"], f"{fc['publication']}: {und['variable']}"), "underlying"
+                inp.pi_12m_transform = und.get("transform", "")
             else:
                 hd = pick_period(_forecast_points(fc, "headline"), T)
                 if hd is not None:
                     inp.pi_12m, inp.pi_12m_basis = Val(point_value(hd)[0], hd["horizon"], f"{fc['publication']}: {hd['variable']}"), "headline"
+                    inp.pi_12m_transform = hd.get("transform", "")
                     inp.flags.add("headline_basis")
             if mv.slack_type == "output_gap":
                 og = pick_period(_forecast_points(fc, "output_gap"), T)
@@ -596,15 +600,20 @@ def lens_inputs(ctx, cur: str, conditioning: str, fc: Optional[dict], tr, asof: 
         g = gap_json(rep)
         gy = (g.get("years") or {}).get(str(T.year))
         if g["kind"] != "n/a" and gy is not None:
+            path = [(str(y), v.get("bank")) for y, v in sorted(g["years"].items()) if int(y) <= T.year and v.get("bank") is not None]
             return {"kind": "own_path", "basis": "gap", "year": T.year, "gap_bp": gy["v"], "bank": gy.get("bank"), "market": gy.get("market"),
                     "flag": gy.get("flag"), "na": gy.get("na") if gy["v"] is None else None,
-                    "source": f"bank page GAP ({g['kind']}, {g.get('sep') or ''})"}
+                    "source": f"bank page GAP ({g['kind']}, {g.get('sep') or ''})",
+                    "path": path, "path_kind": "dots", "path_period": str(T.year), "path_transform": "q4_q4"}
         if rep.bank_path is not None and rep.bank_path.kind not in ("n/a", "dots"):
             vm = ocr_vs_market_json(rep)
             row = next((y for y in vm["years"] if y["year"] == T.year), None)
             if row is not None:
+                hq = f"{T.year}Q{(T.month - 1) // 3 + 1}"
+                path = [(str(lbl), float(v)) for lbl, v in rep.bank_path.points if v is not None and str(lbl) <= hq]
                 return {"kind": "own_path", "basis": "ocr_track", "year": T.year, "gap_bp": row["gap_bp"], "bank": row["bank"], "market": row["market"],
-                        "flag": row["flag"], "na": None, "source": f"bank page OCR track vs market ({vm['note']})"}
+                        "flag": row["flag"], "na": None, "source": f"bank page OCR track vs market ({vm['note']})",
+                        "path": path, "path_kind": "ocr_track", "path_period": path[-1][0] if path else hq, "path_transform": "quarter_average"}
             return {"kind": "own_path", "basis": "ocr_track", "year": T.year, "gap_bp": None, "na": f"no OCR track vs market for {T.year}",
                     "source": "bank page OCR track vs market"}
         return {"kind": "own_path", "gap_bp": None, "na": g.get("na") or f"no GAP for {T.year}", "source": f"bank page GAP ({g['kind']})"}
@@ -718,6 +727,8 @@ def compute(inp: BankInputs, params: dict) -> dict:
                     consistent=abs(hg) <= cons)
         if inp.last_projection_basis == "headline":
             lens["horizon_flag"] = "headline_basis"
+    from .stance_v5 import evaluate as v5_evaluate, from_inputs as v5_inputs
+    r["v5"] = v5_evaluate(v5_inputs(inp)) if inp.rate.v is not None else None           # the displayed stance (stance-ui-v5)
     r.update(lens=lens, cycle=inp.cycle, market=inp.market, flags=sorted(flags), flags_12m=sorted(flags_12m), notes=list(inp.notes),
              inputs=inputs_record(inp))
     return r
@@ -730,7 +741,8 @@ def inputs_record(inp: BankInputs) -> dict:
     return {"rate": v(inp.rate), "pi_under": v(inp.pi_under), "pi_head": v(inp.pi_head), "slack_type": inp.slack_type,
             "y_today": v(inp.y_today), "u": v(inp.u), "u_star": v(inp.u_star), "pi_12m": v(inp.pi_12m), "pi_12m_basis": inp.pi_12m_basis,
             "y_12m": v(inp.y_12m), "u_12m": v(inp.u_12m), "neutral_status": inp.neutral_status, "conditioning": inp.conditioning,
-            "last_projection": v(inp.last_projection), "last_projection_basis": inp.last_projection_basis}
+            "last_projection": v(inp.last_projection), "last_projection_basis": inp.last_projection_basis,
+            "pi_12m_transform": inp.pi_12m_transform}
 
 
 def compute_all(inputs: dict, params: dict) -> dict:

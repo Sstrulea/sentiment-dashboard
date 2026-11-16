@@ -168,3 +168,23 @@ versions:
       neutral_stale: "a flag only, never n/a"
       macro: "the next period is overdue by more than lag_days + stale_grace_days (config/cb_official.yaml macro)"
     verification: "the mandate is re-verified at every new projection publication of the bank; at most 12 months"
+
+# ---------------------------------------------------------------------------------------------------------------------
+# stance-ui-v5 (frozen 2026-11-16, before any display): the DISPLAYED stance - Position / Need / Why (src/cb_compute/stance_v5.py).
+# Pre-registered; never tuned on results. The computation of the versions above (Taylor-type pressure, S0-S3) is still computed
+# and stored in stance_history, not displayed.
+v5:
+  frozen: 2026-11-16
+  position: "P = policy rate - neutral_mid (the bank's own neutral; none -> n/a with the reason)"
+  need: "N = core - target (point or declared midpoint); a band without a declared midpoint: 0 inside, else the distance to the nearest edge"
+  scale_pp: [0.25, 0.75, 1.5]           # |x| <= 0.25 / <= 0.75 / <= 1.5 / > 1.5, the same for P and N
+  p_labels: [Neutral, "Slightly restrictive|stimulative", "Restrictive|Stimulative", "Very restrictive|stimulative"]
+  n_labels: [Near target, "Slightly above|below target", "Above|Below target", "Well above|below target"]
+  step_pp: 0.25                         # own published path: whole 0.25 steps between the rate and the path at the horizon (half away from zero)
+  no_move_pp: 0.25                      # a) |N| <= 0.25
+  restrictive_side_pp: 0.25             # e) P.d <= 0.25 -> move in d
+  forecast_improvement_pp: 0.25         # f) the forecast cuts |N| by >= 0.25 at the horizon ...
+  path_add_pp: 0.25                     # ... AND the assumed path adds < 0.25 in d (not published: < 0.25, "(rate path not published)")
+  borderline_tol_pp: 0.05               # borderline: the conclusion changes inside the neutral interval or at +-0.05 of a threshold
+  horizon: "the published period containing as-of + 12 months (period_rule of v3)"
+  order: [a_no_move, b_own_path, c_constant_rate, d_na, e_not_restrictive, f_forecast_and_path]
