@@ -2121,5 +2121,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-16T08:37:57+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "jpy_prelim_gdp_price_index",
+  "currency": "JPY",
+  "indicator_key": "gdp_price_index",
+  "datetime_utc": "2026-11-15 23:50:00",
+  "actual": 2.4,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-16T08:38:01+00:00",
+  "note": ""
  }
 ]
