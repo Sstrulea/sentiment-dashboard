@@ -114,6 +114,12 @@
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260924~e0eceef02c.en.pdf"
   },
+  "GBP:speech:3df9a5070a56": {
+   "at": "2026-11-16T10:41:30Z",
+   "kind": "non_prose",
+   "reason": "only 0% of the text is full sentences: a deck of tables or slides, not prose",
+   "url": "https://www.bankofengland.co.uk/speech/2026/november/huw-pill-speech-at-the-institute-of-international-monetary-research"
+  },
   "GBP:speech:a94a47400194": {
    "at": "2026-10-16T20:42:15Z",
    "kind": "non_prose",
