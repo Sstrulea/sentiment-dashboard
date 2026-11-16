@@ -31,5 +31,11 @@ ok(html.indexOf('title="o"') > 0 && html.indexOf('title="core: t"') > 0, "offici
 eq((ctx.stanceListHtml(st, "need").match(/cb-v5-card-why/g) || []).length, 5, "phone: Why under each card");
 const z = ctx.stanceZoneHtml({ stance: Object.assign(b("USD", 0.68, 1.1), { scale_pp: 2, mandate: { target: "2%" }, next_test: { date: null }, history: [{ date: "2026-11-15" }] }) });
 ok(z.indexOf("Stance and need") > 0 && z.indexOf("Mandate") > 0 && z.indexOf("History starts on 15 Nov 2026") > 0 && z.indexOf("data-st-next") < 0, "bank zone");
+const sn = b("EUR", 0.5, 0.5);
+sn.position.note = "from Feb 2025"; sn.need.note = "update overdue"; sn.why.note = "Newer ECB forecast out on 17 Dec 2026, not yet entered.";
+const hn = ctx.stanceTableHtml({ scale_pp: 2, banks: { EUR: sn } }, "need");
+ok(hn.indexOf('neutral 2.00% <span class="cb-v5-note" data-note="position">(from Feb 2025)</span>') > 0, "stale neutral: (from Mon YYYY) after the neutral");
+ok(hn.indexOf('data-note="need">update overdue<') > 0, "stale core series: update overdue under the measure line");
+ok(hn.indexOf('data-note="why">Newer ECB forecast out on 17 Dec 2026, not yet entered.<') > hn.indexOf("More hikes likely"), "stale forecast: the note after the reason, the conclusion stays");
 if (failures) { console.error(failures + " failure(s)"); process.exit(1); }
 console.log("stance v5: all checks passed");

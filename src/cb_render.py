@@ -116,6 +116,8 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
     versions = ds.mandate_versions(mand)
     from .cb_collect import Paths
     meetings = ds.load_meetings(Paths(None).meetings)
+    from .cb_compute.framework_watch import last_projection_dates
+    lastp = last_projection_dates(meetings, asof)
     banks = {}
     for c, r in res.items():
         path = out["overview"]["paths"].get(c)
@@ -125,9 +127,11 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
         prim = (raw or {}).get("underlying", {}).get("primary")
         prim = prim if isinstance(prim, list) else [prim]
         ui = {"measure_short": shorts.get(c, "Core"), "measure_name": " and ".join(str(names.get(x, x)) for x in prim if x)}
+        from .cb_compute.stance_v5 import SHORT
+        notes = P.stance_notes(r, SHORT.get(c, c), lastp.get(c), [x for x in prim if x])
         banks[c] = P.stance_page_v5(r, ui, {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
                                     mandate_card(raw, names, params["underlying_rule"]) if raw else None, next_test(c, events, mapping, asof),
-                                    history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof))
+                                    history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof), notes)
     scale = yaml.safe_load((ROOT / "config" / "cb_stance.yaml").read_text(encoding="utf-8"))["v5"]["scale_pp"]
     return {"banks": banks, "how_to_read": how_to_read(scale), "scale_pp": 2.0, "na": None}
 

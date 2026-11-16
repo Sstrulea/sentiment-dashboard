@@ -903,8 +903,23 @@ def _period_short(p: str) -> str:
 MONTHS_SHORT = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 
+def stance_notes(r: dict, short: str, newer_forecast: Optional[date], core_ids: list) -> dict:
+    """The staleness the engine already computed, as short grey notes (the conclusion stays shown):
+    a newer projection publication has passed -> Why; the neutral older than the staleness limit -> Position; the core series overdue -> Need."""
+    notes = list(r.get("notes") or [])
+    N = r.get("N") or {}
+    why = (f"Newer {short} forecast out on {newer_forecast.day} {MONTHS_SHORT[newer_forecast.month - 1]} {newer_forecast.year}, not yet entered."
+           if newer_forecast and any(n.startswith("a newer projection publication") for n in notes) else None)
+    pos = None
+    if N.get("stale") and N.get("asof"):
+        y, m = int(str(N["asof"])[:4]), int(str(N["asof"])[5:7])
+        pos = f"from {MONTHS_SHORT[m - 1]} {y}"
+    need = "update overdue" if any(f"{sid} stale" in notes for sid in core_ids) else None
+    return {"why": why, "position": pos, "need": need}
+
+
 def stance_page_v5(r: dict, ui: dict, rate: Optional[dict], mandate: Optional[dict] = None, next_test: Optional[dict] = None,
-                   history: Optional[list] = None, neutral_na: Optional[str] = None) -> dict:
+                   history: Optional[list] = None, neutral_na: Optional[str] = None, notes: Optional[dict] = None) -> dict:
     """The stance block (stance-ui-v5): only what is displayed - Position / Need / Why - and the sources shown on hover.
     `ui` = {measure_short, measure_name} of the bank (config/cb_stance_ui.yaml + config/cb_official.yaml)."""
     v = r.get("v5") or {}
@@ -933,9 +948,11 @@ def stance_page_v5(r: dict, ui: dict, rate: Optional[dict], mandate: Optional[di
     return {
         "bank": r["currency"], "asof": r["asof"], "rate_display": rate,
         "position": {"v": _r2(v.get("P")), "label": v.get("P_label"), "neutral": N["mid"] if N else None,
-                     "neutral_range": [N["lo"], N["hi"]] if N else None, "na": None if v.get("P") is not None else (neutral_na or "no neutral estimate")},
+                     "neutral_range": [N["lo"], N["hi"]] if N else None, "na": None if v.get("P") is not None else (neutral_na or "no neutral estimate"),
+                     "note": (notes or {}).get("position")},
         "need": {"v": _r2(v.get("N")), "label": v.get("N_label"), "measure": measure, "target": tgt, "official_name": ui.get("measure_name"),
-                 "na": None if v.get("N") is not None else "no core inflation observation"},
-        "why": {"conclusion": v.get("conclusion"), "reason": v.get("reason"), "move": bool(v.get("move")), "sources": sources},
+                 "na": None if v.get("N") is not None else "no core inflation observation", "note": (notes or {}).get("need")},
+        "why": {"conclusion": v.get("conclusion"), "reason": v.get("reason"), "move": bool(v.get("move")), "sources": sources,
+                "note": (notes or {}).get("why")},
         "mandate": mandate, "next_test": next_test, "history": history or [],
     }
