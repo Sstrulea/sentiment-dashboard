@@ -12,15 +12,16 @@ from typing import Optional
 MINUS = "−"
 MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-HOW_TO_READ = [
-    "Position: the policy rate minus the bank's own estimate of the neutral rate (pp). Above zero policy is restrictive, below zero stimulative.",
-    "Need: the bank's preferred core inflation minus its target (pp). For a target range: 0 inside the range, otherwise the distance to the nearest edge.",
-    "Both bars use the same scale, \u00b12 pp, capped at the ends.",
-    "Why: the likely next move. Where the bank publishes its own rate path (Fed dots, RBNZ OCR track) it is read from that path; "
-    "otherwise from the bank's own inflation forecast and the rate path that forecast assumes.",
-    "Borderline: the conclusion would change inside the bank's published neutral range or within 0.05 pp of a threshold.",
-    "A reading of each bank's own numbers, not a forecast. Market pricing already reflects these data.",
-]
+def how_to_read(scale: list) -> list:
+    """The "How to read it" text (George, 2026-11-16); the thresholds come from config/cb_stance.yaml v5.scale_pp."""
+    t1, t2, t3 = (f"{x:g}" for x in scale)
+    return [
+        f"Position = policy rate \u2212 the bank's neutral rate. Need = core inflation \u2212 target. Same scale for both: within \u00b1{t1} pp "
+        f"neutral / near target, up to {t2} slightly, up to {t3} plain, beyond that very / well.",
+        "Why: inflation near target \u2192 no reason to move. Above target and policy not yet restrictive \u2192 more hikes. Already restrictive "
+        "\u2192 on hold only if the bank's own forecast shows inflation falling without further hikes. Where the bank publishes its own rate plan "
+        "(Fed, RBNZ), that plan decides. Mirrored when inflation is below target; total inflation is used where the bank doesn't forecast core.",
+    ]
 
 
 # ---------------------------------------------------------------- formatting (B.4) --
