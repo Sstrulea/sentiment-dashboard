@@ -110,21 +110,39 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
     from .cb_compute.stance_ui import HOW_TO_READ, history_points, mandate_card, next_test
     from .cb_sources.official import load_official
     names = {sid: s["name"] for sid, s in load_official()["macro"]["series"].items()}
-    mapping = (yaml.safe_load(STANCE_UI_YAML.read_text(encoding="utf-8")) or {}).get("next_test") or {}
+    ui_cfg = yaml.safe_load(STANCE_UI_YAML.read_text(encoding="utf-8")) or {}
+    mapping, shorts = ui_cfg.get("next_test") or {}, ui_cfg.get("measure_short") or {}
     events = ff_week_events(asof)
     versions = ds.mandate_versions(mand)
+    from .cb_collect import Paths
+    meetings = ds.load_meetings(Paths(None).meetings)
     banks = {}
     for c, r in res.items():
         path = out["overview"]["paths"].get(c)
         cur = current_version(versions.get(c) or [], asof)
         raw = next((v for v in ((mand.get("banks") or {}).get(c) or {}).get("versions") or [] if cur and str(v["effective_from"]) == str(cur.effective_from)), None)
         rate = (path or {}).get("current") or {}
-        banks[c] = P.stance_page(r, path, ((fc.get("banks") or {}).get(c)), mandate_card(raw, names, params["underlying_rule"]) if raw else None,
-                                 next_test(c, events, mapping, asof), history_points([h for (b, _), h in hist.items() if b == c]),
-                                 {k: rate.get(k) for k in ("rate", "lower", "upper", "range")})
-    return {"banks": banks, "params": {"delta_pp": params["situations"]["delta_pp"], "epsilon_pp": params["situations"]["epsilon_pp"],
-                                       "inflation_response": params["rule"]["inflation_response"], "version": params["version"]},
-            "how_to_read": HOW_TO_READ, "na": None}
+        prim = (raw or {}).get("underlying", {}).get("primary")
+        prim = prim if isinstance(prim, list) else [prim]
+        ui = {"measure_short": shorts.get(c, "Core"), "measure_name": " and ".join(str(names.get(x, x)) for x in prim if x)}
+        banks[c] = P.stance_page_v5(r, ui, {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
+                                    mandate_card(raw, names, params["underlying_rule"]) if raw else None, next_test(c, events, mapping, asof),
+                                    history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof))
+    return {"banks": banks, "how_to_read": HOW_TO_READ, "scale_pp": 2.0, "na": None}
+
+
+def neutral_reason(c: str, r: dict, meetings: dict, asof: date) -> Optional[str]:
+    """Why a bank has no Position: 'SNB publishes no neutral' / 'RBNZ neutral due <next projection meeting>'."""
+    from .cb_compute.stance_v5 import SHORT
+    if r.get("N"):
+        return None
+    status = ((r.get("inputs") or {}).get("neutral_status") or "")
+    if status == "not_published":
+        return f"{SHORT.get(c, c)} publishes no neutral"
+    nxt = min((m["date"] for m in meetings.get(c, []) if m.get("has_projections") and m["date"] > asof), default=None)
+    if status == "pending" and nxt:
+        return f"{SHORT.get(c, c)} neutral due {nxt.day} {P.MONTHS_SHORT[nxt.month - 1]} {nxt.year}"
+    return f"{SHORT.get(c, c)}: no neutral estimate ({status or 'missing'})"
 
 
 def render(data_dir: Path | str | None = None, public_dir: Path | str | None = None, asof: Optional[date] = None) -> dict:
@@ -138,11 +156,10 @@ def render(data_dir: Path | str | None = None, public_dir: Path | str | None = N
     st = stance_blocks(data_dir, ctx, asof, out)                         # S2: the stance on the overview (tab Stance) and each bank page
     out["overview"]["stance"] = ({"na": st["na"]} if st.get("na") else
                                  {**{k: v for k, v in st.items() if k != "banks"},
-                                  "banks": {c: {**{k: v for k, v in b.items() if k not in ("history", "calc")},
-                                                "calc": {k: v for k, v in b["calc"].items() if k != "inputs"}} for c, b in st["banks"].items()}})
+                                  "banks": {c: {k: v for k, v in b.items() if k not in ("history", "mandate", "next_test")} for c, b in st["banks"].items()}})
     for c, page in out["banks"].items():
         page["stance"] = ({"na": st["na"]} if st.get("na") else
-                          {**st["banks"][c], "how_to_read": st["how_to_read"], "params": st["params"]} if c in st["banks"] else {"na": "no stance for this bank"})
+                          {**st["banks"][c], "how_to_read": st["how_to_read"], "scale_pp": st["scale_pp"]} if c in st["banks"] else {"na": "no stance for this bank"})
     tpl = _env().get_template("central_banks.html.j2")
     written, same = [], 0
 

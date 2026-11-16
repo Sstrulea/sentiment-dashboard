@@ -1372,3 +1372,25 @@ geometria hărții, sortarea, Show calculation, istoricul).
 - **Accesibilitate**: canvas-ul hărții are `role="img"`, `aria-label` și `aria-describedby` către lista `#cbStanceMapAlt` (ascunsă vizual): un rând
   per punct — banca, need, stance (cu intervalul), situația azi și la 12 luni.
 - **Verificare**: `scripts/check_stance_ui.py` rulează în dark și light (233 de verificări, capturile din `reports/stance-ui/`, local).
+
+### 23e. Stance — v5 (stance-ui-v5): Position / Need / Why
+
+Înlocuiește afișajul din 23d (harta, S0–S3, presiunea, pivotul, slack-ul, ciclul, lentilele, chip-urile, „If held, in 12 months”). Calculele vechi
+rămân calculate și stocate în `stance_history`, nu se mai afișează. Pragurile: `config/cb_stance.yaml` secțiunea `v5` (frozen 2026-11-16).
+
+- **Logica** (`src/cb_compute/stance_v5.py`, pură): P = rata − neutral_mid; N = core − țintă (punct sau midpoint declarat; bandă fără midpoint:
+  0 înăuntru, altfel distanța până la marginea cea mai apropiată); etichete pe scara 0.25 / 0.75 / 1.5. Concluzia, în ordine: a) |N| ≤ 0.25 „No reason
+  to move”; b) traiectoria proprie publicată (dots Fed, OCR track RBNZ): pași întregi de 0.25 până la traiectoria de la orizont; c) prognoza la rată
+  constantă (SNB); d) fără P și fără b/c → „—” cu motivul; e) P·d ≤ 0.25 → mișcare în direcția d; f) „Likely on hold” doar dacă prognoza aceleiași
+  măsuri micșorează |N| cu ≥ 0.25 la orizont și traiectoria presupusă (curba de piață la cutoff) adaugă < 0.25 în d; nepublicată → „(rate path not
+  published)”. „borderline” când concluzia s-ar schimba în intervalul de neutru publicat sau la ±0.05 de un prag. Textele: șabloane fixe (brief v5).
+- **Payload** (`payload.stance_page_v5`): doar ce se afișează — position {v, label, neutral, na}, need {v, label, măsură, țintă, numele oficial},
+  why {concluzie, motiv, move, surse pentru hover} + (pagina băncii) mandat, next test, istoric (Position și Need). Numerele la 2 zecimale,
+  rotunjite half-up pe valoarea zecimală.
+- **UI**: coloanele Bank | Position | Need | Why, cu subtitlurile din brief; bare pe aceeași scară ±2 pp, plafonate; sortare Need (implicit) ·
+  Position · Bank; pe telefon carduri cu Why dedesubt; caseta „How to read it”. Zona băncii: același bloc, cardul de mandat, next test, istoricul.
+- **stance_history**: coloane noi `v5_position`, `v5_need`, `v5_conclusion`, `v5_reason` (rândurile vechi nu se rescriu).
+- **Gardă de date**: `tests/test_macro_series_gaps.py` — nicio perioadă lipsă între prima și ultima observație a unei serii din macro_series, cu
+  excepțiile din `config/known_gaps.yaml`. Cauza golurilor NZD (2022Q4, 2025Q4): fișierele Stats NZ re-emise (`-corrected`, majuscule, antete cu spații).
+- **Teste**: `tests/test_cb_stance_v5.py` (golden 8/8 pe intrările snapshot-ului 2026-11-15, cazuri oglindite, praguri = config, payload),
+  `tests/cb_js/test_stance_v5.cjs`, `scripts/check_stance_ui.py` (1280 / 390, light / dark, contrast ≥ 4.5, fără overflow).

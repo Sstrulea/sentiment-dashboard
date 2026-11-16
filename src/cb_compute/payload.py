@@ -883,21 +883,59 @@ def stance_json(r: dict) -> dict:
     }
 
 
-def stance_page(r: dict, path: Optional[dict], fc: Optional[dict], mandate: Optional[dict], next_test: Optional[dict], history: list,
-                rate: Optional[dict]) -> dict:
-    """The stance block of a bank page (and, without the history, of the overview): stance_json + the deterministic texts (S2)."""
-    from . import stance_ui as U
-    j = stance_json(r)
-    why = next((n[len("neutral: "):] for n in r.get("notes") or [] if n.startswith("neutral: ")), None)
-    if why == "neutral not_published":
-        why = "the bank does not publish a neutral-rate estimate"
-    if why and j["stance"]["v"] is None:                     # the bank's own reason for the missing neutral (pending, ...)
-        for k in ("stance", "pressure", "situation", "pivot"):
-            j[k]["na"] = f"no neutral estimate: {why}"
-    j.update(
-        chip=U.chip(r.get("situation"), r.get("direction")), chip_12m=U.chip(r.get("situation_12m"), r.get("direction_12m")),
-        summary=U.summary(r, path, fc), cycle_line=U.cycle_line(r.get("cycle")), market_line=U.market_line(path),
-        m12_bp=num(((path or {}).get("m12") or {}).get("cum_bp"), 2), m12_est=bool(((path or {}).get("m12") or {}).get("est")),
-        publication=(fc or {}).get("publication"), rate_display=rate, mandate=mandate, next_test=next_test, history=history,
-        notes=list(r.get("notes") or []))
-    return j
+def _r2(x: Optional[float]) -> Optional[float]:
+    """pp for display: half away from zero on the decimal value (0.6749999999999998 -> 0.68)."""
+    if x is None:
+        return None
+    from decimal import ROUND_HALF_UP, Decimal
+    return float(Decimal(repr(round(x, 9))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+
+def _period_short(p: str) -> str:
+    p = str(p or "")
+    if len(p) == 7 and p[4] == "-":
+        return MONTHS_SHORT[int(p[5:7]) - 1]
+    if len(p) == 6 and p[4] == "Q":
+        return p[4:]
+    return p
+
+
+MONTHS_SHORT = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def stance_page_v5(r: dict, ui: dict, rate: Optional[dict], mandate: Optional[dict] = None, next_test: Optional[dict] = None,
+                   history: Optional[list] = None, neutral_na: Optional[str] = None) -> dict:
+    """The stance block (stance-ui-v5): only what is displayed - Position / Need / Why - and the sources shown on hover.
+    `ui` = {measure_short, measure_name} of the bank (config/cb_stance_ui.yaml + config/cb_official.yaml)."""
+    v = r.get("v5") or {}
+    inp = r.get("inputs") or {}
+    N = r.get("N")
+    core = inp.get("pi_under") or {}
+    star, band = r.get("target_star"), r.get("band")
+    def pct(x):
+        return f"{x:g}%"
+    if star is not None:
+        tgt = f"vs {pct(star)}"
+    else:
+        tgt = f"target {band[0]:g}\u2013{band[1]:g}%" if band else ""
+    measure = f"{ui.get('measure_short', 'Core')} {core.get('v'):g}% ({_period_short(core.get('asof'))})" if core.get("v") is not None else None
+    sources = [{"what": "core inflation", "text": f"{ui.get('measure_name') or core.get('source')} \u2014 {core.get('asof')}" + (f", {core.get('note')}" if core.get("note") else "")}]
+    if N:
+        sources.append({"what": "neutral", "text": f"{N['source']} \u2014 {N['asof']} ({N['flag']}); range {N['lo']:g}\u2013{N['hi']:g}%"})
+    p12 = inp.get("pi_12m") or {}
+    if p12.get("v") is not None:
+        sources.append({"what": "bank projection", "text": f"{p12.get('source')} \u2014 {p12.get('asof')}"})
+    lens = r.get("lens") or {}
+    if lens.get("path"):
+        sources.append({"what": "bank rate path", "text": f"{lens.get('source')}: " + ", ".join(f"{k} {x:g}%" for k, x in lens["path"])})
+    if lens.get("kind") == "market" and lens.get("rate_cutoff_curve") is not None:
+        sources.append({"what": "rate path assumed by the projection", "text": f"market curve at the projection cutoff {lens.get('cutoff')}: {lens['rate_cutoff_curve']:.2f}% at {lens.get('target_date')}"})
+    return {
+        "bank": r["currency"], "asof": r["asof"], "rate_display": rate,
+        "position": {"v": _r2(v.get("P")), "label": v.get("P_label"), "neutral": N["mid"] if N else None,
+                     "neutral_range": [N["lo"], N["hi"]] if N else None, "na": None if v.get("P") is not None else (neutral_na or "no neutral estimate")},
+        "need": {"v": _r2(v.get("N")), "label": v.get("N_label"), "measure": measure, "target": tgt, "official_name": ui.get("measure_name"),
+                 "na": None if v.get("N") is not None else "no core inflation observation"},
+        "why": {"conclusion": v.get("conclusion"), "reason": v.get("reason"), "move": bool(v.get("move")), "sources": sources},
+        "mandate": mandate, "next_test": next_test, "history": history or [],
+    }

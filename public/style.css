@@ -2894,3 +2894,33 @@ table.cb-pathtable tr[data-meeting] { cursor: default; }
   .cb-st-cards { grid-template-columns: 1fr; }
   .cb-st-map { height: 340px; }
 }
+
+/* ---- Stance v5: Position / Need / Why ---- */
+.cb-v5-table { width: 100%; table-layout: fixed; }
+.cb-v5-table th { vertical-align: bottom; text-transform: none; }
+.cb-v5-head { font-size: 11px; font-weight: 400; color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 2px; }
+table.cb-table.cb-v5-table td, table.cb-table.cb-v5-table th { vertical-align: top; white-space: normal !important; text-align: left !important; overflow-wrap: anywhere; }
+table.cb-table.cb-v5-table th { vertical-align: bottom; }
+.cb-v5-table th:first-child, .cb-v5-bank { width: 110px; }
+.cb-v5-table th:nth-child(2), .cb-v5-table th:nth-child(3) { width: 23%; }
+.cb-v5-one th:nth-child(1), .cb-v5-one th:nth-child(2) { width: 28%; }
+.cb-v5-num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; display: flex; align-items: center; gap: 8px; }
+.cb-v5-lab { font-size: 13px; margin-top: 2px; }
+.cb-v5-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.cb-v5-bar { position: relative; display: inline-block; width: 90px; max-width: 45%; height: 8px; border-radius: 4px; background: var(--surface-alt); flex: none; }
+.cb-v5-bar-mid { position: absolute; left: 50%; top: -2px; width: 1px; height: 12px; background: var(--muted); }
+.cb-v5-fill { position: absolute; top: 0; height: 8px; border-radius: 4px; }
+.cb-v5-pos .cb-v5-fill, .cb-v5-fill.cb-v5-pos { background: var(--accent); }
+.cb-v5-fill.cb-v5-need { background: var(--warning-fg); }
+.cb-v5-concl { font-weight: 700; }
+.cb-v5-move { color: var(--accent); }
+.cb-v5-hold { color: var(--muted); }
+.cb-v5-reason { font-size: 13px; line-height: 1.45; margin-top: 2px; }
+.cb-v5-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0; }
+.cb-v5-k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.cb-v5-card .cb-v5-bar { width: 70px; }
+.cb-v5-cards { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 600px) {
+  .cb-v5-one thead { display: none; }
+  .cb-v5-one tr, .cb-v5-one td { display: block; width: auto; }
+}
