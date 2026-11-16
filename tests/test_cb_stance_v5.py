@@ -117,7 +117,7 @@ def test_written_payload_has_only_what_is_displayed(tmp_path):
     assert set(ov) == {"how_to_read", "scale_pp", "na", "banks"} and ov["scale_pp"] == 2.0
     for c, b in ov["banks"].items():
         assert set(b) == {"bank", "asof", "rate_display", "position", "need", "why"}, c
-        assert set(b["why"]) == {"conclusion", "reason", "move", "sources"} and b["why"]["sources"]
+        assert set(b["why"]) == {"conclusion", "reason", "move", "sources", "note"} and b["why"]["sources"]
     usd = json.loads((tmp_path / "data" / "cb" / "usd.json").read_text())["stance"]
     assert set(usd) >= {"mandate", "next_test", "history"} and usd["position"]["v"] == 0.68 and usd["need"]["measure"].startswith("Core PCE 3.1% (")
     text = (tmp_path / "data" / "cb" / "usd.json").read_text()
@@ -142,3 +142,23 @@ def test_how_to_read_text_with_thresholds_from_config(tmp_path, monkeypatch):
                     "±0.25 pp neutral / near target, up to 0.75 slightly, up to 1.5 plain, beyond that very / well.")
     assert t[1].startswith("Why: inflation near target → no reason to move.") and t[1].endswith("total inflation is used where the bank doesn't forecast core.")
     assert "0.3" in how_to_read([0.3, 0.8, 1.6])[0]                    # the numbers follow the config, not the code
+
+
+def test_stale_notes_one_case_each():
+    from datetime import date
+    from src.cb_compute.payload import stance_notes
+    r = {"notes": ["a newer projection publication than the one entered has passed", "abs:CPI.999902 stale"],
+         "N": {"stale": True, "asof": "2025-02-13"}}
+    n = stance_notes(r, "RBA", date(2026, 11, 3), ["abs:CPI.999902"])
+    assert n == {"why": "Newer RBA forecast out on 3 Nov 2026, not yet entered.", "position": "from Feb 2025", "need": "update overdue"}
+    assert stance_notes({"notes": [], "N": {"stale": False, "asof": "2026-09-16"}}, "Fed", date(2026, 9, 16), ["fred:PCEPILFE"]) == \
+        {"why": None, "position": None, "need": None}
+    assert stance_notes({"notes": ["other stale"]}, "BoE", None, ["ons:DKO8"])["need"] is None      # another series' staleness is not the core's
+
+
+def test_today_only_the_eur_neutral_is_stale(tmp_path):
+    from src import cb_render as R
+    R.render(None, tmp_path)
+    notes = {c: (json.loads((tmp_path / "data" / "cb" / f"{c.lower()}.json").read_text())["stance"]) for c in ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")}
+    got = {c: {k: s[k]["note"] for k in ("position", "need", "why") if s[k].get("note")} for c, s in notes.items()}
+    assert {c: v for c, v in got.items() if v} == {"EUR": {"position": "from Feb 2025"}}

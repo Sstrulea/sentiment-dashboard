@@ -2924,3 +2924,4 @@ table.cb-table.cb-v5-table th { vertical-align: bottom; }
   .cb-v5-one thead { display: none; }
   .cb-v5-one tr, .cb-v5-one td { display: block; width: auto; }
 }
+.cb-v5-note { color: var(--muted); font-size: 12px; }

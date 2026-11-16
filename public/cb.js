@@ -1405,19 +1405,22 @@
     if (!isNum(p.v)) return '<div class="cb-v5-num">' + NA + '</div><div class="cb-v5-sub">' + esc(p.na || "no neutral estimate") + "</div>";
     const rng = p.neutral_range ? "neutral range " + fmtRate(p.neutral_range[0]) + EN + fmtRate(p.neutral_range[1]) + "%" : "";
     return '<div class="cb-v5-num">' + stNum(p.v, "pp", "position.v") + " " + stBar(p.v, scale, "pos") + "</div>" +
-      '<div class="cb-v5-lab">' + esc(p.label) + '</div><div class="cb-v5-sub" title="' + esc(rng) + '">neutral ' + esc(fmtRate(p.neutral)) + "%</div>";
+      '<div class="cb-v5-lab">' + esc(p.label) + '</div><div class="cb-v5-sub" title="' + esc(rng) + '">neutral ' + esc(fmtRate(p.neutral)) + "%" +
+      (p.note ? ' <span class="cb-v5-note" data-note="position">(' + esc(p.note) + ")</span>" : "") + "</div>";
   }
   function needCell(s, scale) {
     const n = s.need;
     if (!isNum(n.v)) return '<div class="cb-v5-num">' + NA + '</div><div class="cb-v5-sub">' + esc(n.na) + "</div>";
     const line = [n.measure, n.target].filter(Boolean).join(n.target && n.target.indexOf("target") === 0 ? ", " : " ");
     return '<div class="cb-v5-num">' + stNum(n.v, "pp", "need.v") + " " + stBar(n.v, scale, "need") + "</div>" +
-      '<div class="cb-v5-lab">' + esc(n.label) + '</div><div class="cb-v5-sub" title="' + esc(n.official_name || "") + '">' + esc(line) + "</div>";
+      '<div class="cb-v5-lab">' + esc(n.label) + '</div><div class="cb-v5-sub" title="' + esc(n.official_name || "") + '">' + esc(line) + "</div>" +
+      (n.note ? '<div class="cb-v5-sub cb-v5-note" data-note="need">' + esc(n.note) + "</div>" : "");
   }
   function whyCell(s) {
     const w = s.why, tip = (w.sources || []).map(function (x) { return x.what + ": " + x.text; }).join("\n");
     return '<div class="cb-v5-concl ' + (w.move ? "cb-v5-move" : "cb-v5-hold") + '">' + esc(w.conclusion || NA) + "</div>" +
-      '<div class="cb-v5-reason" title="' + esc(tip) + '">' + esc(w.reason || "") + "</div>";
+      '<div class="cb-v5-reason" title="' + esc(tip) + '">' + esc(w.reason || "") + "</div>" +
+      (w.note ? '<div class="cb-v5-sub cb-v5-note" data-note="why">' + esc(w.note) + "</div>" : "");
   }
   const STANCE_SORTS = [["need", "Need"], ["position", "Position"], ["bank", "Bank"]];
   function stanceRows(st, key) {
