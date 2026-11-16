@@ -768,7 +768,7 @@ def bank_page(ctx: Context, rep: BankReport, asof: date) -> dict:
         unverified.append({"label": "decision time unverified", "text": "The decision time is not verified on the bank's own pages: " + ((bank.get("decision_time") or {}).get("evidence") or "")})
     return {
         "ccy": rep.currency, "bank": {**bank_block(ctx, rep.currency), "conference": bank.get("conference"), "projections": bank.get("projections"),
-                                     "policy_rate": (bank.get("policy_rate") or {}).get("definition"), "youtube": bank.get("youtube_channel_id")},
+                                     "policy_rate": (bank.get("policy_rate") or {}).get("definition"), "youtube": (bank.get("video_page") or "").rsplit("/channel/", 1)[-1] or None},
         "summary": row, "unverified": unverified, "spread": spread, "proxy_basis_bp": num((tr.extra.get("proxy_basis") or 0) * 100, 1) if tr.extra.get("proxy_basis") is not None else None,
         "trajectory": [point_json(p) for p in tr.points], "notes": list(tr.notes), "consistency": [{"source": c[0], "period": c[1], "dev_bp": num(c[2], 2), "detail": c[3]} for c in tr.consistency],
         "chart": chart_json(ctx, rep, asof), "next_card": {"horizon": row["horizon"], "next": row["next"]}, "horizons": horizons, "gap": row["gap"],

@@ -18,6 +18,7 @@ import pandas as pd
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src import http_policy as HP  # noqa: E402
 from src import cb_collect as cc                                   # noqa: E402
 from src import cb_datasets as ds                                  # noqa: E402
 from src.cb_calendar import load_calendars                          # noqa: E402
@@ -37,7 +38,7 @@ def main() -> None:
     ap.add_argument("--since", type=date.fromisoformat, default=date(2025, 9, 1))
     a = ap.parse_args()
     banks, cals = ds.load_banks(), load_calendars()
-    bis = parse_bis(requests.get(BIS_URL.format(areas="+".join(AREA.values()), since=a.since.replace(day=1)), timeout=90).text, a.since)
+    bis = parse_bis(HP.get(BIS_URL.format(areas="+".join(AREA.values()), since=a.since.replace(day=1)), timeout=90).text, a.since)
     store = cc.load_official_store(cc.Paths())
     series = lambda sid: [(r["date"], r["value"]) for r in store.values() if r["series_id"] == sid]      # noqa: E731
     ff = ds.read_ff_parquet(ds.FF_PARQUET)

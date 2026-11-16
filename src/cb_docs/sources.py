@@ -8,7 +8,6 @@ from typing import Optional
 from ..cb_probe import ECB_MPS, ECB_SEEDS, _statement_url
 
 BANKS = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF")            # fetched; NZD is manual
-YT_FEED = "https://www.youtube.com/feeds/videos.xml?channel_id={cid}"
 SEP = "→"
 
 FEEDS = {                                                       # speeches / testimony (RSS) per bank

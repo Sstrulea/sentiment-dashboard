@@ -385,11 +385,11 @@ def fetch_range_raw(from_date: date, to_date: date, *, api_key: str,
     Free tier ≈ 1 call/day — callers must gate through should_pull()."""
     global _last_response_meta
     import requests
-    r = requests.get(
+    from . import http_policy as HP
+    r = HP.get(
         url,
         params={"from": from_date.isoformat(), "to": to_date.isoformat()},
-        headers={"Authorization": f"Api-Key {api_key}",
-                 "User-Agent": "macro-data-analysis/1.0"},
+        headers={"Authorization": f"Api-Key {api_key}"},
         timeout=timeout,
     )
     _last_response_meta = _response_meta(r, api_key)
@@ -402,8 +402,8 @@ def fetch_today_raw(*, api_key: str, url: str = DEFAULT_TODAY_URL, timeout: int 
     The free tier's single daily request — callers gate through should_attempt_today()."""
     global _last_response_meta
     import requests
-    r = requests.get(url, headers={"Authorization": f"Api-Key {api_key}",
-                                   "User-Agent": "macro-data-analysis/1.0"}, timeout=timeout)
+    from . import http_policy as HP
+    r = HP.get(url, headers={"Authorization": f"Api-Key {api_key}"}, timeout=timeout)
     _last_response_meta = _response_meta(r, api_key)
     r.raise_for_status()
     return r.text

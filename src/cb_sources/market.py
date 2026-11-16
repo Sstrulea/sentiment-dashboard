@@ -570,11 +570,15 @@ class EurexOis(MarketSource):
 
     def _download(self, url: str):
         """Streamed GET (the file is ~65 MB): the response, or None with last_status / last_note."""
-        headers = {"User-Agent": self.ua or FRED_UA, "Accept": "text/csv,*/*"}
+        from .. import http_policy as HP
+        headers = {"Accept": "text/csv,*/*"}
         last = ""
         for attempt in range(3):
             try:
-                r = requests.get(url, headers=headers, timeout=60, stream=True)
+                r = HP.get(url, headers=headers, timeout=60, stream=True)       # robots.txt + crawl-delay (Eurex: 30 s) + honest UA
+            except HP.RobotsDisallowed as e:
+                self.last_status, self.last_note = "ROBOTS", str(e)
+                return None
             except requests.RequestException as e:
                 last = f"network:{type(e).__name__}"
             else:
@@ -582,6 +586,8 @@ class EurexOis(MarketSource):
                     return r
                 last = f"HTTP {r.status_code}"
                 r.close()
+                if 400 <= r.status_code < 500:
+                    break
             if attempt < 2:
                 time.sleep(1.0)
         self.last_status, self.last_note = "UNREACHABLE", last

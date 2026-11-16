@@ -343,14 +343,20 @@ def _canonicalize(rows: list[dict], now_utc: Optional[pd.Timestamp],
 # Parsers
 # ---------------------------------------------------------------------------
 
+LAST_RAW: str | None = None
+
+
 def _load_json(src: str | Path | list) -> list:
     if isinstance(src, list):
         return src
     p = str(src)
     if p.startswith("http://") or p.startswith("https://"):
         import requests
-        r = requests.get(p, headers={"User-Agent": "macro-data-analysis/1.0"}, timeout=30)
+        from . import http_policy as HP
+        global LAST_RAW
+        r = HP.get(p, timeout=30)
         r.raise_for_status()
+        LAST_RAW = r.text                       # ff_refresh archives this same payload: one request per run
         return r.json()
     return json.loads(Path(p).read_text())
 

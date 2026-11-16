@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from src import rate_fetch, rate_migrations
-from src.rate_sources import (BocValetSource, BoeSource, DbnomicsFedSource, EcbSource,
+from src.rate_sources import (BocValetSource, BoeSource, FedGswSource, EcbSource,
                               FredSource, MofJgbSource, RbaSource, TenorMismatch)
 
 FIX = Path(__file__).parent / "fixtures" / "rates"
@@ -162,7 +162,7 @@ def _serve_one(monkeypatch, src, body: bytes, as_json: bool = False):
 
 ECB = (FIX / "ecb_sr_2y.csv").read_bytes()
 BOC = (FIX / "boc_2yr.json").read_bytes()
-DBN = (FIX / "dbnomics_sveny02.json").read_bytes()
+GSW = (FIX / "fed_feds200628_cut.csv").read_bytes()   # the Fed's feds200628.csv: header block + first and last rows (2026-11-16)
 RBA = (FIX / "rba_f2_head.csv").read_bytes()   # layout of the published F2 (web.archive.org copy)
 
 CASES = [
@@ -170,7 +170,7 @@ CASES = [
     (EcbSource, "EUR", ECB, False, ECB.replace(b"SR_2Y", b"SR_5Y")),
     (BocValetSource, "CAD", BOC, True,
      BOC.replace(b"Benchmark bond yield, 2-year", b"Benchmark bond yield, 5-year")),
-    (DbnomicsFedSource, "USD", DBN, True, DBN.replace(b'"SVENY02"', b'"SVENY05"')),
+    (FedGswSource, "USD", GSW, False, GSW.replace(b",SVENY02,", b",SVENY2X,", 1)),
     (RbaSource, "AUD", RBA, False, (FIX / "rba_f2_no_2y.csv").read_bytes()),
 ]
 
@@ -210,11 +210,21 @@ def test_boe_raises_without_2y_maturity(monkeypatch):
 
 
 def test_tenor_mismatch_is_not_masked_by_a_fallback(monkeypatch):
-    """EUR: ECB says SR_5Y -> the currency is not written; Stooq is never tried."""
-    ecb, stooq = rate_fetch.ALL_SOURCES["ecb"], rate_fetch.ALL_SOURCES["stooq"]
-    _serve_one(monkeypatch, ecb, ECB.replace(b"SR_2Y", b"SR_5Y"))
-    monkeypatch.setattr(stooq, "fetch", lambda ccy: pytest.fail("fallback must not run"))
-    assert rate_fetch.fetch_currency("EUR", date(2026, 9, 22)) is None
+    """USD: FRED's series is not 2y -> the currency is not written; the Fed GSW fallback is never tried."""
+    fred, gsw = rate_fetch.ALL_SOURCES["fred"], rate_fetch.ALL_SOURCES["fed_gsw"]
+
+    def bad(ccy):
+        raise TenorMismatch("fred: not 2y")
+    monkeypatch.setattr(fred, "fetch", bad)
+    monkeypatch.setattr(gsw, "fetch", lambda ccy: pytest.fail("fallback must not run"))
+    assert rate_fetch.fetch_currency("USD", date(2026, 9, 22)) is None
+
+
+def test_no_aggregator_or_blocked_source_remains():
+    """fix/sources-compliance: DBnomics / Stooq (robots.txt Disallow /) and the RBNZ B2 adapter (Cloudflare, browser UA) are gone."""
+    assert set(rate_fetch.ALL_SOURCES) == {"fred", "ecb", "fed_gsw", "boc_valet", "mof_jgb", "boe_glc", "rba", "snb"}
+    assert rate_fetch.SOURCE_PREFERENCE["USD"] == ["fred", "fed_gsw"] and rate_fetch.SOURCE_PREFERENCE["NZD"] == []
+    assert all(len(v) <= 2 for v in rate_fetch.SOURCE_PREFERENCE.values())
 
 
 # --- 1.5 freshness.rates ----------------------------------------------------------

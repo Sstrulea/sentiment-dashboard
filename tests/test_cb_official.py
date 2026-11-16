@@ -45,7 +45,7 @@ def test_the_18_requested_series_are_configured_with_their_roles():
     assert cfg["series"]["ecb:MRO"]["role"] == "policy_mro"
     assert not any("FIRMMOIS" in json.dumps(s) for s in cfg["series"].values())        # RBA OIS stopped in 2022-12
     for sid, s in cfg["series"].items():
-        assert sid.startswith(s["provider"] + ":") and s["unit"] == "percent", sid
+        assert (sid.startswith(s["provider"] + ":") or (sid, s["provider"]) == ("boe:IUDSOIA", "fred")) and s["unit"] == "percent", sid     # SONIA: a BoE series read through the FRED API
 
 
 def test_banks_reference_configured_series():
@@ -150,7 +150,8 @@ def router(monkeypatch, overrides=None):
         ("series_id=DFEDTARU", "fred_dfedtaru_cut.json", {}), ("series_id=DFEDTARL", "fred_dfedtaru_cut.json", {}),
         ("series_id=EFFR", "fred_sofr_cut.json", {}), ("series_id=SOFR", "fred_sofr_cut.json", {}),
         ("KR.DFR.LEV", "ecb_dfr_cut.csv", {}), ("KR.MRR_FR.LEV", "ecb_dfr_cut.csv", {}), ("EST/B.EU000A2X2A25.WT", "ecb_dfr_cut.csv", {}),
-        ("fromshowcolumns.asp", "boe_iadb_cut.csv", {}), ("getDataCode", "boj_call_cut.json", {}),
+        ("Bank-Rate.asp", "boe_bank_rate_cut_20261116.htm", {}), ("series_id=IUDSOIA", "fred_iudsoia_cut.json", {}),
+        ("getDataCode", "boj_call_cut.json", {}),
         ("valet/observations", "valet_policy_cut.json", {}), ("f1-data.csv", "rba_f1_cut.csv", {"Last-Modified": "Thu, 17 Sep 2026 23:00:50 GMT"}),
         ("WS_CBPOL", "bis_cbpol_cut.csv", {}), ("snbgwdzid", "snb_cube_cut.csv", {}),
     ]
@@ -182,6 +183,7 @@ def mk(cls, **kw):
 def test_fred_adapter_keeps_a_failed_series_out_of_the_way_of_the_others(monkeypatch):
     router(monkeypatch, {"series_id=EFFR": Resp(503), "series_id=DFEDTARL": Resp(200, "<html>Just a moment... requires JavaScript</html>")})
     s = mk(FredSeries)
+    s.series = {k: v for k, v in s.series.items() if k.startswith("fred:")}       # boe:IUDSOIA (SONIA via FRED) has its own test
     res = s.fetch(since=D(2026, 9, 1))
     assert {o.series_id for o in res.obs} == {"fred:DFEDTARU", "fred:SOFR"}
     assert set(res.failed) == {"fred:EFFR", "fred:DFEDTARL"} and "503" in res.failed["fred:EFFR"] and "not JSON" in res.failed["fred:DFEDTARL"]
@@ -211,7 +213,7 @@ def test_rba_uses_a_non_browser_ua_and_last_modified(monkeypatch):
 
 def test_one_request_serves_several_series(monkeypatch):
     calls = router(monkeypatch)
-    for cls, n_series in ((BoeSeries, 2), (BocSeries, 2), (BisSeries, 2), (SnbSeries, 2), (RbaSeries, 2)):
+    for cls, n_series in ((BoeSeries, 1), (BocSeries, 2), (BisSeries, 2), (SnbSeries, 2), (RbaSeries, 2)):     # BoE: Bank Rate page; SONIA via FRED
         calls.clear()
         res = mk(cls).fetch(since=D(2026, 1, 1))
         assert len(calls) == 1 and len({o.series_id for o in res.obs}) == n_series, cls.__name__
@@ -225,7 +227,8 @@ def test_since_is_passed_to_the_provider_urls(monkeypatch):
     mk(BoeSeries).fetch(since=D(2025, 9, 1))
     mk(BojSeries).fetch(since=D(2025, 9, 1))
     urls = [u for u, _ in calls]
-    assert any("observation_start=2025-09-01" in u for u in urls) and any("Datefrom=01/Sep/2025" in u for u in urls) and any("startDate=202509" in u for u in urls)
+    assert any("observation_start=2025-09-01" in u for u in urls) and any("startDate=202509" in u for u in urls)
+    assert any(u.endswith("/boeapps/database/Bank-Rate.asp") for u in urls) and not any("/boeapps/iadb" in u for u in urls)   # the page has no since
 
 
 # ---------------------------------------------------------------------------
@@ -251,15 +254,18 @@ def test_run_official_writes_monthly_partitions_keyed_by_series_and_date(tmp_pat
     reps = cc.run_official(paths, now=lambda: NOW, backfill_from=D(2025, 9, 1))
     assert {r.id for r in reps} == {f"official:{p}" for p in ("fred", "ecb", "boe", "boj", "boc", "rba", "bis", "snb")} and all(r.status == "ok" for r in reps), [(r.id, r.status, r.note) for r in reps]
     files = sorted(f.name for f in (paths.dir / "official_series").glob("*"))
-    assert files == ["official_series_2026-06.parquet", "official_series_2026-09.parquet"] and not (paths.dir / "official_series.parquet").exists()
+    # the BoE Bank Rate page is a change table: expanded onto every UK business day the calendar covers (2026-01-02 .. the day
+    # before NOW); the other fixtures carry June / September 2026 only
+    assert files == [f"official_series_2026-{m:02d}.parquet" for m in range(1, 10)] and not (paths.dir / "official_series.parquet").exists()
     t = pq.read_table(paths.dir / "official_series" / "official_series_2026-09.parquet")
     assert t.schema.names == ["series_id", "currency", "date", "value", "unit", "fetched_at"]
     rows = official_rows(paths)
     keys = [(r["series_id"], r["date"]) for r in rows]
     assert len(keys) == len(set(keys))                                                    # one row per (series_id, date)
-    assert {r["date"].strftime("%Y-%m") for r in rows} == {"2026-06", "2026-09"}          # partition = month of the date
+    assert {r["date"].strftime("%Y-%m") for r in rows if r["series_id"] != "boe:IUDBEDR"} == {"2026-06", "2026-09"}   # partition = month of the date
     by = {(r["series_id"], r["date"]): r["value"] for r in rows}
     assert by[("snb:LZ", D(2026, 9, 11))] == 0.0                                          # CHF 0.00 kept as a value
+    assert by[("boe:IUDBEDR", D(2026, 9, 18))] == 3.75 and ("boe:IUDBEDR", D(2026, 9, 19)) not in by and by[("boe:IUDSOIA", D(2026, 9, 17))] == 3.7304
     assert by[("bis:NZ", D(2026, 9, 3))] == 2.75 and by[("bis:JP", D(2026, 6, 17))] == 1.0
     assert {r.id: r.asof_max for r in reps}["official:snb"] == D(2026, 9, 11)
 

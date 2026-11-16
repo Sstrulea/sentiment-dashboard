@@ -2,8 +2,8 @@
 
 Modes:
     weekly      — COT full refresh (default; preserved behavior)
-    daily       — VIX rebuild + P/C append for today + retail snapshot + re-render
-    retail      — Retail sentiment snapshot + re-render only (3-hourly cron)
+    daily       — VIX update (FRED API) + P/C append for today (Cboe, one request a day) + re-render (retail stopped 2026-11-16)
+    retail      — Retail sentiment snapshot + re-render (collection stopped 2026-11-16: no workflow runs it)
     economic    — MT5 economic-calendar ingest + Economic/Carry/Strength/History re-render
     all         — weekly then daily
     backfill-pc — P/C backfill from 2019-10-07 through today, then re-render
@@ -85,7 +85,9 @@ def _daily() -> int:
             pd.Timestamp(d).date() for d in pd.read_parquet(PC_FILE)["date"]
         }
 
-    candidates = [d for d in trading_days(start, today) if d not in existing_dates]
+    # Cboe P/C: one request a day, after settlement - only closed sessions (up to yesterday) that are still missing; today's
+    # session is never asked for (it is published after the close). Licence: Cboe website terms, personal non-commercial use.
+    candidates = [d for d in trading_days(start, today - dt.timedelta(days=1)) if d not in existing_dates]
     if not candidates:
         log.info("P/C parquet already has every trading day in [%s, %s].", start, today)
     else:
@@ -122,11 +124,8 @@ def _daily() -> int:
         log.error("VIX render failed: %s", e)
         return 2
 
-    # Retail snapshot is best-effort — do not let Myfxbook outages block VIX/PC.
-    rc = _retail()
-    if rc != 0:
-        log.warning("Retail step exited %d (non-fatal in --mode daily)", rc)
-
+    # Retail collection stopped 2026-11-16 (fix/sources-compliance, George's decision): no Myfxbook request any more;
+    # the retail page and data stay (hidden).
     return 0
 
 

@@ -1,5 +1,6 @@
-"""Polite HTTP for the official-text collector: an identifiable user agent, robots.txt respected, a gentle per-host rate limit and
-conditional GET (ETag / Last-Modified kept in data/cb/state.json, advanced only after the data they gate is stored).
+"""Polite HTTP for the official-text collector, on the single HTTP policy of the system (src/http_policy.py: robots.txt for the
+exact path, crawl-delay per host with a 2 s floor, one honest user-agent) + a per-run request budget and conditional GET (ETag /
+Last-Modified kept in data/cb/state.json, advanced only after the data they gate is stored).
 
 Nothing here works around a block: a 401 / 403 / 429 / 503 is reported as a failure (`blocked`), never retried with another identity.
 RBNZ sits behind a Cloudflare challenge and stays manual.
@@ -14,7 +15,9 @@ from urllib.parse import urlsplit
 
 import requests
 
-USER_AGENT = "Mozilla/5.0 (compatible; CbDocsBot/1.0; +https://github.com/Sstrulea/sentiment-dashboard)"
+from .. import http_policy as HP
+
+USER_AGENT = HP.USER_AGENT
 MIN_INTERVAL_S = 2.0                # per host
 TIMEOUT_S = 25
 MAX_REQUESTS = 400                  # per run: a runaway loop cannot hammer a bank
@@ -55,57 +58,31 @@ class Fetched:
 class Fetcher:
     def __init__(self, session=None, validators: Optional[dict] = None, *, sleep: Callable[[float], None] = time.sleep,
                  clock: Callable[[], float] = time.monotonic, user_agent: str = USER_AGENT, min_interval: float = MIN_INTERVAL_S,
-                 max_requests: int = MAX_REQUESTS) -> None:
-        self.session = session or requests.Session()
+                 max_requests: int = MAX_REQUESTS, policy: Optional[HP.Policy] = None) -> None:
+        # one policy per process (shared robots cache and crawl-delay with every other fetcher); a test session gets its own
+        self.policy = policy or (HP.Policy(session=session, clock=clock, sleep=sleep, default_delay=min_interval) if session is not None
+                                 else HP.POLICY)
+        self.session = self.policy.session
         self.validators = validators if validators is not None else {}
         for url, v in self.validators.items():                              # an ETag stored before this rule existed: dropped once
             if self._unstable(url):
                 v.pop("etag", None)
-        self._sleep, self._clock, self.ua, self.min_interval, self.max_requests = sleep, clock, user_agent, min_interval, max_requests
-        self._last: dict = {}
-        self._robots: dict = {}
+        self.ua, self.min_interval, self.max_requests = HP.USER_AGENT, min_interval, max_requests
         self.requests_made = 0
         self.log: list = []
 
-    # -- robots.txt ---------------------------------------------------------------------------------------------------
-    def _robots_for(self, url: str) -> Optional[urllib.robotparser.RobotFileParser]:
-        """None = robots.txt could not be read (blocked or down): the host is skipped this run."""
-        parts = urlsplit(url)
-        host = f"{parts.scheme}://{parts.netloc}"
-        if host not in self._robots:
-            rp = urllib.robotparser.RobotFileParser()
-            r = self._request(f"{host}/robots.txt", {})
-            if r.error == "network" or r.status in BLOCKED or (r.status is not None and r.status >= 500):
-                self._robots[host] = None
-            elif r.status == 404 or r.status is None:
-                rp.parse([])                                             # no robots.txt = everything allowed
-                self._robots[host] = rp
-            else:
-                rp.parse(r.text.splitlines())
-                self._robots[host] = rp
-        return self._robots[host]
-
     def allowed(self, url: str) -> bool:
-        rp = self._robots_for(url)
-        return bool(rp and rp.can_fetch(self.ua, url))
+        return self.policy.allowed(url)
 
     # -- one request ----------------------------------------------------------------------------------------------------
-    def _wait(self, host: str) -> None:
-        last = self._last.get(host)
-        if last is not None:
-            gap = self.min_interval - (self._clock() - last)
-            if gap > 0:
-                self._sleep(gap)
-        self._last[host] = self._clock()
-
     def _request(self, url: str, headers: dict) -> Fetched:
         if self.requests_made >= self.max_requests:
             return Fetched(url, error="network: per-run request budget exhausted")
         self.requests_made += 1
-        self._wait(urlsplit(url).netloc)
-        h = {"User-Agent": self.ua, "Accept": "*/*", **headers}
         try:
-            r = self.session.get(url, headers=h, timeout=TIMEOUT_S, allow_redirects=True)
+            r = self.policy.request("GET", url, headers={"Accept": "*/*", **headers}, timeout=TIMEOUT_S, allow_redirects=True)
+        except HP.RobotsDisallowed:
+            return Fetched(url, error="robots")
         except requests.RequestException as e:
             self.log.append((url, "network", str(e)[:120]))
             return Fetched(url, error="network")
@@ -140,9 +117,10 @@ class Fetcher:
         if self.requests_made >= self.max_requests:
             return Fetched(url, error="network: per-run request budget exhausted")
         self.requests_made += 1
-        self._wait(urlsplit(url).netloc)
         try:
-            r = self.session.head(url, headers={"User-Agent": self.ua}, timeout=TIMEOUT_S, allow_redirects=True)
+            r = self.policy.request("HEAD", url, timeout=TIMEOUT_S, allow_redirects=True)
+        except HP.RobotsDisallowed:
+            return Fetched(url, error="robots")
         except requests.RequestException:
             return Fetched(url, error="network")
         out = Fetched(url, r.status_code, b"", dict(r.headers))

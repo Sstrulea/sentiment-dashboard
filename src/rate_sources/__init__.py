@@ -6,21 +6,15 @@ never raising). `ALL_SOURCES` + `SOURCE_PREFERENCE` + `assess()` are the public
 surface reused by both `src.rates_probe` (diagnostics) and `src.rate_fetch`
 (parquet build). No I/O of project data here — only outbound keyless HTTP.
 
-Adapter status (verified): USD→FRED DGS2 (DBnomics-FED SVENY02 fallback),
-EUR→ECB SR_2Y, GBP→BoE GLC nominal spot 2.0y, JPY→MoF jgbcm_all.csv + jgbcm.csv (col 2年),
-CAD→BoC BD.CDN.2YR.DQ.YLD, AUD→RBA F2 (Stooq fallback), NZD→RBNZ B2 xlsx
-(Stooq fallback), CHF→SNB rendoblid D0=2J (often stale → Stooq fallback).
+Adapter status (fix/sources-compliance, 2026-11-16): USD→FRED DGS2 (fallback: the Fed's own GSW file
+feds200628.csv, SVENY02 - identical to the DBnomics copy it replaces), EUR→ECB SR_2Y, GBP→BoE GLC nominal spot 2.0y,
+JPY→MoF jgbcm_all.csv + jgbcm.csv (col 2年), CAD→BoC BD.CDN.2YR.DQ.YLD, AUD→RBA F2, CHF→SNB rendoblid D0=2J (often stale).
+NZD: no source - the RBNZ B2 file sits behind a Cloudflare challenge and is never worked around (the adapter that tried with a
+browser user-agent was removed); DBnomics and Stooq were removed (their robots.txt disallows every path).
+Every request goes through src/http_policy.py (robots.txt, crawl-delay, one honest user-agent).
 
-Known FX foreign-2y gaps (as of 2026-06, NOT trivially fixable):
-  JPY  — MoF resolves but lags (stale).
-  AUD  — RBA F2 403s behind a bot wall despite a browser UA + Referer + Accept
-         (already set, see RbaSource); not a header tweak. Runs on Stooq cache.
-  NZD  — RBNZ B2 xlsx 403s the same way (browser UA + Referer already set).
-  CHF  — SNB stale; no live primary.
-  Stooq fallback is itself bot-walled intermittently.
-These are real bot walls, not the IPv6 routing issue fixed above (that affected
-connection-level hangs, e.g. FRED — these return an HTTP 403 instead). Left as-is;
-the cross-asset scoring already excludes stale/missing sub-scores from averages.
+Known FX foreign-2y gaps: JPY (MoF lags), NZD (no accessible official source), CHF (SNB stale). Left as-is; the
+cross-asset scoring already excludes stale/missing sub-scores from averages.
 """
 from __future__ import annotations
 
@@ -38,6 +32,8 @@ import pandas as pd
 import requests
 import urllib3.util.connection
 
+from .. import http_policy as HP
+
 log = logging.getLogger(__name__)
 
 # Force IPv4 for all outbound fetches. FRED (and some other endpoints) advertise
@@ -54,14 +50,9 @@ CURRENCIES = ["USD", "EUR", "GBP", "JPY", "AUD", "NZD", "CAD", "CHF"]
 HTTP_TIMEOUT = 15
 RETRIES = 2
 BACKOFF_S = 1.0
-UA = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
-# An honest non-browser UA (historically the FRED one; FRED itself is now read only through
-# src/fred_api.py, the official API with a key). Still used by the CB adapters (RBA, ...) that
-# 403 a Chrome UA; non-FRED sources keep `UA` (Stooq/RBA/BoE bot-walls).
-FRED_UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
+# One honest user-agent for every request (src/http_policy.py sets it; a caller cannot override it). The two names stay for
+# the modules that import them.
+UA = FRED_UA = HP.USER_AGENT
 
 # Qualification thresholds.
 FRESH_LAG_BD = 5     # latest within ~5 business days = fresh
@@ -148,19 +139,24 @@ class BaseSource:
 
     def _get(self, url: str, extra_headers: Optional[dict] = None,
              retries: int = RETRIES) -> Optional[requests.Response]:
-        headers = {"User-Agent": UA, "Accept": "*/*"}
-        if extra_headers:
-            headers.update(extra_headers)
+        """GET through the single HTTP policy (robots.txt, crawl-delay, honest user-agent). A 4xx is never retried with
+        other headers; a path robots.txt disallows is not requested (last_status ROBOTS)."""
+        headers = {"Accept": "*/*", **(extra_headers or {})}
         last = ""
         for attempt in range(retries + 1):
             try:
-                r = requests.get(url, headers=headers, timeout=HTTP_TIMEOUT)
+                r = HP.get(url, headers=headers, timeout=HTTP_TIMEOUT)
+            except HP.RobotsDisallowed as e:
+                self.last_status, self.last_note = "ROBOTS", str(e)
+                return None
             except requests.RequestException as e:
                 last = f"network:{type(e).__name__}"
             else:
                 if r.status_code == 200:
                     return r
                 last = f"HTTP {r.status_code}"
+                if 400 <= r.status_code < 500:
+                    break                                       # a refusal is final: no retry, no other identity
             if attempt < retries:
                 time.sleep(BACKOFF_S)
         self.last_status = "UNREACHABLE"
@@ -247,54 +243,6 @@ def _csv_reader(text: str):
 # ---------------------------------------------------------------------------
 # (a) Stooq — one-stop candidate
 # ---------------------------------------------------------------------------
-
-class StooqSource(BaseSource):
-    name = "stooq"
-    SYMBOLS = {
-        "USD": ["2usy.b"], "EUR": ["2dey.b"], "GBP": ["2uky.b", "2gby.b"],
-        "JPY": ["2jpy.b"], "AUD": ["2auy.b"], "NZD": ["2nzy.b"],
-        "CAD": ["2cay.b"], "CHF": ["2chy.b"],
-    }
-    HOSTS = ["https://stooq.com/q/d/l/?s={s}&i=d", "https://stooq.pl/q/d/l/?s={s}&i=d"]
-
-    def supports(self, currency: str) -> bool:
-        return currency in self.SYMBOLS
-
-    def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        tried = []
-        for sym in self.SYMBOLS[currency]:
-            for tmpl in self.HOSTS:
-                r = self._get(tmpl.format(s=sym))
-                if r is None:
-                    tried.append(f"{sym}:{self.last_note}")
-                    continue
-                if self._check_botwall(r):
-                    tried.append(f"{sym}:bot-wall")
-                    continue
-                if "No data" in r.text or len(r.text.strip()) < 20:
-                    tried.append(f"{sym}:no-data")
-                    continue
-                try:
-                    df = pd.read_csv(io.StringIO(r.text))
-                except Exception as e:
-                    tried.append(f"{sym}:parse({e})")
-                    continue
-                if "Date" not in df.columns or "Close" not in df.columns:
-                    tried.append(f"{sym}:cols{list(df.columns)}")
-                    continue
-                s = _mk(currency, self.name, "2y", "daily",
-                        pd.to_datetime(df["Date"], errors="coerce"),
-                        pd.to_numeric(df["Close"], errors="coerce"), note=f"symbol={sym}")
-                if s:
-                    return s
-                tried.append(f"{sym}:empty")
-        if any("bot-wall" in t for t in tried):
-            self.last_status = "BOT-WALL"
-        elif not self.last_status:
-            self.last_status = "UNREACHABLE"
-        self.last_note = "; ".join(tried)
-        return None
-
 
 # ---------------------------------------------------------------------------
 # (b) FRED — US 2y (DGS2), through the FRED API client (src/fred_api.py)
@@ -481,29 +429,30 @@ class EcbSource(BaseSource):
 # (d) DBnomics FED fitted curve — USD 2y fallback
 # ---------------------------------------------------------------------------
 
-class DbnomicsFedSource(BaseSource):
-    name = "dbnomics_fed"
-    PATH = "FED/NOMINAL_YIELD_CURVE/SVENY02"
+class FedGswSource(BaseSource):
+    """USD 2y fallback: the Federal Reserve Board's own Gurkaynak-Sack-Wright file (feds200628.csv, column SVENY02, from
+    1961-06-14). It replaces the DBnomics copy of the same series (DBnomics robots.txt: Disallow /); the 3729 stored rows
+    labelled dbnomics_fed (1961-06-14..1976-05-28) are identical to this file (fix/sources-compliance, 2026-11-16)."""
+    name = "fed_gsw"
+    URL = "https://www.federalreserve.gov/data/yield-curve-tables/feds200628.csv"
+    COLUMN = "SVENY02"
 
     def supports(self, currency: str) -> bool:
         return currency == "USD"
 
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        r = self._get(f"https://api.db.nomics.world/v22/series/{self.PATH}?observations=1",
-                      retries=3)
+        r = self._get(self.URL, retries=1)
         if r is None:
             return None
-        payload = r.json()
-        docs = (payload.get("series") or {}).get("docs") or []
-        if not docs:
-            self._parse_fail("no series docs")
+        text = r.text
+        i = text.find("\nDate,")
+        if i < 0:
+            self._parse_fail("no 'Date,' header row")
             return None
-        d = docs[0]
-        code = str(d.get("series_code", ""))
-        require_2y(self.name, code == self.PATH.rsplit("/", 1)[-1], f"series_code={code!r}")
-        s = _mk(currency, self.name, "2y", "daily",
-                pd.to_datetime(pd.Series(d.get("period", [])), errors="coerce"),
-                d.get("value", []), note=self.PATH)
+        df = pd.read_csv(io.StringIO(text[i + 1:]), usecols=lambda c: c in ("Date", self.COLUMN))
+        require_2y(self.name, self.COLUMN in df.columns, f"columns {list(df.columns)[:5]}")
+        s = _mk(currency, self.name, "2y", "daily", pd.to_datetime(df["Date"], errors="coerce"),
+                pd.to_numeric(df[self.COLUMN], errors="coerce"), note=f"feds200628.csv {self.COLUMN}")
         if not s:
             self._parse_fail("no observations")
         return s
@@ -757,10 +706,7 @@ class RbaSource(BaseSource):
         return ci
 
     def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        r = self._get(self.URL, extra_headers={
-            "Referer": "https://www.rba.gov.au/statistics/tables/",
-            "Accept": "text/csv,application/csv,*/*",
-        })
+        r = self._get(self.URL, extra_headers={"Accept": "text/csv,application/csv,*/*"})
         if r is None:
             return None
         if self._check_botwall(r):
@@ -791,68 +737,6 @@ class RbaSource(BaseSource):
 # ---------------------------------------------------------------------------
 # (i) RBNZ B2 — NZD 2y (XLSX via openpyxl)
 # ---------------------------------------------------------------------------
-
-class RbnzSource(BaseSource):
-    name = "rbnz"
-    URLS = [
-        "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily.xlsx",
-        "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/tables/b2/hb2-daily.xlsx",
-    ]
-
-    def supports(self, currency: str) -> bool:
-        return currency == "NZD"
-
-    def _fetch(self, currency: str) -> Optional[YieldSeries]:
-        for url in self.URLS:
-            r = self._get(url, extra_headers={"Referer": "https://www.rbnz.govt.nz/statistics"})
-            if r is None:
-                continue
-            if r.content[:2] != b"PK":
-                self.last_status = "UNREACHABLE"
-                self.last_note = "WAF/HTML, not XLSX (validate from a residential IP)"
-                continue
-            try:
-                from openpyxl import load_workbook
-            except Exception:
-                self._parse_fail("openpyxl not installed (pip install openpyxl)")
-                return None
-            try:
-                wb = load_workbook(io.BytesIO(r.content), data_only=True, read_only=True)
-            except Exception as e:
-                self._parse_fail(f"xlsx open {e}")
-                continue
-            ws = wb["Data"] if "Data" in wb.sheetnames else wb[wb.sheetnames[0]]
-            rows = list(ws.iter_rows(values_only=True))
-            col = None
-            for hdr in rows[:12]:
-                for ci, cell in enumerate(hdr):
-                    c = str(cell).lower() if cell is not None else ""
-                    if ("2 year" in c or "2-year" in c or "2 yr" in c) and "bond" in c:
-                        col = ci
-                        break
-                if col is not None:
-                    break
-            require_2y(self.name, col is not None,
-                       "no '2 year ... bond' column in the header band")
-            dates, vals = [], []
-            for row in rows:
-                if col >= len(row):
-                    continue
-                d = pd.to_datetime(row[0], errors="coerce")
-                if pd.isna(d):
-                    continue
-                try:
-                    vals.append(float(row[col])); dates.append(d)
-                except (TypeError, ValueError):
-                    continue
-            s = _mk(currency, self.name, "2y", "daily", dates, vals, note=url.split("/")[-1])
-            if s:
-                return s
-            self._parse_fail("reachable / 2y column found but no numeric rows")
-        if not self.last_status:
-            self._parse_fail("unreachable / needs local validation")
-        return None
-
 
 # ---------------------------------------------------------------------------
 # (j) SNB data portal — CHF (cube rendoblid, D0=2J; often stale)
@@ -905,21 +789,21 @@ class SnbSource(BaseSource):
 
 ALL_SOURCES: dict[str, BaseSource] = {
     s.name: s for s in [
-        StooqSource(), FredSource(), EcbSource(), DbnomicsFedSource(),
+        FredSource(), EcbSource(), FedGswSource(),
         BocValetSource(), MofJgbSource(), BoeSource(), RbaSource(),
-        RbnzSource(), SnbSource(),
+        SnbSource(),
     ]
 }
 
 SOURCE_PREFERENCE: dict[str, list[str]] = {
-    "USD": ["fred", "dbnomics_fed", "stooq"],
-    "EUR": ["ecb", "stooq"],
-    "GBP": ["boe_glc", "stooq"],
-    "JPY": ["mof_jgb", "stooq"],
-    "AUD": ["rba", "stooq"],
-    "NZD": ["rbnz", "stooq"],
-    "CAD": ["boc_valet", "stooq"],
-    "CHF": ["snb", "stooq"],
+    "USD": ["fred", "fed_gsw"],
+    "EUR": ["ecb"],
+    "GBP": ["boe_glc"],
+    "JPY": ["mof_jgb"],
+    "AUD": ["rba"],
+    "NZD": [],                       # no accessible official source (RBNZ: Cloudflare challenge, never worked around)
+    "CAD": ["boc_valet"],
+    "CHF": ["snb"],
 }
 
 

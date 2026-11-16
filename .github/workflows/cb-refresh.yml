@@ -13,7 +13,7 @@ name: cb-refresh
 # dispatched by hand), ONLY data/cb/summaries/, pushed to THAT branch - main is never touched from a run that is not on main (explicit guard in both steps).
 on:
   schedule:
-    - cron: '47 */6 * * *'                   # backup only (the Worker fires every 2 hours); off the Worker's :37 so that the two never start together
+    - cron: '47 4 * * *'                     # backup only, once a day (the Worker fires every 6 hours at :37); skipped when a Worker run succeeded recently
     - cron: '23 7 * * *'                     # stance S0a: the daily run of the macro series + the weekly framework watch (never skipped by the guard)
   workflow_dispatch:
     inputs:
@@ -80,7 +80,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ github.event.schedule }}" = "23 7 * * *" ]; then echo "daily stance-data run: never skipped"; echo "skip=false" >> "$GITHUB_OUTPUT"; exit 0; fi
-          since=$(date -u -d '3 hours ago' +%FT%TZ)
+          since=$(date -u -d '7 hours ago' +%FT%TZ)        # the Worker runs every 6 hours
           n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow cb-refresh.yml --status success --created ">=$since" --json event -q '[.[] | select(.event == "workflow_dispatch")] | length') || n=0
           echo "recent successful dispatch runs: $n"
           echo "skip=$([ "${n:-0}" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"

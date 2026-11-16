@@ -3,8 +3,8 @@ name: econ-refresh
 # Worker is down: it runs less often, and its `guard` job skips it when a run started by the Worker succeeded recently (no needless double runs).
 on:
   schedule:
-    - cron: '35 */3 * * 1-5'               # backup only; off the Worker's :05
-    - cron: '35 */6 * * 0,6'
+    - cron: '35 6,18 * * 1-5'              # backup only, twice a day; runs only when the Worker's :05 run of the last hour did not succeed
+    - cron: '35 12 * * 0,6'
   workflow_dispatch:
     inputs:
       render_all:
@@ -34,7 +34,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          hours=$([ "$(date -u +%u)" -ge 6 ] && echo 5 || echo 2)
+          hours=$([ "$(date -u +%u)" -ge 6 ] && echo 13 || echo 1)      # weekday: the :05 run of this hour; weekend: the Worker runs every 12 h
           since=$(date -u -d "$hours hours ago" +%FT%TZ)
           n=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow econ-refresh.yml --status success --created ">=$since" --json event -q '[.[] | select(.event == "workflow_dispatch")] | length') || n=0
           echo "recent successful dispatch runs (last $hours h): $n"
@@ -71,15 +71,28 @@ jobs:
         timeout-minutes: 3
         run: python -m src.official_fetch
 
+      # Daily series (2y yields, real yields, liquidity): one fetch a day, after 21:00 UTC (state data/daily_gate.json) - fix/sources-compliance
+      - name: FRED due today?
+        id: fredgate
+        run: echo "run=$(python -m src.daily_gate check fred --after 21:00)" >> "$GITHUB_OUTPUT"
+
       - name: FRED
+        if: steps.fredgate.outputs.run == 'true'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # FRED only through the API with a key (src/fred_api.py)
         run: |
           python -m src.rate_fetch
           python -m src.realyield_fetch
           python -m src.liquidity_fetch
+          python -m src.daily_gate mark fred
+
+      # Render only when a data file changed (or render_all): an unchanged hour costs no render
+      - name: Data changed?
+        id: changed
+        run: echo "changed=$([ -n "$(git status --porcelain data/)" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Render
+        if: steps.changed.outputs.changed == 'true' || inputs.render_all
         run: python -m src.main --mode economic
 
       # Dispatch-only: `python -m src.main --mode render-all` (COT, P/C, VIX, retail, economic, carry, strength, history) so a shared template
@@ -100,6 +113,7 @@ jobs:
           [ -f data/integrity_report.json ] && git add data/integrity_report.json || true
           [ -f data/rates_gap_state.json ] && git add data/rates_gap_state.json || true
           [ -f data/official_series.parquet ] && git add data/official_series.parquet || true
+          [ -f data/daily_gate.json ] && git add data/daily_gate.json || true
           git diff --cached --quiet && { echo "nimic de comis"; exit 0; }
           git commit -m "econ: refresh $(date -u +%FT%TZ) [ci]"
           for i in 1 2 3; do

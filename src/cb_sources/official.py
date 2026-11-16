@@ -156,6 +156,51 @@ def parse_boe(text: str, since: date) -> dict:
     return out
 
 
+BANK_RATE_RX = re.compile(r"(\d{1,2}) ([A-Z][a-z]{2}) (\d{2}) (\d+\.\d+)")
+
+
+def parse_bank_rate_page(html_text: str) -> list:
+    """[(date changed, rate)] ascending, from the BoE page /boeapps/database/Bank-Rate.asp (table 'Date Changed | Rate',
+    rows like '05 Nov 26 4.00'; robots.txt allows the path, unlike the interactive database)."""
+    import html as _html
+    t = re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ", html_text)))
+    i = t.find("Date Changed")
+    out = []
+    for d, mon, yy, v in BANK_RATE_RX.findall(t[i:] if i >= 0 else t):
+        try:
+            out.append((datetime.strptime(f"{d} {mon} {yy}", "%d %b %y").date(), float(v)))
+        except ValueError:
+            continue
+    today = date.today()
+    return sorted({x for x in out if x[0] <= today})                     # a 2-digit year read as the future (%y) is dropped
+
+
+def bank_rate_daily(changes: list, days: list) -> list:
+    """The official Bank Rate on each day of `days`: the rate of the last change on or before it (BoE: effective the day of the
+    decision). Reproduces the IADB daily series IUDBEDR (identity checked 2026-11-16)."""
+    out, j, cur = [], 0, None
+    for d in sorted(days):
+        while j < len(changes) and changes[j][0] <= d:
+            cur = changes[j][1]
+            j += 1
+        if cur is not None:
+            out.append((d, cur))
+    return out
+
+
+def bank_rate_bis_check(changes: list, bis_points: list, since: date) -> list:
+    """Disagreements between the BoE page and BIS WS_CBPOL GB (the verification source): change dates since `since` where the
+    BIS level (by effective date, published with a lag) differs from the page's rate. Empty = consistent."""
+    level = dict(bis_points)
+    bad = []
+    for d, v in changes:
+        if d < since or d not in level:
+            continue
+        if abs(level[d] - v) > 1e-9:
+            bad.append((d.isoformat(), v, level[d]))
+    return bad
+
+
 def parse_boj(payload: dict, since: date) -> list:
     rs = payload.get("RESULTSET") or []
     if not rs:
@@ -392,21 +437,32 @@ class BojSeries(_PerSeries):
 
 
 class BoeSeries(OfficialSource):
+    """Official Bank Rate (IUDBEDR) from the BoE page Bank-Rate.asp (the change table), expanded onto the London business days
+    of the UK calendar (config/cb_calendars.yaml) up to the previous business day - the same days and values as the IADB daily
+    series it replaces (the IADB path is disallowed by the BoE robots.txt; fix/sources-compliance). Days the
+    calendar does not cover are not written. SONIA (IUDSOIA) comes from the FRED API (provider fred)."""
     provider = "boe"
 
     def _fetch(self, since, state):
-        codes = {s["key"]: sid for sid, s in self.series.items()}
-        url = self.cfg["url"].format(key=",".join(codes), since_dmy=since.strftime("%d/%b/%Y"))
-        r, _, _ = self._csv_get(url)
+        from ..cb_calendar import load_calendars
+        sid = next((k for k, s in self.series.items() if s["key"] == "IUDBEDR"), None)
+        if sid is None:
+            return self._finish([], {})
+        r, _, _ = self.get_url(self.cfg["url"])
         if r is None:
-            return self._finish([], {sid: self._err() for sid in self.series})
-        got = parse_boe(r.text, since)
-        out, failed = [], {}
-        for code, sid in codes.items():
-            if code not in got:
-                failed[sid] = "column missing"
-            out += [self.obs(sid, d, v) for d, v in got.get(code, [])]
-        return self._finish(out, failed)
+            return self._finish([], {sid: self._err()})
+        changes = parse_bank_rate_page(r.text)
+        if not changes:
+            return self._finish([], {sid: "PARSE-FAIL no 'Date Changed' rows on the Bank Rate page"})
+        cal = load_calendars()[self.series[sid].get("calendar_id", "UK")]
+        last = cal.prev_business_day(self._now().date()) if cal.covers(self._now().date()) else None
+        days, d = [], since
+        while last is not None and d <= last:
+            if cal.covers(d) and cal.is_business_day(d):
+                days.append(d)
+            d += timedelta(days=1)
+        self.changes = changes                                     # kept for the BIS cross-check of the run
+        return self._finish([self.obs(sid, d, v) for d, v in bank_rate_daily(changes, days)], {})
 
 
 class BocSeries(OfficialSource):

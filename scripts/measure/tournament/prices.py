@@ -2,15 +2,17 @@
 
   FX       FRED H.10 (factor_scales.FRED_FX through factor_scales._fred), as
            v3_scales.fred_usd_values: USD value of one unit of each currency, USD = 1
-  indices  Yahoo Finance via yfinance, Close column, cached in ~/.cache/macro-tournament/yahoo
-  metals   Stooq CSVs read as they are from ~/Downloads (xauusd_d.csv, xagusd_d.csv)
+  indices  the Yahoo caches already in ~/.cache/macro-tournament/yahoo (the fetch was removed: robots.txt Disallow /;
+           official route = FRED API SP500 / NASDAQCOM / DJIA / NIKKEI225, personal_only)
+  metals   local CSVs in ~/Downloads (xauusd_d.csv, xagusd_d.csv) - no request is made; official route = LBMA prices
+           only under licence (none free) -> a measurement-only input
 
 Entry = first close on or after the Monday after the Friday; exit = first close on
 or after entry + 7·h days (scripts/measure/v3_metals.fwd). Past return over h
 weeks (coincident check) = last close on or before the Friday's date vs the last
 close on or before that date − 7·h days.
 
-    python scripts/measure/tournament/prices.py fetch   # Yahoo → cache (only when missing)
+    python scripts/measure/tournament/prices.py fetch   # removed (Yahoo robots.txt) - raises
     python scripts/measure/tournament/prices.py check   # mapping + FRED correlation
 """
 from __future__ import annotations
@@ -54,31 +56,10 @@ def yahoo_path(sym: str) -> Path:
 
 
 def fetch_yahoo(start: str = "2000-01-01") -> dict:
-    """Download every index Close once into the cache; the bar of the fetch day
-    (possibly not closed yet) is dropped. Raises PriceError on an empty answer."""
-    import yfinance as yf
-    YAHOO_DIR.mkdir(parents=True, exist_ok=True)
-    today = pd.Timestamp.now(tz="UTC").normalize().tz_localize(None)
-    info = {}
-    for sym, tk in YAHOO.items():
-        p = yahoo_path(sym)
-        if p.exists():
-            continue
-        df = yf.download(tk, start=start, interval="1d", auto_adjust=False, progress=False, actions=False)
-        if df is None or df.empty or "Close" not in df:
-            raise PriceError(f"Yahoo returned nothing for {sym} ({tk})")
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(0)
-        s = df["Close"].dropna()
-        s = s[s.index < today]
-        s.rename("Close").to_frame().rename_axis("Date").to_csv(p)
-        info[sym] = {"ticker": tk, "rows": len(s), "first": str(s.index.min().date()),
-                     "last": str(s.index.max().date()), "fetched_utc": str(pd.Timestamp.now(tz="UTC"))}
-    if info:
-        meta = YAHOO_DIR / "fetch_meta.json"
-        old = json.loads(meta.read_text()) if meta.exists() else {}
-        meta.write_text(json.dumps({**old, **info}, indent=1))
-    return info
+    """Removed (fix/sources-compliance, 2026-11-16): the Yahoo Finance query hosts disallow every path in robots.txt. The caches
+    already in ~/.cache/macro-tournament/yahoo stay readable; for new index data use the FRED API series SP500, NASDAQCOM,
+    DJIA, NIKKEI225 (scope personal_only, config/fred_series.yaml) through src/fred_api.py."""
+    raise PriceError("Yahoo fetch removed (robots.txt Disallow /): use the FRED API index series (personal_only)")
 
 
 def yahoo(sym: str) -> pd.Series:

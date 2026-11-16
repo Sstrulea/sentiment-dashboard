@@ -29,18 +29,20 @@ from typing import Callable, Optional
 import pandas as pd
 import requests
 
+from . import http_policy as HP
+
 import src.rate_sources  # noqa: F401 — import pins IPv4 (allowed_gai_family) process-wide
 
 log = logging.getLogger(__name__)
 
-UA = {"User-Agent": "macro-data-analysis/1.0 (+github.com/Sstrulea/sentiment-dashboard)"}
+UA = {}                                   # the user-agent is set by src/http_policy.py (one honest identity)
 HTTP_TIMEOUT = 20
 
 Getter = Callable[[str], requests.Response]
 
 
 def _default_get(url: str) -> requests.Response:
-    return requests.get(url, headers=UA, timeout=HTTP_TIMEOUT)
+    return HP.get(url, timeout=HTTP_TIMEOUT)
 
 
 @dataclass

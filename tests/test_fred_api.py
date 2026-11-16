@@ -171,6 +171,6 @@ def test_registry_discontinued_and_personal_only_scopes():
     assert reg["AUSSARTMISMEI"]["status"] == "discontinued"
     assert "AUSSARTMISMEI" not in "".join(l for l in (ROOT / "src" / "calendar_fred_fallback.py").read_text().splitlines() if "Candidate(" in l)
     copyrighted = {k for k, v in reg.items() if v.get("copyright")}
-    assert copyrighted == {"CLVMNACSCAB1GQCH", "JPNRGDPEXP", "SP500", "DJIA", "NASDAQCOM", "NIKKEI225"}
+    assert copyrighted == {"CLVMNACSCAB1GQCH", "JPNRGDPEXP", "SP500", "DJIA", "NASDAQCOM", "NIKKEI225", "VIXCLS", "VXVCLS"}
     assert all(reg[k]["scope"] == "personal_only" and reg[k]["copyright"]["owner"] and reg[k]["copyright"]["notice"] for k in copyrighted)
     assert all(v["scope"] == "general" for k, v in reg.items() if k not in copyrighted and v["status"] == "active")

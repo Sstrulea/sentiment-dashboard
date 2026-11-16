@@ -195,4 +195,4 @@ def test_health_check_decodes_session(provider):
 
 def test_user_agent_is_browser_like(provider):
     ua = provider._session.headers.get("User-Agent", "")
-    assert ua.startswith("Mozilla/5.0")
+    assert ua.startswith("macro-data-analysis/1.0 (+https://github.com/")          # the one honest UA (src/http_policy.py)

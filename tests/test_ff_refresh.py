@@ -196,18 +196,37 @@ def test_crosscheck_quarantines_only_mismatch():
 # --- FAZA 2 (fix/alert-noise-and-ff-archive): raw weekly archive hook -------
 
 def test_archive_hook_fires_when_enabled(tmp_path, monkeypatch):
-    """Wiring check only (no network): archive_ff_weekly=True must call
-    fetch_and_archive_weekly exactly once, with the configured URL."""
+    """Wiring check only (no network): archive_ff_weekly=True archives the SAME payload the parse fetched - one request per run
+    (fix/sources-compliance): save_weekly_payload is called once with the raw text econ_calendar_ff kept."""
     p = _write_existing(tmp_path)
-    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
-    calls = []
+    import src.econ_calendar_ff as E
     import src.ff_raw_archive as A
-    monkeypatch.setattr(A, "fetch_and_archive_weekly",
-                        lambda url, **k: calls.append(url) or {"status": "saved", "path": "x", "rotated_out": []})
+
+    def parse(*a, **k):
+        E.LAST_RAW = '[{"title": "x"}]'
+        return _good_weekly()
+    monkeypatch.setattr(R, "parse_ff_weekly", parse)
+    calls = []
+    monkeypatch.setattr(A, "save_weekly_payload", lambda text, **k: calls.append(text) or {"status": "saved", "path": "x", "rotated_out": []})
+    monkeypatch.setattr(A, "fetch_weekly_raw_text", lambda *a, **k: pytest.fail("a second request"))
     rep = R.refresh(now_utc=NOW, cfg={"ff_min_currencies": 4, "run_fred_crosscheck": False, "run_pmi_ingest_guard": False,
-                                      "archive_ff_weekly": True}, parquet_path=p)
+                                      "archive_ff_weekly": True}, parquet_path=p, state_path=tmp_path / "state.json")
     assert rep["status"] == "ok"
-    assert len(calls) == 1
+    assert calls == ['[{"title": "x"}]']
+
+
+def test_at_most_one_request_an_hour_with_the_shared_state(tmp_path, monkeypatch):
+    p = _write_existing(tmp_path)
+    st = tmp_path / "state.json"
+    now = R._naive_utc(NOW)
+    st.write_text('{"last_success_at": "%s"}' % (now - pd.Timedelta(minutes=40)).isoformat())
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: pytest.fail("fetched within the hour"))
+    cfg = {"ff_min_currencies": 4, "run_fred_crosscheck": False, "run_pmi_ingest_guard": False, "archive_ff_weekly": False,
+           "ff_weekly_url": "https://nfs.faireconomy.media/ff_calendar_thisweek.json"}
+    assert R.refresh(now_utc=NOW, cfg=cfg, parquet_path=p, state_path=st)["status"] == "skipped_recent"
+    st.write_text('{"last_success_at": "%s"}' % (now - pd.Timedelta(minutes=61)).isoformat())
+    monkeypatch.setattr(R, "parse_ff_weekly", lambda *a, **k: _good_weekly())
+    assert R.refresh(now_utc=NOW, cfg=cfg, parquet_path=p, state_path=st)["status"] == "ok"
 
 
 def _monthly_rows(cid, ccy, n, hour_str, start="2024-01-01", name_canonical=None):
