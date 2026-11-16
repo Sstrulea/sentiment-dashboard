@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES_YAML = ROOT / "config" / "cb_sources.yaml"
 _CALENDARS = None                  # cached config/cb_calendars.yaml (infer_asof)
-NON_BROWSER_UA = FRED_UA           # RBA/FRED serve it; a Chrome UA is what earns some 403s
+NON_BROWSER_UA = FRED_UA           # = http_policy.USER_AGENT: the one honest user-agent of the system
 
 
 @dataclass(frozen=True)
@@ -112,7 +112,7 @@ def _hhmm(s: str) -> dtime:
 
 class HttpSource(BaseSource):
     """BaseSource + conditional GET; shared by the market and official-series adapters."""
-    ua: Optional[str] = None                       # None -> BaseSource's default browser UA
+    ua: Optional[str] = None                       # ignored by the transport: src/http_policy.py always sends its own honest UA
 
     def __init__(self, now: Callable[[], datetime] | None = None) -> None:
         super().__init__()

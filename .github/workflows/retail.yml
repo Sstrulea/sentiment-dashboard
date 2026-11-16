@@ -1,9 +1,8 @@
 name: Retail Sentiment Refresh
 
+# DISABLED 2026-11-16 (fix/sources-compliance, George's decision): the retail collection (Myfxbook) is stopped. No schedule; the
+# job never runs (if: false), even when dispatched by hand. The code, data/retail_*.parquet and the page stay; the page stays hidden.
 on:
-  schedule:
-    # Every 3 hours: 00, 03, 06, 09, 12, 15, 18, 21 UTC.
-    - cron: '0 */3 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -12,6 +11,7 @@ concurrency:
 
 jobs:
   retail:
+    if: false                                  # collection stopped (see the header)
     runs-on: ubuntu-latest
     permissions:
       contents: write

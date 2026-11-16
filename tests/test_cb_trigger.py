@@ -144,9 +144,9 @@ def test_events_are_unique_sorted_and_the_file_is_deterministic(tmp_path):
 def test_the_regular_runs_are_the_ones_of_the_brief():
     reg = S.regular_entries(CFG)
     cb = next(r for r in reg if r["workflow"] == "cb-refresh.yml")
-    assert (cb["minute"], cb["hours"], cb["dow"]) == (37, list(range(0, 24, 2)), [0, 1, 2, 3, 4, 5, 6])          # every 2 hours at :37
+    assert (cb["minute"], cb["hours"], cb["dow"]) == (37, list(range(0, 24, 6)), [0, 1, 2, 3, 4, 5, 6])     # every 6 hours (Actions budget)          # every 2 hours at :37
     econ = [r for r in reg if r["workflow"] == "econ-refresh.yml"]
-    assert {(r["minute"], len(r["hours"]), tuple(r["dow"])) for r in econ} == {(5, 24, (1, 2, 3, 4, 5)), (5, 6, (0, 6))}     # hourly at :05 on weekdays, every 4 h at the weekend
+    assert {(r["minute"], len(r["hours"]), tuple(r["dow"])) for r in econ} == {(5, 24, (1, 2, 3, 4, 5)), (5, 2, (0, 6))}     # hourly at :05 on weekdays, every 4 h at the weekend
     assert S.build(MEETINGS, BANKS, CFG, D(2026, 9, 21))["tick_minutes"] == 5
 
 
@@ -377,7 +377,7 @@ def test_the_github_schedules_are_only_the_backup_and_are_guarded_against_double
     cb, econ = workflow("cb-refresh"), workflow("econ-refresh")
     cb_crons = [c["cron"] for c in cb[True]["schedule"]]
     econ_crons = [c["cron"] for c in econ[True]["schedule"]]
-    assert cb_crons == ["47 */6 * * *", "23 7 * * *"] and econ_crons == ["35 */3 * * 1-5", "35 */6 * * 0,6"]                                 # every 6 h / every 3 h: below the Worker's 2 h / 1 h
+    assert cb_crons == ["47 4 * * *", "23 7 * * *"] and econ_crons == ["35 6,18 * * 1-5", "35 12 * * 0,6"]                                 # every 6 h / every 3 h: below the Worker's 2 h / 1 h
     for wf in (cb, econ):
         guard, refresh = wf["jobs"]["guard"], wf["jobs"]["refresh"]
         assert guard["if"] == "github.event_name == 'schedule'" and guard["permissions"] == {"actions": "read"}                 # a dispatch never pays for the guard

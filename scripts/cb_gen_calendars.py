@@ -16,11 +16,16 @@ import json
 from datetime import date, timedelta
 from pathlib import Path
 
-import requests
+import sys
+
+import requests  # noqa: F401 - exceptions
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src import http_policy as HP  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
-UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
+UA = None                                  # src/http_policy.py sets the user-agent
 YEARS = (2026, 2027)
 
 
@@ -48,7 +53,7 @@ def h(y, m, d, name, src, verified=True):
 
 def uk() -> list:
     url = "https://www.gov.uk/bank-holidays.json"
-    ev = requests.get(url, headers={"User-Agent": UA}, timeout=30).json()["england-and-wales"]["events"]
+    ev = HP.get(url, timeout=30).json()["england-and-wales"]["events"]
     return [{"date": date.fromisoformat(e["date"]), "name": e["title"], "source": url, "verified": True}
             for e in ev if int(e["date"][:4]) in YEARS]
 
@@ -63,7 +68,7 @@ JP_NAMES = {"元日": "New Year's Day", "成人の日": "Coming of Age Day", "�
 
 def jp() -> list:
     url = "https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv"
-    raw = requests.get(url, headers={"User-Agent": UA}, timeout=30).content.decode("cp932")
+    raw = HP.get(url, timeout=30).content.decode("cp932")
     out = []
     for r in list(csv.reader(io.StringIO(raw)))[1:]:
         y, m, d = (int(x) for x in r[0].split("/"))

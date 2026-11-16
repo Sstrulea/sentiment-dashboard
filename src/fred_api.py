@@ -35,7 +35,7 @@ TERMS_URL = "https://fred.stlouisfed.org/docs/api/terms_of_use.html"
 NOTICE = "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis."
 PROVENANCE = "via FRED API"
 ENV_KEY = "FRED_API_KEY"
-UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/macro-data-analysis)"
+UA = "macro-data-analysis/1.0 (+https://github.com/Sstrulea/sentiment-dashboard)"   # = http_policy.USER_AGENT (tests pass a session)
 TIMEOUT_S = 30
 MIN_INTERVAL_S = 0.6                 # <= 100 requests a minute (FRED's limit is 120)
 RETRIES = 4                          # on 429 / 5xx / network errors
@@ -113,7 +113,11 @@ def _throttle(sleep: Callable[[float], None]) -> None:
 def _call(endpoint: str, params: dict, *, session=None, sleep: Optional[Callable[[float], None]] = None) -> dict:
     sleep = sleep or time.sleep
     key = api_key()
-    get = (session or requests).get
+    if session is not None:
+        get = session.get
+    else:
+        from . import http_policy as HP                  # robots.txt + crawl-delay (api.stlouisfed.org: 2 s) + the honest user-agent
+        get = HP.get
     q = dict(params, api_key=key, file_type="json")
     last = ""
     for attempt in range(RETRIES + 1):

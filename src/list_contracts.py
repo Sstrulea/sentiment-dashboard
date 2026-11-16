@@ -11,6 +11,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
+
+from src import http_policy as HP
 import yaml
 
 ENDPOINT = "https://publicreporting.cftc.gov/resource/jun7-fc8e.json"
@@ -26,7 +28,7 @@ def fetch_recent_contracts(weeks: int = 4) -> list[dict]:
         "$group": "cftc_contract_market_code,market_and_exchange_names",
         "$limit": 50000,
     }
-    r = requests.get(ENDPOINT, params=params, timeout=60)
+    r = HP.get(ENDPOINT, params=params, timeout=60)
     r.raise_for_status()
     rows = r.json()
     rows.sort(key=lambda x: x["market_and_exchange_names"])

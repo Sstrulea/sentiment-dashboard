@@ -22,7 +22,8 @@
 #   projections     the meetings that carry projections (SEP / staff projections / MPR /
 #                   Outlook Report / SMP / MPS / conditional forecast).
 #   blackout        official quiet-period rule (text + url); null = not found.
-#   youtube_channel_id  official channel (keyless feed: youtube.com/feeds/videos.xml?channel_id=).
+#   video_page          the bank's official video channel - a plain link shown when a meeting has no video link on the bank's
+#                       own pages (never fetched; the YouTube feeds were removed: disallowed by youtube.com robots.txt).
 #   can_be_zero     a real 0.00 policy rate exists (CHF): zero is a value, not "missing".
 
 meta:
@@ -57,7 +58,7 @@ banks:
     projections: {name: SEP (dot plot), months: [3, 6, 9, 12], source: calendar_page_asterisk}
     blackout: {text: "00:00 ET on the second Saturday before the meeting -> 23:59 ET the day after it ends",
                url: "https://www.federalreserve.gov/monetarypolicy/files/FOMC_ExtCommunicationParticipants.pdf"}
-    youtube_channel_id: UCAzhpt9DmG6PnHXjmJTvRGQ
+    video_page: "https://www.youtube.com/channel/UCAzhpt9DmG6PnHXjmJTvRGQ"
     blackout_rule: {kind: saturday_before_start, saturdays: 2, tz: America/New_York, start_time: "00:00", end_days_after: 1, end_time: "23:59", precision: exact, verified: true}
     can_be_zero: false
 
@@ -88,7 +89,7 @@ banks:
     projections: {name: Eurosystem staff projections, months: [3, 6, 9, 12], source: ecb_practice_derived}
     blackout: {text: "quiet period: 7 days before each monetary-policy meeting",
                url: "https://www.ecb.europa.eu/ecb-and-you/explainers/tell-me/html/what-is-the_quiet_period.en.html"}
-    youtube_channel_id: UCXB8fM4VyQubRu3UVGhd3wA
+    video_page: "https://www.youtube.com/channel/UCXB8fM4VyQubRu3UVGhd3wA"
     blackout_rule: {kind: days_before_start, days: 7, tz: Europe/Berlin, start_time: "00:00", end_days_after: 0, end_time: "14:45", precision: exact, verified: true, note: "ends with the press conference"}
     can_be_zero: false
 
@@ -106,18 +107,18 @@ banks:
       definition: "Bank Rate"
       level_for_compute: value
       ff_row_maps_to: value
-      series: {level: {source: boe_iadb, id: IUDBEDR}}
+      series: {level: {source: boe_bank_rate_page, id: IUDBEDR}}
       unit: percent
       ff_name: "Official Bank Rate"            # FF row name; matched on (currency, name)
       official: {level: "boe:IUDBEDR"}    # series ids in config/cb_official.yaml
-    overnight_benchmark: {name: SONIA, source: boe_iadb, id: IUDSOIA,
-                          url: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes&SeriesCodes=IUDSOIA&CSVF=TN&UsingCodes=Y", series_id: "boe:IUDSOIA"}
+    overnight_benchmark: {name: SONIA, source: fred_api, id: IUDSOIA,
+                          url: "https://fred.stlouisfed.org/series/IUDSOIA", series_id: "boe:IUDSOIA"}
     effective_rule: {kind: calendar_days, days: 0, verified: true, source: "boe:IUDBEDR",
                      note: "1/1 change since 2025-09 lands on the decision day (2025-12-18); 4/4 in 2025 (6 Feb, 8 May, 7 Aug, 18 Dec); BIS GB changes on the same day"}
     projections: {name: Monetary Policy Report, months: [2, 4, 7, 11], source: calendar_page_mpr}
     blackout: {text: "MPC quiet period from start of deliberations (usually 8-9 days before) until the announcement",
                url: "https://www.bankofengland.co.uk/about/governance-and-funding/mpc-external-communications-code"}
-    youtube_channel_id: UCY70MMJ8Rj4wtwt7bVN6hIA
+    video_page: "https://www.youtube.com/channel/UCY70MMJ8Rj4wtwt7bVN6hIA"
     blackout_rule: {kind: days_before_decision, days: 8, tz: Europe/London, start_time: "00:00", end_days_after: 0, end_time: "12:00", precision: approximate, verified: true, note: "the page says usually 8-9 days before; 8 used"}
     can_be_zero: false
 
@@ -149,7 +150,7 @@ banks:
     projections: {name: Outlook Report, months: [1, 4, 7, 10], source: schedule_page}
     blackout: {text: "2 business days before day 1 of the MPM -> end of the last MPM day (wording from an older BoJ notice; verify current)",
                url: "https://www.boj.or.jp/en/mopo/mpmsche_minu/m_ref/mpm0104a.htm", verified: false}
-    youtube_channel_id: UC32Yu7NyStgmKYsXvYofPvQ
+    video_page: "https://www.youtube.com/channel/UC32Yu7NyStgmKYsXvYofPvQ"
     blackout_rule: {kind: business_days_before_start, days: 2, calendar: JP, tz: Asia/Tokyo, start_time: "00:00", end_days_after: 0, end_time: "23:59", precision: exact, verified: false, note: "wording from an older BoJ notice"}
     can_be_zero: false
 
@@ -178,7 +179,7 @@ banks:
     projections: {name: Monetary Policy Report, months: [1, 4, 7, 10], source: calendar_page_mpr}
     blackout: {text: "starts Tuesday 8 days before the decision in MPR months (Jan/Apr/Jul/Oct), else Wednesday 7 days before; ends 10:30 ET when the press conference starts",
                url: "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/blackout-guidelines/"}
-    youtube_channel_id: UCY4EvEbIox0M4JuEsu5OKnQ
+    video_page: "https://www.youtube.com/channel/UCY4EvEbIox0M4JuEsu5OKnQ"
     blackout_rule: {kind: weekday_before_decision, tz: America/Toronto, start_time: "00:00", end_days_after: 0, end_time: "10:30", mpr_months: [1, 4, 7, 10], mpr: {weekday: 1, days_before: 8}, other: {weekday: 2, days_before: 7}, precision: exact, verified: true}
     can_be_zero: false
 
@@ -207,7 +208,7 @@ banks:
     projections: {name: Statement on Monetary Policy, months: [2, 5, 8, 11], source: rba_practice_derived}
     blackout: {text: "external MPB members: from 14:00 Sydney on the Wednesday before the meeting until the minutes; trading blackout to 17:00 on decision day",
                url: "https://www.rba.gov.au/about-rba/our-policies/monetary-policy-board-external-members-comms-and-public-engagement-policy.html"}
-    youtube_channel_id: UCaLmgAMEglL-yGvuGzTx6ig
+    video_page: "https://www.youtube.com/channel/UCaLmgAMEglL-yGvuGzTx6ig"
     blackout_rule: {kind: weekday_before_start, weekday: 2, tz: Australia/Sydney, start_time: "14:00", end_days_after: 0, end_time: "17:00", precision: exact, verified: true, note: "external MPB members; trading blackout ends 17:00 on decision day, the minutes come later"}
     can_be_zero: false
 
@@ -236,7 +237,7 @@ banks:
     projections: {name: Monetary Policy Statement (OCR track), months: [2, 3, 5, 6, 9, 12], source: manual_from_release_schedule,
                   note: "2026: Feb / May / Sep / Dec; from 2027 (8 meetings a year): Statements in Mar / Jun / Sep / Dec, Reviews in between (release to Feb 2028)"}
     blackout: null
-    youtube_channel_id: UC1v0CeB83SX6Px9r5KT0NuQ
+    video_page: "https://www.youtube.com/channel/UC1v0CeB83SX6Px9r5KT0NuQ"
     blackout_rule: null
     manual: true
     can_be_zero: false
@@ -265,6 +266,6 @@ banks:
                      note: "no SNB change since 2025-09 to test; earlier evidence (0A): 2/2 in 2025 land on decision+1 (2025-03-21, 2025-06-20)"}
     projections: {name: Conditional inflation forecast, months: [3, 6, 9, 12], source: snb_practice_derived}
     blackout: null
-    youtube_channel_id: UC4vQTVEqtj2orppzBkdGmyg
+    video_page: "https://www.youtube.com/channel/UC4vQTVEqtj2orppzBkdGmyg"
     blackout_rule: null
     can_be_zero: true

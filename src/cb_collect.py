@@ -220,6 +220,9 @@ def drop_unchanged_inferred(store: dict[tuple, dict], sid: str, quotes: list[Quo
     return [q for q in quotes if q.asof not in skipped], skipped
 
 
+DAILY_KEY = "_daily_fetch"                 # state.json: {source id: UTC day of the last request} (config `daily_after_utc`)
+
+
 def select_sources(cfg: dict, only: list[str] | None, backfill: bool) -> list[str]:
     ids = list(cfg["sources"])
     if only:
@@ -251,9 +254,17 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
     for r in store.values():
         if r["asof"] > stored.get(r["source"], date.min):
             stored[r["source"]] = r["asof"]
+    daily = dict(state.get(DAILY_KEY, {}))
     for sid in ids:
         rep = SourceReport(sid)
         reports.append(rep)
+        after = cfg["sources"][sid].get("daily_after_utc")                # personal-use licences: one request a day, after settlement
+        if after and not only and not backfill_from:
+            hh, mm = (int(x) for x in after.split(":"))
+            if daily.get(sid) == today.isoformat() or (clock().hour, clock().minute) < (hh, mm):
+                rep.status, rep.note = "skipped", f"once a day after {after} UTC (licence: personal use) - " + (
+                    "already fetched today" if daily.get(sid) == today.isoformat() else "not yet")
+                continue
         try:
             src = CLASSES[cfg["sources"][sid]["adapter"]](cfg["sources"][sid], now=clock, sid=sid)
         except Exception as e:                                   # a broken adapter must not stop the rest
@@ -268,6 +279,8 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
             log.warning("%s: %s", sid, rep.note)
             continue
         rep.status, rep.note = res.status, res.note
+        if after:
+            daily[sid] = today.isoformat()
         final = [q for q in res.quotes if src.is_final(q.asof)]
         rep.dropped = len(res.quotes) - len(final)
         final, rep.skipped = drop_unchanged_inferred(store, sid, final)
@@ -290,6 +303,8 @@ def run(paths: Paths, *, only: list[str] | None = None, backfill_from: date | No
         marks[sid] = dict(list(marks[sid].items())[-NO_NEW_KEEP:])
         if not marks[sid]:
             del marks[sid]
+    if daily:
+        new_state[DAILY_KEY] = daily
     if marks:
         new_state[NO_NEW] = marks
     else:
@@ -351,6 +366,15 @@ def run_official(paths: Paths, *, only: list[str] | None = None, backfill_from: 
             log.warning("%s: %s", rep.id, rep.note)
             continue
         rep.status, rep.note = res.status, res.note
+        if prov == "boe" and getattr(src, "changes", None):             # verification: the BoE page against BIS WS_CBPOL GB
+            try:
+                from . import cb_policy_history as PH
+                from .cb_sources.official import bank_rate_bis_check
+                hist = PH.by_currency(PH.load(paths), PH.load_config(cfg)["series"]).get("GBP", (None, []))[1]
+                bad = bank_rate_bis_check(src.changes, hist, date(2015, 1, 1))
+                rep.note = (rep.note + "; " if rep.note else "") + (f"BIS check: {len(bad)} change date(s) differ {bad[:3]}" if bad else "BIS check ok")
+            except Exception as e:                                       # noqa: BLE001 - a check, never a failure of the stage
+                rep.note = (rep.note + "; " if rep.note else "") + f"BIS check unavailable ({type(e).__name__})"
         rep.merge = cs.merge(OFFICIAL, store, (obs_row(o) for o in res.obs))
         if res.state and not res.failed and (rep.merge.new or rep.merge.updated or rep.id not in state):
             new_state[rep.id] = res.state                           # validators advance only with new data (see run())

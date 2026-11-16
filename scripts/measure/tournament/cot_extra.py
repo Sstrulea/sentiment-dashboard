@@ -20,6 +20,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import CFTC_DIR, ROOT  # noqa: E402
 
+from src import http_policy as HP  # noqa: E402
 from src.fetch import ENDPOINT, NUMERIC_COLS, SELECT_COLS  # noqa: E402
 
 NIKKEI_CODE = "240743"
@@ -35,7 +36,7 @@ def fetch(force: bool = False) -> pd.DataFrame:
               "$where": f"cftc_contract_market_code = '{NIKKEI_CODE}' and "
                         f"report_date_as_yyyy_mm_dd >= '{pd.Timestamp(since).date().isoformat()}'",
               "$order": "report_date_as_yyyy_mm_dd ASC", "$limit": 50000}
-    r = requests.get(ENDPOINT, params=params, timeout=120)
+    r = HP.get(ENDPOINT, params=params, timeout=120)
     r.raise_for_status()
     df = pd.DataFrame(r.json())
     if df.empty:

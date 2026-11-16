@@ -56,8 +56,8 @@ def test_a_block_is_reported_never_worked_around():
             return Resp(403, b"cf challenge") if not url.endswith("/robots.txt") else Resp(404)
     f = fetcher(Blocked())
     r = f.get("https://www.rbnz.govt.nz/monetary-policy/monetary-policy-decisions")
-    assert r.error == "blocked" and not r.ok and len(set(ua_seen)) == 1 and "CbDocsBot" in ua_seen[0]     # one honest identity, no retries
-    assert f.requests_made == 2                                                                        # robots.txt + one GET
+    assert r.error == "blocked" and not r.ok and len(set(ua_seen)) == 1 and ua_seen[0].startswith("macro-data-analysis/1.0 (+https://github.com/")     # one honest identity (http_policy), no retries
+    assert f.requests_made == 1 and len(ua_seen) == 2              # one GET in the run budget; robots.txt (fetched by http_policy) + the GET
 
 
 def test_robots_unreadable_skips_the_host():
@@ -213,7 +213,7 @@ def test_failures_are_reported_not_invented(run1):
     _, rep, _ = run1
     failed = dict((w, why) for w, why in rep.failed)
     assert not any("YouTube" in w for w, _ in rep.failed)                                                          # a known limit is a note, not a failure repeated every run
-    assert any("YouTube feeds: disallowed" in n for n in rep.notes) and any("RBNZ" in n for n in rep.notes)
+    assert not any("YouTube" in n for n in rep.notes) and any("RBNZ" in n for n in rep.notes)          # the YouTube feeds are gone, not reported
 
 
 def test_speeches_are_typed_weighted_and_filtered_but_kept(run1):

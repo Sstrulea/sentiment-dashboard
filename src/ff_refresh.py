@@ -140,6 +140,11 @@ def merge_weekly(existing: Optional[pd.DataFrame], weekly: pd.DataFrame) -> pd.D
     return combined[CANON_COLUMNS]
 
 
+def _naive_utc(ts: Optional[pd.Timestamp]) -> pd.Timestamp:
+    t = pd.Timestamp.now(tz="UTC") if ts is None else pd.Timestamp(ts)
+    return t.tz_convert("UTC").tz_localize(None) if t.tzinfo else t
+
+
 def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = None,
             parquet_path: Path = FF_PARQUET, state_path: Optional[Path] = None) -> dict:
     """Fetch the weekly feed, merge, write. Returns a report dict. Never raises on a
@@ -165,23 +170,30 @@ def refresh(*, now_utc: Optional[pd.Timestamp] = None, cfg: Optional[dict] = Non
     existing = pd.read_parquet(parquet_path) if parquet_path.exists() else None
     n_before = 0 if existing is None else len(existing)
 
-    # Archive the raw weekly SCHEDULE payload (data/ff_raw/) — additive,
-    # fully decoupled from the merge/quarantine path below (own independent
-    # fetch, own try/except). A failure here never affects `refresh()`'s
-    # return value or the anti-degradation contract.
-    if cfg.get("archive_ff_weekly", True):
-        try:
-            from .ff_raw_archive import fetch_and_archive_weekly
-            arch = fetch_and_archive_weekly(url, now_utc=now_utc)
-            if arch["status"] == "saved":
-                log.info("FF weekly raw archive: saved %s (rotated out %d).",
-                         arch["path"], len(arch.get("rotated_out", [])))
-        except Exception as e:  # noqa: BLE001 — advisory; never break the refresh
-            log.warning("FF weekly raw archive skipped (%s).", str(e)[:80])
+    # At most one request an hour (FF: the export is refreshed hourly; more is "unnecessary and can result in being blocked").
+    # The state is shared by every run: data/ff_last_refresh.json, committed by econ-refresh (fix/sources-compliance).
+    min_gap = float(cfg.get("ff_min_interval_minutes", 60))
+    last = load_state(resolved_state_path).get("last_success_at")
+    now_ts = _naive_utc(now_utc)
+    if last and str(url).startswith("http"):
+        age_min = (now_ts - pd.Timestamp(last).tz_localize(None)).total_seconds() / 60
+        if 0 <= age_min < min_gap:
+            log.info("FF weekly: last successful fetch %.0f min ago (< %.0f): no request this run.", age_min, min_gap)
+            return {"status": "skipped_recent", "rows_before": n_before, "rows_after": n_before, "merged": 0}
 
-    # --- fetch + parse (graceful) ---
+    # --- ONE request: parse_ff_weekly fetches the feed; the same raw text is then archived (data/ff_raw/) ---
     try:
+        from . import econ_calendar_ff as _ecf
+        _ecf.LAST_RAW = None
         weekly = parse_ff_weekly(url, now_utc=now_utc)
+        if cfg.get("archive_ff_weekly", True) and _ecf.LAST_RAW:
+            try:                                        # advisory: never breaks the refresh or the anti-degradation contract
+                from .ff_raw_archive import save_weekly_payload
+                arch = save_weekly_payload(_ecf.LAST_RAW, as_of=now_utc)
+                if arch["status"] == "saved":
+                    log.info("FF weekly raw archive: saved %s (rotated out %d).", arch["path"], len(arch.get("rotated_out", [])))
+            except Exception as e:  # noqa: BLE001
+                log.warning("FF weekly raw archive skipped (%s).", str(e)[:80])
     except Exception as e:  # noqa: BLE001 — fetch/HTTP/schema failure
         log.warning("FF weekly fetch/parse FAILED (%s); keeping last-good parquet (%d rows).",
                     str(e)[:100], n_before)

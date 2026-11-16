@@ -42,10 +42,17 @@ log = logging.getLogger(__name__)
 
 API_BASE = "https://www.myfxbook.com/api"
 HTTP_TIMEOUT = 30
-USER_AGENT = (
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
+from .. import http_policy as HP
+
+USER_AGENT = HP.USER_AGENT          # the one honest user-agent (collection stopped 2026-11-16: retail.yml disabled)
+
+
+class _PolicyGet:
+    """`.get(url, params=, timeout=)` through the single HTTP policy (kept as an object so tests can patch `get`)."""
+    headers = {"User-Agent": HP.USER_AGENT, "Accept": "application/json, text/plain, */*"}
+
+    def get(self, url, params=None, timeout=HTTP_TIMEOUT):
+        return HP.get(url, params=params, timeout=timeout, headers={"Accept": "application/json, text/plain, */*"})
 
 ROOT = Path(__file__).resolve().parents[2]
 SYMBOLS_YAML = ROOT / "data" / "retail_symbols.yaml"
@@ -107,11 +114,7 @@ class MyfxbookProvider:
                 "MYFXBOOK_PASSWORD in environment or .env file."
             )
 
-        self._session = requests.Session()
-        self._session.headers.update({
-            "User-Agent": USER_AGENT,
-            "Accept": "application/json, text/plain, */*",
-        })
+        self._session = _PolicyGet()                       # robots.txt + crawl-delay + honest UA (src/http_policy.py)
 
         # Universal symbol set + alias map for symbol normalization.
         cfg = self._load_symbols(symbols_yaml)

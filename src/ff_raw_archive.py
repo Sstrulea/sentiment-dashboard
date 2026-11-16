@@ -41,6 +41,8 @@ from typing import Optional
 import pandas as pd
 import requests
 
+from . import http_policy as HP
+
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,7 +61,7 @@ def fetch_weekly_raw_text(url: str, *, timeout: int = 30) -> str:
     """The one network call in this module. No retry/backoff — a transient
     failure here is advisory (see module docstring); the caller's try/except
     is what keeps this from ever affecting the refresh's own contract."""
-    r = requests.get(url, headers={"User-Agent": "macro-data-analysis/1.0"}, timeout=timeout)
+    r = HP.get(url, timeout=timeout)
     r.raise_for_status()
     return r.text
 

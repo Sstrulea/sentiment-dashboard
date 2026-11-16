@@ -24,6 +24,8 @@ from typing import Optional
 import pandas as pd
 import requests
 
+from . import http_policy as HP
+
 import src.rate_sources  # noqa: F401 — import pins IPv4 (allowed_gai_family) process-wide
 from .calendar_fred_fallback import (
     PARQUET, Candidate, Target, _gap_periods, _to_period_value,
@@ -32,7 +34,7 @@ from .calendar_fred_fallback import (
 
 log = logging.getLogger(__name__)
 
-UA = {"User-Agent": "macro-data-analysis/1.0 (+github.com/Sstrulea/sentiment-dashboard)"}
+UA = {}                                   # the user-agent is set by src/http_policy.py
 HTTP_TIMEOUT = 20
 
 
@@ -49,7 +51,7 @@ def _fetch_abs(dataflow_key: str, *, start: str = "2023") -> Optional[pd.DataFra
     Returns monthly levels (caller transforms to m/m %). None on any failure."""
     url = f"https://data.api.abs.gov.au/rest/data/{dataflow_key}?startPeriod={start}&format=csv"
     try:
-        r = requests.get(url, headers=UA, timeout=HTTP_TIMEOUT)
+        r = HP.get(url, timeout=HTTP_TIMEOUT)
         if r.status_code != 200 or "," not in r.text[:2000]:
             log.warning("ABS %s -> HTTP %s (dataflow/key needs confirmation)", dataflow_key, r.status_code)
             return None
@@ -76,7 +78,7 @@ def _fetch_estat(stats_data_id: str) -> Optional[pd.DataFrame]:
     url = ("https://api.e-stat.go.jp/rest/3.0/app/json/getStatsData"
            f"?appId={app_id}&statsDataId={stats_data_id}")
     try:
-        r = requests.get(url, headers=UA, timeout=HTTP_TIMEOUT)
+        r = HP.get(url, timeout=HTTP_TIMEOUT)
         if r.status_code != 200:
             log.warning("e-Stat %s -> HTTP %s", stats_data_id, r.status_code)
             return None
@@ -94,7 +96,7 @@ def _fetch_seco_pxweb(px_table: str, query: dict) -> Optional[pd.DataFrame]:
     None on any failure (PXWeb needs the exact table id + query dimensions)."""
     url = f"https://www.pxweb.bfs.admin.ch/api/v1/en/{px_table}"
     try:
-        r = requests.post(url, json=query, headers=UA, timeout=HTTP_TIMEOUT)
+        r = HP.post(url, json=query, timeout=HTTP_TIMEOUT)
         if r.status_code != 200:
             log.warning("SECO PXWeb %s -> HTTP %s (table/query needs confirmation)", px_table, r.status_code)
             return None

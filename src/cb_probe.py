@@ -292,26 +292,29 @@ class EcbPolicy(CbSource):
 
 
 class BoePolicy(CbSource):
-    name = "boe_iadb"
+    """Bank Rate from the BoE page Bank-Rate.asp (change dates) + SONIA from the FRED API (IUDSOIA). The IADB path
+    BoE interactive-database path is disallowed by the BoE robots.txt (fix/sources-compliance)."""
+    name = "boe_bank_rate_page"
     section = "a1"
     banks = ("GBP",)
 
-    def _obs(self, code: str):
-        url = ("https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes"
-               f"&Datefrom=01/Jan/2024&Dateto=now&SeriesCodes={code}&CSVF=TN&UsingCodes=Y")
-        r = self.get(url, ua=None)      # BoE serves the browser UA (existing BoeSource does)
-        if r is None or self._check_botwall(r):
-            return None
-        df = pd.read_csv(io.StringIO(r.text))
-        return _pts(pd.to_datetime(df.iloc[:, 0], format="%d %b %Y", errors="coerce"),
-                    pd.to_numeric(df.iloc[:, 1], errors="coerce")) or None
-
     def _fetch(self, bank):
-        br = self._obs("IUDBEDR")
+        from .cb_sources.official import parse_bank_rate_page
+        from . import fred_api
+        r = self.get("https://www.bankofengland.co.uk/boeapps/database/Bank-Rate.asp")
+        if r is None:
+            return None
+        ch = [(d, v) for d, v in parse_bank_rate_page(r.text) if d >= date(2024, 1, 1)]
+        br = _pts(pd.to_datetime([d for d, _ in ch]), [v for _, v in ch]) or None
         if not br:
             return None
-        return CbSeries(bank, self.name, "policy", br, {"bench": {"SONIA": self._obs("IUDSOIA")}},
-                        "IUDBEDR official Bank Rate (daily); IUDSOIA SONIA")
+        try:
+            so = [(d, v) for d, v in fred_api.observations("IUDSOIA", date(2024, 1, 1)) if v is not None]
+            sonia = _pts(pd.to_datetime([d for d, _ in so]), [v for _, v in so]) or None
+        except Exception:                                                     # noqa: BLE001 - a probe
+            sonia = None
+        return CbSeries(bank, self.name, "policy", br, {"bench": {"SONIA": sonia}},
+                        "Bank Rate change table (Bank-Rate.asp); SONIA = FRED IUDSOIA (BoE series, OGL)")
 
 
 class BojPolicy(CbSource):
@@ -398,25 +401,6 @@ class RbaPolicy(CbSource):
                         "FIRMMOIS{1,3,6}D = 1/3/6M OIS (FENICS)")
 
 
-class RbnzPolicy(CbSource):
-    name = "rbnz_site"
-    section = "a1"
-    banks = ("NZD",)
-    URLS = ["https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/statistics/series/b/b2/hb2-daily.xlsx",
-            "https://www.rbnz.govt.nz/monetary-policy/about-monetary-policy/the-official-cash-rate"]
-
-    def _fetch(self, bank):
-        notes = []
-        for u in self.URLS:
-            r = self.get(u, ua=None)
-            if r is not None and r.content[:2] == b"PK":
-                self._parse_fail("XLSX reachable but parser intentionally not built in this spike")
-                return None
-            notes.append(f"{u.rsplit('/', 1)[-1]}:{self.last_note or 'non-XLSX'}")
-        self.last_note = "; ".join(notes)
-        return None
-
-
 class SnbPolicy(CbSource):
     name = "snb_data_portal"
     section = "a1"
@@ -468,7 +452,7 @@ class BisPolicy(CbSource):
         return CbSeries(bank, self.name, "policy", pts, {}, f"WS_CBPOL daily; {note}".strip("; "))
 
 
-A1_PRIMARY = {"USD": "fred_target", "EUR": "ecb_data_portal", "GBP": "boe_iadb", "JPY": "bis_cbpol",
+A1_PRIMARY = {"USD": "fred_target", "EUR": "ecb_data_portal", "GBP": "boe_bank_rate_page", "JPY": "bis_cbpol",
               "CAD": "boc_valet", "AUD": "rba_f1", "NZD": "bis_cbpol", "CHF": "snb_data_portal"}
 
 
@@ -647,33 +631,6 @@ class AsxFutures(CbSource):
                         f"code={self.CODE[bank]} snapshot only (no history endpoint)")
 
 
-class AsxHistoryMirror(CbSource):
-    """Community daily capture of the ASX RBA rate tracker (github.com/bpalmer4/ASX)."""
-    name = "asx_history_mirror"
-    section = "a3"
-    banks = ("AUD",)
-    official = False
-    URL = "https://raw.githubusercontent.com/bpalmer4/ASX/main/ASX-COMBINED/ASX-COMBINED.csv"
-
-    def _fetch(self, bank):
-        r = self.get(self.URL, ua=None)
-        if r is None:
-            return None
-        df = pd.read_csv(io.StringIO(r.text), index_col=0)
-        d = pd.to_datetime(df.index, errors="coerce")
-        mask = ~pd.isna(d)
-        front = df[mask].apply(lambda r: r.dropna().iloc[0] if r.notna().any() else np.nan, axis=1)
-        pts = _pts(d[mask], front.values)
-        lastrow = df[mask].iloc[-1].dropna()
-        hz = None
-        if len(lastrow):
-            yy, mm_ = str(lastrow.index[-1]).split("-")
-            hz = date(int(yy), int(mm_), 28)
-        return CbSeries(bank, self.name, "futures", pts,
-                        {"n_scrapes": int(mask.sum()), "n_expiries": df.shape[1], "horizon": hz},
-                        "unofficial third-party repo; ASX-COMBINED.csv = implied cash rate per expiry month per scrape day")
-
-
 class MxCorra(CbSource):
     """Montréal Exchange 'Canadian Interest Rate Expectations' — server-rendered HTML tables."""
     name = "mx_corra_expectations"
@@ -833,12 +790,10 @@ class EcbYcForward(CbSource):
 # Status-only probes of sources we expect to be blocked / JS-only / paid (negative evidence).
 BLOCKED_TARGETS = [
     ("USD", "cme_fedwatch", "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html", "http"),
-    ("USD", "yahoo_zq_chart", "https://query1.finance.yahoo.com/v8/finance/chart/ZQZ26.CBT?range=5d&interval=1d", "http"),
     ("EUR", "eurex_fesr_page", "https://www.eurex.com/ex-en/markets/int/mon/euro-short-term-rate-futures/euro-short-term-rate-futures-1404746", "js"),
     ("CHF", "eurex_fsr3_page", "https://www.eurex.com/ex-en/markets/int/mon/saron-futures/saron/3M-SARON-Futures-1405958", "js"),
     ("EUR", "ice_euribor_page", "https://www.ice.com/products/27994948/Three-Month-Euribor-Futures/data?marketId=5920503", "js"),
     ("CAD", "mx_quotes_page", "https://www.m-x.ca/en/trading/data/quotes?symbol=CRA", "js"),
-    ("NZD", "rbnz_b2_xlsx", RbnzPolicy.URLS[0], "http"),
 ]
 
 
@@ -1637,7 +1592,6 @@ YT_CHANNEL = {   # official channels; ids resolved from the bank's own site link
     "USD": "UCAzhpt9DmG6PnHXjmJTvRGQ", "EUR": "UCXB8fM4VyQubRu3UVGhd3wA", "GBP": "UCY70MMJ8Rj4wtwt7bVN6hIA",
     "JPY": "UC32Yu7NyStgmKYsXvYofPvQ", "CAD": "UCY4EvEbIox0M4JuEsu5OKnQ", "AUD": "UCaLmgAMEglL-yGvuGzTx6ig",
     "NZD": "UC1v0CeB83SX6Px9r5KT0NuQ", "CHF": "UC4vQTVEqtj2orppzBkdGmyg"}
-YT_FEED = "https://www.youtube.com/feeds/videos.xml?channel_id={cid}"
 PRESS_RX = re.compile(r"press conference|media conference|news conference|conférence de presse|mediengespräch|記者会見|"
                       r"introductory statement|pooled broadcast", re.I)
 # Does the bank hold a press conference at every rate meeting? (official wording / practice, with the source)
@@ -1679,8 +1633,7 @@ class PressConfSource(TextSource):
     def _fetch(self, bank):
         ms = [m.decision for m in official_meetings(bank) if m.decision <= date.today()][-4:]
         cid = YT_CHANNEL[bank]
-        r = self.get(YT_FEED.format(cid=cid), ua=None, retries=0)
-        yt = _feed_items(r.content) if r is not None else []
+        yt = []                                    # the YouTube feeds were removed (their path is disallowed by youtube.com robots.txt)
         rows = []
         for d in ms:
             off = official_dt(bank, d)
@@ -2475,9 +2428,9 @@ def run(src: CbSource, bank: str, today: date) -> Probe:
     return Probe(bank, src.section, src.name, "OK", "", s, s.note, [], src.cdn)
 
 
-A1_SOURCES = [FredTarget, EcbPolicy, BoePolicy, BojPolicy, BocPolicy, RbaPolicy, RbnzPolicy, SnbPolicy, BisPolicy]
+A1_SOURCES = [FredTarget, EcbPolicy, BoePolicy, BojPolicy, BocPolicy, RbaPolicy, SnbPolicy, BisPolicy]
 A2_SOURCES = [FedSep, RbnzOcrTrack, PathAbsence]
-A3_SOURCES = [BoeOis, AsxFutures, AsxHistoryMirror, MxCorra, JpxTona, AtlantaMpt, TreasuryBills, EcbYcForward]
+A3_SOURCES = [BoeOis, AsxFutures, MxCorra, JpxTona, AtlantaMpt, TreasuryBills, EcbYcForward]
 A4_SOURCES = [FfConsensus]
 A5_SOURCES = CALENDARS + [QuietPeriod]
 SECTION_SOURCES = {"a1": A1_SOURCES, "a2": A2_SOURCES, "a3": A3_SOURCES, "a4": A4_SOURCES, "a5": A5_SOURCES,
@@ -3006,7 +2959,7 @@ def report_matrix(allp: list[Probe], today: date, banks: list[str]) -> None:
         # A1
         prim = next((p for p in ps if p.source == A1_PRIMARY[b] and p.section == "a1"), None)
         off = next((p for p in ps if p.section == "a1" and p.series and p.source not in ("bis_cbpol", "boj_timeseries_api", "rbnz_site")
-                    and p.source == {"USD": "fred_target", "EUR": "ecb_data_portal", "GBP": "boe_iadb", "CAD": "boc_valet",
+                    and p.source == {"USD": "fred_target", "EUR": "ecb_data_portal", "GBP": "boe_bank_rate_page", "CAD": "boc_valet",
                                      "AUD": "rba_f1", "CHF": "snb_data_portal"}.get(b, "")), None)
         if off is not None:
             lag = off.series.lag_bd(today)

@@ -9,6 +9,8 @@ from typing import Iterable
 
 import pandas as pd
 import requests
+
+from src import http_policy as HP
 import yaml
 
 log = logging.getLogger(__name__)
@@ -73,7 +75,7 @@ def _fetch_batch(codes: list[str], since_iso: str) -> pd.DataFrame:
         "$order": "report_date_as_yyyy_mm_dd DESC",
         "$limit": 50000,
     }
-    r = requests.get(ENDPOINT, params=params, timeout=120)
+    r = HP.get(ENDPOINT, params=params, timeout=120)
     r.raise_for_status()
     data = r.json()
     if not data:

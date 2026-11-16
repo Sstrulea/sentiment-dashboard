@@ -17,6 +17,7 @@ import time
 
 import pandas as pd
 
+from src import http_policy as HP
 from src.sentiment_fetch import (
     PC_COLUMNS,
     PC_FILE,
@@ -193,7 +194,7 @@ def _cmd_probe_historical() -> int:
     for d in HISTORICAL_PROBE_DATES:
         url = PC_URL_TEMPLATE.format(date=d.strftime("%Y-%m-%d"))
         try:
-            r = requests.get(url, timeout=HTTP_TIMEOUT)
+            r = HP.get(url, timeout=HTTP_TIMEOUT)
             status_code = r.status_code
         except Exception as e:
             status_code = None

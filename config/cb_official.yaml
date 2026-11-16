@@ -30,8 +30,9 @@ providers:
     license: "ECB statistics, reuse with source acknowledgement."
   boe:
     adapter: BoeSeries
-    url: "https://www.bankofengland.co.uk/boeapps/iadb/fromshowcolumns.asp?csv.x=yes&Datefrom={since_dmy}&Dateto=now&SeriesCodes={key}&CSVF=TN&UsingCodes=Y"
-    license: "Bank of England Interactive Database, OGL v3.0."
+    url: "https://www.bankofengland.co.uk/boeapps/database/Bank-Rate.asp"   # the Bank Rate change table (robots.txt allows it; the IADB path is disallowed)
+    check: "BIS WS_CBPOL GB (data/cb/policy_history, hist:bis:GB): every change date must carry the same level"
+    license: "Bank of England, Open Government Licence v3.0 (bankofengland.co.uk/legal)."
   boj:
     adapter: BojSeries
     url: "https://www.stat-search.boj.or.jp/api/v1/getDataCode?format=json&lang=en&db={db}&code={code}&startDate={since_ym}"
@@ -83,7 +84,8 @@ series:
   ecb:ESTR: {currency: EUR, role: overnight,    provider: ecb, key: "EST/B.EU000A2X2A25.WT",        unit: percent, calendar_id: EU, name: "Euro short-term rate"}
 
   boe:IUDBEDR: {currency: GBP, role: policy_level, provider: boe, key: IUDBEDR, unit: percent, calendar_id: UK, name: "Official Bank Rate"}
-  boe:IUDSOIA: {currency: GBP, role: overnight,    provider: boe, key: IUDSOIA, unit: percent, calendar_id: UK, name: "SONIA"}
+  boe:IUDSOIA: {currency: GBP, role: overnight,    provider: fred, key: IUDSOIA, unit: percent, calendar_id: UK, name: "SONIA",
+                attribution: "SONIA and/or SONIA Compounded Index data licensed under the Open Government Licence v3.0 and copyright the Governor and Company of the Bank of England."}   # BoE series, read through the FRED API (fix/sources-compliance)
 
   boj:STRDCLUCON: {currency: JPY, role: overnight,   provider: boj, db: FM01, code: STRDCLUCON, unit: percent, calendar_id: JP, name: "Uncollateralized overnight call rate, average (TONA proxy)"}
   bis:JP:         {currency: JPY, role: policy_bis,  provider: bis, key: JP, unit: percent, calendar_id: JP, name: "BoJ guideline for the overnight call rate (BIS WS_CBPOL)"}

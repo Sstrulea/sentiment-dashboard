@@ -1,4 +1,8 @@
-"""Fetch VIX/VIX3M daily closes and CBOE Put/Call ratios from cboe.com.
+"""Fetch VIX/VIX3M daily closes (FRED API: VIXCLS / VXVCLS) and CBOE Put/Call ratios (cdn.cboe.com, once a day).
+
+VIX / VIX3M come through the FRED API since fix/sources-compliance (2026-11-16): identical to the Cboe CSV on the whole stored
+history; FRED marks them "Copyright, 2016, Chicago Board Options Exchange, Inc. Reprinted with permission" -> scope personal_only
+in config/fred_series.yaml. The P/C ratios stay on Cboe (no official alternative; personal, non-commercial use - license_note).
 
 This module does data acquisition only — no analytics, no template rendering.
 It writes two parquet files alongside the existing COT data:
@@ -16,14 +20,15 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+from . import http_policy as HP
+
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
 SENTIMENT_FILE = ROOT / "data" / "sentiment_history.parquet"
 PC_FILE = ROOT / "data" / "pc_history.parquet"
 
-VIX_URL = "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
-VIX3M_URL = "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv"
+FRED_VIX = {"VIX": "VIXCLS", "VIX3M": "VXVCLS"}          # FRED API series (Cboe copyright, personal_only)
 PC_URL_TEMPLATE = (
     "https://cdn.cboe.com/data/us/options/market_statistics/daily/"
     "{date}_daily_options"
@@ -43,30 +48,18 @@ PC_COLUMNS = ["date", "total", "equity", "index", "spx_spxw", "vix"]
 
 
 def fetch_vix_history(symbol: str) -> pd.DataFrame:
-    """Fetch full VIX or VIX3M daily history from cboe.com.
+    """Full VIX or VIX3M daily history from the FRED API (VIXCLS / VXVCLS).
 
     Returns a DataFrame with columns `date` (datetime64[ns]) and `close` (float64),
-    sorted ascending by date with NaN rows dropped.
+    sorted ascending by date with missing days (FRED ".") dropped.
     """
+    from . import fred_api
     sym = symbol.upper()
-    if sym == "VIX":
-        url = VIX_URL
-    elif sym == "VIX3M":
-        url = VIX3M_URL
-    else:
+    if sym not in FRED_VIX:
         raise ValueError(f"Unknown symbol: {symbol!r} (expected 'VIX' or 'VIX3M')")
-
-    r = requests.get(url, timeout=HTTP_TIMEOUT)
-    r.raise_for_status()
-
-    df = pd.read_csv(io.StringIO(r.text))
-    df.columns = [c.strip().lower() for c in df.columns]
-    if "date" not in df.columns or "close" not in df.columns:
-        raise RuntimeError(
-            f"Unexpected CSV columns from {url}: {list(df.columns)}"
-        )
-
-    df["date"] = pd.to_datetime(df["date"], format="%m/%d/%Y", errors="coerce")
+    rows = fred_api.observations(FRED_VIX[sym])
+    df = pd.DataFrame(rows, columns=["date", "close"])
+    df["date"] = pd.to_datetime(df["date"])
     df["close"] = pd.to_numeric(df["close"], errors="coerce")
     df = df[["date", "close"]].dropna().sort_values("date").reset_index(drop=True)
     return df
@@ -84,7 +77,7 @@ def fetch_pc_daily(date: dt.date) -> dict | None:
 
     url = PC_URL_TEMPLATE.format(date=date.strftime("%Y-%m-%d"))
     try:
-        r = requests.get(url, timeout=HTTP_TIMEOUT)
+        r = HP.get(url, timeout=HTTP_TIMEOUT)
     except requests.RequestException as e:
         log.warning("Network error fetching P/C for %s: %s", date, e)
         return None
@@ -132,6 +125,10 @@ def build_sentiment_parquet() -> pd.DataFrame:
     df = vix.merge(vix3m, on="date", how="inner").sort_values("date").reset_index(drop=True)
     df["ratio"] = df["vix_close"] / df["vix3m_close"]
     df = df[["date", "vix_close", "vix3m_close", "ratio"]]
+    if SENTIMENT_FILE.exists():                      # the stored rows (Cboe CSV until 2026-11-16) stay as they are: only newer days
+        old = pd.read_parquet(SENTIMENT_FILE)        # are appended (FRED is identical on the 4315 shared days; it has no
+        old["date"] = pd.to_datetime(old["date"])    # VIX3M before 2009-09-18 in the stored file and is published a day later)
+        df = pd.concat([old, df[df["date"] > old["date"].max()]], ignore_index=True)[["date", "vix_close", "vix3m_close", "ratio"]]
 
     SENTIMENT_FILE.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(SENTIMENT_FILE, index=False)
@@ -198,7 +195,7 @@ def check_pc_backfill_availability() -> dict:
     for probed in probes:
         url = PC_URL_TEMPLATE.format(date=probed.strftime("%Y-%m-%d"))
         try:
-            r = requests.get(url, timeout=HTTP_TIMEOUT)
+            r = HP.get(url, timeout=HTTP_TIMEOUT)
         except requests.RequestException as e:
             results.append(
                 {

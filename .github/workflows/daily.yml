@@ -30,13 +30,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run daily refresh
         env:
-          MYFXBOOK_EMAIL: ${{ secrets.MYFXBOOK_EMAIL }}
-          MYFXBOOK_PASSWORD: ${{ secrets.MYFXBOOK_PASSWORD }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}   # VIX / VIX3M through the FRED API (src/fred_api.py)
         run: python -m src.main --mode daily
 
       - name: Commit and push if changes

@@ -10,6 +10,9 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src import http_policy as HP  # noqa: E402
+
 CFTC_URL = "https://publicreporting.cftc.gov/resource/jun7-fc8e.json"
 DEFAULT_PARQUET_PATH = Path(__file__).resolve().parent.parent / "data" / "history.parquet"
 
@@ -25,7 +28,7 @@ def local_max_date(parquet_path):
 
 def remote_max_date():
     try:
-        resp = requests.get(
+        resp = HP.get(
             CFTC_URL,
             params={
                 "$select": "report_date_as_yyyy_mm_dd",

@@ -39,3 +39,9 @@ jb_range_url: "https://www.jblanked.com/news/api/forex-factory/calendar/range/"
 # renormalize to FUND + SENTIMENT only. Reason: the MT5 price feed dependency
 # (Wine-only, Mac-only, no cloud path) — see docs/accepted-degradations.md.
 trend_enabled: false
+
+# fix/sources-compliance (2026-11-16): sources kept under a personal-use licence, at the minimum useful frequency.
+cboe_pc:
+  schedule: "daily.yml 01:00 UTC: one request per closed session still missing (normally yesterday's only)"
+  license_note: "Cboe website terms: 'download one copy of the Materials for your personal non-commercial use ... You may not otherwise copy, reproduce, ... store ... in an electronic retrieval system' - kept by George's decision for this private dashboard"
+ff_min_interval_minutes: 60      # FF weekly export: at most one request an hour (state data/ff_last_refresh.json, shared by every run)

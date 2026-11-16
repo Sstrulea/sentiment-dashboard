@@ -37,9 +37,9 @@ workflows:                          # the workflow files the Worker dispatches (
   conference: cb-refresh.yml
 
 regular:                            # the regular runs the Worker fires (UTC): `hours` = every N hours from 00:00, `dow` = days of the week (0 = Sunday)
-  - {workflow: cb-refresh.yml, minute: 37, every_hours: 2, dow: [0, 1, 2, 3, 4, 5, 6]}
+  - {workflow: cb-refresh.yml, minute: 37, every_hours: 6, dow: [0, 1, 2, 3, 4, 5, 6]}      # was 2 h; exchange data is fetched once a day now (fix/sources-compliance, Actions budget)
   - {workflow: econ-refresh.yml, minute: 5, every_hours: 1, dow: [1, 2, 3, 4, 5]}
-  - {workflow: econ-refresh.yml, minute: 5, every_hours: 4, dow: [0, 6]}        # the weekend keeps the cadence it had (every 4 hours)
+  - {workflow: econ-refresh.yml, minute: 5, every_hours: 12, dow: [0, 6]}       # weekend: no FF publications, twice a day (was every 4 h)
 
 tick_minutes: 5                     # the Worker's cron period (infra/cb-trigger/wrangler.toml: */5 * * * *)
 

@@ -57,7 +57,6 @@ class _Run:
     def __init__(self, paths, today: date, fetcher: Fetcher, now: datetime, n: int, banks: tuple, roster: Optional[dict], state: Optional[dict] = None) -> None:
         self.paths, self.today, self.f, self.now, self.n, self.banks = paths, today, fetcher, now, n, banks
         self.state = state if state is not None else {}
-        self.youtube_blocked = False
         self.rep = DocsReport()
         self.docs = ST.load_documents(paths)
         self.cfg = ds.load_banks()
@@ -327,18 +326,9 @@ class _Run:
 
     # ---- press conference ---------------------------------------------------------------------------------------------------
     def presser(self, ccy: str) -> None:
-        cid = self.cfg[ccy].get("youtube_channel_id")
-        yt = S.YT_FEED.format(cid=cid) if cid else None
-        if yt and not self.f.allowed(yt):
-            self.youtube_blocked, yt = True, None                              # robots.txt disallows the feed: not a failure, a known limit (noted once)
-        vids = self.feed(yt, f"{ccy} YouTube feed") if yt else []
+        # press-conference videos come only from the banks' own pages (official_videos); the YouTube feeds were removed
+        # (their path is disallowed by youtube.com robots.txt) - fix/sources-compliance
         for d in self.meet.get(ccy, []):
-            v = P.match_video(vids, d)
-            if v is not None:
-                vid = re.search(r"v=([\w-]{6,})", v["link"])
-                vid_id = vid.group(1) if vid else hashlib.sha1(v["link"].encode()).hexdigest()[:11]
-                self.add(self.base(ccy, "presser_video", f"{ccy}:presser_video:{vid_id}", title=v["title"], url=v["link"], published_date=v["pub"].date(),
-                                   published_at=_ts(v["pub"]), meeting_date=d, format="video", meta={"source": "youtube", "channel": cid}))
             for typ, url, mode, rule in S.transcript_targets(ccy, d):
                 doc_id = f"{ccy}:{typ}:{d.isoformat()}"
                 if (doc_id,) in self.docs:
@@ -602,9 +592,6 @@ def run_documents(paths, today: date, *, fetcher: Optional[Fetcher] = None, now:
         state[STATE_KEY] = f.validators
     save_state(paths, state)
     rep.notes.append("RBNZ: behind a Cloudflare challenge - no automatic fetch; documents only from data/cb/manual/documents.yaml")
-    if run.youtube_blocked:
-        rep.notes.append("YouTube feeds: disallowed by youtube.com/robots.txt (Disallow: /feeds/videos.xml) - not read; press-conference videos come from the banks' own pages "
-                         "(Fed, BoC, RBA, BoE MPR, ECB) or from data/cb/manual/documents.yaml")
     return rep
 
 
