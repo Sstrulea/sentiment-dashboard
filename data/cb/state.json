@@ -28,6 +28,18 @@
       "HOLIDAYS CH: the official file changed (154475 -> 154475 bytes) and 8 date(s) are unverified - re-run scripts/cb_gen_calendars.py"
     ]
   },
+  "_daily_fetch": {
+    "asx_bb": "2026-11-16",
+    "asx_ib": "2026-11-16",
+    "atlantafed_mpt": "2026-11-16",
+    "eurex_ois_chf": "2026-11-16",
+    "eurex_ois_eur": "2026-11-16",
+    "eurex_ois_gbp": "2026-11-16",
+    "eurex_ois_jpy": "2026-11-16",
+    "eurex_ois_usd": "2026-11-16",
+    "eurex_ois_usd_sofr": "2026-11-16",
+    "jpx_tona": "2026-11-16"
+  },
   "_framework": {
     "checked": "2026-11-15",
     "targets": {

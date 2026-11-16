@@ -262,17 +262,9 @@
    ],
    "hours": [
     0,
-    2,
-    4,
     6,
-    8,
-    10,
     12,
-    14,
-    16,
-    18,
-    20,
-    22
+    18
    ],
    "minute": 37,
    "workflow": "cb-refresh.yml"
@@ -321,11 +313,7 @@
    ],
    "hours": [
     0,
-    4,
-    8,
-    12,
-    16,
-    20
+    12
    ],
    "minute": 5,
    "workflow": "econ-refresh.yml"
