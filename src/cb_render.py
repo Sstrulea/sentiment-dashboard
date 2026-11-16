@@ -83,7 +83,7 @@ def stance_blocks(data_dir, ctx, asof: date, out: dict) -> dict:
     from . import cb_stance_history as SH
     from .cb_collect import Paths
     from .cb_compute.stance_inputs import current_version
-    from .cb_compute.stance_ui import HOW_TO_READ, history_points, mandate_card, next_test
+    from .cb_compute.stance_ui import history_points, mandate_card, next_test  # noqa: F401
     from .cb_loader import load_stance
     from .cb_sources.official import load_official
     try:
@@ -107,7 +107,7 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
     import yaml
     from . import cb_datasets as ds
     from .cb_compute.stance_inputs import current_version
-    from .cb_compute.stance_ui import HOW_TO_READ, history_points, mandate_card, next_test
+    from .cb_compute.stance_ui import how_to_read, history_points, mandate_card, next_test
     from .cb_sources.official import load_official
     names = {sid: s["name"] for sid, s in load_official()["macro"]["series"].items()}
     ui_cfg = yaml.safe_load(STANCE_UI_YAML.read_text(encoding="utf-8")) or {}
@@ -128,7 +128,8 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
         banks[c] = P.stance_page_v5(r, ui, {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
                                     mandate_card(raw, names, params["underlying_rule"]) if raw else None, next_test(c, events, mapping, asof),
                                     history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof))
-    return {"banks": banks, "how_to_read": HOW_TO_READ, "scale_pp": 2.0, "na": None}
+    scale = yaml.safe_load((ROOT / "config" / "cb_stance.yaml").read_text(encoding="utf-8"))["v5"]["scale_pp"]
+    return {"banks": banks, "how_to_read": how_to_read(scale), "scale_pp": 2.0, "na": None}
 
 
 def neutral_reason(c: str, r: dict, meetings: dict, asof: date) -> Optional[str]:

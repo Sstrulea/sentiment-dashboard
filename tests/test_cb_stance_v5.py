@@ -132,3 +132,13 @@ def test_written_payload_has_only_what_is_displayed(tmp_path):
 def test_stance_js():
     r = subprocess.run(["node", str(ROOT / "tests" / "cb_js" / "test_stance_v5.cjs")], cwd=ROOT, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+def test_how_to_read_text_with_thresholds_from_config(tmp_path, monkeypatch):
+    from src.cb_compute.stance_ui import how_to_read
+    cfg = yaml.safe_load(open(ROOT / "config" / "cb_stance.yaml"))["v5"]["scale_pp"]
+    t = how_to_read(cfg)
+    assert t[0] == ("Position = policy rate − the bank's neutral rate. Need = core inflation − target. Same scale for both: within "
+                    "±0.25 pp neutral / near target, up to 0.75 slightly, up to 1.5 plain, beyond that very / well.")
+    assert t[1].startswith("Why: inflation near target → no reason to move.") and t[1].endswith("total inflation is used where the bank doesn't forecast core.")
+    assert "0.3" in how_to_read([0.3, 0.8, 1.6])[0]                    # the numbers follow the config, not the code
