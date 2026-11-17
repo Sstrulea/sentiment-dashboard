@@ -185,6 +185,11 @@
       "last_modified": "Fri, 25 Sep 2026 01:01:06 GMT",
       "sha256": "cec85a50ca56f8925dcb0111547f265844bb3f876cb48779c7097c4b933bc3a6"
     },
+    "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260918.pdf": {
+      "etag": "\"w360589-1793752994122\"",
+      "last_modified": "Wed, 04 Nov 2026 00:43:14 GMT",
+      "sha256": "d31670890991ab67351a8db6bafd9b69cec0208537ab4ea7ac51d63e5d0582fb"
+    },
     "https://www.boj.or.jp/en/mopo/mpmsche_minu/opinion_2026/opi260428.pdf": {
       "etag": "\"w178453-1778494519186\"",
       "last_modified": "Mon, 11 May 2026 10:15:19 GMT"
@@ -248,7 +253,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Sun, 15 Nov 2026 22:00:50 GMT"
+    "last_modified": "Mon, 16 Nov 2026 21:58:12 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -274,30 +279,30 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Sun, 15 Nov 2026 22:00:50 GMT"
+    "last_modified": "Mon, 16 Nov 2026 21:58:12 GMT"
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-16T10:41:30Z",
-      "calls": 0,
-      "cost_usd": 0.0,
+      "at": "2026-11-17T00:44:37Z",
+      "calls": 3,
+      "cost_usd": 0.1438,
       "failed_validation": 0,
-      "input_tokens": 0,
-      "new": 0,
+      "input_tokens": 41337,
+      "new": 2,
       "no_text": 0,
-      "output_tokens": 0,
+      "output_tokens": 5096,
       "pending": 0,
-      "reasoning_tokens": 0,
+      "reasoning_tokens": 2758,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 135,
+      "unchanged": 136,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 250,
-      "input_tokens": 1588530,
-      "output_tokens": 281728,
-      "summaries": 166
+      "calls": 253,
+      "input_tokens": 1629867,
+      "output_tokens": 286824,
+      "summaries": 168
     }
   }
 }

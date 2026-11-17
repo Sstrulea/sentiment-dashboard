@@ -4,6 +4,225 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     16,
+     21,
+     28,
+     46,
+     47,
+     50
+    ],
+    "paragraphs_sent": 57,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:minutes:2026-11-03",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-17T00:44:37Z",
+   "input_sha256": "178c6da4253dd151427dbe8aadeb0e7f0301a85f2d3b2093802fd24af6cfa85e",
+   "meeting_date": "2026-11-03",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 61,
+     "point": 2,
+     "source_text": "3",
+     "start": 60,
+     "text": "3 per cent"
+    },
+    {
+     "end": 7044,
+     "point": 2,
+     "source_text": "2027",
+     "start": 7040,
+     "text": "2027"
+    },
+    {
+     "end": 8423,
+     "point": 2,
+     "source_text": "2028",
+     "start": 8419,
+     "text": "2028"
+    },
+    {
+     "end": 75,
+     "point": 3,
+     "source_text": "2026",
+     "start": 71,
+     "text": "2026"
+    },
+    {
+     "end": 29649,
+     "point": 5,
+     "source_text": "4.85 per cent",
+     "start": 29636,
+     "text": "4.85 per cent"
+    },
+    {
+     "end": 29756,
+     "point": 5,
+     "source_text": "4.60 per cent",
+     "start": 29743,
+     "text": "4.60 per cent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-17",
+   "quotes": [
+    {
+     "end": 6494,
+     "paragraph": 16,
+     "start": 6287,
+     "text": "Members concluded that these trends implied that domestic financial conditions were likely to be restrictive but that contrasting trends in various indicators made the extent of restraint difficult to gauge."
+    },
+    {
+     "end": 8774,
+     "paragraph": 21,
+     "start": 8684,
+     "text": "Even after this, the staff judged the risks to the inflation forecast to be to the upside."
+    },
+    {
+     "end": 14348,
+     "paragraph": 28,
+     "start": 14164,
+     "text": "GDP growth had slowed to a little below its potential growth rate in 2026, but more recent data had suggested somewhat more growth in activity than anticipated in the August forecasts."
+    },
+    {
+     "end": 26838,
+     "paragraph": 46,
+     "start": 26687,
+     "text": "Having considered these various arguments, most members determined that the case to increase the cash rate target at this meeting was the stronger one."
+    },
+    {
+     "end": 29757,
+     "paragraph": 50,
+     "start": 29585,
+     "text": "The Board decided to raise the cash rate target to 4.85 per cent. Six members voted in favour; three members voted to leave the cash rate target unchanged at 4.60 per cent."
+    }
+   ],
+   "source": {
+    "chars": 30160,
+    "chars_sent": 30161,
+    "method": "html-selector",
+    "paragraphs_sent": 57,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 6494,
+        "paragraph": 16,
+        "start": 6287,
+        "text": "Members concluded that these trends implied that domestic financial conditions were likely to be restrictive but that contrasting trends in various indicators made the extent of restraint difficult to gauge."
+       }
+      ],
+      "paragraphs": [
+       16
+      ]
+     },
+     "text": "Members concluded that domestic financial conditions were likely to be restrictive, but contrasting trends in indicators made the extent of restraint difficult to gauge."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8288,
+        "paragraph": 21,
+        "start": 8189,
+        "text": "Both headline and underlying inflation were now expected to remain above 3 per cent until late 2027"
+       },
+       {
+        "end": 8774,
+        "paragraph": 21,
+        "start": 8701,
+        "text": "the staff judged the risks to the inflation forecast to be to the upside."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "The staff’s projections had headline and underlying inflation remaining above 3 per cent until late 2027 and returning to the target-range midpoint in mid-2028, with risks to the forecast judged to be on the upside."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 14348,
+        "paragraph": 28,
+        "start": 14164,
+        "text": "GDP growth had slowed to a little below its potential growth rate in 2026, but more recent data had suggested somewhat more growth in activity than anticipated in the August forecasts."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "GDP growth had slowed to a little below its potential growth rate in 2026, while more recent data had indicated somewhat more activity growth than anticipated in the August forecasts."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 26838,
+        "paragraph": 46,
+        "start": 26730,
+        "text": "most members determined that the case to increase the cash rate target at this meeting was the stronger one."
+       },
+       {
+        "end": 28573,
+        "paragraph": 47,
+        "start": 28441,
+        "text": "A minority of members determined instead that the case to leave the cash rate target unchanged at this meeting was the stronger one."
+       }
+      ],
+      "paragraphs": [
+       46,
+       47
+      ]
+     },
+     "text": "Most members determined that the case to increase the cash rate target was stronger, while a minority determined that the case to leave it unchanged was stronger."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 29757,
+        "paragraph": 50,
+        "start": 29585,
+        "text": "The Board decided to raise the cash rate target to 4.85 per cent. Six members voted in favour; three members voted to leave the cash rate target unchanged at 4.60 per cent."
+       }
+      ],
+      "paragraphs": [
+       50
+      ]
+     },
+     "text": "The Board decided to raise the cash rate target to 4.85 per cent, with six members voting in favour and three voting to leave it unchanged at 4.60 per cent."
+    }
+   ],
+   "title": "Reserve Bank of Australia minutes of the 03 November 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.rba.gov.au/monetary-policy/rba-board-minutes/2026/2026-11-03.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 6956,
+    "output_tokens": 1177,
+    "reasoning_tokens": 516
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      7,
      8,
      9,
@@ -3814,6 +4033,251 @@
     "input_tokens": 4374,
     "output_tokens": 1132,
     "reasoning_tokens": 0
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     30,
+     33,
+     39,
+     42,
+     69,
+     73
+    ],
+    "paragraphs_sent": 78,
+    "truncated": false
+   },
+   "currency": "JPY",
+   "doc_id": "JPY:minutes:2026-09-18",
+   "dropped_points": [
+    {
+     "errors": [
+      "summary point 6 has a negation but the closest clause of the paragraph(s) it cites has none: “with the rate of increase in the CPI (all items less fresh food) being below 2 percent recently” (its clause: “considering that the CPI increase had been below 2 percent recently and it could not necessarily be ”) - state it as the source does; never turn a statement into its opposite"
+     ],
+     "text": "Asada Toichiro dissented, considering that the CPI increase had been below 2 percent recently and it could not necessarily be said that the economy was strong; Sato Ayano said developments did not appear to have substantially accelerated."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-11-17T00:44:37Z",
+   "input_sha256": "d31670890991ab67351a8db6bafd9b69cec0208537ab4ea7ac51d63e5d0582fb",
+   "meeting_date": "2026-09-18",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 29177,
+     "point": 2,
+     "source_text": "1.5",
+     "start": 29174,
+     "text": "1.5"
+    },
+    {
+     "end": 695,
+     "point": 2,
+     "source_text": "2",
+     "start": 694,
+     "text": "2.0 percent"
+    },
+    {
+     "end": 49759,
+     "point": 4,
+     "source_text": "0.25 percentage points",
+     "start": 49737,
+     "text": "0.25 percentage points"
+    },
+    {
+     "end": 49782,
+     "point": 4,
+     "source_text": "1.25 percent",
+     "start": 49770,
+     "text": "1.25 percent"
+    },
+    {
+     "end": 11668,
+     "point": 5,
+     "source_text": "7",
+     "start": 11667,
+     "text": "7"
+    },
+    {
+     "end": 695,
+     "point": 5,
+     "source_text": "2",
+     "start": 694,
+     "text": "2"
+    },
+    {
+     "end": 49782,
+     "point": 5,
+     "source_text": "1.25 percent",
+     "start": 49770,
+     "text": "1.25 percent"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-04",
+   "quotes": [
+    {
+     "end": 21822,
+     "paragraph": 30,
+     "start": 21644,
+     "text": "members shared the view that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the impact of the situation in the Middle East."
+    },
+    {
+     "end": 43246,
+     "paragraph": 39,
+     "start": 43173,
+     "text": "Members agreed that financial conditions in Japan had been accommodative."
+    },
+    {
+     "end": 49798,
+     "paragraph": 42,
+     "start": 49627,
+     "text": "most members shared the recognition that it was appropriate for the Bank to raise the policy interest rate by 0.25 percentage points to around 1.25 percent at this meeting"
+    },
+    {
+     "end": 67405,
+     "paragraph": 69,
+     "start": 67307,
+     "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 1.25 percent."
+    },
+    {
+     "end": 73849,
+     "paragraph": 73,
+     "start": 73537,
+     "text": "Asada Toichiro dissented, considering that, with the rate of increase in the CPI (all items less fresh food) being below 2 percent recently, it could not necessarily be said that the economic situation was strong, and it was therefore desirable for the Bank to maintain the guideline for money market operations."
+    }
+   ],
+   "source": {
+    "chars": 78609,
+    "chars_sent": 78610,
+    "method": "pypdf",
+    "paragraphs_sent": 78,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21759,
+        "paragraph": 30,
+        "start": 21644,
+        "text": "members shared the view that Japan's economy had recovered moderately, although some weakness had been seen in part"
+       }
+      ],
+      "paragraphs": [
+       30
+      ]
+     },
+     "text": "Members shared the view that Japan's economy had recovered moderately, although some weakness had been seen in part, partly due to the situation in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 29189,
+        "paragraph": 33,
+        "start": 29042,
+        "text": "the year-on-year rate of increase in the CPI (all items less fresh food) had been moderately rising recently, being in the range of 1.5-2.0 percent"
+       }
+      ],
+      "paragraphs": [
+       33
+      ]
+     },
+     "text": "Members shared the recognition that the year-on-year CPI increase, excluding fresh food, had been moderately rising recently and was in the range of 1.5-2.0 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 43246,
+        "paragraph": 39,
+        "start": 43173,
+        "text": "Members agreed that financial conditions in Japan had been accommodative."
+       },
+       {
+        "end": 43416,
+        "paragraph": 39,
+        "start": 43291,
+        "text": "real interest rates had been rising recently, but the rates remained at low levels, mainly in the short - to medium-term zone"
+       },
+       {
+        "end": 43625,
+        "paragraph": 39,
+        "start": 43501,
+        "text": "firms' and other entities' demand for funds had increased, and financial institutions' lending attitudes remained proactive."
+       }
+      ],
+      "paragraphs": [
+       39
+      ]
+     },
+     "text": "Members agreed that financial conditions in Japan had been accommodative, with real interest rates remaining low, funding demand increasing, and lending attitudes remaining proactive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 49798,
+        "paragraph": 42,
+        "start": 49627,
+        "text": "most members shared the recognition that it was appropriate for the Bank to raise the policy interest rate by 0.25 percentage points to around 1.25 percent at this meeting"
+       }
+      ],
+      "paragraphs": [
+       42
+      ]
+     },
+     "text": "Most members shared the recognition that it was appropriate to raise the policy interest rate by 0.25 percentage points to around 1.25 percent at this meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 67299,
+        "paragraph": 69,
+        "start": 67179,
+        "text": "decided, by a 7-2 majority vote, to set the following guideline for money market operations for the intermeeting period:"
+       },
+       {
+        "end": 67405,
+        "paragraph": 69,
+        "start": 67307,
+        "text": "The Bank will encourage the uncollateralized overnight call rate to remain at around 1.25 percent."
+       },
+       {
+        "end": 73536,
+        "paragraph": 73,
+        "start": 73479,
+        "text": "Voting against the action: ASADA Toichiro and SATO Ayano."
+       }
+      ],
+      "paragraphs": [
+       69,
+       73
+      ]
+     },
+     "text": "The Policy Board decided by a 7-2 majority vote to encourage the uncollateralized overnight call rate to remain at around 1.25 percent; ASADA Toichiro and SATO Ayano voted against."
+    }
+   ],
+   "title": "Bank of Japan minutes of the 18 September 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/minu_2026/g260918.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 34381,
+    "output_tokens": 3919,
+    "reasoning_tokens": 2242
    }
   },
   {
