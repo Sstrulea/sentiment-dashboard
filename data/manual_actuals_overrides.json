@@ -2143,5 +2143,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-17T14:07:06+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "gbp_average_weekly_earnings_total_pay",
+  "currency": "GBP",
+  "indicator_key": "wage_growth",
+  "datetime_utc": "2026-11-17 07:00:00",
+  "actual": 3.6,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-17T14:07:18+00:00",
+  "note": ""
  }
 ]
