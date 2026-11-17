@@ -2665,6 +2665,206 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     3,
+     4,
+     5,
+     7,
+     8
+    ],
+    "paragraphs_sent": 15,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:8481a1d7c53f",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "pdf",
+   "generated_at": "2026-11-17T18:43:29Z",
+   "input_sha256": "42fa19d84ee43708eba8f8cab5fdeedd1d787e7330f3ebf22474e36255741c76",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 365,
+     "point": 6,
+     "source_text": "2025",
+     "start": 361,
+     "text": "2025"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-17",
+   "quotes": [
+    {
+     "end": 1269,
+     "paragraph": 3,
+     "start": 1141,
+     "text": "The figure shows official monetary policy releases between two Governing Council (GovC) monetary policy meetings (at t and t+1)."
+    },
+    {
+     "end": 1823,
+     "paragraph": 4,
+     "start": 1709,
+     "text": "Introduction: High-level explanation for monetary policy decision; guidebook to monetary policy decision framework"
+    },
+    {
+     "end": 3943,
+     "paragraph": 7,
+     "start": 3887,
+     "text": "Focus on the immediate decision in public communications"
+    },
+    {
+     "end": 4109,
+     "paragraph": 8,
+     "start": 4051,
+     "text": "Guidance on the criteria determining the reaction function"
+    },
+    {
+     "end": 4960,
+     "paragraph": 9,
+     "start": 4899,
+     "text": "Explain how current decision incorporated risk considerations"
+    }
+   ],
+   "source": {
+    "chars": 14976,
+    "chars_sent": 14977,
+    "method": "pypdf",
+    "paragraphs_sent": 15,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 773,
+        "paragraph": 2,
+        "start": 501,
+        "text": "The communication outlets considered in this chart include the press conferences following the Governing Council’s monetary policy meetings, related press releases, the accounts of the Governing Council’s monetary policy meetings and speeches given by the ECB’s President."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the communication outlets considered include press conferences, related press releases, meeting accounts and speeches by the ECB’s President."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 1571,
+        "paragraph": 3,
+        "start": 1335,
+        "text": "14:15 Monetary policy decisions press release 14:45 Press conference: Monetary Policy Statement and Q&A 15:45 Macroeconomic projections report (in projection rounds) (t + 4 weeks) Monetary policy accounts (t + 2 weeks) Economic Bulletin"
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the typical communication cycle includes the monetary policy decisions press release, press conference, projections report, meeting accounts and Economic Bulletin."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 1944,
+        "paragraph": 4,
+        "start": 1709,
+        "text": "Introduction: High-level explanation for monetary policy decision; guidebook to monetary policy decision framework • Economic activity assessment • Inflation assessment • Risk assessment • Monetary and financial conditions • Conclusion"
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says the Monetary Policy Statement covers the decision explanation, economic activity, inflation, risks, monetary and financial conditions, and conclusion."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 2184,
+        "paragraph": 5,
+        "start": 1992,
+        "text": "Summary of presentations on financial market developments and economic, monetary and financial developments • “Monetary policy considerations and policy options” • Governing Council discussion"
+       }
+      ],
+      "paragraphs": [
+       5
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says meeting accounts contain summaries of financial market and economic developments, monetary policy considerations and options, and Governing Council discussion."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3532,
+        "paragraph": 7,
+        "start": 3493,
+        "text": "Staff projections based on market curve"
+       },
+       {
+        "end": 3943,
+        "paragraph": 7,
+        "start": 3887,
+        "text": "Focus on the immediate decision in public communications"
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says staff projections are based on the market curve, while public communications focus on the immediate decision."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 4109,
+        "paragraph": 8,
+        "start": 4051,
+        "text": "Guidance on the criteria determining the reaction function"
+       },
+       {
+        "end": 4473,
+        "paragraph": 8,
+        "start": 4410,
+        "text": "2025 update: “surrounding risks” added as an explicit criterion"
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Member of the Executive Board Philip R. Lane says framework guidance sets criteria for the reaction function, and surrounding risks were added as an explicit criterion in the 2025 update."
+    }
+   ],
+   "title": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261117~7f5d3b1a0e.en.pdf",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 10567,
+    "output_tokens": 2074,
+    "reasoning_tokens": 804
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      126,
      127,
      128,
