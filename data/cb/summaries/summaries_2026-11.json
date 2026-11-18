@@ -1741,6 +1741,158 @@
    "coverage": {
     "paragraphs": [
      2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:08bb38eb1733",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-18T18:43:38Z",
+   "input_sha256": "664680113918630cbcad68f0f1437a16af5ac2ddaea918b859c764205d5859ea",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-18",
+   "quotes": [
+    {
+     "end": 291,
+     "paragraph": 2,
+     "start": 151,
+     "text": "Even if we think our forecast shows the most likely path, scenarios help us explain what could happen if the economy takes a different path."
+    },
+    {
+     "end": 420,
+     "paragraph": 3,
+     "start": 292,
+     "text": "We publish scenarios to help us show possible different paths and explain what they could mean for inflation and interest rates."
+    },
+    {
+     "end": 808,
+     "paragraph": 5,
+     "start": 709,
+     "text": "Most recently, we used scenarios to assess how persistently high oil prices could affect inflation."
+    },
+    {
+     "end": 932,
+     "paragraph": 6,
+     "start": 809,
+     "text": "Scenarios make risks more concrete and help people understand how our policy response might change if circumstances change."
+    }
+   ],
+   "source": {
+    "chars": 932,
+    "chars_sent": 933,
+    "method": "html-selector",
+    "paragraphs_sent": 6,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 150,
+        "paragraph": 2,
+        "start": 42,
+        "text": "One way the Bank thinks about and explains uncertainty is by using scenarios, essentially asking, “What if?”"
+       },
+       {
+        "end": 291,
+        "paragraph": 2,
+        "start": 209,
+        "text": "scenarios help us explain what could happen if the economy takes a different path."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Bank of Canada says it uses scenarios to explain uncertainty by asking “What if?” and to show what could happen if the economy takes a different path."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 420,
+        "paragraph": 3,
+        "start": 292,
+        "text": "We publish scenarios to help us show possible different paths and explain what they could mean for inflation and interest rates."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Bank of Canada says it publishes scenarios to show possible paths and what they could mean for inflation and interest rates."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 521,
+        "paragraph": 4,
+        "start": 421,
+        "text": "We’ve used scenarios during periods of unusually high uncertainty—for example, early in the pandemic"
+       },
+       {
+        "end": 808,
+        "paragraph": 5,
+        "start": 709,
+        "text": "Most recently, we used scenarios to assess how persistently high oil prices could affect inflation."
+       }
+      ],
+      "paragraphs": [
+       4,
+       5
+      ]
+     },
+     "text": "The Bank of Canada says it used scenarios early in the pandemic and most recently to assess how persistently high oil prices could affect inflation."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 932,
+        "paragraph": 6,
+        "start": 809,
+        "text": "Scenarios make risks more concrete and help people understand how our policy response might change if circumstances change."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Bank of Canada says scenarios make risks more concrete and help people understand how its policy response might change if circumstances change."
+    }
+   ],
+   "title": "Talking about an uncertain future",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/11/talking-about-an-uncertain-future/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 1688,
+    "output_tokens": 578,
+    "reasoning_tokens": 145
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
      4,
      5,
      9,
@@ -1997,6 +2149,182 @@
     "input_tokens": 2297,
     "output_tokens": 825,
     "reasoning_tokens": 233
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     7,
+     9,
+     15,
+     16,
+     17
+    ],
+    "paragraphs_sent": 19,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:0f138e4e1f50",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-18T18:43:38Z",
+   "input_sha256": "cb35d9fbd40891d6d89a21ca0fb823f741d9ab3f9400a2400ec12e91d401f432",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-18",
+   "quotes": [
+    {
+     "end": 891,
+     "paragraph": 7,
+     "start": 806,
+     "text": "We forecast a most likely path for growth and inflation, or our base-case projection."
+    },
+    {
+     "end": 1435,
+     "paragraph": 9,
+     "start": 1349,
+     "text": "Communication, in other words, is an essential part of how we conduct monetary policy."
+    },
+    {
+     "end": 2580,
+     "paragraph": 15,
+     "start": 2512,
+     "text": "Scenarios show Canadians how we’re thinking through the uncertainty."
+    },
+    {
+     "end": 3237,
+     "paragraph": 17,
+     "start": 3101,
+     "text": "Scenarios can help us show how economic shocks could affect the economy and inflation, and what that could mean for our policy response."
+    }
+   ],
+   "source": {
+    "chars": 3426,
+    "chars_sent": 3427,
+    "method": "html-selector",
+    "paragraphs_sent": 19,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 746,
+        "paragraph": 6,
+        "start": 662,
+        "text": "Changes to our policy interest rate take time to work their way through the economy."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "The Bank of Canada says changes to its policy interest rate take time to work through the economy, so it looks ahead when setting policy."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 891,
+        "paragraph": 7,
+        "start": 806,
+        "text": "We forecast a most likely path for growth and inflation, or our base-case projection."
+       },
+       {
+        "end": 1032,
+        "paragraph": 7,
+        "start": 949,
+        "text": "we also think through the risks that could push inflation off course, the what-ifs."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "The Bank of Canada says it forecasts a most likely path for growth and inflation, while considering risks that could push inflation off course."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1348,
+        "paragraph": 9,
+        "start": 1225,
+        "text": "That means explaining how we see the economy today, where we think it might be headed and what data could change that view."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "The Bank of Canada says communication explains its view of the economy, where it might be headed and what data could change that view."
+    },
+    {
+     "evidence": {
+      "coverage": 0.909,
+      "fragments": [
+       {
+        "end": 2359,
+        "paragraph": 15,
+        "start": 2307,
+        "text": "scenarios can help put a range on possible outcomes."
+       },
+       {
+        "end": 2814,
+        "paragraph": 16,
+        "start": 2746,
+        "text": "they allow us to test our base case against other possible outcomes."
+       }
+      ],
+      "paragraphs": [
+       15,
+       16
+      ]
+     },
+     "text": "The Bank of Canada says scenarios can set out a range of outcomes when uncertainty is extremely high and test its base case against other possible outcomes."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3005,
+        "paragraph": 17,
+        "start": 2945,
+        "text": "What’s changed is that we’re now publishing them more often."
+       },
+       {
+        "end": 3100,
+        "paragraph": 17,
+        "start": 3006,
+        "text": "This shift has been driven by a rise in uncertainty. We’re living in a more shock-prone world."
+       }
+      ],
+      "paragraphs": [
+       17
+      ]
+     },
+     "text": "The Bank of Canada says it is publishing scenarios more often, driven by a rise in uncertainty and a more shock-prone world."
+    }
+   ],
+   "title": "Setting the scenario: Monetary policy communications in uncertain times",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/11/setting-the-scenario-monetary-policy-communications-in-uncertain-times/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2243,
+    "output_tokens": 634,
+    "reasoning_tokens": 151
    }
   },
   {
