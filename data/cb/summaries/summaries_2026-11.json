@@ -3653,6 +3653,268 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     3,
+     4,
+     5,
+     7,
+     8,
+     27,
+     32,
+     39,
+     40,
+     46,
+     50
+    ],
+    "paragraphs_sent": 71,
+    "truncated": false
+   },
+   "currency": "GBP",
+   "doc_id": "GBP:speech:2cf3216395cb",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-18T16:39:49Z",
+   "input_sha256": "ded907a81b1821ed5a8df427c3a0e8d7a3727ea5c022f4548daceb6441cc0252",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 418,
+     "point": 1,
+     "source_text": "3.6%",
+     "start": 414,
+     "text": "3.6%"
+    },
+    {
+     "end": 2117,
+     "point": 3,
+     "source_text": "1.6%",
+     "start": 2113,
+     "text": "1.6%"
+    },
+    {
+     "end": 10764,
+     "point": 5,
+     "source_text": "300",
+     "start": 10761,
+     "text": "300"
+    },
+    {
+     "end": 595,
+     "point": 5,
+     "source_text": "12",
+     "start": 593,
+     "text": "12"
+    },
+    {
+     "end": 11709,
+     "point": 5,
+     "source_text": "6,000",
+     "start": 11704,
+     "text": "6,000"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-18",
+   "quotes": [
+    {
+     "end": 430,
+     "paragraph": 3,
+     "start": 384,
+     "text": "UK CPI inflation increased to 3.6% in October."
+    },
+    {
+     "end": 1155,
+     "paragraph": 5,
+     "start": 1102,
+     "text": "The MPC always assesses the evidence at each meeting."
+    },
+    {
+     "end": 2182,
+     "paragraph": 8,
+     "start": 2072,
+     "text": "We expect annual GDP growth to be around 1.6% this year, whereas back in the summer, we expected just over 1%."
+    },
+    {
+     "end": 11746,
+     "paragraph": 40,
+     "start": 11629,
+     "text": "The Bank of England operates 12 agencies across the UK, undertaking around 6,000 discussions with contacts each year."
+    },
+    {
+     "end": 14202,
+     "paragraph": 50,
+     "start": 14070,
+     "text": "So the relevant objective is convergence in productivity, opportunity and living standards, not convergence in industrial structure."
+    }
+   ],
+   "source": {
+    "chars": 18104,
+    "chars_sent": 18105,
+    "method": "html-selector",
+    "paragraphs_sent": 71,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 383,
+        "paragraph": 3,
+        "start": 310,
+        "text": "This has led to further increases and volatility in global energy prices."
+       },
+       {
+        "end": 430,
+        "paragraph": 3,
+        "start": 384,
+        "text": "UK CPI inflation increased to 3.6% in October."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "Governor Andrew Bailey says the Middle East conflict has led to further increases and volatility in global energy prices, and UK CPI inflation increased to 3.6% in October."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1013,
+        "paragraph": 4,
+        "start": 890,
+        "text": "the degree of inflationary pressure in the pipeline was sufficient to warrant an increase in Bank Rate at our last meeting."
+       },
+       {
+        "end": 1155,
+        "paragraph": 5,
+        "start": 1102,
+        "text": "The MPC always assesses the evidence at each meeting."
+       }
+      ],
+      "paragraphs": [
+       4,
+       5
+      ]
+     },
+     "text": "Governor Andrew Bailey says the degree of inflationary pressure in the pipeline warranted an increase in Bank Rate at the MPC’s last meeting, and the MPC assesses the evidence at each meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2071,
+        "paragraph": 7,
+        "start": 1997,
+        "text": "Activity data in recent months have generally been stronger than expected."
+       },
+       {
+        "end": 2182,
+        "paragraph": 8,
+        "start": 2072,
+        "text": "We expect annual GDP growth to be around 1.6% this year, whereas back in the summer, we expected just over 1%."
+       }
+      ],
+      "paragraphs": [
+       7,
+       8
+      ]
+     },
+     "text": "Governor Andrew Bailey says activity data in recent months have generally been stronger than expected, and the Bank expects annual GDP growth to be around 1.6% this year."
+    },
+    {
+     "evidence": {
+      "coverage": 0.857,
+      "fragments": [
+       {
+        "end": 7968,
+        "paragraph": 27,
+        "start": 7860,
+        "text": "Alongside the different industrial compositions of different UK regions, overall regional gaps remain large."
+       },
+       {
+        "end": 9227,
+        "paragraph": 32,
+        "start": 9126,
+        "text": "Employment rates in July to September ranged from 79.4% in the South West to 70.9% in the North East."
+       }
+      ],
+      "paragraphs": [
+       27,
+       32
+      ]
+     },
+     "text": "Governor Andrew Bailey says regional productivity gaps remain large, while employment, unemployment and inactivity rates varied across regions from July to September."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10821,
+        "paragraph": 39,
+        "start": 10742,
+        "text": "We now have around 300 employees there and have secured new long-term premises."
+       },
+       {
+        "end": 11746,
+        "paragraph": 40,
+        "start": 11629,
+        "text": "The Bank of England operates 12 agencies across the UK, undertaking around 6,000 discussions with contacts each year."
+       }
+      ],
+      "paragraphs": [
+       39,
+       40
+      ]
+     },
+     "text": "Governor Andrew Bailey says the Bank of England has around 300 employees in Leeds, while its 12 agencies undertake around 6,000 discussions with contacts each year."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 12990,
+        "paragraph": 46,
+        "start": 12919,
+        "text": "The UK’s regional growth challenge is also a national growth challenge."
+       },
+       {
+        "end": 14202,
+        "paragraph": 50,
+        "start": 14070,
+        "text": "So the relevant objective is convergence in productivity, opportunity and living standards, not convergence in industrial structure."
+       }
+      ],
+      "paragraphs": [
+       46,
+       50
+      ]
+     },
+     "text": "Governor Andrew Bailey says the UK’s regional growth challenge is also a national growth challenge, and the objective is convergence in productivity, opportunity and living standards, not industrial structure."
+    }
+   ],
+   "title": "The UK’s regional growth: unlocking the economy’s full potential - speech by Andrew Bailey",
+   "type": "speech",
+   "url": "https://www.bankofengland.co.uk/speech/2026/november/andrew-bailey-speech-at-the-annual-institute-of-economic-development-conference-london",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5072,
+    "output_tokens": 949,
+    "reasoning_tokens": 254
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      28,
      32,
      71,
