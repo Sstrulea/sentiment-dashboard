@@ -2165,5 +2165,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-17T14:07:52+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "aud_wage_price_index",
+  "currency": "AUD",
+  "indicator_key": "wage_growth",
+  "datetime_utc": "2026-11-18 00:30:00",
+  "actual": 1.1,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-18T09:07:50+00:00",
+  "note": ""
  }
 ]
