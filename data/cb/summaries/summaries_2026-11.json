@@ -6576,6 +6576,208 @@
     "output_tokens": 1665,
     "reasoning_tokens": 849
    }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     7,
+     8,
+     9
+    ],
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:c8279dbe2376",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-19T16:43:04Z",
+   "input_sha256": "82325865750b4d0884c5db6f22baefdda5c800695ee5118081171ee0511afe49",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-19",
+   "quotes": [
+    {
+     "end": 1546,
+     "paragraph": 6,
+     "start": 1458,
+     "text": "The nature and duration of these shocks influence the approach to monetary policymaking."
+    },
+    {
+     "end": 1943,
+     "paragraph": 7,
+     "start": 1874,
+     "text": "When a shock pushes them in opposite directions, there is a tradeoff."
+    },
+    {
+     "end": 3228,
+     "paragraph": 8,
+     "start": 3149,
+     "text": "Currently, the AI buildout is exerting upward pressure on demand and inflation."
+    },
+    {
+     "end": 4058,
+     "paragraph": 9,
+     "start": 3959,
+     "text": "For the U.S. economy, my goal is to restore price stability while maintaining a solid labor market."
+    }
+   ],
+   "source": {
+    "chars": 5086,
+    "chars_sent": 5087,
+    "method": "html-selector",
+    "paragraphs_sent": 14,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 854,
+        "paragraph": 6,
+        "start": 737,
+        "text": "Shocks, by their nature, are difficult to predict and vary in length, but we are nonetheless very familiar with them."
+       },
+       {
+        "end": 1546,
+        "paragraph": 6,
+        "start": 1458,
+        "text": "The nature and duration of these shocks influence the approach to monetary policymaking."
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Philip N. Jefferson says shocks are difficult to predict and vary in length, and their nature and duration influence the approach to monetary policymaking."
+    },
+    {
+     "evidence": {
+      "coverage": 0.875,
+      "fragments": [
+       {
+        "end": 1709,
+        "paragraph": 7,
+        "start": 1595,
+        "text": "I must consider whether and how shocks impact both sides of our dual mandate—maximum employment and stable prices."
+       },
+       {
+        "end": 1943,
+        "paragraph": 7,
+        "start": 1874,
+        "text": "When a shock pushes them in opposite directions, there is a tradeoff."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Philip N. Jefferson says he must consider whether and how shocks affect maximum employment and stable prices, and shocks pushing the output gap and inflation in opposite directions create a tradeoff."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2236,
+        "paragraph": 7,
+        "start": 2130,
+        "text": "The appropriate response depends on the relative costs of missing each objective and the balance of risks."
+       }
+      ],
+      "paragraphs": [
+       7
+      ]
+     },
+     "text": "Governor Philip N. Jefferson says the appropriate response to an energy price shock depends on the relative costs of missing each objective and the balance of risks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 2990,
+        "paragraph": 8,
+        "start": 2834,
+        "text": "On the demand side, optimism about the technology has been boosting business investment in data centers, advanced computing equipment, and related products."
+       },
+       {
+        "end": 3148,
+        "paragraph": 8,
+        "start": 2991,
+        "text": "On the supply side, AI is likely to automate some tasks and augment others, which could raise productivity and, in turn, the growth rate of potential output."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governor Philip N. Jefferson says AI adoption has boosted business investment, while AI is likely to automate some tasks and augment others, which could raise productivity and potential output growth."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3228,
+        "paragraph": 8,
+        "start": 3149,
+        "text": "Currently, the AI buildout is exerting upward pressure on demand and inflation."
+       },
+       {
+        "end": 3351,
+        "paragraph": 8,
+        "start": 3229,
+        "text": "In the future, advancements in productivity could exert downward pressure on inflation while continuing to support growth."
+       }
+      ],
+      "paragraphs": [
+       8
+      ]
+     },
+     "text": "Governor Philip N. Jefferson says the AI buildout is exerting upward pressure on demand and inflation, while future productivity advancements could exert downward pressure on inflation and support growth."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3717,
+        "paragraph": 9,
+        "start": 3662,
+        "text": "Energy, trade, and AI shocks are all unfolding at once."
+       },
+       {
+        "end": 4058,
+        "paragraph": 9,
+        "start": 3959,
+        "text": "For the U.S. economy, my goal is to restore price stability while maintaining a solid labor market."
+       }
+      ],
+      "paragraphs": [
+       9
+      ]
+     },
+     "text": "Governor Philip N. Jefferson says energy, trade, and AI shocks are unfolding at once, and his goal for the U.S. economy is to restore price stability while maintaining a solid labor market."
+    }
+   ],
+   "title": "Jefferson, Monetary Policy amid Frequent and Complex Shocks",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/jefferson20261119a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2512,
+    "output_tokens": 916,
+    "reasoning_tokens": 274
+   }
   }
  ],
  "version": 1
