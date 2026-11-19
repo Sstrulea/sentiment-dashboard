@@ -5515,6 +5515,267 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     18,
+     36,
+     38,
+     42,
+     43,
+     44,
+     45
+    ],
+    "paragraphs_sent": 131,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:minutes:2026-10-28",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-19T00:44:15Z",
+   "input_sha256": "678148869ec3bf47f3f9f92fb69c4a9ece75238f6cf8154ac1bd1abb440080bb",
+   "meeting_date": "2026-10-28",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 18452,
+     "point": 3,
+     "source_text": "2 percent",
+     "start": 18443,
+     "text": "2 percent"
+    },
+    {
+     "end": 6427,
+     "point": 4,
+     "source_text": "25 basis point",
+     "start": 6413,
+     "text": "25 basis points"
+    },
+    {
+     "end": 8453,
+     "point": 6,
+     "source_text": "10",
+     "start": 8451,
+     "text": "10"
+    },
+    {
+     "end": 31174,
+     "point": 6,
+     "source_text": "3-3/4",
+     "start": 31169,
+     "text": "3-3/4"
+    },
+    {
+     "end": 31187,
+     "point": 6,
+     "source_text": "4 percent",
+     "start": 31178,
+     "text": "4 percent"
+    },
+    {
+     "end": 6427,
+     "point": 6,
+     "source_text": "25 basis point",
+     "start": 6413,
+     "text": "25 basis points"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-18",
+   "quotes": [
+    {
+     "end": 10830,
+     "paragraph": 18,
+     "start": 10734,
+     "text": "The information available at the time of the meeting indicated that inflation remained elevated."
+    },
+    {
+     "end": 24304,
+     "paragraph": 38,
+     "start": 24126,
+     "text": "Several participants indicated that financial conditions overall remained supportive of continued economic growth, citing elevated equity valuations and broadly available credit."
+    },
+    {
+     "end": 27643,
+     "paragraph": 42,
+     "start": 27488,
+     "text": "In their consideration of monetary policy at this meeting, most participants expressed support for maintaining the target range for the federal funds rate."
+    },
+    {
+     "end": 29390,
+     "paragraph": 43,
+     "start": 29205,
+     "text": "Some participants favored an increase of 25 basis points in the target range at this meeting, emphasizing that inflation had remained too high and that they saw few signs of it abating."
+    },
+    {
+     "end": 32042,
+     "paragraph": 45,
+     "start": 31868,
+     "text": "Two members voted against the decision to maintain the target range for the federal funds rate, preferring an increase of 25 basis points in the target range at this meeting."
+    }
+   ],
+   "source": {
+    "chars": 42046,
+    "chars_sent": 42047,
+    "method": "html-selector",
+    "paragraphs_sent": 131,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 10830,
+        "paragraph": 18,
+        "start": 10734,
+        "text": "The information available at the time of the meeting indicated that inflation remained elevated."
+       },
+       {
+        "end": 10924,
+        "paragraph": 18,
+        "start": 10831,
+        "text": "Labor market conditions continued to be broadly stable with some signs of gradual tightening."
+       },
+       {
+        "end": 10989,
+        "paragraph": 18,
+        "start": 10925,
+        "text": "Real gross domestic product (GDP) was expanding at a solid pace."
+       }
+      ],
+      "paragraphs": [
+       18
+      ]
+     },
+     "text": "The information available at the meeting indicated that inflation remained elevated, labor market conditions were broadly stable with some gradual tightening, and real GDP was expanding at a solid pace."
+    },
+    {
+     "evidence": {
+      "coverage": 0.917,
+      "fragments": [
+       {
+        "end": 24304,
+        "paragraph": 38,
+        "start": 24126,
+        "text": "Several participants indicated that financial conditions overall remained supportive of continued economic growth, citing elevated equity valuations and broadly available credit."
+       },
+       {
+        "end": 24585,
+        "paragraph": 38,
+        "start": 24305,
+        "text": "However, a majority of participants noted a tightening in financial conditions since the September meeting, citing higher mortgage interest rates as well as wider credit spreads for some higher-risk and AI-related borrowers and reduced issuance, particularly by lower-rated firms."
+       }
+      ],
+      "paragraphs": [
+       38
+      ]
+     },
+     "text": "Several participants said financial conditions remained supportive of continued economic growth, while a majority noted tighter conditions since the September meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21817,
+        "paragraph": 36,
+        "start": 21647,
+        "text": "Most participants expected inflation to remain elevated in the near term but to decline over time toward 2 percent, reflecting the waning of tariff-related price effects,"
+       },
+       {
+        "end": 22092,
+        "paragraph": 36,
+        "start": 21942,
+        "text": "The vast majority saw upside risks to this outlook, citing higher energy prices and continued supply constraints with regard to refined fuel products."
+       }
+      ],
+      "paragraphs": [
+       36
+      ]
+     },
+     "text": "Most participants expected inflation to remain elevated in the near term but to decline over time toward 2 percent, while the vast majority saw upside risks to this outlook."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 27643,
+        "paragraph": 42,
+        "start": 27547,
+        "text": "most participants expressed support for maintaining the target range for the federal funds rate."
+       },
+       {
+        "end": 29390,
+        "paragraph": 43,
+        "start": 29205,
+        "text": "Some participants favored an increase of 25 basis points in the target range at this meeting, emphasizing that inflation had remained too high and that they saw few signs of it abating."
+       }
+      ],
+      "paragraphs": [
+       42,
+       43
+      ]
+     },
+     "text": "Most participants supported maintaining the federal funds rate target range, while some favored an increase of 25 basis points at this meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 30464,
+        "paragraph": 44,
+        "start": 30196,
+        "text": "almost all participants judged that, under their baseline outlooks for inflation and the labor market, further action to raise the target range for the federal funds rate—broadly consistent with the September Summary of Economic Projections—would likely be appropriate"
+       }
+      ],
+      "paragraphs": [
+       44
+      ]
+     },
+     "text": "Almost all participants judged that further action to raise the target range would likely be appropriate under their baseline outlooks for inflation and the labor market."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 31187,
+        "paragraph": 45,
+        "start": 31092,
+        "text": "10 members agreed to maintain the target range for the federal funds rate at 3-3/4 to 4 percent"
+       },
+       {
+        "end": 32042,
+        "paragraph": 45,
+        "start": 31868,
+        "text": "Two members voted against the decision to maintain the target range for the federal funds rate, preferring an increase of 25 basis points in the target range at this meeting."
+       }
+      ],
+      "paragraphs": [
+       45
+      ]
+     },
+     "text": "10 members agreed to maintain the target range for the federal funds rate at 3-3/4 to 4 percent, and two members voted against the decision, preferring an increase of 25 basis points."
+    }
+   ],
+   "title": "Federal Reserve minutes of the 28 October 2026 meeting",
+   "type": "minutes",
+   "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 19929,
+    "output_tokens": 2340,
+    "reasoning_tokens": 725
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      9,
      10,
      14,

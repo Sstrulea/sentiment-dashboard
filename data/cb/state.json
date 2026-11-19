@@ -230,6 +230,10 @@
       "last_modified": "Wed, 07 Oct 2026 18:00:16 GMT",
       "sha256": "7c7aac7c2653810277e9b8908a18c003b44632285db3fd75de1c40bd68231469"
     },
+    "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm": {
+      "last_modified": "Wed, 18 Nov 2026 19:00:12 GMT",
+      "sha256": "678148869ec3bf47f3f9f92fb69c4a9ece75238f6cf8154ac1bd1abb440080bb"
+    },
     "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm": {
       "last_modified": "Wed, 29 Apr 2026 18:00:15 GMT"
     },
@@ -253,7 +257,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Tue, 17 Nov 2026 22:02:03 GMT"
+    "last_modified": "Wed, 18 Nov 2026 21:57:57 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -279,30 +283,30 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Tue, 17 Nov 2026 22:02:03 GMT"
+    "last_modified": "Wed, 18 Nov 2026 21:57:57 GMT"
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-18T18:43:38Z",
+      "at": "2026-11-19T00:44:15Z",
       "calls": 2,
-      "cost_usd": 0.0224,
+      "cost_usd": 0.0679,
       "failed_validation": 0,
-      "input_tokens": 3931,
-      "new": 2,
+      "input_tokens": 19929,
+      "new": 1,
       "no_text": 0,
-      "output_tokens": 1212,
+      "output_tokens": 2340,
       "pending": 0,
-      "reasoning_tokens": 296,
+      "reasoning_tokens": 725,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 139,
+      "unchanged": 141,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 258,
-      "input_tokens": 1649437,
-      "output_tokens": 291059,
-      "summaries": 172
+      "calls": 260,
+      "input_tokens": 1669366,
+      "output_tokens": 293399,
+      "summaries": 173
     }
   }
 }
