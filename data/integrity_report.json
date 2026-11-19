@@ -1,5 +1,5 @@
 {
- "as_of": "2026-11-15T12:06:31.887444",
+ "as_of": "2026-11-19T19:06:10.638272",
  "checks": {
   "release_conflict": {
    "findings": []
@@ -494,8 +494,8 @@
      "next_previous": -1.4,
      "next_from": "parquet",
      "diff": 13.2,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
+     "tolerance": 9.58887,
+     "threshold": 9.58887,
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
@@ -516,25 +516,6 @@
      "tolerance": 0.1,
      "threshold": 0.2,
      "n_revision_pairs": 41,
-     "level": "INFO",
-     "new": false
-    },
-    {
-     "canonical_id": "cad_ippi",
-     "currency": "CAD",
-     "indicator_key": "ppi_yoy",
-     "name_raw": "IPPI m/m",
-     "release_dt": "2023-09-18T12:30:00",
-     "kind": "value",
-     "scored_actual": 1.3,
-     "scored_source": "ff",
-     "next_release_dt": "2023-10-19T12:30:00",
-     "next_previous": 1.9,
-     "next_from": "parquet",
-     "diff": 0.6,
-     "tolerance": 0.59478,
-     "threshold": 0.59478,
-     "n_revision_pairs": 42,
      "level": "INFO",
      "new": false
     },
@@ -570,8 +551,8 @@
      "next_previous": 42.7,
      "next_from": "parquet",
      "diff": -12.3,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
+     "tolerance": 9.58887,
+     "threshold": 9.58887,
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
@@ -627,8 +608,8 @@
      "next_previous": 72.6,
      "next_from": "parquet",
      "diff": 11.1,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
+     "tolerance": 9.58887,
+     "threshold": 9.58887,
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
@@ -798,8 +779,8 @@
      "next_previous": 15.3,
      "next_from": "parquet",
      "diff": 14.8,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
+     "tolerance": 9.58887,
+     "threshold": 9.58887,
      "n_revision_pairs": 44,
      "level": "INFO",
      "new": false
@@ -1634,8 +1615,8 @@
      "next_previous": -40.7,
      "next_from": "parquet",
      "diff": -22.1,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
+     "tolerance": 9.58887,
+     "threshold": 9.58887,
      "n_revision_pairs": 44,
      "level": "WARN",
      "new": false
@@ -1786,8 +1767,8 @@
      "next_previous": 29.3,
      "next_from": "parquet",
      "diff": -10.2,
-     "tolerance": 10.07843,
-     "threshold": 10.07843,
+     "tolerance": 9.58887,
+     "threshold": 9.58887,
      "n_revision_pairs": 44,
      "level": "WARN",
      "new": false
@@ -1832,19 +1813,19 @@
     }
    ],
    "findings_by_source": {
-    "ff": 78,
+    "ff": 77,
     "manual": 16,
     "quarantined": 2
    },
    "findings_by_kind": {
-    "value": 80,
+    "value": 79,
     "zero": 16
    },
    "n_checked": 3483,
    "n_series": 107,
-   "n_scored_zero": 100,
+   "n_scored_zero": 101,
    "formula": "a = |previous[i+1] - actual[i]| over the series' pairs with actual[i] != 0; tol = median(a) + 3*1.4826*MAD(a) (0 if no pairs); flag effective actual[i] with |previous[i+1] - actual[i]| > tol (kind zero) or max(tol, 2*resolution) (kind value)",
-   "weekly_feed": "ff_weekly_2026-11-15.json"
+   "weekly_feed": "ff_weekly_2026-11-19.json"
   },
   "missing_release": {
    "findings": [
@@ -2272,12 +2253,12 @@
   },
   "previous_consistency": {
    "WARN": 21,
-   "INFO": 75
+   "INFO": 74
   },
   "missing_release": {
    "WARN": 0,
    "INFO": 30
   }
  },
- "generated_at": "2026-11-15T12:06:38+00:00"
+ "generated_at": "2026-11-19T19:06:21+00:00"
 }
