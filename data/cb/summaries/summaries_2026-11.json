@@ -6987,6 +6987,285 @@
     "output_tokens": 916,
     "reasoning_tokens": 274
    }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     6,
+     10,
+     21,
+     23,
+     26,
+     28
+    ],
+    "paragraphs_sent": 40,
+    "truncated": false
+   },
+   "currency": "USD",
+   "doc_id": "USD:speech:da9cc5ebd5f3",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-20T18:43:33Z",
+   "input_sha256": "3f0c7522bf0c3c7353a3d9a7c23b0e24438329cdba366d0d5b98cff6c25d13ef",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 9720,
+     "point": 3,
+     "source_text": "12",
+     "start": 9718,
+     "text": "12"
+    },
+    {
+     "end": 9772,
+     "point": 3,
+     "source_text": "3.8 percent",
+     "start": 9761,
+     "text": "3.8 percent"
+    },
+    {
+     "end": 9720,
+     "point": 3,
+     "source_text": "12",
+     "start": 9718,
+     "text": "12"
+    },
+    {
+     "end": 9880,
+     "point": 3,
+     "source_text": "3.2 percent",
+     "start": 9869,
+     "text": "3.2 percent"
+    },
+    {
+     "end": 11407,
+     "point": 4,
+     "source_text": "4.1 percent",
+     "start": 11396,
+     "text": "4.1 percent"
+    },
+    {
+     "end": 11712,
+     "point": 4,
+     "source_text": "165,000",
+     "start": 11705,
+     "text": "165,000"
+    },
+    {
+     "end": 11865,
+     "point": 4,
+     "source_text": "7.5",
+     "start": 11862,
+     "text": "7.5"
+    },
+    {
+     "end": 13382,
+     "point": 5,
+     "source_text": "1/4 percentage point",
+     "start": 13362,
+     "text": "1/4 percentage point"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-20",
+   "quotes": [
+    {
+     "end": 1451,
+     "paragraph": 6,
+     "start": 1282,
+     "text": "But achieving that mandate requires that I pay careful attention to global developments, including economic and financial developments in Chile and across Latin America."
+    },
+    {
+     "end": 4290,
+     "paragraph": 10,
+     "start": 4214,
+     "text": "This technology could bring a productivity boom unparalleled in generations."
+    },
+    {
+     "end": 9784,
+     "paragraph": 21,
+     "start": 9644,
+     "text": "Based on U.S. inflation data released last week, it is estimated that the 12-month change in the PCE price index was 3.8 percent in October."
+    },
+    {
+     "end": 13383,
+     "paragraph": 26,
+     "start": 13284,
+     "text": "I dissented from that decision. I preferred to raise the target range another 1/4 percentage point."
+    },
+    {
+     "end": 14400,
+     "paragraph": 28,
+     "start": 14313,
+     "text": "Furthermore, waiting longer to implement rate increases risks getting behind the curve."
+    }
+   ],
+   "source": {
+    "chars": 20380,
+    "chars_sent": 20381,
+    "method": "html-selector",
+    "paragraphs_sent": 40,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 1281,
+        "paragraph": 6,
+        "start": 1187,
+        "text": "my mandate is domestic—to promote maximum employment and price stability in the United States."
+       },
+       {
+        "end": 1369,
+        "paragraph": 6,
+        "start": 1286,
+        "text": "achieving that mandate requires that I pay careful attention to global developments"
+       }
+      ],
+      "paragraphs": [
+       6
+      ]
+     },
+     "text": "Governor Lisa D. Cook says her mandate is domestic—to promote maximum employment and price stability in the United States—but achieving it requires attention to global developments."
+    },
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 4150,
+        "paragraph": 10,
+        "start": 4036,
+        "text": "a general-purpose technology, on par with or perhaps exceeding the steam engine, electrification, and the internet"
+       },
+       {
+        "end": 4475,
+        "paragraph": 10,
+        "start": 4310,
+        "text": "I worry deeply about our shared risks resulting from the technology, such as the specter of a painful labor market transition or cyber and financial-stability risks."
+       }
+      ],
+      "paragraphs": [
+       10
+      ]
+     },
+     "text": "Governor Lisa D. Cook describes AI as a general-purpose technology with potential to transform work, innovation, and growth, while worrying about labor-market, cyber, and financial-stability risks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9784,
+        "paragraph": 21,
+        "start": 9693,
+        "text": "it is estimated that the 12-month change in the PCE price index was 3.8 percent in October."
+       },
+       {
+        "end": 9892,
+        "paragraph": 21,
+        "start": 9785,
+        "text": "The 12-month change in core prices—which exclude volatile food and energy costs—was 3.2 percent in October."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Governor Lisa D. Cook reports that the estimated 12-month change in the PCE price index was 3.8 percent in October, while the 12-month change in core prices was 3.2 percent."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11467,
+        "paragraph": 23,
+        "start": 11370,
+        "text": "The unemployment rate was 4.1 percent in October and has trended down modestly for nearly a year."
+       },
+       {
+        "end": 11809,
+        "paragraph": 23,
+        "start": 11685,
+        "text": "Payrolls climbed by 165,000 in October, and some evidence is emerging that hiring is broadening to a wider array of sectors."
+       },
+       {
+        "end": 11873,
+        "paragraph": 23,
+        "start": 11810,
+        "text": "Job openings in September were largely unchanged at 7.5 million"
+       }
+      ],
+      "paragraphs": [
+       23
+      ]
+     },
+     "text": "Governor Lisa D. Cook says the unemployment rate was 4.1 percent in October, payrolls climbed by 165,000, and job openings in September were largely unchanged at 7.5 million."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 13315,
+        "paragraph": 26,
+        "start": 13192,
+        "text": "At the most recent meeting, in October, the Committee voted to hold the policy rate steady. I dissented from that decision."
+       },
+       {
+        "end": 13383,
+        "paragraph": 26,
+        "start": 13316,
+        "text": "I preferred to raise the target range another 1/4 percentage point."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Governor Lisa D. Cook says she dissented from the October decision to hold the policy rate steady and preferred to raise the target range another 1/4 percentage point."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 14189,
+        "paragraph": 28,
+        "start": 14122,
+        "text": "Inflation has been above target for more than five and a half years"
+       },
+       {
+        "end": 14400,
+        "paragraph": 28,
+        "start": 14326,
+        "text": "waiting longer to implement rate increases risks getting behind the curve."
+       }
+      ],
+      "paragraphs": [
+       28
+      ]
+     },
+     "text": "Governor Lisa D. Cook says inflation has been above target for more than five and a half years and that waiting longer to implement rate increases risks getting behind the curve."
+    }
+   ],
+   "title": "Cook, The U.S. Economy in Global Context",
+   "type": "speech",
+   "url": "https://www.federalreserve.gov/newsevents/speech/cook20261120a.htm",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 5723,
+    "output_tokens": 1271,
+    "reasoning_tokens": 516
+   }
   }
  ],
  "version": 1
