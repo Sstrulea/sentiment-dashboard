@@ -1,0 +1,1430 @@
+{
+ "asof": "2026-10-30",
+ "currencies": {
+  "AUD": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "category_mean_beta": {
+      "Growth": 0.263806,
+      "Inflation": 2.467465,
+      "Labor": 0.127284
+     },
+     "const": 0.542106,
+     "gamma_us": 0.171866,
+     "indicators": {
+      "cpi_yoy": {
+       "beta": 2.467465,
+       "beta_cat": 2.467465,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 22,
+       "raw": 2.467465,
+       "se": 1.068698,
+       "w": 0.647059
+      },
+      "employment_change": {
+       "beta": 2.90531,
+       "beta_cat": 2.800979,
+       "category": "Labor",
+       "direction": 1.0,
+       "n": 24,
+       "raw": 2.957476,
+       "se": 1.068144,
+       "w": 0.666667
+      },
+      "gdp_qoq": {
+       "beta": 0.212611,
+       "beta_cat": 0.277079,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 8,
+       "raw": 0.115908,
+       "se": 1.44288,
+       "w": 0.4
+      },
+      "retail_sales": {
+       "beta": 0.315001,
+       "beta_cat": 0.277079,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 22,
+       "raw": 0.335686,
+       "se": 1.048383,
+       "w": 0.647059
+      },
+      "unemployment_rate": {
+       "beta": -2.650743,
+       "beta_cat": -2.800979,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 13,
+       "raw": -2.512063,
+       "se": 1.193228,
+       "w": 0.52
+      }
+     },
+     "n_days": 104
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 8.55113,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "beta_usd": 0.811597,
+     "n": 216,
+     "n_usd": 239,
+     "t": 1.28,
+     "t_usd": 1.7357
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 0.572535,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 27.416072,
+    "z": 0.313699
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 8.598673,
+    "z": 0.07414
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "n_resid": 131
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 0.96326,
+    "z": 0.087946
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "due": {
+      "employment_change": 3.017461,
+      "unemployment_rate": 2.806403
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 5.823864,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "shares": {
+      "Growth": 0.061701,
+      "Inflation": 0.288554,
+      "Labor": 0.649745,
+      "Rates": 0.0
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.649745,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "now": 0.649745,
+     "then": 0.620395
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.02935,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   }
+  },
+  "CAD": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "category_mean_beta": {
+      "Growth": 1.110902,
+      "Inflation": 1.447406,
+      "Labor": 0.39878
+     },
+     "const": -1.474551,
+     "gamma_us": 0.597544,
+     "indicators": {
+      "core_cpi": {
+       "beta": 0.944968,
+       "beta_cat": 1.438271,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 16,
+       "raw": 0.574991,
+       "se": 1.052823,
+       "w": 0.571429
+      },
+      "employment_change": {
+       "beta": 2.019877,
+       "beta_cat": 1.644555,
+       "category": "Labor",
+       "direction": 1.0,
+       "n": 24,
+       "raw": 2.207539,
+       "se": 0.70643,
+       "w": 0.666667
+      },
+      "gdp_qoq": {
+       "beta": 1.110902,
+       "beta_cat": 1.110902,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 18,
+       "raw": 1.110902,
+       "se": 0.702968,
+       "w": 0.6
+      },
+      "trimmed_cpi_yoy": {
+       "beta": 1.949844,
+       "beta_cat": 1.438271,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 15,
+       "raw": 2.359102,
+       "se": 1.004401,
+       "w": 0.555556
+      },
+      "unemployment_rate": {
+       "beta": -1.222317,
+       "beta_cat": -1.644555,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 20,
+       "raw": -0.968974,
+       "se": 0.760239,
+       "w": 0.625
+      }
+     },
+     "n_days": 82
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-19",
+    "status": "context",
+    "value": 7.247907,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "beta_usd": 2.699624,
+     "n": 216,
+     "n_usd": 239,
+     "t": 3.4054,
+     "t_usd": 5.8377
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 1.508611,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [
+      "CAD:core_cpi:2026-10-19T1230",
+      "CAD:trimmed_cpi_yoy:2026-10-19T1230"
+     ],
+     "intensity": 2.208543
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 2.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 66.465325,
+    "z": 1.191716
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 56.313347,
+    "z": 0.769679
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "n_resid": 126
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 18.325504,
+    "z": 3.038312
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "due": {
+      "employment_change": 2.093762,
+      "gdp_qoq": 1.217708,
+      "unemployment_rate": 1.304257
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 4.615727,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "shares": {
+      "Growth": 0.153272,
+      "Inflation": 0.3994,
+      "Labor": 0.447328,
+      "Rates": 0.0
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.447328,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "now": 0.447328,
+     "then": 0.375606
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.071722,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   }
+  },
+  "CHF": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "reason": "CHF 2Y is monthly (SNB rendoblid: daily values published with M+2 lag; last value 2025-07-31)"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "reason": "CHF 2Y is monthly (SNB rendoblid: daily values published with M+2 lag; last value 2025-07-31)"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-09-08",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {
+     "reason": "input node missing: beta_rates_fx"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {
+     "reason": "input node missing: beta_rates_fx"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "reason": "CHF 2Y is monthly (SNB rendoblid: daily values published with M+2 lag; last value 2025-07-31)"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "reason": "input node missing: beta_data_rates"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "reason": "input node missing: beta_data_rates"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "reason": "input node missing: beta_data_rates"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-09-08",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   }
+  },
+  "EUR": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "category_mean_beta": {
+      "Growth": -0.251606,
+      "Inflation": 1.055094,
+      "Labor": -0.352143
+     },
+     "const": -1.081706,
+     "gamma_us": 0.330294,
+     "indicators": {
+      "core_cpi": {
+       "beta": 0.911691,
+       "beta_cat": 1.038548,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 17,
+       "raw": 0.822145,
+       "se": 1.221242,
+       "w": 0.586207
+      },
+      "cpi_yoy": {
+       "beta": 1.198497,
+       "beta_cat": 1.038548,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 11,
+       "raw": 1.372988,
+       "se": 1.048761,
+       "w": 0.478261
+      },
+      "gdp_qoq": {
+       "beta": 0.555946,
+       "beta_cat": -0.388737,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 10,
+       "raw": 1.689566,
+       "se": 1.103473,
+       "w": 0.454545
+      },
+      "retail_sales": {
+       "beta": -1.059158,
+       "beta_cat": -0.388737,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 19,
+       "raw": -1.482581,
+       "se": 0.634674,
+       "w": 0.612903
+      },
+      "unemployment_rate": {
+       "beta": -0.352143,
+       "beta_cat": -0.352143,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 17,
+       "raw": -0.352143,
+       "se": 0.734472,
+       "w": 0.586207
+      }
+     },
+     "n_days": 80
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-02",
+    "status": "context",
+    "value": 4.077435,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "beta_usd": -0.085276,
+     "n": 216,
+     "n_usd": 241,
+     "t": 1.9346,
+     "t_usd": -0.1789
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 0.758611,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": -108.550456,
+    "z": -2.067886
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": -171.268156,
+    "z": -2.552914
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "n_resid": 110
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": -16.715905,
+    "z": -2.067899
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "due": {
+      "gdp_qoq": 0.511491,
+      "unemployment_rate": 0.378952
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.890443,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "shares": {
+      "Growth": 0.396108,
+      "Inflation": 0.517528,
+      "Labor": 0.086364,
+      "Rates": 0.0
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.086364,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "now": 0.086364,
+     "then": 0.108609
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": -0.022245,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [
+      "EUR:cpi_yoy:2026-10-02T0900"
+     ],
+     "intensity": 1.00381
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 1.0,
+    "z": null
+   }
+  },
+  "GBP": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "category_mean_beta": {
+      "Growth": 0.623298,
+      "Inflation": 1.952134,
+      "Labor": -0.796058
+     },
+     "const": -1.549069,
+     "gamma_us": 0.343845,
+     "indicators": {
+      "core_cpi": {
+       "beta": 1.783437,
+       "beta_cat": 1.949275,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 18,
+       "raw": 1.672879,
+       "se": 1.276534,
+       "w": 0.6
+      },
+      "cpi_yoy": {
+       "beta": 2.120831,
+       "beta_cat": 1.949275,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 17,
+       "raw": 2.24193,
+       "se": 1.14835,
+       "w": 0.586207
+      },
+      "employment_change": {
+       "beta": -1.636764,
+       "beta_cat": -1.726972,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 23,
+       "raw": -1.589699,
+       "se": 1.056447,
+       "w": 0.657143
+      },
+      "gdp_qoq": {
+       "beta": 0.623298,
+       "beta_cat": 0.623298,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 20,
+       "raw": 0.623298,
+       "se": 0.731034,
+       "w": 0.625
+      },
+      "unemployment_rate": {
+       "beta": -2.197693,
+       "beta_cat": -1.726972,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 12,
+       "raw": -2.668413,
+       "se": 0.879344,
+       "w": 0.5
+      },
+      "wage_growth": {
+       "beta": 1.446281,
+       "beta_cat": 1.726972,
+       "category": "Labor",
+       "direction": 1.0,
+       "n": 17,
+       "raw": 1.248147,
+       "se": 0.707004,
+       "w": 0.586207
+      }
+     },
+     "n_days": 83
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-21",
+    "status": "context",
+    "value": 9.808304,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "beta_usd": -1.029065,
+     "n": 216,
+     "n_usd": 240,
+     "t": 1.6753,
+     "t_usd": -2.2151
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 0.597204,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-21",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 20.313763,
+    "z": 0.33559
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 67.301206,
+    "z": 0.810227
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "n_resid": 124
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-21",
+    "status": "context",
+    "value": -1.179515,
+    "z": -0.102913
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "due": {}
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "shares": {
+      "Growth": 0.063548,
+      "Inflation": 0.398057,
+      "Labor": 0.538395,
+      "Rates": 0.0
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.538395,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "now": 0.538395,
+     "then": 0.489693
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.048701,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-21",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   }
+  },
+  "JPY": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "category_mean_beta": {
+      "Growth": 1.119598,
+      "Inflation": 0.265879,
+      "Labor": -0.426022
+     },
+     "const": 0.074935,
+     "gamma_us": 0.094659,
+     "indicators": {
+      "cpi_yoy": {
+       "beta": 0.255685,
+       "beta_cat": 0.267285,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 13,
+       "raw": 0.244977,
+       "se": 0.327259,
+       "w": 0.52
+      },
+      "gdp_qoq": {
+       "beta": 1.119598,
+       "beta_cat": 1.119598,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 9,
+       "raw": 1.119598,
+       "se": 0.880511,
+       "w": 0.428571
+      },
+      "tokyo_core_cpi_yoy": {
+       "beta": 0.276073,
+       "beta_cat": 0.267285,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 21,
+       "raw": 0.281095,
+       "se": 0.331932,
+       "w": 0.636364
+      },
+      "unemployment_rate": {
+       "beta": -0.426022,
+       "beta_cat": -0.426022,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 15,
+       "raw": -0.426022,
+       "se": 0.388159,
+       "w": 0.555556
+      }
+     },
+     "n_days": 79
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 2.077378,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "beta_usd": 2.677568,
+     "n": 216,
+     "n_usd": 228,
+     "t": 1.4987,
+     "t_usd": 4.1595
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 1.135591,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": -6.533216,
+    "z": -0.049653
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 8.106032,
+    "z": 0.047774
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "n_resid": 108
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": -3.310645,
+    "z": -1.161222
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "due": {}
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "shares": {
+      "Growth": 0.538948,
+      "Inflation": 0.255976,
+      "Labor": 0.205077,
+      "Rates": 0.0
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.205077,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "now": 0.205077,
+     "then": 0.048947
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.15613,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   }
+  },
+  "NZD": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "reason": "no NZD 2Y: RBNZ B2 is behind a Cloudflare wall (HTTP 403), not bypassed"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "reason": "no NZD 2Y: RBNZ B2 is behind a Cloudflare wall (HTTP 403), not bypassed"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {
+     "reason": "input node missing: beta_rates_fx"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {
+     "reason": "input node missing: beta_rates_fx"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "reason": "no NZD 2Y: RBNZ B2 is behind a Cloudflare wall (HTTP 403), not bypassed"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "reason": "input node missing: beta_data_rates"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "reason": "input node missing: beta_data_rates"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "reason": "input node missing: beta_data_rates"
+    },
+    "quality": "missing",
+    "source_last_date": null,
+    "status": "context",
+    "value": null,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [],
+     "intensity": 0.0
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 0.0,
+    "z": null
+   }
+  },
+  "USD": {
+   "beta_data_rates": {
+    "asof": "2026-10-30",
+    "id": "beta_data_rates",
+    "meta": {
+     "category_mean_beta": {
+      "Growth": 1.715942,
+      "Inflation": 1.538722,
+      "Labor": 0.796983
+     },
+     "const": 0.820454,
+     "gamma_us": 0.0,
+     "indicators": {
+      "core_cpi": {
+       "beta": 1.271923,
+       "beta_cat": 1.543403,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 16,
+       "raw": 1.068313,
+       "se": 1.27017,
+       "w": 0.571429
+      },
+      "cpi_yoy": {
+       "beta": 1.805521,
+       "beta_cat": 1.543403,
+       "category": "Inflation",
+       "direction": 1.0,
+       "n": 17,
+       "raw": 1.990546,
+       "se": 1.212149,
+       "w": 0.586207
+      },
+      "employment_change": {
+       "beta": 2.712075,
+       "beta_cat": 2.420242,
+       "category": "Labor",
+       "direction": 1.0,
+       "n": 23,
+       "raw": 2.864336,
+       "se": 1.144815,
+       "w": 0.657143
+      },
+      "gdp_qoq": {
+       "beta": 1.957077,
+       "beta_cat": 1.658946,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 9,
+       "raw": 2.354585,
+       "se": 2.362085,
+       "w": 0.428571
+      },
+      "retail_sales": {
+       "beta": 1.474806,
+       "beta_cat": 1.658946,
+       "category": "Growth",
+       "direction": 1.0,
+       "n": 22,
+       "raw": 1.374366,
+       "se": 1.181702,
+       "w": 0.647059
+      },
+      "unemployment_rate": {
+       "beta": -2.385055,
+       "beta_cat": -2.420242,
+       "category": "Labor",
+       "direction": -1.0,
+       "n": 15,
+       "raw": -2.356906,
+       "se": 1.273807,
+       "w": 0.555556
+      },
+      "wage_growth": {
+       "beta": 2.063929,
+       "beta_cat": 2.420242,
+       "category": "Labor",
+       "direction": 1.0,
+       "n": 14,
+       "raw": 1.758519,
+       "se": 1.162942,
+       "w": 0.538462
+      }
+     },
+     "n_days": 92
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-15",
+    "status": "context",
+    "value": 13.670387,
+    "z": null
+   },
+   "beta_rates_fx": {
+    "asof": "2026-10-30",
+    "id": "beta_rates_fx",
+    "meta": {
+     "n": 216,
+     "t": 0.9547
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": 0.553465,
+    "z": null
+   },
+   "bngp_4w": {
+    "asof": "2026-10-30",
+    "id": "bngp_4w",
+    "meta": {
+     "events": [
+      "USD:unemployment_rate:2026-10-02T1230",
+      "USD:wage_growth:2026-10-02T1230"
+     ],
+     "intensity": 2.956353
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 2.0,
+    "z": null
+   },
+   "digest_fx_10d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_10d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": -115.738626,
+    "z": -1.127522
+   },
+   "digest_fx_20d": {
+    "asof": "2026-10-30",
+    "id": "digest_fx_20d",
+    "meta": {},
+    "quality": "ok",
+    "source_last_date": "2026-10-23",
+    "status": "context",
+    "value": -15.046342,
+    "z": -0.100177
+   },
+   "digest_rates_4w": {
+    "asof": "2026-10-30",
+    "id": "digest_rates_4w",
+    "meta": {
+     "n_resid": 132
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 2.339612,
+    "z": 0.227442
+   },
+   "event_risk_2w": {
+    "asof": "2026-10-30",
+    "id": "event_risk_2w",
+    "meta": {
+     "due": {
+      "retail_sales": 1.58943
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 1.58943,
+    "z": null
+   },
+   "focus_map": {
+    "asof": "2026-10-30",
+    "id": "focus_map",
+    "meta": {
+     "shares": {
+      "Growth": 0.251045,
+      "Inflation": 0.225118,
+      "Labor": 0.523837,
+      "Rates": 0.0
+     }
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": 0.523837,
+    "z": null
+   },
+   "focus_shift_labor_3m": {
+    "asof": "2026-10-30",
+    "id": "focus_shift_labor_3m",
+    "meta": {
+     "now": 0.523837,
+     "then": 0.550475
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-29",
+    "status": "context",
+    "value": -0.026638,
+    "z": null
+   },
+   "gnbp_4w": {
+    "asof": "2026-10-30",
+    "id": "gnbp_4w",
+    "meta": {
+     "events": [
+      "USD:core_cpi:2026-10-14T1230",
+      "USD:retail_sales:2026-10-15T1230"
+     ],
+     "intensity": 2.775985
+    },
+    "quality": "ok",
+    "source_last_date": "2026-10-28",
+    "status": "context",
+    "value": 2.0,
+    "z": null
+   }
+  }
+ },
+ "inputs_fingerprint": "c5d9f75cfc609fdf",
+ "layer_id": "reaction",
+ "status": "uncalibrated"
+}

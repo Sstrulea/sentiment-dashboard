@@ -1,0 +1,59 @@
+{
+ "george_banks": {
+  "n_pending": 0,
+  "n_scored": 0,
+  "rows": []
+ },
+ "george_fx": {
+  "n": 0,
+  "rows": []
+ },
+ "inputs": {
+  "cftc_legacy.parquet": {
+   "age_days": 10,
+   "last": "2026-10-27",
+   "stale": false
+  },
+  "cftc_tff.parquet": {
+   "age_days": 10,
+   "last": "2026-10-27",
+   "stale": false
+  },
+  "h10_fx.parquet": {
+   "age_days": 7,
+   "last": "2026-10-30",
+   "stale": false
+  },
+  "p5_bci.parquet": {
+   "age_days": 37,
+   "last": "2026-09-30",
+   "stale": false
+  },
+  "p5_bis_policy.parquet": {
+   "age_days": 3,
+   "last": "2026-11-03",
+   "stale": false
+  },
+  "p5_ctot.parquet": {
+   "age_days": 159,
+   "last": "2026-05-31",
+   "stale": false
+  },
+  "p5_ecb_fx.parquet": {
+   "age_days": 1,
+   "last": "2026-11-05",
+   "stale": false
+  },
+  "p5_oecd_components.parquet": {
+   "age_days": 36,
+   "last": "202610",
+   "stale": false
+  }
+ },
+ "scored_at": "2026-11-06T06:18:14Z",
+ "sources": [],
+ "y2_missing": [
+  "CHF",
+  "NZD"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "cftc_legacy.parquet": {
+  "refreshed_at": "2026-11-06T06:14:12Z",
+  "rows": 12421
+ },
+ "cftc_tff.parquet": {
+  "refreshed_at": "2026-11-06T06:14:12Z",
+  "rows": 8509
+ },
+ "h10_fx.parquet": {
+  "refreshed_at": "2026-11-06T06:14:12Z",
+  "rows": 90956
+ },
+ "p5_bis_policy.parquet": {
+  "refreshed_at": "2026-11-06T06:14:12Z",
+  "rows": 145964
+ },
+ "p5_ctot.parquet": {
+  "refreshed_at": "2026-11-06T06:15:11Z",
+  "rows": 7335
+ },
+ "p5_ecb_fx.parquet": {
+  "refreshed_at": "2026-11-06T06:14:12Z",
+  "rows": 104646
+ }
+}

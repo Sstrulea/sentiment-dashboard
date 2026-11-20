@@ -1,0 +1,84 @@
+# Pre-registration — phase 5 (feat/macro-composite). Attempt #5 in docs/eval/attempts.md: the single test.
+# Exception to the stop rule of attempt #4, approved by George on 2026-11-06: hypotheses from external
+# publications (Macrosynergy / JPMaQS; Menkhoff, Sarno, Schmeling & Schrimpf 2012; Cenedese, Sarno &
+# Tsiakas 2014), new data (unrevised OECD editions), a universe almost twice as large. After #5 no new
+# hypothesis is tested on history; everything else goes through the registry.
+# Committed after the data inventory and BEFORE any forward return; scripts/measure/phase5.py refuses
+# to run while this file has uncommitted changes.
+id: phase5
+written: 2026-11-06
+attempt: 5
+frozen_with_this_commit: [src/tree/composite.py, scripts/research/fetch_oecd_editions.py, scripts/research/build_oecd_editions.py,
+                          scripts/research/fetch_phase5_inputs.py, scripts/measure/phase5.py,
+                          data/research/p5_oecd_components.parquet, data/research/p5_bci.parquet, data/research/p5_ctot.parquet,
+                          data/research/p5_ecb_fx.parquet, data/research/p5_bis_policy.parquet,
+                          data/research/composite_panel.parquet, data/research/composite_panel_weekly.parquet]
+
+universe:
+  all15: [USD, EUR, GBP, JPY, CAD, AUD, NZD, CHF, NOK, SEK, MXN, KRW, PLN, CZK, HUF]
+  developed: [USD, EUR, GBP, JPY, CAD, AUD, NZD, CHF, NOK, SEK]
+  emerging: [MXN, KRW, PLN, CZK, HUF]
+  inputs:
+    oecd_editions: "OECD.SDD.STES DF_STES_REVISIONS 4.0, EMP (PS) UNEMP (PT_LF) EX IM (XDC), activity _T, all editions 199902-202610; euro area = widest EA code in each edition (EA20 > EA19 > EA18 > EA11)"
+    bci: "OECD DF_CLI 4.1 BCICP AA, current vintage"
+    tot: "IMF.RES CTOT 5.0.1 CEMPI_CTOTXM_GDP R_RW_IX monthly (net export prices, net exports / GDP, time-varying weights; last month 2026-05); euro area = DEU FRA ITA ESP NLD weighted by World Bank 2015 GDP (USD)"
+    fx: "ECB eurofxref-hist (14:15 CET), converted to log value in USD; MXN from 2008-01-02"
+    rates: "BIS WS_CBPOL daily, last value carried forward (the JP series has no observations 2001-03 -> 2006-03 and 2013-04 -> 2016-09, when the BoJ had no rate target; its last value, 0.15 / 0.05, is carried)"
+  data_check: "monthly G8 returns ECB vs FRED H.10: correlation 0.976-0.988 (2000-2026)"
+
+timing:
+  signal: "last ECB business day of month t"
+  macro: "latest OECD edition with EDITION <= t (YYYYMM), its own history"
+  bci_tot: "months <= t-1 (CTOT stale beyond 12 months -> missing)"
+  fx_rates: "up to t"
+  weekly_variant: "Fridays: OECD edition <= month(t) - 1, BCI / CTOT <= month(t) - 2, FX / rates up to t, high-vol flag of month(t) - 1"
+
+returns:
+  monthly: "excess return = dlog(spot vs USD) + (rate_i - rate_USD) / 12 / 100, from the signal day to the last ECB business day of month t+1; minus the mean of the other available currencies (basket of the other 14)"
+  horizons: {main: "1 month", second: "3 months (carry x 3 / 12)"}
+
+components:                        # src/tree/composite.py
+  excess_employment: "annual employment growth (3-month average vs 12 months earlier; quarterly: last quarter vs 4 earlier) - median of that growth over the previous 60 months (20 quarters), same edition"
+  unemployment_trend: "-(3-month average unemployment rate - its mean over the previous 60 months); quarterly: last quarter - mean of the previous 20 quarters. 60 months instead of 36: the Macrosynergy academy notebook uses the 3m MA minus the 5-year MA (posts p=43476 / 43975 / 43898 answer 403 to automated requests; only search excerpts were read)"
+  labour: "mean of the cross-sectional z of excess employment and unemployment trend (one if only one)"
+  confidence: "BCI 3-month average to month t-1 - the same 6 months earlier"
+  external_balance: "12-month change of (X - M) / (X + M) over 12 rolling months (quarterly: 4 rolling quarters, 4-quarter change)"
+  terms_of_trade: "log(CTOT of the last month <= t-1 / mean of the 12 months before it)"
+  carry: "policy rate - cross-section mean"
+  normalisation: "each component: cross-sectional z at t, clipped at +-3"
+  volatility_rule: "global FX vol = monthly mean of the daily mean |dlog spot vs USD| of the 14; high when its percentile among the previous 60 months (>= 36) is >= 80; carry leaves the composite mean in high-vol months"
+  composite: "mean of the available among labour, confidence, external balance, terms of trade, carry; ranked only with >= 3"
+
+window: {main: "2004-01 -> last month with a 1-month return", descriptive: "2000-01 -> 2003-12"}
+
+metrics:
+  ic: "monthly Spearman across the available currencies (>= 10; developed subset >= 8)"
+  t: "mean / sd x sqrt(N) on non-overlapping samples; 3 months: the three offset series, each and the mean of their ICs"
+  long_short: "top-3 / bottom-3, equal weights, monthly rebalancing; cost per side 2 bp developed / 6 bp emerging on turnover; Sharpe annualised x sqrt(12)"
+  pairs: "hit on all pairs with both present"
+
+gates:                              # 2 tests, at 1 month, on the 15
+  tests: [composite, labour]
+  pass_all:
+    - "IC > 0 with t >= 2.5"
+    - "IC > 0 in 2004-2009, 2010-2019 and 2020-2026"
+    - "IC > 0 on the 10 developed currencies"
+    - "IC > 0 at 3 months (mean of the three offsets)"
+    - "net long / short > 0"
+  decision: "composite passes -> candidate; only labour passes -> labour alone is the candidate; neither -> the composite stays context, v3 stays the direction"
+
+stage_E:
+  window: "2023-09-22 -> last Friday with the 4-week return; the 8 currencies vs their basket; H.10"
+  timing: "every source = value known Friday 21:00 UTC; return from the first H.10 fixing after it (Monday)"
+  scores: ["candidate_live = candidate z (composite components z computed on the 15, evaluated on the 8) + z of the v3 macro block (B2, same Friday), equal weights",
+           "candidate without news", "labour", "v3 A1", "carry", "MS (phase 4)"]
+  rule: "only if stage D gave a candidate: IC(candidate_live) >= IC(v3 A1) - 0.02 at 2 AND at 4 weeks -> the candidate becomes the direction in phase 6; otherwise v3 stays and the candidate is context"
+
+stage_F:
+  thresholds: ["an indicator stays if actual match >= 95% and forecast match >= 90% on >= 12 releases",
+               "the stage passes if the remaining indicators cover >= 75% of the v3 slots (currency x category) and |IC_MT5 - IC_FF| <= 0.03 at 2 weeks"]
+  gate_if_run: "v3 frozen on 2015-01 -> 2022-12, 8 currencies, weekly, H.10: IC at 2 weeks > 0 with t >= 2.0 (non-overlapping) and the same sign in 2015-2018 and 2019-2022"
+  status_at_commit: "not run: MT5 cannot be driven without its GUI here (see the report); steps handed to George"
+
+counting: {gated_phase5: 2, conditional: "stage E rule 1 (applies only with a candidate), stage F gate 1 (only if run)", cumulative_before: 62}
+descriptive: "every component, carry with / without the vol rule, composite without carry, by decade, developed vs emerging, each of the 8, weekly 2 / 4 weeks, IC sign in high vs low vol, baselines carry / MS-lite (8 currencies, COT) / random"

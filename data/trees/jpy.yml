@@ -1,0 +1,62 @@
+# JPY tree v0. Direction is JPY's: +1 = JPY up = USDJPY down (DEXJPUS is JPY per USD).
+# Signs come from the driver map as priors; every threshold and multiplier below is a
+# v0 hypothesis (not fitted). Status: the whole tree is `context` until a
+# pre-registered measurement promotes it (scripts/measure/prereg_tree_jpy_v0.yml).
+tree_id: jpy
+asset: JPY
+horizon_weeks: 2
+note: v0 hypotheses; status uncalibrated
+nodes:
+  - {id: jpy_cot_pctile, fn: rolling_pctile, inputs: [COT_JPY],
+     params: {window_days: 1095, min_obs: 104}, status: context, stale_after_days: 21,
+     note: "CFTC Legacy Combined 097741, non-commercial long - short; 3y rolling percentile;
+       usable from report Tuesday + 6 days"}
+  - {id: usdjpy_trend_20d, fn: chg, inputs: [DEXJPUS], params: {n: 20, mode: log_pct},
+     status: context, stale_after_days: 10, note: "context only, not in the combination"}
+  - {id: usdjpy_speed_flag, fn: abs_gt_flag, inputs: [usdjpy_trend_20d],
+     params: {threshold: 4.0, label: intervention risk}, status: context, stale_after_days: 10,
+     note: "|USDJPY 20d change| > 4% -> intervention-risk flag; context only"}
+  - {id: boj_path_proxy, fn: chg, inputs: [JGB2Y], params: {n: 20, mode: diff_bp},
+     status: context, stale_after_days: 10,
+     note: "MoF JGB 2Y (official, keyless) 20-obs change in bp; context only, not in the combination"}
+
+regime_switch:
+  classifier: risk_regime_v0
+  regimes:
+    calm:
+      primary: {node: us2y_chg_20d, sign: -1, note: US yields up -> JPY down}
+      modifiers:
+        - {node: jpy_cot_pctile, rule: {type: pctile, low: 20, high: 80, sign: 1},
+           agree_mult: 1.3, disagree_mult: 0.7, note: "<= 20 -> JPY up; >= 80 -> JPY down"}
+        - {node: oil_chg_20d, rule: {type: z, threshold: 1.0, sign: -1, two_sided: false},
+           agree_mult: 1.2, disagree_mult: 0.8, note: "z >= +1 -> JPY down (one-sided, as specified)"}
+      vetoes: []
+      invalidator: "US 2Y 20d change turns: signed z back inside +/-{z_min} (now {primary_z:+.2f}; us2y_chg_20d {us2y_chg_20d:+.1f} bp)"
+    growth_scare:
+      primary: {node: spx_ret_20d, sign: -1, note: equities down -> JPY up}
+      modifiers:
+        - {node: us2y_chg_20d, rule: {type: z, threshold: 0.0, sign: -1, two_sided: true},
+           agree_mult: 1.2, disagree_mult: 0.8, note: sign only (threshold 0)}
+        - {node: jpy_cot_pctile, rule: {type: pctile, low: 20, high: 80, sign: 1},
+           agree_mult: 1.3, disagree_mult: 0.7}
+      vetoes: []
+      invalidator: "Equity selloff fades: signed z of -spx_ret_20d back inside +/-{z_min} (now {primary_z:+.2f}; spx_ret_20d {spx_ret_20d:+.1f}%)"
+    inflation_shock:
+      primary: {node: us2y_chg_20d, sign: -1}
+      modifiers:
+        - {node: jpy_cot_pctile, rule: {type: pctile, low: 20, high: 80, sign: 1},
+           agree_mult: 1.3, disagree_mult: 0.7}
+      vetoes: []
+      invalidator: "US 2Y 20d change turns: signed z back inside +/-{z_min} (now {primary_z:+.2f}; us2y_chg_20d {us2y_chg_20d:+.1f} bp)"
+    liquidity_stress:
+      primary: {const_z: 2.0, note: stress -> JPY up}
+      modifiers:
+        - {node: jpy_cot_pctile, rule: {type: pctile, low: 20, high: 80, sign: 1},
+           agree_mult: 1.5, disagree_mult: 1.0, note: "<= 20 -> x1.5; no disagree penalty specified"}
+      vetoes: []
+      invalidator: "Stress eases: vix_term < 0.9 (now {vix_term:.3f})"
+
+decision:
+  z_min: 0.5
+  conviction_tiers: [0.5, 1.0, 2.0]
+  note: "direction 0 when |signed primary z| < z_min; tier = number of thresholds <= conviction (0 when direction 0)"

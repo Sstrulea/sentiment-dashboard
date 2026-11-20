@@ -1,0 +1,8 @@
+# Research / registry dependencies (phase 5). The production requirements.txt is unchanged; the
+# registry workflow installs both files. Same pins as production — nothing new is needed today.
+pandas==2.2.3
+pyarrow==17.0.0
+scipy==1.14.1
+requests==2.32.3
+pyyaml==6.0.2
+openpyxl==3.1.5
