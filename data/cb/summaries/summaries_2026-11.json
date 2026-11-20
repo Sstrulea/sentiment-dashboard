@@ -421,6 +421,215 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     20,
+     21,
+     26,
+     27,
+     31
+    ],
+    "paragraphs_sent": 47,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:22b03947349d",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-20T00:43:19Z",
+   "input_sha256": "53f6b0f21fce4a367de8a4c44e31fedf6ee7137ee29f875ad815ee4f9b2c7a7d",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 4522,
+     "point": 1,
+     "source_text": "2",
+     "start": 4521,
+     "text": "2"
+    },
+    {
+     "end": 4906,
+     "point": 1,
+     "source_text": "3 per cent",
+     "start": 4896,
+     "text": "3 per cent"
+    },
+    {
+     "end": 11665,
+     "point": 5,
+     "source_text": "22,000",
+     "start": 11659,
+     "text": "22,000"
+    },
+    {
+     "end": 11718,
+     "point": 5,
+     "source_text": "25",
+     "start": 11716,
+     "text": "25"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-20",
+   "quotes": [
+    {
+     "end": 4951,
+     "paragraph": 20,
+     "start": 4908,
+     "text": "Inflation should hover around 2.5 per cent."
+    },
+    {
+     "end": 5397,
+     "paragraph": 21,
+     "start": 5337,
+     "text": "Sometimes the objectives will be in tension with each other."
+    },
+    {
+     "end": 8968,
+     "paragraph": 26,
+     "start": 8835,
+     "text": "We cannot control how the conflict might play out, but we can think about the consequences of the different paths the world may take."
+    },
+    {
+     "end": 9319,
+     "paragraph": 27,
+     "start": 9178,
+     "text": "The RBA needs to consider AI, as a force likely to shape the current and future workforce and economy and, in turn, inflation and employment;"
+    }
+   ],
+   "source": {
+    "chars": 14718,
+    "chars_sent": 14719,
+    "method": "html-selector",
+    "paragraphs_sent": 47,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 4907,
+        "paragraph": 20,
+        "start": 4802,
+        "text": "First, the RBA aims to return inflation to the midpoint of its inflation-targeting range of 2–3 per cent."
+       },
+       {
+        "end": 5137,
+        "paragraph": 20,
+        "start": 4985,
+        "text": "the framework’s flexibility stems from recognising there are trade-offs in the economy that need to be considered in the pace of return to the midpoint."
+       }
+      ],
+      "paragraphs": [
+       20
+      ]
+     },
+     "text": "Monetary Policy Board Member Fry-McKibbin says the RBA aims to return inflation to the midpoint of its 2–3 per cent range, while considering trade-offs in the pace of return to the midpoint."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5397,
+        "paragraph": 21,
+        "start": 5337,
+        "text": "Sometimes the objectives will be in tension with each other."
+       },
+       {
+        "end": 5859,
+        "paragraph": 21,
+        "start": 5665,
+        "text": "This is the situation we are in now, with pockets of strong demand in Australia, and weakness elsewhere overlaid with a massive global oil supply shock following the conflict in the Middle East."
+       }
+      ],
+      "paragraphs": [
+       21
+      ]
+     },
+     "text": "Monetary Policy Board Member Fry-McKibbin says monetary policy objectives can be in tension, and describes pockets of strong demand, weakness elsewhere and a global oil supply shock following the conflict in the Middle East."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 8834,
+        "paragraph": 26,
+        "start": 8606,
+        "text": "When the Monetary Policy Board makes decisions, we consider what we think is most likely to occur, but we also challenge our thinking by considering the outcomes for inflation and employment and their trade-offs if we are wrong."
+       }
+      ],
+      "paragraphs": [
+       26
+      ]
+     },
+     "text": "Monetary Policy Board Member Fry-McKibbin says that when making decisions, the Board considers what is most likely to occur and challenges its thinking by considering outcomes for inflation and employment if it is wrong."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 9177,
+        "paragraph": 27,
+        "start": 9055,
+        "text": "The second theme I want to highlight – and that the Board is particularly interested in – is artificial intelligence (AI)."
+       },
+       {
+        "end": 9941,
+        "paragraph": 27,
+        "start": 9878,
+        "text": "the Board is watching the implications of AI extremely closely."
+       }
+      ],
+      "paragraphs": [
+       27
+      ]
+     },
+     "text": "Monetary Policy Board Member Fry-McKibbin says the Board is particularly interested in artificial intelligence and is watching its implications extremely closely."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 11780,
+        "paragraph": 31,
+        "start": 11634,
+        "text": "The tool can examine the 22,000 interactions the RBA has had with businesses over 25 years in the RBA’s secure information technology environment."
+       },
+       {
+        "end": 12234,
+        "paragraph": 31,
+        "start": 12025,
+        "text": "The RBA researchers showed that it was possible to integrate liaison-based indicators into model-based nowcasts for key variables, such as measures of wage growth, and significantly improved model performance."
+       }
+      ],
+      "paragraphs": [
+       31
+      ]
+     },
+     "text": "Monetary Policy Board Member Fry-McKibbin says an AI-powered tool can examine the 22,000 interactions the RBA has had with businesses over 25 years and improved model performance when liaison-based indicators were integrated into nowcasts."
+    }
+   ],
+   "title": "The Role of Research in Monetary Policymaking",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-mpb-2026-11-20.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4522,
+    "output_tokens": 1088,
+    "reasoning_tokens": 412
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      9,
      23,
