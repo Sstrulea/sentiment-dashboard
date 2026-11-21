@@ -32,12 +32,12 @@
     "asx_bb": "2026-11-20",
     "asx_ib": "2026-11-20",
     "atlantafed_mpt": "2026-11-20",
-    "eurex_ois_chf": "2026-11-20",
-    "eurex_ois_eur": "2026-11-20",
-    "eurex_ois_gbp": "2026-11-20",
-    "eurex_ois_jpy": "2026-11-20",
-    "eurex_ois_usd": "2026-11-20",
-    "eurex_ois_usd_sofr": "2026-11-20",
+    "eurex_ois_chf": "2026-11-21",
+    "eurex_ois_eur": "2026-11-21",
+    "eurex_ois_gbp": "2026-11-21",
+    "eurex_ois_jpy": "2026-11-21",
+    "eurex_ois_usd": "2026-11-21",
+    "eurex_ois_usd_sofr": "2026-11-21",
     "jpx_tona": "2026-11-20"
   },
   "_framework": {
@@ -129,22 +129,22 @@
     }
   },
   "eurex_ois_chf": {
-    "asof": "2026-11-19"
+    "asof": "2026-11-20"
   },
   "eurex_ois_eur": {
-    "asof": "2026-11-19"
+    "asof": "2026-11-20"
   },
   "eurex_ois_gbp": {
-    "asof": "2026-11-19"
+    "asof": "2026-11-20"
   },
   "eurex_ois_jpy": {
-    "asof": "2026-11-19"
+    "asof": "2026-11-20"
   },
   "eurex_ois_usd": {
-    "asof": "2026-11-19"
+    "asof": "2026-11-20"
   },
   "eurex_ois_usd_sofr": {
-    "asof": "2026-11-19"
+    "asof": "2026-11-20"
   },
   "http_validators": {
     "https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-summary-and-minutes/mpcvoting.xlsx": {
