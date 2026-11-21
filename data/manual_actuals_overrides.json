@@ -2198,5 +2198,16 @@
   "entered_by": "dolce",
   "entered_at": "2026-11-18T09:08:15+00:00",
   "note": ""
+ },
+ {
+  "canonical_id": "cad_retail_sales",
+  "currency": "CAD",
+  "indicator_key": "retail_sales",
+  "datetime_utc": "2026-11-20 13:30:00",
+  "actual": 0.8,
+  "state_resolved": "MISSING",
+  "entered_by": "dolce",
+  "entered_at": "2026-11-21T13:12:39+00:00",
+  "note": ""
  }
 ]
