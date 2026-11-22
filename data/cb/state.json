@@ -32,12 +32,12 @@
     "asx_bb": "2026-11-21",
     "asx_ib": "2026-11-21",
     "atlantafed_mpt": "2026-11-21",
-    "eurex_ois_chf": "2026-11-21",
-    "eurex_ois_eur": "2026-11-21",
-    "eurex_ois_gbp": "2026-11-21",
-    "eurex_ois_jpy": "2026-11-21",
-    "eurex_ois_usd": "2026-11-21",
-    "eurex_ois_usd_sofr": "2026-11-21",
+    "eurex_ois_chf": "2026-11-22",
+    "eurex_ois_eur": "2026-11-22",
+    "eurex_ois_gbp": "2026-11-22",
+    "eurex_ois_jpy": "2026-11-22",
+    "eurex_ois_usd": "2026-11-22",
+    "eurex_ois_usd_sofr": "2026-11-22",
     "jpx_tona": "2026-11-21"
   },
   "_framework": {
