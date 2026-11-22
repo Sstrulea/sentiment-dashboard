@@ -31,7 +31,7 @@
   "_daily_fetch": {
     "asx_bb": "2026-11-22",
     "asx_ib": "2026-11-22",
-    "atlantafed_mpt": "2026-11-21",
+    "atlantafed_mpt": "2026-11-22",
     "eurex_ois_chf": "2026-11-22",
     "eurex_ois_eur": "2026-11-22",
     "eurex_ois_gbp": "2026-11-22",
@@ -41,7 +41,7 @@
     "jpx_tona": "2026-11-22"
   },
   "_framework": {
-    "checked": "2026-11-15",
+    "checked": "2026-11-22",
     "targets": {
       "AUD.framework": {
         "hash": "e3f774d53df70c3a88e3004c26e68f5ceb0be632577aa2cad800039a8410859d",
