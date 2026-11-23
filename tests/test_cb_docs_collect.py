@@ -167,16 +167,16 @@ def test_merge_table_is_order_independent_and_a_new_row_replaces_the_old_one():
     assert ST.merge_table(list(reversed(a)), [{"k": "b", "v": 9}], ("k",)) == merged
 
 
-def test_votes_rows_for_every_bank_including_not_published_and_consensus(run1):
+def test_votes_rows_for_every_bank_including_not_published(run1):
     paths, rep, _ = run1
     v = {(r["currency"], r["meeting_date"].isoformat()): r for r in ST.load_votes(paths)}
-    assert len(v) == 32
+    assert len(v) == 28                                                       # NZD: the frozen rbnz.yaml has no `votes` section -> no row
     assert [(v[("USD", d)]["n_for"], v[("USD", d)]["n_against"]) for d in DAYS["USD"]] == [(8, 4), (12, 0), (9, 3), (12, 0)]
     assert [(v[("GBP", d)]["n_for"], v[("GBP", d)]["n_against"]) for d in DAYS["GBP"]] == [(8, 1), (7, 2), (6, 3), (6, 3)]
     assert [(v[("JPY", d)]["n_for"], v[("JPY", d)]["n_against"]) for d in DAYS["JPY"]] == [(6, 3), (7, 1), (8, 1), (7, 2)]
     assert [(v[("AUD", d)]["kind"], v[("AUD", d)]["n_for"], v[("AUD", d)]["n_against"]) for d in DAYS["AUD"]] == [("counted", 5, 4), ("counted", 8, 1), ("unanimous", None, 0), ("unanimous", None, 0)]
     assert {v[(c, d)]["kind"] for c in ("EUR", "CAD", "CHF") for d in DAYS[c]} == {"not_published"}
-    assert {r["kind"] for r in ST.load_votes(paths) if r["currency"] == "NZD"} == {"consensus"}
+    assert not [r for r in ST.load_votes(paths) if r["currency"] == "NZD"]                     # no assumption of consensus any more
     assert v[("GBP", "2026-09-17")]["source"] == "summary+xlsx" and v[("AUD", "2026-06-16")]["source"] == "minutes"
 
 

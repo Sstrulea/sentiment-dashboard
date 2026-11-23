@@ -172,11 +172,15 @@ banks:
     note: "the SMP text gives no number for neutral (Graph 1.4's 'range of central estimates' is 'Data restricted' in the graph-data file); the six model series of Graph 1.1 are the official numbers, read from the RBA file (not typed)"
 
   NZD:
-    status: pending
+    status: filled
     flag: BANK_ESTIMATE
-    estimates: []
-    reason: "the September 2026 MPS shows the long-run nominal neutral OCR indicator suite only as a chart (Figure 6.4, p. 55 / PDF p. 58: 'range between the maximum and minimum values from our suite'); no number in the text or tables (re-read 2026-11-14); no 'policy horizon' estimate is printed"
-    next_step: "George: from the September 2026 MPS page on rbnz.govt.nz (bot-walled for scripts) download the chart-data XLSX of the MPS and send the Figure 6.4 sheet (or the latest numbers of the nominal neutral indicator suite); then fill the min/max with page and retrieval date"
+    estimates:
+      - {label: "Long-term (mean), 2026Q3", basis: nominal, point: 3.1, published: 2026-09-02, source: {url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mpssep26-data.xlsx", page: "sheet '6.4' (Figure 6.4 'OCR and nominal neutral OCR indicator suite', quarterly average), column 'Long-term (mean)', row 65 (2026Q3, 01/09/2026)", retrieved: 2026-11-23}, transcription: file}
+      - {label: "Forecast horizon (mean), 2026Q3", basis: nominal, point: 3.5, published: 2026-09-02, policy_horizon: true, source: {url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mpssep26-data.xlsx", page: "sheet '6.4' (Figure 6.4 'OCR and nominal neutral OCR indicator suite', quarterly average), column 'Forecast horizon (mean)', row 65 (2026Q3, 01/09/2026)", retrieved: 2026-11-23}, transcription: file}
+      - {label: "Short-term (mean), 2026Q3", basis: nominal, point: 3.7, published: 2026-09-02, source: {url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mpssep26-data.xlsx", page: "sheet '6.4' (Figure 6.4 'OCR and nominal neutral OCR indicator suite', quarterly average), column 'Short-term (mean)', row 65 (2026Q3, 01/09/2026)", retrieved: 2026-11-23}, transcription: file}
+      - {label: "Lower bound of long-run neutral OCR suite, 2026Q3", basis: nominal, point: 2.3, published: 2026-09-02, source: {url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mpssep26-data.xlsx", page: "sheet '6.4' (Figure 6.4 'OCR and nominal neutral OCR indicator suite', quarterly average), column 'Lower bound of long-run neutral OCR suite', row 65 (2026Q3, 01/09/2026)", retrieved: 2026-11-23}, transcription: file}
+      - {label: "Upper bound of long-run neutral OCR suite, 2026Q3", basis: nominal, point: 4.1, published: 2026-09-02, source: {url: "https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mpssep26-data.xlsx", page: "sheet '6.4' (Figure 6.4 'OCR and nominal neutral OCR indicator suite', quarterly average), column 'Upper bound of long-run neutral OCR suite', row 65 (2026Q3, 01/09/2026)", retrieved: 2026-11-23}, transcription: file}
+    note: "the MPS data file of September 2026, sheet 6.4: 'The shaded area indicates the range between the maximum and minimum values from our suite of long-run nominal neutral OCR indicators.' Read on 2026-11-23 in a browser (rbnz.govt.nz is bot-walled for scripts). Rule (config/cb_stance.yaml neutral_combine.NZD): mid = the policy horizon estimate (Forecast horizon (mean)), range = min-max of the estimates. After the MPS of 9 Dec 2026 the new data file is entered the same way."
 
   CHF:
     status: not_published

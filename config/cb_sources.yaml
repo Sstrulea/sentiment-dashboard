@@ -106,7 +106,7 @@ sources:
     license: "JPX settlement prices; terms not retrieved (403/404) - unverified. Historical data is sold via J-Quants DataCube."
 
   mx_corra:
-    daily_after_utc: "22:30"              # one request a day, after settlement (fix/sources-compliance)
+    daily_after_utc: "00:30"              # one request a day, after settlement: the 00:40Z run = 19:40 EST / 20:40 EDT of the previous Toronto day (fix/cb-data-gaps: 22:30 was reached by no scheduled run)
     license_note: "Bourse de Montreal: 'licence to access, view and download or print a copy of the Content for your strict personal, private and non-commercial use only' - one request a day, crawl-delay 15 s"
     label: "Montréal Exchange"
     currency: CAD
@@ -122,7 +122,7 @@ sources:
     naming: "CRA contract = 'Contract Reference Month' = START month of the Reference Quarter (3rd Wednesday of that month to the 3rd Wednesday 3 months later); COA = calendar month"
     exchange_tz: America/Toronto
     eod_cutoff: "22:00"
-    intraday_utc: ["06:00", "22:00"]          # as-of inference only: with daily_after_utc 22:30 no request falls inside this window any more (no intraday fetch)
+    intraday_utc: ["06:00", "22:00"]          # as-of inference only: the daily request (00:30Z, run at 00:40Z) is outside this window -> the previous Toronto business day
     asof_stamp: none                     # the page carries no as-of; inferred from fetch time + cutoff (asof_inferred=true)
     availability: "HTML tables, no validators (Cache-Control: no-store); update time unknown"
     download: {conditional: false, size_mb: 0.08}

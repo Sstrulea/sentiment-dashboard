@@ -12,7 +12,8 @@ Alerts (all with a link):
                         during that year)
   verification_overdue  the bank's mandate (data/cb/manual/mandates.yaml last_verified) is older than the bank's latest
                         projection publication, or older than the maximum age
-  rbnz_manual           the RBNZ site is bot-walled: a reminder at each Monetary Policy Statement not yet reviewed by hand
+  rbnz_manual           the RBNZ site is bot-walled: a reminder after each decision until its vote is in rbnz.yaml, and at each Monetary
+                        Policy Statement not yet reviewed by hand (its data: OCR track, forecasts, neutral)
 """
 from __future__ import annotations
 
@@ -133,13 +134,26 @@ def verification_alerts(last_verified: dict, last_projection: dict, today: date,
     return out
 
 
-def rbnz_alerts(mps_dates: list, reviewed_mps: Optional[date], today: date, url: str = "") -> list:
-    """A reminder for each RBNZ Monetary Policy Statement (date <= today) newer than the last one reviewed by hand."""
-    past = sorted(d for d in mps_dates if d <= today)
-    if past and (reviewed_mps is None or past[-1] > reviewed_mps):
-        return [Alert("rbnz_manual", "NZD", "NZD.framework", url,
-                      f"MPS {past[-1]} not reviewed by hand (last reviewed MPS {reviewed_mps}); rbnz.govt.nz is bot-walled - check the Remit and the MPS by hand")]
-    return []
+def rbnz_alerts(decisions: list, voted: Iterable[date], reviewed_mps: Optional[date], today: date, url: str = "") -> list:
+    """Reminders for the RBNZ (bot-walled, entered by hand). decisions: [(date, has_projections)] of the OCR decisions (MPS = with projections,
+    Review = without); voted: the decisions whose vote is in data/cb/manual/rbnz.yaml `votes`.
+      - each past decision without its vote (from the first decision of the votes section on; with no section, the latest decision);
+      - the latest past MPS newer than the last one reviewed by hand: its data too (OCR track, forecasts, neutral) and the Remit."""
+    voted = set(voted)
+    past = sorted((d, bool(p)) for d, p in decisions if d <= today)
+    first = min(voted) if voted else (past[-1][0] if past else None)
+    out = []
+    for d, is_mps in past:
+        if first is None or d < first or d in voted:
+            continue
+        out.append(Alert("rbnz_manual", "NZD", f"NZD.vote.{d.isoformat()}", url,
+                         f"RBNZ decision {d} ({'MPS' if is_mps else 'Review'}): vote not entered in data/cb/manual/rbnz.yaml `votes` (read the release by hand)"))
+    mps = [d for d, p in past if p]
+    if mps and (reviewed_mps is None or mps[-1] > reviewed_mps):
+        out.append(Alert("rbnz_manual", "NZD", "NZD.framework", url,
+                         f"MPS {mps[-1]} not reviewed by hand (last reviewed MPS {reviewed_mps}); rbnz.govt.nz is bot-walled - enter its data (OCR track in "
+                         f"rbnz.yaml, forecasts.yaml, the neutral in neutral.yaml from the MPS data file) and check the Remit by hand"))
+    return out
 
 
 def last_projection_dates(meetings: dict, today: date) -> dict:

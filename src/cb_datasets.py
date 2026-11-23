@@ -240,7 +240,61 @@ def validate_rbnz(doc: dict) -> list:
             periods = [pt.get("period") for pt in e["ocr_track"]]
             if len(set(periods)) != len(periods):
                 err.append(f"{tag}: ocr_track has a duplicate period")
+    err += validate_rbnz_votes(doc.get("votes"))
     return err
+
+
+RBNZ_VOTE_KINDS = ("counted", "unanimous", "consensus")
+RBNZ_DIRECTIONS = ("raise", "lower", "hold")
+
+
+def validate_rbnz_votes(votes) -> list:
+    """The optional `votes` section of rbnz.yaml: one entry per decision, typed by hand from the RBNZ release (fix/cb-data-gaps)."""
+    if votes is None:
+        return []
+    if not isinstance(votes, list):
+        return ["votes must be a list"]
+    err, seen = [], set()
+    for i, v in enumerate(votes):
+        tag = f"votes[{i}]"
+        if not isinstance(v, dict) or not isinstance(v.get("date"), date):
+            err.append(f"{tag}: date must be a date")
+            continue
+        if v["date"] in seen:
+            err.append(f"{tag}: duplicate decision {v['date']}")
+        seen.add(v["date"])
+        k = v.get("kind")
+        if k not in RBNZ_VOTE_KINDS:
+            err.append(f"{tag}: kind must be one of {RBNZ_VOTE_KINDS}")
+        fr, ag = v.get("for") or [], v.get("against") or []
+        if not isinstance(fr, list) or not all(isinstance(x, str) and x for x in fr):
+            err.append(f"{tag}: for must be a list of names")
+        if not isinstance(ag, list) or not all(isinstance(x, dict) and isinstance(x.get("name"), str) and x.get("direction") in RBNZ_DIRECTIONS
+                                               and isinstance(x.get("note", ""), str) for x in ag):
+            err.append(f"{tag}: against must be a list of {{name, direction raise|lower|hold, note}}")
+            ag = []
+        if k == "counted":
+            if not (isinstance(v.get("n_for"), int) and isinstance(v.get("n_against"), int)):
+                err.append(f"{tag}: counted needs n_for and n_against (integers)")
+            elif (fr and len(fr) != v["n_for"]) or (ag and len(ag) != v["n_against"]):
+                err.append(f"{tag}: n_for / n_against do not match the names")
+        elif k == "unanimous":
+            if v.get("n_against") not in (0, None) or ag:
+                err.append(f"{tag}: unanimous with votes against")
+        elif k == "consensus":
+            if v.get("n_for") is not None or v.get("n_against") is not None or fr or ag:
+                err.append(f"{tag}: consensus has no count and no names")
+        if v.get("note") is not None and not isinstance(v["note"], str):
+            err.append(f"{tag}: note must be a string")
+        src = v.get("source") or {}
+        if not (src.get("url") and src.get("quote") and isinstance(src.get("retrieved"), date)):
+            err.append(f"{tag}: source needs url, quote and retrieved (date)")
+    return err
+
+
+def rbnz_votes(doc: dict) -> dict:
+    """{decision date: entry} of the `votes` section (validated by validate_rbnz)."""
+    return {v["date"]: v for v in (doc or {}).get("votes") or [] if isinstance(v, dict) and isinstance(v.get("date"), date)}
 
 
 def rbnz_warnings(doc: dict, nz_meetings: list, today: date) -> list:
@@ -835,6 +889,10 @@ def validate_neutral(doc: dict, today: date, mandates: dict | None = None) -> li
                 err.append(f"{t}: a manual transcription needs the quote")
             if b == "GBP" and not x.get("member"):
                 err.append(f"{t}: GBP estimates need the member")
+            if "policy_horizon" in x and not isinstance(x["policy_horizon"], bool):
+                err.append(f"{t}: policy_horizon must be true | false")
+        if sum(1 for x in ests if x.get("policy_horizon") is True) > 1:
+            err.append(f"{tag}: at most one 'policy horizon' estimate")
     return err
 
 
@@ -975,10 +1033,11 @@ def stance_status(paths, today: date) -> tuple:
     """--status section for the manual stance files: validation, projections newer than forecasts.yaml, stale neutral, pending."""
     from .cb_compute.framework_watch import last_projection_dates
     rows, notes = [], []
+    vday = max(today, date.today())               # as in cb_loader.load_stance: a file read after a past as-of is not "in the future"
     try:
-        mand = load_mandates(paths, today=today, validate=True)
-        neut = load_neutral(paths, today=today, validate=True, mandates=mand)
-        fc = load_forecasts(paths, today=today, validate=True, mandates=mand)
+        mand = load_mandates(paths, today=vday, validate=True)
+        neut = load_neutral(paths, today=vday, validate=True, mandates=mand)
+        fc = load_forecasts(paths, today=vday, validate=True, mandates=mand)
     except StanceDataError as e:
         return ("stance inputs (S0a manual files)", ["error"], [[str(e).split(chr(10))[0]]], [f"INVALID {x.strip()}" for x in str(e).split("\n")[1:]])
     cfg = load_stance_config()

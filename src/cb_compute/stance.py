@@ -239,6 +239,19 @@ def neutral_from_estimates(cur: str, entry: dict, target_star: Optional[float], 
         n = Neutral(statistics.median(xs), min(bounds), max(bounds), max(e["published"] for e in latest.values()).isoformat(), entry["flag"],
                     used=[(f"{m} ({latest[m]['published']})", vals[m]) for m in sorted(vals)],
                     nominal_from="nominal" if all(e["basis"] == "nominal" for e in latest.values()) else "real+target")
+    elif cur == "NZD":                                          # neutral_combine.NZD: mid = the 'policy horizon' estimate when published;
+        pub = max(e["published"] for e in ests)                 # range = min-max of the estimates (the latest MPS data file)
+        use = [e for e in ests if e["published"] == pub]
+        ph = [e for e in use if e.get("policy_horizon")]
+        if len(ph) != 1:
+            return None, f"the {pub} estimates carry {len(ph)} 'policy horizon' estimates (one needed)"
+        pts = [(e, nominal(e, v)) for e in use for v in ((e["point"],) if e.get("point") is not None else (e["low"], e["high"]))]
+        if any(v is None for _, v in pts) or nominal(ph[0], val(ph[0])) is None:
+            return None, "a real estimate needs a point target or a declared midpoint"
+        xs = [v for _, v in pts]
+        n = Neutral(nominal(ph[0], val(ph[0])), min(xs), max(xs), pub.isoformat(), entry["flag"],
+                    used=[(e["label"], nominal(e, val(e))) for e in use],
+                    nominal_from="nominal" if all(e["basis"] == "nominal" for e in use) else "real+target")
     else:
         prim = [e for e in ests if e.get("role", "primary") in ("primary", "primary_nominal")]
         nom = [e for e in prim if e["basis"] == "nominal"]
