@@ -455,7 +455,13 @@ data/cb/manual/documents.yaml   ce nu se poate colecta automat (RBNZ, videoclipu
   SNB primește rata în ziua deciziei; JPY iese din `ff_pending` (comunicatul BoJ e publicat în aceeași zi).
 - **Voturi** (`votes.parquet`: pentru / contra, nume, direcția fiecărui disident): Fed din comunicat (antet + nume), BoE din rezumat + istoricul
   `mpcvoting.xlsx` (nume și preferințe), BoJ din PDF (propunerea disidentului comparată cu rata decisă dă direcția), RBA din minute (+14 zile).
-  ECB, BoC, SNB = „not published” (decizie prin consens fără număr), RBNZ = „consensus”. O sursă mai săracă nu înlocuiește una mai bogată (`VOTE_RANK`).
+  ECB, BoC, SNB = „not published” (decizie prin consens fără număr). O sursă mai săracă nu înlocuiește una mai bogată (`VOTE_RANK`).
+  *fix/cb-data-gaps (2026-11-23):* **BoJ** — de la 30 oct 2026 comunicatul are puncte numerotate („1. Guideline for money market operations (an 8-1
+  majority vote)”, „2. … ETFs (a unanimous vote)”): votul se ia și din titlul punctului despre guideline, niciodată din alt punct. **RBNZ** — nu se mai
+  presupune consens (din mai 2026 RBNZ publică votul când nu există consens; site-ul blochează scripturile): voturile se introduc de mână în
+  `data/cb/manual/rbnz.yaml` `votes` (data, kind counted | unanimous | consensus, n_for / n_against, for, against {nume, direcție, notă}, notă, sursa
+  url + citat + retrieved; validate la încărcare); rândul manual (`VOTE_RANK` „manual” = 6) înlocuiește rândurile vechi; o decizie fără intrare n-are
+  rând („vote not recorded”).
 - **Redline** (`redlines.parquet`): diferență pe cuvinte față de comunicatul anterior al aceleiași bănci, stocat compact (adăugat / șters / neschimbat)
   cu ancore pe paragrafe; `apply_redline` reface textul curent exact (testat pe perechi reale consecutive).
 - **Discursuri și mărturii**: feed-ul RSS oficial al fiecărei bănci (Fed, ECB `ecb.sp*` / `ecb.in*`, BoE, BoC, SNB; listele HTML BoJ și RBA); BIS doar
@@ -868,6 +874,14 @@ potrivesc deodată.
 `mx_corra`: `corra_3m_futures` trece de la WINDOW la FIT (`_fit` folosește toate rândurile snapshot-ului, COA + CRA), `fixings: boc:AVG.INTWO`.
 COA rămâne EXACT pe ședințele pe care lanțul le identifică (la 2026-10-08: 28 oct, 9 dec — neschimbate, test). Spread-ul rămâne CORRA − țintă.
 
+**Ora cererii zilnice (fix/cb-data-gaps, 2026-11-23).** `daily_after_utc` era „22:30”: nicio rulare programată a cb-refresh nu ajunge acolo (Worker-ul
+la :40 din 6 în 6 ore, cron-ul zilnic 07:23; backup-ul 04:47 e sărit după un run reușit), deci MX n-a mai fost cerut după 13 nov (16–23 nov nu se pot
+recupera: pagina arată doar ziua curentă). Acum „00:30”: rularea de la 00:40 UTC = 19:40 EST / 20:40 EDT în ziua precedentă de la Toronto, după
+settlement; `infer_asof` dă ziua lucrătoare precedentă (în afara ferestrei 06:00–22:00, sărbătorile din calendarul CA), `is_final` o acceptă.
+Test de consistență (`tests/test_cb_config.py`): fiecare sursă cu `daily_after_utc` are cel puțin o rulare programată în aceeași zi UTC la ora ei sau
+după (intrările `regular` din cb_trigger.yaml la tick-ul efectiv + cron-ul pe care guard-ul nu-l sare niciodată, citite din fișiere); pentru
+`asof_stamp: none` rularea e și în afara `intraday_utc` în zilele lucrătoare.
+
 ### NZD și spread-ul BKBM–OCR estimat
 
 `asx_bb`: `bb_90d_nz_bank_bill_futures` trece pe FIT, `level_kind: policy`, flag ESTIMATE; fiecare punct are nota „BKBM-OCR spread estimated (X bp,
@@ -1211,7 +1225,7 @@ versiuni suprapuse sau nu exact una curentă; effective_to < effective_from; cit
 | seriile macro | stage `macro`, **doar** în rularea zilnică programată (`cb-refresh`, cron `23 7 * * *`; guard-ul nu o sare; dispatch-urile Worker-ului și cele din ziua deciziei nu o rulează). Zero requesturi când nicio serie a furnizorului nu așteaptă o perioadă nouă (perioada următoare e cerută de la `lag_days − 5` zile după sfârșitul ei). | serie stale (perioada următoare întârzie peste `lag_days + 7`); refuzurile guard-ului; reviziile (în raportul stage-ului) | o bază nouă / o serie redefinită: serie nouă în `config/cb_official.yaml` |
 | proiecțiile | SEP (stage `projections`) | `forecasts.yaml` mai vechi decât ultima ședință `has_projections` | George / dev: transcrie publicația nouă în `forecasts.yaml` + re-verifică mandatul în același commit |
 | neutral | SEP (USD) | estimare > 15 luni | transcriere manuală cu sursă |
-| mandatul | — (niciun cod nu scrie `mandates.yaml`) | `page_changed` (hash ≠ confirmat, cu redline față de snapshot-ul confirmat), `keyword_hit` (documente 2a noi), `calendar_due` (±30 zile), `verification_overdue` (last_verified < ultima publicație de proiecții sau > 12 luni), `rbnz_manual` (la fiecare MPS) | verificare, versiune nouă cu sursă, apoi hash-ul nou / doc_id-ul în `framework_reviews.yaml` |
+| mandatul | — (niciun cod nu scrie `mandates.yaml`) | `page_changed` (hash ≠ confirmat, cu redline față de snapshot-ul confirmat), `keyword_hit` (documente 2a noi), `calendar_due` (±30 zile), `verification_overdue` (last_verified < ultima publicație de proiecții sau > 12 luni), `rbnz_manual` (după fiecare decizie RBNZ, MPS sau Review, până când votul ei e în rbnz.yaml `votes`; la MPS și datele MPS: OCR track, prognoze, neutral) | verificare, versiune nouă cu sursă, apoi hash-ul nou / doc_id-ul în `framework_reviews.yaml` |
 
 Framework watch: cel mult o dată pe săptămână (`state.json` `_framework.checked`), politicos (Fetcher-ul din 2a: robots.txt, 2 s / host, cerere
 condiționată ETag / Last-Modified; validatorii avansează doar când textul stocat se schimbă), textul principal extras cu extractorul 2a
@@ -1233,7 +1247,10 @@ nu e în corpus (2a nu colectează comunicatele de framework) și e acoperit de 
 ### Ce e pending (2026-11-14)
 
 - **NZD neutral**: MPS sept. 2026 arată suita de indicatori de neutral doar ca grafic (Figure 6.4) — George descarcă XLSX-ul cu datele graficelor
-  de pe pagina MPS (rbnz.govt.nz blochează scripturile).
+  de pe pagina MPS (rbnz.govt.nz blochează scripturile). *Completat 2026-11-23 (fix/cb-data-gaps):* `mpssep26-data.xlsx`, sheet „6.4”, rândul
+  2026Q3 — Long-term 3.1, Forecast horizon 3.5 (`policy_horizon: true`), Short-term 3.7, limitele suitei 2.3 / 4.1 (nominal, published 2026-09-02);
+  `neutral_combine.NZD` implementat în `neutral_from_estimates` (mid = estimarea pe orizontul de politică, interval = min–max) → 3.5 (2.3–4.1).
+  După MPS-ul din 9 dec 2026 fișierul nou de date se introduce la fel (reminder-ul `rbnz_manual` o cere).
 - **CAD forecasts underlying**: MPR oct. 2026 nu tipărește o proiecție numerică pentru CPI-trim / CPI-median — se re-verifică la MPR din ian. 2027.
 - **EUR neutral**: ultima estimare staff explicită e din Economic Bulletin 1/2025 (13 feb. 2025) → apare stale (> 15 luni).
 - **Limitări de backfill**: ABS lunar (complete monthly CPI) există doar din 2025-04 (înainte: G1 trimestrial); Stats NZ ex food/energy din
