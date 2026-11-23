@@ -1,0 +1,7282 @@
+{
+ "asof": "2026-11-20",
+ "source": "scripts/cb_freeze_stance_fixture.py --asof 2026-11-20 (cb_render.load_stance_args on data/)",
+ "scale_pp": [
+  0.25,
+  0.75,
+  1.5
+ ],
+ "stale_after_bd": 2,
+ "banks": {
+  "USD": {
+   "r": {
+    "currency": "USD",
+    "asof": "2026-11-20",
+    "mandate_id": "2025-08-22",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.0,
+    "band": null,
+    "rate": 3.875,
+    "pi_under": 3.1,
+    "pi_head": 3.6,
+    "gap_under": 1.1,
+    "gap_head": 1.6,
+    "y": 0.20000000000000107,
+    "y_how": "-2.0 * (u 4.1 - u* 4.2)",
+    "x": 1.1666666666666672,
+    "x_headline": 1.6666666666666672,
+    "pi_12m": 2.5,
+    "pi_12m_period": "2027",
+    "pi_12m_basis": "underlying",
+    "gap_12m": 0.5,
+    "y_12m": 0.20000000000000107,
+    "y_12m_how": "-2.0 * (u 4.1 - u* 4.2)",
+    "x_12m": 0.566666666666667,
+    "na_12m": null,
+    "N": {
+     "mid": 3.2,
+     "lo": 2.9,
+     "hi": 3.9,
+     "asof": "2026-09-16",
+     "flag": "SEP_LONGER_RUN",
+     "stale": false,
+     "nominal_from": "nominal",
+     "used": [
+      [
+       "Table 1 longer-run median",
+       3.2
+      ],
+      [
+       "Table 1 longer-run range",
+       "2.9-3.9"
+      ]
+     ],
+     "source": "FOMC SEP 2026-09-16, Table 1 (federalreserve.gov fomcprojtabl20260916.htm)",
+     "check": {
+      "sep": "2026-09-16",
+      "published": 3.2,
+      "from_dots": 3.25,
+      "rounded": 3.2,
+      "dots": 18,
+      "ok": true
+     }
+    },
+    "S": 0.6749999999999998,
+    "S_lo": -0.02499999999999991,
+    "S_hi": 0.9750000000000001,
+    "G": 1.075000000000001,
+    "G_lo": 0.7750000000000008,
+    "G_hi": 1.7750000000000008,
+    "situation": "S1",
+    "direction": 1,
+    "margin": 0.6666666666666672,
+    "situation_at_N_lo": "S1",
+    "situation_at_N_hi": "S1",
+    "pivot": 2.383333333333333,
+    "G_12m": 0.1750000000000007,
+    "situation_12m": "S3",
+    "direction_12m": 1,
+    "margin_12m": 0.06666666666666698,
+    "G_12m_lo": -0.12499999999999956,
+    "G_12m_hi": 0.8750000000000004,
+    "situation_12m_at_N_lo": "S3",
+    "situation_12m_at_N_hi": "S1",
+    "v5": {
+     "bank": "USD",
+     "P": 0.6749999999999998,
+     "N": 1.1,
+     "P_label": "Slightly restrictive",
+     "N_label": "Above target",
+     "conclusion": "One more hike likely",
+     "case": "b",
+     "reason": "Only slightly restrictive for inflation this far above target. The Fed plans one more hike, then a hold, and sees core inflation at 2.5% by end-2027.",
+     "move": true
+    },
+    "lens": {
+     "kind": "own_path",
+     "basis": "gap",
+     "year": 2027,
+     "gap_bp": 29.6,
+     "bank": 4.125,
+     "market": 4.421,
+     "flag": "CURVE",
+     "na": null,
+     "source": "bank page GAP (dots, 2026-09-16)",
+     "path": [
+      [
+       "2026",
+       4.125
+      ],
+      [
+       "2027",
+       4.125
+      ]
+     ],
+     "path_kind": "dots",
+     "path_period": "2027",
+     "path_transform": "q4_q4",
+     "horizon_gap": 0.0,
+     "horizon_period": "2029",
+     "horizon_basis": "underlying",
+     "consistent": true
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 1,
+     "first_move": "2026-09-16",
+     "last_move": "2026-09-16",
+     "moves": [
+      {
+       "date": "2026-09-16",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-09-17"
+      }
+     ],
+     "holds_since": 1,
+     "holds_from": null,
+     "previous": {
+      "direction": "cut",
+      "count": 6,
+      "first_move": "2024-09-19",
+      "last_move": "2025-12-10"
+     },
+     "previous_na": null,
+     "last_change": "2026-09-16",
+     "history": {
+      "series": "hist:bis:US",
+      "from": "2015-01-01",
+      "to": "2026-11-17"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-09",
+      "step_bp": 22.694046660287626,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-10-27",
+      "rate": 4.478982769279749,
+      "cum_bp": 60.39827692797486,
+      "flag": "CURVE",
+      "na": null
+     }
+    },
+    "flags": [],
+    "flags_12m": [
+     "neutral_sensitive"
+    ],
+    "notes": [],
+    "inputs": {
+     "rate": {
+      "v": 3.875,
+      "asof": "2026-10-28",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "Fed: midpoint of the target range",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 3.1,
+      "asof": "2026-09",
+      "source": "fred:PCEPILFE (https://fred.stlouisfed.org/series/PCEPILFE (via FRED API))",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 3.6,
+      "asof": "2026-09",
+      "source": "fred:PCEPI (https://fred.stlouisfed.org/series/PCEPI (via FRED API))",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "unemployment_gap",
+     "y_today": null,
+     "u": {
+      "v": 4.1,
+      "asof": "2026-10",
+      "source": "fred:UNRATE (https://fred.stlouisfed.org/series/UNRATE (via FRED API))",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "u_star": {
+      "v": 4.2,
+      "asof": "2026-09-16",
+      "source": "FOMC SEP 2026-09-16: longer-run median unemployment rate",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m": {
+      "v": 2.5,
+      "asof": "2027",
+      "source": "FOMC SEP 2026-09-16: core PCE inflation (Q4/Q4)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "underlying",
+     "y_12m": null,
+     "u_12m": {
+      "v": 4.1,
+      "asof": "2027",
+      "source": "FOMC SEP 2026-09-16: unemployment rate (Q4 average)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "neutral_status": "fed_sep",
+     "conditioning": "own_path",
+     "last_projection": {
+      "v": 2.0,
+      "asof": "2029",
+      "source": "FOMC SEP 2026-09-16: core PCE inflation",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "underlying",
+     "pi_12m_transform": "q4_q4"
+    }
+   },
+   "d": {
+    "bank": "USD",
+    "short": "Fed",
+    "slack_type": "unemployment_gap",
+    "core": {
+     "v": 3.1,
+     "period": "2026-09",
+     "source": "fred:PCEPILFE (https://fred.stlouisfed.org/series/PCEPILFE (via FRED API))",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 2.5,
+     "period": "2027",
+     "source": "FOMC SEP 2026-09-16: core PCE inflation (Q4/Q4)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "q4_q4",
+     "basis": "underlying"
+    },
+    "y_today": null,
+    "y_12m": null,
+    "u": {
+     "v": 4.1,
+     "period": "2026-10",
+     "source": "fred:UNRATE (https://fred.stlouisfed.org/series/UNRATE (via FRED API))",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "u_star": {
+     "v": 4.2,
+     "period": "2026-09-16",
+     "source": "FOMC SEP 2026-09-16: longer-run median unemployment rate",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "u_12m": {
+     "v": 4.1,
+     "period": "2027",
+     "source": "FOMC SEP 2026-09-16: unemployment rate (Q4 average)",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "conditioning": "own_path",
+    "publication": "Summary of Economic Projections",
+    "published": "2026-09-16",
+    "cutoff": null,
+    "cutoff_flag": null,
+    "assumed_rate": null,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "Core PCE",
+    "measure_name": "PCE price index excluding food and energy (BEA, via FRED)"
+   },
+   "rate": {
+    "rate": 3.875,
+    "lower": 3.75,
+    "upper": 4.0,
+    "range": true
+   },
+   "mandate": {
+    "target": "2%",
+    "target_measure": "PCE price index, annual change",
+    "underlying": "PCE price index excluding food and energy (BEA, via FRED)",
+    "underlying_id": "fred:PCEPILFE",
+    "rule_applied": 2,
+    "rule_text": "(2) the measure projected by the bank that excludes food and energy",
+    "underlying_note": "the SEP projects core PCE inflation (rule 2); the Fed designates no official core measure",
+    "horizon": "over the longer run",
+    "mandate_type": "dual",
+    "effective_from": "2025-08-22",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "Statement on Longer-Run Goals and Monetary Policy Strategy (adopted effective January 24, 2012; as reaffirmed effective January 27, 2026)",
+    "source_url": "https://www.federalreserve.gov/monetarypolicy/files/FOMC_LongerRunGoals.pdf"
+   },
+   "next_test": {
+    "date": null,
+    "title": "Core PCE Price Index m/m",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-15",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-16",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-17",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-18",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-19",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-20",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-21",
+     "position": 0.175,
+     "need": 0.5
+    },
+    {
+     "date": "2026-11-22",
+     "position": 0.175,
+     "need": 0.5
+    }
+   ],
+   "neutral_na": null,
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "USD",
+    "short": "Fed",
+    "name": "Federal Reserve",
+    "href": "/central-banks/usd.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "eurex_ois_usd",
+    "data_label": "Eurex Clearing",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-09",
+      "effective": "2026-12-10",
+      "rate": 4.105,
+      "cum_bp": 23.04,
+      "step_bp": 22.69,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.9078
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-01-27",
+      "effective": "2027-01-28",
+      "rate": 4.273,
+      "cum_bp": 39.84,
+      "step_bp": 16.81,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.6722
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-17",
+      "effective": "2027-03-18",
+      "rate": 4.368,
+      "cum_bp": 49.31,
+      "step_bp": 9.46,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.3786
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-04-28",
+      "effective": "2027-04-29",
+      "rate": 4.457,
+      "cum_bp": 58.22,
+      "step_bp": 8.91,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.3565
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-09",
+      "effective": "2027-06-10",
+      "rate": 4.49,
+      "cum_bp": 61.47,
+      "step_bp": 3.25,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.13
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-07-28",
+      "effective": "2027-07-29",
+      "rate": 4.501,
+      "cum_bp": 62.62,
+      "step_bp": 1.15,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.0462
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-15",
+      "effective": "2027-09-16",
+      "rate": 4.496,
+      "cum_bp": 62.06,
+      "step_bp": -0.57,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.0226
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-10-27",
+      "effective": "2027-10-28",
+      "rate": 4.479,
+      "cum_bp": 60.4,
+      "step_bp": -1.66,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.0663
+      },
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-10-27",
+     "cum_bp": 60.4,
+     "moves": 2.42,
+     "rate": 4.479,
+     "flag": "CURVE",
+     "est": false,
+     "na": null
+    },
+    "current": {
+     "rate": 3.875,
+     "lower": 3.75,
+     "upper": 4.0,
+     "range": true,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "fred:EFFR",
+      "name": "Effective federal funds rate",
+      "value": 3.88,
+      "date": "2026-11-19",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-09",
+        "rate": 4.148,
+        "cum_bp": 27.27,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-01-27",
+        "rate": 4.312,
+        "cum_bp": 43.69,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-17",
+        "rate": 4.485,
+        "cum_bp": 60.99,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-28",
+        "rate": 4.597,
+        "cum_bp": 72.21,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-09",
+        "rate": 4.663,
+        "cum_bp": 78.8,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-28",
+        "rate": 4.718,
+        "cum_bp": 84.34,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-15",
+        "rate": 4.722,
+        "cum_bp": 84.66,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-27",
+        "rate": 4.724,
+        "cum_bp": 84.85,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-09",
+        "rate": 4.073,
+        "cum_bp": 19.77,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-01-27",
+        "rate": 4.134,
+        "cum_bp": 25.93,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-17",
+        "rate": 4.289,
+        "cum_bp": 41.44,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-28",
+        "rate": 4.356,
+        "cum_bp": 48.07,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-09",
+        "rate": 4.44,
+        "cum_bp": 56.46,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-28",
+        "rate": 4.442,
+        "cum_bp": 56.74,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-15",
+        "rate": 4.488,
+        "cum_bp": 61.35,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-27",
+        "rate": 4.466,
+        "cum_bp": 59.08,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -24.46,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-27",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": 1.32,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-27",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-09",
+     "effective": "2026-12-10",
+     "time": {
+      "tz": "America/New_York",
+      "abbr": "EST",
+      "local": "14:00",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-09T19:00:00Z"
+     },
+     "sort_utc": "2026-12-09T19:00:00Z",
+     "end_utc": null
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "USD",
+    "bank": {
+     "id": "fed",
+     "name": "Federal Reserve (FOMC)",
+     "short": "Fed",
+     "tz": "America/New_York",
+     "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+    },
+    "href": "/central-banks/usd.html",
+    "rate": {
+     "value": 3.875,
+     "in_force": 3.875,
+     "lower": 3.75,
+     "upper": 4.0,
+     "pending": false,
+     "from": null,
+     "decided": "2026-10-28",
+     "status": "official",
+     "range": true,
+     "decision_status": "official"
+    },
+    "next": {
+     "decision": "2026-12-09",
+     "effective": "2026-12-10",
+     "first_day": "2026-12-08",
+     "time": {
+      "tz": "America/New_York",
+      "abbr": "EST",
+      "local": "14:00",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-09T19:00:00Z"
+     },
+     "has_projections": true,
+     "projections_name": "SEP (dot plot)",
+     "has_presser": true,
+     "conference": {
+      "local": "14:30",
+      "held": "every_meeting",
+      "verified": true
+     },
+     "blackout": {
+      "start": "2026-11-28T00:00:00-05:00",
+      "end": "2026-12-10T23:59:00-05:00",
+      "start_utc": "2026-11-28T05:00:00Z",
+      "end_utc": "2026-12-11T04:59:00Z",
+      "precision": "exact",
+      "verified": true,
+      "note": ""
+     },
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-09",
+     "method": "CURVE",
+     "flag": "CURVE",
+     "stale": false,
+     "level": 4.105,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": 22.69,
+     "direction": "hike",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.0922
+      },
+      {
+       "moves": 1,
+       "p": 0.9078
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": 23.04,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-09",
+      "window": [
+       "2026-12-10",
+       "2027-01-28"
+      ],
+      "level": 4.105,
+      "level_kind": "policy",
+      "rate": 4.105,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 54.61,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-08",
+      "window": [
+       "2027-12-09",
+       "2028-02-03"
+      ],
+      "level": 4.421,
+      "level_kind": "policy",
+      "rate": 4.421,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "dots",
+     "na": null,
+     "sep": "2026-09-16",
+     "years": {
+      "2026": {
+       "v": -2.0,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "market": 4.105,
+       "bank": 4.125,
+       "n_dots": 18,
+       "window": [
+        "2026-12-10",
+        "2027-01-28"
+       ],
+       "period": null
+      },
+      "2027": {
+       "v": 29.6,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "market": 4.421,
+       "bank": 4.125,
+       "n_dots": 18,
+       "window": [
+        "2027-12-09",
+        "2028-02-03"
+       ],
+       "period": null
+      },
+      "2028": {
+       "v": 60.4,
+       "flag": "UPPER_BOUND",
+       "stale": false,
+       "na": null,
+       "market": 4.479,
+       "bank": 3.875,
+       "n_dots": 17,
+       "window": [
+        "2028-12-20",
+        "2029-03-21"
+       ],
+       "period": null
+      }
+     },
+     "headline": {
+      "v": -2.0,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -4.23,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -4.23
+       },
+       "2027": {
+        "v": -28.08,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -28.08
+       }
+      },
+      "step": {
+       "v": -4.8,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-09"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": 2.11,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": 2.11
+       },
+       "2027": {
+        "v": -12.71,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -12.71
+       }
+      },
+      "step": {
+       "v": 4.26,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-09"
+      },
+      "base_change_bp": null
+     }
+    },
+    "reaction": {
+     "date": "2026-10-28",
+     "next": {
+      "v": 1.1,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-09"
+     },
+     "year": {
+      "v": 1.1,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-09"
+     }
+    },
+    "last_decision": {
+     "date": "2026-10-28",
+     "delta_bp": 0.0,
+     "rate_after": 3.875,
+     "effective": "2026-10-29",
+     "surprise_consensus_bp": 0.0,
+     "status": "official"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": {
+    "kind": "counted",
+    "label": "10–2",
+    "n_for": 10,
+    "n_against": 2,
+    "for": [],
+    "against": [
+     {
+      "direction": "raise",
+      "name": "Lisa D. Cook",
+      "note": ""
+     },
+     {
+      "direction": "raise",
+      "name": "Beth M. Hammack",
+      "note": ""
+     }
+    ],
+    "source": "statement",
+    "evidence": "by a 10 - 2 vote",
+    "notes": null,
+    "doc_id": "USD:statement:2026-10-28"
+   },
+   "stale_after_bd": 2
+  },
+  "EUR": {
+   "r": {
+    "currency": "EUR",
+    "asof": "2026-11-20",
+    "mandate_id": "2025-06-30",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.0,
+    "band": null,
+    "rate": 2.5,
+    "pi_under": 2.5,
+    "pi_head": 4.0,
+    "gap_under": 0.5,
+    "gap_head": 2.0,
+    "y": null,
+    "y_how": "",
+    "x": 0.5,
+    "x_headline": 2.0,
+    "pi_12m": 2.6,
+    "pi_12m_period": "2027",
+    "pi_12m_basis": "underlying",
+    "gap_12m": 0.6000000000000001,
+    "y_12m": null,
+    "y_12m_how": "",
+    "x_12m": 0.6000000000000001,
+    "na_12m": null,
+    "N": {
+     "mid": 2.0,
+     "lo": 1.75,
+     "hi": 2.25,
+     "asof": "2025-02-13",
+     "flag": "STAFF_ESTIMATE",
+     "stale": true,
+     "nominal_from": "nominal",
+     "used": [
+      [
+       "nominal r*, the same measures",
+       2.0
+      ]
+     ],
+     "source": "data/cb/manual/neutral.yaml",
+     "check": null
+    },
+    "S": 0.5,
+    "S_lo": 0.25,
+    "S_hi": 0.75,
+    "G": 0.25,
+    "G_lo": 0.0,
+    "G_hi": 0.5,
+    "situation": "S0",
+    "direction": 0,
+    "margin": 0.0,
+    "situation_at_N_lo": "S0",
+    "situation_at_N_hi": "S2",
+    "pivot": 2.3333333333333335,
+    "G_12m": 0.40000000000000013,
+    "situation_12m": "S1",
+    "direction_12m": 1,
+    "margin_12m": 0.10000000000000009,
+    "G_12m_lo": 0.15000000000000013,
+    "G_12m_hi": 0.6500000000000001,
+    "situation_12m_at_N_lo": "S3",
+    "situation_12m_at_N_hi": "S1",
+    "v5": {
+     "bank": "EUR",
+     "P": 0.5,
+     "N": 0.5,
+     "P_label": "Slightly restrictive",
+     "N_label": "Slightly above target",
+     "conclusion": "More hikes likely",
+     "case": "f",
+     "reason": "Slightly restrictive, but the ECB sees core inflation still at 2.6% in 2027, not coming down.",
+     "move": true
+    },
+    "lens": {
+     "kind": "market",
+     "target_date": "2027-11-20",
+     "rate_today_curve": 3.101737984227273,
+     "flag_today": "CURVE",
+     "cutoff": "2026-08-19",
+     "cutoff_flag": null,
+     "delta_bp": null,
+     "na": "no market history at the cutoff 2026-08-19 (first data 2026-10-08)",
+     "horizon_gap": 0.2999999999999998,
+     "horizon_period": "2028",
+     "horizon_basis": "underlying",
+     "consistent": false
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 2,
+     "first_move": "2026-06-11",
+     "last_move": "2026-09-10",
+     "moves": [
+      {
+       "date": "2026-06-11",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-06-17"
+      },
+      {
+       "date": "2026-09-10",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-09-16"
+      }
+     ],
+     "holds_since": 1,
+     "holds_from": null,
+     "previous": {
+      "direction": "cut",
+      "count": 8,
+      "first_move": "2024-06-12",
+      "last_move": "2025-06-11"
+     },
+     "previous_na": null,
+     "last_change": "2026-09-10",
+     "history": {
+      "series": "hist:ecb:DFR",
+      "from": "2015-01-01",
+      "to": "2026-11-20"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-17",
+      "step_bp": 23.231745070884102,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-10-28",
+      "rate": 3.101737984227273,
+      "cum_bp": 60.1737984227273,
+      "flag": "CURVE",
+      "na": null
+     }
+    },
+    "flags": [
+     "boundary",
+     "neutral_sensitive",
+     "no_slack",
+     "stale"
+    ],
+    "flags_12m": [
+     "neutral_sensitive"
+    ],
+    "notes": [],
+    "inputs": {
+     "rate": {
+      "v": 2.5,
+      "asof": "2026-10-29",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 2.5,
+      "asof": "2026-10",
+      "source": "ecb:HICP_XEF000 (https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.XEF000.4D0.ANR?format=csvdata&startPeriod=2015-01-01)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 4.0,
+      "asof": "2026-10",
+      "source": "ecb:HICP_000000 (https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.000000.4D0.ANR?format=csvdata&startPeriod=2015-01-01)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "none",
+     "y_today": null,
+     "u": null,
+     "u_star": null,
+     "pi_12m": {
+      "v": 2.6,
+      "asof": "2027",
+      "source": "ECB staff macroeconomic projections for the euro area, September 2026: HICP excluding energy and food",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "underlying",
+     "y_12m": null,
+     "u_12m": null,
+     "neutral_status": "filled",
+     "conditioning": "market",
+     "last_projection": {
+      "v": 2.3,
+      "asof": "2028",
+      "source": "ECB staff macroeconomic projections for the euro area, September 2026: HICP excluding energy and food",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "underlying",
+     "pi_12m_transform": "annual_average"
+    }
+   },
+   "d": {
+    "bank": "EUR",
+    "short": "ECB",
+    "slack_type": "none",
+    "core": {
+     "v": 2.5,
+     "period": "2026-10",
+     "source": "ecb:HICP_XEF000 (https://data-api.ecb.europa.eu/service/data/HICP/M.U2.N.XEF000.4D0.ANR?format=csvdata&startPeriod=2015-01-01)",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 2.6,
+     "period": "2027",
+     "source": "ECB staff macroeconomic projections for the euro area, September 2026: HICP excluding energy and food",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "annual_average",
+     "basis": "underlying"
+    },
+    "y_today": null,
+    "y_12m": null,
+    "u": null,
+    "u_star": null,
+    "u_12m": null,
+    "conditioning": "market",
+    "publication": "ECB staff macroeconomic projections for the euro area, September 2026",
+    "published": "2026-09-10",
+    "cutoff": "2026-08-19",
+    "cutoff_flag": null,
+    "assumed_rate": 2.4,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "Core HICP",
+    "measure_name": "HICP excluding energy, food, alcohol and tobacco, annual rate"
+   },
+   "rate": {
+    "rate": 2.5,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "2%",
+    "target_measure": "HICP, annual change",
+    "underlying": "HICP excluding energy, food, alcohol and tobacco, annual rate",
+    "underlying_id": "ecb:HICP_XEF000",
+    "rule_applied": 2,
+    "rule_text": "(2) the measure projected by the bank that excludes food and energy",
+    "underlying_note": "the staff projections project HICP excluding energy and food (Table 1, Table 3) = XEF000 (energy, food, alcohol and tobacco)",
+    "horizon": "over the medium term",
+    "mandate_type": "hierarchical",
+    "effective_from": "2025-06-30",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "The ECB's monetary policy strategy statement (2025)",
+    "source_url": "https://www.ecb.europa.eu/mopo/strategy/strategy-review/ecb.strategyreview202506_strategy_statement.en.html"
+   },
+   "next_test": {
+    "date": null,
+    "title": "Core CPI Flash Estimate y/y",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-15",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-16",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-17",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-18",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-19",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-20",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-21",
+     "position": -0.1,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-22",
+     "position": -0.1,
+     "need": 0.6
+    }
+   ],
+   "neutral_na": null,
+   "notes": {
+    "why": null,
+    "position": "from Feb 2025",
+    "need": null
+   },
+   "path": {
+    "ccy": "EUR",
+    "short": "ECB",
+    "name": "European Central Bank",
+    "href": "/central-banks/eur.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "eurex_ois_eur",
+    "data_label": "Eurex Clearing",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-17",
+      "effective": "2026-12-23",
+      "rate": 2.733,
+      "cum_bp": 23.29,
+      "step_bp": 23.23,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.9293
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-02-04",
+      "effective": "2027-02-10",
+      "rate": 2.783,
+      "cum_bp": 28.35,
+      "step_bp": 5.06,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.2022
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-18",
+      "effective": "2027-03-24",
+      "rate": 2.927,
+      "cum_bp": 42.67,
+      "step_bp": 14.32,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.5729
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-04-29",
+      "effective": "2027-05-05",
+      "rate": 2.968,
+      "cum_bp": 46.84,
+      "step_bp": 4.17,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.1669
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-10",
+      "effective": "2027-06-16",
+      "rate": 3.024,
+      "cum_bp": 52.44,
+      "step_bp": 5.6,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.224
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-07-22",
+      "effective": "2027-07-28",
+      "rate": 3.063,
+      "cum_bp": 56.32,
+      "step_bp": 3.87,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.1549
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-09",
+      "effective": "2027-09-15",
+      "rate": 3.088,
+      "cum_bp": 58.78,
+      "step_bp": 2.47,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.0987
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-10-28",
+      "effective": "2027-11-03",
+      "rate": 3.102,
+      "cum_bp": 60.17,
+      "step_bp": 1.39,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.0556
+      },
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-10-28",
+     "cum_bp": 60.17,
+     "moves": 2.41,
+     "rate": 3.102,
+     "flag": "CURVE",
+     "est": false,
+     "na": null
+    },
+    "current": {
+     "rate": 2.5,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "ecb:ESTR",
+      "name": "Euro short-term rate",
+      "value": 2.444,
+      "date": "2026-11-20",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-17",
+        "rate": 2.741,
+        "cum_bp": 24.06,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-04",
+        "rate": 2.8,
+        "cum_bp": 30.0,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 2.962,
+        "cum_bp": 46.25,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-29",
+        "rate": 2.996,
+        "cum_bp": 49.64,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-10",
+        "rate": 3.095,
+        "cum_bp": 59.54,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-22",
+        "rate": 3.138,
+        "cum_bp": 63.78,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-09",
+        "rate": 3.185,
+        "cum_bp": 68.47,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-28",
+        "rate": 3.198,
+        "cum_bp": 69.77,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-17",
+        "rate": 2.699,
+        "cum_bp": 19.86,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-04",
+        "rate": 2.788,
+        "cum_bp": 28.76,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 2.899,
+        "cum_bp": 39.94,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-29",
+        "rate": 2.964,
+        "cum_bp": 46.37,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-10",
+        "rate": 3.061,
+        "cum_bp": 56.08,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-22",
+        "rate": 3.094,
+        "cum_bp": 59.39,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-09",
+        "rate": 3.153,
+        "cum_bp": 65.25,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-28",
+        "rate": 3.169,
+        "cum_bp": 66.94,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -9.6,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-28",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": -6.76,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-28",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-17",
+     "effective": "2026-12-23",
+     "time": {
+      "tz": "Europe/Berlin",
+      "abbr": "CET",
+      "local": "14:15",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-17T13:15:00Z"
+     },
+     "sort_utc": "2026-12-17T13:15:00Z",
+     "end_utc": null
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "EUR",
+    "bank": {
+     "id": "ecb",
+     "name": "European Central Bank (Governing Council)",
+     "short": "ECB",
+     "tz": "Europe/Berlin",
+     "url": "https://www.ecb.europa.eu/press/calendars/mgcgc/html/index.en.html"
+    },
+    "href": "/central-banks/eur.html",
+    "rate": {
+     "value": 2.5,
+     "in_force": 2.5,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-10-29",
+     "status": "official",
+     "range": false,
+     "decision_status": "official"
+    },
+    "next": {
+     "decision": "2026-12-17",
+     "effective": "2026-12-23",
+     "first_day": "2026-12-16",
+     "time": {
+      "tz": "Europe/Berlin",
+      "abbr": "CET",
+      "local": "14:15",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-17T13:15:00Z"
+     },
+     "has_projections": true,
+     "projections_name": "Eurosystem staff projections",
+     "has_presser": true,
+     "conference": {
+      "local": "14:45",
+      "held": "every_meeting",
+      "verified": true
+     },
+     "blackout": {
+      "start": "2026-12-09T00:00:00+01:00",
+      "end": "2026-12-17T14:45:00+01:00",
+      "start_utc": "2026-12-08T23:00:00Z",
+      "end_utc": "2026-12-17T13:45:00Z",
+      "precision": "exact",
+      "verified": true,
+      "note": "ends with the press conference"
+     },
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-17",
+     "method": "CURVE",
+     "flag": "CURVE",
+     "stale": false,
+     "level": 2.733,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": 23.23,
+     "direction": "hike",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.0707
+      },
+      {
+       "moves": 1,
+       "p": 0.9293
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": 23.29,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-17",
+      "window": [
+       "2026-12-23",
+       "2027-02-10"
+      ],
+      "level": 2.733,
+      "level_kind": "policy",
+      "rate": 2.733,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 59.75,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-16",
+      "window": [
+       "2027-12-22",
+       "2028-02-16"
+      ],
+      "level": 3.097,
+      "level_kind": "policy",
+      "rate": 3.097,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the bank does not publish its own rate path",
+     "sep": null,
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the bank does not publish its own rate path"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -0.77,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -0.77
+       },
+       "2027": {
+        "v": -10.72,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -10.72
+       }
+      },
+      "step": {
+       "v": -0.98,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-17"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": 4.83,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": 4.83
+       },
+       "2027": {
+        "v": -10.64,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -10.64
+       }
+      },
+      "step": {
+       "v": 6.44,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-17"
+      },
+      "base_change_bp": null
+     }
+    },
+    "reaction": {
+     "date": "2026-10-29",
+     "next": {
+      "v": 0.4,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-17"
+     },
+     "year": {
+      "v": 0.4,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-17"
+     }
+    },
+    "last_decision": {
+     "date": "2026-10-29",
+     "delta_bp": 0.0,
+     "rate_after": 2.5,
+     "effective": "2026-11-04",
+     "surprise_consensus_bp": 0.0,
+     "status": "official"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": {
+    "kind": "not_published",
+    "label": "not published",
+    "n_for": null,
+    "n_against": null,
+    "for": [],
+    "against": [],
+    "source": "n/a",
+    "evidence": "not published (decisions by consensus)",
+    "notes": null,
+    "doc_id": "EUR:statement:2026-10-29"
+   },
+   "stale_after_bd": 2
+  },
+  "GBP": {
+   "r": {
+    "currency": "GBP",
+    "asof": "2026-11-20",
+    "mandate_id": "2026-10-28",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.0,
+    "band": null,
+    "rate": 4.0,
+    "pi_under": 2.8,
+    "pi_head": 3.6,
+    "gap_under": 0.7999999999999998,
+    "gap_head": 1.6,
+    "y": -1.0,
+    "y_how": "output gap as published",
+    "x": 0.4666666666666665,
+    "x_headline": 1.2666666666666668,
+    "pi_12m": 4.0,
+    "pi_12m_period": "2027Q4",
+    "pi_12m_basis": "headline",
+    "gap_12m": 2.0,
+    "y_12m": -1.2,
+    "y_12m_how": "output gap as published",
+    "x_12m": 1.6,
+    "na_12m": null,
+    "N": {
+     "mid": 2.9375,
+     "lo": 2.75,
+     "hi": 3.0,
+     "asof": "2026-09-29",
+     "flag": "MEMBERS_VIEW",
+     "stale": false,
+     "nominal_from": "nominal",
+     "used": [
+      [
+       "Alan Taylor (2026-09-29)",
+       2.875
+      ],
+      [
+       "Dave Ramsden (2026-02-05)",
+       3.0
+      ]
+     ],
+     "source": "data/cb/manual/neutral.yaml",
+     "check": null
+    },
+    "S": 1.0625,
+    "S_lo": 1.0,
+    "S_hi": 1.25,
+    "G": -0.36250000000000027,
+    "G_lo": -0.5500000000000003,
+    "G_hi": -0.30000000000000027,
+    "situation": "S2",
+    "direction": -1,
+    "margin": 0.03333333333333349,
+    "situation_at_N_lo": "S2",
+    "situation_at_N_hi": "S2",
+    "pivot": 3.041666666666667,
+    "G_12m": 1.3375000000000004,
+    "situation_12m": "S1",
+    "direction_12m": 1,
+    "margin_12m": 1.0875000000000004,
+    "G_12m_lo": 1.1500000000000004,
+    "G_12m_hi": 1.4000000000000004,
+    "situation_12m_at_N_lo": "S1",
+    "situation_12m_at_N_hi": "S1",
+    "v5": {
+     "bank": "GBP",
+     "P": 1.0625,
+     "N": 0.7999999999999998,
+     "P_label": "Restrictive",
+     "N_label": "Above target",
+     "conclusion": "More hikes likely",
+     "case": "f",
+     "reason": "Already restrictive, but the BoE sees total inflation rising from 3.6% to 4.0% by end-2027, even with the hikes markets expected.",
+     "move": true
+    },
+    "lens": {
+     "kind": "market",
+     "target_date": "2027-11-20",
+     "rate_today_curve": 4.791550591345046,
+     "flag_today": "CURVE",
+     "cutoff": "2026-10-27",
+     "cutoff_flag": null,
+     "rate_cutoff_curve": 4.90596915554066,
+     "flag_cutoff": "CURVE",
+     "delta_bp": -11.441856419561436,
+     "flag": "CURVE",
+     "na": null,
+     "horizon_gap": -0.19999999999999996,
+     "horizon_period": "2029Q4",
+     "horizon_basis": "headline",
+     "consistent": true,
+     "horizon_flag": "headline_basis"
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 1,
+     "first_move": "2026-11-05",
+     "last_move": "2026-11-05",
+     "moves": [
+      {
+       "date": "2026-11-05",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-11-05"
+      }
+     ],
+     "holds_since": 0,
+     "holds_from": null,
+     "previous": {
+      "direction": "cut",
+      "count": 6,
+      "first_move": "2024-08-01",
+      "last_move": "2025-12-18"
+     },
+     "previous_na": null,
+     "last_change": "2026-11-05",
+     "history": {
+      "series": "hist:bis:GB",
+      "from": "2015-01-02",
+      "to": "2026-11-16"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-17",
+      "step_bp": 18.349387150706775,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-11-04",
+      "rate": 4.791550591345046,
+      "cum_bp": 79.15505913450458,
+      "flag": "CURVE",
+      "na": null
+     }
+    },
+    "flags": [
+     "boundary",
+     "headline_basis"
+    ],
+    "flags_12m": [],
+    "notes": [],
+    "inputs": {
+     "rate": {
+      "v": 4.0,
+      "asof": "2026-11-05",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 2.8,
+      "asof": "2026-10",
+      "source": "ons:DKO8 (https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/dko8/mm23/data)",
+      "note": "released 2026-11-18",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 3.6,
+      "asof": "2026-10",
+      "source": "ons:D7G7 (https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7g7/mm23/data)",
+      "note": "released 2026-11-18",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "output_gap",
+     "y_today": {
+      "v": -1.0,
+      "asof": "2026Q4",
+      "source": "Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP) [https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-report/2026/november/monetary-policy-report-november-2026.pdf Table 3.B, p. 75 (PDF p. 76), central projection]",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "u": null,
+     "u_star": null,
+     "pi_12m": {
+      "v": 4.0,
+      "asof": "2027Q4",
+      "source": "Monetary Policy Report, November 2026: CPI inflation (four-quarter inflation rate, D7BT)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "headline",
+     "y_12m": {
+      "v": -1.2,
+      "asof": "2027Q4",
+      "source": "Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "u_12m": null,
+     "neutral_status": "filled",
+     "conditioning": "market",
+     "last_projection": {
+      "v": 1.8,
+      "asof": "2029Q4",
+      "source": "Monetary Policy Report, November 2026: CPI inflation (four-quarter inflation rate, D7BT)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "headline",
+     "pi_12m_transform": "yoy_quarter"
+    }
+   },
+   "d": {
+    "bank": "GBP",
+    "short": "BoE",
+    "slack_type": "output_gap",
+    "core": {
+     "v": 2.8,
+     "period": "2026-10",
+     "source": "ons:DKO8 (https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/dko8/mm23/data)",
+     "note": "released 2026-11-18",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 4.0,
+     "period": "2027Q4",
+     "source": "Monetary Policy Report, November 2026: CPI inflation (four-quarter inflation rate, D7BT)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "yoy_quarter",
+     "basis": "headline"
+    },
+    "y_today": {
+     "v": -1.0,
+     "period": "2026Q4",
+     "source": "Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP) [https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-report/2026/november/monetary-policy-report-november-2026.pdf Table 3.B, p. 75 (PDF p. 76), central projection]",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "quarter_level"
+    },
+    "y_12m": {
+     "v": -1.2,
+     "period": "2027Q4",
+     "source": "Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "quarter_level"
+    },
+    "u": null,
+    "u_star": null,
+    "u_12m": null,
+    "conditioning": "market",
+    "publication": "Monetary Policy Report, November 2026",
+    "published": "2026-11-05",
+    "cutoff": "2026-10-27",
+    "cutoff_flag": null,
+    "assumed_rate": 3.9,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "Core CPI",
+    "measure_name": "CPI 12-month rate excluding energy, food, alcoholic beverages and tobacco"
+   },
+   "rate": {
+    "rate": 4.0,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "2%",
+    "target_measure": "CPI, 12-month increase",
+    "underlying": "CPI 12-month rate excluding energy, food, alcoholic beverages and tobacco",
+    "underlying_id": "ons:DKO8",
+    "rule_applied": 3,
+    "rule_text": "(3) the statistics institute's measure excluding food and energy",
+    "underlying_note": "the MPR projects CPI only (Table 3.B); the Bank designates no core measure: ONS CPI excluding energy, food, alcohol and tobacco (rule 3); services CPI secondary",
+    "horizon": "medium term",
+    "mandate_type": "hierarchical",
+    "effective_from": "2026-10-28",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "Remit for the Monetary Policy Committee - October 2026 (letter of 28 October 2026)",
+    "source_url": "https://www.bankofengland.co.uk/-/media/boe/files/letter/2026/mpc-letter-remit-2026.pdf"
+   },
+   "next_test": {
+    "date": null,
+    "title": "Core CPI y/y",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-15",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-16",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-17",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-18",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-19",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-20",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-21",
+     "position": -0.9375,
+     "need": 2.0
+    },
+    {
+     "date": "2026-11-22",
+     "position": -0.9375,
+     "need": 2.0
+    }
+   ],
+   "neutral_na": null,
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "GBP",
+    "short": "BoE",
+    "name": "Bank of England",
+    "href": "/central-banks/gbp.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "eurex_ois_gbp",
+    "data_label": "Eurex Clearing",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-17",
+      "effective": "2026-12-17",
+      "rate": 4.186,
+      "cum_bp": 18.59,
+      "step_bp": 18.35,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.734
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-02-04",
+      "effective": "2027-02-04",
+      "rate": 4.37,
+      "cum_bp": 36.95,
+      "step_bp": 18.37,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.7347
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-18",
+      "effective": "2027-03-18",
+      "rate": 4.491,
+      "cum_bp": 49.08,
+      "step_bp": 12.13,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.4853
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-04-29",
+      "effective": "2027-04-29",
+      "rate": 4.617,
+      "cum_bp": 61.67,
+      "step_bp": 12.59,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.5035
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-17",
+      "effective": "2027-06-17",
+      "rate": 4.683,
+      "cum_bp": 68.33,
+      "step_bp": 6.66,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.2663
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-07-29",
+      "effective": "2027-07-29",
+      "rate": 4.756,
+      "cum_bp": 75.62,
+      "step_bp": 7.29,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.2917
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-16",
+      "effective": "2027-09-16",
+      "rate": 4.78,
+      "cum_bp": 78.05,
+      "step_bp": 2.43,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.0971
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-11-04",
+      "effective": "2027-11-04",
+      "rate": 4.792,
+      "cum_bp": 79.16,
+      "step_bp": 1.11,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.0443
+      },
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-11-04",
+     "cum_bp": 79.16,
+     "moves": 3.17,
+     "rate": 4.792,
+     "flag": "CURVE",
+     "est": false,
+     "na": null
+    },
+    "current": {
+     "rate": 4.0,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "boe:IUDSOIA",
+      "name": "SONIA",
+      "value": 3.984,
+      "date": "2026-11-19",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-17",
+        "rate": 4.2,
+        "cum_bp": 19.96,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-04",
+        "rate": 4.372,
+        "cum_bp": 37.19,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 4.529,
+        "cum_bp": 52.87,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-29",
+        "rate": 4.668,
+        "cum_bp": 66.77,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-17",
+        "rate": 4.759,
+        "cum_bp": 75.9,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-29",
+        "rate": 4.846,
+        "cum_bp": 84.6,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-16",
+        "rate": 4.886,
+        "cum_bp": 88.65,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-11-04",
+        "rate": 4.903,
+        "cum_bp": 90.26,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-17",
+        "rate": 4.091,
+        "cum_bp": 34.12,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-04",
+        "rate": 4.313,
+        "cum_bp": 56.28,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 4.432,
+        "cum_bp": 68.2,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-29",
+        "rate": 4.601,
+        "cum_bp": 85.1,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-17",
+        "rate": 4.693,
+        "cum_bp": 94.34,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-29",
+        "rate": 4.782,
+        "cum_bp": 103.18,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-16",
+        "rate": 4.825,
+        "cum_bp": 107.45,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-11-04",
+        "rate": 4.848,
+        "cum_bp": 109.83,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -11.11,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-11-04",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": -5.68,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-11-04",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-17",
+     "effective": "2026-12-17",
+     "time": {
+      "tz": "Europe/London",
+      "abbr": "GMT",
+      "local": "12:00",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-17T12:00:00Z"
+     },
+     "sort_utc": "2026-12-17T12:00:00Z",
+     "end_utc": null
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "GBP",
+    "bank": {
+     "id": "boe",
+     "name": "Bank of England (MPC)",
+     "short": "BoE",
+     "tz": "Europe/London",
+     "url": "https://www.bankofengland.co.uk/monetary-policy/upcoming-mpc-dates"
+    },
+    "href": "/central-banks/gbp.html",
+    "rate": {
+     "value": 4.0,
+     "in_force": 4.0,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-11-05",
+     "status": "official",
+     "range": false,
+     "decision_status": "official"
+    },
+    "next": {
+     "decision": "2026-12-17",
+     "effective": "2026-12-17",
+     "first_day": null,
+     "time": {
+      "tz": "Europe/London",
+      "abbr": "GMT",
+      "local": "12:00",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-17T12:00:00Z"
+     },
+     "has_projections": false,
+     "projections_name": "Monetary Policy Report",
+     "has_presser": false,
+     "conference": {
+      "local": null,
+      "held": "mpr_only",
+      "verified": true
+     },
+     "blackout": {
+      "start": "2026-12-09T00:00:00+00:00",
+      "end": "2026-12-17T12:00:00+00:00",
+      "start_utc": "2026-12-09T00:00:00Z",
+      "end_utc": "2026-12-17T12:00:00Z",
+      "precision": "approximate",
+      "verified": true,
+      "note": "the page says usually 8-9 days before; 8 used"
+     },
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-17",
+     "method": "CURVE",
+     "flag": "CURVE",
+     "stale": false,
+     "level": 4.186,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": 18.35,
+     "direction": "hike",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.266
+      },
+      {
+       "moves": 1,
+       "p": 0.734
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": 18.59,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-17",
+      "window": [
+       "2026-12-17",
+       "2027-02-04"
+      ],
+      "level": 4.186,
+      "level_kind": "policy",
+      "rate": 4.186,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 78.16,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-16",
+      "window": [
+       "2027-12-16",
+       "2028-02-10"
+      ],
+      "level": 4.782,
+      "level_kind": "policy",
+      "rate": 4.782,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the bank does not publish its own rate path",
+     "sep": null,
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the bank does not publish its own rate path"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -1.38,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -1.38
+       },
+       "2027": {
+        "v": -12.57,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -12.57
+       }
+      },
+      "step": {
+       "v": -1.73,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-17"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": 9.29,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -15.71
+       },
+       "2027": {
+        "v": -7.0,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -32.0
+       }
+      },
+      "step": {
+       "v": 8.13,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-17"
+      },
+      "base_change_bp": 25.0
+     }
+    },
+    "reaction": {
+     "date": "2026-11-05",
+     "next": {
+      "v": 5.9,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-17"
+     },
+     "year": {
+      "v": 5.9,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-17"
+     }
+    },
+    "last_decision": {
+     "date": "2026-11-05",
+     "delta_bp": 25.0,
+     "rate_after": 4.0,
+     "effective": "2026-11-05",
+     "surprise_consensus_bp": 0.0,
+     "status": "official"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": {
+    "kind": "counted",
+    "label": "8–1",
+    "n_for": 8,
+    "n_against": 1,
+    "for": [
+     "Alan Taylor",
+     "Andrew Bailey",
+     "Clare Lombardelli",
+     "Dave Ramsden",
+     "Huw Pill",
+     "Megan Greene",
+     "Sarah Breeden",
+     "Swati Dhingra"
+    ],
+    "against": [
+     {
+      "direction": "raise",
+      "name": "Catherine L Mann",
+      "note": "preferred Bank Rate 4.25%"
+     }
+    ],
+    "source": "summary+xlsx",
+    "evidence": "voted by a majority of 8-1",
+    "notes": null,
+    "doc_id": "GBP:statement:2026-11-05"
+   },
+   "stale_after_bd": 2
+  },
+  "JPY": {
+   "r": {
+    "currency": "JPY",
+    "asof": "2026-11-20",
+    "mandate_id": "2013-01-22",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.0,
+    "band": null,
+    "rate": 1.25,
+    "pi_under": 2.2,
+    "pi_head": 2.3,
+    "gap_under": 0.20000000000000018,
+    "gap_head": 0.2999999999999998,
+    "y": 0.5497362361895087,
+    "y_how": "output gap as published",
+    "x": 0.38324541206316975,
+    "x_headline": 0.4832454120631694,
+    "pi_12m": 2.7,
+    "pi_12m_period": "FY2027",
+    "pi_12m_basis": "underlying",
+    "gap_12m": 0.7000000000000002,
+    "y_12m": 0.5497362361895087,
+    "y_12m_how": "today's slack held (no projection)",
+    "x_12m": 0.8832454120631698,
+    "na_12m": null,
+    "N": {
+     "mid": 1.8,
+     "lo": 1.1,
+     "hi": 2.5,
+     "asof": "2026-03-27",
+     "flag": "STAFF_ESTIMATE",
+     "stale": false,
+     "nominal_from": "real+target",
+     "used": [
+      [
+       "BoJ Monetary Affairs Department, six models, as of 2025/Q3 (Review 2026-E-4)",
+       1.8
+      ]
+     ],
+     "source": "data/cb/manual/neutral.yaml",
+     "check": null
+    },
+    "S": -0.55,
+    "S_lo": -1.25,
+    "S_hi": 0.1499999999999999,
+    "G": 1.1248681180947546,
+    "G_lo": 0.42486811809475467,
+    "G_hi": 1.8248681180947546,
+    "situation": "S2",
+    "direction": 1,
+    "margin": 0.11675458793683025,
+    "situation_at_N_lo": "S2",
+    "situation_at_N_hi": "S2",
+    "pivot": 1.4500879212701636,
+    "G_12m": 1.8748681180947546,
+    "situation_12m": "S1",
+    "direction_12m": 1,
+    "margin_12m": 0.38324541206316975,
+    "G_12m_lo": 1.1748681180947547,
+    "G_12m_hi": 2.574868118094755,
+    "situation_12m_at_N_lo": "S1",
+    "situation_12m_at_N_hi": "S1",
+    "v5": {
+     "bank": "JPY",
+     "P": -0.55,
+     "N": 0.20000000000000018,
+     "P_label": "Slightly stimulative",
+     "N_label": "Near target",
+     "conclusion": "No reason to move",
+     "case": "a",
+     "reason": "Rate slightly stimulative and core inflation near target.",
+     "move": false
+    },
+    "lens": {
+     "kind": "market",
+     "target_date": "2027-11-20",
+     "rate_today_curve": 1.853519936656394,
+     "flag_today": "CURVE",
+     "cutoff": "2026-10-30",
+     "cutoff_flag": "ESTIMATE",
+     "rate_cutoff_curve": 1.984705046839346,
+     "flag_cutoff": "CURVE",
+     "delta_bp": -13.118511018295198,
+     "flag": "CURVE",
+     "na": null,
+     "horizon_gap": 0.2999999999999998,
+     "horizon_period": "FY2028",
+     "horizon_basis": "underlying",
+     "consistent": false
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 6,
+     "first_move": "2024-03-21",
+     "last_move": "2026-09-18",
+     "moves": [
+      {
+       "date": "2024-03-21",
+       "bp": 15.0,
+       "date_source": "history_effective",
+       "effective": "2024-03-21"
+      },
+      {
+       "date": "2024-08-01",
+       "bp": 20.0,
+       "date_source": "history_effective",
+       "effective": "2024-08-01"
+      },
+      {
+       "date": "2025-01-27",
+       "bp": 25.0,
+       "date_source": "history_effective",
+       "effective": "2025-01-27"
+      },
+      {
+       "date": "2025-12-19",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2025-12-22"
+      },
+      {
+       "date": "2026-06-16",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-06-17"
+      },
+      {
+       "date": "2026-09-18",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-09-24"
+      }
+     ],
+     "holds_since": 1,
+     "holds_from": null,
+     "previous": null,
+     "previous_na": "no earlier stage in the history (from 2016-09-21)",
+     "last_change": "2026-09-18",
+     "history": {
+      "series": "hist:bis:JP",
+      "from": "2016-09-21",
+      "to": "2026-11-17"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-18",
+      "step_bp": 18.216735710696597,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-10-29",
+      "rate": 1.853519936656394,
+      "cum_bp": 60.35199366563939,
+      "flag": "CURVE",
+      "na": null
+     }
+    },
+    "flags": [
+     "estimate",
+     "slack_held"
+    ],
+    "flags_12m": [],
+    "notes": [],
+    "inputs": {
+     "rate": {
+      "v": 1.25,
+      "asof": "2026-10-30",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 2.2,
+      "asof": "2026-10",
+      "source": "statjp:2025:0178 (https://www.stat.go.jp/data/cpi/2025/csv/zmi2025aa.csv)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 2.3,
+      "asof": "2026-10",
+      "source": "statjp:2025:0001 (https://www.stat.go.jp/data/cpi/2025/csv/zmi2025aa.csv)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "output_gap",
+     "y_today": {
+      "v": 0.5497362361895087,
+      "asof": "2026Q2",
+      "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): Output gap (Research and Statistics Department estimate) [https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx sheet data1, row 2026.2Q, column 'Output gap' (updated Oct. 5, 2026)]",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "u": null,
+     "u_star": null,
+     "pi_12m": {
+      "v": 2.7,
+      "asof": "FY2027",
+      "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): CPI (all items less fresh food and energy) (Reference)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "underlying",
+     "y_12m": null,
+     "u_12m": null,
+     "neutral_status": "filled",
+     "conditioning": "market",
+     "last_projection": {
+      "v": 2.3,
+      "asof": "FY2028",
+      "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): CPI (all items less fresh food and energy) (Reference)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "underlying",
+     "pi_12m_transform": "fiscal_year"
+    }
+   },
+   "d": {
+    "bank": "JPY",
+    "short": "BoJ",
+    "slack_type": "output_gap",
+    "core": {
+     "v": 2.2,
+     "period": "2026-10",
+     "source": "statjp:2025:0178 (https://www.stat.go.jp/data/cpi/2025/csv/zmi2025aa.csv)",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 2.7,
+     "period": "FY2027",
+     "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): CPI (all items less fresh food and energy) (Reference)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "fiscal_year",
+     "basis": "underlying"
+    },
+    "y_today": {
+     "v": 0.5497362361895087,
+     "period": "2026Q2",
+     "source": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View): Output gap (Research and Statistics Department estimate) [https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx sheet data1, row 2026.2Q, column 'Output gap' (updated Oct. 5, 2026)]",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "quarter_level"
+    },
+    "y_12m": null,
+    "u": null,
+    "u_star": null,
+    "u_12m": null,
+    "conditioning": "market",
+    "publication": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View)",
+    "published": "2026-10-30",
+    "cutoff": "2026-10-30",
+    "cutoff_flag": "ESTIMATE",
+    "assumed_rate": null,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "Core CPI",
+    "measure_name": "CPI all items, less fresh food and energy (2025=100)"
+   },
+   "rate": {
+    "rate": 1.25,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "2%",
+    "target_measure": "CPI all items, year-on-year",
+    "underlying": "CPI all items, less fresh food and energy (2025=100)",
+    "underlying_id": "statjp:2025:0178",
+    "rule_applied": 2,
+    "rule_text": "(2) the measure projected by the bank that excludes food and energy",
+    "underlying_note": "the Outlook Report projects CPI (all items less fresh food) and, for reference, CPI (all items less fresh food and energy) - rule 2 = the one that excludes food and energy",
+    "horizon": "at the earliest possible time",
+    "mandate_type": "price_stability",
+    "effective_from": "2013-01-22",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "Outline of Monetary Policy - Price Stability and the 'Price Stability Target' of 2 Percent",
+    "source_url": "https://www.boj.or.jp/en/mopo/outline/index.htm"
+   },
+   "next_test": {
+    "date": null,
+    "title": "National Core CPI y/y",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-15",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-16",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-17",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-18",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-19",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-20",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-21",
+     "position": -1.25,
+     "need": 0.7
+    },
+    {
+     "date": "2026-11-22",
+     "position": -1.25,
+     "need": 0.7
+    }
+   ],
+   "neutral_na": null,
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "JPY",
+    "short": "BoJ",
+    "name": "Bank of Japan",
+    "href": "/central-banks/jpy.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "eurex_ois_jpy",
+    "data_label": "Eurex Clearing",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-18",
+      "effective": "2026-12-21",
+      "rate": 1.436,
+      "cum_bp": 18.64,
+      "step_bp": 18.22,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.7287
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-01-22",
+      "effective": "2027-01-25",
+      "rate": 1.501,
+      "cum_bp": 25.15,
+      "step_bp": 6.5,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.2601
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-18",
+      "effective": "2027-03-19",
+      "rate": 1.606,
+      "cum_bp": 35.55,
+      "step_bp": 10.4,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.4162
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-04-28",
+      "effective": "2027-04-30",
+      "rate": 1.684,
+      "cum_bp": 43.4,
+      "step_bp": 7.85,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.314
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-11",
+      "effective": "2027-06-14",
+      "rate": 1.739,
+      "cum_bp": 48.95,
+      "step_bp": 5.54,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.2218
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-07-22",
+      "effective": "2027-07-23",
+      "rate": 1.785,
+      "cum_bp": 53.46,
+      "step_bp": 4.51,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.1804
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-22",
+      "effective": "2027-09-24",
+      "rate": 1.802,
+      "cum_bp": 55.17,
+      "step_bp": 1.72,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.0687
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-10-29",
+      "effective": "2027-11-01",
+      "rate": 1.854,
+      "cum_bp": 60.35,
+      "step_bp": 5.18,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.2072
+      },
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-10-29",
+     "cum_bp": 60.35,
+     "moves": 2.41,
+     "rate": 1.854,
+     "flag": "CURVE",
+     "est": false,
+     "na": null
+    },
+    "current": {
+     "rate": 1.25,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "boj:STRDCLUCON",
+      "name": "Uncollateralized overnight call rate, average (TONA proxy)",
+      "value": 1.227,
+      "date": "2026-11-18",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-18",
+        "rate": 1.46,
+        "cum_bp": 21.0,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-01-22",
+        "rate": 1.502,
+        "cum_bp": 25.15,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 1.659,
+        "cum_bp": 40.87,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-28",
+        "rate": 1.732,
+        "cum_bp": 48.18,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-11",
+        "rate": 1.784,
+        "cum_bp": 53.44,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-22",
+        "rate": 1.858,
+        "cum_bp": 60.77,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-22",
+        "rate": 1.911,
+        "cum_bp": 66.15,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-29",
+        "rate": 1.953,
+        "cum_bp": 70.34,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-18",
+        "rate": 1.444,
+        "cum_bp": 19.37,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-01-22",
+        "rate": 1.507,
+        "cum_bp": 25.67,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 1.645,
+        "cum_bp": 39.48,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-28",
+        "rate": 1.701,
+        "cum_bp": 45.15,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-11",
+        "rate": 1.823,
+        "cum_bp": 57.25,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-22",
+        "rate": 1.878,
+        "cum_bp": 62.77,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-22",
+        "rate": 1.925,
+        "cum_bp": 67.53,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-29",
+        "rate": 1.985,
+        "cum_bp": 73.47,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -9.99,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-29",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": -13.12,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-29",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-18",
+     "effective": "2026-12-21",
+     "time": {
+      "tz": "Asia/Tokyo",
+      "abbr": "JST",
+      "local": null,
+      "tbd": true,
+      "window_local": [
+       "11:30",
+       "13:30"
+      ],
+      "unverified": false,
+      "utc": null
+     },
+     "sort_utc": "2026-12-18T02:30:00Z",
+     "end_utc": "2026-12-18T04:30:00Z"
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "JPY",
+    "bank": {
+     "id": "boj",
+     "name": "Bank of Japan (Policy Board)",
+     "short": "BoJ",
+     "tz": "Asia/Tokyo",
+     "url": "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm"
+    },
+    "href": "/central-banks/jpy.html",
+    "rate": {
+     "value": 1.25,
+     "in_force": 1.25,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-10-30",
+     "status": "statement",
+     "range": false,
+     "decision_status": "statement"
+    },
+    "next": {
+     "decision": "2026-12-18",
+     "effective": "2026-12-21",
+     "first_day": "2026-12-17",
+     "time": {
+      "tz": "Asia/Tokyo",
+      "abbr": "JST",
+      "local": null,
+      "tbd": true,
+      "window_local": [
+       "11:30",
+       "13:30"
+      ],
+      "unverified": false,
+      "utc": null
+     },
+     "has_projections": false,
+     "projections_name": "Outlook Report",
+     "has_presser": true,
+     "conference": {
+      "local": "15:30",
+      "held": "every_meeting",
+      "verified": true
+     },
+     "blackout": {
+      "start": "2026-12-15T00:00:00+09:00",
+      "end": "2026-12-18T23:59:00+09:00",
+      "start_utc": "2026-12-14T15:00:00Z",
+      "end_utc": "2026-12-18T14:59:00Z",
+      "precision": "exact",
+      "verified": false,
+      "note": "wording from an older BoJ notice"
+     },
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-18",
+     "method": "CURVE",
+     "flag": "CURVE",
+     "stale": false,
+     "level": 1.436,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": 18.22,
+     "direction": "hike",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.2713
+      },
+      {
+       "moves": 1,
+       "p": 0.7287
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": 18.64,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-18",
+      "window": [
+       "2026-12-21",
+       "2027-01-25"
+      ],
+      "level": 1.436,
+      "level_kind": "policy",
+      "rate": 1.436,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 67.85,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-17",
+      "window": [
+       "2027-12-20",
+       "2028-02-14"
+      ],
+      "level": 1.928,
+      "level_kind": "policy",
+      "rate": 1.928,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the bank does not publish its own rate path",
+     "sep": null,
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the bank does not publish its own rate path"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -2.36,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -2.36
+       },
+       "2027": {
+        "v": -8.3,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -8.3
+       }
+      },
+      "step": {
+       "v": -3.01,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-18"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": 1.1,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": 1.1
+       },
+       "2027": {
+        "v": -15.19,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -15.19
+       }
+      },
+      "step": {
+       "v": 2.47,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-18"
+      },
+      "base_change_bp": null
+     }
+    },
+    "reaction": {
+     "date": "2026-10-30",
+     "next": {
+      "v": -0.6,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-18"
+     },
+     "year": {
+      "v": -0.6,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-18"
+     }
+    },
+    "last_decision": {
+     "date": "2026-10-30",
+     "delta_bp": 0.0,
+     "rate_after": 1.25,
+     "effective": "2026-11-02",
+     "surprise_consensus_bp": 0.0,
+     "status": "statement"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": null,
+   "stale_after_bd": 2
+  },
+  "CAD": {
+   "r": {
+    "currency": "CAD",
+    "asof": "2026-11-20",
+    "mandate_id": "2022-01-01",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.0,
+    "band": [
+     1.0,
+     3.0
+    ],
+    "rate": 2.5,
+    "pi_under": 1.9,
+    "pi_head": 3.1,
+    "gap_under": -0.10000000000000009,
+    "gap_head": 1.1,
+    "y": -0.75,
+    "y_how": "output gap as published",
+    "x": -0.3500000000000001,
+    "x_headline": 0.8500000000000001,
+    "pi_12m": 2.6,
+    "pi_12m_period": "2027Q4",
+    "pi_12m_basis": "headline",
+    "gap_12m": 0.6000000000000001,
+    "y_12m": -0.75,
+    "y_12m_how": "today's slack held (no projection)",
+    "x_12m": 0.3500000000000001,
+    "na_12m": null,
+    "N": {
+     "mid": 2.75,
+     "lo": 2.25,
+     "hi": 3.25,
+     "asof": "2026-04-29",
+     "flag": "BANK_ESTIMATE",
+     "stale": false,
+     "nominal_from": "nominal",
+     "used": [
+      [
+       "Bank of Canada annual assessment, MPR April 2026 appendix",
+       2.75
+      ]
+     ],
+     "source": "data/cb/manual/neutral.yaml",
+     "check": null
+    },
+    "S": -0.25,
+    "S_lo": -0.75,
+    "S_hi": 0.25,
+    "G": -0.27500000000000013,
+    "G_lo": -0.7750000000000001,
+    "G_hi": 0.22499999999999987,
+    "situation": "S2",
+    "direction": -1,
+    "margin": 0.025000000000000133,
+    "situation_at_N_lo": "S2",
+    "situation_at_N_hi": "S0",
+    "pivot": 2.083333333333333,
+    "G_12m": 0.7750000000000001,
+    "situation_12m": "S2",
+    "direction_12m": 1,
+    "margin_12m": 0.1499999999999999,
+    "G_12m_lo": 0.27500000000000013,
+    "G_12m_hi": 1.2750000000000001,
+    "situation_12m_at_N_lo": "S2",
+    "situation_12m_at_N_hi": "S2",
+    "v5": {
+     "bank": "CAD",
+     "P": -0.25,
+     "N": -0.10000000000000009,
+     "P_label": "Neutral",
+     "N_label": "Near target",
+     "conclusion": "No reason to move",
+     "case": "a",
+     "reason": "Rate near neutral and core inflation near target. The risk is total inflation: 3.1% now, 2.6% by end-2027.",
+     "move": false
+    },
+    "lens": {
+     "kind": "unpublished",
+     "delta_bp": null,
+     "na": "the bank publishes no rate conditioning",
+     "horizon_gap": 0.10000000000000009,
+     "horizon_period": "2028Q4",
+     "horizon_basis": "headline",
+     "consistent": true,
+     "horizon_flag": "headline_basis"
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 1,
+     "first_move": "2026-10-28",
+     "last_move": "2026-10-28",
+     "moves": [
+      {
+       "date": "2026-10-28",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-10-29"
+      }
+     ],
+     "holds_since": 0,
+     "holds_from": null,
+     "previous": {
+      "direction": "cut",
+      "count": 9,
+      "first_move": "2024-06-06",
+      "last_move": "2025-10-29"
+     },
+     "previous_na": null,
+     "last_change": "2026-10-28",
+     "history": {
+      "series": "hist:bis:CA",
+      "from": "2015-01-01",
+      "to": "2026-11-16"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-09",
+      "step_bp": 15.499999999999359,
+      "flag": "EXACT",
+      "stale": true,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-10-27",
+      "rate": 3.326303660879682,
+      "cum_bp": 82.63036608796818,
+      "flag": "ESTIMATE",
+      "na": null
+     }
+    },
+    "flags": [
+     "boundary",
+     "estimate",
+     "headline_basis",
+     "neutral_sensitive",
+     "pending",
+     "slack_held"
+    ],
+    "flags_12m": [],
+    "notes": [],
+    "inputs": {
+     "rate": {
+      "v": 2.5,
+      "asof": "2026-10-28",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 1.9,
+      "asof": "2026-10",
+      "source": "boc:CPI_TRIM (https://www.bankofcanada.ca/valet/observations/CPI_TRIM/json?start_date=2025-07-28) + boc:CPI_MEDIAN (https://www.bankofcanada.ca/valet/observations/CPI_MEDIAN/json?start_date=2025-07-28)",
+      "note": "mean of 1.8, 2.0",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 3.1,
+      "asof": "2026-10",
+      "source": "boc:STATIC_TOTALCPICHANGE (https://www.bankofcanada.ca/valet/observations/STATIC_TOTALCPICHANGE/json?start_date=2025-07-28)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "output_gap",
+     "y_today": {
+      "v": -0.75,
+      "asof": "2026Q3",
+      "source": "Monetary Policy Report, October 2026: Output gap (Bank's estimated range) [https://www.bankofcanada.ca/wp-content/uploads/2026/10/mpr-2026-10-28.pdf Table 2 p. 40 (PDF p. 41), Table 3 p. 41 (PDF p. 42), output gap p. 9 (PDF p. 10)]",
+      "note": "",
+      "lo": -1.25,
+      "hi": -0.25
+     },
+     "u": null,
+     "u_star": null,
+     "pi_12m": {
+      "v": 2.6,
+      "asof": "2027Q4",
+      "source": "Monetary Policy Report, October 2026: CPI inflation (year-over-year percentage change), Table 3",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "headline",
+     "y_12m": null,
+     "u_12m": null,
+     "neutral_status": "filled",
+     "conditioning": "unpublished",
+     "last_projection": {
+      "v": 2.1,
+      "asof": "2028Q4",
+      "source": "Monetary Policy Report, October 2026: CPI inflation (year-over-year percentage change), Table 3",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "headline",
+     "pi_12m_transform": "yoy_quarter"
+    }
+   },
+   "d": {
+    "bank": "CAD",
+    "short": "BoC",
+    "slack_type": "output_gap",
+    "core": {
+     "v": 1.9,
+     "period": "2026-10",
+     "source": "boc:CPI_TRIM (https://www.bankofcanada.ca/valet/observations/CPI_TRIM/json?start_date=2025-07-28) + boc:CPI_MEDIAN (https://www.bankofcanada.ca/valet/observations/CPI_MEDIAN/json?start_date=2025-07-28)",
+     "note": "mean of 1.8, 2.0",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 2.6,
+     "period": "2027Q4",
+     "source": "Monetary Policy Report, October 2026: CPI inflation (year-over-year percentage change), Table 3",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "yoy_quarter",
+     "basis": "headline"
+    },
+    "y_today": {
+     "v": -0.75,
+     "period": "2026Q3",
+     "source": "Monetary Policy Report, October 2026: Output gap (Bank's estimated range) [https://www.bankofcanada.ca/wp-content/uploads/2026/10/mpr-2026-10-28.pdf Table 2 p. 40 (PDF p. 41), Table 3 p. 41 (PDF p. 42), output gap p. 9 (PDF p. 10)]",
+     "note": "",
+     "lo": -1.25,
+     "hi": -0.25,
+     "transform": "quarter_level"
+    },
+    "y_12m": null,
+    "u": null,
+    "u_star": null,
+    "u_12m": null,
+    "conditioning": "unpublished",
+    "publication": "Monetary Policy Report, October 2026",
+    "published": "2026-10-28",
+    "cutoff": null,
+    "cutoff_flag": null,
+    "assumed_rate": null,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "CPI-trim/median",
+    "measure_name": "CPI-trim, 12-month change and CPI-median, 12-month change"
+   },
+   "rate": {
+    "rate": 2.5,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "1–3% (midpoint 2%)",
+    "target_measure": "total CPI, 12-month rate of change",
+    "underlying": "CPI-trim, 12-month change and CPI-median, 12-month change (mean of the two)",
+    "underlying_id": "boc:CPI_TRIM, boc:CPI_MEDIAN",
+    "rule_applied": 1,
+    "rule_text": "(1) the core measure officially designated by the bank",
+    "underlying_note": "the Bank's 'Preferred measures of core inflation': CPI-trim and CPI-median (rule 1); the mean of the two is computed in code",
+    "horizon": "medium term",
+    "mandate_type": "hierarchical",
+    "effective_from": "2022-01-01",
+    "effective_to": "2026-12-31",
+    "last_verified": "2026-11-14",
+    "source_title": "Joint Statement of the Government of Canada and the Bank of Canada on the Renewal of the Monetary Policy Framework (December 13, 2021)",
+    "source_url": "https://www.bankofcanada.ca/2021/12/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework/"
+   },
+   "next_test": {
+    "date": null,
+    "title": "Trimmed CPI y/y",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-15",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-16",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-17",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-18",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-19",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-20",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-21",
+     "position": -0.85,
+     "need": 0.6
+    },
+    {
+     "date": "2026-11-22",
+     "position": -0.85,
+     "need": 0.6
+    }
+   ],
+   "neutral_na": null,
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "CAD",
+    "short": "BoC",
+    "name": "Bank of Canada",
+    "href": "/central-banks/cad.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-13",
+    "data_source": "mx_corra",
+    "data_label": "Montréal Exchange",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-09",
+      "effective": "2026-12-10",
+      "rate": 2.655,
+      "cum_bp": 15.5,
+      "step_bp": 15.5,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.62
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-01-27",
+      "effective": "2027-01-28",
+      "rate": 2.815,
+      "cum_bp": 31.5,
+      "step_bp": 16.0,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.64
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-03",
+      "effective": "2027-03-04",
+      "rate": 2.981,
+      "cum_bp": 48.11,
+      "step_bp": 16.61,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-04-28",
+      "effective": "2027-04-29",
+      "rate": 3.018,
+      "cum_bp": 51.85,
+      "step_bp": 3.74,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-02",
+      "effective": "2027-06-03",
+      "rate": 3.119,
+      "cum_bp": 61.9,
+      "step_bp": 10.05,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-07-21",
+      "effective": "2027-07-22",
+      "rate": 3.22,
+      "cum_bp": 72.04,
+      "step_bp": 10.14,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-08",
+      "effective": "2027-09-09",
+      "rate": 3.291,
+      "cum_bp": 79.1,
+      "step_bp": 7.06,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-10-27",
+      "effective": "2027-10-28",
+      "rate": 3.326,
+      "cum_bp": 82.63,
+      "step_bp": 3.53,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-10-27",
+     "cum_bp": 82.63,
+     "moves": 3.31,
+     "rate": 3.326,
+     "flag": "ESTIMATE",
+     "est": true,
+     "na": null
+    },
+    "current": {
+     "rate": 2.5,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "boc:AVG.INTWO",
+      "name": "CORRA",
+      "value": 2.55,
+      "date": "2026-11-19",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-05",
+      "points": [
+       {
+        "meeting": "2026-12-09",
+        "rate": 2.606,
+        "cum_bp": 10.57,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-01-27",
+        "rate": 2.735,
+        "cum_bp": 23.5,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-03",
+        "rate": 2.842,
+        "cum_bp": 34.21,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-28",
+        "rate": 2.865,
+        "cum_bp": 36.47,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-02",
+        "rate": 2.942,
+        "cum_bp": 44.25,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-21",
+        "rate": 3.023,
+        "cum_bp": 52.31,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-08",
+        "rate": 3.08,
+        "cum_bp": 57.98,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-27",
+        "rate": 3.108,
+        "cum_bp": 60.81,
+        "est": true,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-22",
+      "points": [
+       {
+        "meeting": "2026-12-09",
+        "rate": 2.58,
+        "cum_bp": 33.0,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-01-27",
+        "rate": 2.7,
+        "cum_bp": 44.99,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-03",
+        "rate": 2.86,
+        "cum_bp": 60.99,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-04-28",
+        "rate": 2.948,
+        "cum_bp": 69.77,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-02",
+        "rate": 3.044,
+        "cum_bp": 79.41,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-07-21",
+        "rate": 3.136,
+        "cum_bp": 88.59,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-08",
+        "rate": 3.217,
+        "cum_bp": 96.73,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-27",
+        "rate": 3.26,
+        "cum_bp": 100.95,
+        "est": true,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": 21.82,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-27",
+      "prev": "2026-11-05"
+     },
+     "3w": {
+      "v": 6.68,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-27",
+      "prev": "2026-10-22"
+     }
+    },
+    "next": {
+     "decision": "2026-12-09",
+     "effective": "2026-12-10",
+     "time": {
+      "tz": "America/Toronto",
+      "abbr": "EST",
+      "local": "09:45",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-09T14:45:00Z"
+     },
+     "sort_utc": "2026-12-09T14:45:00Z",
+     "end_utc": null
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "CAD",
+    "bank": {
+     "id": "boc",
+     "name": "Bank of Canada (Governing Council)",
+     "short": "BoC",
+     "tz": "America/Toronto",
+     "url": "https://www.bankofcanada.ca/core-functions/monetary-policy/key-interest-rate/"
+    },
+    "href": "/central-banks/cad.html",
+    "rate": {
+     "value": 2.5,
+     "in_force": 2.5,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-10-28",
+     "status": "official",
+     "range": false,
+     "decision_status": "official"
+    },
+    "next": {
+     "decision": "2026-12-09",
+     "effective": "2026-12-10",
+     "first_day": null,
+     "time": {
+      "tz": "America/Toronto",
+      "abbr": "EST",
+      "local": "09:45",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-09T14:45:00Z"
+     },
+     "has_projections": false,
+     "projections_name": "Monetary Policy Report",
+     "has_presser": true,
+     "conference": {
+      "local": "10:30",
+      "held": "every_meeting",
+      "verified": true
+     },
+     "blackout": {
+      "start": "2026-12-02T00:00:00-05:00",
+      "end": "2026-12-09T10:30:00-05:00",
+      "start_utc": "2026-12-02T05:00:00Z",
+      "end_utc": "2026-12-09T15:30:00Z",
+      "precision": "exact",
+      "verified": true,
+      "note": ""
+     },
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-09",
+     "method": "EXACT",
+     "flag": "EXACT",
+     "stale": true,
+     "level": 2.655,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": 15.5,
+     "direction": "hike",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.38
+      },
+      {
+       "moves": 1,
+       "p": 0.62
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": 15.5,
+      "flag": "EXACT",
+      "stale": true,
+      "na": null,
+      "meeting": "2026-12-09",
+      "window": null,
+      "level": 2.655,
+      "level_kind": "policy",
+      "rate": 2.655,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 83.07,
+      "flag": "ESTIMATE",
+      "stale": true,
+      "na": null,
+      "meeting": "2027-12-08",
+      "window": [
+       "2027-12-09",
+       "2028-02-03"
+      ],
+      "level": 3.331,
+      "level_kind": "policy",
+      "rate": 3.331,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the bank does not publish its own rate path",
+     "sep": null,
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the bank does not publish its own rate path"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": 0.0,
+        "flag": "EXACT",
+        "stale": false,
+        "na": null,
+        "cum_bp": 0.0
+       },
+       "2027": {
+        "v": -0.0,
+        "flag": "ESTIMATE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -0.0
+       }
+      },
+      "step": {
+       "v": 0.0,
+       "flag": "EXACT",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-09"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-21",
+      "years": {
+       "2026": {
+        "v": 5.59,
+        "flag": "EXACT",
+        "stale": false,
+        "na": null,
+        "cum_bp": -19.41
+       },
+       "2027": {
+        "v": -4.01,
+        "flag": "ESTIMATE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -29.01
+       }
+      },
+      "step": {
+       "v": -1.41,
+       "flag": "EXACT",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-09"
+      },
+      "base_change_bp": 25.0
+     }
+    },
+    "reaction": {
+     "date": "2026-10-28",
+     "next": {
+      "v": 5.1,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-09"
+     },
+     "year": {
+      "v": 5.1,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-09"
+     }
+    },
+    "last_decision": {
+     "date": "2026-10-28",
+     "delta_bp": 25.0,
+     "rate_after": 2.5,
+     "effective": "2026-10-29",
+     "surprise_consensus_bp": 0.0,
+     "status": "official"
+    },
+    "stale": true,
+    "na": null
+   },
+   "vote": {
+    "kind": "not_published",
+    "label": "not published",
+    "n_for": null,
+    "n_against": null,
+    "for": [],
+    "against": [],
+    "source": "n/a",
+    "evidence": "not published (Governing Council decides by consensus)",
+    "notes": null,
+    "doc_id": "CAD:statement:2026-10-28"
+   },
+   "stale_after_bd": 2
+  },
+  "AUD": {
+   "r": {
+    "currency": "AUD",
+    "asof": "2026-11-20",
+    "mandate_id": "2025-07-10",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.5,
+    "band": [
+     2.0,
+     3.0
+    ],
+    "rate": 4.85,
+    "pi_under": 3.6,
+    "pi_head": 4.3,
+    "gap_under": 1.1,
+    "gap_head": 1.7999999999999998,
+    "y": -0.3000000000000007,
+    "y_how": "-2.0 * (u 4.9 - u* 4.75)",
+    "x": 0.9999999999999999,
+    "x_headline": 1.6999999999999995,
+    "pi_12m": 2.9,
+    "pi_12m_period": "2027Q4",
+    "pi_12m_basis": "underlying",
+    "gap_12m": 0.3999999999999999,
+    "y_12m": -0.3000000000000007,
+    "y_12m_how": "-2.0 * (u 4.9 - u* 4.75)",
+    "x_12m": 0.29999999999999966,
+    "na_12m": null,
+    "N": {
+     "mid": 3.490555140314484,
+     "lo": 3.02024403284537,
+     "hi": 4.416598826587419,
+     "asof": "2026-11-03",
+     "flag": "STAFF_ESTIMATE",
+     "stale": false,
+     "nominal_from": "nominal",
+     "used": [
+      [
+       "TVP-VAR Model 1, 2026 Q2",
+       4.193964989513948
+      ],
+      [
+       "TVP-VAR Model 2, 2026 Q2",
+       3.659528095190119
+      ],
+      [
+       "TVP-VAR Model 3, 2026 Q2",
+       4.416598826587419
+      ],
+      [
+       "Semi-structural Model 1, 2026 Q2",
+       3.32158218543885
+      ],
+      [
+       "Semi-structural Model 2, 2026 Q2",
+       3.169446731565178
+      ],
+      [
+       "Semi-structural Model 3, 2026 Q2",
+       3.02024403284537
+      ]
+     ],
+     "source": "data/cb/manual/neutral.yaml",
+     "check": null
+    },
+    "S": 1.3594448596855155,
+    "S_lo": 0.4334011734125802,
+    "S_hi": 1.8297559671546297,
+    "G": 0.14055514031448424,
+    "G_lo": -0.32975596715462996,
+    "G_hi": 1.0665988265874196,
+    "situation": "S3",
+    "direction": 1,
+    "margin": 0.10944485968551576,
+    "situation_at_N_lo": "S3",
+    "situation_at_N_hi": "S1",
+    "pivot": 3.5062965731236773,
+    "G_12m": -0.909444859685516,
+    "situation_12m": "S2",
+    "direction_12m": -1,
+    "margin_12m": 0.20000000000000034,
+    "G_12m_lo": -1.3797559671546302,
+    "G_12m_hi": 0.01659882658741929,
+    "situation_12m_at_N_lo": "S2",
+    "situation_12m_at_N_hi": "S0",
+    "v5": {
+     "bank": "AUD",
+     "P": 1.3594448596855155,
+     "N": 1.1,
+     "P_label": "Restrictive",
+     "N_label": "Above target",
+     "conclusion": "Likely on hold",
+     "case": "f",
+     "reason": "Already restrictive, and the RBA sees core inflation easing from 3.6% to 2.9% by end-2027 without further hikes.",
+     "move": false
+    },
+    "lens": {
+     "kind": "market",
+     "target_date": "2027-11-20",
+     "rate_today_curve": 4.480357142857143,
+     "flag_today": "EXACT",
+     "cutoff": "2026-10-28",
+     "cutoff_flag": null,
+     "rate_cutoff_curve": 4.8525000000000045,
+     "flag_cutoff": "EXACT",
+     "delta_bp": -37.21428571428618,
+     "flag": "EXACT",
+     "na": null,
+     "horizon_gap": -0.10000000000000009,
+     "horizon_period": "2028Q4",
+     "horizon_basis": "underlying",
+     "consistent": true
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 5,
+     "first_move": "2026-02-03",
+     "last_move": "2026-11-03",
+     "moves": [
+      {
+       "date": "2026-02-03",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-02-04"
+      },
+      {
+       "date": "2026-03-17",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-03-18"
+      },
+      {
+       "date": "2026-05-05",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-05-06"
+      },
+      {
+       "date": "2026-09-29",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-09-30"
+      },
+      {
+       "date": "2026-11-03",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-11-04"
+      }
+     ],
+     "holds_since": 0,
+     "holds_from": null,
+     "previous": {
+      "direction": "cut",
+      "count": 3,
+      "first_move": "2025-02-19",
+      "last_move": "2025-08-13"
+     },
+     "previous_na": null,
+     "last_change": "2026-11-03",
+     "history": {
+      "series": "hist:bis:AU",
+      "from": "2015-01-02",
+      "to": "2026-11-12"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-08",
+      "step_bp": -1.3478260869559833,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-11-02",
+      "rate": 4.480357142857143,
+      "cum_bp": -36.964285714285694,
+      "flag": "EXACT",
+      "na": null
+     }
+    },
+    "flags": [
+     "neutral_sensitive"
+    ],
+    "flags_12m": [
+     "neutral_sensitive"
+    ],
+    "notes": [],
+    "inputs": {
+     "rate": {
+      "v": 4.85,
+      "asof": "2026-11-03",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 3.6,
+      "asof": "2026-09",
+      "source": "abs:CPI.999902 (https://data.api.abs.gov.au/rest/data/ABS,CPI,2.0.0/3.999902.20.50.M?startPeriod=2015-01-01&format=csv)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 4.3,
+      "asof": "2026-09",
+      "source": "abs:CPI.10001 (https://data.api.abs.gov.au/rest/data/ABS,CPI,2.0.0/3.10001.10.50.M?startPeriod=2015-01-01&format=csv)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "unemployment_gap",
+     "y_today": null,
+     "u": {
+      "v": 4.9,
+      "asof": "2026-10",
+      "source": "rba:GLFSURSA (https://www.rba.gov.au/statistics/tables/csv/h5-data.csv)",
+      "note": "released 2026-11-20",
+      "lo": null,
+      "hi": null
+     },
+     "u_star": {
+      "v": 4.75,
+      "asof": "2026-11-03",
+      "source": "Statement on Monetary Policy, November 2026: NAIRU [https://www.rba.gov.au/publications/smp/2026/nov/pdf/statement-on-monetary-policy-2026-11.pdf section 2.5 'Assessment of spare capacity', p. 50 (PDF p. 53)]",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m": {
+      "v": 2.9,
+      "asof": "2027Q4",
+      "source": "Statement on Monetary Policy, November 2026: Trimmed mean inflation",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "underlying",
+     "y_12m": null,
+     "u_12m": {
+      "v": 4.9,
+      "asof": "2027Q4",
+      "source": "Statement on Monetary Policy, November 2026: Unemployment rate (quarterly, %)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "neutral_status": "filled",
+     "conditioning": "market",
+     "last_projection": {
+      "v": 2.4,
+      "asof": "2028Q4",
+      "source": "Statement on Monetary Policy, November 2026: Trimmed mean inflation",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "underlying",
+     "pi_12m_transform": "yoy_quarter"
+    }
+   },
+   "d": {
+    "bank": "AUD",
+    "short": "RBA",
+    "slack_type": "unemployment_gap",
+    "core": {
+     "v": 3.6,
+     "period": "2026-09",
+     "source": "abs:CPI.999902 (https://data.api.abs.gov.au/rest/data/ABS,CPI,2.0.0/3.999902.20.50.M?startPeriod=2015-01-01&format=csv)",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 2.9,
+     "period": "2027Q4",
+     "source": "Statement on Monetary Policy, November 2026: Trimmed mean inflation",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "yoy_quarter",
+     "basis": "underlying"
+    },
+    "y_today": null,
+    "y_12m": null,
+    "u": {
+     "v": 4.9,
+     "period": "2026-10",
+     "source": "rba:GLFSURSA (https://www.rba.gov.au/statistics/tables/csv/h5-data.csv)",
+     "note": "released 2026-11-20",
+     "lo": null,
+     "hi": null
+    },
+    "u_star": {
+     "v": 4.75,
+     "period": "2026-11-03",
+     "source": "Statement on Monetary Policy, November 2026: NAIRU [https://www.rba.gov.au/publications/smp/2026/nov/pdf/statement-on-monetary-policy-2026-11.pdf section 2.5 'Assessment of spare capacity', p. 50 (PDF p. 53)]",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "u_12m": {
+     "v": 4.9,
+     "period": "2027Q4",
+     "source": "Statement on Monetary Policy, November 2026: Unemployment rate (quarterly, %)",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "conditioning": "market",
+    "publication": "Statement on Monetary Policy, November 2026",
+    "published": "2026-11-03",
+    "cutoff": "2026-10-28",
+    "cutoff_flag": null,
+    "assumed_rate": 4.7,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "Trimmed mean",
+    "measure_name": "Monthly CPI, trimmed mean, annual change (seasonally adjusted)"
+   },
+   "rate": {
+    "rate": 4.85,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "2–3% (midpoint 2.5%)",
+    "target_measure": "consumer price inflation",
+    "underlying": "Monthly CPI, trimmed mean, annual change (seasonally adjusted)",
+    "underlying_id": "abs:CPI.999902",
+    "rule_applied": 1,
+    "rule_text": "(1) the core measure officially designated by the bank",
+    "underlying_note": "trimmed mean, monthly (ABS complete monthly CPI, from 2025-04); the RBA G1 quarterly trimmed mean is the crosscheck (rba:GCPIOCPMTMYP)",
+    "horizon": "the appropriate timeframe depends on economic circumstances",
+    "mandate_type": "dual",
+    "effective_from": "2025-07-10",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "Statement on the Conduct of Monetary Policy - 10 July 2025",
+    "source_url": "https://www.rba.gov.au/monetary-policy/framework/stmt-conduct-mp-9-2025-07-10.html"
+   },
+   "next_test": {
+    "date": null,
+    "title": "Trimmed Mean CPI m/m",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-15",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-16",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-17",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-18",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-19",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-20",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-21",
+     "position": 0.959445,
+     "need": 0.4
+    },
+    {
+     "date": "2026-11-22",
+     "position": 0.959445,
+     "need": 0.4
+    }
+   ],
+   "neutral_na": null,
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "AUD",
+    "short": "RBA",
+    "name": "Reserve Bank of Australia",
+    "href": "/central-banks/aud.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "asx_ib",
+    "data_label": "ASX",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-08",
+      "effective": "2026-12-09",
+      "rate": 4.837,
+      "cum_bp": -1.35,
+      "step_bp": -1.35,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.0539
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-02-09",
+      "effective": "2027-02-10",
+      "rate": 4.82,
+      "cum_bp": -3.05,
+      "step_bp": -1.7,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.0679
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-23",
+      "effective": "2027-03-24",
+      "rate": 4.783,
+      "cum_bp": -6.74,
+      "step_bp": -3.7,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.1479
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-05-04",
+      "effective": "2027-05-05",
+      "rate": 4.722,
+      "cum_bp": -12.78,
+      "step_bp": -6.04,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.2414
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-22",
+      "effective": "2027-06-23",
+      "rate": 4.639,
+      "cum_bp": -21.11,
+      "step_bp": -8.33,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.3332
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-08-10",
+      "effective": "2027-08-11",
+      "rate": 4.618,
+      "cum_bp": -23.16,
+      "step_bp": -2.05,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.0822
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-28",
+      "effective": "2027-09-29",
+      "rate": 4.55,
+      "cum_bp": -30.0,
+      "step_bp": -6.84,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.2735
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-11-02",
+      "effective": "2027-11-03",
+      "rate": 4.48,
+      "cum_bp": -36.96,
+      "step_bp": -6.96,
+      "flag": "EXACT",
+      "method": "EXACT",
+      "est": false,
+      "prob": {
+       "dir": "cut",
+       "n": 0,
+       "p": 0.2786
+      },
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-11-02",
+     "cum_bp": -36.96,
+     "moves": -1.48,
+     "rate": 4.48,
+     "flag": "EXACT",
+     "est": false,
+     "na": null
+    },
+    "current": {
+     "rate": 4.85,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "rba:FIRMMCRID",
+      "name": "Interbank overnight cash rate (F1)",
+      "value": 4.85,
+      "date": "2026-11-20",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-08",
+        "rate": 4.857,
+        "cum_bp": 0.67,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-09",
+        "rate": 4.913,
+        "cum_bp": 6.31,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-23",
+        "rate": 4.92,
+        "cum_bp": 7.04,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-05-04",
+        "rate": 4.897,
+        "cum_bp": 4.7,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-22",
+        "rate": 4.89,
+        "cum_bp": 3.96,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-08-10",
+        "rate": 4.787,
+        "cum_bp": -6.31,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-28",
+        "rate": 4.785,
+        "cum_bp": -6.5,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-11-02",
+        "rate": 4.726,
+        "cum_bp": -12.39,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-08",
+        "rate": 4.849,
+        "cum_bp": 24.91,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-09",
+        "rate": 4.909,
+        "cum_bp": 30.94,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-23",
+        "rate": 4.931,
+        "cum_bp": 33.12,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-05-04",
+        "rate": 4.913,
+        "cum_bp": 31.26,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-22",
+        "rate": 4.884,
+        "cum_bp": 28.41,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-08-10",
+        "rate": 4.841,
+        "cum_bp": 24.11,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-28",
+        "rate": 4.82,
+        "cum_bp": 22.0,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-11-02",
+        "rate": 4.766,
+        "cum_bp": 16.64,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -24.57,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-11-02",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": -28.61,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-11-02",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-08",
+     "effective": "2026-12-09",
+     "time": {
+      "tz": "Australia/Sydney",
+      "abbr": "AEDT",
+      "local": "14:30",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-08T03:30:00Z"
+     },
+     "sort_utc": "2026-12-08T03:30:00Z",
+     "end_utc": null
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "AUD",
+    "bank": {
+     "id": "rba",
+     "name": "Reserve Bank of Australia (Monetary Policy Board)",
+     "short": "RBA",
+     "tz": "Australia/Sydney",
+     "url": "https://www.rba.gov.au/schedules-events/board-meeting-schedules.html"
+    },
+    "href": "/central-banks/aud.html",
+    "rate": {
+     "value": 4.85,
+     "in_force": 4.85,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-11-03",
+     "status": "official",
+     "range": false,
+     "decision_status": "official"
+    },
+    "next": {
+     "decision": "2026-12-08",
+     "effective": "2026-12-09",
+     "first_day": "2026-12-07",
+     "time": {
+      "tz": "Australia/Sydney",
+      "abbr": "AEDT",
+      "local": "14:30",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-08T03:30:00Z"
+     },
+     "has_projections": false,
+     "projections_name": "Statement on Monetary Policy",
+     "has_presser": true,
+     "conference": {
+      "local": "15:30",
+      "held": "every_meeting",
+      "verified": true
+     },
+     "blackout": {
+      "start": "2026-12-02T14:00:00+11:00",
+      "end": "2026-12-08T17:00:00+11:00",
+      "start_utc": "2026-12-02T03:00:00Z",
+      "end_utc": "2026-12-08T06:00:00Z",
+      "precision": "exact",
+      "verified": true,
+      "note": "external MPB members; trading blackout ends 17:00 on decision day, the minutes come later"
+     },
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-08",
+     "method": "EXACT",
+     "flag": "EXACT",
+     "stale": false,
+     "level": 4.837,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": -1.35,
+     "direction": "cut",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.9461
+      },
+      {
+       "moves": 1,
+       "p": 0.0539
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": -1.35,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-08",
+      "window": null,
+      "level": 4.837,
+      "level_kind": "policy",
+      "rate": 4.837,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": -40.68,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-14",
+      "window": null,
+      "level": 4.443,
+      "level_kind": "policy",
+      "rate": 4.443,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the bank does not publish its own rate path",
+     "sep": null,
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the bank does not publish its own rate path"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -2.02,
+        "flag": "EXACT",
+        "stale": false,
+        "na": null,
+        "cum_bp": -2.02
+       },
+       "2027": {
+        "v": -25.35,
+        "flag": "EXACT",
+        "stale": false,
+        "na": null,
+        "cum_bp": -25.35
+       }
+      },
+      "step": {
+       "v": -2.02,
+       "flag": "EXACT",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-08"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": 2.78,
+        "flag": "EXACT",
+        "stale": false,
+        "na": null,
+        "cum_bp": -22.22
+       },
+       "2027": {
+        "v": -38.59,
+        "flag": "EXACT",
+        "stale": false,
+        "na": null,
+        "cum_bp": -63.59
+       }
+      },
+      "step": {
+       "v": -6.66,
+       "flag": "EXACT",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-08"
+      },
+      "base_change_bp": 25.0
+     }
+    },
+    "reaction": {
+     "date": "2026-11-03",
+     "next": {
+      "v": 0.3,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-08"
+     },
+     "year": {
+      "v": 0.3,
+      "flag": "EXACT",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-08"
+     }
+    },
+    "last_decision": {
+     "date": "2026-11-03",
+     "delta_bp": 25.0,
+     "rate_after": 4.85,
+     "effective": "2026-11-04",
+     "surprise_consensus_bp": 0.0,
+     "status": "official"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": {
+    "kind": "counted",
+    "label": "6–3",
+    "n_for": 6,
+    "n_against": 3,
+    "for": [],
+    "against": [
+     {
+      "direction": "hold",
+      "name": "",
+      "note": "3 member(s) voted to leave"
+     }
+    ],
+    "source": "minutes",
+    "evidence": "six members voted to increase the cash rate target by 25 basis points to 4.85 per cent; three members voted to leave",
+    "notes": null,
+    "doc_id": "AUD:statement:2026-11-03"
+   },
+   "stale_after_bd": 2
+  },
+  "NZD": {
+   "r": {
+    "currency": "NZD",
+    "asof": "2026-11-20",
+    "mandate_id": "2023-12-20",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": 2.0,
+    "band": [
+     1.0,
+     3.0
+    ],
+    "rate": 2.75,
+    "pi_under": 2.9,
+    "pi_head": 3.7,
+    "gap_under": 0.8999999999999999,
+    "gap_head": 1.7000000000000002,
+    "y": -1.4,
+    "y_how": "output gap as published",
+    "x": 0.4333333333333333,
+    "x_headline": 1.2333333333333336,
+    "pi_12m": 2.1,
+    "pi_12m_period": "2027Q4",
+    "pi_12m_basis": "headline",
+    "gap_12m": 0.10000000000000009,
+    "y_12m": -0.9,
+    "y_12m_how": "output gap as published",
+    "x_12m": -0.1999999999999999,
+    "na_12m": null,
+    "N": null,
+    "S": null,
+    "S_lo": null,
+    "S_hi": null,
+    "G": null,
+    "G_lo": null,
+    "G_hi": null,
+    "situation": null,
+    "direction": null,
+    "margin": null,
+    "pivot": null,
+    "G_12m": null,
+    "situation_12m": null,
+    "direction_12m": null,
+    "margin_12m": null,
+    "G_12m_lo": null,
+    "G_12m_hi": null,
+    "v5": {
+     "bank": "NZD",
+     "P": null,
+     "N": 0.8999999999999999,
+     "P_label": null,
+     "N_label": "Above target",
+     "conclusion": "More hikes likely",
+     "case": "b",
+     "reason": "The RBNZ's own rate track rises from 2.75% to 3.2% by end-2027.",
+     "move": true
+    },
+    "lens": {
+     "kind": "own_path",
+     "basis": "ocr_track",
+     "year": 2027,
+     "gap_bp": 47.5,
+     "bank": 3.2,
+     "market": 3.675,
+     "flag": "ESTIMATE",
+     "na": null,
+     "source": "bank page OCR track vs market (RBNZ: Q4 average of the published OCR track vs the market at year-end; the market side is an estimate (BKBM-OCR spread).)",
+     "path": [
+      [
+       "2026Q3",
+       2.6
+      ],
+      [
+       "2026Q4",
+       2.8
+      ],
+      [
+       "2027Q1",
+       3.0
+      ],
+      [
+       "2027Q2",
+       3.1
+      ],
+      [
+       "2027Q3",
+       3.1
+      ],
+      [
+       "2027Q4",
+       3.2
+      ]
+     ],
+     "path_kind": "ocr_track",
+     "path_period": "2027Q4",
+     "path_transform": "quarter_average",
+     "horizon_gap": 0.0,
+     "horizon_period": "2029Q3",
+     "horizon_basis": "headline",
+     "consistent": true,
+     "horizon_flag": "headline_basis"
+    },
+    "cycle": {
+     "direction": "hike",
+     "count": 2,
+     "first_move": "2026-07-08",
+     "last_move": "2026-09-02",
+     "moves": [
+      {
+       "date": "2026-07-08",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-07-09"
+      },
+      {
+       "date": "2026-09-02",
+       "bp": 25.0,
+       "date_source": "decision",
+       "effective": "2026-09-03"
+      }
+     ],
+     "holds_since": 1,
+     "holds_from": null,
+     "previous": {
+      "direction": "cut",
+      "count": 9,
+      "first_move": "2024-08-15",
+      "last_move": "2025-11-27"
+     },
+     "previous_na": null,
+     "last_change": "2026-09-02",
+     "history": {
+      "series": "hist:bis:NZ",
+      "from": "2015-01-01",
+      "to": "2026-11-13"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-09",
+      "step_bp": 30.366977956599015,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-10-27",
+      "rate": 3.6721472541929114,
+      "cum_bp": 92.21472541929114,
+      "flag": "ESTIMATE",
+      "na": null
+     }
+    },
+    "flags": [
+     "estimate",
+     "headline_basis",
+     "need_only",
+     "pending"
+    ],
+    "flags_12m": [],
+    "notes": [
+     "neutral: the September 2026 MPS shows the long-run nominal neutral OCR indicator suite only as a chart (Figure 6.4, p. 55 / PDF p. 58: 'range between the maximum and minimum values from our suite'); no number in the text or tables (re-read 2026-11-14); no 'policy horizon' estimate is printed"
+    ],
+    "inputs": {
+     "rate": {
+      "v": 2.75,
+      "asof": "2026-10-28",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 2.9,
+      "asof": "2026Q3",
+      "source": "statsnz:CPIQ.SE9NS1450 (https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2026-quarter/Download-data/consumers-price-index-september-2026-quarter-infoshare-data.csv)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 3.7,
+      "asof": "2026Q3",
+      "source": "statsnz:CPIQ.SE9A (https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2026-quarter/Download-data/consumers-price-index-september-2026-quarter-index-numbers.csv)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "output_gap",
+     "y_today": {
+      "v": -1.4,
+      "asof": "M2027",
+      "source": "Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5) [https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)]",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "u": null,
+     "u_star": null,
+     "pi_12m": {
+      "v": 2.1,
+      "asof": "2027Q4",
+      "source": "Monetary Policy Statement, September 2026: CPI inflation, annual (Table 6.1)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "headline",
+     "y_12m": {
+      "v": -0.9,
+      "asof": "M2028",
+      "source": "Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "u_12m": null,
+     "neutral_status": "pending",
+     "conditioning": "own_path",
+     "last_projection": {
+      "v": 2.0,
+      "asof": "2029Q3",
+      "source": "Monetary Policy Statement, September 2026: CPI inflation, annual (Table 6.1)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "headline",
+     "pi_12m_transform": "yoy_quarter"
+    }
+   },
+   "d": {
+    "bank": "NZD",
+    "short": "RBNZ",
+    "slack_type": "output_gap",
+    "core": {
+     "v": 2.9,
+     "period": "2026Q3",
+     "source": "statsnz:CPIQ.SE9NS1450 (https://www.stats.govt.nz/assets/Uploads/Consumers-price-index/Consumers-price-index-September-2026-quarter/Download-data/consumers-price-index-september-2026-quarter-infoshare-data.csv)",
+     "note": "",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 2.1,
+     "period": "2027Q4",
+     "source": "Monetary Policy Statement, September 2026: CPI inflation, annual (Table 6.1)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "yoy_quarter",
+     "basis": "headline"
+    },
+    "y_today": {
+     "v": -1.4,
+     "period": "M2027",
+     "source": "Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5) [https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)]",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "year_average_march"
+    },
+    "y_12m": {
+     "v": -0.9,
+     "period": "M2028",
+     "source": "Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "year_average_march"
+    },
+    "u": null,
+    "u_star": null,
+    "u_12m": null,
+    "conditioning": "own_path",
+    "publication": "Monetary Policy Statement, September 2026",
+    "published": "2026-09-02",
+    "cutoff": null,
+    "cutoff_flag": null,
+    "assumed_rate": null,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "CPI ex food & energy",
+    "measure_name": "CPI All groups less food group, household energy subgroup and vehicle fuels (non-standard series)"
+   },
+   "rate": {
+    "rate": 2.75,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "1–3% (midpoint 2%)",
+    "target_measure": "CPI, annual",
+    "underlying": "CPI All groups less food group, household energy subgroup and vehicle fuels (non-standard series)",
+    "underlying_id": "statsnz:CPIQ.SE9NS1450",
+    "rule_applied": 3,
+    "rule_text": "(3) the statistics institute's measure excluding food and energy",
+    "underlying_note": "the RBNZ designates no single core measure (MPS Table 6.2 lists several): Stats NZ CPI excluding food, household energy and vehicle fuels (rule 3)",
+    "horizon": "medium term",
+    "mandate_type": "price_stability",
+    "effective_from": "2023-12-20",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "NZ Gazette 2023-go5845: Remit Issued for the Monetary Policy Committee of the Reserve Bank of New Zealand (issued 12 Dec 2023, in effect 20 Dec 2023)",
+    "source_url": "https://gazette.govt.nz/notice/id/2023-go5845"
+   },
+   "next_test": {
+    "date": null,
+    "title": "CPI q/q",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-15",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-16",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-17",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-18",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-19",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-20",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-21",
+     "position": null,
+     "need": 0.1
+    },
+    {
+     "date": "2026-11-22",
+     "position": null,
+     "need": 0.1
+    }
+   ],
+   "neutral_na": "RBNZ neutral due 9 Dec 2026",
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "NZD",
+    "short": "RBNZ",
+    "name": "Reserve Bank of New Zealand",
+    "href": "/central-banks/nzd.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "asx_bb",
+    "data_label": "ASX",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-09",
+      "effective": "2026-12-10",
+      "rate": 3.054,
+      "cum_bp": 30.37,
+      "step_bp": 30.37,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-02-10",
+      "effective": "2027-02-11",
+      "rate": 3.231,
+      "cum_bp": 48.06,
+      "step_bp": 17.69,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-17",
+      "effective": "2027-03-18",
+      "rate": 3.332,
+      "cum_bp": 58.17,
+      "step_bp": 10.11,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-05-05",
+      "effective": "2027-05-06",
+      "rate": 3.431,
+      "cum_bp": 68.13,
+      "step_bp": 9.96,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-16",
+      "effective": "2027-06-17",
+      "rate": 3.529,
+      "cum_bp": 77.92,
+      "step_bp": 9.8,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-08-04",
+      "effective": "2027-08-05",
+      "rate": 3.6,
+      "cum_bp": 84.98,
+      "step_bp": 7.06,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-15",
+      "effective": "2027-09-16",
+      "rate": 3.647,
+      "cum_bp": 89.7,
+      "step_bp": 4.72,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-10-27",
+      "effective": "2027-10-28",
+      "rate": 3.672,
+      "cum_bp": 92.21,
+      "step_bp": 2.52,
+      "flag": "ESTIMATE",
+      "method": "FIT",
+      "est": true,
+      "prob": null,
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-10-27",
+     "cum_bp": 92.21,
+     "moves": 3.69,
+     "rate": 3.672,
+     "flag": "ESTIMATE",
+     "est": true,
+     "na": null
+    },
+    "current": {
+     "rate": 2.75,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": null,
+      "name": "OCR + estimated BKBM-OCR spread (+16.0 bp)",
+      "value": null,
+      "date": null,
+      "estimated": true
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-09",
+        "rate": 3.066,
+        "cum_bp": 31.56,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-10",
+        "rate": 3.264,
+        "cum_bp": 51.41,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-17",
+        "rate": 3.39,
+        "cum_bp": 64.01,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-05-05",
+        "rate": 3.5,
+        "cum_bp": 74.97,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-16",
+        "rate": 3.598,
+        "cum_bp": 84.77,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-08-04",
+        "rate": 3.672,
+        "cum_bp": 92.17,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-15",
+        "rate": 3.725,
+        "cum_bp": 97.52,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-27",
+        "rate": 3.754,
+        "cum_bp": 100.38,
+        "est": true,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-09",
+        "rate": 3.067,
+        "cum_bp": 31.71,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-02-10",
+        "rate": 3.262,
+        "cum_bp": 51.16,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-17",
+        "rate": 3.387,
+        "cum_bp": 63.65,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-05-05",
+        "rate": 3.532,
+        "cum_bp": 78.24,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-16",
+        "rate": 3.692,
+        "cum_bp": 94.19,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-08-04",
+        "rate": 3.802,
+        "cum_bp": 105.23,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-15",
+        "rate": 3.871,
+        "cum_bp": 112.1,
+        "est": true,
+        "na": null
+       },
+       {
+        "meeting": "2027-10-27",
+        "rate": 3.908,
+        "cum_bp": 115.77,
+        "est": true,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -8.16,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-27",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": -23.55,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-10-27",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-09",
+     "effective": "2026-12-10",
+     "time": {
+      "tz": "Pacific/Auckland",
+      "abbr": "NZDT",
+      "local": "14:00",
+      "tbd": false,
+      "window_local": null,
+      "unverified": true,
+      "utc": "2026-12-09T01:00:00Z"
+     },
+     "sort_utc": "2026-12-09T01:00:00Z",
+     "end_utc": null
+    },
+    "spread_note": "BKBM-OCR spread estimated (16 bp, median of 62 months), not observed daily. If the actual BKBM-OCR spread is wider than assumed, every NZD point is lower by about the same number of bp.",
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "NZD",
+    "bank": {
+     "id": "rbnz",
+     "name": "Reserve Bank of New Zealand (MPC)",
+     "short": "RBNZ",
+     "tz": "Pacific/Auckland",
+     "url": "https://www.rbnz.govt.nz/news-and-events/how-we-release-information/ocr-decision-dates-and-financial-stability-report-dates-to-feb-2028"
+    },
+    "href": "/central-banks/nzd.html",
+    "rate": {
+     "value": 2.75,
+     "in_force": 2.75,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-10-28",
+     "status": "bis",
+     "range": false,
+     "decision_status": "bis"
+    },
+    "next": {
+     "decision": "2026-12-09",
+     "effective": "2026-12-10",
+     "first_day": null,
+     "time": {
+      "tz": "Pacific/Auckland",
+      "abbr": "NZDT",
+      "local": "14:00",
+      "tbd": false,
+      "window_local": null,
+      "unverified": true,
+      "utc": "2026-12-09T01:00:00Z"
+     },
+     "has_projections": true,
+     "projections_name": "Monetary Policy Statement (OCR track)",
+     "has_presser": true,
+     "conference": {
+      "local": "15:00",
+      "held": "every_meeting",
+      "verified": false
+     },
+     "blackout": null,
+     "source": "manual",
+     "date_verified": false,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-09",
+     "method": "FIT",
+     "flag": "ESTIMATE",
+     "stale": false,
+     "level": 3.054,
+     "level_kind": "policy",
+     "kind": "na",
+     "na": "n/a"
+    },
+    "end": {
+     "2026": {
+      "v": 30.37,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-09",
+      "window": [
+       "2026-12-10",
+       "2027-02-11"
+      ],
+      "level": 3.054,
+      "level_kind": "policy",
+      "rate": 3.054,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 92.53,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-08",
+      "window": [
+       "2027-12-09",
+       "2028-02-03"
+      ],
+      "level": 3.675,
+      "level_kind": "policy",
+      "rate": 3.675,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the 2026-09-02 MPS tables carry no 90-day bank bill projection: only the OCR track (a different basis from the ASX BB) - shown separately, not compared",
+     "sep": "2026-09-02",
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the 2026-09-02 MPS tables carry no 90-day bank bill projection: only the OCR track (a different basis from the ASX BB) - shown separately, not compared"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -1.2,
+        "flag": "ESTIMATE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -1.2
+       },
+       "2027": {
+        "v": -8.21,
+        "flag": "ESTIMATE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -8.21
+       }
+      },
+      "step": {
+       "v": -1.2,
+       "flag": "ESTIMATE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-09"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": -20.11,
+        "flag": "ESTIMATE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -20.11
+       },
+       "2027": {
+        "v": -36.25,
+        "flag": "ESTIMATE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -36.25
+       }
+      },
+      "step": {
+       "v": -20.11,
+       "flag": "ESTIMATE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-09"
+      },
+      "base_change_bp": null
+     }
+    },
+    "reaction": {
+     "date": "2026-10-28",
+     "next": {
+      "v": -18.8,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-09"
+     },
+     "year": {
+      "v": -18.8,
+      "flag": "ESTIMATE",
+      "stale": false,
+      "na": null,
+      "target": "2026-12-09"
+     }
+    },
+    "last_decision": {
+     "date": "2026-10-28",
+     "delta_bp": 0.0,
+     "rate_after": 2.75,
+     "effective": "2026-10-29",
+     "surprise_consensus_bp": -25.0,
+     "status": "bis"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": {
+    "kind": "consensus",
+    "label": "consensus",
+    "n_for": null,
+    "n_against": null,
+    "for": [],
+    "against": [],
+    "source": "n/a",
+    "evidence": "consensus",
+    "notes": null,
+    "doc_id": null
+   },
+   "stale_after_bd": 2
+  },
+  "CHF": {
+   "r": {
+    "currency": "CHF",
+    "asof": "2026-11-20",
+    "mandate_id": "2000-01-01",
+    "stance_version": 3,
+    "code_version": "s1.1",
+    "target_star": null,
+    "band": [
+     0.0,
+     2.0
+    ],
+    "rate": 0.0,
+    "pi_under": 0.5,
+    "pi_head": 1.0,
+    "gap_under": 0.0,
+    "gap_head": 0.0,
+    "y": null,
+    "y_how": "",
+    "x": 0.0,
+    "x_headline": 0.0,
+    "pi_12m": 0.8,
+    "pi_12m_period": "2027",
+    "pi_12m_basis": "headline",
+    "gap_12m": 0.0,
+    "y_12m": null,
+    "y_12m_how": "",
+    "x_12m": 0.0,
+    "na_12m": null,
+    "N": null,
+    "S": null,
+    "S_lo": null,
+    "S_hi": null,
+    "G": null,
+    "G_lo": null,
+    "G_hi": null,
+    "situation": null,
+    "direction": null,
+    "margin": null,
+    "pivot": null,
+    "G_12m": null,
+    "situation_12m": null,
+    "direction_12m": null,
+    "margin_12m": null,
+    "G_12m_lo": null,
+    "G_12m_hi": null,
+    "v5": {
+     "bank": "CHF",
+     "P": null,
+     "N": 0.0,
+     "P_label": null,
+     "N_label": "Inside target range",
+     "conclusion": "No reason to move",
+     "case": "a",
+     "reason": "Core inflation is inside the target range, and the SNB sees total inflation at 0.8% in 2027.",
+     "move": false
+    },
+    "lens": {
+     "kind": "constant_rate",
+     "target_date": "2027-11-20",
+     "rate_today_curve": 0.45927910812056266,
+     "flag_today": "CURVE",
+     "assumed_rate": 0.0,
+     "delta_bp": 45.92791081205627,
+     "flag": "CURVE",
+     "na": null,
+     "horizon_gap": 0.0,
+     "horizon_period": "2028",
+     "horizon_basis": "headline",
+     "consistent": true,
+     "horizon_flag": "headline_basis"
+    },
+    "cycle": {
+     "direction": "cut",
+     "count": 6,
+     "first_move": "2024-03-22",
+     "last_move": "2025-06-20",
+     "moves": [
+      {
+       "date": "2024-03-22",
+       "bp": -25.0,
+       "date_source": "history_effective",
+       "effective": "2024-03-22"
+      },
+      {
+       "date": "2024-06-21",
+       "bp": -25.0,
+       "date_source": "history_effective",
+       "effective": "2024-06-21"
+      },
+      {
+       "date": "2024-09-27",
+       "bp": -25.0,
+       "date_source": "history_effective",
+       "effective": "2024-09-27"
+      },
+      {
+       "date": "2024-12-13",
+       "bp": -50.0,
+       "date_source": "history_effective",
+       "effective": "2024-12-13"
+      },
+      {
+       "date": "2025-03-21",
+       "bp": -25.0,
+       "date_source": "history_effective",
+       "effective": "2025-03-21"
+      },
+      {
+       "date": "2025-06-20",
+       "bp": -25.0,
+       "date_source": "history_effective",
+       "effective": "2025-06-20"
+      }
+     ],
+     "holds_since": 5,
+     "holds_from": "2025-09-25",
+     "previous": {
+      "direction": "hike",
+      "count": 5,
+      "first_move": "2022-06-17",
+      "last_move": "2023-06-23"
+     },
+     "previous_na": null,
+     "last_change": "2025-06-20",
+     "history": {
+      "series": "hist:bis:CH",
+      "from": "2015-01-01",
+      "to": "2026-11-17"
+     }
+    },
+    "market": {
+     "next": {
+      "meeting": "2026-12-10",
+      "step_bp": 2.000294856152607,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null
+     },
+     "m12": {
+      "meeting": "2027-09-23",
+      "rate": 0.45927910812056266,
+      "cum_bp": 45.92791081205627,
+      "flag": "CURVE",
+      "na": null
+     }
+    },
+    "flags": [
+     "headline_basis",
+     "need_only",
+     "no_slack"
+    ],
+    "flags_12m": [],
+    "notes": [
+     "neutral: neutral not_published"
+    ],
+    "inputs": {
+     "rate": {
+      "v": 0.0,
+      "asof": "2026-09-24",
+      "source": "data/cb/decisions.parquet (engine.base_rate)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_under": {
+      "v": 0.5,
+      "asof": "2026-09",
+      "source": "snb:plkoprinfla:K1 (https://data.snb.ch/api/cube/plkoprinfla/data/csv/en?fromDate=2015-01-01)",
+      "note": "released 2026-10-21",
+      "lo": null,
+      "hi": null
+     },
+     "pi_head": {
+      "v": 1.0,
+      "asof": "2026-09",
+      "source": "snb:plkoprinfla:TLK (https://data.snb.ch/api/cube/plkoprinfla/data/csv/en?fromDate=2015-01-01)",
+      "note": "released 2026-10-21",
+      "lo": null,
+      "hi": null
+     },
+     "slack_type": "none",
+     "y_today": null,
+     "u": null,
+     "u_star": null,
+     "pi_12m": {
+      "v": 0.8,
+      "asof": "2027",
+      "source": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast): Conditional inflation forecast (average annual inflation)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "pi_12m_basis": "headline",
+     "y_12m": null,
+     "u_12m": null,
+     "neutral_status": "not_published",
+     "conditioning": "constant_rate",
+     "last_projection": {
+      "v": 0.8,
+      "asof": "2028",
+      "source": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast): Conditional inflation forecast (average annual inflation)",
+      "note": "",
+      "lo": null,
+      "hi": null
+     },
+     "last_projection_basis": "headline",
+     "pi_12m_transform": "annual_average"
+    }
+   },
+   "d": {
+    "bank": "CHF",
+    "short": "SNB",
+    "slack_type": "none",
+    "core": {
+     "v": 0.5,
+     "period": "2026-09",
+     "source": "snb:plkoprinfla:K1 (https://data.snb.ch/api/cube/plkoprinfla/data/csv/en?fromDate=2015-01-01)",
+     "note": "released 2026-10-21",
+     "lo": null,
+     "hi": null
+    },
+    "pi_fc": {
+     "v": 0.8,
+     "period": "2027",
+     "source": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast): Conditional inflation forecast (average annual inflation)",
+     "note": "",
+     "lo": null,
+     "hi": null,
+     "transform": "annual_average",
+     "basis": "headline"
+    },
+    "y_today": null,
+    "y_12m": null,
+    "u": null,
+    "u_star": null,
+    "u_12m": null,
+    "conditioning": "constant_rate",
+    "publication": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast)",
+    "published": "2026-09-24",
+    "cutoff": null,
+    "cutoff_flag": null,
+    "assumed_rate": 0.0,
+    "newer_forecast": false
+   },
+   "ui": {
+    "measure_short": "Core CPI",
+    "measure_name": "Core inflation 1 (SFSO)"
+   },
+   "rate": {
+    "rate": 0.0,
+    "lower": null,
+    "upper": null,
+    "range": false
+   },
+   "mandate": {
+    "target": "0–2% (no declared midpoint)",
+    "target_measure": "Swiss CPI, annual change",
+    "underlying": "Core inflation 1 (SFSO)",
+    "underlying_id": "snb:plkoprinfla:K1",
+    "rule_applied": 3,
+    "rule_text": "(3) the statistics institute's measure excluding food and energy",
+    "underlying_note": "FSO core inflation 1 (rule 3). The same SNB cube also carries the SNB's own trimmed mean (KGM): reported as a divergence, not used",
+    "horizon": "medium and long term",
+    "mandate_type": "hierarchical",
+    "effective_from": "2000-01-01",
+    "effective_to": null,
+    "last_verified": "2026-11-14",
+    "source_title": "SNB - Monetary policy strategy (in place since 2000)",
+    "source_url": "https://www.snb.ch/en/the-snb/mandates-goals/monetary-policy/strategy"
+   },
+   "next_test": {
+    "date": null,
+    "title": "CPI m/m",
+    "schedule": "ForexFactory",
+    "na": "not in the ForexFactory calendar yet (it lists the current week)"
+   },
+   "history": [
+    {
+     "date": "2026-11-14",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-15",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-16",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-17",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-18",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-19",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-20",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-21",
+     "position": null,
+     "need": 0.0
+    },
+    {
+     "date": "2026-11-22",
+     "position": null,
+     "need": 0.0
+    }
+   ],
+   "neutral_na": "SNB publishes no neutral",
+   "notes": {
+    "why": null,
+    "position": null,
+    "need": null
+   },
+   "path": {
+    "ccy": "CHF",
+    "short": "SNB",
+    "name": "Swiss National Bank",
+    "href": "/central-banks/chf.html",
+    "asof": "2026-11-20",
+    "data_asof": "2026-11-20",
+    "data_source": "eurex_ois_chf",
+    "data_label": "Eurex Clearing",
+    "points": [
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2026-12-10",
+      "effective": "2026-12-11",
+      "rate": 0.021,
+      "cum_bp": 2.05,
+      "step_bp": 2.0,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.08
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-03-18",
+      "effective": "2027-03-19",
+      "rate": 0.176,
+      "cum_bp": 17.57,
+      "step_bp": 15.51,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.6206
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-06-24",
+      "effective": "2027-06-25",
+      "rate": 0.325,
+      "cum_bp": 32.51,
+      "step_bp": 14.94,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.5976
+      },
+      "na": null,
+      "step_na": null
+     },
+     {
+      "includes": [],
+      "joint": null,
+      "meeting": "2027-09-23",
+      "effective": "2027-09-24",
+      "rate": 0.459,
+      "cum_bp": 45.93,
+      "step_bp": 13.42,
+      "flag": "CURVE",
+      "method": "CURVE",
+      "est": false,
+      "prob": {
+       "dir": "hike",
+       "n": 0,
+       "p": 0.5368
+      },
+      "na": null,
+      "step_na": null
+     }
+    ],
+    "m12": {
+     "meeting": "2027-09-23",
+     "cum_bp": 45.93,
+     "moves": 1.84,
+     "rate": 0.459,
+     "flag": "CURVE",
+     "est": false,
+     "na": null
+    },
+    "current": {
+     "rate": 0.0,
+     "lower": null,
+     "upper": null,
+     "range": false,
+     "pending": false,
+     "from": null,
+     "benchmark": {
+      "id": "snb:SARON",
+      "name": "SARON (cube snbgwdzid)",
+      "value": -0.04,
+      "date": "2026-11-20",
+      "estimated": false
+     }
+    },
+    "history": {
+     "1w": {
+      "asof": "2026-11-13",
+      "points": [
+       {
+        "meeting": "2026-12-10",
+        "rate": 0.044,
+        "cum_bp": 4.4,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 0.222,
+        "cum_bp": 22.17,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-24",
+        "rate": 0.376,
+        "cum_bp": 37.64,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-23",
+        "rate": 0.524,
+        "cum_bp": 52.38,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     },
+     "3w": {
+      "asof": "2026-10-30",
+      "points": [
+       {
+        "meeting": "2026-12-10",
+        "rate": 0.023,
+        "cum_bp": 2.35,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-03-18",
+        "rate": 0.154,
+        "cum_bp": 15.42,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-06-24",
+        "rate": 0.313,
+        "cum_bp": 31.25,
+        "est": false,
+        "na": null
+       },
+       {
+        "meeting": "2027-09-23",
+        "rate": 0.459,
+        "cum_bp": 45.9,
+        "est": false,
+        "na": null
+       }
+      ],
+      "na": null
+     }
+    },
+    "delta": {
+     "1w": {
+      "v": -6.45,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-09-23",
+      "prev": "2026-11-13"
+     },
+     "3w": {
+      "v": 0.03,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-09-23",
+      "prev": "2026-10-30"
+     }
+    },
+    "next": {
+     "decision": "2026-12-10",
+     "effective": "2026-12-11",
+     "time": {
+      "tz": "Europe/Zurich",
+      "abbr": "CET",
+      "local": "09:30",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-10T08:30:00Z"
+     },
+     "sort_utc": "2026-12-10T08:30:00Z",
+     "end_utc": null
+    },
+    "spread_note": null,
+    "na": null
+   },
+   "bank_row": {
+    "ccy": "CHF",
+    "bank": {
+     "id": "snb",
+     "name": "Swiss National Bank (Governing Board)",
+     "short": "SNB",
+     "tz": "Europe/Zurich",
+     "url": "https://www.snb.ch/en/services-events/digital-services/event-schedule"
+    },
+    "href": "/central-banks/chf.html",
+    "rate": {
+     "value": 0.0,
+     "in_force": 0.0,
+     "lower": null,
+     "upper": null,
+     "pending": false,
+     "from": null,
+     "decided": "2026-09-24",
+     "status": "official",
+     "range": false,
+     "decision_status": "official"
+    },
+    "next": {
+     "decision": "2026-12-10",
+     "effective": "2026-12-11",
+     "first_day": null,
+     "time": {
+      "tz": "Europe/Zurich",
+      "abbr": "CET",
+      "local": "09:30",
+      "tbd": false,
+      "window_local": null,
+      "unverified": false,
+      "utc": "2026-12-10T08:30:00Z"
+     },
+     "has_projections": true,
+     "projections_name": "Conditional inflation forecast",
+     "has_presser": true,
+     "conference": {
+      "local": "10:00",
+      "held": "quarterly",
+      "verified": true
+     },
+     "blackout": null,
+     "source": "official",
+     "date_verified": true,
+     "na": null
+    },
+    "horizon": {
+     "meeting": "2026-12-10",
+     "method": "CURVE",
+     "flag": "CURVE",
+     "stale": false,
+     "level": 0.021,
+     "level_kind": "policy",
+     "kind": "step",
+     "step_bp": 2.0,
+     "direction": "hike",
+     "probabilities": [
+      {
+       "moves": 0,
+       "p": 0.92
+      },
+      {
+       "moves": 1,
+       "p": 0.08
+      }
+     ],
+     "na": null
+    },
+    "end": {
+     "2026": {
+      "v": 2.05,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2026-12-10",
+      "window": [
+       "2026-12-11",
+       "2027-03-19"
+      ],
+      "level": 0.021,
+      "level_kind": "policy",
+      "rate": 0.021,
+      "interior": null,
+      "pre_days": null
+     },
+     "2027": {
+      "v": 51.45,
+      "flag": "CURVE",
+      "stale": false,
+      "na": null,
+      "meeting": "2027-12-16",
+      "window": [
+       "2027-12-17",
+       "2028-02-11"
+      ],
+      "level": 0.514,
+      "level_kind": "policy",
+      "rate": 0.514,
+      "interior": null,
+      "pre_days": null
+     }
+    },
+    "gap": {
+     "kind": "n/a",
+     "na": "the bank does not publish its own rate path",
+     "sep": null,
+     "years": {},
+     "headline": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "the bank does not publish its own rate path"
+     }
+    },
+    "repricing": {
+     "1w": {
+      "bd": 5,
+      "prev": "2026-11-13",
+      "years": {
+       "2026": {
+        "v": -2.34,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -2.34
+       },
+       "2027": {
+        "v": -7.93,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -7.93
+       }
+      },
+      "step": {
+       "v": -1.29,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-10"
+      },
+      "base_change_bp": null
+     },
+     "1m": {
+      "bd": 21,
+      "prev": "2026-10-22",
+      "years": {
+       "2026": {
+        "v": -1.67,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -1.67
+       },
+       "2027": {
+        "v": -1.95,
+        "flag": "CURVE",
+        "stale": false,
+        "na": null,
+        "cum_bp": -1.95
+       }
+      },
+      "step": {
+       "v": -3.19,
+       "flag": "CURVE",
+       "stale": false,
+       "na": null,
+       "meeting": "2026-12-10"
+      },
+      "base_change_bp": null
+     }
+    },
+    "reaction": {
+     "date": "2026-09-24",
+     "next": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "no market history before 2026-10-08 (needs 2026-09-23)"
+     },
+     "year": {
+      "v": null,
+      "flag": null,
+      "stale": false,
+      "na": "no market history before 2026-10-08 (needs 2026-09-23)"
+     }
+    },
+    "last_decision": {
+     "date": "2026-09-24",
+     "delta_bp": 0.0,
+     "rate_after": 0.0,
+     "effective": "2026-09-25",
+     "surprise_consensus_bp": null,
+     "status": "official"
+    },
+    "stale": false,
+    "na": null
+   },
+   "vote": {
+    "kind": "not_published",
+    "label": "not published",
+    "n_for": null,
+    "n_against": null,
+    "for": [],
+    "against": [],
+    "source": "n/a",
+    "evidence": "not published",
+    "notes": null,
+    "doc_id": "CHF:statement:2026-09-24"
+   },
+   "stale_after_bd": 2
+  }
+ }
+}

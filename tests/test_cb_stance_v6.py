@@ -1,6 +1,10 @@
-"""stance-ui-v6: Position / Need / Why without a verdict. The golden of the brief (8/8, load_stance at as-of 2026-11-20, fixture
-tests/fixtures/cb_stance/v6_inputs_2026-11-20.json), the reading rule case by case, the identities with v3, the thresholds = config v6,
-the payload (only what is displayed: Bank, Market, votes, notes), How to read, the history and the JS (tests/cb_js/test_stance_v6.cjs)."""
+"""stance-ui-v6: Position / Need / Why without a verdict.
+
+Exact values run on the FROZEN arguments of stance_page_v6 at as-of 2026-11-20 (tests/fixtures/cb_stance/v6_page_inputs_2026-11-20.json,
+written by scripts/cb_freeze_stance_fixture.py; r["v6"] recomputed with stance_v6.evaluate, the block built by the pure
+cb_render.build_stance): the golden of the brief (8/8), the market comparison, the votes, the texts, CAD stale, the stale-neutral note, the
+payload keys, the JS fixture. The live data (a render at the newest as-of) only carries invariants valid for any data. Plus the reading
+rule case by case, the identities with v3, the thresholds = config v6, How to read, the history and the JS (tests/cb_js/test_stance_v6.cjs)."""
 from __future__ import annotations
 
 import copy
@@ -16,7 +20,8 @@ from src.cb_compute import stance_v6 as V
 from src.cb_compute.payload import _r2, st_at, st_fmt, st_text, stance_page_v6
 
 ROOT = Path(__file__).resolve().parents[1]
-FIX = json.loads((ROOT / "tests" / "fixtures" / "cb_stance" / "v6_inputs_2026-11-20.json").read_text())
+FIXTURE = ROOT / "tests" / "fixtures" / "cb_stance" / "v6_page_inputs_2026-11-20.json"
+FIX = json.loads(FIXTURE.read_text())
 CFG = yaml.safe_load((ROOT / "config" / "cb_stance.yaml").read_text())
 BANKS = ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")
 M = "−"
@@ -87,7 +92,7 @@ MARKET_LENS = {"USD": "vs dots, end-2027: market 4.421% vs 4.125% = +29.6 bp",
                "JPY": f"vs the 30 Oct curve, at 20 Nov 2027: 1.854% vs 1.985% = {M}13.1 bp",
                "AUD": f"vs the 28 Oct curve, at 20 Nov 2027: 4.480% vs 4.853% = {M}37.2 bp",
                "NZD": "vs OCR track, 2027: market 3.675% (year-end) vs 3.2% (Q4 average) = +47.5 bp [ESTIMATE]",
-               "CHF": "vs an unchanged rate, at 20 Nov 2027: 0.459% vs 0% = +45.9 bp",        # the brief said +46.9: the v3 lens is 45.93 bp
+               "CHF": "vs an unchanged rate, at 20 Nov 2027: 0.459% vs 0% = +45.9 bp",  # +46.9 before the SNB SARON fixings of 16-20 Nov were added on 23 Nov
                "EUR": "vs bank path: n/a (no market history at the cutoff 2026-08-19 (first data 2026-10-08))",
                "CAD": "no bank rate path to compare"}
 
@@ -95,7 +100,7 @@ MARKET_LENS = {"USD": "vs dots, end-2027: market 4.421% vs 4.125% = +29.6 bp",
 def page(c: str, r_over: dict | None = None, **kw) -> dict:
     b = copy.deepcopy(FIX["banks"][c])
     b["r"].update(r_over or {})
-    r = dict(b["r"], v6=V.evaluate(b["r"], b["d"]), inputs={})
+    r = dict(b["r"], v6=V.evaluate(b["r"], b["d"]))
     return stance_page_v6(r, UI, None, neutral_na=kw.pop("neutral_na", "x"), **kw)
 
 
@@ -113,24 +118,34 @@ VOTES = {"USD": "Last decision 28 Oct: vote 10–2 (2 for a hike)", "GBP": "Last
          "CAD": "Last decision 28 Oct: vote not published", "CHF": "Last decision 24 Sep: vote not published"}
 
 
+def _frozen_args() -> dict:
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("cb_freeze_stance_fixture", ROOT / "scripts" / "cb_freeze_stance_fixture.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.load(FIXTURE)
+
+
 @pytest.fixture(scope="module")
-def rendered(tmp_path_factory):
+def frozen():
+    """(args, overview-like {stance, paths, meta}, {ccy: {"stance": bank block}}) built by the pure cb_render functions from the frozen file."""
     from src import cb_render as R
-    pub = tmp_path_factory.mktemp("pub")
-    R.render(None, pub, date(2026, 11, 20))
-    ov = json.loads((pub / "data" / "cb" / "overview.json").read_text())
-    return pub, ov, {c: json.loads((pub / "data" / "cb" / f"{c.lower()}.json").read_text()) for c in BANKS}
+    args = _frozen_args()
+    st = R.build_stance(args)
+    ov = {"stance": R.overview_stance(st), "paths": {c: a["path"] for c, a in args["banks"].items()},
+          "meta": {"stale_after_bd": args["stale_after_bd"]}}
+    return args, ov, {c: {"stance": R.bank_stance(st, c)} for c in BANKS}
 
 
 @pytest.mark.parametrize("cur", BANKS)
-def test_votes_at_the_last_decision(rendered, cur):
-    _, _, pages = rendered
+def test_votes_at_the_last_decision(frozen, cur):
+    _, _, pages = frozen
     s = pages[cur]["stance"]
     assert st_text(s, s["why"]["bank"]["lines"][-1]) == VOTES[cur]
 
 
-def test_rendered_golden_texts(rendered):
-    _, ov, pages = rendered
+def test_rendered_golden_texts(frozen):
+    _, ov, pages = frozen
     usd, nzd, chf = pages["USD"]["stance"], pages["NZD"]["stance"], pages["CHF"]["stance"]
     assert [st_text(usd, x) for x in usd["position"]["lines"]] == ["real rate 1.38% vs real neutral 1.20% (0.90 to 1.90%)",
                                                                     "with the Fed forecast: core inflation 2.5%, 2027 (Q4/Q4)"]
@@ -168,8 +183,8 @@ def test_rendered_golden_texts(rendered):
 # ---- the market row = the "By meeting" table of the same bank ----
 
 @pytest.mark.parametrize("cur", BANKS)
-def test_market_row_is_the_by_meeting_table(rendered, cur):
-    _, ov, pages = rendered
+def test_market_row_is_the_by_meeting_table(frozen, cur):
+    _, ov, pages = frozen
     s, pj = pages[cur]["stance"], ov["paths"][cur]
     x = s["why"]["market"]["x"]
     w1 = {p["meeting"]: p for p in pj["history"]["1w"]["points"]}
@@ -180,8 +195,8 @@ def test_market_row_is_the_by_meeting_table(rendered, cur):
     assert line.startswith(f"1w (vs {int(pj['history']['1w']['asof'][8:])} ")
 
 
-def test_cad_market_data_is_stale(rendered):
-    _, ov, pages = rendered
+def test_cad_market_data_is_stale(frozen):
+    _, ov, pages = frozen
     s = pages["CAD"]["stance"]
     assert st_text(s, s["why"]["market"]["lines"][1]) == "1w (vs 5 Nov): +4.9 / +8.0 bp · data 13 Nov Montréal Exchange [stale]"
     assert {"stale": "older than 2 business days"} in s["why"]["market"]["lines"][1]["segs"]
@@ -319,16 +334,16 @@ def test_notes_newer_forecast_stale_neutral_and_overdue_core():
     assert "note" not in json.dumps(s["why"]["bank"]) and "Newer" not in json.dumps(s["why"])
 
 
-def test_today_only_the_eur_neutral_is_stale(rendered):
-    _, _, pages = rendered
+def test_today_only_the_eur_neutral_is_stale(frozen):
+    _, _, pages = frozen
     got = {c: [l.get("note") for k in ("position", "need") for l in pages[c]["stance"][k]["lines"] if l.get("note")] for c in BANKS}
     assert {c: v for c, v in got.items() if v} == {"EUR": ["position"]}
 
 
 # ---- payload: only what is displayed ----
 
-def test_payload_has_only_what_is_displayed(rendered):
-    _, ov, pages = rendered
+def test_payload_has_only_what_is_displayed(frozen):
+    _, ov, pages = frozen
     st = ov["stance"]
     assert set(st) == {"how_to_read", "scale_pp", "na", "banks"} and st["scale_pp"] == 2.0
     for c, b in st["banks"].items():
@@ -409,8 +424,8 @@ def test_how_to_read_text_with_thresholds_from_config():
     assert "±0.3 pp" in other[1] and "up to 0.8" in other[1] and "up to 1.6" in other[1] and "older than 3 business days" in other[3]
 
 
-def test_how_to_read_in_the_payload(rendered):
-    _, ov, _ = rendered
+def test_how_to_read_in_the_frozen_payload(frozen):
+    _, ov, _ = frozen
     assert "older than 2 business days" in ov["stance"]["how_to_read"][3] and ov["meta"]["stale_after_bd"] == 2
 
 
@@ -448,8 +463,76 @@ def test_stance_js():
     assert r.returncode == 0, r.stdout + r.stderr
 
 
-def test_js_fixture_is_the_rendered_payload(rendered):
-    """tests/cb_js/fixtures/stance_v6_2026-11-20.json = the overview stance rendered at 2026-11-20 (regenerate it when the payload changes)."""
-    _, ov, _ = rendered
+def test_js_fixture_is_the_frozen_payload(frozen):
+    """tests/cb_js/fixtures/stance_v6_2026-11-20.json = the overview stance frozen at 2026-11-20 (regenerate it when the payload changes)."""
+    _, ov, _ = frozen
     fx = json.loads((ROOT / "tests" / "cb_js" / "fixtures" / "stance_v6_2026-11-20.json").read_text())
     assert fx["banks"] == ov["stance"]["banks"]
+
+
+def test_frozen_fixture_is_complete():
+    """The frozen file carries every argument of stance_page_v6 for the 8 banks (r without its v6 key) and scale_pp."""
+    import inspect
+    params = set(inspect.signature(stance_page_v6).parameters)
+    assert FIX["asof"] == "2026-11-20" and FIX["scale_pp"] == CFG["v6"]["scale_pp"] and set(FIX["banks"]) == set(BANKS)
+    for c, b in FIX["banks"].items():
+        assert set(b) == (params - {"r"}) | {"r", "d"}, c
+        assert "v6" not in b["r"] and "v5" in b["r"]
+
+
+# ---- live data (a render at the newest as-of): only invariants valid for any data ----
+
+@pytest.fixture(scope="module")
+def live(tmp_path_factory):
+    from src import cb_render as R
+    pub = tmp_path_factory.mktemp("live")
+    R.render(None, pub)
+    ov = json.loads((pub / "data" / "cb" / "overview.json").read_text())
+    return ov, {c: json.loads((pub / "data" / "cb" / f"{c.lower()}.json").read_text())["stance"] for c in BANKS}
+
+
+def test_live_stance_has_no_na_and_three_why_rows(live):
+    ov, pages = live
+    assert ov["stance"].get("na") is None and set(ov["stance"]["banks"]) == set(BANKS)
+    for c, s in pages.items():
+        assert s.get("na") is None and list(s["why"]) == ["taylor", "bank", "market"], c
+        assert [s["why"][k]["label"] for k in ("taylor", "bank", "market")] == ["Taylor rule", "Bank", "Market"]
+        assert all(s["why"][k]["lines"] for k in ("taylor", "bank", "market"))
+
+
+def test_live_market_row_is_the_by_meeting_table(live):
+    ov, pages = live
+    for c, s in pages.items():
+        pj, x = ov["paths"][c], s["why"]["market"].get("x") or {}
+        w1 = {p["meeting"]: p for p in (pj.get("history", {}).get("1w") or {}).get("points") or []}
+        for j, p in enumerate(pj["points"][:2], 1):
+            assert x.get(f"m{j}_cum") == p.get("cum_bp"), c                     # "Δ vs now"
+            hp = w1.get(p["meeting"])
+            want = (p["rate"] - hp["rate"]) * 100 if hp and hp.get("rate") is not None and p.get("rate") is not None else None
+            assert x.get(f"m{j}_1w") == want, c                                 # "Δ vs 1w", the expression of pathTableRows
+
+
+def test_live_stale_badge_exactly_when_the_overview_row_is_stale(live):
+    ov, pages = live
+    rows = {b["ccy"]: b for b in ov["banks"]}
+    for c, s in pages.items():
+        has = any(isinstance(g, dict) and "stale" in g for l in s["why"]["market"]["lines"] for g in l["segs"])
+        assert has == bool((rows[c].get("horizon") or {}).get("stale")), c
+
+
+def test_live_payload_has_only_the_displayed_keys(live):
+    ov, pages = live
+    assert set(ov["stance"]) == {"how_to_read", "scale_pp", "na", "banks"}
+    for c, b in ov["stance"]["banks"].items():
+        assert set(b) == {"bank", "asof", "rate_display", "position", "need", "why"}, c
+        assert set(b["position"]) <= {"v", "lo", "hi", "label", "na", "lines", "title", "x"}
+        assert set(b["need"]) <= {"v", "label", "na", "lines", "title", "x"}
+        assert all(set(b["why"][k]) <= {"label", "reading", "lines", "na", "x"} for k in ("taylor", "bank", "market"))
+    for c, s in pages.items():
+        assert set(s) == {"bank", "asof", "rate_display", "position", "need", "why", "mandate", "next_test", "history", "how_to_read", "scale_pp"}, c
+
+
+def test_live_how_to_read_takes_the_thresholds_from_config(live):
+    from src.cb_compute.stance_ui import how_to_read
+    ov, _ = live
+    assert ov["stance"]["how_to_read"] == how_to_read(CFG["v6"]["scale_pp"], ov["meta"]["stale_after_bd"])

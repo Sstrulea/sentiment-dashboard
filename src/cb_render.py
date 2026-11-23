@@ -77,35 +77,35 @@ def ff_week_events(asof: date, raw_dir: Path = FF_RAW) -> list:
 
 
 def stance_blocks(data_dir, ctx, asof: date, out: dict) -> dict:
-    """{ccy: bank stance block} (S1 computation, S2 texts) or {"na": reason}. A failure never blocks the rest of the render."""
-    import yaml
+    """{ccy: bank stance block} (S1 computation, v6 texts) or {"na": reason}. A failure never blocks the rest of the render."""
+    try:
+        args = load_stance_args(data_dir, ctx, asof, out)
+    except Exception as e:                                               # noqa: BLE001 - logged, the page says why
+        log.exception("stance payload failed")
+        return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
+    try:
+        return build_stance(args)
+    except Exception as e:                                               # noqa: BLE001 - logged, the page says why
+        log.exception("stance payload failed")
+        return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
+
+
+def load_stance_args(data_dir, ctx, asof: date, out: dict, with_inputs: bool = False) -> dict:
+    """Read every stance input at the as-of and return stance_page_args (with_inputs: also {ccy: BankInputs} under "inputs",
+    for scripts/cb_freeze_stance_fixture.py). Raises on a data error (stance_blocks turns it into na)."""
     from . import cb_datasets as ds
     from . import cb_stance_history as SH
     from .cb_collect import Paths
-    from .cb_compute.stance_inputs import current_version
-    from .cb_compute.stance_ui import history_points, mandate_card, next_test  # noqa: F401
     from .cb_loader import load_stance
-    from .cb_sources.official import load_official
-    try:
-        _, params, inputs, res = load_stance(data_dir, asof, ctx)
-        paths = Paths(data_dir)
-        vday = max(asof, date.today())                                   # as in load_stance: validation against the real day
-        mand = ds.load_mandates(paths, today=vday, validate=True)
-        fc = ds.load_forecasts(paths, today=vday, validate=True, mandates=mand)
-        hist = SH.load(paths)
-    except Exception as e:                                               # noqa: BLE001 - logged, the page says why
-        log.exception("stance payload failed")
-        return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
-    try:
-        return _stance_banks(asof, out, params, res, mand, fc, hist, ctx)
-    except Exception as e:                                               # noqa: BLE001 - logged, the page says why
-        log.exception("stance payload failed")
-        return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
-
-
-def _stance_banks(asof, out, params, res, mand, fc, hist, ctx=None) -> dict:
-    """The stance block from the data: step 1 (stance_page_args, the only read) then step 2 (build_stance, pure)."""
-    return build_stance(stance_page_args(asof, out, params, res, mand, hist, ctx))
+    _, params, inputs, res = load_stance(data_dir, asof, ctx)
+    paths = Paths(data_dir)
+    vday = max(asof, date.today())                                       # as in load_stance: validation against the real day
+    mand = ds.load_mandates(paths, today=vday, validate=True)
+    hist = SH.load(paths)
+    args = stance_page_args(asof, out, params, res, mand, hist, ctx)
+    if with_inputs:
+        args["inputs"] = inputs
+    return args
 
 
 def stance_page_args(asof, out, params, res, mand, hist, ctx=None) -> dict:
