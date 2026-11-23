@@ -153,10 +153,10 @@ def test_rendered_golden_texts(frozen):
                                         "Real neutral = neutral 3.2% (2.9 to 3.9%) − target 2%.")
     assert [st_text(usd, x) for x in usd["need"]["lines"]] == [
         "Fed forecast of 16 Sep 2026: core inflation 2.5%, 2027 (Q4/Q4), vs 2%", "conditional on the Fed's own rate path (dots)",
-        "now: Core PCE 3.1% (2026-09), output gap 0.2 (from unemployment 4.1% vs u* 4.2%, 2026-10)"]
+        "now: Core PCE 3.1% (Sep 2026), output gap 0.2 (from unemployment 4.1% vs u* 4.2%, Oct 2026)"]
     t = usd["why"]["taylor"]
     assert t["reading"] == "Tightening pressure, sensitive to the neutral range"
-    assert st_text(usd, t["lines"][0]) == "today +1.08 (+0.78 to +1.78): Core PCE 3.1% (2026-09), output gap 0.2"
+    assert st_text(usd, t["lines"][0]) == "today +1.08 (+0.78 to +1.78): Core PCE 3.1% (Sep 2026), output gap 0.2"
     assert t["lines"][0]["title"] == "3.2 + 1.5 × (3.1 − 2) + 0.5 × 0.2 − 3.875 = +1.08; neutral 2.9 to 3.9 → +0.78 to +1.78"
     assert st_text(usd, t["lines"][1]) == "forecast +0.18 (−0.13 to +0.88): core inflation 2.5% 2027 (Q4/Q4), output gap 0.2"
     assert st_text(usd, usd["why"]["bank"]["lines"][0]) == "Dots (SEP 16 Sep 2026): 2026 4.125%, 2027 4.125%"
@@ -169,7 +169,7 @@ def test_rendered_golden_texts(frozen):
                                                      "no core forecast published")
     eur = pages["EUR"]["stance"]
     assert [st_text(eur, x) for x in eur["why"]["taylor"]["lines"]] == [
-        "today +0.25 (0.00 to +0.50): Core HICP 2.5% (2026-10)", "forecast +0.40 (+0.15 to +0.65): core inflation 2.6% 2027 (annual average)",
+        "today +0.25 (0.00 to +0.50): Core HICP 2.5% (Oct 2026)", "forecast +0.40 (+0.15 to +0.65): core inflation 2.6% 2027 (annual average)",
         "no output gap term: the ECB publishes no estimate"]
     assert eur["why"]["taylor"]["lines"][0]["title"] == "2 + 1.5 × (2.5 − 2) − 2.5 = +0.25; neutral 1.75 to 2.25 → 0.00 to +0.50"
     jpy, cad = pages["JPY"]["stance"], pages["CAD"]["stance"]
@@ -397,7 +397,9 @@ def test_period_label_one_function():
     assert V.period_label("FY2027", "fiscal_year") == "FY2027 (Apr 2027 to Mar 2028)"
     assert V.period_label("M2027", "year_average_march") == "year to Mar 2027"
     assert V.period_label("2027Q4", "quarter_level") == "2027Q4"
-    assert V.period_label("2026-09", "") == "2026-09"
+    assert V.period_label("2026-09", "") == "Sep 2026"
+    assert V.period_label("2026-09-16", "") == "16 Sep 2026"
+    assert V.period_label("2026Q3", "") == "2026Q3" and V.period_label("M2027", "") == "M2027"
     for f in ("payload.py", "stance_v6.py"):                                           # no second period formatter for v6
         assert "def period_label" not in (ROOT / "src" / "cb_compute" / f).read_text() or f == "stance_v6.py"
 

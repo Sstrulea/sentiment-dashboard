@@ -1010,7 +1010,8 @@ def _day(iso_: str) -> str:
 
 
 def _date(iso_: str) -> str:
-    return f"{_day(iso_)} {str(iso_)[:4]}"
+    from .stance_v6 import period_label
+    return period_label(str(iso_)[:10])
 
 
 def _L(*segs, title: Optional[str] = None, cls: Optional[str] = None, note: Optional[str] = None) -> dict:

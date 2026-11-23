@@ -43,7 +43,7 @@ const t = strip(wh);
 eq((wh.match(/class="cb-v6-why"/g) || []).length, 3, "three Why rows");
 ok(t.indexOf("Taylor rule") === 0 && t.indexOf("Bank") > 0 && t.indexOf("Market") > t.indexOf("Bank"), "labels in order");
 ok(wh.indexOf('<div class="cb-v6-reading">Tightening pressure, sensitive to the neutral range</div>') > 0, "the reading in bold");
-ok(t.indexOf("today +1.08 (+0.78 to +1.78): Core PCE 3.1% (2026-09), output gap 0.2") > 0, "Taylor today");
+ok(t.indexOf("today +1.08 (+0.78 to +1.78): Core PCE 3.1% (Sep 2026), output gap 0.2") > 0, "Taylor today");
 ok(t.indexOf("Dots (SEP 16 Sep 2026): 2026 4.125%, 2027 4.125%") > 0 && t.indexOf("Last decision 28 Oct: vote 10–2 (2 for a hike)") > 0, "Bank row");
 ok(t.indexOf("9 Dec: +23.0 bp, 90.8% hike · 27 Jan: +39.8 bp, 67.2% hike") > 0, "Market row: the By meeting numbers, probText");
 ok(t.indexOf("vs dots, end-2027: market 4.421% vs 4.125% = +29.6 bp") > 0, "Market row: the lens");

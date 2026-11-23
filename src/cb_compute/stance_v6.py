@@ -41,6 +41,10 @@ def period_label(period, transform: str = "") -> str:
     """THE period label (one function, used everywhere): from the published period and its transform."""
     p = "" if period is None else str(period)
     t = transform or ""
+    if len(p) == 7 and p[4] == "-" and p[:4].isdigit() and p[5:].isdigit():                      # a month: "Sep 2026"
+        return f"{MONTHS[int(p[5:]) - 1]} {p[:4]}"
+    if len(p) == 10 and p[4] == "-" and p[7] == "-" and p.replace("-", "").isdigit():             # a day: "16 Sep 2026"
+        return f"{int(p[8:])} {MONTHS[int(p[5:7]) - 1]} {p[:4]}"
     if t == "q4_q4":
         return f"{p} (Q4/Q4)"
     if t == "annual_average":
