@@ -543,3 +543,17 @@ def test_mx_asof_rolls_back_over_the_canadian_holiday(now):
 def test_mx_asof_without_a_calendar_rolls_back_weekends_only():
     s = MxCorra(cfg=dict(mk(MxCorra).cfg, calendar_id=None), now=lambda: datetime(2026, 10, 12, 22, 40, tzinfo=timezone.utc))
     assert s.infer_asof() == date(2026, 10, 12)
+
+
+# ---- fix/cb-data-gaps: the daily MX request runs at 00:40Z (the Worker's 00:37 entry), the previous Toronto evening ----
+
+@pytest.mark.parametrize("now, expected", [
+    (datetime(2026, 11, 24, 0, 40, tzinfo=timezone.utc), date(2026, 11, 23)),       # Tue -> Mon
+    (datetime(2026, 11, 28, 0, 40, tzinfo=timezone.utc), date(2026, 11, 27)),       # Sat -> Fri
+    (datetime(2026, 11, 30, 0, 40, tzinfo=timezone.utc), date(2026, 11, 27)),       # Mon -> Fri
+    (datetime(2026, 7, 2, 0, 40, tzinfo=timezone.utc), date(2026, 6, 30)),          # the day after Canada Day (Wed 1 Jul) -> Tue 30 Jun
+    (datetime(2026, 10, 13, 0, 40, tzinfo=timezone.utc), date(2026, 10, 9)),        # the day after Thanksgiving (Mon 12 Oct) -> Fri 9 Oct
+])
+def test_mx_asof_at_the_0040z_run(now, expected):
+    s = mk(MxCorra, now)
+    assert s.infer_asof() == expected and s.is_final(expected)

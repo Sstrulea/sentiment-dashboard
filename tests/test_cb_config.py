@@ -362,3 +362,59 @@ def test_rbnz_roster_is_the_hand_typed_participants_list_with_only_the_roles_the
     assert [(p["name"], p["role"], p["chair"]) for p in manual["people"]] == [(p["name"], p["role"], p["chair"]) for p in people] and "typed by hand" in manual["source"]   # the file the generator merged
     note = "voter = MPC member; the decision is taken by consensus, votes are not published"
     assert manual["voter_note"] == note and load("config/cb_roster.yaml")["sources"]["NZD"]["voter_note"] == note                # `voter` is a convention, and the file says what it means
+
+
+# ---- fix/cb-data-gaps: every once-a-day source is reached by a scheduled cb-refresh run (no times written here) ----
+
+def _scheduled_runs() -> list:
+    """[(dow 0=Sunday, minutes after 00:00 UTC)] of the cb-refresh runs that always happen: the Worker's regular entries at their effective
+    tick (the first tick not earlier than the minute, infra/cb-trigger/src/schedule.js regularDue) and the cron the guard never skips.
+    The conditional backup cron is left out."""
+    trig = yaml.safe_load((ROOT / "config" / "cb_trigger.yaml").read_text())
+    tick = trig["tick_minutes"]
+    runs = []
+    for r in trig["regular"]:
+        if r["workflow"] != "cb-refresh.yml":
+            continue
+        m = -(-r["minute"] // tick) * tick
+        for h in range(0, 24, r["every_hours"]):
+            for d in r["dow"]:
+                t = h * 60 + m
+                runs.append(((d + t // 1440) % 7, t % 1440))
+    wf = (ROOT / ".github" / "workflows" / "cb-refresh.yml").read_text()
+    never = re.findall(r'github\.event\.schedule \}\}" = "([^"]+)" \]; then echo "[^"]*never skipped', wf)
+    assert never, "the always-run cron of cb-refresh.yml was not found"
+    for cron in never:
+        assert re.search(r"cron: '" + re.escape(cron) + "'", wf), cron
+        mi, hr, _, _, dow = cron.split()
+        days = range(7) if dow == "*" else [int(x) for x in dow.split(",")]
+        runs += [(d, int(hr) * 60 + int(mi)) for d in days]
+    return runs
+
+
+def _hhmm(s: str) -> int:
+    h, m = s.split(":")
+    return int(h) * 60 + int(m)
+
+
+def test_every_daily_source_is_reached_by_a_scheduled_run():
+    cfg = yaml.safe_load((ROOT / "config" / "cb_sources.yaml").read_text())
+    runs = _scheduled_runs()
+    checked = 0
+    for sid, s in cfg["sources"].items():
+        after = s.get("daily_after_utc")
+        if not after:
+            continue
+        checked += 1
+        for d in range(7):
+            ok = [t for dd, t in runs if dd == d and t >= _hhmm(after)]
+            assert ok, f"{sid}: no scheduled cb-refresh run on day {d} at or after {after} UTC"
+            if s.get("asof_stamp") == "none" and d in (1, 2, 3, 4, 5):
+                lo, hi = (_hhmm(x) for x in s["intraday_utc"])
+                assert any(not (lo <= t < hi) for t in ok), f"{sid}: every run on day {d} after {after} falls inside intraday_utc {s['intraday_utc']}"
+    assert checked >= 2
+
+
+def test_the_schedule_check_catches_the_old_mx_time():
+    """The check above would have failed with the old daily_after_utc 22:30 (no run reaches it)."""
+    assert not [t for _, t in _scheduled_runs() if t >= _hhmm("22:30")]

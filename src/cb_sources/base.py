@@ -192,7 +192,7 @@ class MarketSource(HttpSource):
     def infer_asof(self) -> Optional[date]:
         """For pages WITHOUT an as-of stamp: None inside the intraday window (values may be live),
         otherwise the last completed exchange day from fetch time + cutoff, rolled back over weekends AND the holidays of the
-        source's calendar (`calendar_id`; MX is closed on Canadian Thanksgiving: a 22:40Z fetch that Monday shows Friday's prices).
+        source's calendar (`calendar_id`; MX is closed on Canadian Thanksgiving: the 00:40Z fetch of that Tuesday shows Friday's prices).
         Saturday/Sunday have no session, so the window does not apply."""
         now = self._now()
         start, end = (_hhmm(x) for x in self.cfg["intraday_utc"])
