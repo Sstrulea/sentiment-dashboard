@@ -104,10 +104,18 @@ def stance_blocks(data_dir, ctx, asof: date, out: dict) -> dict:
 
 
 def _stance_banks(asof, out, params, res, mand, fc, hist, ctx=None) -> dict:
+    """The stance block from the data: step 1 (stance_page_args, the only read) then step 2 (build_stance, pure)."""
+    return build_stance(stance_page_args(asof, out, params, res, mand, hist, ctx))
+
+
+def stance_page_args(asof, out, params, res, mand, hist, ctx=None) -> dict:
+    """Step 1 - the ONLY step that reads data: for each bank the keyword arguments of payload.stance_page_v6, plus scale_pp (config v6)
+    and stale_after_bd. Frozen for the tests by scripts/cb_freeze_stance_fixture.py."""
     import yaml
     from . import cb_datasets as ds
     from .cb_compute.stance_inputs import current_version
-    from .cb_compute.stance_ui import how_to_read, history_points, mandate_card, next_test
+    from .cb_compute.stance_ui import history_points, mandate_card, next_test
+    from .cb_compute.stance_v6 import SHORT
     from .cb_sources.official import load_official
     names = {sid: s["name"] for sid, s in load_official()["macro"]["series"].items()}
     ui_cfg = yaml.safe_load(STANCE_UI_YAML.read_text(encoding="utf-8")) or {}
@@ -128,17 +136,48 @@ def _stance_banks(asof, out, params, res, mand, fc, hist, ctx=None) -> dict:
         prim = (raw or {}).get("underlying", {}).get("primary")
         prim = prim if isinstance(prim, list) else [prim]
         ui = {"measure_short": shorts.get(c, "Core"), "measure_name": " and ".join(str(names.get(x, x)) for x in prim if x)}
-        from .cb_compute.stance_v6 import SHORT
-        notes = P.stance_notes(r, SHORT.get(c, c), lastp.get(c), [x for x in prim if x])
         row = next((b for b in out["overview"]["banks"] if b["ccy"] == c), {})
         decided = (row.get("rate") or {}).get("decided")
-        vote = P.votes_json(ctx, c, date.fromisoformat(decided)) if ctx is not None and decided else None
-        banks[c] = P.stance_page_v6(r, ui, {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
-                                    mandate_card(raw, names, params["underlying_rule"]) if raw else None, next_test(c, events, mapping, asof),
-                                    history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof), notes,
-                                    path=path, bank_row=row, vote=vote, stale_after_bd=stale_bd)
+        banks[c] = {"r": r, "ui": ui, "rate": {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
+                    "mandate": mandate_card(raw, names, params["underlying_rule"]) if raw else None,
+                    "next_test": next_test(c, events, mapping, asof),
+                    "history": history_points([h for (b, _), h in hist.items() if b == c]),
+                    "neutral_na": neutral_reason(c, r, meetings, asof),
+                    "notes": P.stance_notes(r, SHORT.get(c, c), lastp.get(c), [x for x in prim if x]),
+                    "path": path, "bank_row": row,
+                    "vote": P.votes_json(ctx, c, date.fromisoformat(decided)) if ctx is not None and decided else None,
+                    "stale_after_bd": stale_bd}
     scale = yaml.safe_load((ROOT / "config" / "cb_stance.yaml").read_text(encoding="utf-8"))["v6"]["scale_pp"]
-    return {"banks": banks, "how_to_read": how_to_read(scale, stale_bd), "scale_pp": 2.0, "na": None}
+    return {"banks": banks, "scale_pp": scale, "stale_after_bd": stale_bd}
+
+
+def build_stance(args: dict) -> dict:
+    """Step 2 - pure: the stance block {banks, how_to_read, scale_pp, na} from stance_page_args (live or frozen)."""
+    from .cb_compute.stance_ui import how_to_read
+    banks = {}
+    for c, a in args["banks"].items():
+        a = dict(a)
+        r = a.pop("r")
+        banks[c] = P.stance_page_v6(r, a.pop("ui"), a.pop("rate"), a.pop("mandate"), a.pop("next_test"), a.pop("history"),
+                                    a.pop("neutral_na"), a.pop("notes"), **a)
+    return {"banks": banks, "how_to_read": how_to_read(args["scale_pp"], args["stale_after_bd"]), "scale_pp": 2.0, "na": None}
+
+
+def overview_stance(st: dict) -> dict:
+    """Pure: the stance block of overview.json (no history, mandate, next_test)."""
+    if st.get("na"):
+        return {"na": st["na"]}
+    return {**{k: v for k, v in st.items() if k != "banks"},
+            "banks": {c: {k: v for k, v in b.items() if k not in ("history", "mandate", "next_test")} for c, b in st["banks"].items()}}
+
+
+def bank_stance(st: dict, c: str) -> dict:
+    """Pure: the stance block of one bank page."""
+    if st.get("na"):
+        return {"na": st["na"]}
+    if c not in st["banks"]:
+        return {"na": "no stance for this bank"}
+    return {**st["banks"][c], "how_to_read": st["how_to_read"], "scale_pp": st["scale_pp"]}
 
 
 def neutral_reason(c: str, r: dict, meetings: dict, asof: date) -> Optional[str]:
@@ -164,12 +203,9 @@ def render(data_dir: Path | str | None = None, public_dir: Path | str | None = N
     pub = Path(public_dir) if public_dir else PUBLIC_DIR
     out = P.build(ctx, asof, load_pair_defs())
     st = stance_blocks(data_dir, ctx, asof, out)                         # S2: the stance on the overview (tab Stance) and each bank page
-    out["overview"]["stance"] = ({"na": st["na"]} if st.get("na") else
-                                 {**{k: v for k, v in st.items() if k != "banks"},
-                                  "banks": {c: {k: v for k, v in b.items() if k not in ("history", "mandate", "next_test")} for c, b in st["banks"].items()}})
+    out["overview"]["stance"] = overview_stance(st)
     for c, page in out["banks"].items():
-        page["stance"] = ({"na": st["na"]} if st.get("na") else
-                          {**st["banks"][c], "how_to_read": st["how_to_read"], "scale_pp": st["scale_pp"]} if c in st["banks"] else {"na": "no stance for this bank"})
+        page["stance"] = bank_stance(st, c)
     tpl = _env().get_template("central_banks.html.j2")
     written, same = [], 0
 
