@@ -918,41 +918,415 @@ def stance_notes(r: dict, short: str, newer_forecast: Optional[date], core_ids: 
     return {"why": why, "position": pos, "need": need}
 
 
-def stance_page_v5(r: dict, ui: dict, rate: Optional[dict], mandate: Optional[dict] = None, next_test: Optional[dict] = None,
-                   history: Optional[list] = None, neutral_na: Optional[str] = None, notes: Optional[dict] = None) -> dict:
-    """The stance block (stance-ui-v5): only what is displayed - Position / Need / Why - and the sources shown on hover.
-    `ui` = {measure_short, measure_name} of the bank (config/cb_stance_ui.yaml + config/cb_official.yaml)."""
-    v = r.get("v5") or {}
-    inp = r.get("inputs") or {}
-    N = r.get("N")
-    core = inp.get("pi_under") or {}
-    star, band = r.get("target_star"), r.get("band")
-    def pct(x):
-        return f"{x:g}%"
+# ---------------------------------------------------------------------------
+# Stance v6 (stance-ui-v6): Position / Need / Why without a verdict - only what is displayed
+# ---------------------------------------------------------------------------
+# A displayed line is a list of segments: a fixed English string, a number {"k": key in the bank's stance block, "f": format}
+# (rendered with data-k / data-f / data-v for scripts/check_stance_ui.py), a method badge {"badge": flag}, a stale badge
+# {"stale": tooltip} or a probability {"prob": {dir, n, p}} (probText, as in "By meeting"). Numbers shown as pp / d2 / pub are stored
+# already rounded for display; bp and r3 keep the value of the "By meeting" table (formatted by the browser the same way).
+
+ST_MINUS = "−"
+QUIET_FLAGS = ("EXACT", "CURVE")
+
+
+def _pub(x: Optional[float], nd: int = 3) -> Optional[float]:
+    """A published / input value for display: half-up at `nd` decimals (3.4905 -> 3.491; 0.2000000001 -> 0.2)."""
+    if x is None:
+        return None
+    from decimal import ROUND_HALF_UP, Decimal
+    v = float(Decimal(repr(round(x, 9))).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP))
+    return 0.0 if v == 0 else v
+
+
+def st_fmt(v: float, f: str) -> str:
+    """The text of a number in format f - the browser's ST_FMT (static/cb.js) and scripts/check_stance_ui.py do the same."""
+    from decimal import ROUND_HALF_UP, Decimal
+    v = float(v)
+    if f in ("pp", "bp"):
+        nd = 2 if f == "pp" else 1
+        s = str(Decimal(abs(v)).quantize(Decimal(1).scaleb(-nd), rounding=ROUND_HALF_UP))
+        return s if float(s) == 0 else ("+" if v > 0 else ST_MINUS) + s
+    if f == "d2":
+        s = str(Decimal(abs(v)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+        return s if float(s) == 0 or v > 0 else ST_MINUS + s
+    if f == "r3":
+        s = str(Decimal(abs(v)).quantize(Decimal("0.001"), rounding=ROUND_HALF_UP))
+        return s if float(s) == 0 or v > 0 else ST_MINUS + s
+    if f == "pub":
+        s = f"{abs(v):g}"
+        return s if v >= 0 or float(s) == 0 else ST_MINUS + s
+    raise ValueError(f)
+
+
+def st_at(block: dict, key: str):
+    o = block
+    for k in key.split("."):
+        o = o.get(k) if isinstance(o, dict) else (o[int(k)] if isinstance(o, list) and k.isdigit() and int(k) < len(o) else None)
+    return o
+
+
+def prob_text(pr: Optional[dict]) -> str:
+    """static/cb.js probText: '62.0% hike' (n = 0), '+25 bp + 28.0% of +50' (n >= 1), 'hold'."""
+    if not pr:
+        return ""
+    cut = pr.get("dir") == "cut"
+    sgn, word = (ST_MINUS if cut else "+"), ("cut" if cut else "hike")
+    p = float(pr.get("p") or 0)
+    if pr.get("dir") == "hold" or (pr.get("n") == 0 and p < 0.005):
+        return "hold"
+    from decimal import ROUND_HALF_UP, Decimal
+    pc = str(Decimal(p * 100).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)) + "%"
+    if pr.get("n") == 0:
+        return f"{pc} {word}"
+    n = int(pr["n"])
+    return f"{sgn}{25 * n} bp" + (f" + {pc} of {sgn}{25 * (n + 1)}" if p >= 0.005 else "")
+
+
+def st_text(block: dict, line) -> str:
+    """The plain text of a displayed line (badges as [FLAG], [stale]) - for the tests and the report."""
+    segs = line["segs"] if isinstance(line, dict) else line
+    out = []
+    for s in segs:
+        if isinstance(s, str):
+            out.append(s)
+        elif "k" in s:
+            v = st_at(block, s["k"])
+            out.append("n/a" if v is None else st_fmt(v, s["f"]))
+        elif "badge" in s:
+            out.append(f" [{s['badge']}]")
+        elif "stale" in s:
+            out.append(" [stale]")
+        elif "prob" in s:
+            out.append(prob_text(s["prob"]))
+        elif "note" in s:
+            out.append(s["note"])
+    return "".join(out)
+
+
+def _day(iso_: str) -> str:
+    y, m, d = (int(x) for x in str(iso_)[:10].split("-"))
+    return f"{d} {MONTHS_SHORT[m - 1]}"
+
+
+def _date(iso_: str) -> str:
+    return f"{_day(iso_)} {str(iso_)[:4]}"
+
+
+def _L(*segs, title: Optional[str] = None, cls: Optional[str] = None, note: Optional[str] = None) -> dict:
+    out = {"segs": [s for s in segs if s not in ("", None)]}
+    if title:
+        out["title"] = title
+    if cls:
+        out["cls"] = cls
+    if note:
+        out["note"] = note
+    return out
+
+
+def _n(key: str, f: str) -> dict:
+    return {"k": key, "f": f}
+
+
+def _target_text(star, band) -> str:
+    """The target as v5 showed it: 'vs 2%' (point or declared midpoint), 'target 0–2%' (band without a midpoint)."""
     if star is not None:
-        tgt = f"vs {pct(star)}"
+        return f"vs {star:g}%"
+    return f"target {band[0]:g}–{band[1]:g}%" if band else ""
+
+
+def _measure(basis: str) -> str:
+    return "core inflation" if basis == "underlying" else "total inflation"
+
+
+def _conditioning_text(v6: dict) -> str:
+    bp_ = v6["bank_path"]
+    k = bp_.get("kind")
+    if k == "dots":
+        return "the Fed's own rate path (dots)"
+    if k == "ocr_track":
+        return "the RBNZ's own OCR track"
+    if k == "market":
+        return f"the market curve of {_day(bp_['cutoff'])}" if bp_.get("cutoff") else "the market curve (cutoff not published)"
+    if k == "constant_rate":
+        return "an unchanged rate"
+    return "a rate path that is not published"
+
+
+def _vote_line(vote: Optional[dict], decided: Optional[str]) -> dict:
+    head = f"Last decision {_day(decided)}: " if decided else "Last decision: "
+    if not decided:
+        return _L(head + "vote not recorded")
+    if vote is None:
+        return _L(head + "vote not recorded")
+    k = vote.get("kind")
+    if k == "consensus":
+        return _L(head + "decided by consensus")
+    if k == "not_published":
+        return _L(head + "vote not published")
+    if k == "unanimous":
+        return _L(head + f"vote {vote['label']}")
+    words = {"raise": "for a hike", "lower": "for a cut", "hold": "for no change"}
+    dirs = [a.get("direction") for a in vote.get("against") or [] if a.get("direction") in words]
+    groups = []
+    if len(set(dirs)) == 1 and vote.get("n_against"):                   # one direction: the counted dissents (RBA: one entry for "3 members")
+        groups = [(dirs[0], int(vote["n_against"]))]
     else:
-        tgt = f"target {band[0]:g}\u2013{band[1]:g}%" if band else ""
-    measure = f"{ui.get('measure_short', 'Core')} {core.get('v'):g}% ({_period_short(core.get('asof'))})" if core.get("v") is not None else None
-    sources = [{"what": "core inflation", "text": f"{ui.get('measure_name') or core.get('source')} \u2014 {core.get('asof')}" + (f", {core.get('note')}" if core.get("note") else "")}]
-    if N:
-        sources.append({"what": "neutral", "text": f"{N['source']} \u2014 {N['asof']} ({N['flag']}); range {N['lo']:g}\u2013{N['hi']:g}%"})
-    p12 = inp.get("pi_12m") or {}
-    if p12.get("v") is not None:
-        sources.append({"what": "bank projection", "text": f"{p12.get('source')} \u2014 {p12.get('asof')}"})
-    lens = r.get("lens") or {}
-    if lens.get("path"):
-        sources.append({"what": "bank rate path", "text": f"{lens.get('source')}: " + ", ".join(f"{k} {x:g}%" for k, x in lens["path"])})
-    if lens.get("kind") == "market" and lens.get("rate_cutoff_curve") is not None:
-        sources.append({"what": "rate path assumed by the projection", "text": f"market curve at the projection cutoff {lens.get('cutoff')}: {lens['rate_cutoff_curve']:.2f}% at {lens.get('target_date')}"})
+        for d in ("raise", "lower", "hold"):
+            if dirs.count(d):
+                groups.append((d, dirs.count(d)))
+    tail = " (" + ", ".join(f"{n} {words[d]}" for d, n in groups) + ")" if groups else ""
+    return _L(head + f"vote {vote['label']}{tail}")
+
+
+def stance_page_v6(r: dict, ui: dict, rate: Optional[dict], mandate: Optional[dict] = None, next_test: Optional[dict] = None,
+                   history: Optional[list] = None, neutral_na: Optional[str] = None, notes: Optional[dict] = None, *,
+                   path: Optional[dict] = None, bank_row: Optional[dict] = None, vote: Optional[dict] = None, stale_after_bd: int = 2) -> dict:
+    """The stance block (stance-ui-v6): Position / Need / Why (Taylor rule, Bank, Market), only what is displayed.
+    r = stance.compute (v3 + r["v6"]); ui = {measure_short, measure_name}; path = overview paths[ccy] (the "By meeting" data);
+    bank_row = overview banks[] row (rate.decided, horizon.stale); vote = votes_json of the last decision; notes = stance_notes."""
+    v6 = r["v6"]
+    B = v6["short"]
+    notes = notes or {}
+    fc = v6.get("forecast")
+    star, band = r.get("target_star"), r.get("band")
+    inp = r.get("inputs") or {}
+    core = inp.get("pi_under") or {}
+    newer = bool(v6.get("newer_forecast"))
+    na_text = lambda x: (neutral_na or "no neutral estimate") if x == "neutral" else x     # noqa: E731
+
+    # ---- Position
+    p6 = v6["position"]
+    pos: dict = {"v": _r2(p6["P"]), "lo": _r2(p6["P_lo"]), "hi": _r2(p6["P_hi"]), "label": p6["label"], "na": None, "lines": [], "title": None}
+    if p6["P"] is None:
+        pos["na"] = na_text(p6["na"])
+    else:
+        rn = p6["real_neutral"]
+        pos["x"] = {"real_rate": _r2(p6["real_rate"]), "rn_mid": _r2(rn["mid"]), "rn_lo": _r2(rn["lo"]), "rn_hi": _r2(rn["hi"]), "pi": _pub(p6["pi"])}
+        pos["lines"] = [
+            _L("real rate ", _n("position.x.real_rate", "d2"), "% vs real neutral ", _n("position.x.rn_mid", "d2"), "% (",
+               _n("position.x.rn_lo", "d2"), " to ", _n("position.x.rn_hi", "d2"), "%)"),
+            _L(f"with the {B} forecast: {_measure(fc['basis'])} ", _n("position.x.pi", "pub"), f"%, {fc['period_label']}")]
+        n_ = p6["neutral"]
+        pos["title"] = (f"Over the neutral range: {st_fmt(pos['lo'], 'pp')} to {st_fmt(pos['hi'], 'pp')}. "
+                        f"Real rate = {st_fmt(_pub(p6['rate']), 'pub')}% − {st_fmt(_pub(p6['pi']), 'pub')}%. "
+                        f"Real neutral = neutral {st_fmt(_pub(n_['mid']), 'pub')}% ({st_fmt(_pub(n_['lo']), 'pub')} to {st_fmt(_pub(n_['hi']), 'pub')}%) "
+                        f"− target {st_fmt(_pub(p6['target']), 'pub')}%.")
+        if notes.get("position"):
+            pos["lines"].append(_L(f"({notes['position']})", cls="note", note="position"))
+        if newer:
+            pos["lines"].append(_L("newer forecast not entered", cls="note", note="position_forecast"))
+
+    # ---- Need
+    n6 = v6["need"]
+    need: dict = {"v": _r2(n6["N"]), "label": n6["label"], "na": None, "lines": [], "title": None}
+    now_segs: list = []
+    if core.get("v") is not None:
+        need.setdefault("x", {})["core"] = _pub(core["v"])
+        now_segs = [f"now: {ui.get('measure_short', 'Core')} ", _n("need.x.core", "pub"), f"% ({v6_period(core.get('asof'))})"]
+        now_segs += _slack_now(r, v6, need)
+    if n6["N"] is None:
+        need["na"] = na_text(n6["na"])
+    else:
+        need.setdefault("x", {})["pi"] = _pub(fc["v"])
+        pubd = f" of {_date(v6['bank_path']['published'])}" if v6["bank_path"].get("published") else ""
+        need["lines"] = [
+            _L(f"{B} forecast{pubd}: {_measure(fc['basis'])} ", _n("need.x.pi", "pub"), f"%, {fc['period_label']}, {_target_text(star, band)}"
+               + ("; no core forecast published" if v6.get("headline_basis") else "")),
+            _L(f"conditional on {_conditioning_text(v6)}")]
+    if now_segs:
+        if notes.get("need"):                                             # the core series is overdue: a grey note on the "now" line
+            now_segs += [" ", {"note": notes["need"], "name": "need"}]
+        need["lines"].append(_L(*now_segs))
+    src = []
+    if fc is not None:
+        src.append(f"forecast: {fc.get('source')} ({fc['period_label']})")
+    src.append(f"core inflation: {ui.get('measure_name') or core.get('source')} — {core.get('asof')}" + (f", {core.get('note')}" if core.get("note") else ""))
+    yt, u, us = inp.get("y_today") or {}, inp.get("u") or {}, inp.get("u_star") or {}
+    if inp.get("slack_type") == "output_gap" and yt.get("v") is not None:
+        src.append(f"output gap: {yt.get('source')}")
+    elif inp.get("slack_type") == "unemployment_gap" and u.get("v") is not None:
+        src.append(f"unemployment: {u.get('source')}; u*: {us.get('source')}")
+    else:
+        src.append(f"output gap: the {B} publishes no estimate")
+    need["title"] = "\n".join(src)
+    if notes.get("why"):                                                  # the newer forecast note moves from Why (v5) to Need
+        need["lines"].append(_L(notes["why"], cls="note", note="need_forecast"))
+
+    # ---- Why: Taylor rule
+    t6 = v6["taylor"]
+    tay: dict = {"label": "Taylor rule", "reading": t6.get("reading"), "lines": [], "na": None}
+    if t6.get("na") == "neutral" or t6.get("reading") is None:
+        tay["na"] = na_text(t6["na"] or "neutral")
+        tay["lines"] = [_L(f"n/a: {tay['na']}")]
+    else:
+        tay["x"] = {}
+        for sc in ("today", "forecast"):
+            s = t6[sc]
+            if s["T"] is None:
+                tay["lines"].append(_L(f"{sc} n/a: {na_text(s['na'])}"))
+                continue
+            i_ = s["inputs"]
+            tay["x"].update({f"{sc}_T": _r2(s["T"]), f"{sc}_lo": _r2(s["lo"]), f"{sc}_hi": _r2(s["hi"]), f"{sc}_pi": _pub(i_["pi"])})
+            no_slack = "no_slack" in t6["flags"] or i_["y"] is None
+            if not no_slack:
+                tay["x"][f"{sc}_y"] = _pub(i_["y"])
+            head = [f"{sc} ", _n(f"why.taylor.x.{sc}_T", "pp"), " (", _n(f"why.taylor.x.{sc}_lo", "pp"), " to ", _n(f"why.taylor.x.{sc}_hi", "pp"), "): "]
+            if sc == "today":
+                body = [f"{ui.get('measure_short', 'Core')} ", _n("why.taylor.x.today_pi", "pub"), f"% ({v6_period(i_['pi_period'])})"]
+            else:
+                body = [f"{_measure(fc['basis'])} ", _n("why.taylor.x.forecast_pi", "pub"), f"% {fc['period_label']}"]
+            if not no_slack:
+                body += [", output gap ", _n(f"why.taylor.x.{sc}_y", "pub")] + ([" (held)"] if sc == "forecast" and i_["held"] else [])
+            if sc == "forecast" and newer:
+                body += [" · newer forecast not entered"]
+            tay["lines"].append(_L(*head, *body, title=_formula(i_, s, no_slack)))
+        for f in t6["flags"]:
+            if f == "no_slack":
+                tay["lines"].append(_L(f"no output gap term: the {B} publishes no estimate", cls="flag"))
+            elif f == "headline_basis" and t6["forecast"]["T"] is not None:
+                tay["lines"].append(_L("forecast is total inflation", cls="flag"))
+
+    # ---- Why: Bank
+    bk = v6["bank_path"]
+    bank: dict = {"label": "Bank", "lines": []}
+    k = bk.get("kind")
+    if k == "dots":
+        bank["lines"].append(_L(f"Dots (SEP {_date(bk['published'])}): " + ", ".join(f"{lbl} {v:g}%" for lbl, v in bk["path"]),
+                                title=(r.get("lens") or {}).get("source")))
+    elif k == "ocr_track":
+        bank["lines"].append(_L(f"OCR track ({bk.get('publication')}): " + ", ".join(f"{lbl} {v:g}%" for lbl, v in bk["path"]),
+                                title=(r.get("lens") or {}).get("source")))
+    elif k == "market":
+        bank["lines"].append(_L(f"Forecast conditioned on the market curve of {_day(bk['cutoff'])}" if bk.get("cutoff") else
+                                "Forecast conditioned on the market curve (cutoff not published)",
+                                " (estimated cutoff)" if bk.get("cutoff_flag") == "ESTIMATE" else "", title=bk.get("publication")))
+    elif k == "constant_rate":
+        bank["x"] = {"assumed": _pub(bk.get("assumed_rate"))}
+        bank["lines"].append(_L("Forecast conditioned on an unchanged rate (", _n("why.bank.x.assumed", "pub"), "%)", title=bk.get("publication")))
+    else:
+        bank["lines"].append(_L("Forecast rate path not published", title=bk.get("publication")))
+    bank["lines"].append(_vote_line(vote, ((bank_row or {}).get("rate") or {}).get("decided")))
+
+    # ---- Why: Market
+    market = _market_row(r, path or {}, bank_row or {}, stale_after_bd)
+
     return {
         "bank": r["currency"], "asof": r["asof"], "rate_display": rate,
-        "position": {"v": _r2(v.get("P")), "label": v.get("P_label"), "neutral": N["mid"] if N else None,
-                     "neutral_range": [N["lo"], N["hi"]] if N else None, "na": None if v.get("P") is not None else (neutral_na or "no neutral estimate"),
-                     "note": (notes or {}).get("position")},
-        "need": {"v": _r2(v.get("N")), "label": v.get("N_label"), "measure": measure, "target": tgt, "official_name": ui.get("measure_name"),
-                 "na": None if v.get("N") is not None else "no core inflation observation", "note": (notes or {}).get("need")},
-        "why": {"conclusion": v.get("conclusion"), "reason": v.get("reason"), "move": bool(v.get("move")), "sources": sources,
-                "note": (notes or {}).get("why")},
+        "position": pos, "need": need,
+        "why": {"taylor": tay, "bank": bank, "market": market},
         "mandate": mandate, "next_test": next_test, "history": history or [],
     }
+
+
+def v6_period(p) -> str:
+    from .stance_v6 import period_label
+    return period_label(p, "")
+
+
+def _slack_now(r: dict, v6: dict, need: dict) -> list:
+    """', output gap {y} ({period})' | ', output gap {y} (from unemployment {u}% vs u* {u*}%, {period})' | ', no output gap published'."""
+    from .stance_v6 import period_label
+    inp = r.get("inputs") or {}
+    y = r.get("y")
+    x = need.setdefault("x", {})
+    if inp.get("slack_type") == "output_gap" and y is not None:
+        yt = inp.get("y_today") or {}
+        x["y"] = _pub(y)
+        per = v6.get("y_today_period") or period_label(yt.get("asof"), "")
+        if yt.get("lo") is not None and yt.get("hi") is not None:
+            x["y_lo"], x["y_hi"] = _pub(yt["lo"]), _pub(yt["hi"])
+            return [", output gap ", _n("need.x.y", "pub"), " (", _n("need.x.y_lo", "pub"), " to ", _n("need.x.y_hi", "pub"), f", {per})"]
+        return [", output gap ", _n("need.x.y", "pub"), f" ({per})"]
+    if inp.get("slack_type") == "unemployment_gap" and y is not None:
+        u, us = inp.get("u") or {}, inp.get("u_star") or {}
+        x.update(y=_pub(y), u=_pub(u.get("v")), u_star=_pub(us.get("v")))
+        return [", output gap ", _n("need.x.y", "pub"), " (from unemployment ", _n("need.x.u", "pub"), "% vs u* ", _n("need.x.u_star", "pub"),
+                f"%, {period_label(u.get('asof'), '')})"]
+    return [", no output gap published"]
+
+
+def _formula(i_: dict, s: dict, no_slack: bool) -> str:
+    """'3.2 + 1.5 × (3.1 − 2) + 0.5 × 0.2 − 3.875 = +1.08; neutral 2.9 to 3.9 → +0.78 to +1.78'."""
+    f = lambda v: st_fmt(_pub(v), "pub")                                   # noqa: E731
+    n = i_["neutral"]
+    y = "" if no_slack else f" + 0.5 × {f(i_['y'])}"
+    return (f"{f(n['mid'])} + 1.5 × ({f(i_['pi'])} − {f(i_['target'])}){y} − {f(i_['rate'])} = {st_fmt(_r2(s['T']), 'pp')}; "
+            f"neutral {f(n['lo'])} to {f(n['hi'])} → {st_fmt(_r2(s['lo']), 'pp')} to {st_fmt(_r2(s['hi']), 'pp')}")
+
+
+def _market_row(r: dict, pj: dict, row: dict, stale_bd: int) -> dict:
+    """The next 2 meetings of the implied path (the "By meeting" numbers), their 1-week change, the data date and its stale flag, and
+    the v3 lens (market minus the bank path at the same date)."""
+    out: dict = {"label": "Market", "lines": [], "x": {}}
+    x = out["x"]
+    pts = list((pj or {}).get("points") or [])[:2]
+    w1 = ((pj or {}).get("history") or {}).get("1w") or {}
+    tips = []
+    if not pts:
+        out["lines"].append(_L(f"market pricing n/a ({(pj or {}).get('na') or 'no meeting in the next 12 months'})"))
+    else:
+        segs: list = []
+        for j, p in enumerate(pts, 1):
+            if j > 1:
+                segs.append(" · ")
+            if p.get("cum_bp") is None:
+                segs.append(f"{_day(p['meeting'])}: n/a ({p.get('na') or 'not priced'})")
+                continue
+            x[f"m{j}_cum"] = p["cum_bp"]
+            segs += [f"{_day(p['meeting'])}: " + ("≈ " if p.get("est") else ""), _n(f"why.market.x.m{j}_cum", "bp"), " bp"]
+            if not p.get("est") and prob_text(p.get("prob")):
+                segs += [", ", {"prob": p["prob"]}]
+            if p.get("flag") and p["flag"] not in QUIET_FLAGS:
+                segs.append({"badge": p["flag"]})
+            tips.append(f"{_day(p['meeting'])}: method {p.get('flag') or p.get('method')}, implied rate {p.get('rate')}%")
+        out["lines"].append(_L(*segs))
+        # 1 week: exactly the "Δ vs 1w" column of "By meeting": (rate - rate 1 week ago on the same meeting) * 100
+        segs = [f"1w (vs {_day(w1['asof'])}): " if w1.get("asof") else "1w: "]
+        for j, p in enumerate(pts, 1):
+            if j > 1:
+                segs.append(" / ")
+            hp = next((q for q in w1.get("points") or [] if q.get("meeting") == p["meeting"]), None)
+            if hp is not None and hp.get("rate") is not None and p.get("rate") is not None:
+                x[f"m{j}_1w"] = (p["rate"] - hp["rate"]) * 100
+                segs += ["≈ " if p.get("est") else "", _n(f"why.market.x.m{j}_1w", "bp")]
+            else:
+                segs.append("n/a")
+        segs.append(" bp")
+        if pj.get("data_asof"):
+            segs.append(f" · data {_day(pj['data_asof'])}" + (f" {pj['data_label']}" if pj.get("data_label") else ""))
+        if ((row or {}).get("horizon") or {}).get("stale"):
+            segs.append({"stale": f"older than {stale_bd} business days"})
+        out["lines"].append(_L(*segs, title="; ".join(tips + [f"1 week ago = the snapshot of {w1.get('asof')} on the same meeting"
+                                                              + (f" ({w1['na']})" if w1.get("na") else ""),
+                                                              f"market data: {pj.get('data_label') or pj.get('data_source')}, {pj.get('data_asof')}"])))
+    # the lens (v3): market - bank path at the same date
+    lens = r.get("lens") or {}
+    kind = lens.get("kind")
+    badge = {"badge": lens["flag"]} if lens.get("flag") and lens["flag"] not in QUIET_FLAGS else ""
+    if kind == "unpublished":
+        out["lines"].append(_L("no bank rate path to compare"))
+    elif kind == "own_path" and lens.get("gap_bp") is not None and lens.get("basis") == "gap":
+        x.update(lens_m=lens.get("market"), lens_b=_pub(lens.get("bank")), lens_v=lens["gap_bp"])
+        out["lines"].append(_L(f"vs dots, end-{lens['year']}: market ", _n("why.market.x.lens_m", "r3"), "% vs ", _n("why.market.x.lens_b", "pub"),
+                               "% = ", _n("why.market.x.lens_v", "bp"), " bp", badge, title=lens.get("source")))
+    elif kind == "own_path" and lens.get("gap_bp") is not None:
+        x.update(lens_m=lens.get("market"), lens_b=_pub(lens.get("bank")), lens_v=lens["gap_bp"])
+        out["lines"].append(_L(f"vs OCR track, {lens['year']}: market ", _n("why.market.x.lens_m", "r3"), "% (year-end) vs ",
+                               _n("why.market.x.lens_b", "pub"), "% (Q4 average) = ", _n("why.market.x.lens_v", "bp"), " bp", badge,
+                               title=lens.get("source")))
+    elif kind == "market" and lens.get("delta_bp") is not None:
+        x.update(lens_m=lens["rate_today_curve"], lens_b=lens["rate_cutoff_curve"], lens_v=lens["delta_bp"])
+        out["lines"].append(_L(f"vs the {_day(lens['cutoff'])} curve, at {_date(lens['target_date'])}: ", _n("why.market.x.lens_m", "r3"), "% vs ",
+                               _n("why.market.x.lens_b", "r3"), "% = ", _n("why.market.x.lens_v", "bp"), " bp", badge,
+                               title=f"the implied rate at {lens['target_date']} on today's curve minus the same date on the curve of the forecast cutoff {lens['cutoff']}"))
+    elif kind == "constant_rate" and lens.get("delta_bp") is not None:
+        x.update(lens_m=lens["rate_today_curve"], lens_b=_pub(lens["assumed_rate"]), lens_v=lens["delta_bp"])
+        out["lines"].append(_L(f"vs an unchanged rate, at {_date(lens['target_date'])}: ", _n("why.market.x.lens_m", "r3"), "% vs ",
+                               _n("why.market.x.lens_b", "pub"), "% = ", _n("why.market.x.lens_v", "bp"), " bp", badge,
+                               title=f"the implied rate at {lens['target_date']} on today's curve minus the rate the forecast assumes"))
+    else:
+        out["lines"].append(_L(f"vs bank path: n/a ({lens.get('na') or 'n/a'})"))
+    if not x:
+        del out["x"]
+    return out

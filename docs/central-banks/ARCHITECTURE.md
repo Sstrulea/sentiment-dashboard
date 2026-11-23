@@ -1394,3 +1394,37 @@ rămân calculate și stocate în `stance_history`, nu se mai afișează. Pragur
   excepțiile din `config/known_gaps.yaml`. Cauza golurilor NZD (2022Q4, 2025Q4): fișierele Stats NZ re-emise (`-corrected`, majuscule, antete cu spații).
 - **Teste**: `tests/test_cb_stance_v5.py` (golden 8/8 pe intrările snapshot-ului 2026-11-15, cazuri oglindite, praguri = config, payload),
   `tests/cb_js/test_stance_v5.cjs`, `scripts/check_stance_ui.py` (1280 / 390, light / dark, contrast ≥ 4.5, fără overflow).
+
+### 23f. Stance — v6 (stance-ui-v6): Position / Need / Why fără verdict
+
+Înlocuiește afișajul v5 din 23e (concluzia „More hikes likely” / „Likely on hold” și motivul ei, stilul move/hold). Logica v5
+(`stance_v5.py`) și calculul v1–v3 (`stance.py`: G, G_12m, lens …) rămân calculate și stocate exact ca înainte; v6 citește valorile v3 deja
+calculate și nu le recalculează. Definițiile, pragurile, etichetele și regula de citire: `config/cb_stance.yaml` secțiunea `v6` (frozen
+2026-11-23, commit separat înaintea codului de afișare). Rămân aceleași 4 coloane: Bank | Position | Need | Why.
+
+- **Calcul** (`src/cb_compute/stance_v6.py`, pur, determinist; `r["v6"]` lângă `r["v5"]` în `stance.compute`): pi_fc = prognoza băncii aleasă
+  de horizon_rule v3 (core, altfel headline → flag headline_basis). Position P = (rată − pi_fc) − (neutral_mid − țintă), P_lo cu neutral_hi,
+  P_hi cu neutral_lo (= S − gap_12m); Need N = gap_12m din v3 (bandă fără midpoint cu N = 0 → „Inside target range”). Taylor = G / G_lo / G_hi
+  (azi) și G_12m / G_12m_lo / G_12m_hi (prognoză) din v3, cu intrările fiecărui scenariu. Citirea: semne opuse → Mixed signals; altfel cele patru
+  capete toate > 0 / < 0 → robust; altfel sensitive după semnul lui a (b când a = 0); a = b = 0 → No pressure; un scenariu n/a → testul pe celălalt
+  singur. Clasificarea pe valori nerotunjite (zgomotul |x| ≤ 1e-9 = 0). Eticheta perioadei: o singură funcție `period_label(period, transform)`.
+  `BankInputs.display` ține doar câmpuri de afișare (publicația și data prognozei, cutoff, rata presupusă, transform-ul output gap-ului); nu intră în
+  `inputs_json`.
+- **Payload** (`payload.stance_page_v6`, înlocuiește `stance_page_v5` în `cb_render._stance_banks`): doar ce se afișează. Fiecare linie = o listă de
+  segmente: text fix în engleză, număr `{k, f}` (cheia în blocul băncii, formatul pp / bp / d2 / r3 / pub), badge de metodă, badge stale,
+  probabilitate (probText). Position: valoare, etichetă, bară, real rate vs real neutral, prognoza, hover cu intervalul și aritmetica, note (neutral
+  stale, prognoză nouă neintrodusă), n/a cu motivul (`cb_render.neutral_reason` / prognoza care nu acoperă today + 12 months). Need: prognoza și data
+  ei, condiționarea ratei, „now:” core + output gap (sau u vs u*), hover cu sursele, nota „Newer … forecast out on …” (mutată din Why) și „update
+  overdue”. Why: trei rânduri — Taylor rule (citirea bold, today / forecast cu formula pe hover, flag-urile no_slack / headline_basis), Bank
+  (dots, OCR track, curba de piață la cutoff, rată neschimbată sau nepublicată + votul ultimei decizii din `votes_json` la `rate.decided`), Market
+  (primele 2 ședințe din `paths[ccy]` = „By meeting”, Δ 1w = aceeași expresie, data și stale-ul `banks[].horizon.stale`, lens-ul v3 piață − bancă).
+- **UI** (`static/cb.js` → `public/cb.js`, `static/style.css` → `public/style.css`): subtitlurile noi, `whyCell` cu cele trei rânduri, renderer
+  generic de segmente (`stSegs`), fiecare număr cu data-k / data-f / data-v. Rămân sortarea, barele ±2 pp, cardurile de telefon și zona băncii.
+  „How to read it” (`stance_ui.how_to_read(scale, stale_bd)`) — textul v6, pragurile din config v6, 2 din `meta.stale_after_bd`.
+- **stance_history**: coloane noi `v6_position`, `v6_need`, `v6_reading`, `G_12m_lo`, `G_12m_hi`; `v5_*` se scriu în continuare; rândurile vechi
+  nu se rescriu. Graficul History: Position și Need v6; un rând fără v6_* → Position = S − gap_12m, Need = gap_12m (din coloanele lui).
+- **Teste**: `tests/test_cb_stance_v6.py` (golden 8/8 la as-of 2026-11-20 din `tests/fixtures/cb_stance/v6_inputs_2026-11-20.json`, comparația
+  Market, voturile, citirea caz cu caz, identitățile cu v3, rândul Bank, Market = „By meeting”, CAD stale, payload-ul, How to read, istoricul),
+  `tests/cb_js/test_stance_v6.cjs` (pe `tests/cb_js/fixtures/stance_v6_2026-11-20.json` = payload-ul randat, verificat de pytest),
+  `scripts/check_stance_ui.py` (1280 / 390, light / dark, contrast ≥ 4.5, fără overflow, orice număr cu data-k = JSON, Why = 3 rânduri fără concluzie).
+  Testele de logică v5 rămân.

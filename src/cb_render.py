@@ -97,13 +97,13 @@ def stance_blocks(data_dir, ctx, asof: date, out: dict) -> dict:
         log.exception("stance payload failed")
         return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
     try:
-        return _stance_banks(asof, out, params, res, mand, fc, hist)
+        return _stance_banks(asof, out, params, res, mand, fc, hist, ctx)
     except Exception as e:                                               # noqa: BLE001 - logged, the page says why
         log.exception("stance payload failed")
         return {"na": f"stance unavailable: {type(e).__name__}: {e}"}
 
 
-def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
+def _stance_banks(asof, out, params, res, mand, fc, hist, ctx=None) -> dict:
     import yaml
     from . import cb_datasets as ds
     from .cb_compute.stance_inputs import current_version
@@ -118,6 +118,7 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
     meetings = ds.load_meetings(Paths(None).meetings)
     from .cb_compute.framework_watch import last_projection_dates
     lastp = last_projection_dates(meetings, asof)
+    stale_bd = out["overview"]["meta"]["stale_after_bd"]
     banks = {}
     for c, r in res.items():
         path = out["overview"]["paths"].get(c)
@@ -127,18 +128,22 @@ def _stance_banks(asof, out, params, res, mand, fc, hist) -> dict:
         prim = (raw or {}).get("underlying", {}).get("primary")
         prim = prim if isinstance(prim, list) else [prim]
         ui = {"measure_short": shorts.get(c, "Core"), "measure_name": " and ".join(str(names.get(x, x)) for x in prim if x)}
-        from .cb_compute.stance_v5 import SHORT
+        from .cb_compute.stance_v6 import SHORT
         notes = P.stance_notes(r, SHORT.get(c, c), lastp.get(c), [x for x in prim if x])
-        banks[c] = P.stance_page_v5(r, ui, {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
+        row = next((b for b in out["overview"]["banks"] if b["ccy"] == c), {})
+        decided = (row.get("rate") or {}).get("decided")
+        vote = P.votes_json(ctx, c, date.fromisoformat(decided)) if ctx is not None and decided else None
+        banks[c] = P.stance_page_v6(r, ui, {k: rate.get(k) for k in ("rate", "lower", "upper", "range")},
                                     mandate_card(raw, names, params["underlying_rule"]) if raw else None, next_test(c, events, mapping, asof),
-                                    history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof), notes)
-    scale = yaml.safe_load((ROOT / "config" / "cb_stance.yaml").read_text(encoding="utf-8"))["v5"]["scale_pp"]
-    return {"banks": banks, "how_to_read": how_to_read(scale), "scale_pp": 2.0, "na": None}
+                                    history_points([h for (b, _), h in hist.items() if b == c]), neutral_reason(c, r, meetings, asof), notes,
+                                    path=path, bank_row=row, vote=vote, stale_after_bd=stale_bd)
+    scale = yaml.safe_load((ROOT / "config" / "cb_stance.yaml").read_text(encoding="utf-8"))["v6"]["scale_pp"]
+    return {"banks": banks, "how_to_read": how_to_read(scale, stale_bd), "scale_pp": 2.0, "na": None}
 
 
 def neutral_reason(c: str, r: dict, meetings: dict, asof: date) -> Optional[str]:
     """Why a bank has no Position: 'SNB publishes no neutral' / 'RBNZ neutral due <next projection meeting>'."""
-    from .cb_compute.stance_v5 import SHORT
+    from .cb_compute.stance_v6 import SHORT
     if r.get("N"):
         return None
     status = ((r.get("inputs") or {}).get("neutral_status") or "")

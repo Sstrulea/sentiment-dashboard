@@ -22,10 +22,10 @@ from . import cb_store as cs
 log = logging.getLogger("cb_stance_history")
 
 F64, STR = pa.float64(), pa.string()
-NUMERIC = ("v5_position", "v5_need", "rate", "pi_under", "pi_head", "gap_under", "gap_head", "y", "x", "x_headline", "N_mid", "N_lo", "N_hi", "S", "S_lo", "S_hi",
-           "G", "G_lo", "G_hi", "margin", "pi_12m", "gap_12m", "y_12m", "x_12m", "G_12m", "pivot", "lens_value", "horizon_gap")
+NUMERIC = ("v5_position", "v5_need", "v6_position", "v6_need", "rate", "pi_under", "pi_head", "gap_under", "gap_head", "y", "x", "x_headline", "N_mid", "N_lo", "N_hi", "S", "S_lo", "S_hi",
+           "G", "G_lo", "G_hi", "margin", "pi_12m", "gap_12m", "y_12m", "x_12m", "G_12m", "G_12m_lo", "G_12m_hi", "pivot", "lens_value", "horizon_gap")
 TEXT = ("asof", "N_asof", "N_flag", "situation", "situation_12m", "pi_12m_period", "pi_12m_basis", "lens_kind", "lens_flag", "lens_na",
-        "flags", "flags_12m", "mandate_id", "code_version", "v5_conclusion", "v5_reason")
+        "flags", "flags_12m", "mandate_id", "code_version", "v5_conclusion", "v5_reason", "v6_reading")
 SCHEMA = pa.schema([("bank", STR), ("snapshot_date", pa.date32())]
                    + [(c, F64) for c in NUMERIC] + [(c, STR) for c in TEXT]
                    + [("direction", pa.int32()), ("direction_12m", pa.int32()), ("consistent", pa.bool_()), ("stance_version", pa.int32()),
@@ -39,10 +39,14 @@ def row_of(r: dict, snapshot: date, now: datetime) -> dict:
     N, lens = r.get("N") or {}, r.get("lens") or {}
     lv = lens.get("delta_bp") if lens.get("kind") in ("market", "constant_rate") else lens.get("gap_bp")
     v5 = r.get("v5") or {}
+    v6 = r.get("v6") or {}
     return {"bank": r["currency"], "snapshot_date": snapshot, "asof": r["asof"],
             "v5_position": v5.get("P"), "v5_need": v5.get("N"), "v5_conclusion": v5.get("conclusion"), "v5_reason": v5.get("reason"),
+            "v6_position": (v6.get("position") or {}).get("P"), "v6_need": (v6.get("need") or {}).get("N"),
+            "v6_reading": (v6.get("taylor") or {}).get("reading"),
             **{c: r.get(c) for c in ("rate", "pi_under", "pi_head", "gap_under", "gap_head", "y", "x", "x_headline", "S", "S_lo", "S_hi",
-                                     "G", "G_lo", "G_hi", "margin", "pi_12m", "gap_12m", "y_12m", "x_12m", "G_12m", "pivot")},
+                                     "G", "G_lo", "G_hi", "margin", "pi_12m", "gap_12m", "y_12m", "x_12m", "G_12m", "G_12m_lo",
+                                     "G_12m_hi", "pivot")},
             "N_mid": N.get("mid"), "N_lo": N.get("lo"), "N_hi": N.get("hi"), "N_asof": N.get("asof"), "N_flag": N.get("flag"),
             "situation": r.get("situation"), "situation_12m": r.get("situation_12m"), "pi_12m_period": r.get("pi_12m_period"),
             "pi_12m_basis": r.get("pi_12m_basis") or None, "lens_kind": lens.get("kind"), "lens_value": lv, "lens_flag": lens.get("flag"),

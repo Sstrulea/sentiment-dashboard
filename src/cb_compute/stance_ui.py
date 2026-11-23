@@ -1,4 +1,4 @@
-"""Stance UI (v5) - the parts of the bank zone that are not computed by stance_v5.py: the mandate card, the next test, the history,
+"""Stance UI (v6) - the parts of the bank zone that are not computed by stance_v6.py: the mandate card, the next test, the history,
 the "How to read it" text. Pure, deterministic, no AI. ARCHITECTURE section 23d.
 
 Every text is a fixed template filled with payload values (B.4 rounding: pp 2 decimals with a sign, bp signed integers, inflation as
@@ -12,15 +12,24 @@ from typing import Optional
 MINUS = "−"
 MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-def how_to_read(scale: list) -> list:
-    """The "How to read it" text (George, 2026-11-16); the thresholds come from config/cb_stance.yaml v5.scale_pp."""
+def how_to_read(scale: list, stale_bd: int = 2) -> list:
+    """The "How to read it" text (stance v6); the thresholds come from config/cb_stance.yaml v6.scale_pp, the staleness limit from
+    meta.stale_after_bd."""
     t1, t2, t3 = (f"{x:g}" for x in scale)
     return [
-        f"Position = policy rate \u2212 the bank's neutral rate. Need = core inflation \u2212 target. Same scale for both: within \u00b1{t1} pp "
-        f"neutral / near target, up to {t2} slightly, up to {t3} plain, beyond that very / well.",
-        "Why: inflation near target \u2192 no reason to move. Above target and policy not yet restrictive \u2192 more hikes. Already restrictive "
-        "\u2192 on hold only if the bank's own forecast shows inflation falling without further hikes. Where the bank publishes its own rate plan "
-        "(Fed, RBNZ), that plan decides. Mirrored when inflation is below target; total inflation is used where the bank doesn't forecast core.",
+        "Position = (policy rate \u2212 the bank's inflation forecast) \u2212 (neutral rate \u2212 target): the real policy rate minus the bank's "
+        "real neutral rate. Need = the bank's inflation forecast \u2212 target. The forecast is the bank's projection for the published period "
+        "that contains today + 12 months; the cell shows its measure, its period and the rate path it assumes. Position and Need use the same "
+        "forecast, so they are not two separate signals.",
+        f"Same scale for both: within \u00b1{t1} pp neutral / near target, up to {t2} slightly, up to {t3} plain, beyond that very / well. "
+        "Core inflation and the output gap today are shown under Need for comparison.",
+        "Why gives three readings, not a forecast of the decision. Taylor rule: neutral + 1.5 \u00d7 (inflation \u2212 target) + 0.5 \u00d7 output gap "
+        "\u2212 policy rate, in pp, once with core inflation today and once with the bank's forecast, each across the bank's neutral range. "
+        "Positive: the rule points to a higher rate; negative: to a lower one. Opposite signs: mixed signals. Same sign and all four ends on the "
+        "same side of zero: robust to the neutral range. Otherwise: sensitive to the neutral range.",
+        "Bank: the rate path the bank publishes (Fed dots, RBNZ OCR track) or the rate path its forecast assumes, and the vote at the last "
+        "decision. Market: the move priced by each of the next two meetings (bp vs the current rate), its change over one week, and the market "
+        f"minus the bank's path at the same date. Market data older than {stale_bd:g} business days is marked stale.",
     ]
 
 
@@ -96,10 +105,15 @@ def next_test(cur: str, events: list, mapping: dict, asof: date) -> Optional[dic
 
 
 def history_points(rows: list) -> list:
-    """Position (S) and Need (gap_under) over time from data/cb/stance_history (pp, as stored; the UI rounds)."""
+    """Position and Need (v6) over time from data/cb/stance_history (pp, as stored; the UI rounds). A row written before v6 has no
+    v6_* columns: its values are derived exactly from its own columns - Position = S - gap_12m, Need = gap_12m (never v5 values or S)."""
     out = []
     for r in sorted(rows, key=lambda r: r["snapshot_date"]):
-        p = r.get("v5_position") if r.get("v5_position") is not None else r.get("S")
-        n = r.get("v5_need") if r.get("v5_need") is not None else r.get("gap_under")
+        if r.get("v6_position") is not None or r.get("v6_need") is not None or r.get("v6_reading") is not None:
+            p, n = r.get("v6_position"), r.get("v6_need")
+        else:
+            S, g = r.get("S"), r.get("gap_12m")
+            p = None if S is None or g is None else S - g
+            n = g
         out.append({"date": r["snapshot_date"].isoformat(), "position": None if p is None else round(p, 6), "need": None if n is None else round(n, 6)})
     return out

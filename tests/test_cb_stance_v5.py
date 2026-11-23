@@ -1,9 +1,9 @@
 """stance-ui-v5: the golden of the brief (8/8, the inputs of the stance_history snapshot of 2026-11-15), the mirrored cases, the
-thresholds = config/cb_stance.yaml v5, the payload (only what is displayed) and the JS (tests/cb_js/test_stance_v5.cjs)."""
+thresholds = config/cb_stance.yaml v5. The v5 logic is still computed and stored (stance_history v5_*); its payload and UI were replaced by
+v6 (tests/test_cb_stance_v6.py)."""
 from __future__ import annotations
 
 import json
-import subprocess
 from dataclasses import replace
 from pathlib import Path
 
@@ -108,41 +108,7 @@ def test_no_neutral_and_no_path_is_na_with_the_reason():
     assert r["conclusion"] == "—" and "(pending)" in r["reason"]
 
 
-# ---- payload ----
-
-def test_written_payload_has_only_what_is_displayed(tmp_path):
-    from src import cb_render as R
-    R.render(None, tmp_path)
-    ov = json.loads((tmp_path / "data" / "cb" / "overview.json").read_text())["stance"]
-    assert set(ov) == {"how_to_read", "scale_pp", "na", "banks"} and ov["scale_pp"] == 2.0
-    for c, b in ov["banks"].items():
-        assert set(b) == {"bank", "asof", "rate_display", "position", "need", "why"}, c
-        assert set(b["why"]) == {"conclusion", "reason", "move", "sources", "note"} and b["why"]["sources"]
-    usd = json.loads((tmp_path / "data" / "cb" / "usd.json").read_text())["stance"]
-    assert set(usd) >= {"mandate", "next_test", "history"} and usd["position"]["v"] == 0.68 and usd["need"]["measure"].startswith("Core PCE 3.1% (")
-    text = (tmp_path / "data" / "cb" / "usd.json").read_text()
-    for gone in ("pressure", "pivot", "S0", "chip", "cycle_line", "lens", "If held"):
-        assert f'"{gone}' not in text, gone
-    chf = json.loads((tmp_path / "data" / "cb" / "chf.json").read_text())["stance"]
-    assert chf["position"]["na"] == "SNB publishes no neutral" and chf["need"]["target"] == "target 0–2%"
-    nzd = json.loads((tmp_path / "data" / "cb" / "nzd.json").read_text())["stance"]
-    assert nzd["position"]["na"].startswith("RBNZ neutral due ")
-
-
-def test_stance_js():
-    r = subprocess.run(["node", str(ROOT / "tests" / "cb_js" / "test_stance_v5.cjs")], cwd=ROOT, capture_output=True, text=True, timeout=60)
-    assert r.returncode == 0, r.stdout + r.stderr
-
-
-def test_how_to_read_text_with_thresholds_from_config(tmp_path, monkeypatch):
-    from src.cb_compute.stance_ui import how_to_read
-    cfg = yaml.safe_load(open(ROOT / "config" / "cb_stance.yaml"))["v5"]["scale_pp"]
-    t = how_to_read(cfg)
-    assert t[0] == ("Position = policy rate − the bank's neutral rate. Need = core inflation − target. Same scale for both: within "
-                    "±0.25 pp neutral / near target, up to 0.75 slightly, up to 1.5 plain, beyond that very / well.")
-    assert t[1].startswith("Why: inflation near target → no reason to move.") and t[1].endswith("total inflation is used where the bank doesn't forecast core.")
-    assert "0.3" in how_to_read([0.3, 0.8, 1.6])[0]                    # the numbers follow the config, not the code
-
+# ---- payload / UI: replaced by stance v6 (tests/test_cb_stance_v6.py, tests/cb_js/test_stance_v6.cjs); the notes helper stays ----
 
 def test_stale_notes_one_case_each():
     from datetime import date
@@ -154,11 +120,3 @@ def test_stale_notes_one_case_each():
     assert stance_notes({"notes": [], "N": {"stale": False, "asof": "2026-09-16"}}, "Fed", date(2026, 9, 16), ["fred:PCEPILFE"]) == \
         {"why": None, "position": None, "need": None}
     assert stance_notes({"notes": ["other stale"]}, "BoE", None, ["ons:DKO8"])["need"] is None      # another series' staleness is not the core's
-
-
-def test_today_only_the_eur_neutral_is_stale(tmp_path):
-    from src import cb_render as R
-    R.render(None, tmp_path)
-    notes = {c: (json.loads((tmp_path / "data" / "cb" / f"{c.lower()}.json").read_text())["stance"]) for c in ("USD", "EUR", "GBP", "JPY", "CAD", "AUD", "NZD", "CHF")}
-    got = {c: {k: s[k]["note"] for k in ("position", "need", "why") if s[k].get("note")} for c, s in notes.items()}
-    assert {c: v for c, v in got.items() if v} == {"EUR": {"position": "from Feb 2025"}}
