@@ -108,6 +108,12 @@
    "reason": "no container of the page holds the document text",
    "url": "https://www.bis.org/speeches/20260817-ai-and-monetary-policy"
   },
+  "EUR:speech:dd6e64bcc52a": {
+   "at": "2026-11-23T18:43:27Z",
+   "kind": "non_prose",
+   "reason": "9% of the characters are digits: a deck of tables or slides, not prose",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261123~b5816801a0.en.pdf"
+  },
   "EUR:speech:dfbff8bb48bc": {
    "at": "2026-11-07T14:41:39Z",
    "kind": "no_text",
