@@ -243,11 +243,48 @@
    "id": "conference:JPY:2026-12-18",
    "kind": "conference",
    "lead_minutes": 0
+  },
+  {
+   "bank": "JPY",
+   "date": "2027-01-22",
+   "dispatch": {
+    "inputs": {
+     "bank": "JPY",
+     "date": "2027-01-22",
+     "event": "decision"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fallback_at_window_end": true,
+   "grace_minutes": 30,
+   "id": "decision:JPY:2027-01-22",
+   "kind": "boj_window",
+   "window_end": "2027-01-22T04:30:00Z",
+   "window_start": "2027-01-22T02:30:00Z"
+  },
+  {
+   "at": "2027-01-22T06:30:00Z",
+   "at_basis": "conference",
+   "bank": "JPY",
+   "date": "2027-01-22",
+   "dispatch": {
+    "inputs": {
+     "bank": "JPY",
+     "date": "2027-01-22",
+     "event": "conference"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2027-01-22T08:30:00Z",
+   "grace_minutes": 240,
+   "id": "conference:JPY:2027-01-22",
+   "kind": "conference",
+   "lead_minutes": 0
   }
  ],
  "horizon": {
-  "from": "2026-11-19",
-  "to": "2027-01-21"
+  "from": "2026-11-20",
+  "to": "2027-01-22"
  },
  "regular": [
   {
