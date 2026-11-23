@@ -25,7 +25,7 @@ from . import store as ST
 from .http import Fetched, Fetcher
 
 STATE_KEY = "http_validators"
-VOTE_RANK = {"summary+xlsx": 5, "minutes": 4, "statement": 3, "summary": 2, "n/a": 1}
+VOTE_RANK = {"manual": 6, "summary+xlsx": 5, "minutes": 4, "statement": 3, "summary": 2, "n/a": 1}     # manual: RBNZ, typed from the release
 SPEECH_DAYS = 75                     # speeches / testimony younger than this are (re)collected
 MAX_PAGES_PER_BANK = 12              # first-paragraph fetches for the relevance filter, per bank and run
 MANUAL_FILE = "documents.yaml"
@@ -256,10 +256,25 @@ class _Run:
                     if d in wb and rp is not None:
                         v = P.apply_boe_workbook(v, wb[d], rp.rate)
                 self.add_votes(ccy, d, v, doc_id)
-        for ccy, d in [(c, d) for c in ("NZD",) for d in self.meet.get(c, [])]:
-            v = P.parse_votes(ccy, "")
-            if v:
-                self.add_votes(ccy, d, v, "")
+        if "NZD" in self.banks:
+            self.rbnz_votes()
+
+    def rbnz_votes(self) -> None:
+        """NZD: the votes typed by hand in data/cb/manual/rbnz.yaml `votes` (the site is bot-walled). The manual row replaces any earlier
+        row (the old 'consensus' assumption); a decision without an entry has no row ('vote not recorded')."""
+        doc = ds.load_rbnz(self.paths.manual / "rbnz.yaml")
+        errs = ds.validate_rbnz_votes(doc.get("votes"))
+        if errs:
+            self.fail("rbnz.yaml votes", "; ".join(errs[:3]))
+            return
+        entries = ds.rbnz_votes(doc)
+        for k in [k for k, r in self.votes.items() if k[0] == "NZD" and (r["source"] != "manual" or k[1] not in entries)]:
+            del self.votes[k]
+        for d, e in sorted(entries.items()):
+            against = [{"name": a["name"], "direction": a["direction"], "note": a.get("note", "")} for a in e.get("against") or []]
+            v = P.Votes(e["kind"], e.get("n_for"), e.get("n_against"), list(e.get("for") or []), against, e["source"]["quote"], "manual",
+                        [x for x in (e.get("note"), f"{e['source']['url']} (retrieved {e['source']['retrieved']})") if x])
+            self.add_votes("NZD", d, v, "")
 
     # ---- redlines -----------------------------------------------------------------------------------------------------------
     def redlines(self) -> list:

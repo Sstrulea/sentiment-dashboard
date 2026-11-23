@@ -3,6 +3,8 @@
 # meeting) and BIS WS_CBPOL. What stays manual:
 #   * the OCR track of the LATEST Monetary Policy Statement (MPS) - the bank's own path, quarterly averages;
 #   * the meeting calendar (RBNZ has published it to 2028-02-09).
+#   * the vote of each decision (`votes`): since May 2026 the RBNZ publishes the vote when the Committee does not reach
+#     consensus. One entry per decision, from the release; a decision without an entry shows "vote not recorded".
 # `python -m src.cb_collect --status` warns only when an MPS NEWER than the one in this file has passed (the Feb / May
 # 2026 MPS are not needed), and when the calendar runs out. Only the latest MPS needs a track.
 #
@@ -16,7 +18,7 @@
 meta:
   version: 1
   owner: manual
-  updated: 2026-10-09
+  updated: 2026-11-23
 
 # The published meeting calendar. 2026-10-28 onwards: the RBNZ release "OCR decision dates and Financial Stability Report
 # dates to February 2028" (published 2026-02-19, updated 2026-09-18), transcribed 2026-10-09 by hand from the page (rbnz.govt.nz
@@ -86,3 +88,42 @@ mps:
       - {period: 2029Q2, value: 3.3}
       - {period: 2029Q3, value: 3.3}
     bank_bill_90d: []                # the PDF tables carry no 90-day bank bill projection: the RBNZ GAP stays n/a (same-basis rule)
+
+# The vote of each OCR decision, typed by hand from the RBNZ release (rbnz.govt.nz is bot-walled for scripts; read in a browser).
+# kind: counted (n_for / n_against + names) | unanimous | consensus (no count, no names). against: {name, direction raise|lower|hold, note}.
+# Read by src/cb_docs/collect.py (votes pass): the row of a decision here replaces any earlier row; framework_watch reminds after each
+# decision (MPS or Review) until its entry is here.
+votes:
+  - date: 2026-02-18
+    kind: consensus
+    source: {url: "https://www.rbnz.govt.nz/news-and-events/news/2026/02/ocr-on-hold-at-2-25-with-inflation-expected-to-fall", quote: "The Committee reached consensus to hold the OCR at 2.25 percent.", retrieved: 2026-11-23}
+  - date: 2026-04-08
+    kind: consensus
+    source: {url: "https://www.rbnz.govt.nz/news-and-events/news/2026/04/ocr-on-hold-at-2-25", quote: "the Committee reached consensus to hold the OCR at 2.25 percent", retrieved: 2026-11-23}
+  - date: 2026-05-27
+    kind: counted
+    n_for: 3
+    n_against: 3
+    for: [Anna Breman, Karen Silk, Paul Conway]
+    against:
+      - {name: Carl Hansen, direction: raise, note: "voted for a 25 bp increase to 2.50%"}
+      - {name: Hayley Gourley, direction: raise, note: "voted for a 25 bp increase to 2.50%"}
+      - {name: Prasanna Gai, direction: raise, note: "voted for a 25 bp increase to 2.50%"}
+    note: "3-3: the chairperson's casting vote decided; the OCR remained on hold at 2.25%"
+    source: {url: "https://www.rbnz.govt.nz/news-and-events/news/2026/05/ocr-held-at-2-25-percent", quote: "three Committee members (Anna Breman, Karen Silk, Paul Conway) voted to leave the OCR on hold and three members (Carl Hansen, Hayley Gourley, Prasanna Gai) voted for a 25-basis point increase. In this instance, the chairperson has a casting vote, meaning the OCR remains on hold at 2.25 percent.", retrieved: 2026-11-23}
+  - date: 2026-07-08
+    kind: consensus
+    source: {url: "https://www.rbnz.govt.nz/news-and-events/news/2026/07/ocr-increased-to-2-50-to-return-inflation-to-2-percent", quote: "The Monetary Policy Committee today reached consensus to increase the OCR by 25 basis points to 2.50 percent.", retrieved: 2026-11-23}
+  - date: 2026-09-02
+    kind: consensus
+    source: {url: "https://www.rbnz.govt.nz/news-and-events/news/2026/09/ocr-increased-by-25-basis-points-to-2-75", quote: "The Monetary Policy Committee today reached consensus to increase the OCR by 25 basis points to 2.75 percent.", retrieved: 2026-11-23}
+  - date: 2026-10-28
+    kind: counted
+    n_for: 4
+    n_against: 3
+    for: [Anna Breman, Carl Hansen, Rebecca Williams, Prasanna Gai]
+    against:
+      - {name: Hayley Gourley, direction: raise, note: "favoured a 25 bp increase to 3.00%"}
+      - {name: Paul Conway, direction: raise, note: "favoured a 25 bp increase to 3.00%"}
+      - {name: Karen Silk, direction: raise, note: "favoured a 25 bp increase to 3.00%"}
+    source: {url: "https://www.rbnz.govt.nz/news-and-events/news/2026/10/ocr-held-at-2-75-percent", quote: "The Monetary Policy Committee today voted 4 - 3 to hold the OCR at 2.75 percent. Hayley Gourley, Paul Conway and Karen Silk favoured increasing the OCR by 25 basis points at this meeting.", retrieved: 2026-11-23}

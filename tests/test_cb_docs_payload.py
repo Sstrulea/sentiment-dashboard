@@ -66,10 +66,10 @@ def test_redline_payload_reproduces_the_statement_from_the_previous_one(built):
 def test_decisions_table_columns_are_populated(built):
     exp = {"USD": ["12–0", "9–3", "12–0", "8–4"], "GBP": ["6–3", "6–3", "7–2", "8–1"], "JPY": ["7–2", "8–1", "7–1", "6–3"],
            "AUD": ["unanimous", "unanimous", "8–1", "5–4"], "EUR": ["not published"] * 4, "CAD": ["not published"] * 4, "CHF": ["not published"] * 4,
-           "NZD": ["consensus"] * 4}
+           "NZD": [None] * 4}                          # the frozen rbnz.yaml has no `votes` section: no row, no assumed consensus
     for ccy, labels in exp.items():
         rows = built[0]["banks"][ccy]["decisions"]
-        assert [r["slots"]["votes"]["label"] for r in rows] == labels, ccy
+        assert [(r["slots"]["votes"] or {}).get("label") for r in rows] == labels, ccy
         assert all(r["summary"]["label"] == "summary pending" and r["summary"]["status"] == "pending" for r in rows)
     usd = built[0]["banks"]["USD"]["decisions"]
     assert all(r["slots"]["statement"]["url"].startswith("https://www.federalreserve.gov/") for r in usd)

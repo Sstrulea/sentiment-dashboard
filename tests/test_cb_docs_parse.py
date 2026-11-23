@@ -183,9 +183,10 @@ def test_rba_votes_from_the_minutes_and_the_statement():
 
 
 def test_banks_that_do_not_publish_votes():
-    for ccy, kind in (("EUR", "not_published"), ("CAD", "not_published"), ("CHF", "not_published"), ("NZD", "consensus")):
+    for ccy, kind in (("EUR", "not_published"), ("CAD", "not_published"), ("CHF", "not_published")):
         v = P.parse_votes(ccy, "")
         assert v.kind == kind and v.n_for is None and v.source == "n/a" and v.evidence
+    assert P.parse_votes("NZD", "") is None and "NZD" not in P.NOT_PUBLISHED          # RBNZ: typed by hand in rbnz.yaml `votes`, never assumed
 
 
 # --- redline ---------------------------------------------------------------------------------------------------------------------

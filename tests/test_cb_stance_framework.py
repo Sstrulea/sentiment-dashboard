@@ -144,9 +144,10 @@ def test_verification_overdue_on_fixed_dates():
 
 
 def test_rbnz_reminder_at_each_mps():
-    mps = [date(2026, 9, 2), date(2026, 12, 9)]
-    assert FW.rbnz_alerts(mps, date(2026, 9, 2), date(2026, 11, 14)) == []
-    assert len(FW.rbnz_alerts(mps, date(2026, 9, 2), date(2026, 12, 9))) == 1
+    dec = [(date(2026, 9, 2), True), (date(2026, 12, 9), True)]
+    voted = [date(2026, 9, 2), date(2026, 12, 9)]                                  # votes entered: only the MPS data reminder (tests/test_cb_rbnz_votes.py)
+    assert FW.rbnz_alerts(dec, voted, date(2026, 9, 2), date(2026, 11, 14)) == []
+    assert [a.ref for a in FW.rbnz_alerts(dec, voted, date(2026, 9, 2), date(2026, 12, 9))] == ["NZD.framework"]
 
 
 def test_config_8_banks_have_a_landing_target_and_rbnz_is_manual_only():

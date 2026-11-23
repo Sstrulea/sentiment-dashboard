@@ -246,7 +246,9 @@ def open_alerts(paths, today: date, *, cfg: dict | None = None, meetings: dict |
     alerts += FW.verification_alerts(lv, FW.last_projection_dates(meetings, today), today, cfg["meta"]["verification_max_days"])
     nz = reviews.get("NZD.framework") or {}
     nz_url = next((t["url"] for t in targets(cfg) if t["id"] == "NZD.framework"), "")
-    alerts += FW.rbnz_alerts([r["date"] for r in meetings.get("NZD", []) if r.get("has_projections")], nz.get("mps_reviewed"), today, nz_url)
+    from .cb_datasets import load_rbnz, rbnz_votes
+    voted = rbnz_votes(load_rbnz(paths.manual / "rbnz.yaml"))
+    alerts += FW.rbnz_alerts([(r["date"], r.get("has_projections")) for r in meetings.get("NZD", [])], voted, nz.get("mps_reviewed"), today, nz_url)
     return alerts
 
 

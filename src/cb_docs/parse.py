@@ -143,7 +143,9 @@ class Votes:
 
 
 NOT_PUBLISHED = {"EUR": "not published (decisions by consensus)", "CAD": "not published (Governing Council decides by consensus)",
-                 "CHF": "not published", "NZD": "consensus"}
+                 "CHF": "not published"}
+# NZD: no assumption. Since May 2026 the RBNZ publishes the vote when the Committee does not reach consensus; its site is bot-walled, so
+# each decision's vote is typed by hand in data/cb/manual/rbnz.yaml `votes` (collect.votes_pass); a decision without an entry has no row.
 
 
 def _split_names(s: str) -> list:
@@ -293,7 +295,7 @@ def parse_votes(ccy: str, text: str) -> Optional[Votes]:
     if ccy == "AUD":
         return parse_votes_rba(text)
     if ccy in NOT_PUBLISHED:
-        return Votes("consensus" if ccy == "NZD" else "not_published", None, None, [], [], NOT_PUBLISHED[ccy], "n/a")
+        return Votes("not_published", None, None, [], [], NOT_PUBLISHED[ccy], "n/a")
     return None
 
 
