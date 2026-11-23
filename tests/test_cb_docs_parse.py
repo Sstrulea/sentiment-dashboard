@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 from datetime import date, datetime, timezone
+from pathlib import Path
 
 import openpyxl
 import pytest
@@ -324,3 +325,39 @@ def test_a_media_availability_is_an_announcement_not_a_document():
     assert P.is_non_document("Governor Macklem speaks in Paris", "https://www.bankofcanada.ca/multimedia/media-availability-france-canada-chamber/")   # by its URL
     assert not P.is_non_document("Governor Macklem: Monetary policy in a fragmenting world", "https://www.bankofcanada.ca/2026/09/remarks-macklem/")
     assert not P.is_non_document("Remarks on media availability of central bank data", "https://x/y")                # only a title that STARTS with it
+
+
+# --- fix/cb-data-gaps: the numbered BoJ statement (from 30 Oct 2026) ---------------------------------------------------------------
+
+BOJ_1030 = (Path(__file__).parent / "fixtures" / "cb_docs" / "statements" / "JPY_2026-10-30.txt")     # the stored text (documents store, sha d101f213...)
+
+
+def test_boj_vote_from_the_title_of_the_guideline_item():
+    t = BOJ_1030.read_text()
+    assert "1. Guideline for money market operations (an 8-1 majority vote)" in t and "(ETFs) (a unanimous vote)" in t
+    v = P.parse_votes("JPY", t)
+    assert (v.kind, v.n_for, v.n_against) == ("counted", 8, 1)
+    assert v.evidence == "Guideline for money market operations (an 8-1 majority vote)"
+    assert [(a["name"], a["direction"]) for a in v.against] == [("Hajime Takata", "raise")] and v.against[0]["note"].endswith("[proposed 1.5%]")
+    assert len(v.for_names) == 8 and "Kazuo Ueda" in v.for_names
+    assert P.parse_rate("JPY", t).rate == 1.25
+
+
+def test_boj_never_takes_the_vote_of_another_item():
+    t = BOJ_1030.read_text().replace("Guideline for money market operations (an 8-1 majority vote)", "Guideline for money market operations")
+    assert P.parse_votes("JPY", t) is None                                            # the ETF item's "(a unanimous vote)" is not the guideline's
+    u = BOJ_1030.read_text().replace("(an 8-1 majority vote)", "(a unanimous vote)").replace("Voting against the action: TAKATA Hajime.", "")
+    assert P.parse_votes("JPY", u).kind == "unanimous"
+
+
+@pytest.mark.parametrize("day, want", [("2026-04-28", ("counted", 6, 3, ["raise", "raise", "raise"])), ("2026-06-16", ("counted", 7, 1, ["hold"])),
+                                       ("2026-07-31", ("counted", 8, 1, ["raise"])), ("2026-09-18", ("counted", 7, 2, ["hold", "hold"]))])
+def test_boj_earlier_statements_give_the_same_votes_as_today(day, want):
+    import json as _json
+    from src import cb_collect as cc
+    from src.cb_docs import store as ST
+    v = P.parse_votes("JPY", statement_text("JPY", day))
+    assert (v.kind, v.n_for, v.n_against, [a["direction"] for a in v.against]) == want
+    row = next(r for r in ST.load_votes(cc.Paths()) if r["currency"] == "JPY" and r["meeting_date"].isoformat() == day)   # data/cb/votes.parquet
+    assert (row["kind"], row["n_for"], row["n_against"], _json.loads(row["against"]), _json.loads(row["for_names"]), row["evidence"]) == \
+        (v.kind, v.n_for, v.n_against, v.against, v.for_names, v.evidence)

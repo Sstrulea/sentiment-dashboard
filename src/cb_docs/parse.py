@@ -211,8 +211,16 @@ def parse_votes_boj(text: str) -> Optional[Votes]:
     t = norm(text).replace("\n", " ")
     m = re.search(r"by an? (\d+)\s*-\s*(\d+) majority vote", t)
     unanimous = re.search(r"by a unanimous vote", t) is not None
+    evidence = m.group(0) if m else "by a unanimous vote"
     if m is None and not unanimous:
-        return None
+        # numbered statement (from Oct 2026): the vote is in the title of the guideline item - "1. Guideline for money market operations
+        # (an 8-1 majority vote)". Only that item: another item's vote (e.g. "2. Change in the pace of sales of ETFs (a unanimous vote)")
+        # is never taken.
+        g = re.search(r"Guideline for money market operations \((?:an? (\d+)\s*-\s*(\d+) majority vote|(a unanimous vote))\)", t)
+        if g is None:
+            return None
+        m = g if g.group(1) else None
+        evidence = g.group(0)
     n_for, n_against = (int(m.group(1)), int(m.group(2))) if m else (None, 0)
     decided = parse_rate("JPY", t)
     mf = re.search(r"Voting for the action:\s*(?P<f>.+?)\.\s*(?:Voting against the action:|Absent:)", t) or re.search(r"Voting for the action:\s*(?P<f>.+?)\.\s", t)
@@ -242,7 +250,7 @@ def parse_votes_boj(text: str) -> Optional[Votes]:
         a["name"] = given_first(a["name"])
     notes = [re.sub(r"[A-Z]{2,} [A-Z][a-z]+", lambda x: given_first(x.group(0)), n) for n in notes]
     return Votes("unanimous" if n_against == 0 else "counted", n_for, n_against, [given_first(n) for n in for_names], against,
-                 (m.group(0) if m else "by a unanimous vote"), "statement", notes)
+                 evidence, "statement", notes)
 
 
 def parse_votes_boe_text(text: str) -> Optional[Votes]:
