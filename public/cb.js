@@ -1380,14 +1380,37 @@
     tick();
   }
 
-  // ---- stance (v5): Position / Need / Why - tab "Stance" on the overview and the zone "Stance and need" on the bank page ----------
-  // Every number and text comes from the `stance` block of the JSON (src/cb_compute/stance_v5.py + payload.stance_page_v5). A
-  // rendered number carries data-k (its key in the bank's stance block) and data-f (its format) for the automated check.
+  // ---- stance (v6): Position / Need / Why without a verdict - tab "Stance" on the overview and the zone "Stance and need" on the bank page
+  // Every number and text comes from the `stance` block of the JSON (src/cb_compute/stance_v6.py + payload.stance_page_v6). A displayed
+  // line is a list of segments (fixed text, a number {k, f}, a badge, a probability); a rendered number carries data-k (its key in the
+  // bank's stance block), data-f (its format) and data-v (its value) for the automated check (scripts/check_stance_ui.py).
   function fmtPP(v) { return isNum(v) ? fmtSigned(v, 2) : NA; }
-  const ST_FMT = { pp: fmtPP };
+  function fmtD2(v) { const n = Number(v), s = Math.abs(n).toFixed(2); return Number(s) === 0 || n > 0 ? s : MINUS + s; }
+  function fmtR3(v) { const n = Number(v), s = Math.abs(n).toFixed(3); return Number(s) === 0 || n > 0 ? s : MINUS + s; }
+  function fmtPub(v) { const n = Number(v), s = String(Math.abs(n)); return n >= 0 || Number(s) === 0 ? s : MINUS + s; }
+  const ST_FMT = { pp: fmtPP, bp: function (v) { return fmtSigned(v, 1); }, d2: fmtD2, r3: fmtR3, pub: fmtPub };
+  function stAt(o, key) {
+    String(key).split(".").forEach(function (k) { o = o === null || o === undefined ? undefined : o[k]; });
+    return o;
+  }
   function stNum(v, f, k) {
     if (!isNum(v)) return NA;
     return '<span class="cb-st-n" data-k="' + esc(k) + '" data-f="' + f + '" data-v="' + esc(v) + '">' + ST_FMT[f](v) + "</span>";
+  }
+  function stSegs(s, segs) {
+    return (segs || []).map(function (g) {
+      if (typeof g === "string") return esc(g);
+      if (g.k) return stNum(stAt(s, g.k), g.f, g.k);
+      if (g.badge) return flagBadge(g.badge);
+      if (g.stale) return staleBadge(true, g.stale);
+      if (g.prob) return esc(probText(g.prob));
+      if (g.note) return '<span class="cb-v5-note" data-note="' + esc(g.name || "") + '">' + esc(g.note) + "</span>";
+      return "";
+    }).join("");
+  }
+  function stLine(s, l, cls) {
+    return '<div class="' + cls + (l.cls ? " cb-v6-" + l.cls : "") + '"' + (l.note ? ' data-note="' + esc(l.note) + '"' : "") +
+      (l.title ? ' title="' + esc(l.title) + '"' : "") + ">" + stSegs(s, l.segs) + "</div>";
   }
   function stRate(r) {
     if (!r || !isNum(r.rate)) return NA;
@@ -1402,25 +1425,25 @@
   }
   function positionCell(s, scale) {
     const p = s.position;
-    if (!isNum(p.v)) return '<div class="cb-v5-num">' + NA + '</div><div class="cb-v5-sub">' + esc(p.na || "no neutral estimate") + "</div>";
-    const rng = p.neutral_range ? "neutral range " + fmtRate(p.neutral_range[0]) + EN + fmtRate(p.neutral_range[1]) + "%" : "";
-    return '<div class="cb-v5-num">' + stNum(p.v, "pp", "position.v") + " " + stBar(p.v, scale, "pos") + "</div>" +
-      '<div class="cb-v5-lab">' + esc(p.label) + '</div><div class="cb-v5-sub" title="' + esc(rng) + '">neutral ' + esc(fmtRate(p.neutral)) + "%" +
-      (p.note ? ' <span class="cb-v5-note" data-note="position">(' + esc(p.note) + ")</span>" : "") + "</div>";
+    if (!isNum(p.v)) return '<div class="cb-v5-num">' + NA + '</div><div class="cb-v5-sub" data-na="position">' + esc(p.na || "no neutral estimate") + "</div>";
+    return '<div class="cb-v5-num"' + (p.title ? ' title="' + esc(p.title) + '"' : "") + ">" + stNum(p.v, "pp", "position.v") + " " + stBar(p.v, scale, "pos") + "</div>" +
+      '<div class="cb-v5-lab">' + esc(p.label) + "</div>" + (p.lines || []).map(function (l) { return stLine(s, l, "cb-v5-sub"); }).join("");
   }
   function needCell(s, scale) {
-    const n = s.need;
-    if (!isNum(n.v)) return '<div class="cb-v5-num">' + NA + '</div><div class="cb-v5-sub">' + esc(n.na) + "</div>";
-    const line = [n.measure, n.target].filter(Boolean).join(n.target && n.target.indexOf("target") === 0 ? ", " : " ");
-    return '<div class="cb-v5-num">' + stNum(n.v, "pp", "need.v") + " " + stBar(n.v, scale, "need") + "</div>" +
-      '<div class="cb-v5-lab">' + esc(n.label) + '</div><div class="cb-v5-sub" title="' + esc(n.official_name || "") + '">' + esc(line) + "</div>" +
-      (n.note ? '<div class="cb-v5-sub cb-v5-note" data-note="need">' + esc(n.note) + "</div>" : "");
+    const n = s.need, lines = (n.lines || []).map(function (l) { return stLine(s, l, "cb-v5-sub"); }).join("");
+    if (!isNum(n.v)) return '<div class="cb-v5-num">' + NA + '</div><div class="cb-v5-sub" data-na="need">' + esc(n.na) + "</div>" + lines;
+    return '<div class="cb-v5-num"' + (n.title ? ' title="' + esc(n.title) + '"' : "") + ">" + stNum(n.v, "pp", "need.v") + " " + stBar(n.v, scale, "need") + "</div>" +
+      '<div class="cb-v5-lab">' + esc(n.label) + "</div>" + lines;
   }
+  // Why: three readings in the cell (Taylor rule, Bank, Market), each with its label; no conclusion
   function whyCell(s) {
-    const w = s.why, tip = (w.sources || []).map(function (x) { return x.what + ": " + x.text; }).join("\n");
-    return '<div class="cb-v5-concl ' + (w.move ? "cb-v5-move" : "cb-v5-hold") + '">' + esc(w.conclusion || NA) + "</div>" +
-      '<div class="cb-v5-reason" title="' + esc(tip) + '">' + esc(w.reason || "") + "</div>" +
-      (w.note ? '<div class="cb-v5-sub cb-v5-note" data-note="why">' + esc(w.note) + "</div>" : "");
+    const w = s.why || {};
+    return ["taylor", "bank", "market"].filter(function (k) { return w[k]; }).map(function (k) {
+      const r = w[k];
+      return '<div class="cb-v6-why" data-why="' + k + '"><div class="cb-v6-why-k">' + esc(r.label) + "</div><div>" +
+        (r.reading ? '<div class="cb-v6-reading">' + esc(r.reading) + "</div>" : "") +
+        (r.lines || []).map(function (l) { return stLine(s, l, "cb-v6-line"); }).join("") + "</div></div>";
+    }).join("");
   }
   const STANCE_SORTS = [["need", "Need"], ["position", "Position"], ["bank", "Bank"]];
   function stanceRows(st, key) {
@@ -1439,8 +1462,8 @@
       return '<button type="button" class="cb-pill' + (x[0] === key ? " active" : "") + '" data-sort="' + x[0] + '" aria-pressed="' + (x[0] === key) + '">' + x[1] + "</button>";
     }).join("") + "</span>";
   }
-  const STANCE_HEADS = [["Position", "rate − neutral: how tight policy is"], ["Need", "core inflation − target: how far inflation is from goal"],
-                        ["Why", "likely next move and the reason"]];
+  const STANCE_HEADS = [["Position", "real rate − real neutral, with the bank's forecast"], ["Need", "bank's inflation forecast − target"],
+                        ["Why", "Taylor rule, bank path, market pricing"]];
   function bankCellV5(s) {
     return '<span class="cb-swatch" data-ccy="' + esc(s.bank) + '"></span><b>' + esc(s.bank) + '</b><div class="cb-v5-sub">' + esc(stRate(s.rate_display)) + "</div>";
   }

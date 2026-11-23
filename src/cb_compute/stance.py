@@ -89,6 +89,8 @@ class BankInputs:
     last_projection_basis: str = ""
     flags: set = field(default_factory=set)
     notes: list = field(default_factory=list)
+    display: dict = field(default_factory=dict)  # stance v6, display only (never a value of the computation): the forecast publication,
+                                                 # its date, cutoff and assumed rate, the transforms of the output gap periods
 
 
 # ---------------------------------------------------------------------------
@@ -482,6 +484,7 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
             else:
                 v, lo, hi = point_value(p)
                 inp.y_today = Val(v, p["horizon"], f"{fc['publication']}: {p['variable']} [{p['src']}]", lo=lo, hi=hi)
+                inp.display["y_today_transform"] = p.get("transform", "")
         elif mv.slack_type == "unemployment_gap":
             usid = next((sid for sid, s in macro_cfg.items() if s.get("currency") == cur and s.get("role") == "unemployment"), None)
             inp.u = _obs(macro_per, usid, asof) if usid else None
@@ -528,6 +531,7 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
                        for r in ctx.projections if r["meeting_date"] == sep and r["kind"] == "median_published" and r["horizon"] != "longer_run"]
                 core = pick_period([p for p in pts if p["variable"] == "core_pce_inflation"], T)
                 un = pick_period([p for p in pts if p["variable"] == "unemployment_rate"], T)
+                inp.display.update(publication="Summary of Economic Projections", published=sep.isoformat())
                 if core:
                     inp.pi_12m, inp.pi_12m_basis = Val(core["value"], core["horizon"], f"FOMC SEP {sep}: core PCE inflation (Q4/Q4)"), "underlying"
                     inp.pi_12m_transform = "q4_q4"
@@ -537,6 +541,10 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
                 if last:
                     inp.last_projection, inp.last_projection_basis = Val(last["value"], last["horizon"], f"FOMC SEP {sep}: core PCE inflation"), "underlying"
         elif fc:
+            inp.display.update(publication=fc.get("publication"), published=fc["published"].isoformat() if fc.get("published") else None,
+                               cutoff=fc["cutoff"].isoformat() if fc.get("cutoff") else None, cutoff_flag=fc.get("cutoff_flag"),
+                               assumed_rate=next((v.get("value") for s in fc.get("series") or [] if s["role"] == "rate_assumption"
+                                                  for v in s.get("values") or []), None))
             und = pick_period(_forecast_points(fc, "underlying"), T)
             if und is not None:
                 inp.pi_12m, inp.pi_12m_basis = Val(point_value(und)[0], und["horizon"], f"{fc['publication']}: {und['variable']}"), "underlying"
@@ -551,6 +559,7 @@ def assemble(ctx, mandates_cur: dict, neutral_doc: dict, forecasts_doc: dict, ma
                 og = pick_period(_forecast_points(fc, "output_gap"), T)
                 if og is not None:
                     inp.y_12m = Val(point_value(og)[0], og["horizon"], f"{fc['publication']}: {og['variable']}", lo=og.get("low"), hi=og.get("high"))
+                    inp.display["y_12m_transform"] = og.get("transform", "")
             elif mv.slack_type == "unemployment_gap":
                 un = pick_period(_forecast_points(fc, "unemployment"), T)
                 if un is not None:
@@ -731,6 +740,8 @@ def compute(inp: BankInputs, params: dict) -> dict:
     r["v5"] = v5_evaluate(v5_inputs(inp)) if inp.rate.v is not None else None           # the displayed stance (stance-ui-v5)
     r.update(lens=lens, cycle=inp.cycle, market=inp.market, flags=sorted(flags), flags_12m=sorted(flags_12m), notes=list(inp.notes),
              inputs=inputs_record(inp))
+    from .stance_v6 import display_inputs as v6_inputs, evaluate as v6_evaluate
+    r["v6"] = v6_evaluate(r, v6_inputs(inp))                                             # the displayed stance (stance-ui-v6), reads v3
     return r
 
 

@@ -2895,7 +2895,7 @@ table.cb-pathtable tr[data-meeting] { cursor: default; }
   .cb-st-map { height: 340px; }
 }
 
-/* ---- Stance v5: Position / Need / Why ---- */
+/* ---- Stance v5/v6: Position / Need / Why ---- */
 .cb-v5-table { width: 100%; table-layout: fixed; }
 .cb-v5-table th { vertical-align: bottom; text-transform: none; }
 .cb-v5-head { font-size: 11px; font-weight: 400; color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 2px; }
@@ -2912,10 +2912,18 @@ table.cb-table.cb-v5-table th { vertical-align: bottom; }
 .cb-v5-fill { position: absolute; top: 0; height: 8px; border-radius: 4px; }
 .cb-v5-pos .cb-v5-fill, .cb-v5-fill.cb-v5-pos { background: var(--accent); }
 .cb-v5-fill.cb-v5-need { background: var(--warning-fg); }
-.cb-v5-concl { font-weight: 700; }
-.cb-v5-move { color: var(--accent); }
-.cb-v5-hold { color: var(--muted); }
-.cb-v5-reason { font-size: 13px; line-height: 1.45; margin-top: 2px; }
+/* Stance v6: Why = three readings in the cell (Taylor rule, Bank, Market), no conclusion */
+.cb-v6-why { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; padding: 4px 0; border-top: 1px solid var(--border); font-size: 12px; line-height: 1.45; }
+.cb-v6-why:first-child { border-top: 0; padding-top: 0; }
+.cb-v6-why-k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; padding-top: 1px; }
+.cb-v6-reading { font-weight: 700; font-size: 13px; }
+.cb-v6-line { color: var(--fg); }
+.cb-v6-line[title], .cb-v5-num[title] { cursor: help; }
+.cb-v6-flag, .cb-v6-note { color: var(--muted); }
+.cb-v6-why .econ-flag { font-size: 10px; }
+@media (max-width: 600px) {
+  .cb-v6-why { grid-template-columns: minmax(0, 1fr); }
+}
 .cb-v5-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0; }
 .cb-v5-k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .cb-v5-card .cb-v5-bar { width: 70px; }

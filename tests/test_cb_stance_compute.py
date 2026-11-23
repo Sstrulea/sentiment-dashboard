@@ -394,14 +394,14 @@ def test_seed_snapshot_exists():
 # -------------------------------------------------------- purity and guards ---
 
 def test_stance_modules_are_pure():
-    for f in ("stance", "stance_report"):
+    for f in ("stance", "stance_report", "stance_v6"):
         text = (ROOT / "src" / "cb_compute" / f"{f}.py").read_text()
         for bad in ("open(", "read_text", "requests", "urllib", "pq.read", "pd.read", "yaml.", "import os", "subprocess", "write_text", "to_parquet"):
             assert bad not in text, (f, bad)
 
 
 def test_economic_modules_do_not_import_the_stance():
-    mods = ("src.cb_compute.stance", "src.cb_compute.stance_report", "src.cb_stance_history")
+    mods = ("src.cb_compute.stance", "src.cb_compute.stance_report", "src.cb_compute.stance_v6", "src.cb_stance_history")
     code = ("import sys, src.economic_compute, src.economic_render, src.ff_scoring, src.history_compute;"
             f"bad=[m for m in {mods!r} if m in sys.modules]; print(bad); sys.exit(1 if bad else 0)")
     r = subprocess.run([sys.executable, "-c", code], cwd=ROOT, capture_output=True, text=True)
@@ -410,7 +410,7 @@ def test_economic_modules_do_not_import_the_stance():
 
 def test_payload_is_written_by_the_cb_render():
     """S2: the stance payload reaches public/data/cb only through cb_render (stance_page -> stance_json); schema in test_cb_stance_ui."""
-    assert "P.stance_page_v5(" in (ROOT / "src" / "cb_render.py").read_text()      # stance-ui-v5
+    assert "P.stance_page_v6(" in (ROOT / "src" / "cb_render.py").read_text()      # stance-ui-v6
 
 
 def test_status_alerts_when_the_dots_do_not_reproduce_the_published_median(monkeypatch):

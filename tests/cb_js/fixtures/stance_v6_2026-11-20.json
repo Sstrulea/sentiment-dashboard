@@ -1,0 +1,2120 @@
+{
+"banks": {
+"USD": {
+"bank": "USD",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 3.875,
+"lower": 3.75,
+"upper": 4.0,
+"range": true
+},
+"position": {
+"v": 0.18,
+"lo": -0.53,
+"hi": 0.48,
+"label": "Neutral",
+"na": null,
+"lines": [
+{
+"segs": [
+"real rate ",
+{
+"k": "position.x.real_rate",
+"f": "d2"
+},
+"% vs real neutral ",
+{
+"k": "position.x.rn_mid",
+"f": "d2"
+},
+"% (",
+{
+"k": "position.x.rn_lo",
+"f": "d2"
+},
+" to ",
+{
+"k": "position.x.rn_hi",
+"f": "d2"
+},
+"%)"
+]
+},
+{
+"segs": [
+"with the Fed forecast: core inflation ",
+{
+"k": "position.x.pi",
+"f": "pub"
+},
+"%, 2027 (Q4/Q4)"
+]
+}
+],
+"title": "Over the neutral range: −0.53 to +0.48. Real rate = 3.875% − 2.5%. Real neutral = neutral 3.2% (2.9 to 3.9%) − target 2%.",
+"x": {
+"real_rate": 1.38,
+"rn_mid": 1.2,
+"rn_lo": 0.9,
+"rn_hi": 1.9,
+"pi": 2.5
+}
+},
+"need": {
+"v": 0.5,
+"label": "Slightly above target",
+"na": null,
+"lines": [
+{
+"segs": [
+"Fed forecast of 16 Sep 2026: core inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027 (Q4/Q4), vs 2%"
+]
+},
+{
+"segs": [
+"conditional on the Fed's own rate path (dots)"
+]
+},
+{
+"segs": [
+"now: Core PCE ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Sep 2026)",
+", output gap ",
+{
+"k": "need.x.y",
+"f": "pub"
+},
+" (from unemployment ",
+{
+"k": "need.x.u",
+"f": "pub"
+},
+"% vs u* ",
+{
+"k": "need.x.u_star",
+"f": "pub"
+},
+"%, Oct 2026)"
+]
+}
+],
+"title": "forecast: FOMC SEP 2026-09-16: core PCE inflation (Q4/Q4) (2027 (Q4/Q4))\ncore inflation: PCE price index excluding food and energy (BEA, via FRED) — 2026-09\nunemployment: fred:UNRATE (https://fred.stlouisfed.org/series/UNRATE (via FRED API)); u*: FOMC SEP 2026-09-16: longer-run median unemployment rate",
+"x": {
+"core": 3.1,
+"y": 0.2,
+"u": 4.1,
+"u_star": 4.2,
+"pi": 2.5
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": "Tightening pressure, sensitive to the neutral range",
+"lines": [
+{
+"segs": [
+"today ",
+{
+"k": "why.taylor.x.today_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.today_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.today_hi",
+"f": "pp"
+},
+"): ",
+"Core PCE ",
+{
+"k": "why.taylor.x.today_pi",
+"f": "pub"
+},
+"% (Sep 2026)",
+", output gap ",
+{
+"k": "why.taylor.x.today_y",
+"f": "pub"
+}
+],
+"title": "3.2 + 1.5 × (3.1 − 2) + 0.5 × 0.2 − 3.875 = +1.08; neutral 2.9 to 3.9 → +0.78 to +1.78"
+},
+{
+"segs": [
+"forecast ",
+{
+"k": "why.taylor.x.forecast_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.forecast_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.forecast_hi",
+"f": "pp"
+},
+"): ",
+"core inflation ",
+{
+"k": "why.taylor.x.forecast_pi",
+"f": "pub"
+},
+"% 2027 (Q4/Q4)",
+", output gap ",
+{
+"k": "why.taylor.x.forecast_y",
+"f": "pub"
+}
+],
+"title": "3.2 + 1.5 × (2.5 − 2) + 0.5 × 0.2 − 3.875 = +0.18; neutral 2.9 to 3.9 → −0.13 to +0.88"
+}
+],
+"na": null,
+"x": {
+"today_T": 1.08,
+"today_lo": 0.78,
+"today_hi": 1.78,
+"today_pi": 3.1,
+"today_y": 0.2,
+"forecast_T": 0.18,
+"forecast_lo": -0.13,
+"forecast_hi": 0.88,
+"forecast_pi": 2.5,
+"forecast_y": 0.2
+}
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Dots (SEP 16 Sep 2026): 2026 4.125%, 2027 4.125%"
+],
+"title": "bank page GAP (dots, 2026-09-16)"
+},
+{
+"segs": [
+"Last decision 28 Oct: vote 10–2 (2 for a hike)"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"9 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.9078
+}
+},
+" · ",
+"27 Jan: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.6722
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov Eurex Clearing"
+],
+"title": "9 Dec: method CURVE, implied rate 4.105%; 27 Jan: method CURVE, implied rate 4.273%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: Eurex Clearing, 2026-11-20"
+},
+{
+"segs": [
+"vs dots, end-2027: market ",
+{
+"k": "why.market.x.lens_m",
+"f": "r3"
+},
+"% vs ",
+{
+"k": "why.market.x.lens_b",
+"f": "pub"
+},
+"% = ",
+{
+"k": "why.market.x.lens_v",
+"f": "bp"
+},
+" bp"
+],
+"title": "bank page GAP (dots, 2026-09-16)"
+}
+],
+"x": {
+"m1_cum": 23.04,
+"m2_cum": 39.84,
+"m1_1w": -4.299999999999926,
+"m2_1w": -3.900000000000059,
+"lens_m": 4.421,
+"lens_b": 4.125,
+"lens_v": 29.6
+}
+}
+}
+},
+"EUR": {
+"bank": "EUR",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 2.5,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": -0.1,
+"lo": -0.35,
+"hi": 0.15,
+"label": "Neutral",
+"na": null,
+"lines": [
+{
+"segs": [
+"real rate ",
+{
+"k": "position.x.real_rate",
+"f": "d2"
+},
+"% vs real neutral ",
+{
+"k": "position.x.rn_mid",
+"f": "d2"
+},
+"% (",
+{
+"k": "position.x.rn_lo",
+"f": "d2"
+},
+" to ",
+{
+"k": "position.x.rn_hi",
+"f": "d2"
+},
+"%)"
+]
+},
+{
+"segs": [
+"with the ECB forecast: core inflation ",
+{
+"k": "position.x.pi",
+"f": "pub"
+},
+"%, 2027 (annual average)"
+]
+},
+{
+"segs": [
+"(from Feb 2025)"
+],
+"cls": "note",
+"note": "position"
+}
+],
+"title": "Over the neutral range: −0.35 to +0.15. Real rate = 2.5% − 2.6%. Real neutral = neutral 2% (1.75 to 2.25%) − target 2%.",
+"x": {
+"real_rate": -0.1,
+"rn_mid": 0.0,
+"rn_lo": -0.25,
+"rn_hi": 0.25,
+"pi": 2.6
+}
+},
+"need": {
+"v": 0.6,
+"label": "Slightly above target",
+"na": null,
+"lines": [
+{
+"segs": [
+"ECB forecast of 10 Sep 2026: core inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027 (annual average), vs 2%"
+]
+},
+{
+"segs": [
+"conditional on the market curve of 19 Aug"
+]
+},
+{
+"segs": [
+"now: Core HICP ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Oct 2026)",
+", no output gap published"
+]
+}
+],
+"title": "forecast: ECB staff macroeconomic projections for the euro area, September 2026: HICP excluding energy and food (2027 (annual average))\ncore inflation: HICP excluding energy, food, alcohol and tobacco, annual rate — 2026-10\noutput gap: the ECB publishes no estimate",
+"x": {
+"core": 2.5,
+"pi": 2.6
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": "Tightening pressure, sensitive to the neutral range",
+"lines": [
+{
+"segs": [
+"today ",
+{
+"k": "why.taylor.x.today_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.today_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.today_hi",
+"f": "pp"
+},
+"): ",
+"Core HICP ",
+{
+"k": "why.taylor.x.today_pi",
+"f": "pub"
+},
+"% (Oct 2026)"
+],
+"title": "2 + 1.5 × (2.5 − 2) − 2.5 = +0.25; neutral 1.75 to 2.25 → 0.00 to +0.50"
+},
+{
+"segs": [
+"forecast ",
+{
+"k": "why.taylor.x.forecast_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.forecast_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.forecast_hi",
+"f": "pp"
+},
+"): ",
+"core inflation ",
+{
+"k": "why.taylor.x.forecast_pi",
+"f": "pub"
+},
+"% 2027 (annual average)"
+],
+"title": "2 + 1.5 × (2.6 − 2) − 2.5 = +0.40; neutral 1.75 to 2.25 → +0.15 to +0.65"
+},
+{
+"segs": [
+"no output gap term: the ECB publishes no estimate"
+],
+"cls": "flag"
+}
+],
+"na": null,
+"x": {
+"today_T": 0.25,
+"today_lo": 0.0,
+"today_hi": 0.5,
+"today_pi": 2.5,
+"forecast_T": 0.4,
+"forecast_lo": 0.15,
+"forecast_hi": 0.65,
+"forecast_pi": 2.6
+}
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Forecast conditioned on the market curve of 19 Aug"
+],
+"title": "ECB staff macroeconomic projections for the euro area, September 2026"
+},
+{
+"segs": [
+"Last decision 29 Oct: vote not published"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"17 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.9293
+}
+},
+" · ",
+"4 Feb: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.2022
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov Eurex Clearing"
+],
+"title": "17 Dec: method CURVE, implied rate 2.733%; 4 Feb: method CURVE, implied rate 2.783%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: Eurex Clearing, 2026-11-20"
+},
+{
+"segs": [
+"vs bank path: n/a (no market history at the cutoff 2026-08-19 (first data 2026-10-08))"
+]
+}
+],
+"x": {
+"m1_cum": 23.29,
+"m2_cum": 28.35,
+"m1_1w": -0.8000000000000007,
+"m2_1w": -1.6999999999999904
+}
+}
+}
+},
+"GBP": {
+"bank": "GBP",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 4.0,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": -0.94,
+"lo": -1.0,
+"hi": -0.75,
+"label": "Stimulative",
+"na": null,
+"lines": [
+{
+"segs": [
+"real rate ",
+{
+"k": "position.x.real_rate",
+"f": "d2"
+},
+"% vs real neutral ",
+{
+"k": "position.x.rn_mid",
+"f": "d2"
+},
+"% (",
+{
+"k": "position.x.rn_lo",
+"f": "d2"
+},
+" to ",
+{
+"k": "position.x.rn_hi",
+"f": "d2"
+},
+"%)"
+]
+},
+{
+"segs": [
+"with the BoE forecast: total inflation ",
+{
+"k": "position.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y)"
+]
+}
+],
+"title": "Over the neutral range: −1.00 to −0.75. Real rate = 4% − 4%. Real neutral = neutral 2.938% (2.75 to 3%) − target 2%.",
+"x": {
+"real_rate": 0.0,
+"rn_mid": 0.94,
+"rn_lo": 0.75,
+"rn_hi": 1.0,
+"pi": 4.0
+}
+},
+"need": {
+"v": 2.0,
+"label": "Well above target",
+"na": null,
+"lines": [
+{
+"segs": [
+"BoE forecast of 5 Nov 2026: total inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y), vs 2%; no core forecast published"
+]
+},
+{
+"segs": [
+"conditional on the market curve of 27 Oct"
+]
+},
+{
+"segs": [
+"now: Core CPI ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Oct 2026)",
+", output gap ",
+{
+"k": "need.x.y",
+"f": "pub"
+},
+" (2026Q4)"
+]
+}
+],
+"title": "forecast: Monetary Policy Report, November 2026: CPI inflation (four-quarter inflation rate, D7BT) (2027Q4 (y/y))\ncore inflation: CPI 12-month rate excluding energy, food, alcoholic beverages and tobacco — 2026-10, released 2026-11-18\noutput gap: Monetary Policy Report, November 2026: Excess supply/excess demand (per cent of potential GDP) [https://www.bankofengland.co.uk/-/media/boe/files/monetary-policy-report/2026/november/monetary-policy-report-november-2026.pdf Table 3.B, p. 75 (PDF p. 76), central projection]",
+"x": {
+"core": 2.8,
+"y": -1.0,
+"pi": 4.0
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": "Mixed signals",
+"lines": [
+{
+"segs": [
+"today ",
+{
+"k": "why.taylor.x.today_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.today_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.today_hi",
+"f": "pp"
+},
+"): ",
+"Core CPI ",
+{
+"k": "why.taylor.x.today_pi",
+"f": "pub"
+},
+"% (Oct 2026)",
+", output gap ",
+{
+"k": "why.taylor.x.today_y",
+"f": "pub"
+}
+],
+"title": "2.938 + 1.5 × (2.8 − 2) + 0.5 × −1 − 4 = −0.36; neutral 2.75 to 3 → −0.55 to −0.30"
+},
+{
+"segs": [
+"forecast ",
+{
+"k": "why.taylor.x.forecast_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.forecast_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.forecast_hi",
+"f": "pp"
+},
+"): ",
+"total inflation ",
+{
+"k": "why.taylor.x.forecast_pi",
+"f": "pub"
+},
+"% 2027Q4 (y/y)",
+", output gap ",
+{
+"k": "why.taylor.x.forecast_y",
+"f": "pub"
+}
+],
+"title": "2.938 + 1.5 × (4 − 2) + 0.5 × −1.2 − 4 = +1.34; neutral 2.75 to 3 → +1.15 to +1.40"
+},
+{
+"segs": [
+"forecast is total inflation"
+],
+"cls": "flag"
+}
+],
+"na": null,
+"x": {
+"today_T": -0.36,
+"today_lo": -0.55,
+"today_hi": -0.3,
+"today_pi": 2.8,
+"today_y": -1.0,
+"forecast_T": 1.34,
+"forecast_lo": 1.15,
+"forecast_hi": 1.4,
+"forecast_pi": 4.0,
+"forecast_y": -1.2
+}
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Forecast conditioned on the market curve of 27 Oct"
+],
+"title": "Monetary Policy Report, November 2026"
+},
+{
+"segs": [
+"Last decision 5 Nov: vote 8–1 (1 for a hike)"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"17 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.734
+}
+},
+" · ",
+"4 Feb: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.7347
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov Eurex Clearing"
+],
+"title": "17 Dec: method CURVE, implied rate 4.186%; 4 Feb: method CURVE, implied rate 4.37%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: Eurex Clearing, 2026-11-20"
+},
+{
+"segs": [
+"vs the 27 Oct curve, at 20 Nov 2027: ",
+{
+"k": "why.market.x.lens_m",
+"f": "r3"
+},
+"% vs ",
+{
+"k": "why.market.x.lens_b",
+"f": "r3"
+},
+"% = ",
+{
+"k": "why.market.x.lens_v",
+"f": "bp"
+},
+" bp"
+],
+"title": "the implied rate at 2027-11-20 on today's curve minus the same date on the curve of the forecast cutoff 2026-10-27"
+}
+],
+"x": {
+"m1_cum": 18.59,
+"m2_cum": 36.95,
+"m1_1w": -1.4000000000000234,
+"m2_1w": -0.19999999999997797,
+"lens_m": 4.791550591345046,
+"lens_b": 4.90596915554066,
+"lens_v": -11.441856419561436
+}
+}
+}
+},
+"JPY": {
+"bank": "JPY",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 1.25,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": -1.25,
+"lo": -1.95,
+"hi": -0.55,
+"label": "Stimulative",
+"na": null,
+"lines": [
+{
+"segs": [
+"real rate ",
+{
+"k": "position.x.real_rate",
+"f": "d2"
+},
+"% vs real neutral ",
+{
+"k": "position.x.rn_mid",
+"f": "d2"
+},
+"% (",
+{
+"k": "position.x.rn_lo",
+"f": "d2"
+},
+" to ",
+{
+"k": "position.x.rn_hi",
+"f": "d2"
+},
+"%)"
+]
+},
+{
+"segs": [
+"with the BoJ forecast: core inflation ",
+{
+"k": "position.x.pi",
+"f": "pub"
+},
+"%, FY2027 (Apr 2027 to Mar 2028)"
+]
+}
+],
+"title": "Over the neutral range: −1.95 to −0.55. Real rate = 1.25% − 2.7%. Real neutral = neutral 1.8% (1.1 to 2.5%) − target 2%.",
+"x": {
+"real_rate": -1.45,
+"rn_mid": -0.2,
+"rn_lo": -0.9,
+"rn_hi": 0.5,
+"pi": 2.7
+}
+},
+"need": {
+"v": 0.7,
+"label": "Slightly above target",
+"na": null,
+"lines": [
+{
+"segs": [
+"BoJ forecast of 30 Oct 2026: core inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, FY2027 (Apr 2027 to Mar 2028), vs 2%"
+]
+},
+{
+"segs": [
+"conditional on the market curve of 30 Oct"
+]
+},
+{
+"segs": [
+"now: Core CPI ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Oct 2026)",
+", output gap ",
+{
+"k": "need.x.y",
+"f": "pub"
+},
+" (2026Q2)"
+]
+}
+],
+"title": "forecast: Outlook for Economic Activity and Prices, October 2026 (The Bank's View): CPI (all items less fresh food and energy) (Reference) (FY2027 (Apr 2027 to Mar 2028))\ncore inflation: CPI all items, less fresh food and energy (2025=100) — 2026-10\noutput gap: Outlook for Economic Activity and Prices, October 2026 (The Bank's View): Output gap (Research and Statistics Department estimate) [https://www.boj.or.jp/en/research/research_data/gap/gap.xlsx sheet data1, row 2026.2Q, column 'Output gap' (updated Oct. 5, 2026)]",
+"x": {
+"core": 2.2,
+"y": 0.55,
+"pi": 2.7
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": "Tightening pressure, robust to the neutral range",
+"lines": [
+{
+"segs": [
+"today ",
+{
+"k": "why.taylor.x.today_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.today_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.today_hi",
+"f": "pp"
+},
+"): ",
+"Core CPI ",
+{
+"k": "why.taylor.x.today_pi",
+"f": "pub"
+},
+"% (Oct 2026)",
+", output gap ",
+{
+"k": "why.taylor.x.today_y",
+"f": "pub"
+}
+],
+"title": "1.8 + 1.5 × (2.2 − 2) + 0.5 × 0.55 − 1.25 = +1.12; neutral 1.1 to 2.5 → +0.42 to +1.82"
+},
+{
+"segs": [
+"forecast ",
+{
+"k": "why.taylor.x.forecast_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.forecast_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.forecast_hi",
+"f": "pp"
+},
+"): ",
+"core inflation ",
+{
+"k": "why.taylor.x.forecast_pi",
+"f": "pub"
+},
+"% FY2027 (Apr 2027 to Mar 2028)",
+", output gap ",
+{
+"k": "why.taylor.x.forecast_y",
+"f": "pub"
+},
+" (held)"
+],
+"title": "1.8 + 1.5 × (2.7 − 2) + 0.5 × 0.55 − 1.25 = +1.87; neutral 1.1 to 2.5 → +1.17 to +2.57"
+}
+],
+"na": null,
+"x": {
+"today_T": 1.12,
+"today_lo": 0.42,
+"today_hi": 1.82,
+"today_pi": 2.2,
+"today_y": 0.55,
+"forecast_T": 1.87,
+"forecast_lo": 1.17,
+"forecast_hi": 2.57,
+"forecast_pi": 2.7,
+"forecast_y": 0.55
+}
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Forecast conditioned on the market curve of 30 Oct",
+" (estimated cutoff)"
+],
+"title": "Outlook for Economic Activity and Prices, October 2026 (The Bank's View)"
+},
+{
+"segs": [
+"Last decision 30 Oct: vote not recorded"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"18 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.7287
+}
+},
+" · ",
+"22 Jan: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.2601
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov Eurex Clearing"
+],
+"title": "18 Dec: method CURVE, implied rate 1.436%; 22 Jan: method CURVE, implied rate 1.501%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: Eurex Clearing, 2026-11-20"
+},
+{
+"segs": [
+"vs the 30 Oct curve, at 20 Nov 2027: ",
+{
+"k": "why.market.x.lens_m",
+"f": "r3"
+},
+"% vs ",
+{
+"k": "why.market.x.lens_b",
+"f": "r3"
+},
+"% = ",
+{
+"k": "why.market.x.lens_v",
+"f": "bp"
+},
+" bp"
+],
+"title": "the implied rate at 2027-11-20 on today's curve minus the same date on the curve of the forecast cutoff 2026-10-30"
+}
+],
+"x": {
+"m1_cum": 18.64,
+"m2_cum": 25.15,
+"m1_1w": -2.400000000000002,
+"m2_1w": -0.10000000000001119,
+"lens_m": 1.853519936656394,
+"lens_b": 1.984705046839346,
+"lens_v": -13.118511018295198
+}
+}
+}
+},
+"CAD": {
+"bank": "CAD",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 2.5,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": -0.85,
+"lo": -1.35,
+"hi": -0.35,
+"label": "Stimulative",
+"na": null,
+"lines": [
+{
+"segs": [
+"real rate ",
+{
+"k": "position.x.real_rate",
+"f": "d2"
+},
+"% vs real neutral ",
+{
+"k": "position.x.rn_mid",
+"f": "d2"
+},
+"% (",
+{
+"k": "position.x.rn_lo",
+"f": "d2"
+},
+" to ",
+{
+"k": "position.x.rn_hi",
+"f": "d2"
+},
+"%)"
+]
+},
+{
+"segs": [
+"with the BoC forecast: total inflation ",
+{
+"k": "position.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y)"
+]
+}
+],
+"title": "Over the neutral range: −1.35 to −0.35. Real rate = 2.5% − 2.6%. Real neutral = neutral 2.75% (2.25 to 3.25%) − target 2%.",
+"x": {
+"real_rate": -0.1,
+"rn_mid": 0.75,
+"rn_lo": 0.25,
+"rn_hi": 1.25,
+"pi": 2.6
+}
+},
+"need": {
+"v": 0.6,
+"label": "Slightly above target",
+"na": null,
+"lines": [
+{
+"segs": [
+"BoC forecast of 28 Oct 2026: total inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y), vs 2%; no core forecast published"
+]
+},
+{
+"segs": [
+"conditional on a rate path that is not published"
+]
+},
+{
+"segs": [
+"now: CPI-trim/median ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Oct 2026)",
+", output gap ",
+{
+"k": "need.x.y",
+"f": "pub"
+},
+" (",
+{
+"k": "need.x.y_lo",
+"f": "pub"
+},
+" to ",
+{
+"k": "need.x.y_hi",
+"f": "pub"
+},
+", 2026Q3)"
+]
+}
+],
+"title": "forecast: Monetary Policy Report, October 2026: CPI inflation (year-over-year percentage change), Table 3 (2027Q4 (y/y))\ncore inflation: CPI-trim, 12-month change and CPI-median, 12-month change — 2026-10, mean of 1.8, 2.0\noutput gap: Monetary Policy Report, October 2026: Output gap (Bank's estimated range) [https://www.bankofcanada.ca/wp-content/uploads/2026/10/mpr-2026-10-28.pdf Table 2 p. 40 (PDF p. 41), Table 3 p. 41 (PDF p. 42), output gap p. 9 (PDF p. 10)]",
+"x": {
+"core": 1.9,
+"y": -0.75,
+"y_lo": -1.25,
+"y_hi": -0.25,
+"pi": 2.6
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": "Mixed signals",
+"lines": [
+{
+"segs": [
+"today ",
+{
+"k": "why.taylor.x.today_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.today_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.today_hi",
+"f": "pp"
+},
+"): ",
+"CPI-trim/median ",
+{
+"k": "why.taylor.x.today_pi",
+"f": "pub"
+},
+"% (Oct 2026)",
+", output gap ",
+{
+"k": "why.taylor.x.today_y",
+"f": "pub"
+}
+],
+"title": "2.75 + 1.5 × (1.9 − 2) + 0.5 × −0.75 − 2.5 = −0.28; neutral 2.25 to 3.25 → −0.78 to +0.23"
+},
+{
+"segs": [
+"forecast ",
+{
+"k": "why.taylor.x.forecast_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.forecast_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.forecast_hi",
+"f": "pp"
+},
+"): ",
+"total inflation ",
+{
+"k": "why.taylor.x.forecast_pi",
+"f": "pub"
+},
+"% 2027Q4 (y/y)",
+", output gap ",
+{
+"k": "why.taylor.x.forecast_y",
+"f": "pub"
+},
+" (held)"
+],
+"title": "2.75 + 1.5 × (2.6 − 2) + 0.5 × −0.75 − 2.5 = +0.78; neutral 2.25 to 3.25 → +0.28 to +1.28"
+},
+{
+"segs": [
+"forecast is total inflation"
+],
+"cls": "flag"
+}
+],
+"na": null,
+"x": {
+"today_T": -0.28,
+"today_lo": -0.78,
+"today_hi": 0.23,
+"today_pi": 1.9,
+"today_y": -0.75,
+"forecast_T": 0.78,
+"forecast_lo": 0.28,
+"forecast_hi": 1.28,
+"forecast_pi": 2.6,
+"forecast_y": -0.75
+}
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Forecast rate path not published"
+],
+"title": "Monetary Policy Report, October 2026"
+},
+{
+"segs": [
+"Last decision 28 Oct: vote not published"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"9 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.62
+}
+},
+" · ",
+"27 Jan: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.64
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 5 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 13 Nov Montréal Exchange",
+{
+"stale": "older than 2 business days"
+}
+],
+"title": "9 Dec: method EXACT, implied rate 2.655%; 27 Jan: method EXACT, implied rate 2.815%; 1 week ago = the snapshot of 2026-11-05 on the same meeting; market data: Montréal Exchange, 2026-11-13"
+},
+{
+"segs": [
+"no bank rate path to compare"
+]
+}
+],
+"x": {
+"m1_cum": 15.5,
+"m2_cum": 31.5,
+"m1_1w": 4.899999999999993,
+"m2_1w": 8.000000000000007
+}
+}
+}
+},
+"AUD": {
+"bank": "AUD",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 4.85,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": 0.96,
+"lo": 0.03,
+"hi": 1.43,
+"label": "Restrictive",
+"na": null,
+"lines": [
+{
+"segs": [
+"real rate ",
+{
+"k": "position.x.real_rate",
+"f": "d2"
+},
+"% vs real neutral ",
+{
+"k": "position.x.rn_mid",
+"f": "d2"
+},
+"% (",
+{
+"k": "position.x.rn_lo",
+"f": "d2"
+},
+" to ",
+{
+"k": "position.x.rn_hi",
+"f": "d2"
+},
+"%)"
+]
+},
+{
+"segs": [
+"with the RBA forecast: core inflation ",
+{
+"k": "position.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y)"
+]
+}
+],
+"title": "Over the neutral range: +0.03 to +1.43. Real rate = 4.85% − 2.9%. Real neutral = neutral 3.491% (3.02 to 4.417%) − target 2.5%.",
+"x": {
+"real_rate": 1.95,
+"rn_mid": 0.99,
+"rn_lo": 0.52,
+"rn_hi": 1.92,
+"pi": 2.9
+}
+},
+"need": {
+"v": 0.4,
+"label": "Slightly above target",
+"na": null,
+"lines": [
+{
+"segs": [
+"RBA forecast of 3 Nov 2026: core inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y), vs 2.5%"
+]
+},
+{
+"segs": [
+"conditional on the market curve of 28 Oct"
+]
+},
+{
+"segs": [
+"now: Trimmed mean ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Sep 2026)",
+", output gap ",
+{
+"k": "need.x.y",
+"f": "pub"
+},
+" (from unemployment ",
+{
+"k": "need.x.u",
+"f": "pub"
+},
+"% vs u* ",
+{
+"k": "need.x.u_star",
+"f": "pub"
+},
+"%, Oct 2026)"
+]
+}
+],
+"title": "forecast: Statement on Monetary Policy, November 2026: Trimmed mean inflation (2027Q4 (y/y))\ncore inflation: Monthly CPI, trimmed mean, annual change (seasonally adjusted) — 2026-09\nunemployment: rba:GLFSURSA (https://www.rba.gov.au/statistics/tables/csv/h5-data.csv); u*: Statement on Monetary Policy, November 2026: NAIRU [https://www.rba.gov.au/publications/smp/2026/nov/pdf/statement-on-monetary-policy-2026-11.pdf section 2.5 'Assessment of spare capacity', p. 50 (PDF p. 53)]",
+"x": {
+"core": 3.6,
+"y": -0.3,
+"u": 4.9,
+"u_star": 4.75,
+"pi": 2.9
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": "Mixed signals",
+"lines": [
+{
+"segs": [
+"today ",
+{
+"k": "why.taylor.x.today_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.today_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.today_hi",
+"f": "pp"
+},
+"): ",
+"Trimmed mean ",
+{
+"k": "why.taylor.x.today_pi",
+"f": "pub"
+},
+"% (Sep 2026)",
+", output gap ",
+{
+"k": "why.taylor.x.today_y",
+"f": "pub"
+}
+],
+"title": "3.491 + 1.5 × (3.6 − 2.5) + 0.5 × −0.3 − 4.85 = +0.14; neutral 3.02 to 4.417 → −0.33 to +1.07"
+},
+{
+"segs": [
+"forecast ",
+{
+"k": "why.taylor.x.forecast_T",
+"f": "pp"
+},
+" (",
+{
+"k": "why.taylor.x.forecast_lo",
+"f": "pp"
+},
+" to ",
+{
+"k": "why.taylor.x.forecast_hi",
+"f": "pp"
+},
+"): ",
+"core inflation ",
+{
+"k": "why.taylor.x.forecast_pi",
+"f": "pub"
+},
+"% 2027Q4 (y/y)",
+", output gap ",
+{
+"k": "why.taylor.x.forecast_y",
+"f": "pub"
+}
+],
+"title": "3.491 + 1.5 × (2.9 − 2.5) + 0.5 × −0.3 − 4.85 = −0.91; neutral 3.02 to 4.417 → −1.38 to +0.02"
+}
+],
+"na": null,
+"x": {
+"today_T": 0.14,
+"today_lo": -0.33,
+"today_hi": 1.07,
+"today_pi": 3.6,
+"today_y": -0.3,
+"forecast_T": -0.91,
+"forecast_lo": -1.38,
+"forecast_hi": 0.02,
+"forecast_pi": 2.9,
+"forecast_y": -0.3
+}
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Forecast conditioned on the market curve of 28 Oct"
+],
+"title": "Statement on Monetary Policy, November 2026"
+},
+{
+"segs": [
+"Last decision 3 Nov: vote 6–3 (3 for no change)"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"8 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "cut",
+"n": 0,
+"p": 0.0539
+}
+},
+" · ",
+"9 Feb: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "cut",
+"n": 0,
+"p": 0.0679
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov ASX"
+],
+"title": "8 Dec: method EXACT, implied rate 4.837%; 9 Feb: method EXACT, implied rate 4.82%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: ASX, 2026-11-20"
+},
+{
+"segs": [
+"vs the 28 Oct curve, at 20 Nov 2027: ",
+{
+"k": "why.market.x.lens_m",
+"f": "r3"
+},
+"% vs ",
+{
+"k": "why.market.x.lens_b",
+"f": "r3"
+},
+"% = ",
+{
+"k": "why.market.x.lens_v",
+"f": "bp"
+},
+" bp"
+],
+"title": "the implied rate at 2027-11-20 on today's curve minus the same date on the curve of the forecast cutoff 2026-10-28"
+}
+],
+"x": {
+"m1_cum": -1.35,
+"m2_cum": -3.05,
+"m1_1w": -2.000000000000046,
+"m2_1w": -9.299999999999997,
+"lens_m": 4.480357142857143,
+"lens_b": 4.8525000000000045,
+"lens_v": -37.21428571428618
+}
+}
+}
+},
+"NZD": {
+"bank": "NZD",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 2.75,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": null,
+"lo": null,
+"hi": null,
+"label": null,
+"na": "RBNZ neutral due 9 Dec 2026",
+"lines": [],
+"title": null
+},
+"need": {
+"v": 0.1,
+"label": "Near target",
+"na": null,
+"lines": [
+{
+"segs": [
+"RBNZ forecast of 2 Sep 2026: total inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027Q4 (y/y), vs 2%; no core forecast published"
+]
+},
+{
+"segs": [
+"conditional on the RBNZ's own OCR track"
+]
+},
+{
+"segs": [
+"now: CPI ex food & energy ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (2026Q3)",
+", output gap ",
+{
+"k": "need.x.y",
+"f": "pub"
+},
+" (year to Mar 2027)"
+]
+}
+],
+"title": "forecast: Monetary Policy Statement, September 2026: CPI inflation, annual (Table 6.1) (2027Q4 (y/y))\ncore inflation: CPI All groups less food group, household energy subgroup and vehicle fuels (non-standard series) — 2026Q3\noutput gap: Monetary Policy Statement, September 2026: Output gap (% of potential GDP, year average, March years; Table 6.5) [https://www.rbnz.govt.nz/-/media/project/sites/rbnz/files/publications/monetary-policy-statements/2026/sep-2926/mps_report_sep2026.pdf Table 6.1 p. 50 (PDF p. 53), Table 6.5 p. 54 (PDF p. 57), output gap text p. 44 (PDF p. 47)]",
+"x": {
+"core": 2.9,
+"y": -1.4,
+"pi": 2.1
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": null,
+"lines": [
+{
+"segs": [
+"n/a: RBNZ neutral due 9 Dec 2026"
+]
+}
+],
+"na": "RBNZ neutral due 9 Dec 2026"
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"OCR track (Monetary Policy Statement, September 2026): 2026Q3 2.6%, 2026Q4 2.8%, 2027Q1 3%, 2027Q2 3.1%, 2027Q3 3.1%, 2027Q4 3.2%"
+],
+"title": "bank page OCR track vs market (RBNZ: Q4 average of the published OCR track vs the market at year-end; the market side is an estimate (BKBM-OCR spread).)"
+},
+{
+"segs": [
+"Last decision 28 Oct: decided by consensus"
+]
+}
+]
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"9 Dec: ≈ ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+{
+"badge": "ESTIMATE"
+},
+" · ",
+"10 Feb: ≈ ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+{
+"badge": "ESTIMATE"
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+"≈ ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+"≈ ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov ASX"
+],
+"title": "9 Dec: method ESTIMATE, implied rate 3.054%; 10 Feb: method ESTIMATE, implied rate 3.231%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: ASX, 2026-11-20"
+},
+{
+"segs": [
+"vs OCR track, 2027: market ",
+{
+"k": "why.market.x.lens_m",
+"f": "r3"
+},
+"% (year-end) vs ",
+{
+"k": "why.market.x.lens_b",
+"f": "pub"
+},
+"% (Q4 average) = ",
+{
+"k": "why.market.x.lens_v",
+"f": "bp"
+},
+" bp",
+{
+"badge": "ESTIMATE"
+}
+],
+"title": "bank page OCR track vs market (RBNZ: Q4 average of the published OCR track vs the market at year-end; the market side is an estimate (BKBM-OCR spread).)"
+}
+],
+"x": {
+"m1_cum": 30.37,
+"m2_cum": 48.06,
+"m1_1w": -1.200000000000001,
+"m2_1w": -3.299999999999992,
+"lens_m": 3.675,
+"lens_b": 3.2,
+"lens_v": 47.5
+}
+}
+}
+},
+"CHF": {
+"bank": "CHF",
+"asof": "2026-11-20",
+"rate_display": {
+"rate": 0.0,
+"lower": null,
+"upper": null,
+"range": false
+},
+"position": {
+"v": null,
+"lo": null,
+"hi": null,
+"label": null,
+"na": "SNB publishes no neutral",
+"lines": [],
+"title": null
+},
+"need": {
+"v": 0.0,
+"label": "Inside target range",
+"na": null,
+"lines": [
+{
+"segs": [
+"SNB forecast of 24 Sep 2026: total inflation ",
+{
+"k": "need.x.pi",
+"f": "pub"
+},
+"%, 2027 (annual average), target 0–2%; no core forecast published"
+]
+},
+{
+"segs": [
+"conditional on an unchanged rate"
+]
+},
+{
+"segs": [
+"now: Core CPI ",
+{
+"k": "need.x.core",
+"f": "pub"
+},
+"% (Sep 2026)",
+", no output gap published"
+]
+}
+],
+"title": "forecast: Monetary policy assessment of 24 September 2026 (conditional inflation forecast): Conditional inflation forecast (average annual inflation) (2027 (annual average))\ncore inflation: Core inflation 1 (SFSO) — 2026-09, released 2026-10-21\noutput gap: the SNB publishes no estimate",
+"x": {
+"core": 0.5,
+"pi": 0.8
+}
+},
+"why": {
+"taylor": {
+"label": "Taylor rule",
+"reading": null,
+"lines": [
+{
+"segs": [
+"n/a: SNB publishes no neutral"
+]
+}
+],
+"na": "SNB publishes no neutral"
+},
+"bank": {
+"label": "Bank",
+"lines": [
+{
+"segs": [
+"Forecast conditioned on an unchanged rate (",
+{
+"k": "why.bank.x.assumed",
+"f": "pub"
+},
+"%)"
+],
+"title": "Monetary policy assessment of 24 September 2026 (conditional inflation forecast)"
+},
+{
+"segs": [
+"Last decision 24 Sep: vote not published"
+]
+}
+],
+"x": {
+"assumed": 0.0
+}
+},
+"market": {
+"label": "Market",
+"lines": [
+{
+"segs": [
+"10 Dec: ",
+{
+"k": "why.market.x.m1_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.08
+}
+},
+" · ",
+"18 Mar: ",
+{
+"k": "why.market.x.m2_cum",
+"f": "bp"
+},
+" bp",
+", ",
+{
+"prob": {
+"dir": "hike",
+"n": 0,
+"p": 0.6206
+}
+}
+]
+},
+{
+"segs": [
+"1w (vs 13 Nov): ",
+{
+"k": "why.market.x.m1_1w",
+"f": "bp"
+},
+" / ",
+{
+"k": "why.market.x.m2_1w",
+"f": "bp"
+},
+" bp",
+" · data 20 Nov Eurex Clearing"
+],
+"title": "10 Dec: method CURVE, implied rate 0.021%; 18 Mar: method CURVE, implied rate 0.176%; 1 week ago = the snapshot of 2026-11-13 on the same meeting; market data: Eurex Clearing, 2026-11-20"
+},
+{
+"segs": [
+"vs an unchanged rate, at 20 Nov 2027: ",
+{
+"k": "why.market.x.lens_m",
+"f": "r3"
+},
+"% vs ",
+{
+"k": "why.market.x.lens_b",
+"f": "pub"
+},
+"% = ",
+{
+"k": "why.market.x.lens_v",
+"f": "bp"
+},
+" bp"
+],
+"title": "the implied rate at 2027-11-20 on today's curve minus the rate the forecast assumes"
+}
+],
+"x": {
+"m1_cum": 2.05,
+"m2_cum": 17.57,
+"m1_1w": -2.3,
+"m2_1w": -4.600000000000001,
+"lens_m": 0.45927910812056266,
+"lens_b": 0.0,
+"lens_v": 45.92791081205627
+}
+}
+}
+}
+}
+}

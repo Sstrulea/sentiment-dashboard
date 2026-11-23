@@ -1394,3 +1394,50 @@ rămân calculate și stocate în `stance_history`, nu se mai afișează. Pragur
   excepțiile din `config/known_gaps.yaml`. Cauza golurilor NZD (2022Q4, 2025Q4): fișierele Stats NZ re-emise (`-corrected`, majuscule, antete cu spații).
 - **Teste**: `tests/test_cb_stance_v5.py` (golden 8/8 pe intrările snapshot-ului 2026-11-15, cazuri oglindite, praguri = config, payload),
   `tests/cb_js/test_stance_v5.cjs`, `scripts/check_stance_ui.py` (1280 / 390, light / dark, contrast ≥ 4.5, fără overflow).
+
+### 23f. Stance — v6 (stance-ui-v6): Position / Need / Why fără verdict
+
+Înlocuiește afișajul v5 din 23e (concluzia „More hikes likely” / „Likely on hold” și motivul ei, stilul move/hold). Logica v5
+(`stance_v5.py`) și calculul v1–v3 (`stance.py`: G, G_12m, lens …) rămân calculate și stocate exact ca înainte; v6 citește valorile v3 deja
+calculate și nu le recalculează. Definițiile, pragurile, etichetele și regula de citire: `config/cb_stance.yaml` secțiunea `v6` (frozen
+2026-11-23, commit separat înaintea codului de afișare). Rămân aceleași 4 coloane: Bank | Position | Need | Why.
+
+- **Calcul** (`src/cb_compute/stance_v6.py`, pur, determinist; `r["v6"]` lângă `r["v5"]` în `stance.compute`): pi_fc = prognoza băncii aleasă
+  de horizon_rule v3 (core, altfel headline → flag headline_basis). Position P = (rată − pi_fc) − (neutral_mid − țintă), P_lo cu neutral_hi,
+  P_hi cu neutral_lo (= S − gap_12m); Need N = gap_12m din v3 (bandă fără midpoint cu N = 0 → „Inside target range”). Taylor = G / G_lo / G_hi
+  (azi) și G_12m / G_12m_lo / G_12m_hi (prognoză) din v3, cu intrările fiecărui scenariu. Citirea: semne opuse → Mixed signals; altfel cele patru
+  capete toate > 0 / < 0 → robust; altfel sensitive după semnul lui a (b când a = 0); a = b = 0 → No pressure; un scenariu n/a → testul pe celălalt
+  singur. Clasificarea pe valori nerotunjite (zgomotul |x| ≤ 1e-9 = 0). Eticheta perioadei: o singură funcție `period_label(period, transform)`
+  — „YYYY-MM” → „Sep 2026”, „YYYY-MM-DD” → „16 Sep 2026”, q4_q4 → „2027 (Q4/Q4)”, annual_average → „2027 (annual average)”, yoy_quarter →
+  „2027Q4 (y/y)”, fiscal_year → „FY2027 (Apr 2027 to Mar 2028)”, year_average_march → „year to Mar 2027”, altfel perioada ca atare (2026Q3);
+  hover-ul cu sursele păstrează datele brute.
+  `BankInputs.display` ține doar câmpuri de afișare (publicația și data prognozei, cutoff, rata presupusă, transform-ul output gap-ului); nu intră în
+  `inputs_json`.
+- **Payload** (`payload.stance_page_v6`, înlocuiește `stance_page_v5` în `cb_render._stance_banks`): doar ce se afișează. Fiecare linie = o listă de
+  segmente: text fix în engleză, număr `{k, f}` (cheia în blocul băncii, formatul pp / bp / d2 / r3 / pub), badge de metodă, badge stale,
+  probabilitate (probText). Position: valoare, etichetă, bară, real rate vs real neutral, prognoza, hover cu intervalul și aritmetica, note (neutral
+  stale, prognoză nouă neintrodusă), n/a cu motivul (`cb_render.neutral_reason` / prognoza care nu acoperă today + 12 months). Need: prognoza și data
+  ei, condiționarea ratei, „now:” core + output gap (sau u vs u*), hover cu sursele, nota „Newer … forecast out on …” (mutată din Why) și „update
+  overdue”. Why: trei rânduri — Taylor rule (citirea bold, today / forecast cu formula pe hover, flag-urile no_slack / headline_basis), Bank
+  (dots, OCR track, curba de piață la cutoff, rată neschimbată sau nepublicată + votul ultimei decizii din `votes_json` la `rate.decided`), Market
+  (primele 2 ședințe din `paths[ccy]` = „By meeting”, Δ 1w = aceeași expresie, data și stale-ul `banks[].horizon.stale`, lens-ul v3 piață − bancă).
+- **UI** (`static/cb.js` → `public/cb.js`, `static/style.css` → `public/style.css`): subtitlurile noi, `whyCell` cu cele trei rânduri, renderer
+  generic de segmente (`stSegs`), fiecare număr cu data-k / data-f / data-v. Rămân sortarea, barele ±2 pp, cardurile de telefon și zona băncii.
+  „How to read it” (`stance_ui.how_to_read(scale, stale_bd)`) — textul v6, pragurile din config v6, 2 din `meta.stale_after_bd`.
+- **stance_history**: coloane noi `v6_position`, `v6_need`, `v6_reading`, `G_12m_lo`, `G_12m_hi`; `v5_*` se scriu în continuare; rândurile vechi
+  nu se rescriu. Graficul History: Position și Need v6; un rând fără v6_* → Position = S − gap_12m, Need = gap_12m (din coloanele lui).
+- **Render în doi pași**: `cb_render.stance_page_args` (singurul pas care citește date: argumentele `stance_page_v6` pe bancă + scale_pp)
+  și `build_stance` / `overview_stance` / `bank_stance` (pure). `load_stance_args` face citirile; `render` le apelează pe rând (refactor
+  verificat byte cu byte la as-of 2026-11-20 și 2026-11-23).
+- **Teste**: valorile exacte rulează pe un fixture ÎNGHEȚAT — `scripts/cb_freeze_stance_fixture.py` (implicit --asof 2026-11-20, determinist)
+  scrie `tests/fixtures/cb_stance/v6_page_inputs_2026-11-20.json`: pe bancă toate argumentele `stance_page_v6` (r fără cheia v6,
+  `display_inputs`, ui, rate, mandate, next_test, history, neutral_na, notes, path, bank_row, vote, stale_after_bd) + scale_pp. Testele
+  recalculează r["v6"] cu `stance_v6.evaluate` și construiesc blocul cu funcțiile pure, deci date sosite târziu (fixing-urile SARON 16–20 nov
+  intrate pe 23 nov, un vot BoJ înregistrat, date Montréal noi) nu mută testele, iar orice schimbare din stance_v6.py se vede în texte.
+  Pe fixture: golden 8/8, comparația Market, voturile, textele, CAD stale (13 nov, 1w vs 5 nov), nota de neutral stale doar la EUR, cheile
+  payload-ului, `tests/cb_js/fixtures/stance_v6_2026-11-20.json` (= blocul de overview construit pe aceeași rută). Pe datele live (render la
+  cel mai nou as-of) doar invariante: blocul fără na, cele trei rânduri Why, Market = „By meeting” din același render, badge-ul stale exact
+  când rândul din overview e stale, doar cheile afișate, How to read cu pragurile din config. Plus regula de citire caz cu caz, identitățile
+  cu v3, rândul Bank, istoricul; `tests/cb_js/test_stance_v6.cjs`; `scripts/check_stance_ui.py` (1280 / 390, light / dark, contrast ≥ 4.5,
+  fără overflow, orice număr cu data-k = JSON, Why = 3 rânduri fără concluzie).
+  Testele de logică v5 rămân.
