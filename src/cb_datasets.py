@@ -889,6 +889,10 @@ def validate_neutral(doc: dict, today: date, mandates: dict | None = None) -> li
                 err.append(f"{t}: a manual transcription needs the quote")
             if b == "GBP" and not x.get("member"):
                 err.append(f"{t}: GBP estimates need the member")
+            if "policy_horizon" in x and not isinstance(x["policy_horizon"], bool):
+                err.append(f"{t}: policy_horizon must be true | false")
+        if sum(1 for x in ests if x.get("policy_horizon") is True) > 1:
+            err.append(f"{tag}: at most one 'policy horizon' estimate")
     return err
 
 
@@ -1029,10 +1033,11 @@ def stance_status(paths, today: date) -> tuple:
     """--status section for the manual stance files: validation, projections newer than forecasts.yaml, stale neutral, pending."""
     from .cb_compute.framework_watch import last_projection_dates
     rows, notes = [], []
+    vday = max(today, date.today())               # as in cb_loader.load_stance: a file read after a past as-of is not "in the future"
     try:
-        mand = load_mandates(paths, today=today, validate=True)
-        neut = load_neutral(paths, today=today, validate=True, mandates=mand)
-        fc = load_forecasts(paths, today=today, validate=True, mandates=mand)
+        mand = load_mandates(paths, today=vday, validate=True)
+        neut = load_neutral(paths, today=vday, validate=True, mandates=mand)
+        fc = load_forecasts(paths, today=vday, validate=True, mandates=mand)
     except StanceDataError as e:
         return ("stance inputs (S0a manual files)", ["error"], [[str(e).split(chr(10))[0]]], [f"INVALID {x.strip()}" for x in str(e).split("\n")[1:]])
     cfg = load_stance_config()

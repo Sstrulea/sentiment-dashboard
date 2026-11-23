@@ -99,7 +99,7 @@ def test_mandate_targets_consistent_with_econ_catalog(mand):
 
 def test_neutral_valid_and_statuses(mand):
     doc = ds.load_neutral(PATHS)
-    assert ds.validate_neutral(doc, TODAY, mand) == []
+    assert ds.validate_neutral(doc, max(TODAY, date.today()), mand) == []            # validated against the real day (NZD retrieved 2026-11-23)
     st = {b: e["status"] for b, e in doc["banks"].items()}
     assert "USD" not in st and st["CHF"] == "not_published" and st["NZD"] in ("filled", "pending")
     assert all(st[b] in ("filled", "pending") for b in ("EUR", "GBP", "JPY", "CAD", "AUD"))
