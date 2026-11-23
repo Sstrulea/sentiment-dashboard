@@ -188,3 +188,30 @@ v5:
   borderline_tol_pp: 0.05               # borderline: the conclusion changes inside the neutral interval or at +-0.05 of a threshold
   horizon: "the published period containing as-of + 12 months (period_rule of v3)"
   order: [a_no_move, b_own_path, c_constant_rate, d_na, e_not_restrictive, f_forecast_and_path]
+
+# ---------------------------------------------------------------------------------------------------------------------
+# stance-ui-v6 (frozen 2026-11-23, before any display code): the DISPLAYED stance - Position / Need / Why without a verdict
+# (src/cb_compute/stance_v6.py). Pre-registered; never tuned on results. Position and Need use the bank's own inflation forecast;
+# Why shows three readings (Taylor rule, the bank, the market), no conclusion. v6 reads the v3 values already computed (G, G_12m,
+# gap_12m, lens); the versions above and v5 are still computed and stored exactly as before.
+v6:
+  frozen: 2026-11-23
+  forecast: "pi_fc = the bank's projection chosen by the v3 horizon_rule (the shortest published period containing as-of + 12 months): the underlying measure, else the headline (flag headline_basis); its period and definition are always displayed"
+  position: "P = (rate - pi_fc) - (neutral_mid - target); P_lo uses neutral_hi, P_hi uses neutral_lo; target = the point or the declared midpoint; no neutral, no pi_fc or a band without a declared midpoint -> n/a with the reason"
+  need: "N = gap(pi_fc) as in v3: point -> pi_fc - value; declared midpoint -> pi_fc - midpoint; band without a declared midpoint -> 0 inside, else the distance to the nearest edge"
+  scale_pp: [0.25, 0.75, 1.5]
+  p_labels: [Neutral, "Slightly restrictive|stimulative", "Restrictive|Stimulative", "Very restrictive|stimulative"]
+  n_labels: [Near target, "Slightly above|below target", "Above|Below target", "Well above|below target"]
+  taylor: "T = neutral + 1.5 * gap(pi) + 0.5 * y - rate (= v3 G = 1.5 * x - S); y as in v3: the published output gap; unemployment-gap banks -2 * (u - u*); none -> the term is left out (flag no_slack)"
+  scenarios:
+    today: "pi = the underlying measure today, y = today's slack (v3 G, G_lo, G_hi)"
+    forecast: "pi = pi_fc, y = the projected slack for the same period, else today's slack held (flag slack_held) (v3 G_12m, G_12m_lo, G_12m_hi)"
+  reading:
+    - "a = T_today, b = T_forecast, both at neutral_mid; a * b < 0 -> Mixed signals"
+    - "else the four ends (each scenario at neutral_lo and neutral_hi) all > 0 -> Tightening pressure, robust to the neutral range; all < 0 -> Easing pressure, robust to the neutral range"
+    - "else -> Tightening / Easing pressure, sensitive to the neutral range, by sign(a) (sign(b) when a = 0); a = b = 0 -> No pressure at the neutral midpoint"
+    - "one scenario n/a -> the same test on the other scenario alone (its two ends), with the reason of the missing one"
+    - "no neutral -> n/a with the reason of Position"
+  bank_row: "the bank's own published path (Fed dots, RBNZ OCR track) up to the period of pi_fc; otherwise the rate conditioning of the forecast (market curve at the cutoff | unchanged rate | not published); the vote at the last decision"
+  market_row: "the next 2 meetings of the implied path (bp vs the current rate, probability where EXACT / CURVE), the change of each over 1 week (the 'Delta vs 1w' of the By meeting table), the market data date and its stale flag (meta.stale_after_bd), the v3 lens (market minus the bank path at the same date, bp)"
+  rounding: "classification on unrounded values; display pp with 2 decimals, half-up (payload._r2)"
