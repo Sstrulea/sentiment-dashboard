@@ -2540,6 +2540,427 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     3,
+     5,
+     8,
+     9,
+     12,
+     17,
+     18,
+     21,
+     23,
+     28,
+     29
+    ],
+    "paragraphs_sent": 29,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:971284004699",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-24T18:43:30Z",
+   "input_sha256": "5606ed9ee639016b00230e50c2518a57b4537b966c9cc2567d4db5bae56f815f",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 80,
+     "point": 1,
+     "source_text": "2%",
+     "start": 78,
+     "text": "2%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-24",
+   "quotes": [
+    {
+     "end": 138,
+     "paragraph": 3,
+     "start": 68,
+     "text": "We target 2% inflation, as measured by the consumer price index (CPI)."
+    },
+    {
+     "end": 1837,
+     "paragraph": 9,
+     "start": 1697,
+     "text": "But if it is going to stay too high for too long, we would need to raise the policy interest rate to steer inflation back toward the target."
+    },
+    {
+     "end": 2454,
+     "paragraph": 12,
+     "start": 2356,
+     "text": "The pandemic also taught us that temporary supply shocks can add up, causing persistent inflation."
+    },
+    {
+     "end": 5039,
+     "paragraph": 21,
+     "start": 4912,
+     "text": "We bring all this evidence together to inform our outlook for total CPI inflation and the balance of risks around that outlook."
+    },
+    {
+     "end": 7233,
+     "paragraph": 29,
+     "start": 7166,
+     "text": "Together, they give us complementary views of underlying inflation."
+    }
+   ],
+   "source": {
+    "chars": 7233,
+    "chars_sent": 7234,
+    "method": "html-selector",
+    "paragraphs_sent": 29,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 138,
+        "paragraph": 3,
+        "start": 68,
+        "text": "We target 2% inflation, as measured by the consumer price index (CPI)."
+       },
+       {
+        "end": 887,
+        "paragraph": 5,
+        "start": 794,
+        "text": "Total CPI inflation is our target, and it will be front and centre in all our communications."
+       }
+      ],
+      "paragraphs": [
+       3,
+       5
+      ]
+     },
+     "text": "The Bank of Canada says it targets 2% inflation as measured by the consumer price index (CPI), and total CPI inflation will be front and centre in its communications."
+    },
+    {
+     "evidence": {
+      "coverage": 0.923,
+      "fragments": [
+       {
+        "end": 1466,
+        "paragraph": 8,
+        "start": 1408,
+        "text": "whether inflation pressures are likely to fade or persist."
+       },
+       {
+        "end": 1837,
+        "paragraph": 9,
+        "start": 1697,
+        "text": "But if it is going to stay too high for too long, we would need to raise the policy interest rate to steer inflation back toward the target."
+       }
+      ],
+      "paragraphs": [
+       8,
+       9
+      ]
+     },
+     "text": "The Bank of Canada says it judges whether inflation pressures are likely to fade or persist, and would raise the policy interest rate if inflation were to stay too high for too long."
+    },
+    {
+     "evidence": {
+      "coverage": 0.929,
+      "fragments": [
+       {
+        "end": 2454,
+        "paragraph": 12,
+        "start": 2356,
+        "text": "The pandemic also taught us that temporary supply shocks can add up, causing persistent inflation."
+       },
+       {
+        "end": 2754,
+        "paragraph": 12,
+        "start": 2695,
+        "text": "The result was a prolonged period of inflationary pressure."
+       }
+      ],
+      "paragraphs": [
+       12
+      ]
+     },
+     "text": "The Bank of Canada says the pandemic taught that temporary supply shocks can add up and cause persistent inflation, with a chain of events producing prolonged inflationary pressure."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 3984,
+        "paragraph": 17,
+        "start": 3860,
+        "text": "We look at the CPI data in different ways to see what they tell us about the breadth and persistence of inflation pressures."
+       },
+       {
+        "end": 4404,
+        "paragraph": 18,
+        "start": 4284,
+        "text": "And we assess labour market and other capacity indicators to gauge the balance between supply and demand in the economy."
+       },
+       {
+        "end": 5039,
+        "paragraph": 21,
+        "start": 4912,
+        "text": "We bring all this evidence together to inform our outlook for total CPI inflation and the balance of risks around that outlook."
+       }
+      ],
+      "paragraphs": [
+       17,
+       18,
+       21
+      ]
+     },
+     "text": "The Bank of Canada says it assesses CPI data, supply-chain costs, labour market and capacity indicators to inform its outlook for total CPI inflation and the balance of risks."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 5411,
+        "paragraph": 23,
+        "start": 5295,
+        "text": "Measures of core inflation help us filter out those temporary bumps to get a better sense of the underlying pattern."
+       },
+       {
+        "end": 6919,
+        "paragraph": 28,
+        "start": 6774,
+        "text": "We’ve refined the group of core measures we look at and will be relying a little more on two that look at underlying inflation in different ways."
+       },
+       {
+        "end": 7233,
+        "paragraph": 29,
+        "start": 7166,
+        "text": "Together, they give us complementary views of underlying inflation."
+       }
+      ],
+      "paragraphs": [
+       23,
+       28,
+       29
+      ]
+     },
+     "text": "The Bank of Canada says core inflation measures filter temporary price changes and that it will rely a little more on CPI-trim and CPIX for complementary views of underlying inflation."
+    }
+   ],
+   "title": "Canada’s monetary policy framework: A trusted anchor in uncertain waters",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/11/canadas-monetary-policy-framework-a-trusted-anchor-in-uncertain-waters/",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 2987,
+    "output_tokens": 1103,
+    "reasoning_tokens": 431
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
+     2,
+     3,
+     4
+    ],
+    "paragraphs_sent": 4,
+    "truncated": false
+   },
+   "currency": "CAD",
+   "doc_id": "CAD:speech:d41f2c7d0b02",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-24T18:43:30Z",
+   "input_sha256": "52947f8f6dd1821d540532009c7414b214a165333d2ce2e76b8c34a64907776e",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 221,
+     "point": 1,
+     "source_text": "1.9%",
+     "start": 217,
+     "text": "1.9%"
+    },
+    {
+     "end": 182,
+     "point": 1,
+     "source_text": "1995",
+     "start": 178,
+     "text": "1995"
+    },
+    {
+     "end": 201,
+     "point": 1,
+     "source_text": "2019",
+     "start": 197,
+     "text": "2019"
+    },
+    {
+     "end": 846,
+     "point": 4,
+     "source_text": "2031",
+     "start": 842,
+     "text": "2031"
+    },
+    {
+     "end": 6,
+     "point": 4,
+     "source_text": "2%",
+     "start": 4,
+     "text": "2%"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-24",
+   "quotes": [
+    {
+     "end": 120,
+     "paragraph": 2,
+     "start": 40,
+     "text": "The Bank of Canada’s objective is to keep inflation low, stable and predictable."
+    },
+    {
+     "end": 426,
+     "paragraph": 3,
+     "start": 342,
+     "text": "The Bank responded by raising the policy interest rate to bring inflation back down."
+    },
+    {
+     "end": 555,
+     "paragraph": 3,
+     "start": 487,
+     "text": "Their trust in the Bank helped make that happen—without a recession."
+    },
+    {
+     "end": 891,
+     "paragraph": 4,
+     "start": 848,
+     "text": "The 2% inflation target remains the anchor."
+    }
+   ],
+   "source": {
+    "chars": 891,
+    "chars_sent": 892,
+    "method": "html-selector",
+    "paragraphs_sent": 4,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 120,
+        "paragraph": 2,
+        "start": 40,
+        "text": "The Bank of Canada’s objective is to keep inflation low, stable and predictable."
+       },
+       {
+        "end": 233,
+        "paragraph": 2,
+        "start": 173,
+        "text": "From 1995 to the end of 2019, inflation was 1.9% on average."
+       }
+      ],
+      "paragraphs": [
+       2
+      ]
+     },
+     "text": "The Bank of Canada states that its objective is to keep inflation low, stable and predictable, and that inflation averaged 1.9% from 1995 to the end of 2019."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 341,
+        "paragraph": 3,
+        "start": 234,
+        "text": "But the reopening of the economy after the pandemic as well as the war in Ukraine pushed prices up quickly."
+       },
+       {
+        "end": 426,
+        "paragraph": 3,
+        "start": 342,
+        "text": "The Bank responded by raising the policy interest rate to bring inflation back down."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Bank of Canada states that it raised the policy interest rate after the reopening of the economy and the war in Ukraine pushed prices up quickly."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 555,
+        "paragraph": 3,
+        "start": 487,
+        "text": "Their trust in the Bank helped make that happen—without a recession."
+       },
+       {
+        "end": 645,
+        "paragraph": 3,
+        "start": 591,
+        "text": "Money didn’t go as far, and Canadians were frustrated."
+       }
+      ],
+      "paragraphs": [
+       3
+      ]
+     },
+     "text": "The Bank of Canada states that Canadians’ trust in the Bank helped make that happen—without a recession, and that money didn’t go as far."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 847,
+        "paragraph": 4,
+        "start": 767,
+        "text": "The Government of Canada and the Bank recently renewed the framework until 2031."
+       },
+       {
+        "end": 891,
+        "paragraph": 4,
+        "start": 848,
+        "text": "The 2% inflation target remains the anchor."
+       }
+      ],
+      "paragraphs": [
+       4
+      ]
+     },
+     "text": "The Bank of Canada states that the Government of Canada and the Bank renewed the monetary policy framework until 2031, with the 2% inflation target remaining the anchor."
+    }
+   ],
+   "title": "Keeping inflation low and stable in an uncertain world",
+   "type": "speech",
+   "url": "https://www.bankofcanada.ca/2026/11/keeping-inflation-low-and-stable-in-an-uncertain-world/",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 4007,
+    "output_tokens": 1147,
+    "reasoning_tokens": 283
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      4,
      5,

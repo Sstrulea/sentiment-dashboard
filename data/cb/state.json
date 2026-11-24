@@ -31,7 +31,7 @@
   "_daily_fetch": {
     "asx_bb": "2026-11-24",
     "asx_ib": "2026-11-24",
-    "atlantafed_mpt": "2026-11-23",
+    "atlantafed_mpt": "2026-11-24",
     "eurex_ois_chf": "2026-11-24",
     "eurex_ois_eur": "2026-11-24",
     "eurex_ois_gbp": "2026-11-24",
@@ -116,8 +116,8 @@
     }
   },
   "atlantafed_mpt": {
-    "etag": "9d0b70d462314a7d9a4ee3f2ef9873c2",
-    "last_modified": "Mon, 23 Nov 2026 15:36:18 GMT"
+    "etag": "86635cfa9ebb4fb387639fc380905882",
+    "last_modified": "Tue, 24 Nov 2026 16:15:27 GMT"
   },
   "boe_ois": {
     "history": {
@@ -288,26 +288,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-24T12:43:34Z",
-      "calls": 1,
-      "cost_usd": 0.0198,
+      "at": "2026-11-24T18:43:30Z",
+      "calls": 3,
+      "cost_usd": 0.041,
       "failed_validation": 0,
-      "input_tokens": 4897,
-      "new": 1,
+      "input_tokens": 6994,
+      "new": 2,
       "no_text": 0,
-      "output_tokens": 833,
+      "output_tokens": 2250,
       "pending": 0,
-      "reasoning_tokens": 187,
+      "reasoning_tokens": 714,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 136,
+      "unchanged": 137,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 264,
-      "input_tokens": 1687020,
-      "output_tokens": 297507,
-      "summaries": 177
+      "calls": 267,
+      "input_tokens": 1694014,
+      "output_tokens": 299757,
+      "summaries": 179
     }
   }
 }
