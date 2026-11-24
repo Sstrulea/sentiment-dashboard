@@ -29,8 +29,8 @@
     ]
   },
   "_daily_fetch": {
-    "asx_bb": "2026-11-23",
-    "asx_ib": "2026-11-23",
+    "asx_bb": "2026-11-24",
+    "asx_ib": "2026-11-24",
     "atlantafed_mpt": "2026-11-23",
     "eurex_ois_chf": "2026-11-24",
     "eurex_ois_eur": "2026-11-24",
@@ -38,7 +38,7 @@
     "eurex_ois_jpy": "2026-11-24",
     "eurex_ois_usd": "2026-11-24",
     "eurex_ois_usd_sofr": "2026-11-24",
-    "jpx_tona": "2026-11-23",
+    "jpx_tona": "2026-11-24",
     "mx_corra": "2026-11-24"
   },
   "_framework": {
@@ -126,7 +126,7 @@
     },
     "latest": {
       "etag": null,
-      "last_modified": "Mon, 23 Nov 2026 11:46:49 GMT"
+      "last_modified": "Tue, 24 Nov 2026 11:48:18 GMT"
     }
   },
   "eurex_ois_chf": {
@@ -254,7 +254,7 @@
   },
   "jpx_tona": {
     "etag": null,
-    "last_modified": "Fri, 20 Nov 2026 07:35:15 GMT"
+    "last_modified": "Tue, 24 Nov 2026 07:39:10 GMT"
   },
   "official:rba": {
     "etag": null,
@@ -288,26 +288,26 @@
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-23T18:43:27Z",
-      "calls": 0,
-      "cost_usd": 0.0,
+      "at": "2026-11-24T12:43:34Z",
+      "calls": 1,
+      "cost_usd": 0.0198,
       "failed_validation": 0,
-      "input_tokens": 0,
-      "new": 0,
+      "input_tokens": 4897,
+      "new": 1,
       "no_text": 0,
-      "output_tokens": 0,
+      "output_tokens": 833,
       "pending": 0,
-      "reasoning_tokens": 0,
+      "reasoning_tokens": 187,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 139,
+      "unchanged": 136,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 263,
-      "input_tokens": 1682123,
-      "output_tokens": 296674,
-      "summaries": 176
+      "calls": 264,
+      "input_tokens": 1687020,
+      "output_tokens": 297507,
+      "summaries": 177
     }
   }
 }

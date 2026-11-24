@@ -3202,6 +3202,180 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     78,
+     79,
+     80,
+     81,
+     86
+    ],
+    "paragraphs_sent": 89,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:speech:4199d8f4bbf5",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-24T12:43:34Z",
+   "input_sha256": "7ac1705d2ec5353a72125c615dc2c993f1b13290010e7f6bebcd0318fcfd816f",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-24",
+   "quotes": [
+    {
+     "end": 16331,
+     "paragraph": 78,
+     "start": 16143,
+     "text": "First, monetary resilience. Credible institutions and price stability provide an anchor when shocks arrive, while being part of the euro area can remove an important source of instability."
+    },
+    {
+     "end": 16555,
+     "paragraph": 79,
+     "start": 16332,
+     "text": "Second, fiscal resilience. Relatively low public debt is a valuable asset for many CEE economies and it needs to be preserved. Building and maintaining fiscal buffers in good times creates room to respond when shocks occur."
+    },
+    {
+     "end": 16755,
+     "paragraph": 80,
+     "start": 16556,
+     "text": "Third, financial resilience. Strong banks and sound rules help economies absorb shocks rather than amplify them. Deeper European financial integration can help share risks more widely across borders."
+    },
+    {
+     "end": 17054,
+     "paragraph": 81,
+     "start": 16756,
+     "text": "And fourth, structural resilience. This means being able to manage strategic dependencies and adapt to structural shifts: diversifying energy sources and supply chains, investing in innovation and skills, and responding to demographic changes by making the most of the labour force available to us."
+    },
+    {
+     "end": 17505,
+     "paragraph": 86,
+     "start": 17411,
+     "text": "The task today is therefore not to retreat from openness, but to make openness more resilient."
+    }
+   ],
+   "source": {
+    "chars": 18074,
+    "chars_sent": 18075,
+    "method": "html-selector",
+    "paragraphs_sent": 89,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 0.933,
+      "fragments": [
+       {
+        "end": 16331,
+        "paragraph": 78,
+        "start": 16171,
+        "text": "Credible institutions and price stability provide an anchor when shocks arrive, while being part of the euro area can remove an important source of instability."
+       }
+      ],
+      "paragraphs": [
+       78
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says credible institutions and price stability provide an anchor when shocks arrive, while euro area membership can remove an important source of instability."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16458,
+        "paragraph": 79,
+        "start": 16359,
+        "text": "Relatively low public debt is a valuable asset for many CEE economies and it needs to be preserved."
+       },
+       {
+        "end": 16555,
+        "paragraph": 79,
+        "start": 16459,
+        "text": "Building and maintaining fiscal buffers in good times creates room to respond when shocks occur."
+       }
+      ],
+      "paragraphs": [
+       79
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says relatively low public debt is a valuable asset for many CEE economies and building and maintaining fiscal buffers in good times creates room to respond when shocks occur."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 16668,
+        "paragraph": 80,
+        "start": 16585,
+        "text": "Strong banks and sound rules help economies absorb shocks rather than amplify them."
+       },
+       {
+        "end": 16755,
+        "paragraph": 80,
+        "start": 16669,
+        "text": "Deeper European financial integration can help share risks more widely across borders."
+       }
+      ],
+      "paragraphs": [
+       80
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says strong banks and sound rules help economies absorb shocks rather than amplify them, and deeper European financial integration can help share risks more widely across borders."
+    },
+    {
+     "evidence": {
+      "coverage": 0.944,
+      "fragments": [
+       {
+        "end": 17054,
+        "paragraph": 81,
+        "start": 16791,
+        "text": "This means being able to manage strategic dependencies and adapt to structural shifts: diversifying energy sources and supply chains, investing in innovation and skills, and responding to demographic changes by making the most of the labour force available to us."
+       }
+      ],
+      "paragraphs": [
+       81
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says structural resilience means managing strategic dependencies and adapting to structural shifts through diversified energy sources and supply chains, innovation, skills and responses to demographic changes."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 17505,
+        "paragraph": 86,
+        "start": 17411,
+        "text": "The task today is therefore not to retreat from openness, but to make openness more resilient."
+       }
+      ],
+      "paragraphs": [
+       86
+      ]
+     },
+     "text": "Vice-President Boris Vujčić says the task today is not to retreat from openness, but to make openness more resilient."
+    }
+   ],
+   "title": "Boris Vujčić: Resilience in an age of shocks: lessons from central and eastern Europe",
+   "type": "speech",
+   "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261124~17928e5456.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 4897,
+    "output_tokens": 833,
+    "reasoning_tokens": 187
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      2,
      3,
      4,
