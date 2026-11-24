@@ -1,0 +1,37 @@
+# risk_regime_v1 (phase 3): long-history risk regime on FRED keyless series
+# (data/regime_inputs.parquet). Thresholds are rolling 5-year percentiles of each input,
+# fixed on coverage before any forward return (scripts/measure/prereg_phase3.yml).
+# Equity 20-day return: NASDAQCOM up to 2016-12-31, SP500 after (FRED serves SP500 from 2016-10).
+# Three-valued logic: a rule that cannot be decided does not fire and the week is degraded;
+# before 2007-12 (no VIX3M) stress is decided by the VIX / Baa branch alone.
+note: v1, percentiles over a 5-year window (1826 days, >= 500 obs)
+nodes:
+  - {id: vix_term, fn: ratio, inputs: [VIXCLS, VXVCLS], status: context, stale_after_days: 7}
+  - {id: vix_pct, fn: derived_pctile, inputs: [VIXCLS], params: {mode: level, window_days: 1826, min_obs: 500},
+     status: context, stale_after_days: 7}
+  - {id: baa_w20_pct, fn: derived_pctile, inputs: [BAA10Y], params: {mode: diff_bp, n: 20, window_days: 1826, min_obs: 500},
+     status: context, stale_after_days: 7, note: "Baa - 10y spread, 20-obs widening in bp"}
+  - {id: eq20_pct, fn: derived_pctile, inputs: [NASDAQCOM, SP500],
+     params: {mode: pct, n: 20, window_days: 1826, min_obs: 500, splice: {after: "2016-12-31"}},
+     status: context, stale_after_days: 7}
+  - {id: d10y20_pct, fn: derived_pctile, inputs: [DGS10], params: {mode: diff_bp, n: 20, window_days: 1826, min_obs: 500},
+     status: context, stale_after_days: 7}
+classifiers:
+  risk_regime_v1:
+    precedence: [liquidity_stress, inflation_shock, growth_scare]
+    default: calm
+    rules:
+      liquidity_stress:
+        any:
+          - {node: vix_term, op: ">=", value: 1.0}
+          - all:
+              - {node: vix_pct, op: ">=", value: 95}
+              - {node: baa_w20_pct, op: ">=", value: 95}
+      inflation_shock:
+        all:
+          - {node: eq20_pct, op: "<=", value: 10}
+          - {node: d10y20_pct, op: ">=", value: 90}
+      growth_scare:
+        all:
+          - {node: eq20_pct, op: "<=", value: 10}
+          - {node: d10y20_pct, op: "<=", value: 10}

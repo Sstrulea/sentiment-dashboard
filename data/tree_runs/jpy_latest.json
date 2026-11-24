@@ -1,0 +1,188 @@
+{
+ "active_path": [
+  {
+   "node": "us2y_chg_20d",
+   "role": "primary",
+   "sign": -1,
+   "signed_z": 1.32235,
+   "value": -22.0,
+   "z": -1.32235
+  },
+  {
+   "implied": -1,
+   "mult": 0.7,
+   "node": "jpy_cot_pctile",
+   "role": "modifier",
+   "value": 80.254777,
+   "verdict": "disagree",
+   "z": 0.905619
+  },
+  {
+   "implied": 0,
+   "mult": 1.0,
+   "node": "oil_chg_20d",
+   "role": "modifier",
+   "value": 7.230131,
+   "verdict": "neutral",
+   "z": 0.492106
+  }
+ ],
+ "asof": "2026-10-30",
+ "asset": "JPY",
+ "classifier": "risk_regime_v0",
+ "config_hash": "44318a683bce03c0",
+ "conviction": 0.925645,
+ "conviction_tier": 1,
+ "direction": 1,
+ "horizon_weeks": 2,
+ "inputs_fingerprint": "5f01b6722b44a5ef",
+ "invalidator": "US 2Y 20d change turns: signed z back inside +/-0.5 (now +1.32; us2y_chg_20d -22.0 bp)",
+ "nodes": {
+  "boj_path_proxy": {
+   "asof": "2026-10-30",
+   "id": "boj_path_proxy",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-29",
+   "status": "context",
+   "value": -5.1,
+   "z": -1.280062
+  },
+  "hy_oas_chg_20d": {
+   "asof": "2026-10-30",
+   "id": "hy_oas_chg_20d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-29",
+   "status": "context",
+   "value": 2.0,
+   "z": 0.029022
+  },
+  "jpy_cot_pctile": {
+   "asof": "2026-10-30",
+   "id": "jpy_cot_pctile",
+   "meta": {
+    "raw": 68611.0,
+    "window_obs": 157
+   },
+   "quality": "ok",
+   "source_last_date": "2026-10-20",
+   "status": "context",
+   "value": 80.254777,
+   "z": 0.905619
+  },
+  "oil_chg_20d": {
+   "asof": "2026-10-30",
+   "id": "oil_chg_20d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-27",
+   "status": "context",
+   "value": 7.230131,
+   "z": 0.492106
+  },
+  "spx_ret_20d": {
+   "asof": "2026-10-30",
+   "id": "spx_ret_20d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-29",
+   "status": "context",
+   "value": 0.703585,
+   "z": -0.138337
+  },
+  "stock_bond_corr_60d": {
+   "asof": "2026-10-30",
+   "id": "stock_bond_corr_60d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-28",
+   "status": "context",
+   "value": -0.249362,
+   "z": -0.4934
+  },
+  "us10y_chg_20d": {
+   "asof": "2026-10-30",
+   "id": "us10y_chg_20d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-28",
+   "status": "context",
+   "value": -21.0,
+   "z": -1.375815
+  },
+  "us2y_chg_20d": {
+   "asof": "2026-10-30",
+   "id": "us2y_chg_20d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-28",
+   "status": "context",
+   "value": -22.0,
+   "z": -1.32235
+  },
+  "us2y_chg_5d": {
+   "asof": "2026-10-30",
+   "id": "us2y_chg_5d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-28",
+   "status": "context",
+   "value": -14.0,
+   "z": -1.492871
+  },
+  "usdjpy_speed_flag": {
+   "asof": "2026-10-30",
+   "id": "usdjpy_speed_flag",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-23",
+   "status": "context",
+   "value": 0.0,
+   "z": null
+  },
+  "usdjpy_trend_20d": {
+   "asof": "2026-10-30",
+   "id": "usdjpy_trend_20d",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-23",
+   "status": "context",
+   "value": -1.298349,
+   "z": -0.688765
+  },
+  "vix_level": {
+   "asof": "2026-10-30",
+   "id": "vix_level",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-29",
+   "status": "context",
+   "value": 17.2,
+   "z": -0.257818
+  },
+  "vix_term": {
+   "asof": "2026-10-30",
+   "id": "vix_term",
+   "meta": {},
+   "quality": "ok",
+   "source_last_date": "2026-10-29",
+   "status": "context",
+   "value": 0.887971,
+   "z": -0.039667
+  }
+ },
+ "reason": null,
+ "regime": "calm",
+ "regime_detail": {
+  "degraded": false,
+  "fired": null,
+  "regime": "calm",
+  "undetermined": []
+ },
+ "signed_conviction": 0.925645,
+ "skipped": [],
+ "status": "uncalibrated",
+ "tree_id": "jpy",
+ "vetoes": []
+}

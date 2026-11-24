@@ -1,0 +1,7 @@
+# v4 score (phase 4). Definition pre-registered in scripts/measure/prereg_phase4.yml; code in src/tree/v4.py.
+# extra_nodes: stage-A nodes that passed their hard gates (filled mechanically from the measurement; none = []).
+model: v4
+version: v4.0
+horizons: [2, 4]
+extra_nodes: []
+note: "carry_z + macro_z (v3 macro block, previous Friday); regime gate from risk_regime_v1; calibrated P with abstention 0.45-0.55"
