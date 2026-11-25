@@ -91,14 +91,18 @@ def _scores(payload: dict) -> dict:
 def test_trend_disabled_scores_are_the_trendless_scores(monkeypatch):
     monkeypatch.setattr(economic_render, "_trend_enabled", lambda cfg=None: False)
     payload = economic_render.build_economic_payload(as_of=_AS_OF)
-    # scoring v3 (2026-10-07): the label is z = score / RMS(instrument) on the v3 thresholds
+    # scoring v3 (2026-10-07) and v4 (2026-11-25): the label is z = score / RMS(instrument)
+    # on the board's thresholds (v4: calibrated on the COT history, payload meta.v4)
     from src.economic_compute import v3_label
     v3 = economic_render._load_yaml(economic_render.INSTRUMENTS_YAML)["v3"]
+    v4 = payload["meta"].get("fx_model") == "v4"
+    th = payload["meta"]["v4"]["thresholds"] if v4 else v3["thresholds"]
     for inst in payload["instruments"]:
         keys = {c["key"] for c in inst["contributions"]}
         assert "trend" not in keys, inst["symbol"]
         assert inst["contrib_sum"] == pytest.approx(inst["score"], abs=1e-9), inst["symbol"]
-        assert inst["bias"] == v3_label(inst["score"], v3["rms"][inst["symbol"]], v3["thresholds"]), inst["symbol"]
+        rms = inst["rms"] if v4 else v3["rms"][inst["symbol"]]
+        assert inst["bias"] == v3_label(inst["score"], rms, th), inst["symbol"]
 
 
 def test_trend_enabled_without_cells_is_bit_identical_to_disabled(monkeypatch):

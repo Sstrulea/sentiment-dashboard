@@ -1520,3 +1520,134 @@ def apply_v3_fx(payload: dict, instruments_cfg: dict, indicators_cfg: dict,
         acc.setdefault(q, []).append(-float(inst["score_v2"]))
     for c, card in cards.items():
         card["score_v2_ccy"] = (sum(acc[c]) / len(acc[c])) if acc.get(c) else None
+
+
+# ---------------------------------------------------------------------------
+# Scoring v4 "swing" (2026-11-25) — the FX board scores COT only
+# ---------------------------------------------------------------------------
+# v4 is v3's COT block alone (Level + Flow, the current calculation) at 100%:
+#   S_c   = COT cell(c) / σ_cot          (USD as a pair leg = 0)
+#   pair  = (S_base − S_quote) × 2.5;    US Dollar = DXY cell / σ_cot × 2.5
+#   label = z = score / RMS(instrument) on the thresholds p55 / p90 of |z|
+# RMS and the thresholds are measured as for v3 (scripts/measure/v3_scales.py:
+# RMS over the last 156 weeks, thresholds over the last 53 weeks pooled over the
+# board), on every render, from the weekly COT cell history
+# (src.cot_score.currency_cell_history). v3 is still computed and kept as
+# score_v3 / bias_v3 / z_v3 / final_score_v3 (shadow, not displayed);
+# `swing_model: v3` in data/economic_instruments.yaml brings it back.
+
+V4_FX_WEIGHTS = {"cot": 1.0}
+V4_RMS_WEEKS, V4_THR_WEEKS = 156, 53
+V4_THR_Q = (0.55, 0.90)
+V4_MIN_RMS_WEEKS = 52        # fewer weekly scores → no RMS for that instrument (Neutral)
+V4_MIN_THR_VALUES = 100      # fewer pooled |z| values → no thresholds (v4 not applied)
+V4_SHADOW_FIELDS = ("score", "bias", "z", "rms", "final_score", "contributions")
+
+
+def swing_model(instruments_cfg: dict | None) -> str:
+    """The FX board's model: 'v4' when the config says `swing_model: v4` and has a
+    `v4` block, else 'v3'."""
+    cfg = instruments_cfg or {}
+    return "v4" if str(cfg.get("swing_model") or "").lower() == "v4" and cfg.get("v4") else "v3"
+
+
+def v4_sigma_cot(instruments_cfg: dict) -> float:
+    """σ_cot of the v4 block (the same σ as v3's COT block when not set)."""
+    k4 = instruments_cfg.get("v4") or {}
+    k3 = instruments_cfg.get("v3") or {}
+    return float(k4.get("sigma_cot") or k3["sigma_cot"])
+
+
+def _cell(cells: dict, key: str) -> float | None:
+    v = cells.get(key)
+    if v is None:
+        return None
+    v = float(v)
+    return None if math.isnan(v) else v
+
+
+def v4_instrument_score(inst_cfg: dict, cells: dict, sigma_cot: float) -> float | None:
+    """The v4 raw score of one board instrument from per-contract COT cells
+    ({EUR: cell, …, DXY: cell}): a pair = 2.5 × (cell_base − cell_quote) / σ_cot
+    with the USD leg 0; the single US Dollar row = 2.5 × DXY / σ_cot. None when a
+    non-USD leg (or DXY) has no cell."""
+    if inst_cfg.get("type") == "single":
+        c = inst_cfg.get("currency")
+        v = _cell(cells, "DXY" if c == "USD" else c)
+        return None if v is None else V3_DISPLAY_SCALE * v / sigma_cot
+    if inst_cfg.get("type") != "fx":
+        return None
+    b = 0.0 if inst_cfg.get("base") == "USD" else _cell(cells, inst_cfg.get("base"))
+    q = 0.0 if inst_cfg.get("quote") == "USD" else _cell(cells, inst_cfg.get("quote"))
+    if b is None or q is None:
+        return None
+    return V3_DISPLAY_SCALE * (b - q) / sigma_cot
+
+
+def v4_calibrate(cell_hist: pd.DataFrame | None, instruments: dict, sigma_cot: float,
+                 rms_weeks: int = V4_RMS_WEEKS, thr_weeks: int = V4_THR_WEEKS,
+                 q: tuple[float, float] = V4_THR_Q) -> dict | None:
+    """The v4 label constants from the weekly COT cell history (columns date,
+    symbol, cell): the instruments' weekly v4 scores over the last `rms_weeks`
+    report dates; RMS = sqrt(mean(score²)) per instrument; thresholds = the
+    q-quantiles of |score / RMS| pooled over the instruments and the last
+    `thr_weeks` dates (np.quantile, as scripts/measure/v3_scales.py). None when
+    the history is too short for the thresholds."""
+    import numpy as np
+
+    if cell_hist is None or len(cell_hist) == 0:
+        return None
+    wide = (cell_hist.pivot_table(index="date", columns="symbol", values="cell", aggfunc="last")
+            .sort_index().tail(int(rms_weeks)))
+    dates = list(wide.index)
+    rows = [{k: v for k, v in zip(wide.columns, vals)} for vals in wide.itertuples(index=False, name=None)]
+    series = {sym: [v4_instrument_score(cfg, r, sigma_cot) for r in rows] for sym, cfg in instruments.items()}
+    rms: dict[str, float | None] = {}
+    for sym, vals in series.items():
+        v = [x for x in vals if x is not None]
+        r = float(math.sqrt(np.mean(np.square(v)))) if len(v) >= V4_MIN_RMS_WEEKS else None
+        rms[sym] = r if r else None
+    n_thr = min(int(thr_weeks), len(rows))
+    z = [abs(x / rms[sym]) for sym, vals in series.items() if rms.get(sym)
+         for x in vals[len(vals) - n_thr:] if x is not None]
+    if len(z) < V4_MIN_THR_VALUES:
+        return None
+    return {"rms": rms,
+            "thresholds": {"mild": float(np.quantile(z, q[0])), "very": float(np.quantile(z, q[1]))},
+            "weeks": len(dates), "thr_weeks": n_thr, "n_z": len(z),
+            "from": pd.Timestamp(dates[0]).date().isoformat(),
+            "to": pd.Timestamp(dates[-1]).date().isoformat()}
+
+
+def apply_v4_fx(payload: dict, instruments_cfg: dict, sentiment_cells: dict | None,
+                calib: dict) -> None:
+    """Scoring v4 on the FX board (in place), after build_payload (v3 already
+    applied). v3's score, bias, z, rms, final_score and contributions move to the
+    *_v3 fields (shadow, not displayed); the instrument's own fields become v4's:
+    score = v4_instrument_score, z = score / RMS, the bias and the final Score
+    on the calibrated thresholds, one `cot` contribution equal to the score.
+    A pair with a missing COT leg scores 0 with no contributions (as v3 does
+    for a missing currency)."""
+    sig = v4_sigma_cot(instruments_cfg)
+    cfgs = instruments_cfg.get("instruments", {}) or {}
+    cells = {k: v for k, v in (sentiment_cells or {}).items() if v is not None}
+    th = calib["thresholds"]
+    rms = calib.get("rms") or {}
+    for inst in payload.get("instruments", []):
+        sym = inst["symbol"]
+        for f in V4_SHADOW_FIELDS:
+            inst[f + "_v3"] = inst.get(f)
+        cfg = cfgs.get(sym) or {}
+        s = v4_instrument_score(cfg, cells, sig)
+        score = 0.0 if s is None else float(s)
+        r = rms.get(sym)
+        inst["score"] = score
+        inst["rms"] = float(r) if r else None
+        inst["z"] = (score / float(r)) if r else None
+        inst["bias"] = v3_label(score, r, th)
+        inst["final_score"] = final_score(inst["z"], th)
+        inst["contributions"] = ([] if s is None else
+                                 [{"key": "cot", "category": "cot", "raw": None, "contribution": score}])
+        inst["contrib_sum"] = float(sum(c["contribution"] for c in inst["contributions"]))
+        inst["contrib_residual"] = score - inst["contrib_sum"]
+        inst["v4"] = {"sigma_cot": sig, "scale": V3_DISPLAY_SCALE}

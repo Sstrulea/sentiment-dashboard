@@ -26,11 +26,19 @@
     </header>
 
     <div class="econ-legend" data-htr>
+      {% if fx_model == "v4" %}
+      <span class="muted">FX pairs score COT positioning only (scoring v4): each currency&rsquo;s COT cell =
+      Level (speculative positioning against its 6-month and 3-year range, contrarian) + Flow (the 4-week change),
+      base − quote for a pair (USD leg = 0; the US Dollar row uses DXY). That raw score divided by the pair&rsquo;s
+      usual size (z) gives the Score −10..+10: 0–2 Neutral, 3–5 Bullish/Bearish, 6–10 Very. It changes once a week,
+      after the Friday COT report. Click a row for the COT legs.</span>
+      {% else %}
       <span class="muted">Each currency = 51% Macro + 34% Carry + 15% COT, base − quote for a pair; that raw
       score divided by the pair&rsquo;s usual size (z) gives the Score −10..+10: 0–2 Neutral, 3–5 Bullish/Bearish,
       6–10 Very. Cells are indicator scores on a
       blue (bullish) ↔ red (bearish) scale; for a pair each indicator cell is the base − quote
       differential, Carry the policy-rate differential in σ. Click a row for the per-indicator breakdown.</span>
+      {% endif %}
     </div>
     {% include '_help_scoring_modal.html.j2' %}
 

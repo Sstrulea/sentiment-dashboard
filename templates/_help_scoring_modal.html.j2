@@ -16,6 +16,23 @@
     <button class="modal-close" type="button" aria-label="Close">&times;</button>
     <h2>How the score is computed</h2>
 
+    {% if fx_model == "v4" %}
+    <p><b>FX pairs (scoring v4).</b> COT positioning only. Each currency&rsquo;s COT cell = Level
+    (speculative net positioning against its 6-month and 3-year range, contrarian, &minus;3..+3) + Flow
+    (the 4-week change in net positioning, &plusmn;1), capped at &plusmn;4. Pair = 2.5 &times; (cell base
+    &minus; cell quote) / 1.77; the USD leg is 0 and the US Dollar row uses the DXY contract. The score
+    changes once a week, after the Friday COT report.</p>
+
+    <p><b>Score and bias</b>: the raw score divided by that pair&rsquo;s usual size (its RMS over the last
+    156 COT weeks) gives z, shown as a Score from &minus;10 to +10 &mdash; 0&ndash;2 Neutral, 3&ndash;5
+    Bullish/Bearish, 6&ndash;10 Very; the cut points are the 55th and 90th percentiles of |z| over the last
+    53 weeks, recomputed every week.</p>
+
+    <p><b>Indices</b>: 67% Macro + 33% Rates (the 3-month change of the home 2Y and US real 10Y
+    yields; rising yields only erase a positive macro). <b>Metals</b>: 67% Rates (the 3-month change of the US 2Y
+    yield) + 33% US Macro. Each macro indicator: the surprise (Actual &minus; Forecast) compared with its last
+    12 surprises. <b>Strength</b> uses the macro part only and does not enter the FX score.</p>
+    {% else %}
     <p>Each indicator: the surprise (Actual &minus; Forecast) compared with its last 12 surprises.
     Far beyond its usual size &rarr; &plusmn;2, above average &rarr; &plusmn;1, normal &rarr; 0. Rows without a
     forecast, or too old, do not enter.</p>
@@ -33,6 +50,7 @@
     <p><b>Score and bias</b>: the raw score divided by that instrument&rsquo;s usual size (its RMS over
     3 years) gives z, shown as a Score from &minus;10 to +10 &mdash; 0&ndash;2 Neutral, 3&ndash;5 Bullish/Bearish,
     6&ndash;10 Very (about 55% of weeks are Neutral, 10% Very). <b>Strength</b> uses the macro part only.</p>
+    {% endif %}
 
     <p>N = how many indicators actually entered. A small N = less confidence.</p>
   </div>

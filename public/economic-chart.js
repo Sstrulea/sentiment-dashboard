@@ -89,6 +89,21 @@
   function isV3() {
     return !!(state.payload && state.payload.meta) && state.payload.meta.scoring === "v3";
   }
+  // Scoring v4 (2026-11-25): the FX board scores COT only (meta.fx_model). The
+  // cross-asset block keeps v3 (meta.scoring), so the FX views check this one.
+  function isFxV4() {
+    return !!(state.payload && state.payload.meta) && state.payload.meta.fx_model === "v4";
+  }
+  // base − quote, uncapped (the US Dollar row: the DXY cell) — the v4 score's input
+  function cotDelta(cot) {
+    const n = (x) => (x === null || x === undefined) ? 0 : Number(x);
+    return cot.quote ? n(cot.base_cell) - n(cot.quote_cell) : n(cot.base_cell);
+  }
+  function fxV4Formula() {
+    const v4 = (state.payload.meta && state.payload.meta.v4) || {};
+    const sc = v4.scale || 2.5, sg = v4.sigma_cot ? Number(v4.sigma_cot).toFixed(2) : "σ_cot";
+    return sc + " × (COT base − COT quote) / " + sg;
+  }
   // Category header on the per-currency breakdown (v3): score_precise (2 dp), its
   // value in σ (score_precise / σ(currency, category)) and N — e.g.
   // "−0.43 · −1.44σ · N7". null on a v2 payload (no card.v3) → the old header.
@@ -210,7 +225,8 @@
   function renderModelNote(p) {
     const el = document.getElementById("modelNote");
     if (!el) return;
-    const t = modelNoteText(p);
+    const err = p && p.meta && p.meta.v4_error;
+    const t = err ? "Scoring v4 is unavailable in this build (" + err + "); the FX board shows v3." : modelNoteText(p);
     el.textContent = t;
     el.hidden = !t;
   }
@@ -683,6 +699,14 @@
       const c = inst.cot;
       return (c && c.cell !== null && c.cell !== undefined) ? c.cell : -Infinity;
     }
+    if (key === "cot_base" || key === "cot_quote" || key === "cot_delta") {
+      const c = inst.cot;
+      if (!c || c.cell === null || c.cell === undefined) return -Infinity;
+      const b = Number(c.base_cell || 0), q = c.quote ? Number(c.quote_cell || 0) : 0;
+      if (key === "cot_base") return b;
+      if (key === "cot_quote") return c.quote ? q : -Infinity;
+      return b - q;
+    }
     if (key === "carry") {
       const v = (inst.v3 || {}).carry;
       return (v !== null && v !== undefined) ? v : -Infinity;
@@ -794,6 +818,31 @@
       '<a href="/cot?sym=' + encodeURIComponent(x) + '">Open ' + escAttr(x) + ' on COT →</a>').join(" · ") + '</p>';
   }
 
+  // Scoring v4: the two COT legs and their difference, the score's only input
+  // (score = 2.5 × Δ / σ_cot). The US Dollar row has one leg, the DXY contract.
+  function fxCotV4CellsHtml(inst) {
+    const cot = inst.cot;
+    const empty = '<td class="econ-cell cell-empty"></td>';
+    if (!cot || cot.cell === null || cot.cell === undefined) return empty + empty + empty;
+    const n = (x) => (x === null || x === undefined) ? 0 : Number(x);
+    const legTd = (ccy, cell, det) => {
+      const v = n(cell);
+      const tip = (ccy === "USD" && !det) ? "USD leg = 0 (the CFTC currency contracts are quoted against USD)"
+        : ccy + " COT cell " + fmtScoreCell(v) + (det ? " = " + cotPartsTxt(det) : "");
+      return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) + ' title="' + escAttr(tip) + '">' +
+        fmtScoreCell(v) + "</td>";
+    };
+    const single = inst.type === "single";
+    const d = single ? n(cot.base_cell) : n(cot.base_cell) - n(cot.quote_cell);
+    const contrib = findContribution(inst, "cot");
+    const tip = "Δ = " + (single ? "DXY" : cot.base + " − " + cot.quote) + " = " + fmtScoreCell(d) +
+      " → score " + fxV4Formula() + " = " + fmtSigned(contrib === null ? 0 : contrib, 2);
+    return legTd(single ? "DXY" : cot.base, cot.base_cell, cot.base_detail) +
+      (single ? empty : legTd(cot.quote, cot.quote_cell, cot.quote_detail)) +
+      '<td class="econ-cell"' + styleAttr(gradientStyle(d, 4)) + ' title="' + escAttr(tip) + '"><strong>' +
+      fmtScoreCell(d) + "</strong></td>";
+  }
+
   function fxCotCellHtml(inst) {
     const cot = inst.cot;
     if (!cot || cot.cell === null || cot.cell === undefined) {
@@ -810,7 +859,9 @@
     const tip = "COT positioning · " + (cot.quote
       ? "base " + baseTxt + " − quote " + legTxt(cot.quote, cot.quote_cell, cot.quote_detail) +
         " = cell " + fmtScoreCell(v)
-      : baseTxt + " = cell " + fmtScoreCell(v)) + ". " + contribTip(contrib);
+      : baseTxt + " = cell " + fmtScoreCell(v)) + ". " +
+      (isFxV4() ? "Score = " + fxV4Formula() + " = " + fmtSigned(contrib === null ? 0 : contrib, 2) + " (the whole score)."
+                : contribTip(contrib));
     return '<td class="econ-cell"' + styleAttr(gradientStyle(v, 4)) +
       ' title="' + escAttr(tip) + '">' + fmtScoreCell(v) + "</td>";
   }
@@ -876,6 +927,7 @@
   // "· n{coverage}" format (see legHtml). A single-type instrument (no quote
   // leg) shows just the one currency.
   function categoriesNTooltip(inst) {
+    if (isFxV4()) return "";
     const base = inst.breakdown && inst.breakdown.base;
     if (!base) return "";
     const quote = inst.breakdown && inst.breakdown.quote;
@@ -914,8 +966,8 @@
       '<td class="bias-cell"' + sg + ">" + inst.bias + "</td>" +
       '<td class="score-cell"' + sg + ' title="' + escAttr(scoreTip(inst)) + '">' + fmtFinal(fsOf(inst)) + "</td>" +
       (trendEnabled() ? trendCellHtml(inst) : "") +
-      fxCotCellHtml(inst) +
-      (isV3() ? carryCellHtml(inst) : "") +
+      (isFxV4() ? fxCotV4CellsHtml(inst) : fxCotCellHtml(inst)) +
+      (isV3() && !isFxV4() ? carryCellHtml(inst) : "") +
       cells +
       "</tr>"
     );
@@ -949,11 +1001,17 @@
 
     // SENTIMENT: top-level group placed after TREND, before the macro factor
     // groups. Contributes to Score with weight 0.5.
-    const sentimentGroupHeader = isV3()
+    const sentimentGroupHeader = isFxV4()
+      ? '<th colspan="3" class="grp-head grp-sentiment" title="COT positioning: each currency\'s vs-USD Level (contrarian) + 4-week Flow, base − quote (USD = 0; the US Dollar row uses the DXY contract). The whole score (scoring v4).">COT</th>'
+      : isV3()
       ? '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning: currency vs-USD extreme + 4-week flow, base − quote (USD = 0; the US Dollar row uses the DXY contract). 15% of each currency\'s score.">COT</th>' +
         '<th colspan="1" class="grp-head grp-carry" title="Policy-rate differential (latest CB decision), in σ. 34% of each currency\'s score.">CARRY</th>'
       : '<th colspan="1" class="grp-head grp-sentiment" title="COT positioning sentiment: currency vs-USD extreme + 4-week flow, combined base − quote. Blue = bullish for the pair, red = bearish. Weighted 0.5 in the Score.">SENTIMENT</th>';
-    const sentimentSubHeader = isV3()
+    const sentimentSubHeader = isFxV4()
+      ? '<th data-sort="cot_base" class="ind-head grp-sentiment" title="The base currency\'s COT cell vs USD: Crowding (Level) + Flow, −4..+4 (the US Dollar row: DXY)">Base</th>' +
+        '<th data-sort="cot_quote" class="ind-head grp-sentiment" title="The quote currency\'s COT cell vs USD (USD = 0)">Quote</th>' +
+        '<th data-sort="cot_delta" class="ind-head grp-sentiment" title="Base − quote: the score\'s only input (score = 2.5 × Δ / σ_cot)">Δ</th>'
+      : isV3()
       ? '<th data-sort="cot" class="ind-head grp-sentiment" title="COT cell, base − quote">COT</th>' +
         '<th data-sort="carry" class="ind-head grp-carry" title="(policy base − policy quote) / σ_carry">Δ policy</th>'
       : '<th data-sort="cot" class="ind-head grp-sentiment" title="COT positioning (weight 0.5 in score)">COT</th>';
@@ -967,7 +1025,7 @@
 
     wrap.innerHTML =
       '<div class="retail-table-scroll econ-scroll">' +
-      '<table class="retail-table econ-table">' +
+      '<table class="retail-table econ-table' + (isFxV4() ? " econ-v4" : "") + '">' +
       '<thead>' +
       '<tr>' +
       '<th rowspan="2" data-sort="symbol" class="col-sym">Symbol</th>' +
@@ -1192,10 +1250,13 @@
         '<div class="econ-ind-scroll"><p class="muted" style="padding:6px 10px;">' +
         'No COT positioning for this pair.</p></div></div>';
     }
-    const cls = cellClass(cot.cell);
+    const v4 = isFxV4();
+    const shown = v4 ? cotDelta(cot) : cot.cell;
+    const cls = cellClass(shown);
     const head = head0 +
-      '<span class="econ-cat-sub ' + cls + '">cell ' + fmtScoreCell(cot.cell) + '</span>' +
-      (isV3() ? ' <span class="muted">· 15% of each currency\'s score · positioning, base − quote (vs-USD)</span></div>'
+      '<span class="econ-cat-sub ' + cls + '">' + (v4 ? "Δ " : "cell ") + fmtScoreCell(shown) + '</span>' +
+      (isFxV4() ? ' <span class="muted">· the whole score (v4) · positioning, base − quote (vs-USD)</span></div>'
+        : isV3() ? ' <span class="muted">· 15% of each currency\'s score · positioning, base − quote (vs-USD)</span></div>'
               : ' <span class="muted">· weight 0.5 · positioning, base − quote (vs-USD)</span></div>');
     const legRow = (role, ccy, cell, det) => {
       if (ccy === null || ccy === undefined) return "";
@@ -1207,8 +1268,9 @@
     };
     const rows = legRow("Base", cot.base, cot.base_cell, cot.base_detail) +
       (cot.quote ? legRow("Quote", cot.quote, cot.quote_cell, cot.quote_detail) : "") +
-      '<tr><td class="ei-name"><strong>Pair cell (base − quote)</strong></td><td class="ei-num ' +
-      cls + '"><strong>' + fmtScoreCell(cot.cell) + '</strong></td></tr>';
+      '<tr><td class="ei-name"><strong>' + (v4 ? (cot.quote ? "Δ = base − quote → score " + fxV4Formula() : "Δ = DXY → score " + fxV4Formula())
+        : "Pair cell (base − quote)") + '</strong></td><td class="ei-num ' +
+      cls + '"><strong>' + fmtScoreCell(shown) + '</strong></td></tr>';
     return head + '<div class="econ-ind-scroll"><table class="econ-ind-table">' +
       '<thead><tr><th>Leg</th><th>Cell</th></tr></thead><tbody>' + rows +
       '</tbody></table></div>' + cotLinksHtml([cot.base, cot.quote]) + '</div>';
@@ -1247,14 +1309,17 @@
     const quote = (inst.breakdown && inst.breakdown.quote) ? inst.breakdown.quote.currency : null;
     const isFx = inst.type === "fx";
 
+    const v4 = isFxV4();
     const gridClass = isFx ? "modal-grid econ-leg-grid" : "modal-grid econ-leg-grid one-col";
-    const legs = isFx
+    const legs = v4 ? "" : isFx
       ? legHtml("Base", base, inst.categories_excluded, !!inst.monetary_pair) +
         legHtml("Quote", quote, inst.categories_excluded, !!inst.monetary_pair)
       : legHtml("Currency", base);
 
-    const sub =
-      isFx
+    const sub = v4
+      ? (isFx ? "FX pair · score = " + fxV4Formula().replace("COT base", "COT " + base).replace("COT quote", "COT " + quote)
+              : "US Dollar · score = " + fxV4Formula().replace("(COT base − COT quote)", "COT DXY"))
+      : isFx
         ? "FX pair · score = (index(" + base + ") − index(" + quote + ")) / " +
           (state.payload.meta.pair_divisor || 2)
         : "Single currency · score = index × sign";
@@ -1271,8 +1336,10 @@
       // TREND first (matches column order), then Sentiment (COT), then the macro legs.
       (trendEnabled() ? trendSectionHtml(inst.trend_detail) : "") +
       fxCotSectionHtml(inst.cot) +
-      (isFx ? fxMonetarySectionHtml(inst, base, quote) : "") +
-      '<div class="' + gridClass + '">' + legs + '</div>';
+      (v4 && cbHref(inst) ? '<p class="econ-cot-links"><a class="cb-xlink" href="' + escAttr(cbHref(inst)) +
+        '">Central banks: ' + escAttr(isFx ? base + "/" + quote : base) + ' →</a></p>' : "") +
+      (isFx && !v4 ? fxMonetarySectionHtml(inst, base, quote) : "") +
+      (v4 ? "" : '<div class="' + gridClass + '">' + legs + '</div>');
 
     modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -1903,7 +1970,14 @@
       card.appendChild(ph("p", { class: "econ-ph-muted", text: "No COT positioning for this pair." }));
       return card;
     }
-    head.appendChild(cellPill(cot.cell, 4));
+    const v4 = isFxV4();
+    head.appendChild(v4 ? (function () {
+      const d = cotDelta(cot);
+      const el = ph("span", { class: "econ-ph-cellpill", text: "Δ " + pmStr(fmtScoreCell(d)) });
+      const st = gradientStyle(d, 4);
+      if (st) el.setAttribute("style", st);
+      return el;
+    })() : cellPill(cot.cell, 4));
     const leg = (ccy, cell, det) => {
       if (!ccy) return null;
       const txt = det ? "Crowding " + pmStr(fmtScoreCell(det.level)) + " · Flow " + pmStr(fmtScoreCell(det.flow)) : (ccy === "USD" ? "vs-USD leg = 0" : "no COT data");
@@ -1913,7 +1987,9 @@
     card.appendChild(leg(cot.base, cot.base_cell, cot.base_detail));
     if (cot.quote) card.appendChild(leg(cot.quote, cot.quote_cell, cot.quote_detail));
     const links = [cot.base, cot.quote].filter((c) => c && c !== "USD");
-    const foot = ph("p", { class: "econ-ph-muted econ-ph-cotfoot", text: cot.quote ? "Pair cell = " + cot.base + " " + MINUS_SIGN + " " + cot.quote + ". " : "" });
+    const foot = ph("p", { class: "econ-ph-muted econ-ph-cotfoot", text: v4
+      ? (cot.quote ? "Δ = " + cot.base + " " + MINUS_SIGN + " " + cot.quote : "Δ = DXY") + "; score = " + pmStr(fxV4Formula()) + ". "
+      : (cot.quote ? "Pair cell = " + cot.base + " " + MINUS_SIGN + " " + cot.quote + ". " : "") });
     links.forEach((c, i) => {
       if (i) foot.appendChild(document.createTextNode(" · "));
       foot.appendChild(ph("a", { href: "/cot?sym=" + encodeURIComponent(c), text: c + " on COT" }));
@@ -2010,6 +2086,10 @@
       body.appendChild(t);
     }
     body.appendChild(cotCard(inst.cot));
+    if (isFxV4()) {
+      P().sheet({ titleNode: sheetTitle(label, inst.bias), body: body, returnFocus: row, cls: "econ-ph-sheet" });
+      return;
+    }
     const m = monetaryCard(inst);
     if (m) body.appendChild(m);
     const b = indicatorsCard(base, true, inst.categories_excluded, !!inst.monetary_pair);
@@ -2162,6 +2242,7 @@
   if (typeof module !== "undefined" && module.exports) module.exports = { indicatorCellHtml: indicatorCellHtml, carryCellHtml: carryCellHtml,
     fmtAsOf: fmtAsOf, phoneAsOfText: phoneAsOfText, zOf: zOf, zHeaderTip: zHeaderTip,
     fsOf: fsOf, scoreTip: scoreTip, chainText: chainText, finalSortKey: finalSortKey, SCORE_HEADER_TIP: SCORE_HEADER_TIP,
+    fxCotV4CellsHtml: function (inst) { return fxCotV4CellsHtml(inst); }, isFxV4: function () { return isFxV4(); },
     caTableHtml: function (ca) { return caTableHtml(ca); },
     _setPayloadForTest: function (p) { state.payload = p; }, compareInstruments: function (a, b) { return compareInstruments(a, b); },
     catSigmaText: catSigmaText, macroSigmaText: macroSigmaText, cbHref: cbHref, scoreGroups: scoreGroups, caBars: caBars,
