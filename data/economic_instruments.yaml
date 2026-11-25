@@ -163,16 +163,3 @@ v3:
   # /strength (8 currencies, the macro-only pair aggregate): RMS per currency, its own thresholds.
   rms_strength: { USD: 2.674, EUR: 2.47, GBP: 2.817, JPY: 2.706, AUD: 2.879, NZD: 2.253, CAD: 2.616, CHF: 2.572 }
   thresholds_strength: { mild: 0.67, very: 1.52 }   # (0.6698 / 1.5177)
-
-# Scoring v4 "swing" (2026-11-25, Sebastian's choice after the swing v4 tests,
-# docs in the claude.ai project "economic dashboard"): the FX board scores COT only,
-# v3's COT block (Level + Flow) at 100%. v3 keeps being computed as score_v3 /
-# bias_v3 (shadow, not displayed); `swing_model: v3` brings v3 back on the board.
-#   S_c = cell / sigma_cot (USD as a pair leg = 0); pair = (S_base - S_quote) x 2.5;
-#   US Dollar = DXY cell / sigma_cot x 2.5
-#   label: z = score / RMS[symbol]; RMS and the thresholds are measured on every
-#   render from the weekly COT cells: RMS over the last 156 weeks, thresholds =
-#   p55 / p90 of |z| over the last 53 weeks (the v3 method, src/economic_compute.py)
-swing_model: v4
-v4:
-  sigma_cot: 1.773

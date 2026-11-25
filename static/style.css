@@ -1149,11 +1149,6 @@ html.dark body .fresh-badge.pending { color: #ffcc80; }
 .bias-very-bear { color: #fff;     background: #d32f2f; }
 
 table.econ-table td.econ-cell { text-align: center; font-variant-numeric: tabular-nums; }
-/* Scoring v4 (2026-11-25): the FX board has 3 COT columns only, so the table keeps its natural width. */
-table.econ-table.econ-v4 { width: auto; min-width: 560px; }
-table.econ-table.econ-v4 td.econ-cell { min-width: 76px; }
-table.econ-table.econ-v4 th.col-sym, table.econ-table.econ-v4 td.sym, table.econ-table.econ-v4 td.bias-cell,
-table.econ-table.econ-v4 td.score-cell { width: auto; }   /* the 1% widths would stretch an auto table to the page */
 .econ-cell .econ-score { font-weight: 600; font-size: 13px; }
 .econ-cell .cov { display: none; }
 

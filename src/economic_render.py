@@ -27,12 +27,10 @@ import pandas as pd
 import yaml
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.economic_compute import (V3_DISPLAY_SCALE, V4_RMS_WEEKS, active_thresholds, apply_v4_fx,
-                                  build_payload, bias_label, final_score, final_score_precise,
-                                  swing_model, v3_label, v4_calibrate, v4_sigma_cot)
+from src.economic_compute import (active_thresholds, build_payload, bias_label, final_score,
+                                  final_score_precise, v3_label)
 from src.ff_corrections import read_ff_parquet
 from src.cot_score import (
-    currency_cell_history,
     load_currencies_history,
     load_metals_history,
     pair_cot,
@@ -838,27 +836,16 @@ def _us_index_pc(cfg: dict) -> tuple[int | None, dict | None, set[str], set[str]
     return int(cell), detail, native_syms, proxy_syms
 
 
-def _fx_cot_history() -> pd.DataFrame | None:
-    """The enriched currencies COT history (load_currencies_history), loaded once
-    per render for the cells and the v4 calibration. None on failure."""
-    try:
-        return load_currencies_history()
-    except Exception as e:  # noqa: BLE001 — never break the page
-        log.warning("FX COT history unavailable (%s).", e)
-        return None
-
-
-def _fx_currency_cells(history: pd.DataFrame | None = None) -> tuple[dict[str, int], dict[str, dict]]:
+def _fx_currency_cells() -> tuple[dict[str, int], dict[str, dict]]:
     """(cells, details) per currency COT contract from score_currencies (read-only).
 
     Computed ONCE and reused for both the FX SCORE (sentiment factor, via
     build_payload) and the display sub-cell. cells: {COT_symbol: cell int};
     details: {COT_symbol: {level, flow, blend, z, basis}}. Empty on failure
-    (FX rows then carry no sentiment in score or display). `history`: the
-    already-loaded load_currencies_history() frame (loaded here when None).
+    (FX rows then carry no sentiment in score or display).
     """
     try:
-        scored = score_currencies(history if history is not None else load_currencies_history())
+        scored = score_currencies(load_currencies_history())
     except Exception as e:  # noqa: BLE001 — never break the page
         log.warning("FX COT sentiment unavailable (%s); FX shown blank.", e)
         return {}, {}
@@ -875,50 +862,6 @@ def _fx_currency_cells(history: pd.DataFrame | None = None) -> tuple[dict[str, i
         for _, row in scored.iterrows()
     }
     return cells, details
-
-
-def _v4_calibration(history: pd.DataFrame | None,
-                    instruments_cfg: dict) -> tuple[dict | None, str | None]:
-    """(calibration, None) for scoring v4 — RMS per instrument and the label
-    thresholds from the weekly COT cells (economic_compute.v4_calibrate) — or
-    (None, reason) when it cannot be measured (the FX board then stays on v3)."""
-    if history is None or history.empty:
-        return None, "no COT history"
-    try:
-        cell_hist = currency_cell_history(history, last_n=V4_RMS_WEEKS)
-        calib = v4_calibrate(cell_hist, instruments_cfg.get("instruments", {}) or {},
-                             v4_sigma_cot(instruments_cfg))
-    except Exception as e:  # noqa: BLE001 — never break the page
-        log.warning("Scoring v4 calibration failed (%s).", e)
-        return None, "calibration failed"
-    if calib is None:
-        return None, "COT history too short for the labels"
-    th = calib["thresholds"]
-    log.info("Scoring v4: thresholds mild %.3f / very %.3f, %d weeks (%s .. %s), RMS %s",
-             th["mild"], th["very"], calib["weeks"], calib["from"], calib["to"],
-             {k: (round(v, 3) if v else None) for k, v in calib["rms"].items()})
-    return calib, None
-
-
-# Scoring v4: the FX board shows only what enters its score — COT. The macro
-# indicator columns, the carry column and the macro coverage flags leave the FX
-# rows; the cross-asset block and /strength are unchanged.
-V4_FX_HIDDEN = ("categories_used", "categories_total", "categories_excluded",
-                "indicator_cells", "monetary_pair")
-
-
-def _v4_display(payload: dict, meta: dict, instruments_cfg: dict, calib: dict) -> None:
-    """In place, after _v3_display."""
-    th = dict(calib["thresholds"])
-    meta["fx_model"] = "v4"
-    meta["table_layout"] = []
-    meta["bias_thresholds"] = th
-    meta["v4"] = {"thresholds": th, "sigma_cot": v4_sigma_cot(instruments_cfg), "scale": V3_DISPLAY_SCALE,
-                  "rms_weeks": V4_RMS_WEEKS, "thr_weeks": calib["thr_weeks"], "weeks": calib["weeks"],
-                  "from": calib["from"], "to": calib["to"]}
-    for inst in payload.get("instruments", []):
-        for k in V4_FX_HIDDEN:
-            inst.pop(k, None)
 
 
 def _attach_fx_cot_cells(payload: dict, cells: dict[str, int],
@@ -1939,9 +1882,7 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
 
     # SENTIMENT (COT) per currency, computed ONCE: fed into the FX SCORE as a
     # weight-0.5 factor AND reused for the display sub-cell below.
-    fx_model = swing_model(instruments_cfg)
-    fx_hist = _fx_cot_history()
-    fx_cells, fx_details = _fx_currency_cells(fx_hist)
+    fx_cells, fx_details = _fx_currency_cells()
 
     # TREND kill switch (config/pipeline.yaml, default false — see
     # docs/accepted-degradations.md). Disabled → trend_score_all() is never
@@ -1963,19 +1904,6 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
                             trend_cells=trend_by_symbol or None,
                             pair_monetary=pair_monetary or None,
                             policy_rates=_policy_rates_now(decisions, as_of))
-
-    # Scoring v4 (2026-11-25): the FX board scores COT only; v3 stays as the
-    # *_v3 shadow fields. Without a calibration (or without COT cells) the
-    # board stays on v3 and meta.v4_error says why.
-    v4_calib, v4_error = None, None
-    if fx_model == "v4":
-        v4_calib, v4_error = _v4_calibration(fx_hist, instruments_cfg)
-        if v4_calib is not None and fx_cells:
-            apply_v4_fx(payload, instruments_cfg, fx_cells, v4_calib)
-        else:
-            v4_error = v4_error or "no COT cells"
-            fx_model = "v3"
-            log.warning("Scoring v4 not applied (%s); the FX board stays on v3.", v4_error)
 
     meta = _build_meta(indicators_cfg, instruments_cfg)
     meta["trend_enabled"] = trend_on
@@ -2016,12 +1944,6 @@ def build_economic_payload(as_of: pd.Timestamp | None = None) -> dict:
                                                      trend_enabled=trend_on)
     if instruments_cfg.get("v3"):
         _v3_display(payload, meta, indicators_cfg, instruments_cfg)
-    if fx_model == "v4":
-        _v4_display(payload, meta, instruments_cfg, v4_calib)
-    else:
-        meta["fx_model"] = "v3"
-        if v4_error:
-            meta["v4_error"] = v4_error
 
     payload["meta"] = meta
     payload["freshness"] = _freshness(as_of, trend_enabled=trend_on)
@@ -2055,7 +1977,6 @@ def render_economic_page() -> Path:
     html = template.render(
         active_page="economic",
         data_url="/data/economic.json",
-        fx_model=(payload.get("meta") or {}).get("fx_model", "v3"),
     )
     out_path = PUBLIC_DIR / "economic.html"
     out_path.write_text(html, encoding="utf-8")
@@ -2080,7 +2001,6 @@ def render_strength_page() -> Path:
     html = template.render(
         active_page="strength",
         data_url="/data/economic.json",
-        fx_model=swing_model(_load_yaml(INSTRUMENTS_YAML)),
     )
     out_path = PUBLIC_DIR / "strength.html"
     out_path.write_text(html, encoding="utf-8")

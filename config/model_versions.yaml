@@ -15,6 +15,3 @@ versions:
   - version: "2026.10.08-metals"
     since: 2026-10-08
     changes: "metals: 67% US 2Y 3-month rates + 33% US macro; COT removed"
-  - version: "2026.11.25-v4"
-    since: 2026-11-25
-    changes: "FX scoring v4: pair score = COT positioning only (Level + Flow); macro and carry no longer scored on the FX board; bias from each instrument's usual size, recalibrated weekly from the COT history; indices and metals unchanged"

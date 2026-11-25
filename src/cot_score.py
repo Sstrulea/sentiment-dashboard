@@ -294,35 +294,6 @@ def score_currencies(cot_history: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=cols)
 
 
-def currency_cell_history(cot_history: pd.DataFrame, last_n: int | None = None) -> pd.DataFrame:
-    """Every currency contract's COT cell at each report date, through the same
-    ``cot_cell`` as ``score_currencies``: the cell at date t uses only the reports
-    up to t, so the last row per symbol equals ``score_currencies``' row.
-
-    Scoring v4 (2026-11-25) calibrates the FX labels on this history. As in the
-    measurement of v3 (scripts/measure/factor_scales.py), a cell counts only when
-    that report's ``spec_extreme_6m`` exists. ``last_n``: only the last n reports
-    of each symbol (the Flow still sees the whole history before them).
-    Columns: date, symbol, level, flow, cell.
-    """
-    cols = ["date", "symbol", "level", "flow", "cell"]
-    if cot_history.empty:
-        return pd.DataFrame(columns=cols)
-    rows: list[dict] = []
-    for symbol in sorted(cot_history[SYMBOL_COL].dropna().unique()):
-        g = cot_history[cot_history[SYMBOL_COL] == symbol].sort_values(DATE_COL)
-        net = g[NET_COL]
-        start = 0 if last_n is None else max(0, len(g) - int(last_n))
-        for i in range(start, len(g)):
-            r = g.iloc[i]
-            if pd.isna(r[EXT_6M_COL]):
-                continue
-            cell, m = cot_cell(r[EXT_6M_COL], r[EXT_3Y_COL], net.iloc[: i + 1])
-            rows.append({"date": pd.Timestamp(r[DATE_COL]), "symbol": symbol,
-                         "level": int(m["level"]), "flow": int(m["flow"]), "cell": int(cell)})
-    return pd.DataFrame(rows, columns=cols)
-
-
 def pair_cot(base_cell: int | None, quote_cell: int | None) -> int:
     """Combine two currency COT cells into an FX-pair cell, clamped to [-4, +4].
 

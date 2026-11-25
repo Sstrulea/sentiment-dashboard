@@ -92,14 +92,3 @@ def test_tables_show_the_final_score():
     r = subprocess.run(["node", str(FINAL_SCORE)], cwd=ROOT, capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
     assert "final score ok" in r.stdout
-
-
-V4_COT = ROOT / "tests" / "economic_js" / "test_v4_cot_columns.cjs"
-
-
-@pytest.mark.skipif(shutil.which("node") is None, reason="node not on PATH")
-def test_v4_board_shows_the_cot_legs_and_their_difference():
-    """Scoring v4 (2026-11-25): base leg, quote leg and Δ = base − quote on every FX row."""
-    r = subprocess.run(["node", str(V4_COT)], cwd=ROOT, capture_output=True, text=True, timeout=60)
-    assert r.returncode == 0, f"stdout:\n{r.stdout}\nstderr:\n{r.stderr}"
-    assert "v4 cot columns ok" in r.stdout
