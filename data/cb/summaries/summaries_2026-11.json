@@ -421,6 +421,241 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     2,
+     7,
+     34,
+     50,
+     64,
+     70,
+     78,
+     84,
+     89
+    ],
+    "paragraphs_sent": 126,
+    "truncated": false
+   },
+   "currency": "AUD",
+   "doc_id": "AUD:speech:062aeb5694eb",
+   "dropped_points": [
+    {
+     "errors": [
+      "the word 'suggest' of summary point 2 is not attributed to the bank or to a named speaker: write who says it, e.g. 'The Committee suggest ...' (never in your own voice)"
+     ],
+     "text": "Head of Domestic Markets David Jacobs says estimates generally suggest the real neutral rate in Australia was zero or negative before the pandemic, but is now around ½–1½ per cent."
+    }
+   ],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-25T00:43:36Z",
+   "input_sha256": "0ce9031790a481ed2fa51764e4492ddda0e91b0c20cb865a92f536b71895620d",
+   "meeting_date": null,
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 16183,
+     "point": 4,
+     "source_text": "100 basis points",
+     "start": 16167,
+     "text": "100 basis points"
+    }
+   ],
+   "prompt_version": "speech-v6",
+   "provider": "openai",
+   "published": "2026-11-25",
+   "quotes": [
+    {
+     "end": 604,
+     "paragraph": 7,
+     "start": 341,
+     "text": "Monetary policy has tightened over the past year in response to persistent inflation. The cash rate target has reached its highest level in 18 years. As a result, financial conditions are now clearly restrictive. That’s important for gauging the economic outlook."
+    },
+    {
+     "end": 5780,
+     "paragraph": 34,
+     "start": 5565,
+     "text": "These estimates generally suggest the real neutral rate in Australia was zero or negative before the pandemic, but is now around ½–1½ per cent (with wide uncertainty bands around those central estimates) (Graph 3).7"
+    },
+    {
+     "end": 9867,
+     "paragraph": 50,
+     "start": 9403,
+     "text": "But more to my main point – the expected real policy path looks like it’s moved up by more than neutral, and into restrictive territory. You can see that in this chart, which shows measures of r–r * from the yield curve (where r * is approximated by expected real rates in 3 or 10 years’ time). These show that the real policy path was around neutral last year, but has since risen to the upper part of its range of restrictiveness from recent decades (Graph 6).16"
+    },
+    {
+     "end": 16220,
+     "paragraph": 78,
+     "start": 15897,
+     "text": "Strong competition among banks has kept mortgage and business lending spreads low. Non-bank lenders have added to that, expanding in areas under-served by banks, supported by a deepening of the domestic bond market.23 So for a given cash rate, mortgage rates are around 100 basis points lower than five years ago (Graph 9)."
+    },
+    {
+     "end": 19346,
+     "paragraph": 89,
+     "start": 19055,
+     "text": "Overall, policy is clearly restrictive. The expected real cash rate has risen above our central estimates of neutral, having been closer to those neutral estimates a year ago. And we can see that restraint transmitting clearly across a broad range of interest-sensitive financial conditions."
+    }
+   ],
+   "source": {
+    "chars": 31293,
+    "chars_sent": 31294,
+    "method": "html-selector",
+    "paragraphs_sent": 126,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 99,
+        "paragraph": 2,
+        "start": 61,
+        "text": "David Jacobs* Head of Domestic Markets"
+       },
+       {
+        "end": 426,
+        "paragraph": 7,
+        "start": 341,
+        "text": "Monetary policy has tightened over the past year in response to persistent inflation."
+       },
+       {
+        "end": 553,
+        "paragraph": 7,
+        "start": 491,
+        "text": "As a result, financial conditions are now clearly restrictive."
+       }
+      ],
+      "paragraphs": [
+       2,
+       7
+      ]
+     },
+     "text": "Head of Domestic Markets David Jacobs says monetary policy has tightened over the past year in response to persistent inflation, and financial conditions are now clearly restrictive."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 99,
+        "paragraph": 2,
+        "start": 61,
+        "text": "David Jacobs* Head of Domestic Markets"
+       },
+       {
+        "end": 9854,
+        "paragraph": 50,
+        "start": 9698,
+        "text": "These show that the real policy path was around neutral last year, but has since risen to the upper part of its range of restrictiveness from recent decades"
+       }
+      ],
+      "paragraphs": [
+       2,
+       50
+      ]
+     },
+     "text": "Head of Domestic Markets David Jacobs says the real policy path was around neutral last year, but has since risen to the upper part of its range of restrictiveness from recent decades."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 99,
+        "paragraph": 2,
+        "start": 61,
+        "text": "David Jacobs* Head of Domestic Markets"
+       },
+       {
+        "end": 12048,
+        "paragraph": 64,
+        "start": 11973,
+        "text": "We can see clear evidence that tighter monetary policy is having an effect."
+       },
+       {
+        "end": 14495,
+        "paragraph": 70,
+        "start": 14360,
+        "text": "The decline in new investor housing lending has been particularly pronounced, and larger than in earlier periods of monetary tightening"
+       }
+      ],
+      "paragraphs": [
+       2,
+       64,
+       70
+      ]
+     },
+     "text": "Head of Domestic Markets David Jacobs says tighter monetary policy is having an effect, and the decline in new investor housing lending has been larger than in earlier periods of monetary tightening."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 99,
+        "paragraph": 2,
+        "start": 61,
+        "text": "David Jacobs* Head of Domestic Markets"
+       },
+       {
+        "end": 15979,
+        "paragraph": 78,
+        "start": 15897,
+        "text": "Strong competition among banks has kept mortgage and business lending spreads low."
+       },
+       {
+        "end": 16209,
+        "paragraph": 78,
+        "start": 16115,
+        "text": "So for a given cash rate, mortgage rates are around 100 basis points lower than five years ago"
+       }
+      ],
+      "paragraphs": [
+       2,
+       78
+      ]
+     },
+     "text": "Head of Domestic Markets David Jacobs says strong competition among banks has kept mortgage and business lending spreads low, and mortgage rates are around 100 basis points lower than five years ago for a given cash rate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 99,
+        "paragraph": 2,
+        "start": 61,
+        "text": "David Jacobs* Head of Domestic Markets"
+       },
+       {
+        "end": 18334,
+        "paragraph": 84,
+        "start": 18219,
+        "text": "Australian data centres have raised debt equivalent to more than one-fifth of the growth in business debt this year"
+       }
+      ],
+      "paragraphs": [
+       2,
+       84
+      ]
+     },
+     "text": "Head of Domestic Markets David Jacobs says Australian data centres have raised debt equivalent to more than one-fifth of the growth in business debt this year."
+    }
+   ],
+   "title": "Real Interest Rates &ndash; Restrictive Amid Cross-Currents",
+   "type": "speech",
+   "url": "https://www.rba.gov.au/speeches/2026/sp-so-2026-11-25.html",
+   "usage": {
+    "attempts": 2,
+    "input_tokens": 18008,
+    "output_tokens": 2541,
+    "reasoning_tokens": 702
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      20,
      21,
      26,

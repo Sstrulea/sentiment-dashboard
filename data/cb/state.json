@@ -39,7 +39,7 @@
     "eurex_ois_usd": "2026-11-24",
     "eurex_ois_usd_sofr": "2026-11-24",
     "jpx_tona": "2026-11-24",
-    "mx_corra": "2026-11-24"
+    "mx_corra": "2026-11-25"
   },
   "_framework": {
     "checked": "2026-11-22",
@@ -258,7 +258,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Mon, 23 Nov 2026 22:00:31 GMT"
+    "last_modified": "Tue, 24 Nov 2026 22:00:08 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -284,30 +284,30 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Mon, 23 Nov 2026 22:00:31 GMT"
+    "last_modified": "Tue, 24 Nov 2026 22:00:08 GMT"
   },
   "summaries": {
     "last_run": {
-      "at": "2026-11-24T18:43:30Z",
-      "calls": 3,
-      "cost_usd": 0.041,
+      "at": "2026-11-25T00:43:36Z",
+      "calls": 2,
+      "cost_usd": 0.0665,
       "failed_validation": 0,
-      "input_tokens": 6994,
-      "new": 2,
+      "input_tokens": 18008,
+      "new": 1,
       "no_text": 0,
-      "output_tokens": 2250,
+      "output_tokens": 2541,
       "pending": 0,
-      "reasoning_tokens": 714,
+      "reasoning_tokens": 702,
       "source_errors": 0,
       "stopped": null,
-      "unchanged": 137,
+      "unchanged": 139,
       "usage_estimated": 0
     },
     "totals": {
-      "calls": 267,
-      "input_tokens": 1694014,
-      "output_tokens": 299757,
-      "summaries": 179
+      "calls": 269,
+      "input_tokens": 1712022,
+      "output_tokens": 302298,
+      "summaries": 180
     }
   }
 }
