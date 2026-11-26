@@ -102,6 +102,12 @@
    "reason": "13% of the characters are digits: a deck of tables or slides, not prose",
    "url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp260923_1~ac21bf46e3.en.pdf"
   },
+  "EUR:speech:9b159f16a07f": {
+   "at": "2026-11-26T12:43:02Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20261110-navigating-stormy-waters-reflections-monetary-policy"
+  },
   "EUR:speech:a2d1191a289b": {
    "at": "2026-10-01T12:41:42Z",
    "kind": "no_text",
@@ -125,6 +131,12 @@
    "kind": "no_text",
    "reason": "no container of the page holds the document text",
    "url": "https://www.bis.org/speeches/20261027-taking-action-nature-investing-economic-resilience-and-prosperity"
+  },
+  "EUR:speech:e314401f8bd6": {
+   "at": "2026-11-26T12:43:02Z",
+   "kind": "no_text",
+   "reason": "no container of the page holds the document text",
+   "url": "https://www.bis.org/speeches/20261109-integrated-open-and-resilient-europes-strengths-fragmenting-world"
   },
   "EUR:speech:e5f751f0937f": {
    "at": "2026-09-24T10:41:37Z",

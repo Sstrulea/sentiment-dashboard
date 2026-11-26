@@ -3685,6 +3685,202 @@
    "changes_vs_previous": null,
    "coverage": {
     "paragraphs": [
+     35,
+     46,
+     61,
+     68,
+     74,
+     83,
+     89,
+     92,
+     95
+    ],
+    "paragraphs_sent": 171,
+    "truncated": false
+   },
+   "currency": "EUR",
+   "doc_id": "EUR:account:2026-10-29",
+   "dropped_points": [],
+   "dropped_quotes": [],
+   "format": "html",
+   "generated_at": "2026-11-26T12:43:02Z",
+   "input_sha256": "c7f5353115efce64f1a8d982f8f40f187773c576bcc4bad893cac947dacbb0f0",
+   "meeting_date": "2026-10-29",
+   "model": "gpt-5.6-terra",
+   "numbers": [
+    {
+     "end": 9833,
+     "point": 5,
+     "source_text": "2%",
+     "start": 9831,
+     "text": "2%"
+    }
+   ],
+   "prompt_version": "minutes-v6",
+   "provider": "openai",
+   "published": "2026-11-26",
+   "quotes": [
+    {
+     "end": 49490,
+     "paragraph": 74,
+     "start": 49327,
+     "text": "Members largely agreed that the inflation outlook had deteriorated, with headline inflation rising by more than expected to 3.8% in September, from 3.2% in August."
+    },
+    {
+     "end": 27814,
+     "paragraph": 46,
+     "start": 27714,
+     "text": "Against this background, members assessed that the risks to the growth outlook were to the downside."
+    },
+    {
+     "end": 59215,
+     "paragraph": 89,
+     "start": 59086,
+     "text": "Against this background, all members agreed with the proposal made by Mr Lane to keep the three key ECB interest rates unchanged."
+    },
+    {
+     "end": 63855,
+     "paragraph": 95,
+     "start": 63375,
+     "text": "In spite of these concerns, all members, including those seeing a case for acting at the current meeting, supported the decision to keep policy rates unchanged provided that communication stressed the Governing Council’s firm commitment to setting monetary policy to ensure that inflation stabilised at the 2% target in the medium term, as well as that, without pre-committing to a rate hike, the direction of travel was clear, unless the inflation outlook improved significantly."
+    }
+   ],
+   "source": {
+    "chars": 74076,
+    "chars_sent": 74077,
+    "method": "html-selector",
+    "paragraphs_sent": 171,
+    "truncated": false
+   },
+   "summary": [
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 49490,
+        "paragraph": 74,
+        "start": 49327,
+        "text": "Members largely agreed that the inflation outlook had deteriorated, with headline inflation rising by more than expected to 3.8% in September, from 3.2% in August."
+       },
+       {
+        "end": 55042,
+        "paragraph": 83,
+        "start": 54848,
+        "text": "members assessed indicators of underlying inflation to have remained broadly stable, although the early stages of the pricing chain pointed to upward pressures. Wage pressures remained moderate."
+       }
+      ],
+      "paragraphs": [
+       74,
+       83
+      ]
+     },
+     "text": "Members largely agreed that the inflation outlook had deteriorated, while indicators of underlying inflation remained broadly stable and wage pressures moderate."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 21977,
+        "paragraph": 35,
+        "start": 21865,
+        "text": "The incoming data suggested that the euro area economy had continued to expand in the third quarter of the year."
+       },
+       {
+        "end": 27814,
+        "paragraph": 46,
+        "start": 27739,
+        "text": "members assessed that the risks to the growth outlook were to the downside."
+       }
+      ],
+      "paragraphs": [
+       35,
+       46
+      ]
+     },
+     "text": "Members said the euro area economy continued to expand in the third quarter, but assessed risks to the growth outlook as being to the downside."
+    },
+    {
+     "evidence": {
+      "coverage": 0.889,
+      "fragments": [
+       {
+        "end": 42769,
+        "paragraph": 61,
+        "start": 42615,
+        "text": "Since the Governing Council’s previous monetary policy meeting in September, overall financial conditions had tightened on account of a repricing of risk."
+       },
+       {
+        "end": 46802,
+        "paragraph": 68,
+        "start": 46712,
+        "text": "members observed that bank lending conditions had tightened and loan demand had decreased."
+       }
+      ],
+      "paragraphs": [
+       61,
+       68
+      ]
+     },
+     "text": "Members assessed that financial conditions had tightened, and observed that bank lending conditions had tightened and loan demand had decreased."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 59215,
+        "paragraph": 89,
+        "start": 59111,
+        "text": "all members agreed with the proposal made by Mr Lane to keep the three key ECB interest rates unchanged."
+       },
+       {
+        "end": 61179,
+        "paragraph": 92,
+        "start": 60948,
+        "text": "A large number of members noted that, as the incoming data since the September Governing Council meeting had confirmed the case for further policy tightening, they could have supported raising interest rates at the current meeting."
+       }
+      ],
+      "paragraphs": [
+       89,
+       92
+      ]
+     },
+     "text": "All members agreed to keep the three key ECB interest rates unchanged, though a large number said they could have supported raising interest rates at the current meeting."
+    },
+    {
+     "evidence": {
+      "coverage": 1.0,
+      "fragments": [
+       {
+        "end": 63611,
+        "paragraph": 95,
+        "start": 63403,
+        "text": "all members, including those seeing a case for acting at the current meeting, supported the decision to keep policy rates unchanged provided that communication stressed the Governing Council’s firm commitment"
+       }
+      ],
+      "paragraphs": [
+       95
+      ]
+     },
+     "text": "All members, including those seeing a case for acting at the current meeting, supported keeping policy rates unchanged provided communication stressed the Governing Council’s commitment to the 2% target."
+    }
+   ],
+   "title": "Meeting of 28-29 October 2026",
+   "type": "account",
+   "url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261126~ccf28c8071.en.html",
+   "usage": {
+    "attempts": 1,
+    "input_tokens": 15437,
+    "output_tokens": 1019,
+    "reasoning_tokens": 319
+   }
+  },
+  {
+   "changes_vs_previous": null,
+   "coverage": {
+    "paragraphs": [
      58,
      67,
      98,
