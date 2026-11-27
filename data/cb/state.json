@@ -39,7 +39,7 @@
     "eurex_ois_usd": "2026-11-26",
     "eurex_ois_usd_sofr": "2026-11-26",
     "jpx_tona": "2026-11-26",
-    "mx_corra": "2026-11-26"
+    "mx_corra": "2026-11-27"
   },
   "_framework": {
     "checked": "2026-11-22",
@@ -258,7 +258,7 @@
   },
   "official:rba": {
     "etag": null,
-    "last_modified": "Wed, 25 Nov 2026 22:00:01 GMT"
+    "last_modified": "Thu, 26 Nov 2026 22:01:01 GMT"
   },
   "presser_checked": {
     "AUD:2026-03-17": "video",
@@ -284,7 +284,7 @@
   },
   "rba_bank_bills": {
     "etag": null,
-    "last_modified": "Wed, 25 Nov 2026 22:00:01 GMT"
+    "last_modified": "Thu, 26 Nov 2026 22:01:01 GMT"
   },
   "summaries": {
     "last_run": {
