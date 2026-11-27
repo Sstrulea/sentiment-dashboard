@@ -29,8 +29,8 @@
     ]
   },
   "_daily_fetch": {
-    "asx_bb": "2026-11-26",
-    "asx_ib": "2026-11-26",
+    "asx_bb": "2026-11-27",
+    "asx_ib": "2026-11-27",
     "atlantafed_mpt": "2026-11-26",
     "eurex_ois_chf": "2026-11-27",
     "eurex_ois_eur": "2026-11-27",
@@ -38,7 +38,7 @@
     "eurex_ois_jpy": "2026-11-27",
     "eurex_ois_usd": "2026-11-27",
     "eurex_ois_usd_sofr": "2026-11-27",
-    "jpx_tona": "2026-11-26",
+    "jpx_tona": "2026-11-27",
     "mx_corra": "2026-11-27"
   },
   "_framework": {
@@ -126,7 +126,7 @@
     },
     "latest": {
       "etag": null,
-      "last_modified": "Thu, 26 Nov 2026 10:50:21 GMT"
+      "last_modified": "Fri, 27 Nov 2026 11:01:54 GMT"
     }
   },
   "eurex_ois_chf": {
@@ -254,7 +254,7 @@
   },
   "jpx_tona": {
     "etag": null,
-    "last_modified": "Thu, 26 Nov 2026 07:47:44 GMT"
+    "last_modified": "Fri, 27 Nov 2026 07:41:11 GMT"
   },
   "official:rba": {
     "etag": null,
