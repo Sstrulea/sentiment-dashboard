@@ -1,10 +1,10 @@
 {
- "last_success_utc_date": "2026-11-26",
- "last_success_at": "2026-11-26T19:05:27.709488",
+ "last_success_utc_date": "2026-11-27",
+ "last_success_at": "2026-11-27T19:05:56.513902",
  "endpoint": "today",
  "rows": 1,
  "actuals": 1,
- "last_attempt_at": "2026-11-26T19:05:27.709488",
+ "last_attempt_at": "2026-11-27T19:05:56.513902",
  "last_status": "ok",
  "last_http_status": 200,
  "last_error": null,
