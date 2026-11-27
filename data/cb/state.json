@@ -31,7 +31,7 @@
   "_daily_fetch": {
     "asx_bb": "2026-11-27",
     "asx_ib": "2026-11-27",
-    "atlantafed_mpt": "2026-11-26",
+    "atlantafed_mpt": "2026-11-27",
     "eurex_ois_chf": "2026-11-27",
     "eurex_ois_eur": "2026-11-27",
     "eurex_ois_gbp": "2026-11-27",
@@ -116,8 +116,8 @@
     }
   },
   "atlantafed_mpt": {
-    "etag": "0ed56275c1a84a10a90b9aefdc4429d0",
-    "last_modified": "Wed, 25 Nov 2026 14:15:35 GMT"
+    "etag": "bc27cfaa835249baa8a13b68d76cc6b6",
+    "last_modified": "Fri, 27 Nov 2026 15:31:12 GMT"
   },
   "boe_ois": {
     "history": {
