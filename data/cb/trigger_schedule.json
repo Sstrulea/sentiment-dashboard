@@ -280,11 +280,85 @@
    "id": "conference:JPY:2027-01-22",
    "kind": "conference",
    "lead_minutes": 0
+  },
+  {
+   "at": "2027-01-27T14:45:00Z",
+   "bank": "CAD",
+   "date": "2027-01-27",
+   "dispatch": {
+    "inputs": {
+     "bank": "CAD",
+     "date": "2027-01-27",
+     "event": "decision"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2027-01-27T14:46:00Z",
+   "grace_minutes": 90,
+   "id": "decision:CAD:2027-01-27",
+   "kind": "decision",
+   "lead_minutes": 5
+  },
+  {
+   "at": "2027-01-27T15:30:00Z",
+   "at_basis": "conference",
+   "bank": "CAD",
+   "date": "2027-01-27",
+   "dispatch": {
+    "inputs": {
+     "bank": "CAD",
+     "date": "2027-01-27",
+     "event": "conference"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2027-01-27T17:30:00Z",
+   "grace_minutes": 240,
+   "id": "conference:CAD:2027-01-27",
+   "kind": "conference",
+   "lead_minutes": 0
+  },
+  {
+   "at": "2027-01-27T19:00:00Z",
+   "bank": "USD",
+   "date": "2027-01-27",
+   "dispatch": {
+    "inputs": {
+     "bank": "USD",
+     "date": "2027-01-27",
+     "event": "decision"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2027-01-27T19:01:00Z",
+   "grace_minutes": 90,
+   "id": "decision:USD:2027-01-27",
+   "kind": "decision",
+   "lead_minutes": 5
+  },
+  {
+   "at": "2027-01-27T19:30:00Z",
+   "at_basis": "conference",
+   "bank": "USD",
+   "date": "2027-01-27",
+   "dispatch": {
+    "inputs": {
+     "bank": "USD",
+     "date": "2027-01-27",
+     "event": "conference"
+    },
+    "workflow": "cb-refresh.yml"
+   },
+   "fire_at": "2027-01-27T21:30:00Z",
+   "grace_minutes": 240,
+   "id": "conference:USD:2027-01-27",
+   "kind": "conference",
+   "lead_minutes": 0
   }
  ],
  "horizon": {
-  "from": "2026-11-24",
-  "to": "2027-01-26"
+  "from": "2026-11-25",
+  "to": "2027-01-27"
  },
  "regular": [
   {
